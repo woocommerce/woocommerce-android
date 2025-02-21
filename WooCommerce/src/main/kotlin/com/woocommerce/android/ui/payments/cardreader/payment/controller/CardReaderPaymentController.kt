@@ -289,7 +289,6 @@ class CardReaderPaymentController(
         ).collect { paymentStatus ->
             onPaymentStatusChanged(
                 order.id,
-                customerEmail,
                 paymentStatus,
                 cardReaderPaymentOrderHelper.getAmountLabel(order)
             )
@@ -299,7 +298,6 @@ class CardReaderPaymentController(
     @Suppress("LongMethod")
     private suspend fun onPaymentStatusChanged(
         orderId: Long,
-        billingEmail: String,
         paymentStatus: CardPaymentStatus,
         amountLabel: String
     ) {
@@ -352,7 +350,7 @@ class CardReaderPaymentController(
 
             is PaymentFailed -> {
                 tracker.trackPaymentFailed(paymentStatus.errorMessage, paymentStatus.type)
-                emitFailedPaymentState(orderId, billingEmail, paymentStatus, amountLabel)
+                emitFailedPaymentState(paymentStatus, amountLabel)
             }
         }
     }
@@ -518,8 +516,6 @@ class CardReaderPaymentController(
     }
 
     private suspend fun emitFailedPaymentState(
-        orderId: Long,
-        billingEmail: String,
         error: PaymentFailed,
         amountLabel: String
     ) {

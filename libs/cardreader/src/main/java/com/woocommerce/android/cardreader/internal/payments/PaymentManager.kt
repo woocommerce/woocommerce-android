@@ -46,7 +46,9 @@ internal class PaymentManager(
         try {
             processPaymentIntent(paymentInfo.orderId, paymentIntent).collect { emit(it) }
         } finally {
-            if (paymentIntent.status != PaymentIntentStatus.SUCCEEDED || paymentIntent.status != PaymentIntentStatus.REQUIRES_CAPTURE) {
+            if (paymentIntent.status != PaymentIntentStatus.SUCCEEDED ||
+                paymentIntent.status != PaymentIntentStatus.REQUIRES_CAPTURE
+            ) {
                 cancelPaymentAction.cancelPayment(paymentIntent)
             }
         }

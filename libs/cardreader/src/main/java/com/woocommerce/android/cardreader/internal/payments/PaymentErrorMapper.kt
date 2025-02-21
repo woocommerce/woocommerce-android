@@ -1,6 +1,5 @@
 package com.woocommerce.android.cardreader.internal.payments
 
-import com.stripe.stripeterminal.external.models.PaymentIntent
 import com.stripe.stripeterminal.external.models.TerminalException
 import com.stripe.stripeterminal.external.models.TerminalException.TerminalErrorCode
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
