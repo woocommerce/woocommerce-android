@@ -152,9 +152,6 @@ class WooPosTotalsViewModelTest {
         whenever(cardReaderManager.collectPayment(any())).thenAnswer {
             flow<CardPaymentStatus> { }
         }
-        whenever(cardReaderManager.retryCollectPayment(any(), any())).thenAnswer {
-            flow<CardPaymentStatus> { }
-        }
         whenever(cardReaderManager.displayBluetoothCardReaderMessages).thenAnswer {
             flow<BluetoothCardReaderMessages> {}
         }
