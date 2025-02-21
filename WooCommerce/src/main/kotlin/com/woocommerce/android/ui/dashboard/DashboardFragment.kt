@@ -193,7 +193,9 @@ class DashboardFragment :
             // Show banners only if onboarding list is NOT displayed
             if (
                 state.widgets.none {
-                    (it as? DashboardWidgetUiModel.ConfigurableWidget)?.widget?.type == DashboardWidget.Type.ONBOARDING
+                    val configurableWidget = it as? DashboardWidgetUiModel.ConfigurableWidget
+                    configurableWidget?.widget?.type == DashboardWidget.Type.ONBOARDING &&
+                        configurableWidget.widget.isVisible
                 }
             ) {
                 initJitm()

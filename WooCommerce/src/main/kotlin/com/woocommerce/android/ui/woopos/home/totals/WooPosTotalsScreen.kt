@@ -411,8 +411,7 @@ private fun TotalsErrorScreen(
         primaryButton = Button(
             text = stringResource(R.string.retry),
             click = { onUIEvent(WooPosTotalsUIEvent.RetryOrderCreationClicked) }
-        ),
-        adaptToScreenHeight = true,
+        )
     )
 }
 

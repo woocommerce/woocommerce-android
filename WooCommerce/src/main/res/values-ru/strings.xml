@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-02-06 13:54:03+0000
+Translation-Revision-Date: 2025-02-10 15:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_customs_restriction_other">Другое</string>
+    <string name="woo_shipping_labels_customs_restriction_sanitary">Санитарная/фитосанитарная проверка</string>
+    <string name="woo_shipping_labels_customs_restriction_quarantine">Карантин</string>
+    <string name="woo_shipping_labels_customs_restriction_none">Нет</string>
+    <string name="woo_shipping_labels_customs_restriction_details_description">Укажите ограничения для этой посылки</string>
+    <string name="woo_shipping_labels_customs_restriction_details_label">Сведения об ограничениях</string>
+    <string name="woo_shipping_labels_customs_content_other">Другое</string>
+    <string name="woo_shipping_labels_customs_content_documents">Документы</string>
+    <string name="woo_shipping_labels_customs_content_sample">Образец</string>
+    <string name="woo_shipping_labels_customs_content_returned_goods">Возвращённые товары</string>
+    <string name="woo_shipping_labels_customs_content_gift">Подарок</string>
+    <string name="woo_shipping_labels_customs_content_merchandise">Атрибутика</string>
+    <string name="woo_shipping_labels_customs_content_details_description">Укажите, какие товары содержатся в посылке</string>
+    <string name="woo_shipping_labels_customs_content_details_label">Сведения о содержимом</string>
+    <string name="woo_shipping_labels_customs_return_to_sender_label">Вернуть отправителю в случае невозможности доставки</string>
+    <string name="woo_shipping_labels_customs_itn_label">Внутренний номер транзакции (ITN)</string>
+    <string name="woo_shipping_labels_customs_restriction_type_label">Тип ограничения</string>
+    <string name="woo_shipping_labels_customs_content_type_label">Тип содержимого</string>
+    <string name="woo_shipping_labels_customs_add_missing_information">Дополнить сведения</string>
+    <string name="product_open_upload_screen">Просмотреть последние неудачные загрузки</string>
+    <string name="shipping_labels_customs_completed_badge">Завершено</string>
+    <string name="shipping_labels_customs_missing_info_badge">Отсутствуют данные</string>
+    <string name="shipping_labels_customs_title">Таможня</string>
     <string name="about_automattic_x_item_title">X</string>
     <string name="woo_shipping_fetching_countries_and_states_failed">Не удалось получить сведения о стране и регионе. Повторите попытку.</string>
     <string name="woo_shipping_field_required_error">Обязательное поле.</string>

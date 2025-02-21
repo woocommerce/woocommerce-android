@@ -12,6 +12,8 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItem.SimpleProduct
 import com.woocommerce.android.ui.woopos.home.items.WooPosItem.VariableProduct
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ProductsPullToRefreshTriggered
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -33,6 +35,7 @@ class WooPosItemsViewModel @Inject constructor(
     private val priceFormat: WooPosFormatPrice,
     private val preferencesRepository: WooPosPreferencesRepository,
     private val navigator: WooPosItemsNavigator,
+    private val analyticsTracker: WooPosAnalyticsTracker,
 ) : ViewModel() {
     private var loadMoreProductsJob: Job? = null
 
@@ -70,6 +73,7 @@ class WooPosItemsViewModel @Inject constructor(
                     withPullToRefresh = true,
                     withCart = true,
                 )
+                viewModelScope.launch { analyticsTracker.track(ProductsPullToRefreshTriggered) }
             }
 
             WooPosItemsUIEvent.ProductsLoadingErrorRetryButtonClicked -> {

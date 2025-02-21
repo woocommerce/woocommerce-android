@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-02-06 15:54:04+0000
+Translation-Revision-Date: 2025-02-11 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_customs_restriction_other">기타</string>
+    <string name="woo_shipping_labels_customs_restriction_sanitary">위생/식물검역 검사</string>
+    <string name="woo_shipping_labels_customs_restriction_quarantine">격리</string>
+    <string name="woo_shipping_labels_customs_restriction_none">해당 없음</string>
+    <string name="woo_shipping_labels_customs_restriction_details_description">이 패키지에 있어야 하는 제한 사항의 종류를 설명하세요.</string>
+    <string name="woo_shipping_labels_customs_restriction_details_label">제한 상세 정보</string>
+    <string name="woo_shipping_labels_customs_content_other">기타</string>
+    <string name="woo_shipping_labels_customs_content_documents">문서</string>
+    <string name="woo_shipping_labels_customs_content_sample">샘플</string>
+    <string name="woo_shipping_labels_customs_content_returned_goods">반품된 상품</string>
+    <string name="woo_shipping_labels_customs_content_gift">선물</string>
+    <string name="woo_shipping_labels_customs_content_merchandise">물품</string>
+    <string name="woo_shipping_labels_customs_content_details_description">이 패키지에 들어 있는 상품의 종류를 설명하세요.</string>
+    <string name="woo_shipping_labels_customs_content_details_label">내용물 상세 정보</string>
+    <string name="woo_shipping_labels_customs_return_to_sender_label">패키지를 배송할 수 없는 경우 보낸 사람에게 반송</string>
+    <string name="woo_shipping_labels_customs_itn_label">국제 거래 번호</string>
+    <string name="woo_shipping_labels_customs_restriction_type_label">제한 유형</string>
+    <string name="woo_shipping_labels_customs_content_type_label">내용물 유형</string>
+    <string name="woo_shipping_labels_customs_add_missing_information">누락된 정보 추가</string>
+    <string name="product_open_upload_screen">최근 업로드 실패 보기</string>
+    <string name="shipping_labels_customs_completed_badge">완료됨</string>
+    <string name="shipping_labels_customs_missing_info_badge">누락된 정보</string>
+    <string name="shipping_labels_customs_title">세관</string>
     <string name="about_automattic_x_item_title">X</string>
     <string name="woo_shipping_fetching_countries_and_states">국가 및 주를 가져오는 중입니다.</string>
     <string name="woo_shipping_fetching_countries_and_states_failed">국가 및 주 정보를 조회할 수 없습니다. 다시 시도해 주세요.</string>

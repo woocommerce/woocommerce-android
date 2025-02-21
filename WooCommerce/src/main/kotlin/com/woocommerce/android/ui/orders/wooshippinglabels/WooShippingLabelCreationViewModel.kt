@@ -57,6 +57,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     private val getShippingRates: GetShippingRates,
     private val purchaseShippingLabel: PurchaseShippingLabel,
     private val observeStoreOptions: ObserveStoreOptions,
+    private val fetchAccountSettings: FetchAccountSettings,
     private val shouldRequireCustoms: ShouldRequireCustomsForm
 ) : ScopedViewModel(savedState) {
     private val navArgs: WooShippingLabelCreationFragmentArgs by savedState.navArgs()
@@ -499,6 +500,17 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
     fun onNavigateBack() {
         if (allowBackNavigation()) triggerEvent(Event.Exit)
+    }
+
+    fun onRetry() {
+        // Retry loading data that may have previously resulted in errors.
+        viewState.value = WooShippingViewState.Loading
+        launch { getOrderInformation() }
+        launch {
+            val result = fetchAccountSettings().getOrNull()
+            storeOptions.value = StoreOptionsModel.EMPTY
+            storeOptions.value = result
+        }
     }
 
     data object StartPackageSelection : Event()

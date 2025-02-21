@@ -15,6 +15,8 @@
 - [*] Improved the Authenticated WebView implementation, and it will now handle opening the Analytics reports directly from the app without requiring additional authentication [https://github.com/woocommerce/woocommerce-android/pull/13487]
 - [*] [Internal] All non-login tracking events will now include the selected site data [https://github.com/woocommerce/woocommerce-android/pull/13575]
 - [*] Fixed a crash that occurred when the app was backgrounded during bulk variations update [https://github.com/woocommerce/woocommerce-android/pull/13584]
+- [*] Improved handling of product previews by using the Authenticated WebView in supported scenarios [https://github.com/woocommerce/woocommerce-android/pull/13494]
+- [*] [Internal] Fixed a bug that caused the app to not show JITM messages in the dashboard [https://github.com/woocommerce/woocommerce-android/pull/13604]
 
 21.7
 -----

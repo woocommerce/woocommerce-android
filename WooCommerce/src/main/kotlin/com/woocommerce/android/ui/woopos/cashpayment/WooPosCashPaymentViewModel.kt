@@ -4,6 +4,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.CashCollectPaymentSuccess
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -18,6 +20,7 @@ class WooPosCashPaymentViewModel @Inject constructor(
     private val repository: WooPosCashPaymentRepository,
     private val priceFormat: WooPosFormatPrice,
     private val resourceProvider: ResourceProvider,
+    private val analyticsTracker: WooPosAnalyticsTracker,
     savedState: SavedStateHandle,
 ) : ViewModel() {
     private val orderId = savedState.get<Long>(CASH_ROUTE_ORDER_ID_KEY)!!
@@ -106,6 +109,7 @@ class WooPosCashPaymentViewModel @Inject constructor(
 
             val result = repository.completeOrder(orderId)
             if (result.isSuccess) {
+                analyticsTracker.track(CashCollectPaymentSuccess)
                 _state.value = WooPosCashPaymentState.Complete
             } else {
                 val currentState = _state.value as? WooPosCashPaymentState.Collecting ?: return@launch

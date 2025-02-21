@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.support.WooPosGetSupportFacade
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.ext.isGestureNavigation
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -27,6 +28,9 @@ class WooPosActivity : AppCompatActivity() {
     @Inject
     lateinit var wooPosGetSupportFacade: WooPosGetSupportFacade
 
+    @Inject
+    lateinit var wooPosAnalyticsTracker: WooPosAnalyticsTracker
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -38,7 +42,8 @@ class WooPosActivity : AppCompatActivity() {
         setContent {
             WooPosTheme {
                 WooPosRootScreen(
-                    modifier = Modifier.gesturesOrButtonsNavigationPadding()
+                    modifier = Modifier.gesturesOrButtonsNavigationPadding(),
+                    wooPosAnalyticsTracker = wooPosAnalyticsTracker
                 )
             }
         }

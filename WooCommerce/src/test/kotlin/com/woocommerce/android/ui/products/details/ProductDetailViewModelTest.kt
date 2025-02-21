@@ -15,6 +15,7 @@ import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
+import com.woocommerce.android.ui.common.webview.CanAutoAuthenticateInWebView
 import com.woocommerce.android.ui.customfields.CustomFieldsRepository
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.products.ParameterRepository
@@ -35,6 +36,7 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.IsWindowClassLargeThanCompact
 import com.woocommerce.android.util.ProductUtils
 import com.woocommerce.android.util.getOrAwaitValue
+import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -51,6 +53,7 @@ import org.mockito.kotlin.anyVararg
 import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
+import org.mockito.kotlin.given
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.spy
@@ -137,6 +140,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     private val customFieldsRepository: CustomFieldsRepository = mock {
         onBlocking { hasDisplayableCustomFields(any()) } doReturn false
     }
+    private val canAutoAuthenticateInWebView: CanAutoAuthenticateInWebView = mock()
 
     private lateinit var viewModel: ProductDetailViewModel
 
@@ -279,7 +283,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                 isProductCurrentlyPromoted = mock(),
                 isWindowClassLargeThanCompact = isWindowClassLargeThanCompact,
                 determineProductPasswordApi = determineProductPasswordApi,
-                customFieldsRepository = customFieldsRepository
+                customFieldsRepository = customFieldsRepository,
+                canAutoAuthenticateInWebView = canAutoAuthenticateInWebView,
             )
         )
 
@@ -1336,6 +1341,93 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
             // THEN
             Assertions.assertThat(viewModel.getProduct().subscriptionDraft).isEqualTo(originalSubscription)
+        }
+
+    @Test
+    fun `when a product is publish, then show the view product button`() = testBlocking {
+        given(productRepository.getProductAggregate(any())).willReturn(
+            productAggregate.copy(
+                product = productAggregate.product.copy(
+                    status = ProductStatus.PUBLISH
+                )
+            )
+        )
+
+        val menuButtonsState = viewModel.menuButtonsState.runAndCaptureValues {
+            viewModel.start()
+            // Observe the view state to trigger the menu buttons state
+            viewModel.productDetailViewStateData.observeForever { _, _ -> }
+        }.last()
+
+        Assertions.assertThat(menuButtonsState.viewProductOption).isTrue()
+    }
+
+    @Test
+    fun `given we can authenticate the user in WebView, when product is private, then show the view product button`() =
+        testBlocking {
+            given(canAutoAuthenticateInWebView.invoke(any())).willReturn(true)
+            given(productRepository.getProductAggregate(any())).willReturn(
+                productAggregate.copy(
+                    product = productAggregate.product.copy(
+                        status = ProductStatus.PRIVATE
+                    )
+                )
+            )
+
+            val menuButtonsState = viewModel.menuButtonsState.runAndCaptureValues {
+                viewModel.start()
+                // Observe the view state to trigger the menu buttons state
+                viewModel.productDetailViewStateData.observeForever { _, _ -> }
+            }.last()
+
+            Assertions.assertThat(menuButtonsState.viewProductOption).isTrue()
+        }
+
+    @Test
+    fun `given we can't authenticate the user in WebView, when product is private, then don't show the view product button`() =
+        testBlocking {
+            given(canAutoAuthenticateInWebView.invoke(any())).willReturn(false)
+            given(productRepository.getProductAggregate(any())).willReturn(
+                productAggregate.copy(
+                    product = productAggregate.product.copy(
+                        status = ProductStatus.PRIVATE
+                    )
+                )
+            )
+
+            val menuButtonsState = viewModel.menuButtonsState.runAndCaptureValues {
+                viewModel.start()
+                // Observe the view state to trigger the menu buttons state
+                viewModel.productDetailViewStateData.observeForever { _, _ -> }
+            }.last()
+
+            Assertions.assertThat(menuButtonsState.viewProductOption).isFalse()
+        }
+
+    @Test
+    fun `given we can authenticate the user in WebView, when tapping on view product, then show authenticated webview`() =
+        testBlocking {
+            given(canAutoAuthenticateInWebView.invoke(any())).willReturn(true)
+            given(productRepository.getProductAggregate(any())).willReturn(productAggregate)
+
+            viewModel.start()
+            viewModel.onViewProductOnStoreLinkClicked()
+
+            Assertions.assertThat(viewModel.event.value)
+                .isEqualTo(MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView(productAggregate.product.permalink))
+        }
+
+    @Test
+    fun `given we can't authenticate the user in WebView, when tapping on view product, then show Chrome Custom Tab`() =
+        testBlocking {
+            given(canAutoAuthenticateInWebView.invoke(any())).willReturn(false)
+            given(productRepository.getProductAggregate(any())).willReturn(productAggregate)
+
+            viewModel.start()
+            viewModel.onViewProductOnStoreLinkClicked()
+
+            Assertions.assertThat(viewModel.event.value)
+                .isEqualTo(MultiLiveEvent.Event.LaunchUrlInChromeTab(productAggregate.product.permalink))
         }
 
     private val productsDraft

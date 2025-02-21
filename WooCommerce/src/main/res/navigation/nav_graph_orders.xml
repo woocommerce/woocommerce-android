@@ -486,44 +486,6 @@
         android:label="EditShippingLabelPaymentFragment"
         tools:layout="@layout/fragment_edit_shipping_label_payment">
     </fragment>
-    <action
-        android:id="@+id/action_global_AuthenticatedWebViewFragment"
-        app:destination="@id/AuthenticatedWebViewFragment" />
-    <fragment
-        android:id="@+id/AuthenticatedWebViewFragment"
-        android:name="com.woocommerce.android.ui.common.webview.AuthenticatedWebViewFragment"
-        android:label="AuthenticatedWebViewFragment"
-        tools:layout="@layout/fragment_wpcom_webview">
-        <argument
-            android:name="urlToLoad"
-            app:argType="string" />
-        <argument
-            android:name="title"
-            android:defaultValue="@null"
-            app:argType="string"
-            app:nullable="true" />
-        <argument
-            android:name="urlsToTriggerExit"
-            android:defaultValue="@null"
-            app:argType="string[]"
-            app:nullable="true" />
-        <argument
-            android:name="captureBackButton"
-            android:defaultValue="true"
-            app:argType="boolean" />
-        <argument
-            android:name="displayMode"
-            android:defaultValue="REGULAR"
-            app:argType="com.woocommerce.android.ui.common.webview.AuthenticatedWebViewViewModel$DisplayMode" />
-        <argument
-            android:name="urlComparisonMode"
-            android:defaultValue="PARTIAL"
-            app:argType="com.woocommerce.android.ui.common.webview.AuthenticatedWebViewViewModel$UrlComparisonMode" />
-        <argument
-            android:name="clearCache"
-            android:defaultValue="false"
-            app:argType="boolean" />
-    </fragment>
     <fragment
         android:id="@+id/shippingCarrierRatesFragment"
         android:name="com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesFragment"

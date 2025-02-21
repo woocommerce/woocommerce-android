@@ -1,0 +1,3 @@
+21.7:
+Die WooCommerce-App wurde verbessert! In diesem Release haben wir mehrere Fehler behoben und uns der Optimierung der Benutzeroberfläche gewidmet. Sende uns weiterhin Feedback, denn mit deiner Hilfe können wir Woo stetig verbessern. Viel Spaß beim Verkaufen!
+

@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-02-05 16:54:04+0000
+Translation-Revision-Date: 2025-02-10 15:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_customs_restriction_other">Outro</string>
+    <string name="woo_shipping_labels_customs_restriction_sanitary">Inspeção sanitária/fitossanitária</string>
+    <string name="woo_shipping_labels_customs_restriction_quarantine">Quarentena</string>
+    <string name="woo_shipping_labels_customs_restriction_none">Nenhum</string>
+    <string name="woo_shipping_labels_customs_restriction_details_description">Descreva que tipo de restrições este pacote deve ter</string>
+    <string name="woo_shipping_labels_customs_restriction_details_label">Detalhes da restrição</string>
+    <string name="woo_shipping_labels_customs_content_other">Outro</string>
+    <string name="woo_shipping_labels_customs_content_documents">Documentos</string>
+    <string name="woo_shipping_labels_customs_content_sample">Amostra</string>
+    <string name="woo_shipping_labels_customs_content_returned_goods">Produtos devolvidos</string>
+    <string name="woo_shipping_labels_customs_content_gift">Presente</string>
+    <string name="woo_shipping_labels_customs_content_merchandise">Mercadoria</string>
+    <string name="woo_shipping_labels_customs_content_details_description">Descreva que tipo de mercadorias este pacote contém</string>
+    <string name="woo_shipping_labels_customs_content_details_label">Detalhes do conteúdo</string>
+    <string name="woo_shipping_labels_customs_return_to_sender_label">Devolver ao remetente se não for possível entregar o pacote</string>
+    <string name="woo_shipping_labels_customs_itn_label">Número de transação internacional</string>
+    <string name="woo_shipping_labels_customs_restriction_type_label">Tipo de restrição</string>
+    <string name="woo_shipping_labels_customs_content_type_label">Tipo de conteúdo</string>
+    <string name="woo_shipping_labels_customs_add_missing_information">Adicionar informações não fornecidas</string>
+    <string name="product_open_upload_screen">Visualizar falhas de upload recentes</string>
+    <string name="shipping_labels_customs_completed_badge">Concluído</string>
+    <string name="shipping_labels_customs_missing_info_badge">Informações ausentes</string>
+    <string name="shipping_labels_customs_title">Alfândega</string>
     <string name="about_automattic_x_item_title">X</string>
     <string name="woo_shipping_fetching_countries_and_states">Buscando países e estados.</string>
     <string name="woo_shipping_fetching_countries_and_states_failed">Não conseguimos recuperar informações do país ou estado. Tente novamente.</string>

@@ -1,0 +1,3 @@
+21.7:
+Kami telah menyempurnakan aplikasi WooCommerce! Kali ini, kami memperbaiki sejumlah bug dan berfokus pada peningkatan antarmuka pengguna. Terus berikan feedback Anda untuk membantu kami menyempurnakan Woo. Selamat berjualan!
+

@@ -192,6 +192,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                 isWindowClassLargeThanCompact = mock(),
                 determineProductPasswordApi = mock(),
                 customFieldsRepository = mock(),
+                canAutoAuthenticateInWebView = mock(),
             )
         )
 

@@ -6,13 +6,12 @@ import android.view.View
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.AppUrls
-import com.woocommerce.android.AppUrls.FETCH_PAYMENT_METHOD_URL_PATH
-import com.woocommerce.android.NavGraphOrdersDirections
+import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentEditShippingLabelPaymentBinding
+import com.woocommerce.android.extensions.findNavController
 import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.navigateBackWithResult
@@ -198,10 +197,10 @@ class EditShippingLabelPaymentFragment :
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is AddPaymentMethod -> {
-                    findNavController().navigateSafely(
-                        NavGraphOrdersDirections.actionGlobalAuthenticatedWebViewFragment(
+                    findNavController(R.id.nav_host_fragment_main).navigateSafely(
+                        NavGraphMainDirections.actionGlobalAuthenticatedWebViewFragment(
                             urlToLoad = AppUrls.WPCOM_ADD_PAYMENT_METHOD,
-                            urlsToTriggerExit = arrayOf(FETCH_PAYMENT_METHOD_URL_PATH),
+                            urlsToTriggerExit = arrayOf(AppUrls.FETCH_PAYMENT_METHOD_URL_PATH),
                             title = getFragmentTitle()
                         )
                     )
@@ -215,7 +214,7 @@ class EditShippingLabelPaymentFragment :
     }
 
     private fun setupResultHandlers() {
-        handleNotice(AuthenticatedWebViewFragment.WEBVIEW_RESULT) {
+        handleNotice(AuthenticatedWebViewFragment.WEBVIEW_RESULT, navHostId = R.id.nav_host_fragment_main) {
             viewModel.onPaymentMethodAdded()
         }
     }

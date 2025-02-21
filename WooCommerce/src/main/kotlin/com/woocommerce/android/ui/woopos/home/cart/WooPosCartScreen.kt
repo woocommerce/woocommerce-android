@@ -179,13 +179,13 @@ fun CartBodyEmpty(modifier: Modifier = Modifier) {
         Image(
             imageVector = ImageVector.vectorResource(R.drawable.ic_woo_pos_empty_cart),
             contentDescription = stringResource(R.string.woopos_cart_empty_content_description),
-            modifier = Modifier.size(104.dp)
+            modifier = Modifier.size(88.dp)
         )
         Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
         WooPosText(
             text = stringResource(R.string.woopos_cart_empty_subtitle),
             style = WooPosTypography.BodyLarge,
-            color = MaterialTheme.colorScheme.onSurface,
+            color = WooPosTheme.colors.onSurfaceVariantLowest,
             textAlign = TextAlign.Center
         )
     }
@@ -423,7 +423,7 @@ private fun ProductItem(
                 Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value.toAdaptivePadding()))
                 if (item.description.isNotNullOrEmpty()) {
                     WooPosText(
-                        text = item.description!!,
+                        text = item.description,
                         style = WooPosTypography.BodySmall,
                         color = WooPosTheme.colors.onSurfaceVariantHighest,
                         maxLines = 1,

@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.cashpayment
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.text.KeyboardOptions
@@ -49,6 +50,7 @@ fun WooPosCashPaymentScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) 
         onBackClicked = { onNavigationEvent(WooPosNavigationEvent.GoBack) },
         onOrderComplete = { onNavigationEvent(WooPosNavigationEvent.OpenHomeFromCashPaymentAfterSuccessfulPayment) },
     )
+    BackHandler { onNavigationEvent(WooPosNavigationEvent.GoBack) }
 }
 
 @Composable

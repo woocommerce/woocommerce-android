@@ -78,7 +78,7 @@ private fun WooPosPaymentSuccessScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surfaceContainerLowest),
+            .background(MaterialTheme.colorScheme.surfaceBright),
         contentAlignment = Alignment.Center
     ) {
         val marginBetweenButtonAndText by animateDpAsState(

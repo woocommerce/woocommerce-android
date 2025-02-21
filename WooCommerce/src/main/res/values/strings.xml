@@ -4316,7 +4316,6 @@
     <string name="woopos_payment_tax_label">Taxes</string>
     <string name="woopos_payment_total_label">Total</string>
     <string name="woopos_payment_collect_payment_label">Collect card payment</string>
-    <string name="woopos_receipt_sending_not_supported">Please update WooCommerce to version %s or later</string>
     <string name="woopos_payment_take_cash_payment_label">Cash payment</string>
     <string name="woopos_products_empty_list">No products</string>
     <string name="woopos_reader_connect_now_button">Connect now</string>
@@ -4507,6 +4506,7 @@
     <string name="woo_shipping_address_validate_and_save">Validate &amp; Save</string>
     <string name="woo_shipping_address_missing_info_hint">Add missing information</string>
     <string name="woo_shipping_labels_loading_order_error">Unable to load the order</string>
+    <string name="woo_shipping_labels_loading_error">Unable to load data</string>
 
     <string name="woo_shipping_address_validate_title">Validating</string>
     <string name="woo_shipping_address_validate_message">Validating entered address</string>

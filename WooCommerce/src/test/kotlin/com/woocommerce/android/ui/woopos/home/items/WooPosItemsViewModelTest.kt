@@ -8,6 +8,8 @@ import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ProductsPullToRefreshTriggered
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -40,6 +42,7 @@ class WooPosItemsViewModelTest {
         onBlocking { invoke(BigDecimal("10.0")) }.thenReturn("$10.0")
         onBlocking { invoke(BigDecimal("20.0")) }.thenReturn("$20.0")
     }
+    private val analyticsTracker: WooPosAnalyticsTracker = mock()
 
     @Before
     fun setup() {
@@ -445,6 +448,25 @@ class WooPosItemsViewModelTest {
             verify(fromChildToParentEventSender).sendToParent(ChildToParentEvent.ProductsStatusChanged.WithCart)
             cancelAndConsumeRemainingEvents()
         }
+    }
+
+    @Test
+    fun `when pull to refresh, then should track event`() = runTest {
+        // GIVEN
+        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+            flowOf(
+                WooPosProductsDataSource.ProductsResult.Remote(
+                    Result.success(emptyList())
+                )
+            )
+        )
+
+        // WHEN
+        val viewModel = createViewModel()
+        viewModel.onUIEvent(WooPosItemsUIEvent.PullToRefreshTriggered)
+
+        // THEN
+        verify(analyticsTracker).track(ProductsPullToRefreshTriggered)
     }
 
     @Test
@@ -915,5 +937,6 @@ class WooPosItemsViewModelTest {
             priceFormat,
             posPreferencesRepository,
             wooPosItemsNavigator,
+            analyticsTracker,
         )
 }

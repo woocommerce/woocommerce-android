@@ -39,7 +39,7 @@ class WooShippingLabelRepository @Inject constructor(
                 ?.takeIf { response.isError.not() }
                 ?.let {
                     configurationDataStore.saveStoreOptions(it)
-                }
+                } ?: configurationDataStore.clearStoreOptions()
         }
 
     suspend fun fetchPurchasedShippingLabels(

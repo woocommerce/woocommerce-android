@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.wooshippinglabels
 
 import android.content.res.Configuration
 import android.os.Parcelable
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -31,6 +33,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetDefaults
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
@@ -60,6 +63,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.modifiers.dashedBorder
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.CustomsState
@@ -82,9 +86,7 @@ import kotlinx.parcelize.Parcelize
 fun WooShippingLabelCreationScreen(viewModel: WooShippingLabelCreationViewModel) {
     when (val viewState = viewModel.viewState.collectAsState().value) {
         WooShippingLabelCreationViewModel.WooShippingViewState.Loading -> {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-            }
+            LoadingScreen(onNavigateBack = viewModel::onNavigateBack)
         }
 
         is WooShippingLabelCreationViewModel.WooShippingViewState.DataState -> {
@@ -115,8 +117,11 @@ fun WooShippingLabelCreationScreen(viewModel: WooShippingLabelCreationViewModel)
         }
 
         WooShippingLabelCreationViewModel.WooShippingViewState.Error -> {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("Error")
+            WooThemeWithBackground {
+                ErrorScreen(
+                    onNavigateBack = viewModel::onNavigateBack,
+                    onRetryClick = viewModel::onRetry,
+                )
             }
         }
     }
@@ -315,19 +320,7 @@ private fun LabelCreationScreenWithBottomSheet(
         sheetPeekHeight = bottomSheetPeekHeight,
         scaffoldState = scaffoldState,
         topBar = {
-            TopAppBar(
-                title = { Text(stringResource(id = R.string.shipping_label_create_title)) },
-                navigationIcon = {
-                    IconButton(onNavigateBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(id = R.string.back)
-                        )
-                    }
-                },
-                backgroundColor = colorResource(id = R.color.color_toolbar),
-                elevation = 0.dp,
-            )
+            TopBar(onNavigateBack)
         },
     ) { innerPadding ->
         Surface(
@@ -374,6 +367,21 @@ private fun LabelCreationScreenWithBottomSheet(
         }
     }
 }
+
+@Composable
+private fun TopBar(onNavigateBack: () -> Unit) = TopAppBar(
+    title = { Text(stringResource(id = R.string.shipping_label_create_title)) },
+    navigationIcon = {
+        IconButton(onNavigateBack) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = stringResource(id = R.string.back)
+            )
+        }
+    },
+    backgroundColor = colorResource(id = R.color.color_toolbar),
+    elevation = 0.dp,
+)
 
 @Composable
 internal fun HazmatCard(
@@ -654,7 +662,6 @@ private fun PackageSelectionAvailableCard(
                         onValueChange = onCustomWeightChange,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         textStyle = MaterialTheme.typography.body2.copy(color = MaterialTheme.colors.onSurface),
-
                     )
                     if (customWeight.isEmpty()) {
                         Text(
@@ -669,6 +676,56 @@ private fun PackageSelectionAvailableCard(
                     style = MaterialTheme.typography.body2,
                     color = colorResource(id = R.color.color_on_surface_disabled)
                 )
+            }
+        }
+    }
+}
+
+@Composable
+internal fun LoadingScreen(
+    modifier: Modifier = Modifier,
+    onNavigateBack: () -> Unit = {},
+) {
+    Scaffold(topBar = { TopBar(onNavigateBack) }) { padding ->
+        Box(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(padding),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
+        }
+    }
+}
+
+@Composable
+internal fun ErrorScreen(
+    modifier: Modifier = Modifier,
+    onNavigateBack: () -> Unit = {},
+    onRetryClick: () -> Unit = {}
+) {
+    Scaffold(topBar = { TopBar(onNavigateBack) }) { padding ->
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .background(MaterialTheme.colors.surface)
+                .padding(padding),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(24.dp, Alignment.CenterVertically)
+        ) {
+            Image(
+                modifier = Modifier.size(87.dp),
+                painter = painterResource(id = R.drawable.ic_error),
+                contentDescription = stringResource(id = R.string.woopos_error_icon_content_description),
+            )
+            Text(
+                text = stringResource(R.string.woo_shipping_labels_loading_error),
+                style = MaterialTheme.typography.subtitle1,
+                color = MaterialTheme.colors.onSurface,
+            )
+            WCTextButton(onClick = onRetryClick) {
+                Text(stringResource(id = R.string.retry))
             }
         }
     }
@@ -784,3 +841,7 @@ private fun PackageSelectedPreview() {
         )
     }
 }
+
+@Preview
+@Composable
+private fun EmptyScreenPreview() = WooThemeWithBackground { ErrorScreen() }

@@ -24,8 +24,8 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosDialogWrapper
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
@@ -103,13 +103,18 @@ fun WooPosProductInfoDialog(
                         textAlign = TextAlign.Center,
                         modifier = Modifier.padding(bottom = WooPosSpacing.Medium.value.toAdaptivePadding())
                     )
+                    @Suppress("WooPosDesignSystemSpacingUsageRule")
+                    Spacer(Modifier.height(40.dp.toAdaptivePadding()))
                     Box(
                         Modifier
                             .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
                             .background(
                                 color = MaterialTheme.colorScheme.surfaceDim
                             )
-                            .padding(24.dp.toAdaptivePadding()),
+                            .padding(
+                                vertical = WooPosSpacing.XLarge.value.toAdaptivePadding(),
+                                horizontal = WooPosSpacing.Medium.value.toAdaptivePadding()
+                            ),
                         contentAlignment = Alignment.Center,
                     ) {
                         Column(
@@ -124,7 +129,7 @@ fun WooPosProductInfoDialog(
                         }
                     }
                     Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
-                    WooPosButton(
+                    WooPosOutlinedButton(
                         onClick = { onDismissRequest() },
                         text = stringResource(id = state.primaryButton.label),
                         modifier = Modifier

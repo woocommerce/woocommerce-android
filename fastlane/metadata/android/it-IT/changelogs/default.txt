@@ -1,0 +1,3 @@
+21.7:
+Abbiamo migliorato l'app WooCommerce! Questa volta abbiamo corretto diversi bug e ci siamo concentrati sul miglioramento dell'interfaccia utente. Continua a inviarci il tuo feedback: ci aiuta a capire come migliorare Woo per te. Ti auguriamo di vendere con successo!
+
