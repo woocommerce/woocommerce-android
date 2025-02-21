@@ -9,4 +9,4 @@ steps:
     command: ".buildkite/commands/diff-merged-manifest.sh jalapenoDebug"
     plugins: [$CI_TOOLKIT]
     artifact_paths:
-      - "**/build/reports/diff_manifest/*"
+      - "**/build/reports/diff_manifest/**/**/*"
