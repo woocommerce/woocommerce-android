@@ -33,7 +33,6 @@ import com.woocommerce.android.cardreader.payments.CardPaymentStatus.Initializin
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentCompleted
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentFailed
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.ProcessingPayment
-import com.woocommerce.android.cardreader.payments.PaymentData
 import com.woocommerce.android.cardreader.payments.RefundParams
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
@@ -107,7 +106,6 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.clearInvocations
-import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.times
@@ -142,15 +140,14 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     private val currencyFormatter: CurrencyFormatter = mock()
     private val wooStore: WooCommerceStore = mock()
 
-    private val paymentFailedWithEmptyDataForRetry = PaymentFailed(Generic, null, "dummy msg")
-    private val paymentFailedWithValidDataForRetry = PaymentFailed(Generic, mock(), "dummy msg")
-    private val paymentFailedWithNoNetwork = PaymentFailed(NoNetwork, mock(), "dummy msg")
-    private val paymentFailedWithPaymentDeclined = PaymentFailed(DeclinedByBackendError.Unknown, mock(), "dummy msg")
-    private val paymentFailedWithCardReadTimeOut = PaymentFailed(Generic, mock(), "dummy msg")
-    private val paymentFailedWithServerError = PaymentFailed(Server(""), mock(), "dummy msg")
+    private val paymentFailedWithEmptyDataForRetry = PaymentFailed(Generic, "dummy msg")
+    private val paymentFailedWithValidDataForRetry = PaymentFailed(Generic, "dummy msg")
+    private val paymentFailedWithNoNetwork = PaymentFailed(NoNetwork, "dummy msg")
+    private val paymentFailedWithPaymentDeclined = PaymentFailed(DeclinedByBackendError.Unknown, "dummy msg")
+    private val paymentFailedWithCardReadTimeOut = PaymentFailed(Generic, "dummy msg")
+    private val paymentFailedWithServerError = PaymentFailed(Server(""), "dummy msg")
     private val paymentFailedWithAmountTooSmall = PaymentFailed(
         DeclinedByBackendError.AmountTooSmall,
-        mock(),
         "dummy msg"
     )
 
@@ -226,9 +223,6 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         whenever(orderRepository.fetchOrderById(ORDER_ID)).thenReturn(mockedOrder)
         whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.Connected(mock())))
         whenever(cardReaderManager.collectPayment(any())).thenAnswer {
-            flow<CardPaymentStatus> { }
-        }
-        whenever(cardReaderManager.retryCollectPayment(any(), any())).thenAnswer {
             flow<CardPaymentStatus> { }
         }
         whenever(selectedSite.get()).thenReturn(siteModel)
@@ -1179,7 +1173,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 )
             ).thenReturn(PaymentFlowError.BuiltInReader.PinRequired)
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
-                flow { emit(PaymentFailed(DeclinedByBackendError.CardDeclined.PinRequired, mock(), "dummy msg")) }
+                flow { emit(PaymentFailed(DeclinedByBackendError.CardDeclined.PinRequired, "dummy msg")) }
             }
             initViewModel(BUILT_IN)
 
@@ -1202,7 +1196,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                 )
             ).thenReturn(PaymentFlowError.BuiltInReader.PinRequired)
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
-                flow { emit(PaymentFailed(DeclinedByBackendError.CardDeclined.PinRequired, mock(), "dummy msg")) }
+                flow { emit(PaymentFailed(DeclinedByBackendError.CardDeclined.PinRequired, "dummy msg")) }
             }
             whenever(wooStore.getStoreCountryCode(siteModel)).thenReturn("US")
             initViewModel(BUILT_IN)
@@ -1272,7 +1266,6 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                     emit(
                         PaymentFailed(
                             CardPaymentStatus.CardPaymentStatusErrorType.BuiltInReader.NfcDisabled,
-                            null,
                             "message"
                         )
                     )
@@ -1305,7 +1298,6 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
                     emit(
                         PaymentFailed(
                             CardPaymentStatus.CardPaymentStatusErrorType.BuiltInReader.NfcDisabled,
-                            null,
                             "message"
                         )
                     )
@@ -1323,7 +1315,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given user clicks on retry and external, when payment fails and retryData are null, then flow restarted from scratch`() =
+    fun `given user clicks on retry and external, when payment fails, then flow restarted from scratch`() =
         testBlocking {
             whenever(errorMapper.mapPaymentErrorToUiError(Generic, cardReaderConfig, false))
                 .thenReturn(PaymentFlowError.Generic)
@@ -1340,7 +1332,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given user clicks on retry and built in, when payment fails and retryData are null, then flow restarted from scratch`() =
+    fun `given user clicks on retry and built in, when payment fails, then flow restarted from scratch`() =
         testBlocking {
             whenever(errorMapper.mapPaymentErrorToUiError(Generic, cardReaderConfig, true))
                 .thenReturn(PaymentFlowError.Generic)
@@ -1355,74 +1347,6 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             advanceUntilIdle()
 
             verify(cardReaderManager).collectPayment(any())
-        }
-
-    @Test
-    fun `given user clicks on retry and external, when payment fails, then retryCollectPayment invoked`() =
-        testBlocking {
-            whenever(errorMapper.mapPaymentErrorToUiError(Generic, cardReaderConfig, false))
-                .thenReturn(PaymentFlowError.Generic)
-            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
-                flow { emit(paymentFailedWithValidDataForRetry) }
-            }
-            viewModel.start()
-
-            (viewModel.viewStateData.value as ExternalReaderFailedPaymentState).onPrimaryActionClicked.invoke()
-            advanceUntilIdle()
-
-            verify(cardReaderManager).retryCollectPayment(any(), any())
-        }
-
-    @Test
-    fun `given user clicks on retry and built in, when payment fails, then retryCollectPayment invoked`() =
-        testBlocking {
-            whenever(errorMapper.mapPaymentErrorToUiError(Generic, cardReaderConfig, true))
-                .thenReturn(PaymentFlowError.Generic)
-            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
-                flow { emit(paymentFailedWithValidDataForRetry) }
-            }
-            initViewModel(BUILT_IN)
-            viewModel.start()
-
-            (viewModel.viewStateData.value as BuiltInReaderFailedPaymentState).onPrimaryActionClicked.invoke()
-            advanceUntilIdle()
-
-            verify(cardReaderManager).retryCollectPayment(any(), any())
-        }
-
-    @Test
-    fun `given user clicks on retry and external, when payment fails, then flow retried with provided PaymentData`() =
-        testBlocking {
-            whenever(errorMapper.mapPaymentErrorToUiError(Generic, cardReaderConfig, false))
-                .thenReturn(PaymentFlowError.Generic)
-            val paymentData = mock<PaymentData>()
-            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
-                flow { emit(PaymentFailed(Generic, paymentData, "dummy msg")) }
-            }
-            viewModel.start()
-
-            (viewModel.viewStateData.value as ExternalReaderFailedPaymentState).onPrimaryActionClicked.invoke()
-            advanceUntilIdle()
-
-            verify(cardReaderManager).retryCollectPayment(any(), eq(paymentData))
-        }
-
-    @Test
-    fun `given user clicks on retry and built in, when payment fails, then flow retried with provided PaymentData`() =
-        testBlocking {
-            whenever(errorMapper.mapPaymentErrorToUiError(Generic, cardReaderConfig, true))
-                .thenReturn(PaymentFlowError.Generic)
-            val paymentData = mock<PaymentData>()
-            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
-                flow { emit(PaymentFailed(Generic, paymentData, "dummy msg")) }
-            }
-            initViewModel(BUILT_IN)
-            viewModel.start()
-
-            (viewModel.viewStateData.value as BuiltInReaderFailedPaymentState).onPrimaryActionClicked.invoke()
-            advanceUntilIdle()
-
-            verify(cardReaderManager).retryCollectPayment(any(), eq(paymentData))
         }
 
     @Test
@@ -1430,9 +1354,8 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         testBlocking {
             whenever(errorMapper.mapPaymentErrorToUiError(Generic, cardReaderConfig, false))
                 .thenReturn(PaymentFlowError.Generic)
-            val paymentData = mock<PaymentData>()
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
-                flow { emit(PaymentFailed(Generic, paymentData, "dummy msg")) }
+                flow { emit(PaymentFailed(Generic, "dummy msg")) }
             }
             viewModel.start()
 
@@ -1446,9 +1369,8 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         testBlocking {
             whenever(errorMapper.mapPaymentErrorToUiError(Generic, cardReaderConfig, true))
                 .thenReturn(PaymentFlowError.Generic)
-            val paymentData = mock<PaymentData>()
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
-                flow { emit(PaymentFailed(Generic, paymentData, "dummy msg")) }
+                flow { emit(PaymentFailed(Generic, "dummy msg")) }
             }
             initViewModel(BUILT_IN)
 
@@ -1665,7 +1587,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             whenever(errorMapper.mapPaymentErrorToUiError(NoNetwork, cardReaderConfig, false))
                 .thenReturn(PaymentFlowError.NoNetwork)
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
-                flow { emit(PaymentFailed(NoNetwork, null, "")) }
+                flow { emit(PaymentFailed(NoNetwork, "")) }
             }
 
             viewModel.start()
@@ -1681,7 +1603,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             whenever(errorMapper.mapPaymentErrorToUiError(DeclinedByBackendError.Unknown, cardReaderConfig, false))
                 .thenReturn(Unknown)
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
-                flow { emit(PaymentFailed(DeclinedByBackendError.Unknown, null, "")) }
+                flow { emit(PaymentFailed(DeclinedByBackendError.Unknown, "")) }
             }
 
             viewModel.start()
@@ -1697,7 +1619,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             whenever(errorMapper.mapPaymentErrorToUiError(Server(""), cardReaderConfig, false))
                 .thenReturn(PaymentFlowError.Server)
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
-                flow { emit(PaymentFailed(Server(""), null, "")) }
+                flow { emit(PaymentFailed(Server(""), "")) }
             }
 
             viewModel.start()
