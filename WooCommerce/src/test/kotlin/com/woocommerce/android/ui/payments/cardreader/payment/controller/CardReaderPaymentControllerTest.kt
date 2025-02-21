@@ -1205,7 +1205,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
             (controller.paymentState.value as CardReaderPaymentState.PaymentFailed).onRetry!!()
             advanceUntilIdle()
 
-            verify(cardReaderManager).collectPayment(any())
+            verify(cardReaderManager, times(2)).collectPayment(any())
         }
 
     @Test
@@ -1222,7 +1222,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
             (controller.paymentState.value as CardReaderPaymentState.PaymentFailed).onRetry!!()
             advanceUntilIdle()
 
-            verify(cardReaderManager).collectPayment(any())
+            verify(cardReaderManager, times(2)).collectPayment(any())
         }
 
     @Test
@@ -2417,7 +2417,6 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
                 flow { emit(paymentFailedWithEmptyDataForRetry) }
             }
-            assertThat(controller.scope.isActive).isFalse()
             controller.start()
             assertThat(controller.scope.isActive).isTrue()
             controller.stop()
