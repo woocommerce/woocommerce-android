@@ -1,3 +1,0 @@
-21.7 :
-Nous avons amélioré l’application WooCommerce ! Cette fois, nous avons corrigé plusieurs bugs et nous nous sommes concentrés sur l’amélioration de l’interface utilisateur. Continuez à nous faire part de vos commentaires, cela nous permet de connaître les améliorations que vous souhaitez voir apportées à Woo. Bonnes ventes !
-

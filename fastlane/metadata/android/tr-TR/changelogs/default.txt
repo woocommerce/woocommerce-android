@@ -1,3 +1,0 @@
-21.7:
-WooCommerce uygulamasını iyileştirdik! Bu sefer birden fazla hatayı düzelttik ve kullanıcı arayüzünü iyileştirmeye odaklandık. Woo'yu sizin için nasıl iyileştirebileceğimizi anlamamıza yardımcı olduğundan geri bildirim göndermeye devam edin. İyi satışlar!
-

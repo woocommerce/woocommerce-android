@@ -1,3 +1,0 @@
-21.7:
-We hebben de WooCommerce-app verbeterd! Deze keer hebben we verschillende bugs opgelost en hebben we ons gericht op de verbetering van de gebruikersinterface. Blijf je feedback geven, dit helpt ons erachter te komen hoe we Woo voor jou kunnen verbeteren. Veel verkoopplezier!
-

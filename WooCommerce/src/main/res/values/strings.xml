@@ -4522,4 +4522,5 @@
 
     <string name="error_user_username_instead_of_email">Please log in using your WordPress.com username instead of your email address.</string>
     <string name="about_automattic_x_item_title">X</string>
+    <string name="default_web_client_id" a8c-src-lib="module:login">placeholder</string>
 </resources>
