@@ -36,7 +36,6 @@ import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.cardreader.payments.StatementDescriptor
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
