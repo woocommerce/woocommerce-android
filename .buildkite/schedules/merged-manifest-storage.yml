@@ -6,5 +6,5 @@ agents:
 
 steps:
   - label: "💾 Create and Store Merged Manifest"
-    command: .buildkite/commands/save-merged-manifest.sh
+    command: ".buildkite/commands/save-merged-manifest.sh jalapenoDebug"
     plugins: [$CI_TOOLKIT]

@@ -1,8 +1,10 @@
 #!/bin/bash
 
-"$(dirname "${BASH_SOURCE[0]}")/restore-merged-manifest.sh" "WooCommerce" "jalapenoDebug"
+BUILD_VARIANT=$1
 
-"$(dirname "${BASH_SOURCE[0]}")/restore-merged-manifest.sh" "WooCommerce-Wear" "jalapenoDebug"
+"$(dirname "${BASH_SOURCE[0]}")/restore-merged-manifest.sh" "WooCommerce" ${BUILD_VARIANT}
+
+"$(dirname "${BASH_SOURCE[0]}")/restore-merged-manifest.sh" "WooCommerce-Wear" ${BUILD_VARIANT}
 
 "$(dirname "${BASH_SOURCE[0]}")/restore-cache.sh"
 
@@ -14,12 +16,12 @@ install_gems
 echo "--- :closed_lock_with_key: Installing Secrets"
 bundle exec fastlane run configure_apply
 
-echo "--- 📦 Create Merged Manifest"
-./gradlew assembleJalapenoDebug
+echo "--- 📦 Create Merged Manifest (Build Variant: ${BUILD_VARIANT})"
+./gradlew assemble"${BUILD_VARIANT^}"
 echo ""
 
-echo "--- 💾 Diff Merged Manifest for WooCommerce"
-comment_with_manifest_diff "WooCommerce" "jalapenoDebug"
+echo "--- 💾 Diff Merged Manifest (Module: WooCommerce, Build Variant: ${BUILD_VARIANT})"
+comment_with_manifest_diff "WooCommerce" ${BUILD_VARIANT}
 
-echo "--- 💾 Diff Merged Manifest for WooCommerce-Wear"
-comment_with_manifest_diff "WooCommerce-Wear" "jalapenoDebug"
+echo "--- 💾 Diff Merged Manifest (Module: WooCommerce-Wear, Build Variant: ${BUILD_VARIANT})"
+comment_with_manifest_diff "WooCommerce-Wear" ${BUILD_VARIANT}
