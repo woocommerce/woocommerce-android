@@ -6,11 +6,7 @@ agents:
 
 steps:
   - label: "💾 Restore and Diff Merged Manifest"
-    command: |
-      ".buildkite/commands/restore-merged-manifest.sh" "WooCommerce" "jalapenoDebug"
-      .buildkite/commands/restore-cache.sh
-      ./gradlew assembleJalapenoDebug
-      "comment_with_manifest_diff" "WooCommerce" "jalapenoDebug"
+    command: .buildkite/commands/diff-merged-manifest.sh
     plugins: [$CI_TOOLKIT]
     artifact_paths:
       - "**/build/reports/diff_manifest/*"
