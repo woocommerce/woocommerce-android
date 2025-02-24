@@ -29,11 +29,69 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
     }
 
     sealed class Event : WooPosAnalyticsEvent() {
+        data object BackToCartTapped : Event() {
+            override val name: String = "back_to_cart_tapped"
+        }
+        data object BackToCheckoutFromCash : Event() {
+            override val name: String = "back_to_checkout_from_cash"
+        }
+        data object CashCollectPaymentSuccess : Event() {
+            override val name: String = "cash_collect_payment_success"
+        }
+        data object CheckoutTapped : Event() {
+            override val name: String = "checkout_tapped"
+        }
+        data object ClearCartTapped : Event() {
+            override val name: String = "clear_cart_tapped"
+        }
+        data object CreateNewOrderTapped : Event() {
+            override val name: String = "create_new_order_tapped"
+        }
+        data object EmailReceiptTapped : Event() {
+            override val name: String = "receipt_email_tapped"
+        }
+        data object EmailReceiptSendTapped : Event() {
+            override val name: String = "receipt_email_send_tapped"
+        }
+        data object EmailReceiptSendFailed : Event() {
+            override val name: String = "receipt_email_failed"
+        }
+        data object EmailReceiptSendSuccess : Event() {
+            override val name: String = "receipt_email_success"
+        }
+        data object ExitTapped : Event() {
+            override val name: String = "exit_menu_item_tapped"
+        }
+        data object GetSupportTapped : Event() {
+            override val name: String = "get_support_tapped"
+        }
+        data object InteractionWithCustomerStarted : Event() {
+            override val name: String = "interaction_with_customer_started"
+        }
         data object ItemAddedToCart : Event() {
             override val name: String = "item_added_to_cart"
         }
+        data object ItemRemovedFromCart : Event() {
+            override val name: String = "item_removed_from_cart"
+        }
+        data object Loaded : Event() {
+            override val name: String = "loaded"
+        }
         data object OrderCreationSuccess : Event() {
             override val name: String = "order_creation_success"
+        }
+        data object ProductsPullToRefreshTriggered : Event() {
+            override val name: String = "products_pull_to_refresh"
+        }
+        data object ReaderReadyForCardPayment : Event() {
+            override val name: String
+                get() = "reader_ready_for_card_payment"
+        }
+        data object VariationsPullToRefreshTriggered : Event() {
+            override val name: String = "variations_pull_to_refresh"
+        }
+        data object ViewDocsTapped : Event() {
+            override val name: String = "view_docs_tapped"
         }
     }
 

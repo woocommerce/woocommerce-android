@@ -80,7 +80,7 @@ fun DashboardContainer(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(MaterialTheme.colors.surface)
-                    .padding(16.dp),
+                    .padding(horizontal = 16.dp),
                 numberOfColumns = calculateColumnNumber(boxWithConstraintsScope.maxWidth, state)
             )
             PullRefreshIndicator(
@@ -111,6 +111,7 @@ private fun DashboardWidgets(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
+            Spacer(modifier = Modifier)
             widgetUiModels.forEach { widget ->
                 AnimatedVisibility(widget.isVisible) {
                     DashboardWidgetCard(
@@ -122,6 +123,7 @@ private fun DashboardWidgets(
                     )
                 }
             }
+            Spacer(modifier = Modifier)
         }
     } else {
         val widgetColumns = splitWidgetsIntoColumns(
@@ -134,6 +136,7 @@ private fun DashboardWidgets(
                 .verticalScroll(rememberScrollState()),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            Spacer(modifier = Modifier)
             widgetColumns.forEach { columnWidgets ->
                 Column(
                     modifier = Modifier.weight(1f),
@@ -150,6 +153,7 @@ private fun DashboardWidgets(
                     }
                 }
             }
+            Spacer(modifier = Modifier)
         }
     }
 }

@@ -4,21 +4,16 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -27,11 +22,13 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.woopos.common.composeui.ShadowType
-import com.woocommerce.android.ui.woopos.common.composeui.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
-import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
-import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.items.PaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItem.SimpleProduct
 import com.woocommerce.android.ui.woopos.home.items.WooPosItem.VariableProduct
@@ -67,9 +64,8 @@ private fun WooPosPaginationErrorIndicatorContent(
     WooPosCard(
         modifier = modifier
             .semantics { contentDescription = itemContentDescription },
-        shape = RoundedCornerShape(8.dp),
-        backgroundColor = MaterialTheme.colors.surface,
-        elevation = 6.dp,
+        shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
+        elevation = WooPosElevation.Medium,
         shadowType = ShadowType.Soft,
     ) {
         Row(
@@ -77,11 +73,11 @@ private fun WooPosPaginationErrorIndicatorContent(
                 .height(112.dp)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+            horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value),
                 modifier = Modifier.weight(1f)
             ) {
                 Box(
@@ -94,21 +90,21 @@ private fun WooPosPaginationErrorIndicatorContent(
                             .align(Alignment.Center),
                         painter = icon,
                         contentDescription = stringResource(R.string.woopos_error_icon_content_description),
-                        tint = Color.Unspecified,
+                        tint = WooPosTheme.colors.unspecified,
                     )
                 }
-                Spacer(modifier = Modifier.width(18.dp))
                 Column {
-                    Text(
+                    WooPosText(
                         text = message,
-                        style = MaterialTheme.typography.h5,
+                        style = WooPosTypography.BodyLarge,
                         fontWeight = FontWeight.Bold,
+                        maxLines = 1,
                     )
-                    Text(
+                    WooPosText(
                         text = description,
-                        style = MaterialTheme.typography.h5,
-                        fontWeight = FontWeight.Normal,
-                        modifier = Modifier.padding(top = 8.dp.toAdaptivePadding())
+                        style = WooPosTypography.BodyMedium,
+                        modifier = Modifier.padding(top = WooPosSpacing.Small.value.toAdaptivePadding()),
+                        maxLines = 1,
                     )
                 }
             }
@@ -117,8 +113,7 @@ private fun WooPosPaginationErrorIndicatorContent(
                 text = primaryButton.text,
                 onClick = primaryButton.click,
                 modifier = Modifier
-                    .padding(end = 16.dp.toAdaptivePadding())
-                    .weight(0.25f),
+                    .padding(end = WooPosSpacing.Medium.value.toAdaptivePadding())
             )
         }
     }

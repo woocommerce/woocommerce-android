@@ -8,9 +8,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -30,10 +29,14 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
-import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
-import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -75,11 +78,11 @@ private fun WooPosPaymentSuccessScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(WooPosTheme.colors.paymentSuccessBackground),
+            .background(MaterialTheme.colorScheme.surfaceBright),
         contentAlignment = Alignment.Center
     ) {
         val marginBetweenButtonAndText by animateDpAsState(
-            targetValue = if (animationStage >= AnimationStage.BUTTONS) 80.dp else 16.dp,
+            targetValue = if (animationStage >= AnimationStage.BUTTONS) 80.dp else WooPosSpacing.Medium.value,
             label = "Check mark size"
         )
         @Suppress("DestructuringDeclarationWithTooManyEntries")
@@ -96,13 +99,13 @@ private fun WooPosPaymentSuccessScreen(
                 }
             )
 
-            val textsMargin = 8.dp.toAdaptivePadding()
-            Text(
+            val textsMargin = WooPosSpacing.Small.value.toAdaptivePadding()
+            WooPosText(
                 text = stringResource(R.string.woopos_payment_successful_label),
-                style = MaterialTheme.typography.h4,
+                style = WooPosTypography.Heading,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
-                color = MaterialTheme.colors.onSurface,
+                color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.constrainAs(title) {
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
@@ -111,12 +114,11 @@ private fun WooPosPaymentSuccessScreen(
             )
 
             val marginBetweenButtonAndTextAdaptive = marginBetweenButtonAndText.toAdaptivePadding()
-            Text(
+            WooPosText(
                 text = state.orderTotalText,
-                style = MaterialTheme.typography.h6,
+                style = WooPosTypography.BodyLarge,
+                color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center,
-                fontWeight = FontWeight.Normal,
-                color = MaterialTheme.colors.onSurface,
                 modifier = Modifier.constrainAs(message) {
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
@@ -124,7 +126,7 @@ private fun WooPosPaymentSuccessScreen(
                 }
             )
 
-            val marginBetweenButtons = 16.dp.toAdaptivePadding()
+            val marginBetweenButtons = WooPosSpacing.Medium.value.toAdaptivePadding()
             WooPosButton(
                 modifier = Modifier
                     .constrainAs(buttonNewOrder) {
@@ -160,7 +162,7 @@ private fun CheckMarkIcon(
     modifier: Modifier = Modifier,
 ) {
     val size by animateDpAsState(
-        targetValue = if (animationStage >= AnimationStage.CIRCLE) 164.dp else 0.dp,
+        targetValue = if (animationStage >= AnimationStage.CIRCLE) 166.dp else 0.dp,
         label = "Circle Size"
     )
     val iconSize by animateDpAsState(
@@ -173,7 +175,7 @@ private fun CheckMarkIcon(
         modifier = modifier
             .size(size)
             .shadow(
-                elevation = 4.dp,
+                elevation = WooPosElevation.Medium.value,
                 shape = CircleShape,
                 clip = false
             )
@@ -181,7 +183,7 @@ private fun CheckMarkIcon(
     ) {
         Icon(
             imageVector = ImageVector.vectorResource(id = R.drawable.ic_woo_pos_check),
-            tint = MaterialTheme.colors.onSurface,
+            tint = WooPosTheme.colors.onSuccess,
             contentDescription = stringResource(id = R.string.woopos_payment_successful_label),
             modifier = Modifier
                 .size(iconSize)

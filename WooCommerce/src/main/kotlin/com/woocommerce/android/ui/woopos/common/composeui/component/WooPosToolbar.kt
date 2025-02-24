@@ -6,10 +6,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -20,8 +19,10 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
-import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
-import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 
 @Composable
 fun WooPosToolbar(
@@ -31,7 +32,7 @@ fun WooPosToolbar(
     ConstraintLayout(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 40.dp.toAdaptivePadding())
+            .padding(top = WooPosSpacing.XLarge.value.toAdaptivePadding())
             .height(40.dp)
     ) {
         val (backButton, title) = createRefs()
@@ -43,21 +44,21 @@ fun WooPosToolbar(
                     top.linkTo(parent.top)
                     centerVerticallyTo(parent)
                 }
-                .padding(start = 8.dp.toAdaptivePadding())
+                .padding(start = WooPosSpacing.Small.value.toAdaptivePadding())
         ) {
             Icon(
                 imageVector = ImageVector.vectorResource(R.drawable.ic_back_24dp),
                 contentDescription = stringResource(R.string.woopos_toolbar_icon_content_description),
-                tint = MaterialTheme.colors.onBackground,
+                tint = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.size(28.dp)
             )
         }
 
-        val iconTitlePadding = 8.dp.toAdaptivePadding()
-        Text(
+        val iconTitlePadding = WooPosSpacing.Small.value.toAdaptivePadding()
+        WooPosText(
             text = titleText,
-            style = MaterialTheme.typography.h4,
-            color = MaterialTheme.colors.onBackground,
+            style = WooPosTypography.Heading,
+            color = MaterialTheme.colorScheme.onBackground,
             fontWeight = FontWeight.Bold,
             maxLines = 1,
             modifier = Modifier

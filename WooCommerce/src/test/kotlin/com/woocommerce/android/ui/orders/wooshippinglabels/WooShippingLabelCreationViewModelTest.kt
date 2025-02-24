@@ -33,6 +33,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingSort
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -49,6 +50,7 @@ import java.math.BigDecimal
 import java.util.Date
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
+import kotlin.test.assertNotNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
@@ -213,6 +215,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     private val getShippingRates: GetShippingRates = mock()
     private val purchaseShippingLabel: PurchaseShippingLabel = mock()
     private val observeStoreOptions: ObserveStoreOptions = mock()
+    private val fetchAccountSettings: FetchAccountSettings = mock()
 
     private lateinit var sut: WooShippingLabelCreationViewModel
 
@@ -225,6 +228,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
             getShippingRates = getShippingRates,
             purchaseShippingLabel = purchaseShippingLabel,
             observeStoreOptions = observeStoreOptions,
+            fetchAccountSettings = fetchAccountSettings,
             shouldRequireCustoms = shouldRequireCustomsForm,
             savedState = savedState
         )
@@ -280,7 +284,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when the order is not found, then show an error`() = testBlocking {
+    fun `when the order is not found, then exit`() = testBlocking {
         val order: Order? = null
         whenever(orderDetailRepository.getOrderById(any())) doReturn order
         whenever(observeOriginAddresses()) doReturn flowOf(defaultOriginAddresses)
@@ -288,10 +292,10 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
         createViewModel()
 
-        advanceUntilIdle()
+        var exit: Exit? = null
+        sut.event.observeForever { if (it is Exit) exit = it }
 
-        val currentViewState = sut.viewState.value
-        assert(currentViewState is WooShippingViewState.Error)
+        assertNotNull(exit)
     }
 
     @Test
@@ -717,12 +721,14 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when there is no cached store options and API request fails then display error`() = testBlocking {
+    fun `when there is no cached store options and API request fails then display error with retry`() = testBlocking {
         val order = OrderTestUtils.generateTestOrder(orderId = orderId)
 
         whenever(orderDetailRepository.getOrderById(any())) doReturn order
         whenever(observeOriginAddresses()) doReturn flowOf(defaultOriginAddresses)
         whenever(observeStoreOptions()) doReturn flowOf(null)
+        whenever(getShippableItems(any())) doReturn defaultShippableItems
+        whenever(fetchAccountSettings()) doReturn Result.success(defaultStoreOptions)
 
         createViewModel()
 
@@ -730,6 +736,11 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
         val currentViewState = sut.viewState.value
         assertThat(currentViewState).isInstanceOf(WooShippingViewState.Error::class.java)
+
+        sut.onRetry()
+
+        val newViewState = sut.viewState.value
+        assertThat(newViewState).isInstanceOf(DataState::class.java)
     }
 
     @Test

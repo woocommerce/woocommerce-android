@@ -61,7 +61,9 @@ class WooPosProductsDataSource @Inject constructor(
     }.flowOn(Dispatchers.IO).take(2)
 
     suspend fun loadMore(): Result<List<Product>> = withContext(Dispatchers.IO) {
-        val result = handler.loadMore()
+        val result = handler.loadMore(
+            includeTypes = listOf(WCProductStore.IncludeType.Simple, WCProductStore.IncludeType.Variable),
+        )
         if (result.isSuccess) {
             val moreProducts = handler.productsFlow.first()
             updateProductCache(moreProducts)

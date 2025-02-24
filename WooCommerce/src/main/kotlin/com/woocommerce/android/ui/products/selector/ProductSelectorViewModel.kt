@@ -375,17 +375,25 @@ class ProductSelectorViewModel @Inject constructor(
 
     fun onProductClick(item: ListItem, productSourceForTracking: ProductSourceForTracking) {
         val productSource = updateProductSourceIfSearchIsEnabled(productSourceForTracking)
-        when (item) {
-            is ListItem.ProductListItem -> {
-                handleProductTap(item, productSource)
-            }
+        if (
+            navArgs.productSelectorFlow == OrderListFilter &&
+            _selectedItems.value.containsItemWith(item.id)
+        ) {
+            selectedItemsSource.remove(item.id)
+            _selectedItems.update { it.filter { selectedItem -> selectedItem.id != item.id } }
+        } else {
+            when (item) {
+                is ListItem.ProductListItem -> {
+                    handleProductTap(item, productSource)
+                }
 
-            is ListItem.VariationListItem -> {
-                handleVariationItemTap(item, productSource)
-            }
+                is ListItem.VariationListItem -> {
+                    handleVariationItemTap(item, productSource)
+                }
 
-            is ListItem.ConfigurableListItem -> {
-                handleConfigurableItemTap(item)
+                is ListItem.ConfigurableListItem -> {
+                    handleConfigurableItemTap(item)
+                }
             }
         }
     }
@@ -540,7 +548,7 @@ class ProductSelectorViewModel @Inject constructor(
         loadMoreJob?.cancel()
         loadMoreJob = viewModelScope.launch {
             loadingState.value = APPENDING
-            listHandler.loadMore(navArgs.orderCurrency)
+            listHandler.loadMore(orderCurrency = navArgs.orderCurrency)
             loadingState.value = IDLE
         }
     }
@@ -692,7 +700,8 @@ class ProductSelectorViewModel @Inject constructor(
         val ctaButtonTextOverride: String? = null,
         val selectionEnabled: Boolean = true
     ) {
-        val isDoneButtonEnabled: Boolean = selectionMode == SelectionMode.MULTIPLE || selectedItemsCount > 0
+        val isDoneButtonEnabled: Boolean =
+            selectionMode == SelectionMode.MULTIPLE || selectedItemsCount > 0 || productFlow == OrderListFilter
         val shouldDisplayFilterButton = searchState.searchQuery.isEmpty() && productFlow != OrderListFilter
     }
 

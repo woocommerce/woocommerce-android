@@ -49,20 +49,6 @@ class WebViewAuthenticationFlowResolverTest {
     }
 
     @Test
-    fun `given WPCom authenticated and an atomic site, when resolving the authentication flow, then it should return WPCom`() {
-        givenWPComAuthenticated()
-        givenSite {
-            setIsWPComAtomic(true)
-            url = "https://example.com"
-        }
-        val url = "https://example.com/test"
-
-        val result = sut.resolve(url)
-
-        assertThat(result).isEqualTo(WebViewAuthenticationFlowResolver.WebViewAuthenticationFlow.WPCom)
-    }
-
-    @Test
     fun `given WPCom authenticated and a Jetpack SSO site, when resolving the authentication flow, then it should return JetpackSSO`() {
         givenWPComAuthenticated()
         givenSite {

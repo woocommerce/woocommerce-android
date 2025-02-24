@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-02-06 13:54:03+0000
+Translation-Revision-Date: 2025-02-10 19:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_customs_restriction_other">其他</string>
+    <string name="woo_shipping_labels_customs_restriction_sanitary">衛生/植物檢疫檢查</string>
+    <string name="woo_shipping_labels_customs_restriction_quarantine">檢疫</string>
+    <string name="woo_shipping_labels_customs_restriction_none">無</string>
+    <string name="woo_shipping_labels_customs_restriction_details_description">請說明此包裹有哪些限制</string>
+    <string name="woo_shipping_labels_customs_restriction_details_label">限制詳細資料</string>
+    <string name="woo_shipping_labels_customs_content_other">其他</string>
+    <string name="woo_shipping_labels_customs_content_documents">文件</string>
+    <string name="woo_shipping_labels_customs_content_sample">樣品</string>
+    <string name="woo_shipping_labels_customs_content_returned_goods">退還的貨物</string>
+    <string name="woo_shipping_labels_customs_content_gift">禮物</string>
+    <string name="woo_shipping_labels_customs_content_merchandise">商品</string>
+    <string name="woo_shipping_labels_customs_content_details_description">請說明此包裹有哪些內容物</string>
+    <string name="woo_shipping_labels_customs_content_details_label">內容物詳細資料</string>
+    <string name="woo_shipping_labels_customs_return_to_sender_label">包裹無法投遞時退回寄件人</string>
+    <string name="woo_shipping_labels_customs_itn_label">國際交易號碼</string>
+    <string name="woo_shipping_labels_customs_restriction_type_label">限制類型</string>
+    <string name="woo_shipping_labels_customs_content_type_label">內容類型</string>
+    <string name="woo_shipping_labels_customs_add_missing_information">新增遺漏資訊</string>
+    <string name="product_open_upload_screen">檢視最近上傳失敗紀錄</string>
+    <string name="shipping_labels_customs_completed_badge">已完成</string>
+    <string name="shipping_labels_customs_missing_info_badge">缺少資訊</string>
+    <string name="shipping_labels_customs_title">海關</string>
     <string name="about_automattic_x_item_title">X</string>
     <string name="woo_shipping_fetching_countries_and_states">正在擷取國家/地區和州/省資訊。</string>
     <string name="woo_shipping_fetching_countries_and_states_failed">我們無法擷取國家/地區和州/省資訊， 請再試一次。</string>

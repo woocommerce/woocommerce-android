@@ -1,13 +1,6 @@
 package org.wordpress.android.login;
 
-import static android.app.Activity.RESULT_OK;
-
-import android.app.PendingIntent;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentSender;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.Html;
@@ -18,7 +11,6 @@ import android.util.Patterns;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.autofill.AutofillManager;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -30,11 +22,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.credentials.Credential;
-import com.google.android.gms.auth.api.credentials.CredentialPickerConfig;
-import com.google.android.gms.auth.api.credentials.HintRequest;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
@@ -73,7 +61,6 @@ public class LoginEmailFragment extends LoginBaseFormFragment<LoginListener> imp
     private static final String KEY_EMAIL_ERROR_RES = "KEY_EMAIL_ERROR_RES";
     private static final String LOG_TAG = LoginEmailFragment.class.getSimpleName();
     private static final int GOOGLE_API_CLIENT_ID = 1002;
-    private static final int EMAIL_CREDENTIALS_REQUEST_CODE = 25100;
 
     private static final String ARG_LOGIN_SITE_URL = "ARG_LOGIN_SITE_URL";
     private static final String ARG_SIGNUP_FROM_LOGIN_ENABLED = "ARG_SIGNUP_FROM_LOGIN_ENABLED";
@@ -217,14 +204,12 @@ public class LoginEmailFragment extends LoginBaseFormFragment<LoginListener> imp
         mEmailInput.getEditText().setOnFocusChangeListener((view, hasFocus) -> {
             if (hasFocus && !mIsDisplayingEmailHints && !mHasDismissedEmailHints) {
                 mAnalyticsListener.trackSelectEmailField();
-                showHintPickerDialogIfNeeded();
             }
         });
         mEmailInput.getEditText().setOnClickListener(view -> {
             mAnalyticsListener.trackSelectEmailField();
             if (!mIsDisplayingEmailHints && !mHasDismissedEmailHints) {
                 mAnalyticsListener.trackSelectEmailField();
-                showHintPickerDialogIfNeeded();
             }
         });
     }
@@ -353,7 +338,7 @@ public class LoginEmailFragment extends LoginBaseFormFragment<LoginListener> imp
         mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
                 .addConnectionCallbacks(LoginEmailFragment.this)
                 .enableAutoManage(getActivity(), GOOGLE_API_CLIENT_ID, LoginEmailFragment.this)
-                .addApi(Auth.CREDENTIALS_API)
+                .addApi(Auth.GOOGLE_SIGN_IN_API)
                 .build();
         showEmailError();
     }
@@ -605,73 +590,5 @@ public class LoginEmailFragment extends LoginBaseFormFragment<LoginListener> imp
     @Override
     public void onConnectionSuspended(int i) {
         AppLog.d(T.NUX, LOG_TAG + ": Google API client connection suspended");
-    }
-
-    private void showHintPickerDialogIfNeeded() {
-        // If autofill is available and enabled, we favor the active autofill service over the hint picker dialog.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            final AutofillManager autofillManager = requireContext().getSystemService(AutofillManager.class);
-            if (autofillManager != null && autofillManager.isEnabled()) {
-                AppLog.d(T.NUX, LOG_TAG + ": Autofill framework is enabled. Disabling hint picker dialog.");
-                return;
-            }
-        }
-
-        AppLog.d(T.NUX, LOG_TAG + ": Autofill framework is unavailable or disabled. Showing hint picker dialog.");
-
-        showHintPickerDialog();
-    }
-
-    private void showHintPickerDialog() {
-        GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
-        if (getContext() == null
-            || googleApiAvailability.isGooglePlayServicesAvailable(getContext()) != ConnectionResult.SUCCESS) {
-            AppLog.w(T.NUX, LOG_TAG + ": Couldn't start hint picker - Play Services unavailable");
-            return;
-        }
-        HintRequest hintRequest = new HintRequest.Builder()
-                .setHintPickerConfig(new CredentialPickerConfig.Builder()
-                        .setShowCancelButton(true)
-                        .build())
-                .setEmailAddressIdentifierSupported(true)
-                .build();
-
-        PendingIntent intent = Auth.CredentialsApi.getHintPickerIntent(mGoogleApiClient, hintRequest);
-
-        try {
-            startIntentSenderForResult(intent.getIntentSender(), EMAIL_CREDENTIALS_REQUEST_CODE, null, 0, 0, 0, null);
-            mIsDisplayingEmailHints = true;
-        } catch (IntentSender.SendIntentException exception) {
-            AppLog.d(T.NUX, LOG_TAG + "Could not start email hint picker" + exception);
-        } catch (ActivityNotFoundException exception) {
-            AppLog.d(T.NUX, LOG_TAG + "Could not find any activity to handle email hint picker" + exception);
-        }
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == EMAIL_CREDENTIALS_REQUEST_CODE) {
-            if (mEmailInput == null) {
-                // Activity result received before the fragments onCreateView(), disregard result.
-                return;
-            }
-
-            if (resultCode == RESULT_OK) {
-                Credential credential = data.getParcelableExtra(Credential.EXTRA_KEY);
-                mEmailInput.getEditText().setText(credential.getId());
-                next(getCleanedEmail());
-            } else {
-                mHasDismissedEmailHints = true;
-                mEmailInput.getEditText().postDelayed(() -> {
-                    if (isAdded()) {
-                        ActivityUtils.showKeyboard(mEmailInput.getEditText());
-                    }
-                }, getResources().getInteger(android.R.integer.config_mediumAnimTime));
-            }
-
-            mIsDisplayingEmailHints = false;
-        }
     }
 }

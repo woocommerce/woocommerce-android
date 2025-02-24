@@ -9,7 +9,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -22,10 +22,14 @@ import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
-import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 
 @Composable
-fun WooPosCircularLoadingIndicator(modifier: Modifier = Modifier) {
+fun WooPosCircularLoadingIndicator(
+    modifier: Modifier = Modifier,
+    spinnerPrimaryColor: Color = MaterialTheme.colorScheme.primary,
+    spinnerSecondaryColor: Color = MaterialTheme.colorScheme.secondary,
+) {
     val infiniteTransition = rememberInfiniteTransition(label = "RotationTransition")
     val animatedRotation by infiniteTransition.animateFloat(
         initialValue = 0f,
@@ -36,7 +40,6 @@ fun WooPosCircularLoadingIndicator(modifier: Modifier = Modifier) {
         label = "RotationAnimation"
     )
 
-    val backgroundColor = MaterialTheme.colors.primary
     Canvas(
         modifier = modifier
             .graphicsLayer {
@@ -46,13 +49,13 @@ fun WooPosCircularLoadingIndicator(modifier: Modifier = Modifier) {
         val radius = size.width / 2
 
         drawCircle(
-            color = backgroundColor.copy(alpha = 0.5f),
+            color = spinnerSecondaryColor,
             radius = radius,
         )
 
         rotate(animatedRotation) {
             drawArc(
-                color = backgroundColor,
+                color = spinnerPrimaryColor,
                 startAngle = 0f,
                 sweepAngle = 110f,
                 useCenter = true,

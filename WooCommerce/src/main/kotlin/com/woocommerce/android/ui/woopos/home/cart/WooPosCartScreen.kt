@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.woopos.home.cart
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
@@ -26,10 +25,9 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -38,7 +36,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.painter.ColorPainter
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -59,14 +57,19 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.isNotNullOrEmpty
-import com.woocommerce.android.ui.woopos.common.composeui.ShadowType
-import com.woocommerce.android.ui.woopos.common.composeui.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
-import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
+import com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosLazyColumn
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButtonSmall
-import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 
 @Composable
 fun WooPosCartScreen(modifier: Modifier = Modifier) {
@@ -87,14 +90,14 @@ private fun WooPosCartScreen(
     ConstraintLayout(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colors.surface)
+            .background(MaterialTheme.colorScheme.surfaceBright)
     ) {
-        val (topMargin, toolbar, body, checkoutButton, overlay) = createRefs()
+        val (topMargin, toolbar, body, checkoutButton) = createRefs()
 
         Spacer(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(40.dp.toAdaptivePadding())
+                .height(WooPosSpacing.XLarge.value.toAdaptivePadding())
                 .constrainAs(topMargin) {
                     top.linkTo(parent.top)
                     start.linkTo(parent.start)
@@ -127,7 +130,7 @@ private fun WooPosCartScreen(
             }
 
             is WooPosCartState.Body.WithItems -> {
-                val productsTopMargin = 24.dp.toAdaptivePadding()
+                val productsTopMargin = WooPosSpacing.Large.value.toAdaptivePadding()
                 CartBodyWithItems(
                     modifier = Modifier.constrainAs(body) {
                         top.linkTo(toolbar.bottom, margin = productsTopMargin)
@@ -150,7 +153,7 @@ private fun WooPosCartScreen(
             exit = fadeOut(animationSpec = tween(300)),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp.toAdaptivePadding())
+                .padding(WooPosSpacing.Medium.value.toAdaptivePadding())
                 .constrainAs(checkoutButton) {
                     bottom.linkTo(parent.bottom)
                     start.linkTo(parent.start)
@@ -162,60 +165,27 @@ private fun WooPosCartScreen(
                 onClick = { onUIEvent(WooPosCartUIEvent.CheckoutClicked) }
             )
         }
-
-        CartOverlay(
-            modifier = Modifier.constrainAs(overlay) {
-                top.linkTo(parent.top)
-                bottom.linkTo(parent.bottom)
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-                height = Dimension.fillToConstraints
-            },
-            state = state,
-        )
     }
-}
-
-@Composable
-private fun CartOverlay(
-    modifier: Modifier = Modifier,
-    state: WooPosCartState,
-) {
-    val cartOverlayIntensityAnimated by animateFloatAsState(
-        when (state.body) {
-            WooPosCartState.Body.Empty -> .6f
-            is WooPosCartState.Body.WithItems -> 0f
-        },
-        label = "cartOverlayAnimated"
-    )
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(
-                color = MaterialTheme.colors.background.copy(alpha = cartOverlayIntensityAnimated),
-            )
-    )
 }
 
 @Composable
 fun CartBodyEmpty(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
-            .padding(16.dp.toAdaptivePadding()),
+            .padding(WooPosSpacing.Medium.value.toAdaptivePadding()),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
             imageVector = ImageVector.vectorResource(R.drawable.ic_woo_pos_empty_cart),
             contentDescription = stringResource(R.string.woopos_cart_empty_content_description),
-            modifier = Modifier.size(104.dp)
+            modifier = Modifier.size(88.dp)
         )
-        Spacer(modifier = Modifier.height(32.dp.toAdaptivePadding()))
-        Text(
+        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
+        WooPosText(
             text = stringResource(R.string.woopos_cart_empty_subtitle),
-            style = MaterialTheme.typography.h6,
-            fontWeight = FontWeight.Normal,
-            color = MaterialTheme.colors.onSurface,
+            style = WooPosTypography.BodyLarge,
+            color = WooPosTheme.colors.onSurfaceVariantLowest,
             textAlign = TextAlign.Center
         )
     }
@@ -239,13 +209,13 @@ private fun CartBodyWithItems(
 
     WooPosLazyColumn(
         modifier = modifier
-            .padding(horizontal = 16.dp.toAdaptivePadding()),
+            .padding(horizontal = WooPosSpacing.Medium.value.toAdaptivePadding()),
         state = listState,
-        verticalArrangement = Arrangement.spacedBy(8.dp.toAdaptivePadding()),
+        verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value.toAdaptivePadding()),
         horizontalAlignment = Alignment.CenterHorizontally,
         contentPadding = PaddingValues(
-            top = 2.dp.toAdaptivePadding(),
-            bottom = 8.dp.toAdaptivePadding()
+            top = WooPosSpacing.XSmall.value.toAdaptivePadding(),
+            bottom = WooPosSpacing.Small.value.toAdaptivePadding()
         ),
         withBottomShadow = true,
     ) {
@@ -290,7 +260,7 @@ private fun CartToolbar(
     onBackClicked: () -> Unit
 ) {
     val iconSize = 28.dp
-    val iconTitlePadding = 16.dp.toAdaptivePadding()
+    val iconTitlePadding = WooPosSpacing.Medium.value.toAdaptivePadding()
     val titleOffset by animateDpAsState(
         targetValue = if (toolbar.backIconVisible) iconSize + iconTitlePadding else 0.dp,
         animationSpec = tween(durationMillis = 300),
@@ -316,21 +286,20 @@ private fun CartToolbar(
                         start.linkTo(parent.start)
                         centerVerticallyTo(parent)
                     }
-                    .padding(start = 8.dp.toAdaptivePadding())
+                    .padding(start = WooPosSpacing.Small.value.toAdaptivePadding())
             ) {
                 Icon(
                     imageVector = ImageVector.vectorResource(R.drawable.ic_back_24dp),
                     contentDescription = stringResource(R.string.woopos_cart_back_content_description),
-                    tint = MaterialTheme.colors.onBackground,
+                    tint = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier.size(iconSize)
                 )
             }
         }
 
-        Text(
+        WooPosText(
             text = stringResource(R.string.woopos_cart_title),
-            style = MaterialTheme.typography.h4,
-            color = MaterialTheme.colors.onBackground,
+            style = WooPosTypography.Heading,
             fontWeight = FontWeight.Bold,
             maxLines = 1,
             modifier = Modifier
@@ -339,8 +308,8 @@ private fun CartToolbar(
                     centerVerticallyTo(parent)
                 }
                 .padding(
-                    start = 16.dp.toAdaptivePadding(),
-                    end = 4.dp,
+                    start = WooPosSpacing.Medium.value.toAdaptivePadding(),
+                    end = WooPosSpacing.XSmall.value,
                 )
         )
 
@@ -354,12 +323,11 @@ private fun CartToolbar(
         )
 
         toolbar.itemsCount?.let {
-            val itemsEndMargin = 16.dp.toAdaptivePadding()
-            Text(
+            val itemsEndMargin = WooPosSpacing.Medium.value.toAdaptivePadding()
+            WooPosText(
                 text = it,
-                style = MaterialTheme.typography.body2,
-                color = MaterialTheme.colors.secondaryVariant.copy(alpha = 0.6f),
-                fontWeight = FontWeight.SemiBold,
+                style = WooPosTypography.BodySmall,
+                color = WooPosTheme.colors.onSurfaceVariantLowest,
                 maxLines = 1,
                 modifier = Modifier
                     .constrainAs(itemsCount) {
@@ -384,7 +352,7 @@ private fun CartToolbar(
                         end.linkTo(parent.end)
                         centerVerticallyTo(parent)
                     }
-                    .padding(end = 16.dp.toAdaptivePadding()),
+                    .padding(end = WooPosSpacing.Medium.value.toAdaptivePadding()),
                 text = stringResource(R.string.woopos_clear_cart_button)
             )
         }
@@ -408,62 +376,72 @@ private fun ProductItem(
         modifier = modifier
             .height(96.dp)
             .semantics { contentDescription = itemContentDescription },
-        elevation = 6.dp,
+        backgroundColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+        elevation = WooPosElevation.Medium,
         shadowType = ShadowType.Soft,
-        shape = RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
     ) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(item.imageUrl)
-                    .crossfade(true)
-                    .build(),
-                fallback = ColorPainter(WooPosTheme.colors.loadingSkeleton),
-                error = ColorPainter(WooPosTheme.colors.loadingSkeleton),
-                placeholder = ColorPainter(WooPosTheme.colors.loadingSkeleton),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.size(96.dp)
-            )
+            Box(
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.surfaceDim),
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.ic_box),
+                    contentDescription = null,
+                    colorFilter = ColorFilter.tint(WooPosTheme.colors.onSurfaceVariantLowest),
+                    modifier = Modifier.size(38.dp, 32.dp)
+                )
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(item.imageUrl)
+                        .crossfade(true)
+                        .build(),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.size(96.dp)
+                )
+            }
 
-            Spacer(modifier = Modifier.width(16.dp.toAdaptivePadding()))
+            Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value.toAdaptivePadding()))
 
             Column(
                 modifier = Modifier.weight(1f)
             ) {
-                Text(
+                WooPosText(
                     text = item.name,
-                    style = MaterialTheme.typography.body1,
-                    fontWeight = FontWeight.Bold,
                     maxLines = 1,
+                    style = WooPosTypography.BodyLarge,
+                    fontWeight = FontWeight.Bold,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.clearAndSetSemantics { }
                 )
-                Spacer(modifier = Modifier.height(4.dp.toAdaptivePadding()))
+                Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value.toAdaptivePadding()))
                 if (item.description.isNotNullOrEmpty()) {
-                    Text(
-                        text = item.description!!,
-                        style = MaterialTheme.typography.body1,
-                        maxLines = 2,
+                    WooPosText(
+                        text = item.description,
+                        style = WooPosTypography.BodySmall,
+                        color = WooPosTheme.colors.onSurfaceVariantHighest,
+                        maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        color = MaterialTheme.colors.secondaryVariant,
                         modifier = Modifier.clearAndSetSemantics { }
                     )
-                    Spacer(modifier = Modifier.height(4.dp.toAdaptivePadding()))
+                    Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value.toAdaptivePadding()))
                 }
-                Text(
+                WooPosText(
                     text = item.price,
-                    style = MaterialTheme.typography.body1,
-                    color = MaterialTheme.colors.secondaryVariant,
+                    style = WooPosTypography.BodySmall,
+                    color = WooPosTheme.colors.onSurfaceVariantHighest,
                     modifier = Modifier.clearAndSetSemantics { }
                 )
             }
 
             if (canRemoveItems) {
-                Spacer(modifier = Modifier.width(8.dp.toAdaptivePadding()))
+                Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value.toAdaptivePadding()))
 
                 val removeButtonContentDescription = stringResource(
                     id = R.string.woopos_remove_item_button_from_cart_content_description,
@@ -477,12 +455,12 @@ private fun ProductItem(
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_pos_remove_cart_item),
-                        tint = MaterialTheme.colors.onBackground,
+                        tint = WooPosTheme.colors.onSurfaceVariantLowest,
                         contentDescription = null,
                     )
                 }
             }
-            Spacer(modifier = Modifier.width(16.dp.toAdaptivePadding()))
+            Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value.toAdaptivePadding()))
         }
     }
 }

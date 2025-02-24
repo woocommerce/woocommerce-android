@@ -45,7 +45,7 @@ class VariationsBulkUpdatePriceFragment :
     private fun observeViewStateChanges() {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.priceType.takeIfNotEqualTo(old?.priceType) {
-                requireActivity().title = when (new.priceType) {
+                binding.toolbar.title = when (new.priceType) {
                     Regular -> getString(R.string.variations_bulk_update_regular_price)
                     Sale -> getString(R.string.variations_bulk_update_sale_price)
                 }

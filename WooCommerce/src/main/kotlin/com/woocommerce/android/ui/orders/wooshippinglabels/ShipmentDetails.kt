@@ -225,7 +225,7 @@ private fun ShipmentDetailsLandscape(
 }
 
 @Composable
-internal fun ShipmentDetailsSectionTitle(
+fun ShipmentDetailsSectionTitle(
     title: String,
     modifier: Modifier = Modifier
 ) {

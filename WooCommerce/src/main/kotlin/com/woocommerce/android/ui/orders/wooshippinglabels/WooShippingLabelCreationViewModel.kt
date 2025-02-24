@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.R
 import com.woocommerce.android.extensions.combine
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.extensions.sumByFloat
@@ -56,12 +57,13 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     private val getShippingRates: GetShippingRates,
     private val purchaseShippingLabel: PurchaseShippingLabel,
     private val observeStoreOptions: ObserveStoreOptions,
+    private val fetchAccountSettings: FetchAccountSettings,
     private val shouldRequireCustoms: ShouldRequireCustomsForm
 ) : ScopedViewModel(savedState) {
     private val navArgs: WooShippingLabelCreationFragmentArgs by savedState.navArgs()
 
     private val emptyOrder = Order.getEmptyOrder(Date(), Date())
-    private val order = MutableStateFlow<Order?>(emptyOrder)
+    private val order = MutableStateFlow<Order>(emptyOrder)
     private val shippingAddresses = MutableStateFlow<WooShippingAddresses?>(WooShippingAddresses.EMPTY)
     private val storeOptions = MutableStateFlow<StoreOptionsModel?>(StoreOptionsModel.EMPTY)
 
@@ -113,7 +115,12 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     }
 
     private suspend fun getOrderInformation() {
-        orderDetailRepository.getOrderById(navArgs.orderId).let { order.value = it }
+        orderDetailRepository.getOrderById(navArgs.orderId)?.let {
+            order.value = it
+        } ?: run {
+            triggerEvent(Event.ShowSnackbar(R.string.woo_shipping_labels_loading_order_error))
+            postTriggerEvent(Event.Exit)
+        }
     }
 
     private fun getStoreOptions() {
@@ -145,7 +152,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                     shipFrom = addresses.shipFrom,
                     shipTo = addresses.shipTo,
                     weight = packageWeight.totalWeight,
-                    currencyCode = order.value?.currency
+                    currencyCode = order.value.currency
                 )
             } else {
                 null
@@ -231,7 +238,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
     private suspend fun getShippingAddresses() {
         order.combine(observeOriginAddresses()) { order, originAddresses ->
-            if (order != null && !originAddresses.isNullOrEmpty()) {
+            if (!originAddresses.isNullOrEmpty()) {
                 val selectedOriginAddress = getSelectedOriginAddress(originAddresses)
                 WooShippingAddresses(
                     shipFrom = selectedOriginAddress,
@@ -281,7 +288,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             purchaseState,
             customsState
         ) { storeOptions, order, addresses, shippingRates, packageSelection, uiState, purchaseState, customsState ->
-            if (order == null || storeOptions == null || addresses == null || purchaseState is PurchaseState.Error) {
+            if (storeOptions == null || addresses == null || purchaseState is PurchaseState.Error) {
                 return@combine WooShippingViewState.Error
             }
 
@@ -493,6 +500,17 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
     fun onNavigateBack() {
         if (allowBackNavigation()) triggerEvent(Event.Exit)
+    }
+
+    fun onRetry() {
+        // Retry loading data that may have previously resulted in errors.
+        viewState.value = WooShippingViewState.Loading
+        launch { getOrderInformation() }
+        launch {
+            val result = fetchAccountSettings().getOrNull()
+            storeOptions.value = StoreOptionsModel.EMPTY
+            storeOptions.value = result
+        }
     }
 
     data object StartPackageSelection : Event()

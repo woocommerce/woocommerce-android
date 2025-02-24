@@ -14,8 +14,7 @@
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/jitmFragment"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/minor_100" />
+        android:layout_height="wrap_content" />
 
     <!-- Dynamic dashboard container -->
     <androidx.compose.ui.platform.ComposeView

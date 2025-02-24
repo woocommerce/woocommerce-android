@@ -5,6 +5,8 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.CashCollectPaymentSuccess
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -34,6 +36,7 @@ class WooPosCashPaymentViewModelTest {
     private val repository: WooPosCashPaymentRepository = mock()
     private val priceFormat: WooPosFormatPrice = mock()
     private val resourceProvider: ResourceProvider = mock()
+    private val tracker: WooPosAnalyticsTracker = mock()
 
     private lateinit var viewModel: WooPosCashPaymentViewModel
 
@@ -64,6 +67,7 @@ class WooPosCashPaymentViewModelTest {
             repository = repository,
             priceFormat = priceFormat,
             resourceProvider = resourceProvider,
+            analyticsTracker = tracker,
             savedState = savedStateHandle
         )
     }
@@ -156,5 +160,19 @@ class WooPosCashPaymentViewModelTest {
         assertThat(collectingState.errorMessage).isEqualTo(errorMessage)
         assertThat(collectingState.button.status).isEqualTo(WooPosCashPaymentState.Collecting.Button.Status.ENABLED)
         verify(repository).completeOrder(any())
+    }
+
+    @Test
+    fun `when state is Complete, then should track event`() = runTest {
+        // GIVEN
+        whenever(repository.completeOrder(any())).thenReturn(Result.success(Unit))
+
+        // WHEN
+        viewModel.onUIEvent(WooPosCashPaymentUIEvent.CompleteOrderClicked)
+        val state = viewModel.state.first()
+
+        // THEN
+        assertThat(state).isEqualTo(WooPosCashPaymentState.Complete)
+        verify(tracker).track(CashCollectPaymentSuccess)
     }
 }

@@ -91,7 +91,11 @@ class OrderFilterCategoriesFragment :
         }
 
         handleResult<Collection<SelectedItem>>(ProductSelectorFragment.PRODUCT_SELECTOR_RESULT) {
-            viewModel.onProductSelected(it.first().id)
+            it.firstOrNull()?.let {
+                viewModel.onProductSelected(it.id)
+            } ?: run {
+                viewModel.onClearProductFilter()
+            }
         }
 
         handleResult<Order.Customer>(KEY_CUSTOMER_RESULT) {

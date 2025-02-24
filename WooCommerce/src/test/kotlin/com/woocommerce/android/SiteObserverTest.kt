@@ -18,7 +18,6 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
@@ -27,7 +26,7 @@ class SiteObserverTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
     private val environmentRepository: EnvironmentRepository = mock {
-        onBlocking { fetchOrGetStoreID(any()) } doReturn WooResult("storeID")
+        onBlocking { fetchOrGetStoreID(any()) } doReturn Result.success("storeID")
     }
     private val wearableConnectionRepository: WearableConnectionRepository = mock()
     private val featureFlagRepository: WPComRemoteFeatureFlagRepository = mock()

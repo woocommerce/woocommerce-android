@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.woopos.splash
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource.ProductsResult
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
@@ -13,12 +15,14 @@ import kotlinx.coroutines.test.setMain
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import kotlin.test.Test
 
 @ExperimentalCoroutinesApi
 class WooPosSplashViewModelTest {
     private val productsDataSource: WooPosProductsDataSource = mock()
+    private val analyticsTracker: WooPosAnalyticsTracker = mock()
 
     @Rule
     @JvmField
@@ -52,6 +56,20 @@ class WooPosSplashViewModelTest {
     }
 
     @Test
+    fun `given products load successfully, when vm created, should track event`() = runTest {
+        // GIVEN
+        whenever(productsDataSource.loadSimpleProducts(forceRefreshProducts = true)).thenReturn(
+            flowOf(ProductsResult.Remote(Result.success(emptyList())))
+        )
+
+        // WHEN
+        val sut = createSut()
+
+        // THEN
+        verify(analyticsTracker).track(Event.Loaded)
+    }
+
+    @Test
     fun `given products are cached, when vm created, should remain in loading state`() = runTest {
         // GIVEN
         whenever(productsDataSource.loadSimpleProducts(forceRefreshProducts = true)).thenReturn(
@@ -65,5 +83,5 @@ class WooPosSplashViewModelTest {
         assertThat(sut.state.value).isEqualTo(WooPosSplashState.Loading)
     }
 
-    private fun createSut() = WooPosSplashViewModel(productsDataSource)
+    private fun createSut() = WooPosSplashViewModel(productsDataSource, analyticsTracker)
 }

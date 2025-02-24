@@ -94,6 +94,8 @@ rootProject.afterEvaluate {
         sourceDirectories.setFrom(files([sources]))
         classDirectories.from = files([kotlinClasses])
 
-        executionData fileTree(project.rootDir.absolutePath).include("**/build/**/*.exec")
+        executionData fileTree(project.rootDir.absolutePath)
+                .include("**/build/**/*.exec")
+                .exclude("**/detektrules/**")
     }
 }

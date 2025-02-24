@@ -13,15 +13,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -34,11 +33,14 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
-import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.component.Button
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreen
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosPaginationErrorIndicator
-import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.items.ItemsEmptyList
 import com.woocommerce.android.ui.woopos.home.items.ItemsLoadingIndicator
 import com.woocommerce.android.ui.woopos.home.items.WooPosItem
@@ -88,8 +90,8 @@ fun WooPosVariationsScreen(
     )
 }
 
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterialApi::class)
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 private fun WooPosVariationsScreens(
     modifier: Modifier,
@@ -112,10 +114,10 @@ private fun WooPosVariationsScreens(
             .fillMaxSize()
             .pullRefresh(pullToRefreshState)
             .padding(
-                start = 16.dp.toAdaptivePadding(),
-                end = 16.dp.toAdaptivePadding(),
-                top = 32.dp.toAdaptivePadding(),
-                bottom = 0.dp.toAdaptivePadding(),
+                start = WooPosSpacing.Medium.value.toAdaptivePadding(),
+                end = WooPosSpacing.Medium.value.toAdaptivePadding(),
+                top = WooPosSpacing.XLarge.value.toAdaptivePadding(),
+                bottom = WooPosSpacing.None.value.toAdaptivePadding(),
             )
     ) {
         BackHandler(onBack = onBackClicked)
@@ -128,7 +130,7 @@ private fun WooPosVariationsScreens(
             )
             when (val itemsState = itemState.value) {
                 is WooPosVariationsViewState.Content -> {
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
                     WooPosItemList(
                         state = itemsState,
                         listState = listState,
@@ -148,7 +150,7 @@ private fun WooPosVariationsScreens(
                 }
 
                 is WooPosVariationsViewState.Loading -> {
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
                     ItemsLoadingIndicator()
                 }
 
@@ -216,7 +218,7 @@ private fun VariationsToolbar(
         modifier = Modifier
             .fillMaxWidth()
     ) {
-        val (backButton, productName, variationsCount) = createRefs()
+        val (backButton, productName) = createRefs()
 
         IconButton(
             onClick = onBackClicked,
@@ -229,19 +231,18 @@ private fun VariationsToolbar(
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = stringResource(id = R.string.woopos_variations_back_content_description),
-                tint = MaterialTheme.colors.onSurface
+                tint = MaterialTheme.colorScheme.onSurface
             )
         }
 
-        Text(
+        WooPosText(
             text = variableProductData.name,
-            style = MaterialTheme.typography.h4.copy(
-                fontWeight = FontWeight.Bold
-            ),
-            color = MaterialTheme.colors.onSurface,
+            style = WooPosTypography.Heading,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.constrainAs(productName) {
-                start.linkTo(backButton.end, margin = 8.dp)
-                top.linkTo(parent.top, margin = 8.dp)
+                start.linkTo(backButton.end, margin = WooPosSpacing.Small.value)
+                top.linkTo(parent.top, margin = WooPosSpacing.Small.value)
             }
         )
     }

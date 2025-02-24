@@ -9,7 +9,6 @@ import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.common.environment.EnvironmentRepository
 import com.woocommerce.android.util.GetAppVersionName
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLog.T.UTILS
 import com.woocommerce.android.util.dispatchAndAwait
 import com.woocommerce.android.wear.WearableConnectionRepository
 import kotlinx.coroutines.coroutineScope
@@ -73,10 +72,14 @@ class SiteObserver @Inject constructor(
     private suspend fun fetchStoreId(site: SiteModel) {
         // Makes sure the store ID is fetched for the site.
         environmentRepository.fetchOrGetStoreID(site)
-            .takeIf { result -> result.isError.not() }
-            ?.model?.let { storeID ->
-                WooLog.d(UTILS, "Fetched StoreID $storeID for site ${site.name}")
-            }
+            .fold(
+                onSuccess = { storeID ->
+                    WooLog.d(WooLog.T.UTILS, "Fetched StoreID $storeID for site ${site.name}")
+                },
+                onFailure = { error ->
+                    WooLog.e(WooLog.T.UTILS, "Error fetching StoreID for site ${site.name}: ${error.message}")
+                }
+            )
     }
 
     private suspend fun fetchOrderStatusOptions(site: SiteModel) {
@@ -94,7 +97,7 @@ class SiteObserver @Inject constructor(
     }
 
     private suspend fun fetchRemoteFeatureFlags() {
-        WooLog.d(UTILS, "Fetching remote feature flags")
+        WooLog.d(WooLog.T.UTILS, "Fetching remote feature flags")
         featureFlagRepository.fetchAndCacheFeatureFlags(appVersionName())
     }
 

@@ -12,8 +12,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -29,14 +28,14 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextRange
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.unit.dp
 import com.woocommerce.android.ui.compose.component.NullableCurrencyTextFieldValueMapper
 import com.woocommerce.android.ui.payments.changeduecalculator.CurrencyVisualTransformation
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
-import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import org.wordpress.android.fluxc.model.WCSettingsModel
@@ -51,8 +50,8 @@ fun WooPosMoneyInputField(
     currencyPosition: WCSettingsModel.CurrencyPosition,
     decimalSeparator: String,
     numberOfDecimals: Int,
-    textStyle: TextStyle = MaterialTheme.typography.h6,
-    textColor: Color = MaterialTheme.colors.onBackground,
+    textStyle: WooPosTypography = WooPosTypography.BodyLarge,
+    textColor: Color,
     modifier: Modifier = Modifier,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
@@ -91,14 +90,15 @@ fun WooPosMoneyInputField(
     var labelWidth by remember { mutableIntStateOf(0) }
 
     Box(
-        modifier = modifier.background(Color.Transparent),
+        modifier = modifier.background(WooPosTheme.colors.transparent),
         contentAlignment = contentAlignment,
     ) {
         val showLabel = textFieldValue.text.isEmpty()
         if (showLabel) {
-            Text(
+            WooPosText(
                 text = visualTransformation.filter(AnnotatedString("0.00")).text.toString(),
-                style = textStyle.copy(color = textColor.copy(alpha = 0.2f)),
+                style = textStyle,
+                color = WooPosTheme.colors.onDisabledContainer,
                 maxLines = 1,
                 softWrap = false,
                 modifier = Modifier.onGloballyPositioned { coordinates ->
@@ -110,7 +110,7 @@ fun WooPosMoneyInputField(
         val density = LocalDensity.current
 
         val textFieldModifier = if (showLabel) {
-            Modifier.width(with(density) { labelWidth.toDp() + 4.dp })
+            Modifier.width(with(density) { labelWidth.toDp() + WooPosSpacing.XSmall.value })
         } else {
             Modifier.width(IntrinsicSize.Min)
         }
@@ -149,7 +149,7 @@ fun WooPosMoneyInputField(
                     WooLog.e(T.POS, "Failed to parse text: $transformedText", it)
                 }
             },
-            textStyle = textStyle.copy(color = textFieldColor),
+            textStyle = textStyle.style.copy(color = textFieldColor),
             singleLine = true,
             keyboardActions = keyboardActions,
             keyboardOptions = keyboardOptions,
@@ -160,7 +160,7 @@ fun WooPosMoneyInputField(
                     visualTransformation.filter(it)
                 }
             },
-            cursorBrush = SolidColor(MaterialTheme.colors.onBackground),
+            cursorBrush = SolidColor(MaterialTheme.colorScheme.onBackground),
             modifier = textFieldModifier,
         )
     }
@@ -172,8 +172,8 @@ fun WooPosInputField(
     onValueChange: (String) -> Unit,
     label: String = "",
     modifier: Modifier = Modifier,
-    textStyle: TextStyle = MaterialTheme.typography.h6,
-    textColor: Color = MaterialTheme.colors.onBackground,
+    textStyle: WooPosTypography = WooPosTypography.BodyLarge,
+    textColor: Color,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     contentAlignment: Alignment = Alignment.CenterStart,
@@ -181,13 +181,14 @@ fun WooPosInputField(
     var labelWidth by remember { mutableIntStateOf(0) }
 
     Box(
-        modifier = modifier.background(Color.Transparent),
+        modifier = modifier.background(WooPosTheme.colors.transparent),
         contentAlignment = contentAlignment,
     ) {
         if (value.isEmpty()) {
-            Text(
+            WooPosText(
                 text = label,
-                style = textStyle.copy(color = textColor.copy(alpha = 0.2f)),
+                style = textStyle,
+                color = WooPosTheme.colors.onDisabledContainer,
                 maxLines = 1,
                 softWrap = false,
                 modifier = Modifier.onGloballyPositioned { coordinates ->
@@ -200,19 +201,19 @@ fun WooPosInputField(
 
         // that's workaround to keep cursor to the left from the label
         val textFieldModifier = if (value.isEmpty()) {
-            Modifier.width(with(density) { labelWidth.toDp() + 4.dp })
+            Modifier.width(with(density) { labelWidth.toDp() + WooPosSpacing.XSmall.value })
         } else {
             Modifier.width(IntrinsicSize.Min)
         }
         BasicTextField(
             value = value,
             onValueChange = onValueChange,
-            textStyle = textStyle.copy(color = textColor),
+            textStyle = textStyle.style.copy(color = textColor),
             singleLine = true,
             keyboardActions = keyboardActions,
             keyboardOptions = keyboardOptions,
             modifier = textFieldModifier,
-            cursorBrush = SolidColor(MaterialTheme.colors.onBackground),
+            cursorBrush = SolidColor(MaterialTheme.colorScheme.onBackground),
         )
     }
 }
@@ -221,7 +222,7 @@ fun WooPosInputField(
 @Composable
 fun WooPosMoneyInputFieldPreview() {
     WooPosTheme {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(WooPosSpacing.Medium.value)) {
             WooPosMoneyInputField(
                 value = null,
                 onValueChange = {},
@@ -229,9 +230,10 @@ fun WooPosMoneyInputFieldPreview() {
                 currencyPosition = WCSettingsModel.CurrencyPosition.LEFT,
                 decimalSeparator = ".",
                 numberOfDecimals = 2,
+                textColor = MaterialTheme.colorScheme.onSurface,
             )
 
-            Spacer(modifier = Modifier.size(8.dp))
+            Spacer(modifier = Modifier.size(WooPosSpacing.Medium.value))
 
             WooPosMoneyInputField(
                 value = BigDecimal.ZERO,
@@ -240,9 +242,10 @@ fun WooPosMoneyInputFieldPreview() {
                 currencyPosition = WCSettingsModel.CurrencyPosition.LEFT,
                 decimalSeparator = ".",
                 numberOfDecimals = 2,
+                textColor = MaterialTheme.colorScheme.onSurface,
             )
 
-            Spacer(modifier = Modifier.size(8.dp))
+            Spacer(modifier = Modifier.size(WooPosSpacing.Medium.value))
 
             WooPosMoneyInputField(
                 value = BigDecimal.TEN,
@@ -251,6 +254,7 @@ fun WooPosMoneyInputFieldPreview() {
                 currencyPosition = WCSettingsModel.CurrencyPosition.LEFT,
                 decimalSeparator = ".",
                 numberOfDecimals = 2,
+                textColor = MaterialTheme.colorScheme.onSurface,
             )
         }
     }
@@ -262,24 +266,24 @@ fun WooPosInputFieldPreview() {
     WooPosTheme {
         Column(
             modifier = Modifier
-                .padding(16.dp)
+                .padding(WooPosSpacing.Medium.value)
                 .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             WooPosInputField(
                 value = "longemail@gmail.com",
                 onValueChange = {},
-                textStyle = MaterialTheme.typography.h3,
-                contentAlignment = Alignment.Center
+                contentAlignment = Alignment.Center,
+                textColor = MaterialTheme.colorScheme.onSurface,
             )
 
-            Spacer(modifier = Modifier.size(8.dp))
+            Spacer(modifier = Modifier.size(WooPosSpacing.Medium.value))
 
             WooPosInputField(
                 value = "",
                 onValueChange = {},
-                textStyle = MaterialTheme.typography.h3,
                 label = "Label Label",
+                textColor = MaterialTheme.colorScheme.onSurface,
             )
         }
     }

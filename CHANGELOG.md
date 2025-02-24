@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 21.8
+Our latest update brings a smoother WooCommerce experience! The Dashboard now adapts beautifully to tablets, and accessibility in in-person payments has been improved. We've also fixed currency mismatches in order editing and made product selection more flexible. Plus, enjoy better stability, refined UI elements, and a seamless experience when accessing Analytics reports. Update now! 🚀
+
 ## 21.7
 We've improved WooCommerce app! This time we've fixed several bugs and focused on improving user interface. Keep your feedback falling in; it helps us figure how to improve Woo for you. Happy selling!
 

@@ -113,9 +113,7 @@ class VariationDetailFragment :
             onMenuItemSelected = ::onMenuItemSelected,
             onCreateMenu = { toolbar ->
                 toolbar.setNavigationOnClickListener {
-                    if (onRequestAllowBackPress()) {
-                        findNavController().navigateUp()
-                    }
+                    viewModel.onExit()
                 }
                 onCreateMenu(toolbar)
             }
@@ -320,12 +318,7 @@ class VariationDetailFragment :
                 is ShowDialog -> event.showDialog()
                 is ShowDialogFragment -> event.showIn(parentFragmentManager, this)
                 is VariationDetailViewModel.ShowUpdateVariationError -> showUpdateVariationError(event.message)
-                is Exit -> {
-                    // Ensure subsequent Exit events are ignored to avoid IllegalStateException
-                    viewModel.event.removeObservers(viewLifecycleOwner)
-                    requireActivity().onBackPressedDispatcher.onBackPressed()
-                }
-
+                is Exit -> findNavController().navigateUp()
                 else -> event.isHandled = false
             }
         }
@@ -437,11 +430,7 @@ class VariationDetailFragment :
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        return if (viewModel.event.value == Exit) {
-            true
-        } else {
-            viewModel.onExit()
-            false
-        }
+        viewModel.onExit()
+        return false
     }
 }

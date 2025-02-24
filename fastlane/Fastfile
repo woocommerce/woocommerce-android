@@ -49,6 +49,11 @@ REMOTE_LIBRARIES_STRINGS_PATHS = [
     exclusions: []
   }
 ].freeze
+LOCAL_LIBRARIES_STRINGS_PATHS = [
+  # NOTE: for those we don't set `add_ignore_attr` to true because we currently use `checkDependencies true` in `WooCommerce/build.gradle`
+  # Which will correctly detect strings from the app's `strings.xml` being used by one of the module.
+  { library: 'Login Library', strings_path: './libs/login/src/main/res/values/strings.xml', source_id: 'module:login' }
+].freeze
 
 # URL of the GlotPress project containing the app's strings
 GLOTPRESS_APP_STRINGS_PROJECT_URL = 'https://translate.wordpress.com/projects/woocommerce/woocommerce-android/'
@@ -431,6 +436,40 @@ platform :android do
     )
   end
 
+  # This lane downloads the latest translations and commits them
+  #
+  # @param [Boolean] skip_confirm (default: false) If set, will skip the confirmation prompt before running the rest of the lane
+  # @param [Boolean] include_wear_app (default: false) If true, will also download translations for the Wear app
+  #
+  # @example Running the lane
+  #          bundle exec fastlane download_release_translations skip_confirm:true include_wear_app:true
+  #
+  desc 'Downloads and commits the latest translations before finalizing a release'
+  lane :download_release_translations do |skip_confirm: false, include_wear_app: false|
+    ensure_git_status_clean
+    ensure_git_branch_is_release_branch!
+
+    UI.important("Downloading latest translations for release: #{release_version_current}")
+    UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.") unless skip_confirm || UI.confirm('Do you want to continue?')
+
+    configure_apply(force: is_ci)
+
+    # Don't check translation coverage in CI
+    check_translation_progress_all unless is_ci
+    download_translations
+
+    # Download metadata strings for both apps
+    download_metadata_strings(version: release_version_current, app: MOBILE_APP)
+    download_metadata_strings(version: release_version_current, app: WEAR_APP) if include_wear_app
+
+    UI.important('Pushing changes to remote')
+    UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.") unless is_ci || UI.confirm('Do you want to continue?')
+
+    push_to_git_remote(tags: false)
+
+    UI.success("Successfully downloaded and committed latest translations for #{release_version_current}")
+  end
+
   # This lane finalizes a release: updates store metadata and runs the release checks.
   #
   # @param [Boolean] skip_confirm (default: false) If set, will skip the confirmation prompt before running the rest of the lane
@@ -450,10 +489,6 @@ platform :android do
 
     configure_apply(force: is_ci)
 
-    # Don't check translation coverage in CI
-    check_translation_progress_all unless is_ci
-    download_translations
-
     # Bump the release version and build code
     UI.message 'Bumping final release version and build code...'
     VERSION_FILE.write_version(
@@ -464,9 +499,6 @@ platform :android do
     UI.success("Done! New Release Version: #{release_version_current}. New Build Code: #{build_code_current}")
 
     version = release_version_current
-
-    download_metadata_strings(version: version, app: MOBILE_APP)
-    download_metadata_strings(version: version, app: WEAR_APP) if include_wear_app
 
     # Start the build
     UI.important('Pushing changes to remote and triggering the release build')
@@ -739,6 +771,9 @@ platform :android do
   #
   desc 'Merge libraries strings files into the main app one'
   lane :localize_libs do
+    # Merge `strings.xml` files of libraries hosted in this repo (in `./libs` folder) into the `strings.xml` of the main app
+    an_localize_libs(app_strings_path: MAIN_STRINGS_PATH, libs_strings_path: LOCAL_LIBRARIES_STRINGS_PATHS)
+
     REMOTE_LIBRARIES_STRINGS_PATHS.each do |lib|
       download_path = android_download_file_by_version(
         library_name: lib[:name],

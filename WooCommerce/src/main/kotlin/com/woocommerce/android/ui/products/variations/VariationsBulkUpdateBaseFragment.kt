@@ -1,17 +1,17 @@
 package com.woocommerce.android.ui.products.variations
 
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.annotation.CallSuper
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
-import androidx.core.view.MenuProvider
+import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.CustomProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
@@ -23,7 +23,11 @@ import javax.inject.Inject
  */
 @AndroidEntryPoint
 abstract class VariationsBulkUpdateBaseFragment(@LayoutRes layoutId: Int) : BaseFragment(layoutId) {
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
+
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
 
     private var doneMenuItem: MenuItem? = null
     private var progressDialog: CustomProgressDialog? = null
@@ -35,31 +39,16 @@ abstract class VariationsBulkUpdateBaseFragment(@LayoutRes layoutId: Int) : Base
 
     @CallSuper
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        setupMenu()
-        observeEvents()
-    }
-
-    private fun setupMenu() {
-        requireActivity().addMenuProvider(
-            object : MenuProvider {
-                override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                    menuInflater.inflate(R.menu.menu_variations_bulk_update, menu)
-                    doneMenuItem = menu.findItem(R.id.done)
-                }
-
-                override fun onMenuItemSelected(item: MenuItem): Boolean {
-                    return when (item.itemId) {
-                        R.id.done -> {
-                            viewModel.onDoneClicked()
-                            true
-                        }
-
-                        else -> false
-                    }
-                }
-            },
-            viewLifecycleOwner
+        setupTabletSecondPaneToolbar(
+            title = getFragmentTitle(),
+            onMenuItemSelected = ::onMenuItemSelected,
+            onCreateMenu = { toolbar ->
+                toolbar.inflateMenu(R.menu.menu_variations_bulk_update)
+                doneMenuItem = toolbar.menu.findItem(R.id.done)
+            }
         )
+
+        observeEvents()
     }
 
     private fun observeEvents() {
@@ -70,12 +59,19 @@ abstract class VariationsBulkUpdateBaseFragment(@LayoutRes layoutId: Int) : Base
                     uiMessageResolver.showSnack(event.message)
                 }
 
-                is MultiLiveEvent.Event.Exit -> {
-                    // Ensure subsequent Exit events are ignored to avoid IllegalStateException
-                    viewModel.event.removeObservers(viewLifecycleOwner)
-                    requireActivity().onBackPressedDispatcher.onBackPressed()
-                }
+                is MultiLiveEvent.Event.Exit -> findNavController().navigateUp()
             }
+        }
+    }
+
+    private fun onMenuItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.done -> {
+                viewModel.onDoneClicked()
+                true
+            }
+
+            else -> false
         }
     }
 

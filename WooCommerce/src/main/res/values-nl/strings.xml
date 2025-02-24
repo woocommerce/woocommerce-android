@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-02-06 15:54:03+0000
+Translation-Revision-Date: 2025-02-11 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_customs_restriction_other">Overig</string>
+    <string name="woo_shipping_labels_customs_restriction_sanitary">Sanitaire/fytosanitaire inspectie</string>
+    <string name="woo_shipping_labels_customs_restriction_quarantine">Quarantaine</string>
+    <string name="woo_shipping_labels_customs_restriction_none">Geen</string>
+    <string name="woo_shipping_labels_customs_restriction_details_description">Omschrijf welk soort beperkingen dit pakket moet hebben</string>
+    <string name="woo_shipping_labels_customs_restriction_details_label">Beperkingdetails</string>
+    <string name="woo_shipping_labels_customs_content_other">Overig</string>
+    <string name="woo_shipping_labels_customs_content_documents">Documenten</string>
+    <string name="woo_shipping_labels_customs_content_sample">Voorbeeld</string>
+    <string name="woo_shipping_labels_customs_content_returned_goods">Geretourneerde goederen</string>
+    <string name="woo_shipping_labels_customs_content_gift">Cadeau</string>
+    <string name="woo_shipping_labels_customs_content_merchandise">Merchandise</string>
+    <string name="woo_shipping_labels_customs_content_details_description">Omschrijf welk soort goederen dit pakket bevat</string>
+    <string name="woo_shipping_labels_customs_content_details_label">Inhouddetails</string>
+    <string name="woo_shipping_labels_customs_return_to_sender_label">Terugsturen naar afzender als het pakket niet kan worden geleverd</string>
+    <string name="woo_shipping_labels_customs_itn_label">Internationaal transactienummer</string>
+    <string name="woo_shipping_labels_customs_restriction_type_label">Soort beperking</string>
+    <string name="woo_shipping_labels_customs_content_type_label">Type content</string>
+    <string name="woo_shipping_labels_customs_add_missing_information">Ontbrekende informatie toevoegen</string>
+    <string name="product_open_upload_screen">Recente mislukte uploads bekijken</string>
+    <string name="shipping_labels_customs_completed_badge">Afgerond</string>
+    <string name="shipping_labels_customs_missing_info_badge">Ontbrekende informatie</string>
+    <string name="shipping_labels_customs_title">Douane</string>
     <string name="about_automattic_x_item_title">X</string>
     <string name="woo_shipping_fetching_countries_and_states">Landen en provincies ophalen</string>
     <string name="woo_shipping_fetching_countries_and_states_failed">We konden de land- en provinciespecifieke informatie niet ophalen. Probeer het nog eens.</string>
