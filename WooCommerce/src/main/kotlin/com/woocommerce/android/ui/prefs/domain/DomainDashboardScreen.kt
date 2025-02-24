@@ -12,9 +12,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -64,13 +69,21 @@ import com.woocommerce.android.ui.prefs.domain.DomainDashboardViewModel.ViewStat
 fun DomainDashboardScreen(viewModel: DomainDashboardViewModel) {
     viewModel.viewState.observeAsState().value?.let { state ->
         Crossfade(targetState = state) { viewState ->
-            Scaffold(topBar = {
-                ToolbarWithHelpButton(
-                    title = stringResource(id = string.domains),
-                    onNavigationButtonClick = viewModel::onCancelPressed,
-                    onHelpButtonClick = viewModel::onHelpPressed
-                )
-            }) { padding ->
+            Scaffold(
+                topBar = {
+                    ToolbarWithHelpButton(
+                        title = stringResource(id = string.domains),
+                        onNavigationButtonClick = viewModel::onCancelPressed,
+                        onHelpButtonClick = viewModel::onHelpPressed
+                    )
+                },
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(color = colorResource(id = color.color_toolbar))
+                    .windowInsetsPadding(
+                        WindowInsets.systemBars.only(WindowInsetsSides.Top)
+                    )
+            ) { padding ->
                 when (viewState) {
                     is DashboardState -> {
                         DomainDashboard(
@@ -83,6 +96,7 @@ fun DomainDashboardScreen(viewModel: DomainDashboardViewModel) {
                                 .padding(padding)
                         )
                     }
+
                     is ErrorState -> ErrorScreen(viewState.errorType)
                     LoadingState -> ProgressIndicator()
                 }

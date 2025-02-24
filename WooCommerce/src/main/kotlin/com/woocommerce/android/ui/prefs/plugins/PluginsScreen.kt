@@ -13,12 +13,17 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Divider
@@ -65,11 +70,17 @@ fun PluginsScreen(viewModel: PluginsViewModel) {
                 navigationIcon = Icons.AutoMirrored.Filled.ArrowBack
             )
         },
-        modifier = Modifier.background(MaterialTheme.colors.surface)
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = colorResource(id = R.color.color_toolbar))
+            .windowInsetsPadding(
+                WindowInsets.systemBars.only(WindowInsetsSides.Top)
+            )
     ) { paddingValues ->
         Surface(
             modifier = Modifier
                 .fillMaxSize()
+                .background(MaterialTheme.colors.surface)
                 .padding(paddingValues)
         ) {
             viewModel.viewState.observeAsState().value?.let { state ->
