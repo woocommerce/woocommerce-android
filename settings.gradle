@@ -18,6 +18,27 @@ pluginManagement {
 
 plugins {
     id 'com.gradle.develocity' version '3.19'
+    id "com.github.burrunan.s3-build-cache" version "1.8.4"
+}
+
+def secretProperties = new Properties()
+file("${System.getProperty("user.home")}/.configure/woocommerce-android/secrets/secrets.properties").withInputStream { stream ->
+    secretProperties.load(stream)
+}
+
+buildCache {
+    remote(com.github.burrunan.s3cache.AwsS3BuildCache) {
+        region = "eu-central-1"
+        bucket = "buildcachetests"
+        prefix = "cache/"
+        push = true
+
+        println("AWS Access Key ID: ${secretProperties.get('awsAccessKeyId')}")
+        println("AWS Secret Key: ${secretProperties.get('awsSecretKey')}")
+
+        awsAccessKeyId = secretProperties.get('awsAccessKeyId')
+        awsSecretKey = secretProperties.get('awsSecretKey')
+    }
 }
 
 gradle.ext.isCi = System.getenv('CI')?.toBoolean() ?: false
