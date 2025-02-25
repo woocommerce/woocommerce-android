@@ -11,7 +11,6 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
-import androidx.core.view.WindowCompat
 import androidx.core.view.updatePadding
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
@@ -179,7 +178,7 @@ class LoginActivity :
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        applyDefaultInsets()
+        applyDefaultWindowInsets()
 
         when {
             intent?.action == LOGIN_WITH_WPCOM_EMAIL_ACTION -> {
@@ -212,10 +211,8 @@ class LoginActivity :
         }
     }
 
-    private fun applyDefaultInsets() {
+    private fun applyDefaultWindowInsets() {
         enableEdgeToEdge()
-
-        WindowCompat.setDecorFitsSystemWindows(window, true)
 
         // Add system bar insets to the fragment's root
         binding.snackRoot.doOnApplyWindowInsets(consumeInsets = true) { insets ->
@@ -369,7 +366,8 @@ class LoginActivity :
 
     override fun disableDynamicEdgeToEdge() {
         // re-apply default insets
-        applyDefaultInsets()
+        applyDefaultWindowInsets()
+        binding.fragmentContainer.requestLayout()
     }
 
     override fun onNewToWooButtonClicked() {
