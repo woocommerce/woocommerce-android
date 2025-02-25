@@ -34,24 +34,11 @@ steps:
         agents:
           queue: "linter"
 
-      - label: "detekt"
-        command: ./gradlew detektAll
-        plugins: [$CI_TOOLKIT]
-        artifact_paths:
-          - "**/build/reports/detekt/detekt.html"
-
       - label: "lint"
         command: .buildkite/commands/lint.sh
         plugins: [$CI_TOOLKIT]
         artifact_paths:
           - "**/build/reports/lint-results*.*"
-
-      - label: "Dependency Tree Diff"
-        command: comment_with_dependency_diff 'woocommerce' 'vanillaReleaseRuntimeClasspath'
-        if: build.pull_request.id != null
-        plugins: [$CI_TOOLKIT]
-        artifact_paths:
-          - "**/build/reports/diff/*"
 
   ########################################
   - group: "🛠 Prototype Builds"
