@@ -179,6 +179,8 @@ class LoginActivity :
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        applyDefaultInsets()
+
         when {
             intent?.action == LOGIN_WITH_WPCOM_EMAIL_ACTION -> {
                 val email = intent.extras!!.getString(EMAIL_PARAMETER)
@@ -207,6 +209,19 @@ class LoginActivity :
             unifiedLoginTracker.setSource(ss.getString(KEY_UNIFIED_TRACKER_SOURCE, Source.DEFAULT.value))
             unifiedLoginTracker.setFlow(ss.getString(KEY_UNIFIED_TRACKER_FLOW))
             connectSiteInfo = ss.parcelable(KEY_CONNECT_SITE_INFO)
+        }
+    }
+
+    private fun applyDefaultInsets() {
+        enableEdgeToEdge()
+
+        WindowCompat.setDecorFitsSystemWindows(window, true)
+
+        // Add system bar insets to the fragment's root
+        ViewCompat.setOnApplyWindowInsetsListener(binding.snackRoot) { v, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
+            WindowInsetsCompat.CONSUMED
         }
     }
 
@@ -355,17 +370,8 @@ class LoginActivity :
     }
 
     override fun disableDynamicEdgeToEdge() {
-        // Call again to reset the statusBarStyle to its default setting
-        enableEdgeToEdge()
-
-        WindowCompat.setDecorFitsSystemWindows(window, true)
-
-        // Add system bar insets to the fragment's root
-        ViewCompat.setOnApplyWindowInsetsListener(binding.snackRoot) { v, windowInsets ->
-            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
-            WindowInsetsCompat.CONSUMED
-        }
+        // re-apply default insets
+        applyDefaultInsets()
     }
 
     override fun onNewToWooButtonClicked() {
