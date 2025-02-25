@@ -4,8 +4,6 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup.MarginLayoutParams
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import com.woocommerce.android.AppPrefsWrapper
@@ -16,6 +14,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.LOGIN_ONBOARDING_SKIP_BU
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.databinding.FragmentLoginPrologueCarouselBinding
+import com.woocommerce.android.extensions.doOnApplyWindowInsets
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
 import dagger.hilt.android.AndroidEntryPoint
@@ -54,26 +53,20 @@ class LoginPrologueCarouselFragment : Fragment(R.layout.fragment_login_prologue_
         val binding = FragmentLoginPrologueCarouselBinding.bind(view)
 
         val isTablet = DisplayUtils.isTablet(context) || DisplayUtils.isXLargeTablet(context)
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, windowInsets ->
-            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+        binding.root.doOnApplyWindowInsets(consumeInsets = true) { insets ->
+            val currentBottomMargin = resources.getDimension(R.dimen.prologue_button_skip_bottom_margin)
+            val buttonHorizontalMargin = resources.getDimension(R.dimen.prologue_button_horizontal_margin)
+
             binding.buttonSkip.updateLayoutParams<MarginLayoutParams> {
-                val currentBottomMargin = resources.getDimension(R.dimen.prologue_button_skip_bottom_margin)
                 bottomMargin = currentBottomMargin.roundToInt() + insets.bottom
                 if (!isTablet) {
-                    val buttonHorizontalMargin = resources.getDimension(R.dimen.prologue_button_horizontal_margin)
                     rightMargin = buttonHorizontalMargin.roundToInt() + insets.right
                 }
             }
-            WindowInsetsCompat.CONSUMED
-        }
-        if (!isTablet) {
-            ViewCompat.setOnApplyWindowInsetsListener(binding.buttonNext) { v, windowInsets ->
-                val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
-                val buttonHorizontalMargin = resources.getDimension(R.dimen.prologue_button_horizontal_margin)
-                v.updateLayoutParams<MarginLayoutParams> {
+            if (!isTablet) {
+                binding.buttonNext.updateLayoutParams<MarginLayoutParams> {
                     leftMargin = buttonHorizontalMargin.roundToInt() + insets.left
                 }
-                WindowInsetsCompat.CONSUMED
             }
         }
 
