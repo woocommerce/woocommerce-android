@@ -12,7 +12,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
@@ -33,6 +32,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_NO_WP_
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_WP_COM
 import com.woocommerce.android.analytics.ExperimentTracker
 import com.woocommerce.android.databinding.ActivityLoginBinding
+import com.woocommerce.android.extensions.doOnApplyWindowInsets
 import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.support.help.HelpActivity
 import com.woocommerce.android.support.help.HelpOrigin
@@ -218,10 +218,8 @@ class LoginActivity :
         WindowCompat.setDecorFitsSystemWindows(window, true)
 
         // Add system bar insets to the fragment's root
-        ViewCompat.setOnApplyWindowInsetsListener(binding.snackRoot) { v, windowInsets ->
-            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
-            WindowInsetsCompat.CONSUMED
+        binding.snackRoot.doOnApplyWindowInsets(consumeInsets = true) { insets ->
+            binding.snackRoot.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
         }
     }
 
