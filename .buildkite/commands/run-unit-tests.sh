@@ -2,9 +2,15 @@
 
 "$(dirname "${BASH_SOURCE[0]}")/restore-cache.sh"
 
+echo "--- :rubygems: Setting up Gems"
+install_gems
+
+echo "--- :closed_lock_with_key: Installing Secrets"
+bundle exec fastlane run configure_apply
+
 echo "--- 🧪 Testing"
 set +e
-./gradlew testJalapenoDebugUnitTest testDebugUnitTest
+./gradlew testWasabiDebugUnitTest testDebugUnitTest
 TESTS_EXIT_STATUS=$?
 set -e
 
@@ -19,7 +25,7 @@ echo "--- 🚦 Report Tests Status"
 results_file="WooCommerce/build/test-results/merged-test-results.xml"
 # Merge JUnit results into a single file (for performance reasons with reporting)
 # See https://github.com/woocommerce/woocommerce-android/pull/12064
-merge_junit_reports -d WooCommerce/build/test-results/testJalapenoDebugUnitTest -o "$results_file"
+merge_junit_reports -d WooCommerce/build/test-results/testWasabiDebugUnitTest -o "$results_file"
 
 if [[ $BUILDKITE_BRANCH == trunk ]] || [[ $BUILDKITE_BRANCH == release/* ]]; then
     annotate_test_failures "$results_file" --slack "build-and-ship"

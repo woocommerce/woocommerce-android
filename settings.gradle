@@ -31,7 +31,7 @@ buildCache {
         region = "eu-central-1"
         bucket = "buildcachetests"
         prefix = "cache/"
-        push = true
+        push = false
 
         println("AWS Access Key ID: ${secretProperties.get('awsAccessKeyId')}")
         println("AWS Secret Key: ${secretProperties.get('awsSecretKey')}")
