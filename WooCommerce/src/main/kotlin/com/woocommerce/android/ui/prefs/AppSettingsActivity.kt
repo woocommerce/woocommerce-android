@@ -6,6 +6,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -18,7 +19,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.ActivityAppSettingsBinding
-import com.woocommerce.android.extensions.edgeToEdgeHandlingForNavigationBar
+import com.woocommerce.android.extensions.doOnApplyWindowInsets
 import com.woocommerce.android.notifications.push.NotificationMessageHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
@@ -68,7 +69,17 @@ class AppSettingsActivity :
 
         binding = ActivityAppSettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        binding.root.edgeToEdgeHandlingForNavigationBar()
+
+        binding.root.doOnApplyWindowInsets(consumeInsets = true) {
+            binding.root.updatePadding(
+                left = it.left,
+                right = it.right,
+                bottom = it.bottom
+            )
+            binding.appBarLayout.updatePadding(
+                top = it.top
+            )
+        }
 
         presenter.takeView(this)
 

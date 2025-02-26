@@ -11,8 +11,6 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
@@ -33,6 +31,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_NO_WP_
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_WP_COM
 import com.woocommerce.android.analytics.ExperimentTracker
 import com.woocommerce.android.databinding.ActivityLoginBinding
+import com.woocommerce.android.extensions.doOnApplyWindowInsets
 import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.support.help.HelpActivity
 import com.woocommerce.android.support.help.HelpOrigin
@@ -179,6 +178,8 @@ class LoginActivity :
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        applyDefaultWindowInsets()
+
         when {
             intent?.action == LOGIN_WITH_WPCOM_EMAIL_ACTION -> {
                 val email = intent.extras!!.getString(EMAIL_PARAMETER)
@@ -207,6 +208,15 @@ class LoginActivity :
             unifiedLoginTracker.setSource(ss.getString(KEY_UNIFIED_TRACKER_SOURCE, Source.DEFAULT.value))
             unifiedLoginTracker.setFlow(ss.getString(KEY_UNIFIED_TRACKER_FLOW))
             connectSiteInfo = ss.parcelable(KEY_CONNECT_SITE_INFO)
+        }
+    }
+
+    private fun applyDefaultWindowInsets() {
+        enableEdgeToEdge()
+
+        // Add system bar insets to the fragment's root
+        binding.snackRoot.doOnApplyWindowInsets(consumeInsets = true) { insets ->
+            binding.snackRoot.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
         }
     }
 
@@ -355,17 +365,9 @@ class LoginActivity :
     }
 
     override fun disableDynamicEdgeToEdge() {
-        // Call again to reset the statusBarStyle to its default setting
-        enableEdgeToEdge()
-
-        WindowCompat.setDecorFitsSystemWindows(window, true)
-
-        // Add system bar insets to the fragment's root
-        ViewCompat.setOnApplyWindowInsetsListener(binding.snackRoot) { v, windowInsets ->
-            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
-            WindowInsetsCompat.CONSUMED
-        }
+        // re-apply default insets
+        applyDefaultWindowInsets()
+        binding.fragmentContainer.requestLayout()
     }
 
     override fun onNewToWooButtonClicked() {

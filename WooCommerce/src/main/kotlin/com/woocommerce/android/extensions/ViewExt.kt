@@ -13,6 +13,7 @@ import android.view.animation.Transformation
 import android.widget.LinearLayout.LayoutParams
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.Group
+import androidx.core.graphics.Insets
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.children
@@ -186,21 +187,24 @@ fun View.scrollStartEvents(): Flow<Unit> {
 }
 
 fun View.edgeToEdgeHandlingForNavigationBar() {
-    ViewCompat.setOnApplyWindowInsetsListener(this) { v, insets ->
-        val systemInsets = insets.getInsets(
-            WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
-        )
-        v.setPadding(systemInsets.left, 0, systemInsets.right, systemInsets.bottom)
-        insets
+    doOnApplyWindowInsets {
+        setPadding(it.left, 0, it.right, it.bottom)
     }
 }
 
 fun View.edgeToEdgeHandlingForNavigationAndStatusBar() {
+    doOnApplyWindowInsets {
+        setPadding(it.left, it.top, it.right, it.bottom)
+    }
+}
+
+inline fun View.doOnApplyWindowInsets(
+    insetsMask: Int = WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout(),
+    consumeInsets: Boolean = false,
+    crossinline action: (Insets) -> Unit
+) {
     ViewCompat.setOnApplyWindowInsetsListener(this) { v, insets ->
-        val systemInsets = insets.getInsets(
-            WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
-        )
-        v.setPadding(systemInsets.left, systemInsets.top, systemInsets.right, systemInsets.bottom)
-        insets
+        action(insets.getInsets(insetsMask))
+        if (consumeInsets) WindowInsetsCompat.CONSUMED else insets
     }
 }
