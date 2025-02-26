@@ -50,8 +50,11 @@ steps:
         plugins: [$CI_TOOLKIT]
         artifact_paths:
           - "**/build/task-inputs**.*"
+          - "**/R_jar-snapshot.bin"
+          - "**/fluxc-annotations_jar-snapshot.bin"
 
-#      - label: "🛠 Prototype Build: Wear App"
+
+  #      - label: "🛠 Prototype Build: Wear App"
 #        command: ".buildkite/commands/prototype-build.sh WooCommerce-Wear"
 #        if: build.pull_request.id != null
 #        plugins: [$CI_TOOLKIT]
