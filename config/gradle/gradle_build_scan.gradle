@@ -14,7 +14,8 @@ if (gradle.ext.isCi) {
     develocity {
         buildScan {
             server="https://scans.gradle.com/"
-            publishing.onlyIf { false }
+            termsOfUseUrl = 'https://gradle.com/terms-of-service'
+            termsOfUseAgree = 'yes'
         }
     }
 }
