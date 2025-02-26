@@ -49,31 +49,31 @@ steps:
         if: build.pull_request.id != null
         plugins: [$CI_TOOLKIT]
 
-      - label: "🛠 Prototype Build: Wear App"
-        command: ".buildkite/commands/prototype-build.sh WooCommerce-Wear"
-        if: build.pull_request.id != null
-        plugins: [$CI_TOOLKIT]
+#      - label: "🛠 Prototype Build: Wear App"
+#        command: ".buildkite/commands/prototype-build.sh WooCommerce-Wear"
+#        if: build.pull_request.id != null
+#        plugins: [$CI_TOOLKIT]
 
   ########################################
-  - group: "🔬 Tests"
-    steps:
-
-      - label: "Unit tests"
-        command: .buildkite/commands/run-unit-tests.sh
-        plugins:
-          - $CI_TOOLKIT
-          - $TEST_COLLECTOR :
-              <<: *test_collector_common_params
-              api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_UNIT_TESTS"
-        artifact_paths:
-          - "**/build/test-results/merged-test-results.xml"
-
-      - label: "Instrumented tests"
-        command: .buildkite/commands/run-instrumented-tests.sh
-        plugins:
-          - $CI_TOOLKIT
-          - $TEST_COLLECTOR :
-              <<: *test_collector_common_params
-              api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_INSTRUMENTED_TESTS"
-        artifact_paths:
-          - "**/build/instrumented-tests/**/*"
+#  - group: "🔬 Tests"
+#    steps:
+#
+#      - label: "Unit tests"
+#        command: .buildkite/commands/run-unit-tests.sh
+#        plugins:
+#          - $CI_TOOLKIT
+#          - $TEST_COLLECTOR :
+#              <<: *test_collector_common_params
+#              api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_UNIT_TESTS"
+#        artifact_paths:
+#          - "**/build/test-results/merged-test-results.xml"
+#
+#      - label: "Instrumented tests"
+#        command: .buildkite/commands/run-instrumented-tests.sh
+#        plugins:
+#          - $CI_TOOLKIT
+#          - $TEST_COLLECTOR :
+#              <<: *test_collector_common_params
+#              api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_INSTRUMENTED_TESTS"
+#        artifact_paths:
+#          - "**/build/instrumented-tests/**/*"

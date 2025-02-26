@@ -39,8 +39,13 @@ buildCache {
         prefix = "cache/"
         push = gradle.ext.isCi
 
-        awsAccessKeyId = secretProperties.get('awsAccessKeyId')
-        awsSecretKey = secretProperties.get('awsSecretKey')
+        if (gradle.startParameter.projectProperties.containsKey('awsAccessKeyId')) {
+            awsAccessKeyId =  gradle.startParameter.projectProperties.get('awsAccessKeyId', null)
+            awsSecretKey =  gradle.startParameter.projectProperties.get('awsSecretKey', null)
+        } else {
+            awsAccessKeyId = secretProperties.get('awsAccessKeyId')
+            awsSecretKey = secretProperties.get('awsSecretKey')
+        }
     }
 }
 
