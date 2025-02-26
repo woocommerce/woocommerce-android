@@ -1102,7 +1102,7 @@ platform :android do
     UI.user_error!("'BUILDKITE_ARTIFACTS_S3_BUCKET' must be defined as an environment variable.") unless ENV['BUILDKITE_ARTIFACTS_S3_BUCKET']
 
     app = get_app_param!(options)
-    prototype_flavor = 'Jalapeno'
+    prototype_flavor = 'Wasabi'
     prototype_build_type = 'Debug'
 
     gradle(
