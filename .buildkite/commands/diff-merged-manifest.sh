@@ -17,7 +17,7 @@ echo "--- :closed_lock_with_key: Installing Secrets"
 bundle exec fastlane run configure_apply
 
 echo "--- 📦 Create Merged Manifest (Build Variant: ${BUILD_VARIANT})"
-./gradlew assemble"${BUILD_VARIANT^}"
+./gradlew process"${BUILD_VARIANT^}"Manifest
 echo ""
 
 echo "--- 💾 Diff Merged Manifest (Module: WooCommerce, Build Variant: ${BUILD_VARIANT})"
