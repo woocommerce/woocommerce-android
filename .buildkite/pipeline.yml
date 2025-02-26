@@ -50,8 +50,8 @@ steps:
         plugins: [$CI_TOOLKIT]
         artifact_paths:
           - "**/build/task-inputs**.*"
-          - "~/.gradle/caches/8.12.1/transforms/**/R_jar-snapshot.bin"
-          - "~/.gradle/caches/8.12.1/transforms/**/fluxc-annotations_jar-snapshot.bin"
+          - "../../../../../.gradle/caches/8.12.1/transforms/**/R_jar-snapshot.bin"
+          - "../../../../../.gradle/caches/8.12.1/transforms/**/fluxc-annotations_jar-snapshot.bin"
 
 
   #      - label: "🛠 Prototype Build: Wear App"
