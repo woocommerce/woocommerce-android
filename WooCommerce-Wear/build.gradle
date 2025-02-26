@@ -207,6 +207,7 @@ dependencies {
         exclude group: 'com.squareup.okhttp3'
     }
     lintChecks(libs.android.security.lint)
+    implementation(libs.singular)
 }
 
 android.buildTypes.all { buildType ->
