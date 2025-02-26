@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.customs
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.ContentType
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.InputValue
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.RestrictionType
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.ShowContentTypeDialog
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.ShowRestrictionTypeDialog
@@ -45,14 +46,25 @@ class WooShippingCustomsFormViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `onITNChanged should update itnValue in viewState`() = testBlocking {
-        val newItnValue = "123456"
+    fun `onITNChanged should update itnValue with valid input`() = testBlocking {
+        val newItnValue = "AES X20201234567890"
         var capturedViewState: ViewState? = null
         viewModel.viewState.observeForever {
             capturedViewState = it
         }
         viewModel.onITNChanged(newItnValue)
-        assertThat(capturedViewState?.itnValue).isEqualTo(newItnValue)
+        assertThat(capturedViewState?.itnValue).isEqualTo(InputValue.Data(newItnValue))
+    }
+
+    @Test
+    fun `onITNChanged should update itnValue with invalid input`() = testBlocking {
+        val newItnValue = "INVALID_ITN"
+        var capturedViewState: ViewState? = null
+        viewModel.viewState.observeForever {
+            capturedViewState = it
+        }
+        viewModel.onITNChanged(newItnValue)
+        assertThat(capturedViewState?.itnValue).isInstanceOf(InputValue.Error::class.java)
     }
 
     @Test
@@ -89,24 +101,50 @@ class WooShippingCustomsFormViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `onOtherContentInputChanged should update otherContentInput in viewState`() = testBlocking {
+    fun `onOtherContentInputChanged should update otherContentInput with valid input`() = testBlocking {
         val newValue = "Important Stuff"
         var capturedViewState: ViewState? = null
         viewModel.viewState.observeForever {
             capturedViewState = it
         }
         viewModel.onOtherContentInputChanged(newValue)
-        assertThat(capturedViewState?.otherContentInput).isEqualTo(newValue)
+        assertThat(capturedViewState?.otherContentInput).isEqualTo(InputValue.Data(newValue))
     }
 
     @Test
-    fun `onRestrictionDetailsInputChanged should update otherRestrictionInput in viewState`() = testBlocking {
+    fun `onOtherContentInputChanged should update otherContentInput with invalid input`() = testBlocking {
+        val newValue = ""
+        var capturedViewState: ViewState? = null
+        viewModel.viewState.observeForever {
+            capturedViewState = it
+        }
+        viewModel.onOtherContentInputChanged(newValue)
+        assertThat(
+            capturedViewState?.otherContentInput
+        ).isInstanceOf(InputValue.Error::class.java)
+    }
+
+    @Test
+    fun `onRestrictionDetailsInputChanged should update otherRestrictionInput with valid input`() = testBlocking {
         val newValue = "Restricted Stuff"
         var capturedViewState: ViewState? = null
         viewModel.viewState.observeForever {
             capturedViewState = it
         }
         viewModel.onRestrictionDetailsInputChanged(newValue)
-        assertThat(capturedViewState?.otherRestrictionInput).isEqualTo(newValue)
+        assertThat(capturedViewState?.otherRestrictionInput).isEqualTo(InputValue.Data(newValue))
+    }
+
+    @Test
+    fun `onRestrictionDetailsInputChanged should update otherRestrictionInput with invalid input`() = testBlocking {
+        val newValue = ""
+        var capturedViewState: ViewState? = null
+        viewModel.viewState.observeForever {
+            capturedViewState = it
+        }
+        viewModel.onRestrictionDetailsInputChanged(newValue)
+        assertThat(
+            capturedViewState?.otherRestrictionInput
+        ).isInstanceOf(InputValue.Error::class.java)
     }
 }

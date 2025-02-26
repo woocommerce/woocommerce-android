@@ -48,4 +48,6 @@ class WooShippingAddressDataStore @Inject constructor(
         }
         saveOriginAddresses(addresses)
     }
+
+    suspend fun clearOriginAddresses() = dataStore.edit { it.remove(stringPreferencesKey(getOriginAddressesKey())) }
 }
