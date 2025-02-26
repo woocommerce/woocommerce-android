@@ -4482,6 +4482,8 @@
     <string name="woo_shipping_labels_customs_restriction_quarantine">Quarantine</string>
     <string name="woo_shipping_labels_customs_restriction_sanitary">Sanitary / Phytosanitary inspection</string>
     <string name="woo_shipping_labels_customs_restriction_other">Other</string>
+    <string name="woo_shipping_labels_customs_other_error_message">Type must not be empty</string>
+    <string name="woo_shipping_labels_customs_itn_error_message">Invalid ITN format</string>
 
 
     <string name="email_not_registered_wpcom">Hmm, we can\'t find a WordPress.com account connected to this email address.</string>

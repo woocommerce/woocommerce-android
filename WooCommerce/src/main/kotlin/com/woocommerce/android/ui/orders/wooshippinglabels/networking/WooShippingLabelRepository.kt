@@ -105,7 +105,7 @@ class WooShippingLabelRepository @Inject constructor(
                 ?.takeIf { response.isError.not() }
                 ?.let {
                     addressDataStore.saveOriginAddresses(it)
-                }
+                } ?: addressDataStore.clearOriginAddresses()
         }
 
     suspend fun normalizeAddress(

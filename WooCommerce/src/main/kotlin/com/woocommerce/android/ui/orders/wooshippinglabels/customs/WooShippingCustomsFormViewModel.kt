@@ -17,6 +17,7 @@ import javax.inject.Inject
 class WooShippingCustomsFormViewModel @Inject constructor(
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
+    private val itnRegex by lazy { ITN_REGEX_STRING.toRegex() }
 
     private val _viewState = savedState.getStateFlow(
         scope = viewModelScope,
@@ -32,12 +33,6 @@ class WooShippingCustomsFormViewModel @Inject constructor(
     fun onRestrictionTypeClick() {
         val currentSelection = _viewState.value.restrictionType
         triggerEvent(ShowRestrictionTypeDialog(currentSelection))
-    }
-
-    fun onITNChanged(newItnValue: String) {
-        _viewState.update {
-            it.copy(itnValue = newItnValue)
-        }
     }
 
     fun onReturnToSenderChanged(isChecked: Boolean) {
@@ -59,32 +54,83 @@ class WooShippingCustomsFormViewModel @Inject constructor(
     }
 
     fun onOtherContentInputChanged(newValue: String) {
+        val input = when (newValue.isBlank()) {
+            false -> InputValue.Data(newValue)
+            true -> InputValue.Error(
+                input = newValue,
+                errorMessageId = R.string.woo_shipping_labels_customs_other_error_message
+            )
+        }
         _viewState.update {
-            it.copy(otherContentInput = newValue)
+            it.copy(otherContentInput = input)
         }
     }
 
     fun onRestrictionDetailsInputChanged(newValue: String) {
-        _viewState.update {
-            it.copy(otherRestrictionInput = newValue)
+        val input = when (newValue.isBlank()) {
+            false -> InputValue.Data(newValue)
+            true -> InputValue.Error(
+                input = newValue,
+                errorMessageId = R.string.woo_shipping_labels_customs_other_error_message
+            )
         }
+        _viewState.update {
+            it.copy(otherRestrictionInput = input)
+        }
+    }
+
+    fun onITNChanged(newItnValue: String) {
+        val input = when {
+            newItnValue.isBlank() -> InputValue.Empty
+            itnRegex.matches(newItnValue).not() ->
+                InputValue.Error(
+                    input = newItnValue,
+                    errorMessageId = R.string.woo_shipping_labels_customs_itn_error_message
+                )
+            else -> InputValue.Data(newItnValue)
+        }
+        _viewState.update { it.copy(itnValue = input) }
     }
 
     @Parcelize
     data class ViewState(
         val contentType: ContentType = ContentType.MERCHANDISE,
-        val otherContentInput: String = "",
+        val otherContentInput: InputValue = InputValue.Empty,
         val restrictionType: RestrictionType = RestrictionType.NONE,
-        val otherRestrictionInput: String = "",
-        val itnValue: String = "",
-        val returnToSenderChecked: Boolean = false,
-        val isAddCustomsButtonEnabled: Boolean = false
+        val otherRestrictionInput: InputValue = InputValue.Empty,
+        val itnValue: InputValue = InputValue.Empty,
+        val returnToSenderChecked: Boolean = false
     ) : Parcelable {
         val shouldDisplayContentTypeInput: Boolean
             get() = contentType == ContentType.OTHER
 
         val shouldDisplayRestrictionTypeInput: Boolean
             get() = restrictionType == RestrictionType.OTHER
+
+        val isAddCustomsButtonEnabled: Boolean
+            get() = itnValue is InputValue.Data &&
+                (contentType != ContentType.OTHER || otherContentInput is InputValue.Data) &&
+                (restrictionType != RestrictionType.OTHER || otherRestrictionInput is InputValue.Data)
+    }
+
+    @Parcelize
+    sealed class InputValue : Parcelable {
+        data class Data(val input: String) : InputValue()
+        data class Error(
+            val input: String,
+            val errorMessageId: Int
+        ) : InputValue()
+        data object Empty : InputValue()
+
+        val currentInput
+            get() = when (this) {
+                is Data -> input
+                is Error -> input
+                is Empty -> ""
+            }
+
+        val errorMessageOrNull: Int?
+            get() = run { this as? Error }?.errorMessageId
     }
 
     enum class ContentType(val resourceId: Int) {
@@ -105,4 +151,13 @@ class WooShippingCustomsFormViewModel @Inject constructor(
 
     data class ShowContentTypeDialog(val currentSelection: ContentType) : MultiLiveEvent.Event()
     data class ShowRestrictionTypeDialog(val currentSelection: RestrictionType) : MultiLiveEvent.Event()
+
+    companion object {
+        /**
+         * For information regarding the format of the ITN, check the Appendix A of
+         * [Export Compliance Customs Data Requirements](https://postalpro.usps.com/node/3973)
+         */
+        private const val ITN_REGEX_STRING =
+            """^(?:(?:AES X\d{14})|(?:NOEEI 30\.\d{1,2}(?:\([a-z]\)(?:\(\d\))?)?))${'$'}"""
+    }
 }
