@@ -48,6 +48,8 @@ steps:
         command: ".buildkite/commands/prototype-build.sh WooCommerce"
         if: build.pull_request.id != null
         plugins: [$CI_TOOLKIT]
+        artifact_paths:
+          - "**/build/task-inputs**.*"
 
 #      - label: "🛠 Prototype Build: Wear App"
 #        command: ".buildkite/commands/prototype-build.sh WooCommerce-Wear"

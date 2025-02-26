@@ -197,25 +197,14 @@ android {
     }
 }
 
-tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
-    doFirst {
-        println "========== Task: $name =========="
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-        // Print all input files and directories (includes sources & classpath)
-        println "\n=== Input Files & Directories ==="
-        inputs.files.each { println "Input: $it" }
-
-        // Print all input properties (compiler options, flags, etc.)
-        println "\n=== Input Properties ==="
-        inputs.properties.each { key, value ->
-            println "Property: $key = $value"
-        }
-
-        // Print all output files and directories
-        println "\n=== Output Files & Directories ==="
-        outputs.files.each { println "Output: $it" }
-
-        println "==================================="
+tasks.withType(KotlinCompile).configureEach { task ->
+    task.doFirst {
+        def inputFile = task.project.file("build/task-inputs-${task.name}.txt")
+        inputFile.text = "Task: ${task.name}\nInputs:\n"
+        task.inputs.files.sort().each { inputFile.append("${it.absolutePath}\n") }
+        task.inputs.properties.sort().each { key, value -> inputFile.append("$key = $value\n") }
     }
 }
 
