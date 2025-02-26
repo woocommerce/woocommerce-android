@@ -49,6 +49,11 @@ REMOTE_LIBRARIES_STRINGS_PATHS = [
     exclusions: []
   }
 ].freeze
+LOCAL_LIBRARIES_STRINGS_PATHS = [
+  # NOTE: for those we don't set `add_ignore_attr` to true because we currently use `checkDependencies true` in `WooCommerce/build.gradle`
+  # Which will correctly detect strings from the app's `strings.xml` being used by one of the module.
+  { library: 'Login Library', strings_path: './libs/login/src/main/res/values/strings.xml', source_id: 'module:login' }
+].freeze
 
 # URL of the GlotPress project containing the app's strings
 GLOTPRESS_APP_STRINGS_PROJECT_URL = 'https://translate.wordpress.com/projects/woocommerce/woocommerce-android/'
@@ -766,6 +771,9 @@ platform :android do
   #
   desc 'Merge libraries strings files into the main app one'
   lane :localize_libs do
+    # Merge `strings.xml` files of libraries hosted in this repo (in `./libs` folder) into the `strings.xml` of the main app
+    an_localize_libs(app_strings_path: MAIN_STRINGS_PATH, libs_strings_path: LOCAL_LIBRARIES_STRINGS_PATHS)
+
     REMOTE_LIBRARIES_STRINGS_PATHS.each do |lib|
       download_path = android_download_file_by_version(
         library_name: lib[:name],

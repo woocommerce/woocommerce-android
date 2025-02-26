@@ -5,15 +5,20 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.R
 import com.woocommerce.android.extensions.combine
 import com.woocommerce.android.extensions.isNotNullOrEmpty
+import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.Location
 import com.woocommerce.android.ui.orders.details.editing.address.LocationCode
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.AddressValidationHelper
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.GetStatesByCountryCode
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.AddressNormalizationModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
 import com.woocommerce.android.util.StringUtils.combineStrings
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -34,6 +39,9 @@ class WooShippingEditOriginViewModel @Inject constructor(
     private val addressValidator: AddressValidationHelper,
     private val getAcceptedOriginCountries: GetAcceptedOriginCountries,
     private val getStatesByCountryCode: GetStatesByCountryCode,
+    private val normalizeAddress: NormalizeAddress,
+    private val resourceProvider: ResourceProvider,
+    private val updateOriginAddress: UpdateOriginAddress,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     private var name by mutableStateOf(InputValue(""))
@@ -59,7 +67,12 @@ class WooShippingEditOriginViewModel @Inject constructor(
     private val countriesState = MutableStateFlow<LocationState>(LocationState.Loading)
     private val statesState = MutableStateFlow<LocationState>(LocationState.Loading)
 
+    private val addressValidationState =
+        MutableStateFlow<AddressValidationState>(AddressValidationState.NotStarted)
+
     private val navArgs: WooShippingEditOriginAddressFragmentArgs by savedState.navArgs()
+
+    private val currentAddress = MutableStateFlow(navArgs.originAddress)
 
     private val nameValidatedFlow = snapshotFlow { name }
         .combine(snapshotFlow { company }) { name, company ->
@@ -137,45 +150,46 @@ class WooShippingEditOriginViewModel @Inject constructor(
         )
     }
 
-    val viewState: MutableStateFlow<EditAddressViewState> = MutableStateFlow(
-        EditAddressViewState.DataState(
+    val viewState: MutableStateFlow<ViewState> = MutableStateFlow(
+        ViewState(
             isCompanyExpanded = false,
             editableAddress = EditableAddress(),
-            shouldDisplayLoading = false,
+            loading = LoadingState.Hidden,
             shouldDisplayLoadingCountriesError = false,
             shouldUseStatesInput = false,
-            addressStatus = AddressStatus.UNVERIFIED
+            addressStatus = AddressStatus.UNVERIFIED,
+            addressValidationState = AddressValidationState.NotStarted
         )
     )
 
     init {
         launch { observeChanges() }
-        fillAddressForm()
+        fillAddressForm(currentAddress.value)
         launch {
             loadCountries()
             loadStates()
         }
     }
 
-    private fun fillAddressForm() {
+    private fun fillAddressForm(originAddress: OriginShippingAddress) {
         val fullName = combineStrings(
-            navArgs.originAddress.firstName.orEmpty(),
-            navArgs.originAddress.lastName.orEmpty()
+            originAddress.firstName.orEmpty(),
+            originAddress.lastName.orEmpty()
         )
         val fullAddress = combineStrings(
-            navArgs.originAddress.address1.orEmpty(),
-            navArgs.originAddress.address2.orEmpty()
+            originAddress.address1.orEmpty(),
+            originAddress.address2.orEmpty()
         )
         name = InputValue(fullName)
-        company = InputValue(navArgs.originAddress.company.orEmpty())
-        country.value = findLocationByCode(navArgs.originAddress.country, countriesState.value)
+        company = InputValue(originAddress.company.orEmpty())
+        country.value = findLocationByCode(originAddress.country, countriesState.value)
         address = InputValue(fullAddress)
-        city = InputValue(navArgs.originAddress.city.orEmpty())
-        selectedState.value = findLocationByCode(navArgs.originAddress.state.orEmpty(), statesState.value)
-        postalCode = InputValue(navArgs.originAddress.postcode)
-        email = InputValue(navArgs.originAddress.email.orEmpty())
-        phone = InputValue(navArgs.originAddress.phone.orEmpty())
-        isCompanyExpanded.value = navArgs.originAddress.company.isNotNullOrEmpty()
+        city = InputValue(originAddress.city.orEmpty())
+        selectedState.value = findLocationByCode(originAddress.state.orEmpty(), statesState.value)
+        postalCode = InputValue(originAddress.postcode)
+        email = InputValue(originAddress.email.orEmpty())
+        phone = InputValue(originAddress.phone.orEmpty())
+        isCompanyExpanded.value = originAddress.company.isNotNullOrEmpty()
     }
 
     private fun findLocationByCode(code: String, state: LocationState): Location {
@@ -226,24 +240,52 @@ class WooShippingEditOriginViewModel @Inject constructor(
             editableAddress,
             isCompanyExpanded,
             countriesState,
-            statesState
-        ) { address, isExpanded, countriesState, statesState ->
-            val isLoading =
-                countriesState is LocationState.DisplayLoading || statesState is LocationState.DisplayLoading
+            statesState,
+            addressValidationState,
+            currentAddress
+        ) { address, isExpanded, countriesState, statesState, addressSelection, currentAddress ->
+
+            val loading =
+                when {
+                    countriesState is LocationState.DisplayLoading || statesState is LocationState.DisplayLoading -> {
+                        LoadingState.DisplayLoading(
+                            resourceProvider.getString(R.string.loading),
+                            resourceProvider.getString(R.string.woo_shipping_fetching_countries_and_states)
+                        )
+                    }
+
+                    addressSelection is AddressValidationState.VerifyingAddress -> {
+                        LoadingState.DisplayLoading(
+                            resourceProvider.getString(R.string.woo_shipping_address_validate_title),
+                            resourceProvider.getString(R.string.woo_shipping_address_validate_message)
+                        )
+                    }
+
+                    addressSelection is AddressValidationState.UpdatingAddress -> {
+                        LoadingState.DisplayLoading(
+                            resourceProvider.getString(R.string.woo_shipping_address_update_title),
+                            resourceProvider.getString(R.string.woo_shipping_address_update_message)
+                        )
+                    }
+
+                    else -> LoadingState.Hidden
+                }
 
             val addressStatus = when {
                 hasIncorrectOrMissingData(address) -> AddressStatus.MISSING_INFO
-                isSameAddress(address) && navArgs.originAddress.isVerified -> AddressStatus.VERIFIED
+                hasOnlyNoAddressChanges(address, currentAddress) -> AddressStatus.SAVE_CHANGES
+                isSameAddress(address, currentAddress) && currentAddress.isVerified -> AddressStatus.VERIFIED
                 else -> AddressStatus.UNVERIFIED
             }
 
-            EditAddressViewState.DataState(
+            ViewState(
                 isCompanyExpanded = isExpanded,
                 editableAddress = address,
-                shouldDisplayLoading = isLoading,
+                loading = loading,
                 shouldDisplayLoadingCountriesError = countriesState is LocationState.Error,
                 shouldUseStatesInput = statesState is LocationState.Loaded && statesState.locations.isEmpty(),
-                addressStatus = addressStatus
+                addressStatus = addressStatus,
+                addressValidationState = addressSelection
             )
         }
             .collectLatest {
@@ -251,20 +293,32 @@ class WooShippingEditOriginViewModel @Inject constructor(
             }
     }
 
-    private fun isSameAddress(newAddress: EditableAddress): Boolean {
-        val originalAddress = navArgs.originAddress
+    private fun isSameAddress(newAddress: EditableAddress, currentAddress: OriginShippingAddress): Boolean {
         val originalFullAddress = combineStrings(
-            originalAddress.address1.orEmpty(),
-            originalAddress.address2.orEmpty()
+            currentAddress.address1.orEmpty(),
+            currentAddress.address2.orEmpty()
         )
 
         val isSameAddress = originalFullAddress == newAddress.address.value
-        val isSameCity = originalAddress.city == newAddress.city.value
-        val isSameState = originalAddress.state == newAddress.state.code
-        val isSameCountry = originalAddress.country == newAddress.country.code
-        val isSamePostalCode = originalAddress.postcode == newAddress.postalCode.value
+        val isSameCity = currentAddress.city == newAddress.city.value
+        val isSameState = currentAddress.state == newAddress.state.code
+        val isSameCountry = currentAddress.country == newAddress.country.code
+        val isSamePostalCode = currentAddress.postcode == newAddress.postalCode.value
 
         return isSameAddress && isSameCity && isSameState && isSameCountry && isSamePostalCode
+    }
+
+    private fun hasOnlyNoAddressChanges(newAddress: EditableAddress, currentAddress: OriginShippingAddress): Boolean {
+        val originalFullName = combineStrings(
+            currentAddress.firstName.orEmpty(),
+            currentAddress.lastName.orEmpty()
+        )
+        val isDifferentName = newAddress.name.value != originalFullName
+        val isDifferentCompany = newAddress.company.value != currentAddress.company
+        val isDifferentEmail = newAddress.email.value != currentAddress.email
+        val isDifferentPhone = newAddress.phone.value != currentAddress.phone
+        val isSameAddress = isSameAddress(newAddress, currentAddress)
+        return (isDifferentName || isDifferentCompany || isDifferentEmail || isDifferentPhone) && isSameAddress
     }
 
     private fun hasIncorrectOrMissingData(editableAddress: EditableAddress): Boolean {
@@ -350,15 +404,79 @@ class WooShippingEditOriginViewModel @Inject constructor(
         selectedState.value = findLocationByCode(code, statesState.value)
     }
 
-    sealed class EditAddressViewState {
-        data class DataState(
-            val isCompanyExpanded: Boolean,
-            val editableAddress: EditableAddress,
-            val shouldDisplayLoading: Boolean,
-            val shouldDisplayLoadingCountriesError: Boolean,
-            val shouldUseStatesInput: Boolean,
-            val addressStatus: AddressStatus
-        ) : EditAddressViewState()
+    fun onNormalizeAddress(editableAddress: EditableAddress) {
+        launch {
+            val address = editableAddress.toAddress()
+            addressValidationState.value = AddressValidationState.VerifyingAddress
+            normalizeAddress(address).fold(
+                onSuccess = {
+                    addressValidationState.value =
+                        AddressValidationState.AddressSelection(it, it.normalizedAddress)
+                },
+                onFailure = {
+                    addressValidationState.value = AddressValidationState.VerificationFailed
+                }
+            )
+        }
+    }
+
+    fun onAddressSelectionChange(addressSelection: AddressValidationState.AddressSelection) {
+        addressValidationState.value = addressSelection
+    }
+
+    fun onCloseAddressSelection() {
+        addressValidationState.value = AddressValidationState.NotStarted
+    }
+
+    fun onUpdateNormalizedOriginAddress(selection: AddressValidationState.AddressSelection) {
+        launch {
+            addressValidationState.value = AddressValidationState.UpdatingAddress
+            updateOriginAddress(selection.selectedAddress, currentAddress.value.id).fold(
+                onSuccess = {
+                    fillAddressForm(it)
+                    addressValidationState.value = AddressValidationState.NotStarted
+                    currentAddress.value = it
+                },
+                onFailure = {
+                    addressValidationState.value = AddressValidationState.NormalizedAddressUpdateFailed(selection)
+                }
+            )
+        }
+    }
+
+    fun onUpdateOriginAddress(editableAddress: EditableAddress) {
+        launch {
+            val address = editableAddress.toAddress()
+            addressValidationState.value = AddressValidationState.UpdatingAddress
+            updateOriginAddress(address, currentAddress.value.id).fold(
+                onSuccess = {
+                    fillAddressForm(it)
+                    addressValidationState.value = AddressValidationState.NotStarted
+                    currentAddress.value = it
+                },
+                onFailure = {
+                    addressValidationState.value = AddressValidationState.AddressUpdateFailed
+                }
+            )
+        }
+    }
+
+    data class ViewState(
+        val isCompanyExpanded: Boolean,
+        val editableAddress: EditableAddress,
+        val loading: LoadingState,
+        val shouldDisplayLoadingCountriesError: Boolean,
+        val shouldUseStatesInput: Boolean,
+        val addressStatus: AddressStatus,
+        val addressValidationState: AddressValidationState
+    )
+
+    sealed class LoadingState {
+        data object Hidden : LoadingState()
+        data class DisplayLoading(
+            val title: String,
+            val message: String
+        ) : LoadingState()
     }
 
     sealed class LocationState {
@@ -403,10 +521,42 @@ data class EditableAddress(
     val phone: InputValue = InputValue.EMPTY
 )
 
+fun EditableAddress.toAddress(): Address {
+    return Address(
+        firstName = name.value,
+        lastName = "",
+        company = company.value,
+        address1 = address.value,
+        address2 = "",
+        city = city.value,
+        state = AmbiguousLocation.Defined(state),
+        postcode = postalCode.value,
+        country = country,
+        email = email.value,
+        phone = phone.value
+    )
+}
+
+sealed class AddressValidationState {
+    data object NotStarted : AddressValidationState()
+    data object VerifyingAddress : AddressValidationState()
+    data object VerificationFailed : AddressValidationState()
+    data class AddressSelection(
+        val addressNormalization: AddressNormalizationModel,
+        val selectedAddress: Address
+    ) : AddressValidationState()
+    data object UpdatingAddress : AddressValidationState()
+    data object AddressUpdateFailed : AddressValidationState()
+    data class NormalizedAddressUpdateFailed(
+        val selection: AddressSelection,
+    ) : AddressValidationState()
+}
+
 enum class AddressStatus {
     VERIFIED,
     UNVERIFIED,
-    MISSING_INFO
+    MISSING_INFO,
+    SAVE_CHANGES
 }
 
 data class InputValue(

@@ -12,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
@@ -21,9 +22,13 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingL
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class WooShippingLabelCreationFragment : BaseFragment(), BackPressListener {
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
+
     private val viewModel: WooShippingLabelCreationViewModel by viewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -73,7 +78,7 @@ class WooShippingLabelCreationFragment : BaseFragment(), BackPressListener {
                         .actionWooShippingLabelCreationFragmentToWooShippingLabelCustomsFormFragment()
                         .let { findNavController().navigateSafely(it) }
                 }
-
+                is MultiLiveEvent.Event.ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is MultiLiveEvent.Event.Exit -> findNavController().navigateUp()
             }
         }

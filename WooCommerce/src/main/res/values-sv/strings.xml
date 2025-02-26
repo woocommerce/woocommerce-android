@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-02-06 10:54:03+0000
+Translation-Revision-Date: 2025-02-11 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_customs_restriction_other">Annat</string>
+    <string name="woo_shipping_labels_customs_restriction_quarantine">Karantän</string>
+    <string name="woo_shipping_labels_customs_restriction_none">Ingen</string>
+    <string name="woo_shipping_labels_customs_restriction_details_description">Beskriv vilken typ av begränsningar detta paket måste ha</string>
+    <string name="woo_shipping_labels_customs_restriction_details_label">Begränsningsdetaljer</string>
+    <string name="woo_shipping_labels_customs_restriction_sanitary">Sanitär/fytosanitär inspektion</string>
+    <string name="woo_shipping_labels_customs_content_other">Annat</string>
+    <string name="woo_shipping_labels_customs_content_documents">Dokument</string>
+    <string name="woo_shipping_labels_customs_content_sample">Prov</string>
+    <string name="woo_shipping_labels_customs_content_returned_goods">Returnerade varor</string>
+    <string name="woo_shipping_labels_customs_content_gift">Gåva</string>
+    <string name="woo_shipping_labels_customs_content_details_label">Innehållsdetaljer</string>
+    <string name="shipping_labels_customs_missing_info_badge">Saknar information</string>
+    <string name="woo_shipping_labels_customs_content_type_label">Innehållstyp</string>
+    <string name="woo_shipping_labels_customs_add_missing_information">Lägg till saknad information</string>
+    <string name="woo_shipping_labels_customs_content_merchandise">Handelsvaror</string>
+    <string name="woo_shipping_labels_customs_content_details_description">Beskriv vilken typ av gods detta paket innehåller</string>
+    <string name="woo_shipping_labels_customs_return_to_sender_label">Returnera till avsändaren om paketet inte kan levereras</string>
+    <string name="woo_shipping_labels_customs_itn_label">Internationellt transaktionsnummer</string>
+    <string name="woo_shipping_labels_customs_restriction_type_label">Begränsningstyp</string>
+    <string name="product_open_upload_screen">Visa senaste misslyckade uppladdningar</string>
+    <string name="shipping_labels_customs_completed_badge">Slutförd</string>
+    <string name="shipping_labels_customs_title">Tull</string>
     <string name="about_automattic_x_item_title">X</string>
     <string name="woo_shipping_fetching_countries_and_states">Hämtar länder och delstater.</string>
     <string name="woo_shipping_field_required_error">Detta fält är obligatoriskt.</string>

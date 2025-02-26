@@ -1,10 +1,10 @@
 package com.woocommerce.android.ui.woopos.cashpayment
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -17,7 +17,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -26,12 +25,15 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
-import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosMoneyInputField
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolbar
-import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import org.wordpress.android.fluxc.model.WCSettingsModel
 import java.math.BigDecimal
@@ -48,6 +50,7 @@ fun WooPosCashPaymentScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) 
         onBackClicked = { onNavigationEvent(WooPosNavigationEvent.GoBack) },
         onOrderComplete = { onNavigationEvent(WooPosNavigationEvent.OpenHomeFromCashPaymentAfterSuccessfulPayment) },
     )
+    BackHandler { onNavigationEvent(WooPosNavigationEvent.GoBack) }
 }
 
 @Composable
@@ -102,12 +105,12 @@ private fun Collecting(
             keyboardController?.show()
         }
 
-        Text(
+        WooPosText(
             text = state.totalText,
-            style = MaterialTheme.typography.h6,
+            style = WooPosTypography.BodyLarge,
             modifier = Modifier
                 .constrainAs(total) {
-                    top.linkTo(parent.top, margin = 4.dp)
+                    top.linkTo(parent.top, margin = WooPosSpacing.XSmall.value)
                     start.linkTo(parent.start, margin = 64.dp)
                 }
         )
@@ -115,7 +118,7 @@ private fun Collecting(
         var inputText by remember { mutableStateOf(state.enteredAmount) }
 
         val marginBetweenTotalAndInput = 48.dp.toAdaptivePadding()
-        val standardMargin = 16.dp.toAdaptivePadding()
+        val standardMargin = WooPosSpacing.Medium.value.toAdaptivePadding()
         WooPosMoneyInputField(
             modifier = Modifier
                 .focusRequester(focusRequester)
@@ -132,19 +135,19 @@ private fun Collecting(
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Decimal
             ),
-            textStyle = MaterialTheme.typography.h4,
+            textStyle = WooPosTypography.Heading,
+            textColor = MaterialTheme.colorScheme.onSurface,
             currencySymbol = state.currencySymbol,
             currencyPosition = state.currencyPosition,
             decimalSeparator = state.decimalSeparator,
             numberOfDecimals = state.numberOfDecimals,
         )
 
-        val smallMargin = 8.dp.toAdaptivePadding()
-        Text(
+        val smallMargin = WooPosSpacing.Small.value.toAdaptivePadding()
+        WooPosText(
             text = state.changeDueText,
-            style = MaterialTheme.typography.body1,
-            color = MaterialTheme.colors.secondary,
-            fontWeight = FontWeight.Normal,
+            style = WooPosTypography.BodySmall,
+            color = WooPosTheme.colors.onSurfaceVariantLowest,
             modifier = Modifier
                 .constrainAs(changeDue) {
                     top.linkTo(input.bottom, margin = smallMargin)
@@ -154,10 +157,10 @@ private fun Collecting(
         )
 
         if (state.errorMessage != null) {
-            Text(
+            WooPosText(
                 text = state.errorMessage,
-                color = MaterialTheme.colors.error,
-                style = MaterialTheme.typography.body1,
+                color = MaterialTheme.colorScheme.error,
+                style = WooPosTypography.BodySmall,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.constrainAs(error) {
                     top.linkTo(changeDue.bottom, margin = smallMargin)

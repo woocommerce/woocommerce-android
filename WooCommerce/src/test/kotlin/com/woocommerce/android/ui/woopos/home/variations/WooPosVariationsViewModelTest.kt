@@ -15,6 +15,8 @@ import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsU
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsViewModel
 import com.woocommerce.android.ui.woopos.home.items.variations.getNameForPOS
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.VariationsPullToRefreshTriggered
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -50,6 +52,7 @@ class WooPosVariationsViewModelTest {
         onBlocking { invoke(BigDecimal("0.00")) }.thenReturn("$0.00")
         onBlocking { invoke(null) }.thenReturn("$0.00")
     }
+    private val analyticsTracker: WooPosAnalyticsTracker = mock()
 
     @Test
     fun `given variations from data source, when view model created, then view state updated correctly`() = runTest {
@@ -171,6 +174,20 @@ class WooPosVariationsViewModelTest {
 
         // THEN
         verify(variationsDataSource).fetchFirstPage(eq(123L), eq(true))
+    }
+
+    @Test
+    fun `when pull to refresh triggered, then should track event`() = runTest {
+        whenever(variationsDataSource.fetchFirstPage(any(), eq(true))).thenReturn(
+            flowOf(FetchResult.Remote(Result.success(emptyList())))
+        )
+
+        // WHEN
+        val viewModel = createViewModel()
+        viewModel.onUIEvent(WooPosVariationsUIEvents.PullToRefreshTriggered(123L))
+
+        // THEN
+        verify(analyticsTracker).track(VariationsPullToRefreshTriggered)
     }
 
     @Test
@@ -624,6 +641,7 @@ class WooPosVariationsViewModelTest {
             getProductById,
             variationsDataSource,
             priceFormat,
-            resourceProvider
+            resourceProvider,
+            analyticsTracker,
         )
 }

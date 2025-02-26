@@ -127,7 +127,8 @@ class ProductDetailViewModelGenerateVariationFlowTest : BaseUnitTest() {
                 isProductCurrentlyPromoted = mock(),
                 isWindowClassLargeThanCompact = isWindowClassLargeThanCompact,
                 determineProductPasswordApi = determineProductPasswordApi,
-                customFieldsRepository = mock()
+                customFieldsRepository = mock(),
+                canAutoAuthenticateInWebView = mock()
             )
         )
 

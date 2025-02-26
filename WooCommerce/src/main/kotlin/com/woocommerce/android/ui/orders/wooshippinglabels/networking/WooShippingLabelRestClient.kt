@@ -110,12 +110,47 @@ class WooShippingLabelRestClient @Inject constructor(
 
     suspend fun fetchOriginAddresses(
         site: SiteModel,
-    ): WooPayload<Array<OriginAddressDTO>> {
+    ): WooPayload<Array<AddressDTO>> {
         val url = "/wcshipping/v1/address/origins"
         return wooNetwork.executeGetGsonRequest(
             site = site,
             path = url,
-            clazz = Array<OriginAddressDTO>::class.java,
+            clazz = Array<AddressDTO>::class.java,
         ).toWooPayload()
+    }
+
+    suspend fun normalizeAddress(
+        site: SiteModel,
+        address: AddressDTO,
+    ): WooPayload<NormalizationResponseDTO> {
+        val url = "/wcshipping/v1/address/normalize/"
+
+        val result = wooNetwork.executePostGsonRequest(
+            site = site,
+            path = url,
+            body = mapOf("address" to address),
+            clazz = NormalizationResponseDTO::class.java,
+        )
+
+        return result.toWooPayload()
+    }
+
+    suspend fun updateOriginAddress(
+        site: SiteModel,
+        address: AddressDTO,
+    ): WooPayload<UpdateAddressResponseDTO> {
+        val url = "/wcshipping/v1/address/update_origin/"
+
+        val result = wooNetwork.executePostGsonRequest(
+            site = site,
+            path = url,
+            body = mapOf(
+                "address" to address.copy(isVerified = true),
+                "isVerified" to true // We always verify the address before saving it
+            ),
+            clazz = UpdateAddressResponseDTO::class.java,
+        )
+
+        return result.toWooPayload()
     }
 }

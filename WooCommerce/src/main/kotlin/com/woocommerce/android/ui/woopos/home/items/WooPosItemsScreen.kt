@@ -13,19 +13,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.ContentAlpha
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.PullRefreshState
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
@@ -39,11 +36,14 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
-import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.component.Button
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreen
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosPaginationErrorIndicator
-import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.items.WooPosItem.SimpleProduct
 import com.woocommerce.android.ui.woopos.home.items.WooPosItem.VariableProduct
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsUIEvent.EndOfItemsListReached
@@ -131,10 +131,10 @@ private fun MainItemsList(
             .fillMaxSize()
             .pullRefresh(pullToRefreshState)
             .padding(
-                start = 16.dp.toAdaptivePadding(),
-                end = 16.dp.toAdaptivePadding(),
-                top = 40.dp.toAdaptivePadding(),
-                bottom = 0.dp.toAdaptivePadding(),
+                start = WooPosSpacing.Medium.value.toAdaptivePadding(),
+                end = WooPosSpacing.Medium.value.toAdaptivePadding(),
+                top = WooPosSpacing.XLarge.value.toAdaptivePadding(),
+                bottom = WooPosSpacing.None.value.toAdaptivePadding(),
             )
     ) {
         Column(
@@ -143,13 +143,13 @@ private fun MainItemsList(
             val titleColor = when (state.value) {
                 is WooPosItemsViewState.Loading,
                 is WooPosItemsViewState.Empty,
-                is WooPosItemsViewState.Error -> MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
+                is WooPosItemsViewState.Error -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
 
-                is WooPosItemsViewState.Content -> MaterialTheme.colors.onSurface
+                is WooPosItemsViewState.Content -> MaterialTheme.colorScheme.onSurface
             }
             ItemsToolbar(state.value, titleColor, onToolbarInfoIconClicked)
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
 
             when (val itemsState = state.value) {
                 is WooPosItemsViewState.Content -> {
@@ -206,9 +206,9 @@ private fun ItemsToolbar(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.Top,
     ) {
-        Text(
+        WooPosText(
             text = stringResource(id = R.string.woopos_products_screen_title),
-            style = MaterialTheme.typography.h4,
+            style = WooPosTypography.Heading,
             fontWeight = FontWeight.Bold,
             color = titleColor,
         )
@@ -226,7 +226,7 @@ private fun ItemsToolbar(
                             contentDescription = stringResource(
                                 id = R.string.woopos_banner_simple_products_info_content_description
                             ),
-                            tint = MaterialTheme.colors.onSurface.copy(ContentAlpha.high),
+                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.87f),
                         )
                     }
                 }
@@ -270,7 +270,6 @@ fun ProductsError(onRetryClicked: () -> Unit) {
         contentAlignment = Alignment.Center,
     ) {
         WooPosErrorScreen(
-            modifier = Modifier.width(640.dp),
             message = stringResource(id = R.string.woopos_products_loading_error_title),
             reason = stringResource(id = R.string.woopos_products_loading_error_message),
             primaryButton = Button(

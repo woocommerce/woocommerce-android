@@ -1,10 +1,34 @@
-package com.woocommerce.android.ui.woopos.common.composeui
+package com.woocommerce.android.ui.woopos.common.composeui.designsystem
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.ui.woopos.util.ext.getLongestScreenSideDp
+
+enum class WooPosCornerRadius(val value: Dp) {
+    None(0.dp),
+    XSmall(2.dp),
+    Small(4.dp),
+    Medium(8.dp),
+    Large(16.dp),
+    XLarge(24.dp)
+}
+
+enum class WooPosSpacing(val value: Dp) {
+    None(0.dp),
+    XSmall(4.dp),
+    Small(8.dp),
+    Medium(16.dp),
+    Large(24.dp),
+    XLarge(32.dp)
+}
+
+enum class WooPosElevation(val value: Dp) {
+    None(0.dp),
+    Medium(8.dp),
+    Large(24.dp)
+}
 
 @Composable
 fun Dp.toAdaptivePadding(): Dp {

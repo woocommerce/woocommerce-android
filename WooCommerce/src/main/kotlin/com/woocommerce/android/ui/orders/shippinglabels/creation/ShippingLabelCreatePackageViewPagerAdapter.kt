@@ -8,7 +8,7 @@ class ShippingLabelCreatePackageViewPagerAdapter(container: Fragment) : Fragment
     override fun getItemCount(): Int = PackageType.values().size
 
     override fun createFragment(position: Int): Fragment {
-        return when (PackageType.values()[position]) {
+        return when (PackageType.entries[position]) {
             PackageType.CUSTOM -> ShippingLabelCreateCustomPackageFragment()
             PackageType.SERVICE -> ShippingLabelCreateServicePackageFragment()
         }

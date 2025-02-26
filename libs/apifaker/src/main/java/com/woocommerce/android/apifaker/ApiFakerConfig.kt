@@ -32,7 +32,11 @@ internal class ApiFakerConfig @Inject constructor(
         endpointDao.observeEndpointsCount().map { it == 0 }
     ) { pref, isEmpty ->
         pref && !isEmpty
-    }.stateIn(configScope, SharingStarted.Eagerly, false)
+    }.stateIn(
+        scope = configScope,
+        started = SharingStarted.WhileSubscribed(),
+        initialValue = preferences.getBoolean(PREFERENCE_KEY, false)
+    )
 
     fun setStatus(enabled: Boolean) {
         preferences.edit().putBoolean(PREFERENCE_KEY, enabled).apply()

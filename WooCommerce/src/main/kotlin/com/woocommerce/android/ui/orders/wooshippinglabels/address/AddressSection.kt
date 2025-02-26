@@ -372,7 +372,7 @@ fun AddressSelection(
             LazyColumn {
                 items(originAddresses) { option ->
                     val isSelected = option == shipFrom
-                    AddressSelectionItem(
+                    OriginAddressSelectionItem(
                         address = option,
                         isSelected = isSelected,
                         onEdit = onEditOriginAddress,
@@ -398,7 +398,7 @@ fun AddressSelection(
 }
 
 @Composable
-fun AddressSelectionItem(
+fun OriginAddressSelectionItem(
     address: OriginShippingAddress,
     isSelected: Boolean,
     onClick: () -> Unit,

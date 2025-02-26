@@ -9,8 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -24,8 +23,11 @@ import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
-import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
-import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsUIEvent
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState
 
@@ -39,7 +41,7 @@ fun WooPosPaymentInProgressScreen(
     }
     Box(
         modifier = Modifier
-            .background(color = WooPosTheme.colors.paymentProcessingBackground)
+            .background(color = MaterialTheme.colorScheme.primary)
             .fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
@@ -48,7 +50,7 @@ fun WooPosPaymentInProgressScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-            Spacer(modifier = Modifier.height(16.dp.toAdaptivePadding()))
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
             val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.woopos_card_ilustration))
             LottieAnimation(
                 modifier = Modifier.size(256.dp),
@@ -57,24 +59,23 @@ fun WooPosPaymentInProgressScreen(
                 clipToCompositionBounds = false,
                 clipSpec = LottieClipSpec.Markers("payment_processing_start", "payment_processing_end")
             )
-            Spacer(modifier = Modifier.height(16.dp.toAdaptivePadding()))
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(
+                WooPosText(
                     text = state.title,
-                    color = WooPosTheme.colors.paymentProcessingText,
-                    style = MaterialTheme.typography.h6,
-                    fontWeight = FontWeight.Normal,
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    style = WooPosTypography.BodyLarge,
                 )
-                Spacer(modifier = Modifier.height(8.dp.toAdaptivePadding()))
-                Text(
+                Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
+                WooPosText(
                     text = state.subtitle,
-                    color = WooPosTheme.colors.paymentProcessingText,
-                    style = MaterialTheme.typography.h4,
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    style = WooPosTypography.BodyXLarge,
                     fontWeight = FontWeight.Bold,
                 )
             }
         }
-        Spacer(modifier = Modifier.height(16.dp.toAdaptivePadding()))
+        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
     }
 }
 

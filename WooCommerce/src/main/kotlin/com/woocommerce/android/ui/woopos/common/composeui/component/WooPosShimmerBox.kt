@@ -13,18 +13,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 
 @Composable
 fun WooPosShimmerBox(
     modifier: Modifier = Modifier,
-    color: Color = WooPosTheme.colors.loadingSkeleton,
+    color: Color = WooPosTheme.colors.onSurfaceVariantLowest.copy(alpha = 0.2f),
 ) {
     val shimmerColors = listOf(
         color.copy(),
-        color.copy(alpha = 0.7f),
-        color.copy(alpha = 0.6f),
-        color.copy(alpha = 0.7f),
+        color.copy(alpha = 0.15f),
+        color.copy(alpha = 0.1f),
+        color.copy(alpha = 0.15f),
         color.copy()
     )
 

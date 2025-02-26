@@ -13,7 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -27,10 +27,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
-import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosExitConfirmationDialog
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.common.composeui.isPreviewMode
-import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ProductsInfoDialog
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreen
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreenProductsPreview
@@ -140,7 +141,7 @@ private fun WooPosHomeScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(WooPosTheme.colors.homeBackground)
+            .background(MaterialTheme.colorScheme.surface)
     ) {
         Row(
             modifier = Modifier
@@ -153,7 +154,7 @@ private fun WooPosHomeScreen(
             )
             WooPosHomeScreenCart(
                 modifier = Modifier
-                    .background(MaterialTheme.colors.surface)
+                    .background(MaterialTheme.colorScheme.surfaceBright)
                     .width(cartWidthDp)
             )
             WooPosHomeScreenTotals(
@@ -164,7 +165,7 @@ private fun WooPosHomeScreen(
 
         WooPosHomeScreenToolbar(
             modifier = Modifier
-                .padding(24.dp.toAdaptivePadding())
+                .padding(WooPosSpacing.Large.value.toAdaptivePadding())
                 .align(Alignment.BottomStart),
         )
 

@@ -169,6 +169,9 @@ class SitePickerFragment :
             new.isPrimaryBtnVisible.takeIfNotEqualTo(old?.isPrimaryBtnVisible) {
                 binding.loginEpilogueButtonBar.buttonPrimary.isVisible = it
             }
+            new.isPrimaryBtnEnabled.takeIfNotEqualTo(old?.isPrimaryBtnEnabled) {
+                binding.loginEpilogueButtonBar.buttonPrimary.isEnabled = it
+            }
             new.isSecondaryBtnVisible.takeIfNotEqualTo(old?.isSecondaryBtnVisible) {
                 binding.loginEpilogueButtonBar.buttonSecondary.isVisible = it
             }

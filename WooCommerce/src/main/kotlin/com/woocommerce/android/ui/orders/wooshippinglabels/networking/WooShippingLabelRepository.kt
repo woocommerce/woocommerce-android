@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.networking
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingAddressDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigurationDataStore
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.AddressNormalizationModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PurchasedLabelData
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus
@@ -38,7 +39,7 @@ class WooShippingLabelRepository @Inject constructor(
                 ?.takeIf { response.isError.not() }
                 ?.let {
                     configurationDataStore.saveStoreOptions(it)
-                }
+                } ?: configurationDataStore.clearStoreOptions()
         }
 
     suspend fun fetchPurchasedShippingLabels(
@@ -106,4 +107,34 @@ class WooShippingLabelRepository @Inject constructor(
                     addressDataStore.saveOriginAddresses(it)
                 }
         }
+
+    suspend fun normalizeAddress(
+        site: SiteModel,
+        address: Address
+    ): WooResult<AddressNormalizationModel> {
+        return restClient.normalizeAddress(
+            site = site,
+            address = mapper.toAddressDTO(address)
+        ).asWooResult { mapper(it) }
+    }
+
+    suspend fun updateOriginAddress(
+        site: SiteModel,
+        address: Address,
+        addressId: String?
+    ): WooResult<OriginShippingAddress> {
+        return restClient.updateOriginAddress(
+            site = site,
+            address = mapper.toAddressDTO(address, addressId)
+        ).asWooResult {
+            mapper.toOriginAddress(it.address)
+        }
+            .also { response ->
+                response.model
+                    ?.takeIf { response.isError.not() }
+                    ?.let {
+                        addressDataStore.updateOriginAddress(it)
+                    }
+            }
+    }
 }

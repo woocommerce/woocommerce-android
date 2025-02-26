@@ -4,9 +4,12 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccessfullyPaid.PaymentMethod
+import com.woocommerce.android.ui.woopos.home.WooPosHomeUIEvent.SystemBackClicked
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCartTapped
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flowOf
@@ -32,6 +35,7 @@ class WooPosHomeViewModelTest {
     private val childrenToParentEventReceiver: WooPosChildrenToParentEventReceiver = mock()
     private val parentToChildrenEventSender: WooPosParentToChildrenEventSender = mock()
     private val wooPosItemsNavigator: WooPosItemsNavigator = mock()
+    private val analyticsTracker: WooPosAnalyticsTracker = mock()
 
     @Test
     fun `given state checkout, when SystemBackClicked passed, then BackFromCheckoutToCartClicked event should be sent`() =
@@ -434,10 +438,30 @@ class WooPosHomeViewModelTest {
             )
         }
 
+    @Test
+    fun `given home at Checkout, when back pressed, should return to Cart`() = runTest {
+        // GIVEN
+        val events = MutableSharedFlow<ChildToParentEvent>()
+        whenever(childrenToParentEventReceiver.events).thenReturn(events)
+
+        val viewModel: WooPosHomeViewModel = createViewModel()
+        events.emit(ChildToParentEvent.CheckoutClicked(listOf(ItemClickedData.SimpleProduct(1))))
+        assertThat(
+            viewModel.state.value.screenPositionState
+        ).isEqualTo(WooPosHomeState.ScreenPositionState.Checkout.CartWithTotals)
+
+        // WHEN
+        viewModel.onUIEvent(SystemBackClicked)
+
+        // THEN
+        analyticsTracker.track(BackToCartTapped)
+    }
+
     private fun createViewModel() = WooPosHomeViewModel(
         childrenToParentEventReceiver,
         parentToChildrenEventSender,
         wooPosItemsNavigator,
+        analyticsTracker,
         SavedStateHandle()
     )
 }

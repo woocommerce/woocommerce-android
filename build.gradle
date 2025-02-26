@@ -96,6 +96,7 @@ tasks.register("detektAll", Detekt) {
 
 dependencies {
     detektPlugins(libs.detekt.formatting)
+    detektPlugins project(':libs:detektrules')
 }
 
 tasks.register('clean', Delete) {

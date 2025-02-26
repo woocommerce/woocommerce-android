@@ -181,7 +181,7 @@ class AddProductCategoryFragment :
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is Exit -> requireActivity().onBackPressedDispatcher.onBackPressed()
+                is Exit -> findNavController().navigateUp()
                 is ShowDialog -> event.showDialog()
                 is ExitWithResult<*> -> navigateBackWithResult(ARG_CATEGORY_UPDATE_RESULT, event.data)
                 else -> event.isHandled = false

@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.common.composeui
+package com.woocommerce.android.ui.woopos.common.composeui.component
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -8,13 +8,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CornerBasedShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ElevationOverlay
-import androidx.compose.material.LocalAbsoluteElevation
-import androidx.compose.material.LocalContentColor
-import androidx.compose.material.LocalElevationOverlay
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.material.contentColorFor
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
@@ -34,6 +30,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 
 /**
  * We implemented our custom card as the default Material card
@@ -44,29 +46,23 @@ import androidx.compose.ui.unit.dp
 fun WooPosCard(
     modifier: Modifier = Modifier,
     shape: Shape = MaterialTheme.shapes.medium,
-    backgroundColor: Color = MaterialTheme.colors.surface,
+    backgroundColor: Color = MaterialTheme.colorScheme.surfaceContainerLowest,
     contentColor: Color = contentColorFor(backgroundColor),
     border: BorderStroke? = null,
-    elevation: Dp = 1.dp,
+    elevation: WooPosElevation = WooPosElevation.Medium,
     shadowType: ShadowType = ShadowType.Normal,
     content: @Composable () -> Unit
 ) {
-    val absoluteElevation = LocalAbsoluteElevation.current + elevation
     CompositionLocalProvider(
         LocalContentColor provides contentColor,
-        LocalAbsoluteElevation provides absoluteElevation
     ) {
         Box(
             modifier = modifier
                 .surface(
                     shape = shape,
-                    backgroundColor = surfaceColorAtElevation(
-                        color = backgroundColor,
-                        elevationOverlay = LocalElevationOverlay.current,
-                        absoluteElevation = absoluteElevation
-                    ),
+                    backgroundColor = backgroundColor,
                     border = border,
-                    elevation = elevation,
+                    elevation = elevation.value,
                     shadowType = shadowType
                 )
                 .semantics(mergeDescendants = false) {
@@ -100,19 +96,6 @@ private fun Modifier.surface(
         .then(if (border != null) Modifier.border(border, shape) else Modifier)
         .background(color = backgroundColor, shape = shape)
         .clip(shape)
-}
-
-@Composable
-private fun surfaceColorAtElevation(
-    color: Color,
-    elevationOverlay: ElevationOverlay?,
-    absoluteElevation: Dp
-): Color {
-    return if (color == MaterialTheme.colors.surface && elevationOverlay != null) {
-        elevationOverlay.apply(color, absoluteElevation)
-    } else {
-        color
-    }
 }
 
 @Composable
@@ -179,37 +162,30 @@ private fun Modifier.drawShadow(
 
 @WooPosPreview
 @Composable
-fun WooPosCardPreview8() {
-    Preview(elevation = 8.dp)
+fun WooPosCardPreviewSmall() {
+    Preview(elevation = WooPosElevation.Medium)
 }
 
 @WooPosPreview
 @Composable
-fun WooPosCardPreview2() {
-    Preview(elevation = 2.dp)
-}
-
-@WooPosPreview
-@Composable
-fun WooPosCardPreview4() {
-    Preview(elevation = 4.dp)
+fun WooPosCardPreviewLarge() {
+    Preview(elevation = WooPosElevation.Large)
 }
 
 @Composable
-private fun Preview(elevation: Dp) {
+private fun Preview(elevation: WooPosElevation) {
     WooPosTheme {
         WooPosCard(
-            modifier = Modifier.padding(16.dp),
-            shape = RoundedCornerShape(8.dp),
-            backgroundColor = MaterialTheme.colors.surface,
+            modifier = Modifier.padding(WooPosSpacing.Medium.value),
+            shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
             elevation = elevation,
         ) {
-            Text(
+            WooPosText(
                 modifier = Modifier
-                    .padding(32.dp)
+                    .padding(WooPosSpacing.XLarge.value)
                     .fillMaxWidth(),
                 text = "WooPosCard",
-                style = MaterialTheme.typography.h5,
+                style = WooPosTypography.BodyLarge,
                 textAlign = TextAlign.Center,
             )
         }

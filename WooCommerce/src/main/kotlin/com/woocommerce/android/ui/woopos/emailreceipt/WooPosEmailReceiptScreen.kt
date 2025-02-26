@@ -4,8 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -24,12 +23,15 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
-import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosInputField
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolbar
-import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 
 @Composable
@@ -89,15 +91,16 @@ private fun EmailState(
             keyboardController?.show()
         }
 
-        val standardMargin = 16.dp.toAdaptivePadding()
+        val standardMargin = WooPosSpacing.Medium.value.toAdaptivePadding()
         val topMargin = 72.dp.toAdaptivePadding()
-        val textFieldButtonMargin = 80.dp.toAdaptivePadding()
+        val textFieldButtonMargin = 92.dp.toAdaptivePadding()
         WooPosInputField(
             value = state.email,
             onValueChange = onEmailAddressChanged,
             label = stringResource(R.string.woopos_email_receipt_email_label),
             contentAlignment = Alignment.Center,
-            textStyle = MaterialTheme.typography.h3,
+            textStyle = WooPosTypography.Heading,
+            textColor = MaterialTheme.colorScheme.onSurface,
             keyboardOptions = KeyboardOptions(
                 autoCorrectEnabled = false,
                 keyboardType = KeyboardType.Email
@@ -110,13 +113,13 @@ private fun EmailState(
         )
 
         if (state.errorMessage != null) {
-            Text(
+            WooPosText(
                 text = state.errorMessage,
-                color = MaterialTheme.colors.error,
-                style = MaterialTheme.typography.h6,
+                color = MaterialTheme.colorScheme.error,
+                style = WooPosTypography.BodyLarge,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.constrainAs(error) {
-                    top.linkTo(email.bottom, margin = 8.dp)
+                    top.linkTo(email.bottom, margin = WooPosSpacing.Small.value)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                 }

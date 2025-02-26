@@ -217,6 +217,7 @@ dependencies {
     implementation(libs.androidx.recyclerview.selection)
     implementation(libs.androidx.appcompat)
     implementation(libs.google.material)
+    implementation(libs.google.compose.material3)
     implementation(libs.androidx.transition)
     implementation(libs.androidx.cardview)
     implementation(libs.androidx.browser) {

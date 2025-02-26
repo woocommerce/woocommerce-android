@@ -835,4 +835,21 @@ class SitePickerViewModelTest : BaseUnitTest() {
             }
             Dispatchers.resetMain()
         }
+
+    @Test
+    fun `given initiated, when selected site is hidden, then primary button view is disabled`() = testBlocking {
+        val expectedSites = defaultExpectedSiteList
+        val selectedSiteModel = expectedSites[0]
+        whenever(getWooVisibleSites()).thenReturn(expectedSites.minus(selectedSiteModel))
+
+        whenSitesAreFetched(sitesFromDb = expectedSites)
+        whenever(selectedSite.exists()).thenReturn(true)
+        whenever(selectedSite.getSelectedSiteId()).thenReturn(selectedSiteModel.id)
+        whenViewModelIsCreated()
+
+        var sitePickerData: SitePickerViewModel.SitePickerViewState? = null
+        viewModel.sitePickerViewStateData.observeForever { _, new -> sitePickerData = new }
+
+        assertThat(sitePickerData?.isPrimaryBtnEnabled).isFalse()
+    }
 }

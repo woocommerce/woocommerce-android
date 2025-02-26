@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.networking
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.Location
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.AddressNormalizationModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PurchasedLabelData
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
@@ -12,6 +13,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageDa
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRatesDatasourceMapper
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.DestinationAddressDTO
+import com.woocommerce.android.util.StringUtils.combineStrings
 import java.math.BigDecimal
 import java.util.Date
 import javax.inject.Inject
@@ -102,7 +104,7 @@ class WooShippingNetworkingMapper @Inject constructor(
         )
     }
 
-    operator fun invoke(addressListDTO: Array<OriginAddressDTO>): List<OriginShippingAddress> {
+    operator fun invoke(addressListDTO: Array<AddressDTO>): List<OriginShippingAddress> {
         return addressListDTO.map {
             OriginShippingAddress(
                 id = it.id.orEmpty(),
@@ -121,6 +123,49 @@ class WooShippingNetworkingMapper @Inject constructor(
                 isVerified = it.isVerified,
             )
         }
+    }
+
+    operator fun invoke(addressDTO: AddressDTO): Address {
+        return Address(
+            address1 = addressDTO.address.orEmpty(),
+            address2 = addressDTO.address2.orEmpty(),
+            city = addressDTO.city.orEmpty(),
+            state = AmbiguousLocation.Raw(addressDTO.state.orEmpty()),
+            postcode = addressDTO.postcode.orEmpty(),
+            country = AmbiguousLocation.Raw(addressDTO.country.orEmpty()).asLocation(),
+            firstName = if (addressDTO.name.isNullOrEmpty()) addressDTO.firstName.orEmpty() else addressDTO.name,
+            lastName = addressDTO.lastName.orEmpty(),
+            company = addressDTO.company.orEmpty(),
+            phone = addressDTO.phone.orEmpty(),
+            email = addressDTO.email.orEmpty(),
+        )
+    }
+
+    fun toOriginAddress(addressDTO: AddressDTO): OriginShippingAddress {
+        return OriginShippingAddress(
+            id = addressDTO.id.orEmpty(),
+            address1 = addressDTO.address.orEmpty(),
+            address2 = addressDTO.address2.orEmpty(),
+            city = addressDTO.city.orEmpty(),
+            state = addressDTO.state.orEmpty(),
+            postcode = addressDTO.postcode.orEmpty(),
+            country = addressDTO.country.orEmpty(),
+            firstName = addressDTO.firstName.orEmpty(),
+            lastName = addressDTO.lastName.orEmpty(),
+            company = addressDTO.company.orEmpty(),
+            phone = addressDTO.phone.orEmpty(),
+            email = addressDTO.email.orEmpty(),
+            isDefault = addressDTO.defaultAddress,
+            isVerified = addressDTO.isVerified,
+        )
+    }
+
+    operator fun invoke(normalizationResponseDTO: NormalizationResponseDTO): AddressNormalizationModel {
+        return AddressNormalizationModel(
+            address = invoke(normalizationResponseDTO.address),
+            normalizedAddress = invoke(normalizationResponseDTO.normalizedAddress),
+            isTrivial = normalizationResponseDTO.isTrivialNormalization
+        )
     }
 
     fun toOriginAddressPurchaseDTO(address: OriginShippingAddress): OriginAddressPurchaseDTO {
@@ -200,6 +245,22 @@ class WooShippingNetworkingMapper @Inject constructor(
             ANONYMIZED_KEY -> ShippingLabelStatus.Anonymized
             else -> ShippingLabelStatus.Unknown
         }
+    }
+
+    fun toAddressDTO(address: Address, id: String? = null): AddressDTO {
+        return AddressDTO(
+            id = id,
+            address = address.address1,
+            address2 = address.address2,
+            city = address.city,
+            state = address.state.codeOrRaw,
+            postcode = address.postcode,
+            country = address.country.code,
+            company = address.company,
+            name = combineStrings(address.firstName, address.lastName),
+            phone = address.phone,
+            email = address.email
+        )
     }
 
     companion object {

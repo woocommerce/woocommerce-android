@@ -13,6 +13,8 @@ import com.woocommerce.android.ui.woopos.home.items.PaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItem
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.home.items.WooPosVariationsViewState
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.VariationsPullToRefreshTriggered
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -31,6 +33,7 @@ class WooPosVariationsViewModel @Inject constructor(
     private val variationsDataSource: WooPosVariationsDataSource,
     private val priceFormat: WooPosFormatPrice,
     private val resourceProvider: ResourceProvider,
+    private val analyticsTracker: WooPosAnalyticsTracker,
 ) : ViewModel() {
 
     private val _viewState =
@@ -182,6 +185,7 @@ class WooPosVariationsViewModel @Inject constructor(
 
             is WooPosVariationsUIEvents.PullToRefreshTriggered -> {
                 loadVariations(event.productId, forceRefresh = true, withPullToRefresh = true, withCart = false)
+                viewModelScope.launch { analyticsTracker.track(VariationsPullToRefreshTriggered) }
             }
 
             is WooPosVariationsUIEvents.VariationsLoadingErrorRetryButtonClicked -> {

@@ -51,6 +51,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
 import com.woocommerce.android.ui.blaze.IsProductCurrentlyPromoted
+import com.woocommerce.android.ui.common.webview.CanAutoAuthenticateInWebView
 import com.woocommerce.android.ui.customfields.CustomFieldsRepository
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.media.getMediaUploadErrorMessage
@@ -72,6 +73,7 @@ import com.woocommerce.android.ui.products.canDisplayMessage
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoryItemUiModel
 import com.woocommerce.android.ui.products.details.ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem
+import com.woocommerce.android.ui.products.details.ProductDetailViewModel.Companion.DEFAULT_ADD_NEW_PRODUCT_ID
 import com.woocommerce.android.ui.products.list.ProductListRepository
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.SiteParameters
@@ -93,7 +95,6 @@ import com.woocommerce.android.util.IsWindowClassLargeThanCompact
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.LaunchUrlInChromeTab
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUiStringSnackbar
@@ -162,7 +163,8 @@ class ProductDetailViewModel @Inject constructor(
     private val isProductCurrentlyPromoted: IsProductCurrentlyPromoted,
     private val isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact,
     private val determineProductPasswordApi: DetermineProductPasswordApi,
-    private val customFieldsRepository: CustomFieldsRepository
+    private val customFieldsRepository: CustomFieldsRepository,
+    private val canAutoAuthenticateInWebView: CanAutoAuthenticateInWebView
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
@@ -342,11 +344,16 @@ class ProductDetailViewModel @Inject constructor(
             val showShareOptionAsActionWithText =
                 showShareOption && !showSaveOptionAsActionWithText && !showPublishOption
 
+            // Show "View Product" option only if the product is published or we can auto-authenticate the user
+            // in a WebView.
+            val showViewProductOption = !isProductUnderCreation &&
+                (isProductPublished || canAutoAuthenticateInWebView(productDraft.permalink))
+
             MenuButtonsState(
                 saveOption = showSaveOptionAsActionWithText,
                 saveAsDraftOption = canBeSavedAsDraft,
                 publishOption = showPublishOption,
-                viewProductOption = isProductPublished && !isProductUnderCreation,
+                viewProductOption = showViewProductOption,
                 shareOption = showShareOption,
                 showShareOptionAsActionWithText = showShareOptionAsActionWithText,
                 trashOption = !isProductUnderCreation && navArgs.isTrashEnabled
@@ -549,9 +556,7 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     fun onLearnMoreClicked() {
-        triggerEvent(
-            LaunchUrlInChromeTab(AppUrls.AUTOMATTIC_AI_GUIDELINES)
-        )
+        triggerEvent(Event.LaunchUrlInChromeTab(AppUrls.AUTOMATTIC_AI_GUIDELINES))
     }
 
     fun onBlazeClicked() {
@@ -1214,7 +1219,11 @@ class ProductDetailViewModel @Inject constructor(
     fun onViewProductOnStoreLinkClicked() {
         tracker.track(AnalyticsEvent.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED)
         viewState.productDraft?.permalink?.let { url ->
-            triggerEvent(LaunchUrlInChromeTab(url))
+            if (canAutoAuthenticateInWebView(url)) {
+                triggerEvent(Event.LaunchUrlInAuthenticatedWebView(url))
+            } else {
+                triggerEvent(Event.LaunchUrlInChromeTab(url))
+            }
         }
     }
 

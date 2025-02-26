@@ -3,11 +3,16 @@ package com.woocommerce.android.ui.orders.shippinglabels.creation
 import com.woocommerce.android.R
 import com.woocommerce.android.model.PackageDimensions
 import com.woocommerce.android.model.ShippingPackage
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreatePackageViewModel.OnDoneButtonClicked
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreatePackageViewModel.PackageType
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Before
 import org.junit.Test
 
 @ExperimentalCoroutinesApi
@@ -23,14 +28,14 @@ class ShippingLabelCreatePackageViewModelTest : BaseUnitTest() {
         1f
     )
 
-    fun setup() {
+    @Before
+    fun setUp() {
         val savedState = ShippingLabelCreatePackageFragmentArgs(0).toSavedStateHandle()
         viewModel = ShippingLabelCreatePackageViewModel(savedState)
     }
 
     @Test
     fun `when handling package creation success, then show Snackbar and navigate to edit label package screen`() {
-        setup()
         val events = mutableListOf<Event>()
         viewModel.event.observeForever {
             events.add(it)
@@ -52,5 +57,34 @@ class ShippingLabelCreatePackageViewModelTest : BaseUnitTest() {
                 )
             )
         )
+    }
+
+    @Test
+    fun `when onDoneButtonClicked is called, then creationDoneFlow emits the correct event`() = testBlocking {
+        // Given
+        val expectedEvent = OnDoneButtonClicked(PackageType.CUSTOM)
+        var receivedEvent: OnDoneButtonClicked? = null
+        viewModel.creationDoneFlow.onEach { receivedEvent = it }.launchIn(this.backgroundScope)
+
+        // When
+        viewModel.onDoneButtonClicked()
+
+        // Then
+        assertThat(receivedEvent).isEqualTo(expectedEvent)
+    }
+
+    @Test
+    fun `when onSelectedPageChanged is called, then selectedTabType is updated`() = testBlocking {
+        // Given
+        val expectedEvent = OnDoneButtonClicked(PackageType.SERVICE)
+        var receivedEvent: OnDoneButtonClicked? = null
+        viewModel.creationDoneFlow.onEach { receivedEvent = it }.launchIn(this.backgroundScope)
+
+        // When
+        viewModel.onSelectedPageChanged(PackageType.SERVICE)
+        viewModel.onDoneButtonClicked()
+
+        // Then
+        assertThat(receivedEvent).isEqualTo(expectedEvent)
     }
 }

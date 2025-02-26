@@ -224,6 +224,7 @@ class SitePickerViewModel @Inject constructor(
             )
         }
         val selectedSiteId = selectedSiteId.value ?: wooSites.getOrNull(0)?.id
+        val isSelectedSiteVisible = getWooVisibleSites().any { it.id == selectedSiteId }
         _sites.value = buildSitesList(wooSites, selectedSiteId, nonWooSites)
 
         val isEditListEnabled = FeatureFlag.HIDE_SITES_FROM_SITE_PICKER.isEnabled() &&
@@ -236,6 +237,7 @@ class SitePickerViewModel @Inject constructor(
         sitePickerViewState = sitePickerViewState.copy(
             hasConnectedStores = sites.isNotEmpty(),
             isPrimaryBtnVisible = wooSites.isNotEmpty(),
+            isPrimaryBtnEnabled = isSelectedSiteVisible,
             isNoStoresViewVisible = false,
             currentSitePickerState = SitePickerState.StoreListState,
             editStoreListEnabled = isEditListEnabled
@@ -412,6 +414,7 @@ class SitePickerViewModel @Inject constructor(
             }
         }
         updatedSites?.let { _sites.value = it }
+        sitePickerViewState = sitePickerViewState.copy(isPrimaryBtnEnabled = true)
     }
 
     fun onNonWooSiteSelected(siteModel: SiteModel) {
@@ -693,6 +696,7 @@ class SitePickerViewModel @Inject constructor(
         val isSkeletonViewVisible: Boolean = false,
         val isProgressDiaLogVisible: Boolean = false,
         val isPrimaryBtnVisible: Boolean = false,
+        val isPrimaryBtnEnabled: Boolean = true,
         val isSecondaryBtnVisible: Boolean = false,
         val isNoStoresBtnVisible: Boolean = false,
         val showCloseAccountMenuItem: Boolean = false,
