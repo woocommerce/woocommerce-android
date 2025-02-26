@@ -10,7 +10,6 @@ sealed class WooPosTotalsViewState : Parcelable {
     data class Checkout(
         val totals: Totals,
         val readerStatus: ReaderStatus,
-        val isFreeOrder: Boolean,
     ) : WooPosTotalsViewState()
 
     sealed class Totals : Parcelable {
@@ -27,46 +26,34 @@ sealed class WooPosTotalsViewState : Parcelable {
 
     data class PaymentSuccess(val orderTotalText: String) : WooPosTotalsViewState()
 
-    sealed class ReaderStatus(
-        open val title: String,
-        open val subtitle: String,
-    ) : Parcelable {
+    sealed class ReaderStatus : Parcelable {
         @Parcelize
         data class Preparing(
-            override val title: String,
-            override val subtitle: String,
-        ) : ReaderStatus(
-            title = title,
-            subtitle = subtitle
-        )
+            val title: String,
+            val subtitle: String,
+        ) : ReaderStatus()
 
         @Parcelize
         data class CheckingOrder(
-            override val title: String,
-            override val subtitle: String,
-        ) : ReaderStatus(
-            title = title,
-            subtitle = subtitle
-        )
+            val title: String,
+            val subtitle: String,
+        ) : ReaderStatus()
 
         @Parcelize
         data class ReadyForPayment(
-            override val title: String,
-            override val subtitle: String,
-        ) : ReaderStatus(
-            title = title,
-            subtitle = subtitle
-        )
+            val title: String,
+            val subtitle: String,
+        ) : ReaderStatus()
 
         @Parcelize
         data class Disconnected(
-            override val title: String,
-            override val subtitle: String,
+            val title: String,
+            val subtitle: String,
             val actionButtonLabel: String,
-        ) : ReaderStatus(
-            title = title,
-            subtitle = subtitle
-        )
+        ) : ReaderStatus()
+
+        @Parcelize
+        object Unavailable : ReaderStatus()
     }
 
     data class PaymentInProgress(

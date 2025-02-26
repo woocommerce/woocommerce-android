@@ -327,15 +327,37 @@ fun ItemsLoadingItem() {
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Spacer(modifier = Modifier.weight(0.17f))
-            WooPosShimmerBox(
+            Box(
                 modifier = Modifier
-                    .weight(0.66f)
-                    .height(30.dp)
-                    .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
+                    .size(112.dp)
+                    .background(WooPosTheme.colors.onSurfaceVariantLowest.copy(alpha = 0.35f))
             )
 
-            Spacer(modifier = Modifier.weight(0.17f))
+            Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
+
+            Column(
+                modifier = Modifier.fillMaxWidth()
+                    .weight(1f),
+                verticalArrangement = Arrangement.Center,
+            ) {
+                WooPosShimmerBox(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(32.dp)
+                        .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
+                )
+
+                Spacer(modifier = Modifier.size(WooPosSpacing.XSmall.value))
+
+                WooPosShimmerBox(
+                    modifier = Modifier
+                        .height(32.dp)
+                        .width(57.dp)
+                        .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
+                )
+            }
+
+            Spacer(modifier = Modifier.weight(0.5f))
         }
     }
 }

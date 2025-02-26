@@ -4332,8 +4332,8 @@
     <string name="woopos_reader_not_connected_description">Please make sure a card reader is connected.</string>
     <string name="woopos_products_loading_error_retry_button">Retry</string>
     <string name="woopos_totals_order_creation_error">Couldn\'t create order</string>
-    <string name="woopos_totals_success_payment_cash">A cash payment of %1$s was successfully made</string>
-    <string name="woopos_totals_success_payment_card">A card payment of %1$s was successfully made</string>
+    <string name="woopos_totals_success_payment_cash">A cash payment of %1$s was successfully made.</string>
+    <string name="woopos_totals_success_payment_card">A card payment of %1$s was successfully made.</string>
 
     <string name="woopos_variations_empty_list_title">No supported variations found</string>
     <string name="woopos_variations_empty_list_message">POS currently only supports simple, variable, and virtual products – \ncreate one to get started.</string>

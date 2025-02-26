@@ -2,7 +2,7 @@ package com.woocommerce.android.ui.woopos.emailreceipt
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -80,20 +80,23 @@ private fun EmailState(
     onEmailAddressChanged: (String) -> Unit,
     onSendReceiptClicked: () -> Unit,
 ) {
-    ConstraintLayout(modifier = Modifier.fillMaxWidth()) {
+    val focusRequester = remember { FocusRequester() }
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
+        keyboardController?.show()
+    }
+
+    ConstraintLayout(
+        modifier = Modifier
+            .fillMaxSize()
+            .imePadding()
+    ) {
         val (email, error, button) = createRefs()
-
-        val focusRequester = remember { FocusRequester() }
-        val keyboardController = LocalSoftwareKeyboardController.current
-
-        LaunchedEffect(Unit) {
-            focusRequester.requestFocus()
-            keyboardController?.show()
-        }
-
         val standardMargin = WooPosSpacing.Medium.value.toAdaptivePadding()
         val topMargin = 72.dp.toAdaptivePadding()
-        val textFieldButtonMargin = 92.dp.toAdaptivePadding()
+
         WooPosInputField(
             value = state.email,
             onValueChange = onEmailAddressChanged,
@@ -105,11 +108,13 @@ private fun EmailState(
                 autoCorrectEnabled = false,
                 keyboardType = KeyboardType.Email
             ),
-            modifier = Modifier.constrainAs(email) {
-                top.linkTo(parent.top, margin = topMargin)
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-            }.focusRequester(focusRequester),
+            modifier = Modifier
+                .constrainAs(email) {
+                    top.linkTo(parent.top, margin = topMargin)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+                .focusRequester(focusRequester),
         )
 
         if (state.errorMessage != null) {
@@ -135,7 +140,7 @@ private fun EmailState(
                 WooPosEmailReceiptState.Email.Button.Status.LOADING -> WooPosButtonState.LOADING
             },
             modifier = Modifier.constrainAs(button) {
-                top.linkTo(email.bottom, margin = textFieldButtonMargin)
+                bottom.linkTo(parent.bottom, margin = WooPosSpacing.Medium.value)
                 start.linkTo(parent.start, margin = standardMargin)
                 end.linkTo(parent.end, margin = standardMargin)
                 width = Dimension.fillToConstraints

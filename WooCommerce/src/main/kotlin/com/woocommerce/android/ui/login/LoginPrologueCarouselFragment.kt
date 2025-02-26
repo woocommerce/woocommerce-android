@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup.MarginLayoutParams
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import com.woocommerce.android.AppPrefsWrapper
@@ -54,8 +55,8 @@ class LoginPrologueCarouselFragment : Fragment(R.layout.fragment_login_prologue_
 
         val isTablet = DisplayUtils.isTablet(context) || DisplayUtils.isXLargeTablet(context)
         binding.root.doOnApplyWindowInsets(consumeInsets = true) { insets ->
-            val currentBottomMargin = resources.getDimension(R.dimen.prologue_button_skip_bottom_margin)
             val buttonHorizontalMargin = resources.getDimension(R.dimen.prologue_button_horizontal_margin)
+            val currentBottomMargin = resources.getDimension(R.dimen.prologue_button_skip_bottom_margin)
 
             binding.buttonSkip.updateLayoutParams<MarginLayoutParams> {
                 bottomMargin = currentBottomMargin.roundToInt() + insets.bottom

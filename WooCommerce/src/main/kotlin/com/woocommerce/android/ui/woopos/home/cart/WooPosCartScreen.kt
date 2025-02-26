@@ -36,6 +36,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -179,7 +180,11 @@ fun CartBodyEmpty(modifier: Modifier = Modifier) {
         Image(
             imageVector = ImageVector.vectorResource(R.drawable.ic_woo_pos_empty_cart),
             contentDescription = stringResource(R.string.woopos_cart_empty_content_description),
-            modifier = Modifier.size(88.dp)
+            modifier = Modifier.size(88.dp),
+            colorFilter = ColorFilter.tint(
+                color = MaterialTheme.colorScheme.surface.copy(alpha = 0.4F),
+                blendMode = BlendMode.SrcAtop,
+            )
         )
         Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
         WooPosText(

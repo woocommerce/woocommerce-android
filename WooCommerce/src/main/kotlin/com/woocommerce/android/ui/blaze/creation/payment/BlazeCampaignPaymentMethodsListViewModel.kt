@@ -84,7 +84,7 @@ class BlazeCampaignPaymentMethodsListViewModel @Inject constructor(
                                 triggerEvent(MultiLiveEvent.Event.ExitWithResult(newPayment.id))
                             } else {
                                 WooLog.e(WooLog.T.BLAZE, "Failed to find a new payment methods")
-                                _viewState.value = paymentMethodsListState(data.savedPaymentMethods, null)
+                                _viewState.value = paymentMethodsListState(data.savedPaymentMethods)
                             }
                         },
                         onFailure = {

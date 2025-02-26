@@ -3,7 +3,7 @@
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 21.9
 -----
-
+- [*] Fixed an issue that can cause a crash when adding a new payment card in Blaze campaign form [https://github.com/woocommerce/woocommerce-android/pull/13624]
 
 21.8
 -----

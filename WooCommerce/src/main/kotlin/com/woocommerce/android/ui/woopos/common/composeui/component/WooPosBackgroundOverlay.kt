@@ -27,7 +27,7 @@ fun WooPosBackgroundOverlay(
         Box(
             modifier = modifier
                 .fillMaxSize()
-                .background(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f))
+                .background(color = MaterialTheme.colorScheme.surfaceDim.copy(alpha = 0.8f))
                 .clickable(
                     indication = null,
                     interactionSource = remember { MutableInteractionSource() }

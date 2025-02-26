@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.blaze.creation.payment
 
 import com.woocommerce.android.model.CreditCardType
 import com.woocommerce.android.ui.blaze.BlazeRepository
+import com.woocommerce.android.ui.blaze.creation.payment.BlazeCampaignPaymentMethodsListViewModel.ViewState
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.getOrAwaitValue
@@ -51,8 +52,8 @@ class BlazeCampaignPaymentMethodsListViewModelTests : BaseUnitTest() {
         val viewState = viewModel.viewState.getOrAwaitValue()
 
         assertThat(viewState)
-            .isInstanceOf(BlazeCampaignPaymentMethodsListViewModel.ViewState.PaymentMethodsList::class.java)
-        assertThat((viewState as BlazeCampaignPaymentMethodsListViewModel.ViewState.PaymentMethodsList).paymentMethods)
+            .isInstanceOf(ViewState.PaymentMethodsList::class.java)
+        assertThat((viewState as ViewState.PaymentMethodsList).paymentMethods)
             .isEqualTo(BlazePaymentSampleData.userPaymentMethods)
         assertThat(viewState.selectedPaymentMethod)
             .isEqualTo(BlazePaymentSampleData.userPaymentMethods.first())
@@ -70,7 +71,7 @@ class BlazeCampaignPaymentMethodsListViewModelTests : BaseUnitTest() {
         val viewState = viewModel.viewState.getOrAwaitValue()
 
         assertThat(viewState)
-            .isInstanceOf(BlazeCampaignPaymentMethodsListViewModel.ViewState.AddPaymentMethodWebView::class.java)
+            .isInstanceOf(ViewState.AddPaymentMethodWebView::class.java)
     }
 
     @Test
@@ -78,7 +79,7 @@ class BlazeCampaignPaymentMethodsListViewModelTests : BaseUnitTest() {
         setup()
 
         val viewState = viewModel.viewState.getOrAwaitValue()
-            as BlazeCampaignPaymentMethodsListViewModel.ViewState.PaymentMethodsList
+            as ViewState.PaymentMethodsList
         val event = viewModel.event.runAndCaptureValues {
             viewState.onPaymentMethodClicked(viewState.paymentMethods.last())
         }.last()
@@ -91,13 +92,13 @@ class BlazeCampaignPaymentMethodsListViewModelTests : BaseUnitTest() {
         setup()
 
         val viewState = viewModel.viewState.getOrAwaitValue()
-            as BlazeCampaignPaymentMethodsListViewModel.ViewState.PaymentMethodsList
+            as ViewState.PaymentMethodsList
         val state = viewModel.viewState.runAndCaptureValues {
             viewState.onAddPaymentMethodClicked()
         }.last()
 
         assertThat(state)
-            .isInstanceOf(BlazeCampaignPaymentMethodsListViewModel.ViewState.AddPaymentMethodWebView::class.java)
+            .isInstanceOf(ViewState.AddPaymentMethodWebView::class.java)
     }
 
     @Test
@@ -124,14 +125,37 @@ class BlazeCampaignPaymentMethodsListViewModelTests : BaseUnitTest() {
 
         val viewState = viewModel.viewState.captureValues()
         val event = viewModel.event.runAndCaptureValues {
-            (viewState.first() as BlazeCampaignPaymentMethodsListViewModel.ViewState.PaymentMethodsList)
+            (viewState.first() as ViewState.PaymentMethodsList)
                 .onAddPaymentMethodClicked()
             val webViewState = viewState.last()
-                as BlazeCampaignPaymentMethodsListViewModel.ViewState.AddPaymentMethodWebView
+                as ViewState.AddPaymentMethodWebView
 
             webViewState.onUrlLoaded(urls.successUrl)
         }.last()
 
         assertThat(event).isEqualTo(MultiLiveEvent.Event.ExitWithResult(newPayment.id))
+    }
+
+    @Test
+    fun `when payment success URL is detected and no new payment method is found, then keep old selected method`() = testBlocking {
+        setup {
+            whenever(blazeRepository.fetchPaymentMethods()).thenReturn(
+                Result.success(
+                    BlazeRepository.PaymentMethodsData(
+                        savedPaymentMethods = BlazePaymentSampleData.userPaymentMethods,
+                        addPaymentMethodUrls = BlazePaymentSampleData.paymentMethodsUrls
+                    )
+                )
+            )
+        }
+        val urls = BlazePaymentSampleData.paymentMethodsUrls
+
+        (viewModel.viewState.getOrAwaitValue() as ViewState.PaymentMethodsList)
+            .onAddPaymentMethodClicked()
+        (viewModel.viewState.getOrAwaitValue() as ViewState.AddPaymentMethodWebView)
+            .onUrlLoaded(urls.successUrl)
+        val viewState = viewModel.viewState.getOrAwaitValue() as ViewState.PaymentMethodsList
+
+        assertThat(viewState.selectedPaymentMethod).isEqualTo(BlazePaymentSampleData.userPaymentMethods.first())
     }
 }

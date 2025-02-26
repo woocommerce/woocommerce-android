@@ -89,7 +89,7 @@ fun WooPosBanner(
                         contentDescription = stringResource(
                             id = R.string.woopos_banner_simple_products_info_content_description
                         ),
-                        tint = MaterialTheme.colorScheme.primary,
+                        tint = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.align(Alignment.Center)
                     )
                 }

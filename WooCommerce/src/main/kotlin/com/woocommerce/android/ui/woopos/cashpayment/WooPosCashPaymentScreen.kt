@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.cashpayment
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -93,17 +94,22 @@ private fun Collecting(
     onAmountChanged: (BigDecimal?) -> Unit,
     onCompleteOrderClicked: () -> Unit,
 ) {
+    val focusRequester = remember { FocusRequester() }
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
+        keyboardController?.show()
+    }
+
     ConstraintLayout(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .imePadding()
     ) {
         val (input, total, error, changeDue, button) = createRefs()
-        val focusRequester = remember { FocusRequester() }
-        val keyboardController = LocalSoftwareKeyboardController.current
-
-        LaunchedEffect(Unit) {
-            focusRequester.requestFocus()
-            keyboardController?.show()
-        }
+        val standardMargin = WooPosSpacing.Medium.value.toAdaptivePadding()
+        val smallMargin = WooPosSpacing.Small.value.toAdaptivePadding()
 
         WooPosText(
             text = state.totalText,
@@ -118,7 +124,6 @@ private fun Collecting(
         var inputText by remember { mutableStateOf(state.enteredAmount) }
 
         val marginBetweenTotalAndInput = 48.dp.toAdaptivePadding()
-        val standardMargin = WooPosSpacing.Medium.value.toAdaptivePadding()
         WooPosMoneyInputField(
             modifier = Modifier
                 .focusRequester(focusRequester)
@@ -143,7 +148,6 @@ private fun Collecting(
             numberOfDecimals = state.numberOfDecimals,
         )
 
-        val smallMargin = WooPosSpacing.Small.value.toAdaptivePadding()
         WooPosText(
             text = state.changeDueText,
             style = WooPosTypography.BodySmall,
@@ -180,7 +184,7 @@ private fun Collecting(
             },
             modifier = Modifier
                 .constrainAs(button) {
-                    top.linkTo(input.bottom, margin = 96.dp)
+                    bottom.linkTo(parent.bottom, margin = WooPosSpacing.Medium.value)
                     end.linkTo(parent.end, margin = standardMargin)
                     start.linkTo(parent.start, margin = standardMargin)
                     width = Dimension.fillToConstraints
