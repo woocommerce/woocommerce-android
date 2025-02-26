@@ -13,6 +13,7 @@ if (gradle.ext.isCi) {
 } else {
     develocity {
         buildScan {
+            server="https://scans.gradle.com/"
             publishing.onlyIf { false }
         }
     }
