@@ -170,6 +170,9 @@ dependencyResolutionManagement {
                 includeModule("com.github.PhilJay", "MPAndroidChart")
             }
         }
+        maven {
+            url "https://maven.singular.net"
+        }
     }
 }
 
