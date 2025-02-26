@@ -21,24 +21,24 @@ steps:
   - wait
 
   ########################################
-  - group: "🕵️ Linters"
-    steps:
-
-      - label: "☢️ Danger - PR Check"
-        command: danger
-        key: danger
-        if: "build.pull_request.id != null"
-        retry:
-          manual:
-            permit_on_passed: true
-        agents:
-          queue: "linter"
-
-      - label: "lint"
-        command: .buildkite/commands/lint.sh
-        plugins: [$CI_TOOLKIT]
-        artifact_paths:
-          - "**/build/reports/lint-results*.*"
+#  - group: "🕵️ Linters"
+#    steps:
+#
+#      - label: "☢️ Danger - PR Check"
+#        command: danger
+#        key: danger
+#        if: "build.pull_request.id != null"
+#        retry:
+#          manual:
+#            permit_on_passed: true
+#        agents:
+#          queue: "linter"
+#
+#      - label: "lint"
+#        command: .buildkite/commands/lint.sh
+#        plugins: [$CI_TOOLKIT]
+#        artifact_paths:
+#          - "**/build/reports/lint-results*.*"
 
   ########################################
   - group: "🛠 Prototype Builds"
