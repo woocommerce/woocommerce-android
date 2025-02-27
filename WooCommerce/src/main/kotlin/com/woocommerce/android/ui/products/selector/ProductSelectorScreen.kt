@@ -117,8 +117,8 @@ fun ProductSelectorScreen(viewModel: ProductSelectorViewModel) {
             val modifier = if (showToolbar) {
                 Modifier.padding(padding)
             } else {
-                Modifier.padding(padding).statusBarsPadding().navigationBarsPadding()
-            }
+                Modifier.padding(padding).statusBarsPadding()
+            }.navigationBarsPadding()
             ProductSelectorScreen(
                 modifier = modifier,
                 state = state,
