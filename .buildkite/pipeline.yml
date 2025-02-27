@@ -53,6 +53,7 @@ steps:
           - "R_jar-snapshot.bin"
           - "fluxc-annotations_jar-snapshot.bin"
           - "WooCommerce/build/intermediates/compile_and_runtime_not_namespaced_r_class_jar/wasabiDebug/processWasabiDebugResources/R.jar"
+          - "jrt-fs.jar"
 
 
   #      - label: "🛠 Prototype Build: Wear App"

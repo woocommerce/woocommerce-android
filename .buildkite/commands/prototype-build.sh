@@ -15,4 +15,5 @@ bundle exec fastlane build_and_upload_prototype_build app:"${APP_TO_BUILD}"
 
 find ~/.gradle/caches/8.12.1/transforms/ -type f -name "R_jar-snapshot.bin" -exec cp {} . \;
 find ~/.gradle/caches/8.12.1/transforms/ -type f -name "fluxc-annotations_jar-snapshot.bin" -exec cp {} . \;
+find ~/.gradle/caches/8.12.1/transforms/ -type f -name "jrt-fs.jar" -exec cp {} . \;
 ls
