@@ -45,11 +45,7 @@ steps:
     steps:
 
       - label: "🛠 Prototype Build: Mobile App"
-        command: |
-          ".buildkite/commands/prototype-build.sh WooCommerce"
-          find ../../../../../.gradle/caches/8.12.1/transforms/ -type f -name "R_jar-snapshot.bin" -exec cp {} . \;
-          find ../../../../../.gradle/caches/8.12.1/transforms/ -type f -name "fluxc-annotations_jar-snapshot.bin" -exec cp {} . \;
-          ls
+        command: ".buildkite/commands/prototype-build.sh WooCommerce"
         if: build.pull_request.id != null
         plugins: [$CI_TOOLKIT]
         artifact_paths:
