@@ -2,7 +2,11 @@
 
 package com.woocommerce.android.ui.orders.creation.customerlist
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -52,21 +56,30 @@ fun OrderCustomerListScreen(
     onEndOfListReached: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val toolbarColor = colorResource(id = R.color.color_toolbar)
+
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(stringResource(id = R.string.order_creation_add_customer)) },
-                navigationIcon = {
-                    IconButton(onNavigateBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(id = R.string.back)
-                        )
-                    }
-                },
-                backgroundColor = colorResource(id = R.color.color_toolbar),
-                elevation = 0.dp,
-            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(toolbarColor)
+            ) {
+                TopAppBar(
+                    title = { Text(stringResource(id = R.string.order_creation_add_customer)) },
+                    navigationIcon = {
+                        IconButton(onNavigateBack) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = stringResource(id = R.string.back)
+                            )
+                        }
+                    },
+                    backgroundColor = toolbarColor,
+                    elevation = 0.dp,
+                    modifier = Modifier.statusBarsPadding()
+                )
+            }
         },
         floatingActionButton = {
             if (state.showFab) CustomerListAddCustomerButton(onAddCustomerClicked)
