@@ -31,6 +31,7 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
+import org.wordpress.android.util.DisplayUtils
 
 const val EXPAND_COLLAPSE_ANIMATION_DURATION_MILLIS = 300L
 
@@ -191,6 +192,12 @@ fun View.scrollStartEvents(): Flow<Unit> {
 fun View.edgeToEdgeHandlingForNavigationBar() {
     doOnApplyWindowInsets {
         setPadding(it.left, 0, it.right, it.bottom)
+    }
+}
+
+fun View.edgeToEdgeForInLandscape() {
+    if (DisplayUtils.isLandscape(context)) {
+        edgeToEdgeHandlingForNavigationBar()
     }
 }
 

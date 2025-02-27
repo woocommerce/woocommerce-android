@@ -10,6 +10,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.edgeToEdgeForInLandscape
 import com.woocommerce.android.extensions.isTwoPanesShouldBeUsed
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -64,6 +65,8 @@ class UpdateProductStockStatusFragment : DialogFragment() {
                     viewModel.onDoneButtonClicked()
                 }
             )
+        }.apply {
+            edgeToEdgeForInLandscape()
         }
     }
 

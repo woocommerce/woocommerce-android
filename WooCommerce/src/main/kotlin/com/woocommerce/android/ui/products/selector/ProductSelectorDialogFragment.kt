@@ -11,6 +11,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.edgeToEdgeForInLandscape
 import com.woocommerce.android.extensions.isTwoPanesShouldBeUsed
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -57,6 +58,7 @@ class ProductSelectorDialogFragment : DialogFragment() {
         return ComposeView(requireContext()).apply {
             id = R.id.product_selector_compose_view
 
+            edgeToEdgeForInLandscape()
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
             setContent {
