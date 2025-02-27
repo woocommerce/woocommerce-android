@@ -30,7 +30,6 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
@@ -54,6 +53,7 @@ import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.SearchLayoutWithParams
 import com.woocommerce.android.ui.compose.component.SearchLayoutWithParamsState
+import com.woocommerce.android.ui.compose.component.TopAppBarEdgeToEdge
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.products.ProductType.BUNDLE
@@ -82,42 +82,36 @@ fun ProductSelectorScreen(viewModel: ProductSelectorViewModel) {
         val showToolbar = state.selectionMode != SelectionMode.LIVE
         Scaffold(topBar = {
             if (showToolbar) {
-                val toolbarColor = colorResource(id = R.color.color_toolbar)
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(toolbarColor)
-                ) {
-                    TopAppBar(
-                        title = {
-                            Text(
-                                text = state.screenTitleOverride
-                                    ?: stringResource(id = string.coupon_conditions_products_select_products_title)
+                TopAppBarEdgeToEdge(
+                    title = {
+                        Text(
+                            text = state.screenTitleOverride
+                                ?: stringResource(id = string.coupon_conditions_products_select_products_title)
+                        )
+                    },
+                    navigationIcon = {
+                        IconButton(viewModel::onNavigateBack) {
+                            Icon(
+                                imageVector = if (state.searchState.isActive) {
+                                    Icons.AutoMirrored.Filled.ArrowBack
+                                } else {
+                                    Icons.Filled.Close
+                                },
+                                contentDescription = stringResource(id = string.back)
                             )
-                        },
-                        navigationIcon = {
-                            IconButton(viewModel::onNavigateBack) {
-                                Icon(
-                                    imageVector = if (state.searchState.isActive) {
-                                        Icons.AutoMirrored.Filled.ArrowBack
-                                    } else {
-                                        Icons.Filled.Close
-                                    },
-                                    contentDescription = stringResource(id = string.back)
-                                )
-                            }
-                        },
-                        backgroundColor = toolbarColor,
-                        elevation = 0.dp,
-                        modifier = Modifier.statusBarsPadding(),
-                    )
-                }
+                        }
+                    },
+                    backgroundColor = colorResource(id = R.color.color_toolbar),
+                    elevation = 0.dp,
+                )
             }
         }) { padding ->
             val modifier = if (showToolbar) {
                 Modifier.padding(padding)
             } else {
-                Modifier.padding(padding).statusBarsPadding()
+                Modifier
+                    .padding(padding)
+                    .statusBarsPadding()
             }.navigationBarsPadding()
             ProductSelectorScreen(
                 modifier = modifier,

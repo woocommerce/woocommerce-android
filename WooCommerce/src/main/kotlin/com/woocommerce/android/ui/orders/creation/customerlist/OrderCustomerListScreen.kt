@@ -2,17 +2,12 @@
 
 package com.woocommerce.android.ui.orders.creation.customerlist
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
@@ -25,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.component.TopAppBarEdgeToEdge
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.customer.CustomerListScreen
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
@@ -56,30 +52,21 @@ fun OrderCustomerListScreen(
     onEndOfListReached: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val toolbarColor = colorResource(id = R.color.color_toolbar)
-
     Scaffold(
         topBar = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(toolbarColor)
-            ) {
-                TopAppBar(
-                    title = { Text(stringResource(id = R.string.order_creation_add_customer)) },
-                    navigationIcon = {
-                        IconButton(onNavigateBack) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = stringResource(id = R.string.back)
-                            )
-                        }
-                    },
-                    backgroundColor = toolbarColor,
-                    elevation = 0.dp,
-                    modifier = Modifier.statusBarsPadding()
-                )
-            }
+            TopAppBarEdgeToEdge(
+                title = { Text(stringResource(id = R.string.order_creation_add_customer)) },
+                navigationIcon = {
+                    IconButton(onNavigateBack) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(id = R.string.back)
+                        )
+                    }
+                },
+                backgroundColor = colorResource(id = R.color.color_toolbar),
+                elevation = 0.dp,
+            )
         },
         floatingActionButton = {
             if (state.showFab) CustomerListAddCustomerButton(onAddCustomerClicked)
