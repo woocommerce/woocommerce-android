@@ -12,9 +12,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -77,34 +79,48 @@ fun ProductSelectorScreen(viewModel: ProductSelectorViewModel) {
     val viewState by viewModel.viewState.observeAsState()
     BackHandler(onBack = viewModel::onNavigateBack)
     viewState?.let { state ->
+        val showToolbar = state.selectionMode != SelectionMode.LIVE
         Scaffold(topBar = {
-            if (state.selectionMode != SelectionMode.LIVE) {
-                TopAppBar(
-                    title = {
-                        Text(
-                            text = state.screenTitleOverride
-                                ?: stringResource(id = string.coupon_conditions_products_select_products_title)
-                        )
-                    },
-                    navigationIcon = {
-                        IconButton(viewModel::onNavigateBack) {
-                            Icon(
-                                imageVector = if (state.searchState.isActive) {
-                                    Icons.AutoMirrored.Filled.ArrowBack
-                                } else {
-                                    Icons.Filled.Close
-                                },
-                                contentDescription = stringResource(id = string.back)
+            if (showToolbar) {
+                val toolbarColor = colorResource(id = R.color.color_toolbar)
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(toolbarColor)
+                ) {
+                    TopAppBar(
+                        title = {
+                            Text(
+                                text = state.screenTitleOverride
+                                    ?: stringResource(id = string.coupon_conditions_products_select_products_title)
                             )
-                        }
-                    },
-                    backgroundColor = colorResource(id = color.color_toolbar),
-                    elevation = 0.dp,
-                )
+                        },
+                        navigationIcon = {
+                            IconButton(viewModel::onNavigateBack) {
+                                Icon(
+                                    imageVector = if (state.searchState.isActive) {
+                                        Icons.AutoMirrored.Filled.ArrowBack
+                                    } else {
+                                        Icons.Filled.Close
+                                    },
+                                    contentDescription = stringResource(id = string.back)
+                                )
+                            }
+                        },
+                        backgroundColor = toolbarColor,
+                        elevation = 0.dp,
+                        modifier = Modifier.statusBarsPadding(),
+                    )
+                }
             }
         }) { padding ->
+            val modifier = if (showToolbar) {
+                Modifier.padding(padding)
+            } else {
+                Modifier.padding(padding).statusBarsPadding().navigationBarsPadding()
+            }
             ProductSelectorScreen(
-                modifier = Modifier.padding(padding),
+                modifier = modifier,
                 state = state,
                 onDoneButtonClick = viewModel::onDoneButtonClick,
                 onClearButtonClick = viewModel::onClearButtonClick,
