@@ -32,7 +32,6 @@ class OrderFilterOptionsFragment :
     private var _binding: FragmentOrderFilterListBinding? = null
     private val binding get() = _binding!!
     private companion object {
-        const val DATE_PICKER_FRAGMENT_TAG = "DateRangePicker"
         const val TABLET_LANDSCAPE_WIDTH_RATIO = 0.55f
         const val TABLET_LANDSCAPE_HEIGHT_RATIO = 0.6f
     }
