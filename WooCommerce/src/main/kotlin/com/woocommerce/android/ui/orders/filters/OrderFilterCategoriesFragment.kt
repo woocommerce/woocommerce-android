@@ -106,10 +106,6 @@ class OrderFilterCategoriesFragment :
         }
     }
 
-//    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
-//        inflater.inflate(R.menu.menu_clear, menu)
-//    }
-
     fun onPrepareMenu(menu: Menu) {
         updateClearButtonVisibility(menu.findItem(R.id.menu_clear))
     }
