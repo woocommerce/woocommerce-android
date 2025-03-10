@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.core.view.WindowCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -50,6 +51,14 @@ class VariationSelectorFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupObservers()
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        dialog?.window?.let {
+            WindowCompat.setDecorFitsSystemWindows(it, false)
+        }
     }
 
     private fun setupObservers() {

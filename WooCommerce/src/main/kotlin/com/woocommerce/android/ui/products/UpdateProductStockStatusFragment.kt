@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.core.view.WindowCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -88,10 +89,13 @@ class UpdateProductStockStatusFragment : DialogFragment() {
             else -> PORTRAIT_WIDTH_RATIO to PORTRAIT_HEIGHT_RATIO
         }
 
-        dialog?.window?.setLayout(
-            (width * widthRatio).toInt(),
-            (height * heightRatio).toInt()
-        )
+        dialog?.window?.let {
+            it.setLayout(
+                (width * widthRatio).toInt(),
+                (height * heightRatio).toInt()
+            )
+            WindowCompat.setDecorFitsSystemWindows(it, false)
+        }
     }
 
     private fun setupObservers() {

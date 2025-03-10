@@ -5,6 +5,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.view.WindowCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -140,6 +141,10 @@ class OrderFilterCategoriesFragment :
                 (DisplayUtils.getWindowPixelWidth(requireContext()) * TABLET_LANDSCAPE_WIDTH_RATIO).toInt(),
                 (DisplayUtils.getWindowPixelHeight(requireContext()) * TABLET_LANDSCAPE_HEIGHT_RATIO).toInt()
             )
+        }
+
+        dialog?.window?.let {
+            WindowCompat.setDecorFitsSystemWindows(it, false)
         }
     }
 

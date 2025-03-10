@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.filters
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.view.WindowCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -71,6 +72,9 @@ class OrderFilterOptionsFragment :
                 (DisplayUtils.getWindowPixelWidth(requireContext()) * TABLET_LANDSCAPE_WIDTH_RATIO).toInt(),
                 (DisplayUtils.getWindowPixelHeight(requireContext()) * TABLET_LANDSCAPE_HEIGHT_RATIO).toInt()
             )
+        }
+        dialog?.window?.let {
+            WindowCompat.setDecorFitsSystemWindows(it, false)
         }
     }
 

@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.details
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.view.WindowCompat
 import androidx.fragment.app.DialogFragment
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
@@ -50,6 +51,9 @@ class PrintingInstructionsFragment : DialogFragment(R.layout.fragment_printing_i
                 (DisplayUtils.getWindowPixelWidth(requireContext()) * TABLET_LANDSCAPE_WIDTH_RATIO).toInt(),
                 (DisplayUtils.getWindowPixelHeight(requireContext()) * TABLET_LANDSCAPE_HEIGHT_RATIO).toInt()
             )
+        }
+        dialog?.window?.let {
+            WindowCompat.setDecorFitsSystemWindows(it, false)
         }
     }
 
