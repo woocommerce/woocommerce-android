@@ -5,23 +5,25 @@ import javax.inject.Inject
 
 class ShouldRequireCustomsForm @Inject constructor() {
     operator fun invoke(addressData: WooShippingAddresses): Boolean {
-        if (addressData.isDifferentCountryShipment) return true
+        val isCountryEmpty = addressData.shipTo.address.country.code.isEmpty()
+        val isDifferentCountry = addressData.isDifferentCountryShipment
+
+        if (isCountryEmpty.not() && isDifferentCountry) return true
 
         val isOriginAddressMilitary = isAddressInMilitaryState(
             addressData.shipFrom.country,
             addressData.shipFrom.state.orEmpty()
         )
-
         val isShippingAddressMilitary = isAddressInMilitaryState(
-            addressData.shipTo.country.code,
-            addressData.shipTo.state.codeOrRaw
+            addressData.shipTo.address.country.code,
+            addressData.shipTo.address.state.codeOrRaw
         )
 
         return isOriginAddressMilitary || isShippingAddressMilitary
     }
 
     private val WooShippingAddresses.isDifferentCountryShipment
-        get() = shipFrom.country != shipTo.country.code
+        get() = shipFrom.country != shipTo.address.country.code
 
     private fun isAddressInMilitaryState(
         countryCode: String,

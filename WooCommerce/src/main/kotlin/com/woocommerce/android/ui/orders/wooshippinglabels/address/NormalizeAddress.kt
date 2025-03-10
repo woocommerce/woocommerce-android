@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.wooshippinglabels.address.origin
+package com.woocommerce.android.ui.orders.wooshippinglabels.address
 
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.tools.SelectedSite

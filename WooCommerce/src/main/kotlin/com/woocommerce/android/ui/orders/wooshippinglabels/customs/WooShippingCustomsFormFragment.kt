@@ -11,13 +11,19 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.handleDialogResult
+import com.woocommerce.android.extensions.handleResult
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.model.Location
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.ContentType
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.FinishCustomsForm
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.RestrictionType
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.ShowContentTypeDialog
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.ShowCountrySelector
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.ShowRestrictionTypeDialog
+import com.woocommerce.android.ui.searchfilter.SearchFilterItem
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -67,6 +73,10 @@ class WooShippingCustomsFormFragment : BaseFragment() {
                             .toTypedArray()
                     )
                 }
+
+                is ShowCountrySelector -> showCountrySearchScreen(event.countries)
+
+                is FinishCustomsForm -> navigateBackWithResult(CUSTOMS_DATA_RESULT, event.customData)
             }
         }
     }
@@ -89,6 +99,10 @@ class WooShippingCustomsFormFragment : BaseFragment() {
                 .firstOrNull { it.toString() == result }
                 ?.let { viewModel.onRestrictionTypeSelected(it) }
         }
+
+        handleResult<String>(SELECT_COUNTRY_REQUEST) { countryCode ->
+            viewModel.onShippableProductOriginCountryChanged(countryCode)
+        }
     }
 
     private fun handleItemSelection(
@@ -106,8 +120,26 @@ class WooShippingCustomsFormFragment : BaseFragment() {
             ).let { findNavController().navigateSafely(it) }
     }
 
+    private fun showCountrySearchScreen(countries: List<Location>) {
+        val action = WooShippingCustomsFormFragmentDirections.actionSearchFilterFragment(
+            items = countries.map {
+                SearchFilterItem(
+                    name = it.name,
+                    value = it.code
+                )
+            }.toTypedArray(),
+            hint = getString(R.string.shipping_label_edit_address_country_search_hint),
+            requestKey = SELECT_COUNTRY_REQUEST,
+            title = getString(R.string.shipping_label_edit_address_country)
+        )
+        findNavController().navigateSafely(action)
+    }
+
     companion object {
         const val SELECTOR_CONTENT_REQUEST_KEY = "label_customs_content_selector"
         const val SELECTOR_RESTRICTION_REQUEST_KEY = "label_customs_restriction_selector"
+        const val SELECT_COUNTRY_REQUEST = "select_address_country_request"
+
+        const val CUSTOMS_DATA_RESULT = "customs_data_result"
     }
 }

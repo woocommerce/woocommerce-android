@@ -1,3 +1,5 @@
+@file:Suppress("WooPosDesignSystemTextUsageRule")
+
 package com.woocommerce.android.ui.woopos.common.composeui.component
 
 import androidx.compose.material3.Text

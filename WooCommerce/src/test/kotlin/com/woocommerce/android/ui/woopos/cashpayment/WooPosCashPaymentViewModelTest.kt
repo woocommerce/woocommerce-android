@@ -6,7 +6,10 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.CashCollectPaymentSuccess
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.CashPaymentFailed
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.CashPaymentTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTrackingDataKeeper
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -37,6 +40,7 @@ class WooPosCashPaymentViewModelTest {
     private val priceFormat: WooPosFormatPrice = mock()
     private val resourceProvider: ResourceProvider = mock()
     private val tracker: WooPosAnalyticsTracker = mock()
+    private val trackerData: WooPosAnalyticsTrackingDataKeeper = WooPosAnalyticsTrackingDataKeeper()
 
     private lateinit var viewModel: WooPosCashPaymentViewModel
 
@@ -68,7 +72,8 @@ class WooPosCashPaymentViewModelTest {
             priceFormat = priceFormat,
             resourceProvider = resourceProvider,
             analyticsTracker = tracker,
-            savedState = savedStateHandle
+            analyticsData = trackerData,
+            savedState = savedStateHandle,
         )
     }
 
@@ -145,10 +150,7 @@ class WooPosCashPaymentViewModelTest {
     @Test
     fun `given repository fails to complete order, when onUIEvent CompleteOrderClicked, then error message is set and button is enabled`() = runTest {
         // GIVEN
-        val errorMessage = "Something went wrong"
-        whenever(repository.completeOrder(any())).thenReturn(Result.failure(Exception()))
-        whenever(resourceProvider.getString(R.string.woopos_cash_payment_error_message))
-            .thenReturn(errorMessage)
+        val errorMessage = givenRepoFailsToCompleteOrder()
 
         // WHEN
         viewModel.onUIEvent(WooPosCashPaymentUIEvent.CompleteOrderClicked)
@@ -163,6 +165,30 @@ class WooPosCashPaymentViewModelTest {
     }
 
     @Test
+    fun `given repository fails to complete order, when onUIEvent CompleteOrderClicked, then event is tracked`() = runTest {
+        // GIVEN
+        givenRepoFailsToCompleteOrder()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosCashPaymentUIEvent.CompleteOrderClicked)
+
+        // THEN
+        verify(tracker).track(CashPaymentFailed)
+    }
+
+    @Test
+    fun `when Complete button tapped, then should track event`() = runTest {
+        // GIVEN
+        whenever(repository.completeOrder(any())).thenReturn(Result.success(Unit))
+
+        // WHEN
+        viewModel.onUIEvent(WooPosCashPaymentUIEvent.CompleteOrderClicked)
+
+        // THEN
+        verify(tracker).track(CashPaymentTapped)
+    }
+
+    @Test
     fun `when state is Complete, then should track event`() = runTest {
         // GIVEN
         whenever(repository.completeOrder(any())).thenReturn(Result.success(Unit))
@@ -174,5 +200,13 @@ class WooPosCashPaymentViewModelTest {
         // THEN
         assertThat(state).isEqualTo(WooPosCashPaymentState.Complete)
         verify(tracker).track(CashCollectPaymentSuccess)
+    }
+
+    private suspend fun givenRepoFailsToCompleteOrder(): String {
+        val errorMessage = "Something went wrong"
+        whenever(repository.completeOrder(any())).thenReturn(Result.failure(Exception()))
+        whenever(resourceProvider.getString(R.string.woopos_cash_payment_error_message))
+            .thenReturn(errorMessage)
+        return errorMessage
     }
 }

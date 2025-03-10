@@ -28,6 +28,7 @@ import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.CashOnDelive
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptShare
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import javax.inject.Inject
 
 class PaymentsFlowTracker @Inject constructor(
@@ -45,6 +46,9 @@ class PaymentsFlowTracker @Inject constructor(
         errorType: String? = null,
         errorDescription: String? = null,
     ) {
+        if (stat is WooPosAnalyticsEvent) {
+            properties.putAll(stat.properties)
+        }
         addPreferredPluginSlugProperty(properties)
         addStoreCountryCodeProperty(properties)
         addCurrencyProperty(properties)

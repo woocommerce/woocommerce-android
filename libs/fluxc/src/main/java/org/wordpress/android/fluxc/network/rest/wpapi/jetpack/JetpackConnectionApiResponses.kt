@@ -1,15 +1,19 @@
 package org.wordpress.android.fluxc.network.rest.wpapi.jetpack
 
+import com.google.gson.JsonPrimitive
 import com.google.gson.annotations.SerializedName
 
 data class JetpackConnectionDataResponse(
-    val currentUser: CurrentUser
+    @SerializedName("isRegistered") val isRegistered: Boolean?,
+    @SerializedName("currentUser") val currentUser: CurrentUser,
+    @SerializedName("connectionOwner") val connectionOwner: String?
 )
 
 data class CurrentUser(
     @SerializedName("isConnected") val isConnected: Boolean?,
     @SerializedName("isMaster") val isMaster: Boolean?,
     @SerializedName("username") val username: String?,
+    @SerializedName("blogId") val blogId: JsonPrimitive?,
     @SerializedName("wpcomUser") val wpcomUser: WpcomUser?,
     @SerializedName("gravatar") val gravatar: String?,
     @SerializedName("permissions") val permissions: Map<String, Boolean>?
@@ -24,4 +28,14 @@ data class WpcomUser(
     @SerializedName("site_count") val siteCount: Long?,
     @SerializedName("jetpack_connect") val jetpackConnect: String?,
     @SerializedName("avatar") val avatar: String?
+)
+
+data class JetpackConnectionRegisterResponse(
+    val authorizeUrl: String
+)
+
+data class JetpackConnectionProvisionResponse(
+    @SerializedName("user_id") val userId: Long,
+    val scope: String,
+    val secret: String,
 )

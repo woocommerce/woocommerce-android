@@ -74,7 +74,7 @@ class WooShippingLabelRestClient @Inject constructor(
         return result.toWooPayload()
     }
 
-    @Suppress("LongParameterList")
+    @Suppress("LongParameterList", "ForbiddenComment")
     suspend fun purchaseShippingLabel(
         orderId: Long,
         site: SiteModel,
@@ -100,6 +100,8 @@ class WooShippingLabelRestClient @Inject constructor(
                         "parent" to null
                     )
                 ),
+                // TODO: `selected_rate_options` will be updated while adding UPS support PaJDVv-2Gf-p2
+                "selected_rate_options" to "",
                 "hazmat" to mapOf(selectedPackage.boxId to hazmat),
                 "customs" to emptyMap<String, String>(),
                 "user_meta" to mapOf("last_order_completed" to markOrderComplete)
@@ -152,5 +154,38 @@ class WooShippingLabelRestClient @Inject constructor(
         )
 
         return result.toWooPayload()
+    }
+
+    suspend fun updateDestinationAddress(
+        site: SiteModel,
+        orderId: Long,
+        address: AddressDTO,
+    ): WooPayload<UpdateAddressResponseDTO> {
+        val url = "/wcshipping/v1/address/$orderId/update_destination/"
+
+        val result = wooNetwork.executePostGsonRequest(
+            site = site,
+            path = url,
+            body = mapOf(
+                "address" to address,
+                "isVerified" to true // We always verify the address before saving it
+            ),
+            clazz = UpdateAddressResponseDTO::class.java,
+        )
+
+        return result.toWooPayload()
+    }
+
+    suspend fun verifyDestinationAddress(
+        site: SiteModel,
+        orderId: Long,
+    ): WooPayload<VerifyDestinationAddressResponseDTO> {
+        val url = "/wcshipping/v1/address/$orderId/verify_order/"
+
+        return wooNetwork.executeGetGsonRequest(
+            site = site,
+            path = url,
+            clazz = VerifyDestinationAddressResponseDTO::class.java,
+        ).toWooPayload()
     }
 }

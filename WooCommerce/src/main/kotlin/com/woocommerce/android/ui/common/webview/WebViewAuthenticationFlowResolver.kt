@@ -53,7 +53,10 @@ class WebViewAuthenticationFlowResolver @Inject constructor(
         return findDomain().contains(site.url.findDomain())
     }
 
-    private fun String.findDomain(): String = toHttpUrl().host.substringAfter("www.")
+    private fun String.findDomain(): String {
+        val urlWithScheme = if (contains("://")) this else "http://$this"
+        return urlWithScheme.toHttpUrl().host.substringAfter("www.")
+    }
 
     private fun SiteModel.supportsJetpackSSO(): Boolean {
         return jetpackModules?.contains("sso") == true

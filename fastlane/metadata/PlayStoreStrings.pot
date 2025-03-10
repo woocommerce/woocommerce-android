@@ -16,17 +16,16 @@ msgid "We've improved WooCommerce app! This time we've fixed several bugs and fo
 msgstr ""
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_219"
+msgid ""
+"21.9:\n"
+"We’ve squashed a pesky bug that could cause a crash when adding a new payment card in the Blaze campaign form. This update ensures a smoother and more reliable experience—enjoy hassle-free payments with WooCommerce! 🚀\n"
+msgstr ""
+
 msgctxt "release_note_218"
 msgid ""
 "21.8:\n"
 "Our latest update brings a smoother WooCommerce experience! The Dashboard now adapts beautifully to tablets, and accessibility in in-person payments has been improved. We've also fixed currency mismatches in order editing and made product selection more flexible. Plus, enjoy better stability, refined UI elements, and a seamless experience when accessing Analytics reports. Update now! 🚀\n"
-msgstr ""
-
-msgctxt "release_note_217"
-msgid ""
-"21.7:\n"
-"We've improved WooCommerce app! This time we've fixed several bugs and focused on improving user interface. Keep your feedback falling in; it helps us figure how to improve Woo for you. Happy selling!\n"
-"\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!

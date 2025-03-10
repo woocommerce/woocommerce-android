@@ -147,11 +147,11 @@ class JetpackActivationMainViewModelTest : BaseUnitTest() {
     fun `when connection step succeeds, then start connection validation`() = testBlocking {
         setup(isJetpackInstalled = true) {
             whenever(
-                jetpackActivationRepository.fetchJetpackConnectionUrl(site = site)
+                jetpackActivationRepository.fetchJetpackConnectionUrl(site = site, useApplicationPasswords = false)
             ).thenReturn(Result.success("https://example.com/connect"))
 
             whenever(
-                jetpackActivationRepository.fetchJetpackConnectedEmail(site = site)
+                jetpackActivationRepository.fetchJetpackConnectedEmail(site = site, useApplicationPasswords = false)
             ).doSuspendableAnswer {
                 // The duration value is not important, it's just to make sure we suspend at this step
                 delay(100)
@@ -170,11 +170,11 @@ class JetpackActivationMainViewModelTest : BaseUnitTest() {
     fun `when validation step succeeds, then mark steps as done`() = testBlocking {
         setup(isJetpackInstalled = true) {
             whenever(
-                jetpackActivationRepository.fetchJetpackConnectionUrl(site = site)
+                jetpackActivationRepository.fetchJetpackConnectionUrl(site = site, useApplicationPasswords = false)
             ).thenReturn(Result.success("https://example.com/connect"))
 
             whenever(
-                jetpackActivationRepository.fetchJetpackConnectedEmail(site = site)
+                jetpackActivationRepository.fetchJetpackConnectedEmail(site = site, useApplicationPasswords = false)
             ).doReturn(Result.success("email"))
         }
 
@@ -194,11 +194,11 @@ class JetpackActivationMainViewModelTest : BaseUnitTest() {
         testBlocking {
             setup(isJetpackInstalled = true) {
                 whenever(
-                    jetpackActivationRepository.fetchJetpackConnectionUrl(site = site)
+                    jetpackActivationRepository.fetchJetpackConnectionUrl(site = site, useApplicationPasswords = false)
                 ).thenReturn(Result.success("https://example.com/connect"))
                 whenever(
-                    jetpackActivationRepository.fetchJetpackConnectedEmail(site = site)
-                ).thenReturn(Result.failure(JetpackActivationRepository.JetpackMissingConnectionEmailException))
+                    jetpackActivationRepository.fetchJetpackConnectedEmail(site = site, useApplicationPasswords = false)
+                ).thenReturn(Result.failure(JetpackActivationRepository.JetpackMissingConnectionEmailException()))
             }
 
             val state = viewModel.viewState.runAndCaptureValues {
@@ -206,7 +206,10 @@ class JetpackActivationMainViewModelTest : BaseUnitTest() {
                 viewModel.onRetryClick()
             }.last()
 
-            verify(jetpackActivationRepository, times(2)).fetchJetpackConnectionUrl(site = site)
+            verify(jetpackActivationRepository, times(2)).fetchJetpackConnectionUrl(
+                site = site,
+                useApplicationPasswords = false
+            )
             assertThat((state as ProgressViewState).steps.single { it.state == StepState.Ongoing }.type)
                 .isEqualTo(StepType.Connection)
         }
@@ -215,7 +218,7 @@ class JetpackActivationMainViewModelTest : BaseUnitTest() {
     fun `when connection is dismissed, then trigger correct event`() = testBlocking {
         setup(isJetpackInstalled = true) {
             whenever(
-                jetpackActivationRepository.fetchJetpackConnectionUrl(site = site)
+                jetpackActivationRepository.fetchJetpackConnectionUrl(site = site, useApplicationPasswords = false)
             ).thenReturn(Result.success("https://example.com/connect"))
         }
 
@@ -230,7 +233,7 @@ class JetpackActivationMainViewModelTest : BaseUnitTest() {
     fun `when connection fails due to an error, then show correct state`() = testBlocking {
         setup(isJetpackInstalled = true) {
             whenever(
-                jetpackActivationRepository.fetchJetpackConnectionUrl(site = site)
+                jetpackActivationRepository.fetchJetpackConnectionUrl(site = site, useApplicationPasswords = false)
             ).thenReturn(Result.success("https://example.com/connect"))
         }
 

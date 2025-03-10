@@ -4332,8 +4332,8 @@
     <string name="woopos_reader_not_connected_description">Please make sure a card reader is connected.</string>
     <string name="woopos_products_loading_error_retry_button">Retry</string>
     <string name="woopos_totals_order_creation_error">Couldn\'t create order</string>
-    <string name="woopos_totals_success_payment_cash">A cash payment of %1$s was successfully made</string>
-    <string name="woopos_totals_success_payment_card">A card payment of %1$s was successfully made</string>
+    <string name="woopos_totals_success_payment_cash">A cash payment of %1$s was successfully made.</string>
+    <string name="woopos_totals_success_payment_card">A card payment of %1$s was successfully made.</string>
 
     <string name="woopos_variations_empty_list_title">No supported variations found</string>
     <string name="woopos_variations_empty_list_message">POS currently only supports simple, variable, and virtual products – \ncreate one to get started.</string>
@@ -4457,6 +4457,9 @@
     <string name="woo_shipping_labels_package_creation_save_package_option">Save this as a new package template</string>
     <string name="woo_shipping_labels_package_creation_add_package">Add Package</string>
     <string name="woo_shipping_labels_package_creation_error">Failed to load the package data</string>
+    <string name="woo_shipping_labels_package_creation_carrier_loading_error">We are unable to load carrier packages.</string>
+    <string name="woo_shipping_labels_package_creation_saved_loading_error">We are unable to load saved packages.</string>
+    <string name="woo_shipping_labels_package_creation_shipping_rates_loading_error">We are unable to load shipping rates.</string>
     <string name="woo_shipping_labels_package_creation_box_type">Box</string>
     <string name="woo_shipping_labels_package_creation_envelope_type">Envelope</string>
     <string name="woo_shipping_labels_package_creation_error_title">We couldn\'t save the package as template</string>
@@ -4482,11 +4485,26 @@
     <string name="woo_shipping_labels_customs_restriction_quarantine">Quarantine</string>
     <string name="woo_shipping_labels_customs_restriction_sanitary">Sanitary / Phytosanitary inspection</string>
     <string name="woo_shipping_labels_customs_restriction_other">Other</string>
+    <string name="woo_shipping_labels_customs_other_error_message">Type must not be empty</string>
+    <string name="woo_shipping_labels_customs_itn_error_message">Invalid ITN format</string>
+    <string name="woo_shipping_labels_customs_itn_required_message">ITN must not be empty</string>
+    <string name="woo_shipping_labels_customs_product_details_title">Product Details</string>
+    <string name="woo_shipping_labels_customs_product_details_description">Description</string>
+    <string name="woo_shipping_labels_customs_product_details_description_missing">Missing Description</string>
+    <string name="woo_shipping_labels_customs_product_details_tariff">HS tariff number</string>
+    <string name="woo_shipping_labels_customs_product_details_tariff_missing">Missing tariff number</string>
+    <string name="woo_shipping_labels_customs_product_details_value_per_unit">Value per unit</string>
+    <string name="woo_shipping_labels_customs_product_details_weight_per_unit">Weight per unit</string>
+    <string name="woo_shipping_labels_customs_product_details_value_required">Value required</string>
+    <string name="woo_shipping_labels_customs_product_details_origin_country">Origin country</string>
+    <string name="woo_shipping_labels_customs_product_details_origin_country_missing">Missing country</string>
+    <string name="woo_shipping_labels_customs_product_details_origin_country_selection">Select a country</string>
 
 
     <string name="email_not_registered_wpcom">Hmm, we can\'t find a WordPress.com account connected to this email address.</string>
 
     <string name="woo_shipping_edit_origin_address_title">Edit Origin</string>
+    <string name="woo_shipping_edit_destination_address_title">Edit Destination</string>
     <string name="woo_shipping_label_name">Name</string>
     <string name="woo_shipping_label_company">Company</string>
     <string name="woo_shipping_label_country">Country</string>
@@ -4502,14 +4520,23 @@
     <string name="woo_shipping_address_verified">Address verified</string>
     <string name="woo_shipping_address_unverified">Unverified address</string>
     <string name="woo_shipping_address_missing_info">Missing information</string>
+    <string name="woo_shipping_address_missing">Missing address</string>
+    <string name="woo_shipping_address_unsaved_changes">Unsaved changes</string>
+    <string name="woo_shipping_verifying_address_failed">The address verification failed. Please try again.</string>
+    <string name="woo_shipping_updating_address_failed">We couldn\'t update your address. Please try again.</string>
+
 
     <string name="woo_shipping_address_validate_and_save">Validate &amp; Save</string>
     <string name="woo_shipping_address_missing_info_hint">Add missing information</string>
     <string name="woo_shipping_labels_loading_order_error">Unable to load the order</string>
     <string name="woo_shipping_labels_loading_error">Unable to load data</string>
+    <string name="woo_shipping_address_save_changes">Save changes</string>
 
     <string name="woo_shipping_address_validate_title">Validating</string>
     <string name="woo_shipping_address_validate_message">Validating entered address</string>
+
+    <string name="woo_shipping_address_update_title">Updating</string>
+    <string name="woo_shipping_address_update_message">Updating entered address</string>
 
     <string name="woo_shipping_confirm_address_title">Confirm address</string>
     <string name="woo_shipping_confirm_address_description">We have slightly modified the entered address.\nIf correct, please use the suggested address to ensure accurate delivery.</string>

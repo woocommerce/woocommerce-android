@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-02-11 09:54:04+0000
+Translation-Revision-Date: 2025-02-25 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_confirm_submit_address_entered">입력된 주소 확인</string>
+    <string name="woo_shipping_confirm_submit_address_suggested">제안된 주소 확인</string>
+    <string name="woo_shipping_confirm_address_suggested">제안됨</string>
+    <string name="woo_shipping_confirm_address_entered">입력한 내용</string>
+    <string name="woo_shipping_confirm_address_description">입력된 주소를 약간 수정했습니다.\n제안된 주소가 올바르면 정확한 배송 확인에 사용하세요.</string>
+    <string name="woo_shipping_confirm_address_title">주소 확인</string>
+    <string name="woo_shipping_address_validate_message">입력된 주소 확인 중</string>
+    <string name="woo_shipping_address_validate_title">확인 중</string>
+    <string name="woo_shipping_labels_loading_error">데이터를 로드할 수 없음</string>
+    <string name="woo_shipping_labels_loading_order_error">주문을 로드할 수 없음</string>
+    <string name="woo_shipping_address_missing_info_hint">누락된 정보 추가</string>
+    <string name="woo_shipping_address_validate_and_save">확인 및 저장</string>
+    <string name="woo_shipping_address_missing_info">누락된 정보</string>
+    <string name="woo_shipping_address_unverified">미확인된 주소</string>
+    <string name="woo_shipping_address_verified">주소 확인됨</string>
+    <string name="woopos_reader_not_connected_description">카드 리더가 연결되었는지 확인하세요.</string>
+    <string name="woopos_documentation_title">설명서</string>
     <string name="woo_shipping_labels_customs_restriction_other">기타</string>
     <string name="woo_shipping_labels_customs_restriction_sanitary">위생/식물검역 검사</string>
     <string name="woo_shipping_labels_customs_restriction_quarantine">격리</string>
@@ -110,7 +127,6 @@ Language: ko_KR
     <string name="woopos_success_totals_error_reader_not_connected_subtitle">이 결제를 처리하려면 리더를 연결하세요.</string>
     <string name="woopos_success_totals_error_reader_not_connected_title">리더가 연결되지 않음</string>
     <string name="woopos_payment_take_cash_payment_label">현금 결제</string>
-    <string name="woopos_receipt_sending_not_supported">우커머스를 버전 %s 이상으로 업데이트하세요.</string>
     <string name="woopos_receipt_button">이메일로 영수증 보내기</string>
     <string name="blaze_campaign_creation_no_product_modal_cta">상품 생성</string>
     <string name="blaze_campaign_creation_no_product_modal_body">현재 홍보 가능한 상품이 없습니다. 지금 상품을 생성하시겠습니까?</string>
@@ -163,7 +179,6 @@ Language: ko_KR
     <string name="shipping_label_purchased_note">참고: 인쇄된 레이블을 재사용하는 행위는 서비스 약관 위반이며 형사 고발될 수 있습니다.</string>
     <string name="shipping_label_purchased_success_message">여기에서 배송 레이블을 다시 인쇄하거나 레이블의 용지 크기를 변경할 수 있습니다.</string>
     <string name="shipping_label_purchased_success_title">배송 레이블을 인쇄할 준비가 되었습니다.</string>
-    <string name="order_detail_edit_store_currency_mismatch">죄송합니다. 이 주문에서는 %1$s을(를) 사용하고 사이트의 통화는 %2$s이므로 웹에서만 이 주문을 편집할 수 있습니다.</string>
     <string name="shipping_label_shipping_service_title">배송 서비스</string>
     <string name="shipping_label_shipping_rates_sort_option_fastest">가장 빠름</string>
     <string name="shipping_label_shipping_rates_sort_option_cheapest">가장 저렴</string>
@@ -3577,6 +3592,7 @@ Language: ko_KR
     <string name="settings_crash_reporting">충돌 보고서</string>
     <string name="share">공유</string>
     <string name="version_with_name_param">%s 버전</string>
+    <string name="default_web_client_id" a8c-src-lib="module:login">플레이스홀더</string>
     <string name="httppassword">HTTP 암호</string>
     <string name="httpuser">HTTP 사용자 이름</string>
     <string name="http_authorization_required">인증이 필요합니다</string>

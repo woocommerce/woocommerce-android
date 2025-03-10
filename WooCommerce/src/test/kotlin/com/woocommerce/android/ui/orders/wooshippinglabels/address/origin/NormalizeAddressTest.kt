@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.address.origin
 
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.wooshippinglabels.address.NormalizeAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.AddressNormalizationModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingLabelRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest

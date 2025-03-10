@@ -13,8 +13,6 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.SiteActionBuilder
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.JetpackStore
-import org.wordpress.android.fluxc.store.JetpackStore.JetpackConnectionUrlError
-import org.wordpress.android.fluxc.store.JetpackStore.JetpackUserError
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.login.util.SiteUtils
@@ -40,11 +38,11 @@ class JetpackActivationRepository @Inject constructor(
 
     suspend fun fetchJetpackConnectionUrl(
         site: SiteModel,
-        useApplicationPasswords: Boolean = false
+        useApplicationPasswords: Boolean
     ): Result<String> = runWithRetry {
         WooLog.d(WooLog.T.LOGIN, "Fetching Jetpack Connection URL")
         val result = jetpackStore.fetchJetpackConnectionUrl(
-            site,
+            site = site,
             autoRegisterSiteIfNeeded = true,
             useApplicationPasswords = useApplicationPasswords
         )
@@ -54,33 +52,44 @@ class JetpackActivationRepository @Inject constructor(
                 Result.failure(OnChangedException(result.error, result.error.message))
             }
 
+            result.data.isNullOrEmpty() -> {
+                WooLog.w(WooLog.T.LOGIN, "Fetching Jetpack Connection URL failed, result empty")
+                Result.failure(IllegalStateException("Response Empty"))
+            }
+
             else -> {
                 WooLog.d(WooLog.T.LOGIN, "Jetpack connection URL fetched successfully")
-                Result.success(result.url)
+                Result.success(result.data!!)
             }
         }
     }
 
-    suspend fun fetchJetpackConnectedEmail(site: SiteModel): Result<String> = runWithRetry {
+    suspend fun fetchJetpackConnectedEmail(
+        site: SiteModel,
+        useApplicationPasswords: Boolean
+    ): Result<String> = runWithRetry {
         WooLog.d(WooLog.T.LOGIN, "Fetching email of Jetpack User")
-        val result = jetpackStore.fetchJetpackUser(site)
+        val result = jetpackStore.fetchJetpackConnectionData(
+            site = site,
+            useApplicationPasswords = useApplicationPasswords
+        )
         return@runWithRetry when {
             result.isError -> {
                 WooLog.w(WooLog.T.LOGIN, "Fetching Jetpack User failed error: $result.error.message")
                 Result.failure(OnChangedException(result.error, result.error.message))
             }
 
-            result.user?.wpcomEmail.isNullOrEmpty() -> {
+            result.data?.currentUser?.wpcomEmail.isNullOrEmpty() -> {
                 analyticsTrackerWrapper.track(
                     stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_CANNOT_FIND_WPCOM_USER
                 )
                 WooLog.w(WooLog.T.LOGIN, "Cannot find Jetpack Email in response")
-                Result.failure(JetpackMissingConnectionEmailException)
+                Result.failure(JetpackMissingConnectionEmailException())
             }
 
             else -> {
                 WooLog.d(WooLog.T.LOGIN, "Jetpack User fetched successfully")
-                Result.success(result.user!!.wpcomEmail)
+                Result.success(result.data!!.currentUser.wpcomEmail)
             }
         }
     }
@@ -150,11 +159,7 @@ class JetpackActivationRepository @Inject constructor(
                 },
                 onFailure = {
                     if (it is OnChangedException) {
-                        val errorCode = when (it.error) {
-                            is JetpackConnectionUrlError -> it.error.errorCode
-                            is JetpackUserError -> it.error.errorCode
-                            else -> null
-                        }
+                        val errorCode = (it.error as? JetpackStore.JetpackError)?.errorCode
                         // Skip retrying on 4xx errors
                         if (errorCode.is4xx()) return Result.failure(it)
                     }
@@ -169,5 +174,5 @@ class JetpackActivationRepository @Inject constructor(
         return Result.failure(lastError!!)
     }
 
-    object JetpackMissingConnectionEmailException : RuntimeException("Email missing from response")
+    class JetpackMissingConnectionEmailException : RuntimeException("Email missing from response")
 }

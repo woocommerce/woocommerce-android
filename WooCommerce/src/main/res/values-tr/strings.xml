@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-02-11 13:54:04+0000
+Translation-Revision-Date: 2025-02-25 11:54:11+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_confirm_submit_address_entered">Girilen Adresi Onayla</string>
+    <string name="woo_shipping_confirm_submit_address_suggested">Önerilen Adresi Onayla</string>
+    <string name="woo_shipping_confirm_address_suggested">Önerilen</string>
+    <string name="woo_shipping_confirm_address_entered">Girdiğiniz</string>
+    <string name="woo_shipping_confirm_address_description">Girilen adresi biraz değiştirdik.\nDoğruysa teslimatın doğru yapılması için lütfen önerilen adresi kullanın.</string>
+    <string name="woo_shipping_confirm_address_title">Adresi doğrulayın</string>
+    <string name="woo_shipping_address_validate_message">Girilen adres doğrulanıyor</string>
+    <string name="woo_shipping_address_validate_title">Doğrulanıyor</string>
+    <string name="woo_shipping_labels_loading_error">Veriler yüklenemiyor</string>
+    <string name="woo_shipping_labels_loading_order_error">Sipariş yüklenemiyor</string>
+    <string name="woo_shipping_address_missing_info_hint">Eksik bilgi ekle</string>
+    <string name="woo_shipping_address_validate_and_save">Doğrula ve Kaydet</string>
+    <string name="woo_shipping_address_missing_info">Eksik bilgi</string>
+    <string name="woo_shipping_address_unverified">Doğrulanmamış adres</string>
+    <string name="woo_shipping_address_verified">Adres doğrulandı</string>
+    <string name="woopos_reader_not_connected_description">Lütfen bir kart okuyucunun bağlı olduğundan emin olun.</string>
+    <string name="woopos_documentation_title">Belgeler</string>
     <string name="woo_shipping_labels_customs_restriction_other">Diğer</string>
     <string name="woo_shipping_labels_customs_restriction_sanitary">Sağlık/Bitki Sağlığı denetimi</string>
     <string name="woo_shipping_labels_customs_restriction_quarantine">Karantina</string>
@@ -110,7 +127,6 @@ Language: tr
     <string name="woopos_success_totals_error_reader_not_connected_subtitle">Bu ödemeyi işlemek için lütfen okuyucunuzu bağlayın.</string>
     <string name="woopos_success_totals_error_reader_not_connected_title">Okuyucu bağlanmadı</string>
     <string name="woopos_payment_take_cash_payment_label">Nakit ödeme</string>
-    <string name="woopos_receipt_sending_not_supported">Lütfen WooCommerce\'ü %s veya daha yeni bir sürüme güncelleyin</string>
     <string name="woopos_receipt_button">Faturayı e-posta ile gönderin</string>
     <string name="blaze_campaign_creation_no_product_modal_cta">Ürün Oluşturun</string>
     <string name="blaze_campaign_creation_no_product_modal_body">Şu anda tanıtılabilecek ürününüz yok. Hemen bir ürün oluşturmak ister misiniz?</string>
@@ -163,7 +179,6 @@ Language: tr
     <string name="shipping_label_purchased_note">Not: Yazdırılmış bir etiketi yeniden kullanmak hizmet koşullarımızın ihlalidir ve cezai suçlamalarla sonuçlanabilir.</string>
     <string name="shipping_label_purchased_success_message">Buradan gönderim etiketini yeniden yazdırabilir veya etiketin kağıt boyutunu değiştirebilirsiniz.</string>
     <string name="shipping_label_purchased_success_title">Gönderim etiketiniz yazdırmaya hazır</string>
-    <string name="order_detail_edit_store_currency_mismatch">Üzgünüz, bu siparişi yalnızca web üzerinden düzenleyebilirsiniz, çünkü bu sipariş %1$s kullanıyor ve sitenizin para birimi şu:%2$s</string>
     <string name="shipping_label_shipping_service_title">Gönderim hizmeti</string>
     <string name="shipping_label_shipping_rates_sort_option_fastest">En hızlı</string>
     <string name="shipping_label_shipping_rates_sort_option_cheapest">En ucuz</string>
@@ -3577,6 +3592,7 @@ Language: tr
     <string name="settings_crash_reporting">Çökme raporları</string>
     <string name="share">Paylaş</string>
     <string name="version_with_name_param">Sürüm %s</string>
+    <string name="default_web_client_id" a8c-src-lib="module:login">yer tutucu</string>
     <string name="httppassword">HTTP Sifre</string>
     <string name="httpuser">HTTP Kullanici Adi</string>
     <string name="http_authorization_required">Yetkilendirme gerekli</string>

@@ -53,6 +53,13 @@ steps:
         artifact_paths:
           - "**/build/reports/diff/*"
 
+      - label: "Merged Manifest Diff"
+        command: ".buildkite/commands/diff-merged-manifest.sh vanillaRelease"
+        if: build.pull_request.id != null
+        plugins: [$CI_TOOLKIT]
+        artifact_paths:
+          - "**/build/reports/diff_manifest/**/**/*"
+
   ########################################
   - group: "🛠 Prototype Builds"
     steps:

@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ExitConfirmationDi
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ProductsInfoDialog
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ScreenPositionState
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCartTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -94,6 +95,7 @@ class WooPosHomeViewModel @Inject constructor(
             WooPosHomeUIEvent.ExitPosClicked -> {
                 viewModelScope.launch {
                     _navigationEvent.emit(NavigationEvent.ExitPos)
+                    analyticsTracker.track(WooPosAnalyticsEvent.Event.ExitConfirmed)
                 }
             }
         }

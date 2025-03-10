@@ -5,7 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.CashCollectPaymentSuccess
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.CashPaymentFailed
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.CashPaymentTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTrackingDataKeeper
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -21,6 +24,7 @@ class WooPosCashPaymentViewModel @Inject constructor(
     private val priceFormat: WooPosFormatPrice,
     private val resourceProvider: ResourceProvider,
     private val analyticsTracker: WooPosAnalyticsTracker,
+    private val analyticsData: WooPosAnalyticsTrackingDataKeeper,
     savedState: SavedStateHandle,
 ) : ViewModel() {
     private val orderId = savedState.get<Long>(CASH_ROUTE_ORDER_ID_KEY)!!
@@ -100,6 +104,8 @@ class WooPosCashPaymentViewModel @Inject constructor(
 
     private fun handleOrderCompletion() {
         viewModelScope.launch {
+            analyticsTracker.track(CashPaymentTapped)
+
             val stateBeforeCompleting = _state.value as WooPosCashPaymentState.Collecting
             _state.value = stateBeforeCompleting.copy(
                 button = stateBeforeCompleting.button.copy(
@@ -109,7 +115,7 @@ class WooPosCashPaymentViewModel @Inject constructor(
 
             val result = repository.completeOrder(orderId)
             if (result.isSuccess) {
-                analyticsTracker.track(CashCollectPaymentSuccess)
+                trackPaymentSuccess()
                 _state.value = WooPosCashPaymentState.Complete
             } else {
                 val currentState = _state.value as? WooPosCashPaymentState.Collecting ?: return@launch
@@ -119,8 +125,19 @@ class WooPosCashPaymentViewModel @Inject constructor(
                         status = WooPosCashPaymentState.Collecting.Button.Status.ENABLED
                     )
                 )
+                analyticsTracker.track(CashPaymentFailed)
             }
         }
+    }
+
+    private suspend fun trackPaymentSuccess() {
+        val props = mutableMapOf<String, String>()
+        analyticsData.interactionWithCustomerStartedTimestamp?.let {
+            val timeElapsed = System.currentTimeMillis() - it
+            props["milliseconds_since_customer_interaction_started"] = "$timeElapsed"
+        }
+        val event = CashCollectPaymentSuccess.apply { addProperties(props) }
+        analyticsTracker.track(event)
     }
 
     private companion object {

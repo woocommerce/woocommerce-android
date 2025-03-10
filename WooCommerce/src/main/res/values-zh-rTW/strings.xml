@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-02-10 19:54:04+0000
+Translation-Revision-Date: 2025-02-25 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_confirm_submit_address_entered">確認輸入的地址</string>
+    <string name="woo_shipping_confirm_submit_address_suggested">確認建議的地址</string>
+    <string name="woo_shipping_confirm_address_suggested">建議</string>
+    <string name="woo_shipping_confirm_address_entered">你輸入的內容</string>
+    <string name="woo_shipping_confirm_address_description">我們稍微修改了輸入的地址。\n若正確，請使用建議的地址，確保貨件能正確運送。</string>
+    <string name="woo_shipping_confirm_address_title">確認地址</string>
+    <string name="woo_shipping_address_validate_message">正在驗證輸入的地址</string>
+    <string name="woo_shipping_address_validate_title">正在驗證</string>
+    <string name="woo_shipping_labels_loading_error">無法載入資料</string>
+    <string name="woo_shipping_labels_loading_order_error">無法載入訂單</string>
+    <string name="woo_shipping_address_missing_info_hint">新增遺漏資訊</string>
+    <string name="woo_shipping_address_validate_and_save">驗證並儲存</string>
+    <string name="woo_shipping_address_missing_info">遺漏資訊</string>
+    <string name="woo_shipping_address_unverified">地址未通過驗證</string>
+    <string name="woo_shipping_address_verified">地址已通過驗證</string>
+    <string name="woopos_reader_not_connected_description">請確認是否連結讀卡機。</string>
+    <string name="woopos_documentation_title">文件</string>
     <string name="woo_shipping_labels_customs_restriction_other">其他</string>
     <string name="woo_shipping_labels_customs_restriction_sanitary">衛生/植物檢疫檢查</string>
     <string name="woo_shipping_labels_customs_restriction_quarantine">檢疫</string>
@@ -110,7 +127,6 @@ Language: zh_TW
     <string name="woopos_success_totals_error_reader_not_connected_subtitle">若要處理此款項，請連結讀卡機。</string>
     <string name="woopos_success_totals_error_reader_not_connected_title">未連結讀卡機</string>
     <string name="woopos_payment_take_cash_payment_label">現金付款</string>
-    <string name="woopos_receipt_sending_not_supported">請將 WooCommerce 更新至 %s 或較新版本</string>
     <string name="woopos_receipt_button">電子郵件收據</string>
     <string name="blaze_campaign_creation_no_product_modal_cta">建立商品</string>
     <string name="blaze_campaign_creation_no_product_modal_body">目前你沒有可促銷的商品。 是否要立即建立商品？</string>
@@ -163,7 +179,6 @@ Language: zh_TW
     <string name="shipping_label_purchased_note">請注意：若你重複使用已印製標籤，此行為將違反我們的服務條款，並可能會導致刑事責任。</string>
     <string name="shipping_label_purchased_success_message">你可以在這裡再次印製貨運標籤，或變更標籤的紙張大小。</string>
     <string name="shipping_label_purchased_success_title">你的貨運標籤已可供印製</string>
-    <string name="order_detail_edit_store_currency_mismatch">很抱歉，你只能在網頁上編輯此訂單，這是因為此訂單使用「%1$s」，而貴網站採用的幣值為：%2$s</string>
     <string name="shipping_label_shipping_service_title">貨運服務</string>
     <string name="shipping_label_shipping_rates_sort_option_fastest">最快速</string>
     <string name="shipping_label_shipping_rates_sort_option_cheapest">最便宜</string>
@@ -3577,6 +3592,7 @@ Language: zh_TW
     <string name="settings_crash_reporting">當機報告</string>
     <string name="share">分享</string>
     <string name="version_with_name_param">%s 版本</string>
+    <string name="default_web_client_id" a8c-src-lib="module:login">預留位置</string>
     <string name="httppassword">HTTP 密碼</string>
     <string name="httpuser">HTTP 使用者帳號</string>
     <string name="http_authorization_required">需要授權</string>

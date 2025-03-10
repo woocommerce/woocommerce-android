@@ -347,6 +347,7 @@ class ProductDetailViewModel @Inject constructor(
             // Show "View Product" option only if the product is published or we can auto-authenticate the user
             // in a WebView.
             val showViewProductOption = !isProductUnderCreation &&
+                productDraft.permalink.isNotEmpty() &&
                 (isProductPublished || canAutoAuthenticateInWebView(productDraft.permalink))
 
             MenuButtonsState(

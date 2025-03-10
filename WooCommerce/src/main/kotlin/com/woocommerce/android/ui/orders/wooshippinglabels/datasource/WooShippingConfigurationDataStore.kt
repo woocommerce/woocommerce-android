@@ -34,6 +34,4 @@ class WooShippingConfigurationDataStore @Inject constructor(
             preferences[stringPreferencesKey(getStoreOptionsKey())] = gson.toJson(storeOptions)
         }
     }
-
-    suspend fun clearStoreOptions() = dataStore.edit { it.remove(stringPreferencesKey(getStoreOptionsKey())) }
 }

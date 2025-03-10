@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -42,6 +43,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PredefinedPackagesState
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.components.ErrorMessageWithButton
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.components.WooShippingPackageListItem
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.components.WooShippingPackageListItemSkeleton
 import kotlinx.coroutines.launch
@@ -53,7 +55,8 @@ fun WooShippingCarrierPackageScreen(viewModel: WooShippingLabelPackageCreationVi
         packageState = viewState?.predefinedPackagesState ?: PredefinedPackagesState.Waiting,
         isAddPackageEnabled = viewState?.predefinedPackagesData?.hasCarrierSelection ?: false,
         onPackageSelected = viewModel::onCarrierPackageSelected,
-        onAddPackageClick = viewModel::onAddCarrierPackageClick
+        onAddPackageClick = viewModel::onAddCarrierPackageClick,
+        onRetryClick = viewModel::onRetryClick
     )
 }
 
@@ -63,42 +66,45 @@ fun WooShippingCarrierPackageScreen(
     packageState: PredefinedPackagesState,
     onPackageSelected: (PackageData, Boolean) -> Unit,
     isAddPackageEnabled: Boolean = false,
-    onAddPackageClick: () -> Unit = {}
+    onAddPackageClick: () -> Unit = {},
+    onRetryClick: () -> Unit
 ) {
-    when (packageState) {
-        is PredefinedPackagesState.Data -> {
-            WooShippingCarrierPackageContent(
-                modifier = modifier,
-                carrierPackages = packageState.carrierPackages,
-                onPackageSelected = onPackageSelected,
-                isAddPackageEnabled = isAddPackageEnabled,
-                onAddPackageClick = onAddPackageClick
-            )
-        }
+    Column(modifier = modifier) {
+        Box(modifier = modifier.weight(1f)) {
+            when (packageState) {
+                is PredefinedPackagesState.Data -> WooShippingCarrierPackageContent(
+                    modifier = modifier,
+                    carrierPackages = packageState.carrierPackages,
+                    onPackageSelected = onPackageSelected,
+                )
 
-        is PredefinedPackagesState.Error -> {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
-                    .verticalScroll(rememberScrollState())
-            ) {
-                Text(text = stringResource(id = R.string.woo_shipping_labels_package_creation_error))
+                is PredefinedPackagesState.Error -> ErrorMessageWithButton(
+                    modifier = modifier,
+                    message = R.string.woo_shipping_labels_package_creation_carrier_loading_error,
+                    onRetryClick = onRetryClick
+                )
+
+                is PredefinedPackagesState.Waiting -> Column(
+                    modifier = modifier
+                        .fillMaxSize()
+                        .padding(16.dp)
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    WooShippingPackageListItemSkeleton()
+                    WooShippingPackageListItemSkeleton()
+                    WooShippingPackageListItemSkeleton()
+                }
             }
         }
-
-        is PredefinedPackagesState.Waiting -> {
-            Column(
-                modifier = modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
-                    .verticalScroll(rememberScrollState())
-            ) {
-                WooShippingPackageListItemSkeleton()
-                WooShippingPackageListItemSkeleton()
-                WooShippingPackageListItemSkeleton()
-            }
+        Divider()
+        Button(
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            enabled = isAddPackageEnabled,
+            onClick = onAddPackageClick
+        ) {
+            Text(stringResource(id = R.string.woo_shipping_labels_package_creation_add_package))
         }
     }
 }
@@ -108,8 +114,6 @@ fun WooShippingCarrierPackageContent(
     modifier: Modifier = Modifier,
     carrierPackages: Map<Carrier, List<CarrierPackageGroup>>,
     onPackageSelected: (PackageData, Boolean) -> Unit,
-    isAddPackageEnabled: Boolean = false,
-    onAddPackageClick: () -> Unit = {}
 ) {
     val pagerState = rememberPagerState { carrierPackages.keys.size }
     Column(
@@ -130,16 +134,6 @@ fun WooShippingCarrierPackageContent(
             carrierPackages = carrierPackages,
             onPackageSelected = onPackageSelected
         )
-        Divider()
-        Button(
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            enabled = isAddPackageEnabled,
-            onClick = onAddPackageClick
-        ) {
-            Text(stringResource(id = R.string.woo_shipping_labels_package_creation_add_package))
-        }
     }
 }
 

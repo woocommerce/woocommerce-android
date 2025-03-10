@@ -36,7 +36,7 @@ class UpdateOriginAddressTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when normalize address fails then return failure`() = testBlocking {
+    fun `when update address fails then return failure`() = testBlocking {
         whenever(site.getOrNull()).thenReturn(SiteModel())
         whenever(repository.updateOriginAddress(any(), any(), any()))
             .thenReturn(WooResult(WooError(GENERIC_ERROR, UNKNOWN)))
@@ -47,7 +47,7 @@ class UpdateOriginAddressTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when normalize address succeed then return expected data`() = testBlocking {
+    fun `when update address succeed then return expected data`() = testBlocking {
         whenever(site.getOrNull()).thenReturn(SiteModel())
         whenever(repository.updateOriginAddress(any(), any(), any()))
             .thenReturn(WooResult(defaultAddressResponse))

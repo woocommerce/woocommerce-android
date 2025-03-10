@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-02-11 11:54:04+0000
+Translation-Revision-Date: 2025-02-25 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_confirm_submit_address_entered">Het ingevoerde adres bevestigen</string>
+    <string name="woo_shipping_confirm_submit_address_suggested">Het voorgestelde adres bevestigen</string>
+    <string name="woo_shipping_confirm_address_suggested">Aanbevolen</string>
+    <string name="woo_shipping_confirm_address_entered">Wat je hebt ingevoerd</string>
+    <string name="woo_shipping_confirm_address_description">We hebben het adres dat is ingevoerd een beetje aangepast.\nIndien het juist is, gebruik dan het voorgestelde adres om zeker te zijn van een nauwkeurige levering.</string>
+    <string name="woo_shipping_confirm_address_title">E-mailadres bevestigen</string>
+    <string name="woo_shipping_address_validate_message">Ingevoerd adres valideren</string>
+    <string name="woo_shipping_address_validate_title">Wordt gevalideerd</string>
+    <string name="woo_shipping_labels_loading_error">Kan gegevens niet laden</string>
+    <string name="woo_shipping_labels_loading_order_error">Kan de bestelling niet laden</string>
+    <string name="woo_shipping_address_missing_info_hint">Ontbrekende informatie toevoegen</string>
+    <string name="woo_shipping_address_validate_and_save">Valideren en opslaan</string>
+    <string name="woo_shipping_address_missing_info">Ontbrekende informatie</string>
+    <string name="woo_shipping_address_unverified">Niet-geverifieerd adres</string>
+    <string name="woo_shipping_address_verified">Adres geverifieerd</string>
+    <string name="woopos_reader_not_connected_description">Zorg ervoor dat er een kaartlezer is aangesloten.</string>
+    <string name="woopos_documentation_title">Documentatie</string>
     <string name="woo_shipping_labels_customs_restriction_other">Overig</string>
     <string name="woo_shipping_labels_customs_restriction_sanitary">Sanitaire/fytosanitaire inspectie</string>
     <string name="woo_shipping_labels_customs_restriction_quarantine">Quarantaine</string>
@@ -110,7 +127,6 @@ Language: nl
     <string name="woopos_success_totals_error_reader_not_connected_subtitle">Sluit je lezer aan om deze betaling te verwerken.</string>
     <string name="woopos_success_totals_error_reader_not_connected_title">Lezer niet verbonden</string>
     <string name="woopos_payment_take_cash_payment_label">Contante betaling</string>
-    <string name="woopos_receipt_sending_not_supported">Update WooCommerce naar versie %s of hoger</string>
     <string name="woopos_receipt_button">Betalingsbewijs e-mailen</string>
     <string name="blaze_campaign_creation_no_product_modal_cta">Product aanmaken</string>
     <string name="blaze_campaign_creation_no_product_modal_body">Je hebt momenteel geen beschikbaar product voor een aanbieding. Wil je nu een product aanmaken?</string>
@@ -163,7 +179,6 @@ Language: nl
     <string name="shipping_label_purchased_note">Let op: een afgedrukt label hergebruiken is een overtreding van onze servicevoorwaarden en kan leiden tot strafrechtelijke vervolging.</string>
     <string name="shipping_label_purchased_success_message">Vanuit hier kan je het verzendlabel opnieuw afdrukken of het papierformaat van het label wijzigen.</string>
     <string name="shipping_label_purchased_success_title">Je verzendlabel kan worden afgedrukt</string>
-    <string name="order_detail_edit_store_currency_mismatch">U kunt deze bestelling alleen op het web bewerken, omdat het web gebruikmaakt van %1$s en uw site gebruikmaakt van %2$s</string>
     <string name="shipping_label_shipping_service_title">Bezorgservice</string>
     <string name="shipping_label_shipping_rates_sort_option_fastest">Snelste</string>
     <string name="shipping_label_shipping_rates_sort_option_cheapest">Voordeligste</string>
@@ -3577,6 +3592,7 @@ Language: nl
     <string name="settings_crash_reporting">Crash-rapporten</string>
     <string name="share">Delen</string>
     <string name="version_with_name_param">Versie %s</string>
+    <string name="default_web_client_id" a8c-src-lib="module:login">placeholder</string>
     <string name="httppassword">HTTP wachtwoord</string>
     <string name="httpuser">HTTP gebruikersnaam</string>
     <string name="http_authorization_required">Autorisatie vereist</string>

@@ -1,3 +1,5 @@
+@file:Suppress("WooPosDesignSystemButtonUsageRule")
+
 package com.woocommerce.android.ui.woopos.common.composeui.component
 
 import androidx.compose.foundation.BorderStroke
