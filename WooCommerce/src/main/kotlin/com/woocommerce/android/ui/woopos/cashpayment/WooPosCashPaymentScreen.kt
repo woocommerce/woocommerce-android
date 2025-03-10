@@ -1,9 +1,14 @@
 package com.woocommerce.android.ui.woopos.cashpayment
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -13,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -21,8 +27,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
@@ -34,7 +38,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolba
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import org.wordpress.android.fluxc.model.WCSettingsModel
 import java.math.BigDecimal
@@ -87,7 +90,6 @@ fun WooPosCashPaymentScreen(
     }
 }
 
-@Suppress("DestructuringDeclarationWithTooManyEntries")
 @Composable
 private fun Collecting(
     state: WooPosCashPaymentState.Collecting,
@@ -102,77 +104,73 @@ private fun Collecting(
         keyboardController?.show()
     }
 
-    ConstraintLayout(
+    Column(
         modifier = Modifier
             .fillMaxSize()
-            .imePadding()
+            .imePadding(),
+        verticalArrangement = Arrangement.SpaceBetween
     ) {
-        val (input, total, error, changeDue, button) = createRefs()
-        val standardMargin = WooPosSpacing.Medium.value.toAdaptivePadding()
-        val smallMargin = WooPosSpacing.Small.value.toAdaptivePadding()
-
+        @Suppress("WooPosDesignSystemSpacingUsageRule")
         WooPosText(
             text = state.totalText,
             style = WooPosTypography.BodyLarge,
             modifier = Modifier
-                .constrainAs(total) {
-                    top.linkTo(parent.top, margin = WooPosSpacing.XSmall.value)
-                    start.linkTo(parent.start, margin = 64.dp)
-                }
+                .padding(
+                    top = WooPosSpacing.XSmall.value,
+                    start = 64.dp
+                )
         )
 
-        var inputText by remember { mutableStateOf(state.enteredAmount) }
+        Spacer(modifier = Modifier.weight(1f))
 
-        val marginBetweenTotalAndInput = 48.dp.toAdaptivePadding()
-        WooPosMoneyInputField(
-            modifier = Modifier
-                .focusRequester(focusRequester)
-                .constrainAs(input) {
-                    top.linkTo(total.bottom, margin = marginBetweenTotalAndInput)
-                    start.linkTo(parent.start, margin = standardMargin)
-                    end.linkTo(parent.end, margin = standardMargin)
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            var inputText by remember { mutableStateOf(state.enteredAmount) }
+
+            WooPosMoneyInputField(
+                modifier = Modifier
+                    .focusRequester(focusRequester),
+                value = inputText,
+                onValueChange = {
+                    onAmountChanged(it)
+                    inputText = it
                 },
-            value = inputText,
-            onValueChange = {
-                onAmountChanged(it)
-                inputText = it
-            },
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Decimal
-            ),
-            textStyle = WooPosTypography.Heading,
-            textColor = MaterialTheme.colorScheme.onSurface,
-            currencySymbol = state.currencySymbol,
-            currencyPosition = state.currencyPosition,
-            decimalSeparator = state.decimalSeparator,
-            numberOfDecimals = state.numberOfDecimals,
-        )
-
-        WooPosText(
-            text = state.changeDueText,
-            style = WooPosTypography.BodySmall,
-            color = WooPosTheme.colors.onSurfaceVariantLowest,
-            modifier = Modifier
-                .constrainAs(changeDue) {
-                    top.linkTo(input.bottom, margin = smallMargin)
-                    start.linkTo(parent.start, margin = standardMargin)
-                    end.linkTo(parent.end, margin = standardMargin)
-                }
-        )
-
-        if (state.errorMessage != null) {
-            WooPosText(
-                text = state.errorMessage,
-                color = MaterialTheme.colorScheme.error,
-                style = WooPosTypography.BodySmall,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.constrainAs(error) {
-                    top.linkTo(changeDue.bottom, margin = smallMargin)
-                    start.linkTo(parent.start, margin = standardMargin)
-                    end.linkTo(parent.end, margin = standardMargin)
-                }
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Decimal
+                ),
+                textStyle = WooPosTypography.Heading,
+                textColor = MaterialTheme.colorScheme.onSurface,
+                currencySymbol = state.currencySymbol,
+                currencyPosition = state.currencyPosition,
+                decimalSeparator = state.decimalSeparator,
+                numberOfDecimals = state.numberOfDecimals,
             )
+
+            Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+
+            WooPosText(
+                text = state.changeDueText,
+                style = WooPosTypography.BodySmall,
+                color = WooPosTheme.colors.onSurfaceVariantLowest,
+                modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value)
+            )
+
+            if (state.errorMessage != null) {
+                Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+
+                WooPosText(
+                    text = state.errorMessage,
+                    color = MaterialTheme.colorScheme.error,
+                    style = WooPosTypography.BodySmall,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value)
+                )
+            }
         }
+
+        Spacer(modifier = Modifier.weight(1f))
 
         WooPosButton(
             text = state.button.text,
@@ -183,12 +181,11 @@ private fun Collecting(
                 WooPosCashPaymentState.Collecting.Button.Status.LOADING -> WooPosButtonState.LOADING
             },
             modifier = Modifier
-                .constrainAs(button) {
-                    bottom.linkTo(parent.bottom, margin = WooPosSpacing.Medium.value)
-                    end.linkTo(parent.end, margin = standardMargin)
-                    start.linkTo(parent.start, margin = standardMargin)
-                    width = Dimension.fillToConstraints
-                }
+                .fillMaxWidth()
+                .padding(
+                    horizontal = WooPosSpacing.Medium.value,
+                    vertical = WooPosSpacing.Medium.value
+                )
         )
     }
 }

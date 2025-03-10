@@ -9,20 +9,20 @@ updates:
       - "bot: dependencies update"
     reviewers:
       - "woocommerce/android-developers"
+    groups:
+      kotlin-ksp:
+        applies-to: version-updates
+        patterns:
+          - "org.jetbrains.kotlin*"
+          - "com.google.devtools.ksp*"
+        exclude-patterns:
+          - "org.jetbrains.kotlinx*"
     ignore:
-      # The Android Gradle Plugin is a dependency we'd like to have in sync with other
-      # in-house libraries due to compatibility with composite build.
-      - dependency-name: "com.android.tools.build:gradle"
-      - dependency-name: "com.android.application"
-      - dependency-name: "com.android.library"
       # Bumping 2.26.3 to 2.27.2 will break the mocks. For more details, see
       # https://github.com/wiremock/wiremock/issues/1345#issuecomment-656060968
       - dependency-name: "com.github.tomakehurst:wiremock"
       # Our libraries that are stored in S3 have a custom versioning scheme which doesn't work with Dependabot.
       - dependency-name: "org.wordpress:utils"
-      - dependency-name: "org.wordpress:fluxc"
-      - dependency-name: "org.wordpress.fluxc.plugins:woocommerce"
-      - dependency-name: "org.wordpress:login"
       - dependency-name: "com.automattic:Automattic-Tracks-Android"
       - dependency-name: "com.automattic.tracks:experimentation"
       # Assertj is a java first library only used for testing. It has caused troubles several times due to library

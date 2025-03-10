@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-02-10 15:54:04+0000
+Translation-Revision-Date: 2025-02-25 09:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_confirm_submit_address_entered">Подтвердить указанный адрес</string>
+    <string name="woo_shipping_confirm_submit_address_suggested">Подтвердить предложенный адрес</string>
+    <string name="woo_shipping_confirm_address_suggested">Предложено</string>
+    <string name="woo_shipping_confirm_address_entered">Что вы указали</string>
+    <string name="woo_shipping_confirm_address_description">Мы немного изменили указанный адрес.\nЕсли предложенный адрес верен, воспользуйтесь им, чтобы обеспечить точную доставку.</string>
+    <string name="woo_shipping_confirm_address_title">Подтвердить адрес</string>
+    <string name="woo_shipping_address_validate_message">Проверка указанного адреса</string>
+    <string name="woo_shipping_address_validate_title">Выполняется проверка</string>
+    <string name="woo_shipping_labels_loading_error">Не удалось загрузить данные</string>
+    <string name="woo_shipping_labels_loading_order_error">Не удалось загрузить заказ</string>
+    <string name="woo_shipping_address_missing_info_hint">Дополнить сведения</string>
+    <string name="woo_shipping_address_validate_and_save">Подтвердить и сохранить</string>
+    <string name="woo_shipping_address_missing_info">Недостающие сведения</string>
+    <string name="woo_shipping_address_unverified">Неподтверждённый адрес</string>
+    <string name="woo_shipping_address_verified">Адрес подтверждён</string>
+    <string name="woopos_reader_not_connected_description">Проверьте, подключён ли платёжный терминал.</string>
+    <string name="woopos_documentation_title">Документация</string>
     <string name="woo_shipping_labels_customs_restriction_other">Другое</string>
     <string name="woo_shipping_labels_customs_restriction_sanitary">Санитарная/фитосанитарная проверка</string>
     <string name="woo_shipping_labels_customs_restriction_quarantine">Карантин</string>
@@ -110,7 +127,6 @@ Language: ru
     <string name="woopos_success_totals_payment_processing_subtitle">Подождите…</string>
     <string name="woopos_success_totals_error_reader_not_connected_title">Платёжный терминал не подключён</string>
     <string name="woopos_payment_take_cash_payment_label">Оплата наличными</string>
-    <string name="woopos_receipt_sending_not_supported">Обновите WooCommerce до версии %s или более поздней</string>
     <string name="woopos_receipt_button">Отправить чек по эл. почте</string>
     <string name="blaze_campaign_creation_no_product_modal_cta">Создать товар</string>
     <string name="blaze_campaign_creation_no_product_modal_body">В данный момент у вас нет товаров, доступных для продвижения. Хотите создать товар?</string>
@@ -161,7 +177,6 @@ Language: ru
     <string name="shipping_label_purchased_track_shipment">Отслеживать доставку</string>
     <string name="shipping_label_purchased_learn_how_to_print">Как распечатывать файлы с мобильного устройства</string>
     <string name="shipping_label_purchased_note">Примечание. Повторное использование напечатанной этикетки запрещается условиями предоставления услуг и может повлечь уголовное преследование.</string>
-    <string name="order_detail_edit_store_currency_mismatch">К сожалению, этот заказ можно редактировать только в Интернете, так как он сделан в %1$s, а валюта вашего сайта — %2$s</string>
     <string name="shipping_label_purchased_success_message">Здесь вы можете заново напечатать транспортную этикетку или изменить формат бумаги для этикетки.</string>
     <string name="shipping_label_purchased_success_title">Ваша транспортная этикетка готова к печати</string>
     <string name="shipping_label_shipping_service_title">Служба доставки</string>
@@ -3635,6 +3650,7 @@ Language: ru
     <string name="httppassword">Пароль для HTTP-авторизации</string>
     <string name="httpuser">Имя для HTTP-авторизации</string>
     <string name="enter_wpcom_or_jetpack_site">Укажите сайт WordPress.com или автономный сайт с подключённым модулем Jetpack</string>
+    <string name="default_web_client_id" a8c-src-lib="module:login">заполнитель</string>
     <string name="alternatively">Альтернативно:</string>
     <string name="notification_channel_general_title">Общее</string>
     <string name="at_username">\@%s</string>

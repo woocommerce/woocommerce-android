@@ -30,11 +30,6 @@ import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState.Payme
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState.PaymentInProgress
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState.Totals
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.CreateNewOrderTapped
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.EmailReceiptTapped
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ReaderReadyForCardPayment
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.UiStringParser
 import com.woocommerce.android.util.WooLog
@@ -59,10 +54,10 @@ class WooPosTotalsViewModel @Inject constructor(
     private val cardReaderFacade: WooPosCardReaderFacade,
     private val totalsRepository: WooPosTotalsRepository,
     private val priceFormat: WooPosFormatPrice,
-    private val analyticsTracker: WooPosAnalyticsTracker,
     private val networkStatus: WooPosNetworkStatus,
     private val cardReaderPaymentControllerFactory: WooPosCardReaderPaymentControllerFactory,
     private val uiStringParser: UiStringParser,
+    private val totalsAnalyticsTracker: WooPosTotalsAnalyticsTracker,
     savedState: SavedStateHandle,
 ) : ViewModel() {
 
@@ -144,7 +139,7 @@ class WooPosTotalsViewModel @Inject constructor(
         when (event) {
             is WooPosTotalsUIEvent.OnNewTransactionClicked -> viewModelScope.launch {
                 childrenToParentEventSender.sendToParent(NewTransactionClicked)
-                analyticsTracker.track(CreateNewOrderTapped)
+                totalsAnalyticsTracker.trackCreateNewOrderTapped()
             }
 
             is WooPosTotalsUIEvent.RetryOrderCreationClicked -> {
@@ -167,7 +162,7 @@ class WooPosTotalsViewModel @Inject constructor(
 
     private fun handleEmailReceiptClicked() {
         viewModelScope.launch {
-            analyticsTracker.track(EmailReceiptTapped)
+            totalsAnalyticsTracker.trackEmailReceiptTapped()
             childrenToParentEventSender.sendToParent(
                 ToEmailReceipt(dataState.value.orderId)
             )
@@ -267,6 +262,7 @@ class WooPosTotalsViewModel @Inject constructor(
                     is ParentToChildrenEvent.CheckoutClicked -> {
                         dataState.value = dataState.value.copy(itemClickedDataList = event.itemClickedDataList)
                         createOrderDraft(dataState.value.itemClickedDataList)
+                        totalsAnalyticsTracker.incrementCheckoutButtonTaps()
                     }
 
                     is ParentToChildrenEvent.BackFromCheckoutToCartClicked -> {
@@ -296,21 +292,9 @@ class WooPosTotalsViewModel @Inject constructor(
 
                     is CardReaderPaymentState.LoadingData -> handleReaderLoadingPaymentState()
 
-                    is CardReaderPaymentState.ProcessingPayment,
-                    is CardReaderPaymentState.PaymentCapturing -> {
-                        val state = uiState.value
-                        if (state is WooPosTotalsViewState.Checkout) {
-                            uiState.value = state.copy(totals = Totals.Hidden)
-                            // allow the UI to show "shrinking" exit animation of totals grid before showing
-                            // the "payment in progress" state.
-                            @Suppress("MagicNumber")
-                            delay(384)
-                        }
-                        uiState.value = buildPaymentInProgressState()
-                        childrenToParentEventSender.sendToParent(ChildToParentEvent.PaymentInProgress)
-                        childrenToParentEventSender.sendToParent(
-                            NavigationEvent.ReturnHomeFromCashWhenCardPaymentStarted
-                        )
+                    is CardReaderPaymentState.PaymentCapturing,
+                    is CardReaderPaymentState.ProcessingPayment -> {
+                        handleProcessingOrCapturingPaymentState()
                     }
 
                     is CardReaderPaymentState.PaymentSuccessful -> {
@@ -333,6 +317,23 @@ class WooPosTotalsViewModel @Inject constructor(
                 }
             }
         }
+        viewModelScope.launch { totalsAnalyticsTracker.trackPaymentStates(cardReaderPaymentController?.paymentState) }
+    }
+
+    private suspend fun handleProcessingOrCapturingPaymentState() {
+        val state = uiState.value
+        if (state is WooPosTotalsViewState.Checkout) {
+            uiState.value = state.copy(totals = Totals.Hidden)
+            // allow the UI to show "shrinking" exit animation of totals grid before showing
+            // the "payment in progress" state.
+            @Suppress("MagicNumber")
+            delay(384)
+        }
+        uiState.value = buildPaymentInProgressState()
+        childrenToParentEventSender.sendToParent(ChildToParentEvent.PaymentInProgress)
+        childrenToParentEventSender.sendToParent(
+            NavigationEvent.ReturnHomeFromCashWhenCardPaymentStarted
+        )
     }
 
     private suspend fun handleCollectingPaymentState(paymentState: CardReaderPaymentState.CollectingPayment) {
@@ -352,7 +353,6 @@ class WooPosTotalsViewModel @Inject constructor(
             uiState.value = buildWooPosTotalsViewState(order)
             childrenToParentEventSender.sendToParent(ChildToParentEvent.PaymentCollecting)
         }
-        analyticsTracker.track(ReaderReadyForCardPayment)
     }
 
     private suspend fun handleReaderLoadingPaymentState() {
@@ -417,7 +417,7 @@ class WooPosTotalsViewModel @Inject constructor(
                             orderTotal = order.total
                         )
                         uiState.value = buildWooPosTotalsViewState(order)
-                        analyticsTracker.track(WooPosAnalyticsEvent.Event.OrderCreationSuccess)
+                        totalsAnalyticsTracker.trackOrderCreationSuccess()
                         collectPayment()
                     },
                     onFailure = { error ->
@@ -425,13 +425,7 @@ class WooPosTotalsViewModel @Inject constructor(
                         uiState.value = WooPosTotalsViewState.Error(
                             resourceProvider.getString(R.string.woopos_totals_order_creation_error)
                         )
-                        analyticsTracker.track(
-                            WooPosAnalyticsEvent.Error.OrderCreationError(
-                                errorContext = WooPosTotalsViewModel::class,
-                                errorType = error::class.simpleName,
-                                errorDescription = error.message
-                            )
-                        )
+                        totalsAnalyticsTracker.trackOrderCreationFailed(error)
                     }
                 )
         }

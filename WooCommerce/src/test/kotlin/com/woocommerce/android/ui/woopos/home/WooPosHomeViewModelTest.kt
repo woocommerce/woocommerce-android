@@ -4,11 +4,13 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccessfullyPaid.PaymentMethod
+import com.woocommerce.android.ui.woopos.home.WooPosHomeUIEvent.ExitPosClicked
 import com.woocommerce.android.ui.woopos.home.WooPosHomeUIEvent.SystemBackClicked
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCartTapped
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ExitConfirmed
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -112,7 +114,7 @@ class WooPosHomeViewModelTest {
         }
 
     @Test
-    fun `given state is Cart Empty, when ExitPosClicked passed, then exit confirmation dialog should be shown`() =
+    fun `when ExitPos confirmed in exit confirmation dialog, then should track event`() =
         runTest {
             // GIVEN
             val eventsFlow = MutableSharedFlow<ChildToParentEvent>()
@@ -120,15 +122,10 @@ class WooPosHomeViewModelTest {
             val viewModel = createViewModel()
 
             // WHEN
-            eventsFlow.emit(ChildToParentEvent.ExitPosClicked)
+            viewModel.onUIEvent(ExitPosClicked)
 
             // THEN
-            assertThat(viewModel.state.value.exitConfirmationDialog)
-                .isEqualTo(
-                    WooPosHomeState.ExitConfirmationDialog(
-                        isVisible = true
-                    )
-                )
+            verify(analyticsTracker).track(ExitConfirmed)
         }
 
     @Test

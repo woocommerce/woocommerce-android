@@ -4,12 +4,16 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingAddressDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigurationDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.AddressNormalizationModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PurchasedLabelData
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import javax.inject.Inject
 
@@ -39,7 +43,7 @@ class WooShippingLabelRepository @Inject constructor(
                 ?.takeIf { response.isError.not() }
                 ?.let {
                     configurationDataStore.saveStoreOptions(it)
-                } ?: configurationDataStore.clearStoreOptions()
+                }
         }
 
     suspend fun fetchPurchasedShippingLabels(
@@ -112,10 +116,22 @@ class WooShippingLabelRepository @Inject constructor(
         site: SiteModel,
         address: Address
     ): WooResult<AddressNormalizationModel> {
-        return restClient.normalizeAddress(
+        val normalizedAddress = restClient.normalizeAddress(
             site = site,
             address = mapper.toAddressDTO(address)
-        ).asWooResult { mapper(it) }
+        )
+
+        return if (normalizedAddress.result?.success == true) {
+            normalizedAddress.asWooResult { mapper(it) }
+        } else {
+            WooResult(
+                WooError(
+                    type = WooErrorType.INVALID_RESPONSE,
+                    original = GenericErrorType.INVALID_RESPONSE,
+                    message = "Address normalization failed"
+                )
+            )
+        }
     }
 
     suspend fun updateOriginAddress(
@@ -123,18 +139,84 @@ class WooShippingLabelRepository @Inject constructor(
         address: Address,
         addressId: String?
     ): WooResult<OriginShippingAddress> {
-        return restClient.updateOriginAddress(
+        val updatedAddress = restClient.updateOriginAddress(
             site = site,
             address = mapper.toAddressDTO(address, addressId)
-        ).asWooResult {
-            mapper.toOriginAddress(it.address)
+        )
+
+        return if (updatedAddress.result?.success == true) {
+            updatedAddress.asWooResult { mapper.toOriginAddress(it.address) }
+                .also { response ->
+                    response.model
+                        ?.takeIf { response.isError.not() }
+                        ?.let {
+                            addressDataStore.updateOriginAddress(it)
+                        }
+                }
+        } else {
+            WooResult(
+                WooError(
+                    type = WooErrorType.INVALID_RESPONSE,
+                    original = GenericErrorType.INVALID_RESPONSE,
+                    message = "Address update failed"
+                )
+            )
         }
-            .also { response ->
-                response.model
-                    ?.takeIf { response.isError.not() }
-                    ?.let {
-                        addressDataStore.updateOriginAddress(it)
-                    }
+    }
+
+    suspend fun updateDestinationAddress(
+        site: SiteModel,
+        orderId: Long,
+        address: Address,
+    ): WooResult<DestinationShippingAddress> {
+        val updatedAddress = restClient.updateDestinationAddress(
+            site = site,
+            orderId = orderId,
+            address = mapper.toAddressDTO(address)
+        )
+
+        return if (updatedAddress.result?.success == true) {
+            updatedAddress.asWooResult {
+                DestinationShippingAddress(
+                    address = mapper(it.address),
+                    isVerified = it.isVerified
+                )
             }
+        } else {
+            WooResult(
+                WooError(
+                    type = WooErrorType.INVALID_RESPONSE,
+                    original = GenericErrorType.INVALID_RESPONSE,
+                    message = "Address update failed"
+                )
+            )
+        }
+    }
+
+    suspend fun verifyDestinationAddress(
+        site: SiteModel,
+        orderId: Long,
+    ): WooResult<DestinationShippingAddress> {
+        val verifyDestinationAddress = restClient.verifyDestinationAddress(
+            site = site,
+            orderId = orderId,
+        )
+
+        return if (verifyDestinationAddress.result?.success == true) {
+            verifyDestinationAddress.asWooResult {
+                DestinationShippingAddress(
+                    address = mapper(it.normalizedAddress),
+                    isVerified = it.isVerified
+                )
+            }
+        } else {
+            WooResult(
+                WooError(
+                    type = WooErrorType.INVALID_RESPONSE,
+                    original = GenericErrorType.INVALID_RESPONSE,
+                    message = "Address verification failed"
+                )
+            )
+        }
     }
 }

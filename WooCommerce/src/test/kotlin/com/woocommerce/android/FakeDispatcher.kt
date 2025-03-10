@@ -3,9 +3,11 @@ package com.woocommerce.android
 import org.greenrobot.eventbus.Subscribe
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.annotations.action.Action
+import org.wordpress.android.fluxc.annotations.action.IAction
 
-class FakeDispatcher(private val dispatchCallback: Dispatcher.(action: Action<*>) -> Unit = {}) : Dispatcher() {
+class FakeDispatcher : Dispatcher() {
     private val listeners = mutableListOf<Any>()
+    private var actionHandlers = mutableMapOf<IAction, Dispatcher.() -> Unit>()
 
     @Synchronized
     override fun register(`object`: Any) {
@@ -32,6 +34,10 @@ class FakeDispatcher(private val dispatchCallback: Dispatcher.(action: Action<*>
     }
 
     override fun dispatch(action: Action<*>) {
-        dispatchCallback(action)
+        actionHandlers[action.type]?.invoke(this)
+    }
+
+    fun registerActionHandler(actionType: IAction, handler: Dispatcher.() -> Unit) {
+        actionHandlers[actionType] = handler
     }
 }

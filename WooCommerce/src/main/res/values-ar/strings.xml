@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-02-10 17:54:05+0000
+Translation-Revision-Date: 2025-02-24 15:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_confirm_submit_address_entered">تأكيد العنوان الذي تم إدخاله</string>
+    <string name="woo_shipping_confirm_submit_address_suggested">تأكيد العنوان المقترح</string>
+    <string name="woo_shipping_confirm_address_suggested">مقترح</string>
+    <string name="woo_shipping_confirm_address_entered">الذي أدخلته</string>
+    <string name="woo_shipping_confirm_address_description">لقد أجرينا تعديلاً طفيفًا على العنوان الذي تم إدخاله.\nإذا كان صحيحًا، فيرجى استخدام العنوان المقترح لضمان التوصيل الدقيق.</string>
+    <string name="woo_shipping_confirm_address_title">تأكيد العنوان</string>
+    <string name="woo_shipping_address_validate_message">التحقق من العنوان الذي تم إدخاله</string>
+    <string name="woo_shipping_address_validate_title">التحقق</string>
+    <string name="woo_shipping_labels_loading_error">يتعذر تحميل البيانات</string>
+    <string name="woo_shipping_labels_loading_order_error">يتعذر تحميل الطلب</string>
+    <string name="woo_shipping_address_missing_info_hint">إضافة معلومات مفقودة</string>
+    <string name="woo_shipping_address_validate_and_save">التحقق والحفظ</string>
+    <string name="woo_shipping_address_missing_info">معلومات مفقودة</string>
+    <string name="woo_shipping_address_unverified">عنوان غير متحقق منه</string>
+    <string name="woo_shipping_address_verified">تم التحقق من العنوان</string>
+    <string name="woopos_reader_not_connected_description">يرجى التأكد من اتصال قارئ البطاقة.</string>
+    <string name="woopos_documentation_title">الوثائق</string>
     <string name="woo_shipping_labels_customs_restriction_other">أخرى</string>
     <string name="woo_shipping_labels_customs_restriction_sanitary">التفتيش الصحي/تفتيش الصحة النباتية</string>
     <string name="woo_shipping_labels_customs_restriction_quarantine">الحجر الصحي</string>
@@ -110,7 +127,6 @@ Language: ar
     <string name="woopos_success_totals_error_reader_not_connected_subtitle">لمعالجة هذا الدفع، يرجى الاتصال بالقارئ الخاص بك.</string>
     <string name="woopos_success_totals_error_reader_not_connected_title">لم يتم الاتصال بالقارئ</string>
     <string name="woopos_payment_take_cash_payment_label">المدفوعات النقدية</string>
-    <string name="woopos_receipt_sending_not_supported">يرجى تحديث WooCommerce إلى الإصدار %s أو إصدار لاحق</string>
     <string name="woopos_receipt_button">إرسال إيصال في رسالة عبر البريد الإلكتروني</string>
     <string name="blaze_campaign_creation_no_product_modal_cta">إنشاء المنتج</string>
     <string name="blaze_campaign_creation_no_product_modal_body">لا يتاح أمامك منتج لغرض الترويج حاليًا. هل تود إنشاء منتج الآن؟</string>
@@ -163,7 +179,6 @@ Language: ar
     <string name="shipping_label_purchased_note">ملاحظة: يُعد إعادة استخدام ملصق طباعة انتهاكًا لشروط الخدمة وقد يؤدي إلى توجيه اتهامات جنائية.</string>
     <string name="shipping_label_purchased_success_message">من هنا، يمكنك طباعة ملصق الشحن مجددًا أو تغيير حجم ورق الملصق.</string>
     <string name="shipping_label_purchased_success_title">ملصق الشحن لديك جاهز للطباعة</string>
-    <string name="order_detail_edit_store_currency_mismatch">عذرًا، لا يمكنك سوى تحرير هذا الطلب على الويب، لأنه يستخدم ⁦%1$s⁩، وعملة موقعك هي ⁦%2$s⁩</string>
     <string name="shipping_label_shipping_service_title">خدمة الشحن</string>
     <string name="shipping_label_shipping_rates_sort_option_fastest">الأسرع</string>
     <string name="shipping_label_shipping_rates_sort_option_cheapest">الأرخص</string>
@@ -3577,6 +3592,7 @@ Language: ar
     <string name="settings_crash_reporting">تقارير الأعطال</string>
     <string name="share">مشاركة</string>
     <string name="version_with_name_param">الإصدار %s</string>
+    <string name="default_web_client_id" a8c-src-lib="module:login">عنصر نائب</string>
     <string name="httppassword">كلمة مرور HTTP</string>
     <string name="httpuser">اسم مستخدم HTTP</string>
     <string name="http_authorization_required">مطلوب ترخيص</string>

@@ -1,16 +1,13 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.sizeIn
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.components.ErrorMessageWithButton
 
 @Composable
 internal fun ShippingRatesSection(
@@ -31,20 +28,11 @@ internal fun ShippingRatesSection(
             )
         }
 
-        WooShippingLabelCreationViewModel.ShippingRatesState.Error -> {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .sizeIn(minHeight = 300.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text(text = "Error")
-                WCColoredButton(onClick = { onRefreshShippingRates() }) {
-                    Text(text = "Retry")
-                }
-            }
-        }
+        WooShippingLabelCreationViewModel.ShippingRatesState.Error -> ErrorMessageWithButton(
+            message = R.string.woo_shipping_labels_package_creation_shipping_rates_loading_error,
+            modifier = Modifier.sizeIn(minHeight = 300.dp),
+            onRetryClick = { onRefreshShippingRates() }
+        )
 
         is WooShippingLabelCreationViewModel.ShippingRatesState.Loading -> {
             ShippingRatesLoading(

@@ -18,6 +18,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.InteractionWithCustomerStarted
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTrackingDataKeeper
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -68,6 +69,7 @@ class WooPosCartViewModelTest {
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
 
     private val savedState: SavedStateHandle = SavedStateHandle()
+    private val trackerData: WooPosAnalyticsTrackingDataKeeper = WooPosAnalyticsTrackingDataKeeper()
 
     @Test
     fun `given empty cart, when product clicked in product selector, then should add product to cart`() = runTest {
@@ -230,7 +232,7 @@ class WooPosCartViewModelTest {
     }
 
     @Test
-    fun `given items in cart, when checkout tapped, then should track envent`() = runTest {
+    fun `given items in cart, when checkout tapped, then should track event`() = runTest {
         // GIVEN
         val (sut, states) = createSutWithItemsInCart()
         assertThat(states.last().body).isInstanceOf(WooPosCartState.Body.WithItems::class.java)
@@ -668,6 +670,7 @@ class WooPosCartViewModelTest {
             resourceProvider,
             formatPrice,
             analyticsTracker,
+            trackerData,
             savedState
         )
     }

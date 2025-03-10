@@ -60,21 +60,21 @@ data class PurchasedShippingLabelResponseDTO(
 data class ShippingRatePurchaseDTO(val rate: ShippingRatePurchaseResponseDTO)
 
 data class ShippingRatePurchaseResponseDTO(
-    val rateId: String,
-    val serviceId: String,
-    val carrierId: String?,
+    @SerializedName("rate_id") val rateId: String,
+    @SerializedName("service_id") val serviceId: String,
+    @SerializedName("carrier_id") val carrierId: String?,
     val title: String,
     val rate: BigDecimal,
-    val retailRate: BigDecimal? = null,
-    val listRate: BigDecimal? = null,
-    val isSelected: Boolean,
+    @SerializedName("retail_rate") val retailRate: BigDecimal? = null,
+    @SerializedName("list_rate") val listRate: BigDecimal? = null,
+    @SerializedName("is_selected") val isSelected: Boolean,
     val tracking: Boolean = false,
     val insurance: String?,
-    val freePickup: Boolean,
-    val shipmentId: String?,
-    val deliveryDays: Int,
-    val deliveryDateGuaranteed: Boolean,
-    val deliveryDate: String?
+    @SerializedName("free_pickup") val freePickup: Boolean,
+    @SerializedName("shipment_id") val shipmentId: String?,
+    @SerializedName("delivery_days") val deliveryDays: Int,
+    @SerializedName("delivery_date_guaranteed") val deliveryDateGuaranteed: Boolean,
+    @SerializedName("delivery_date") val deliveryDate: String?
 )
 
 data class AddressDTO(
@@ -96,12 +96,20 @@ data class AddressDTO(
 )
 
 data class NormalizationResponseDTO(
+    val success: Boolean,
     val normalizedAddress: AddressDTO,
     val address: AddressDTO,
     val isTrivialNormalization: Boolean
 )
 
 data class UpdateAddressResponseDTO(
+    val success: Boolean,
     val address: AddressDTO,
+    val isVerified: Boolean
+)
+
+data class VerifyDestinationAddressResponseDTO(
+    val success: Boolean,
+    val normalizedAddress: AddressDTO,
     val isVerified: Boolean
 )

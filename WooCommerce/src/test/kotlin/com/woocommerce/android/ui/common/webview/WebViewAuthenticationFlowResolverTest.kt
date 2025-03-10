@@ -124,6 +124,18 @@ class WebViewAuthenticationFlowResolverTest {
         assertThat(result).isTrue()
     }
 
+    @Test
+    fun `given a URL without scheme, when checking if the URL is part of the site, then it should return true`() {
+        val site = SiteModel().apply { url = "https://example.com" }
+        val url = "example.com/path"
+
+        val result = with(sut) {
+            url.isPartOf(site)
+        }
+
+        assertThat(result).isTrue()
+    }
+
     private fun givenWPComAuthenticated() {
         given(accountStore.accessToken).willReturn("token")
         given(accountStore.account).willReturn(AccountModel().apply { userName = "username" })

@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-02-11 09:54:04+0000
+Translation-Revision-Date: 2025-02-25 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_confirm_submit_address_entered">Konfirmasi Alamat yang Dimasukkan</string>
+    <string name="woo_shipping_confirm_submit_address_suggested">Konfirmasi Alamat yang Disarankan</string>
+    <string name="woo_shipping_confirm_address_suggested">Disarankan</string>
+    <string name="woo_shipping_confirm_address_entered">Yang Anda masukkan</string>
+    <string name="woo_shipping_confirm_address_description">Kami mengubah sedikit alamat yang dimasukkan.\nJika sudah benar, gunakan alamat yang disarankan agar pengantaran akurat.</string>
+    <string name="woo_shipping_confirm_address_title">Konfirmasi alamat</string>
+    <string name="woo_shipping_address_validate_message">Memvalidasi alamat yang dimasukkan</string>
+    <string name="woo_shipping_address_validate_title">Memvalidasi</string>
+    <string name="woo_shipping_labels_loading_error">Tidak dapat memuat data</string>
+    <string name="woo_shipping_labels_loading_order_error">Tidak dapat memuat pesanan</string>
+    <string name="woo_shipping_address_missing_info_hint">Tambahkan informasi yang kurang</string>
+    <string name="woo_shipping_address_validate_and_save">Lakukan Validasi dan Simpan</string>
+    <string name="woo_shipping_address_missing_info">Informasi kurang</string>
+    <string name="woo_shipping_address_unverified">Alamat tidak terverifikasi</string>
+    <string name="woo_shipping_address_verified">Alamat terverifikasi</string>
+    <string name="woopos_reader_not_connected_description">Pastikan pembaca kartu sudah terhubung.</string>
+    <string name="woopos_documentation_title">Dokumentasi</string>
     <string name="woo_shipping_labels_customs_restriction_other">Lainnya</string>
     <string name="woo_shipping_labels_customs_restriction_sanitary">Pemeriksaan Sanitasi/Fitosanitasi</string>
     <string name="woo_shipping_labels_customs_restriction_quarantine">Karantina</string>
@@ -110,7 +127,6 @@ Language: id
     <string name="woopos_success_totals_error_reader_not_connected_subtitle">Untuk memproses pembayaran ini, hubungkan ke perangkat pembaca kartu.</string>
     <string name="woopos_success_totals_error_reader_not_connected_title">Perangkat pembaca kartu tidak terhubung</string>
     <string name="woopos_payment_take_cash_payment_label">Pembayaran tunai</string>
-    <string name="woopos_receipt_sending_not_supported">Perbarui WooCommerce ke versi %s atau yang lebih baru</string>
     <string name="woopos_receipt_button">Email tanda terima</string>
     <string name="blaze_campaign_creation_no_product_modal_cta">Buat Produk</string>
     <string name="blaze_campaign_creation_no_product_modal_body">Saat ini tidak ada produk yang tersedia untuk promosi. Anda ingin membuat produk sekarang?</string>
@@ -161,7 +177,6 @@ Language: id
     <string name="shipping_label_purchased_track_shipment">Lacak pengiriman</string>
     <string name="shipping_label_purchased_learn_how_to_print">Pelajari cara mencetak dari perangkat seluler Anda</string>
     <string name="shipping_label_purchased_note">Catatan: Penggunaan kembali label yang dicetak adalah tindakan yang melanggar ketentuan layanan kami dan dapat mengakibatkan tuntutan pidana.</string>
-    <string name="order_detail_edit_store_currency_mismatch">Maaf, Anda hanya bisa mengedit pesanan ini di web, karena pesanan menggunakan %1$s, dan mata uang situs Anda adalah %2$s</string>
     <string name="shipping_label_purchased_success_message">Dari sini, Anda dapat mencetak label pengiriman lagi atau mengubah ukuran kertas label.</string>
     <string name="shipping_label_purchased_success_title">Label pengiriman siap dicetak</string>
     <string name="shipping_label_shipping_service_title">Layanan pengiriman</string>
@@ -3635,6 +3650,7 @@ Language: id
     <string name="enter_wpcom_or_jetpack_site">Masukkan situs WordPress dihosting sendiri yang terhubung ke Jetpack atau WordPress.com</string>
     <string name="xmlrpc_endpoint_forbidden_error">Tidak dapat terhubung. Kami menerima error 403 saat mencoba mengakses\n titik akhir XMLRPC situs Anda. Aplikasi ini memerlukannya agar dapat berkomunikasi dengan situs Anda. Hubungi host Anda untuk mengatasi\n masalah ini.</string>
     <string name="signup_magic_link_error">Ada beberapa masalah saat mengirim email. Anda dapat mencoba lagi sekarang atau menutupnya dan mencoba lagi nanti.</string>
+    <string name="default_web_client_id" a8c-src-lib="module:login">placeholder</string>
     <string name="alternatively">Atau:</string>
     <string name="notification_channel_general_title">Umum</string>
     <string name="at_username">\@%s</string>

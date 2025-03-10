@@ -168,7 +168,7 @@ class AnalyticsTracker private constructor(
         private const val TRACKS_ANON_ID = "nosara_tracks_anon_id"
         private const val EVENTS_PREFIX = "woocommerceandroid_"
         private const val POS_EVENTS_PREFIX = "woocommerceandroid_pos_"
-        private const val KEY_SITE_URL = "site_url"
+        const val KEY_SITE_URL = "site_url"
 
         const val IS_DEBUG = "is_debug"
         const val KEY_ALREADY_READ = "already_read"

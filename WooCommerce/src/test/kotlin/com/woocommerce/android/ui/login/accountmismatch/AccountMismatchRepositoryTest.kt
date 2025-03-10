@@ -11,6 +11,7 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.jetpack.JetpackConnectionData
 import org.wordpress.android.fluxc.model.jetpack.JetpackUser
 import org.wordpress.android.fluxc.store.JetpackStore
 import org.wordpress.android.fluxc.store.SiteStore
@@ -33,8 +34,8 @@ class AccountMismatchRepositoryTest : BaseUnitTest() {
 
     @Test
     fun `given a non-connected Jetpack Account, when fetching status, then return correct status`() = testBlocking {
-        whenever(jetpackStore.fetchJetpackUser(any(), eq(false)))
-            .thenReturn(JetpackStore.JetpackUserResult(createJetpackUser(isConnected = false)))
+        whenever(jetpackStore.fetchJetpackConnectionData(any(), eq(false)))
+            .thenReturn(JetpackStore.JetpackResult(createJetpackConnectionData(isConnected = false)))
 
         val result = sut.checkJetpackConnection(
             siteUrl = "https://example.com",
@@ -47,8 +48,8 @@ class AccountMismatchRepositoryTest : BaseUnitTest() {
 
     @Test
     fun `given a null jetpack user, when fetching connection status, then assume non-connected`() = testBlocking {
-        whenever(jetpackStore.fetchJetpackUser(any(), eq(false)))
-            .thenReturn(JetpackStore.JetpackUserResult(null))
+        whenever(jetpackStore.fetchJetpackConnectionData(any(), eq(false)))
+            .thenReturn(JetpackStore.JetpackResult(null))
 
         val result = sut.checkJetpackConnection(
             siteUrl = "https://example.com",
@@ -61,8 +62,8 @@ class AccountMismatchRepositoryTest : BaseUnitTest() {
 
     @Test
     fun `given a connected Jetpack Account, when fetching status, then return correct status`() = testBlocking {
-        whenever(jetpackStore.fetchJetpackUser(any(), eq(false)))
-            .thenReturn(JetpackStore.JetpackUserResult(createJetpackUser(isConnected = true, wpcomEmail = "email")))
+        whenever(jetpackStore.fetchJetpackConnectionData(any(), eq(false)))
+            .thenReturn(JetpackStore.JetpackResult(createJetpackConnectionData(isConnected = true, wpcomEmail = "email")))
 
         val result = sut.checkJetpackConnection(
             siteUrl = "https://example.com",
@@ -76,8 +77,8 @@ class AccountMismatchRepositoryTest : BaseUnitTest() {
 
     @Test
     fun `given a correctly connected Jetpack account, when fetching email, then return it`() = testBlocking {
-        whenever(jetpackStore.fetchJetpackUser(any(), eq(false)))
-            .thenReturn(JetpackStore.JetpackUserResult(createJetpackUser(isConnected = true, wpcomEmail = "email")))
+        whenever(jetpackStore.fetchJetpackConnectionData(any(), eq(false)))
+            .thenReturn(JetpackStore.JetpackResult(createJetpackConnectionData(isConnected = true, wpcomEmail = "email")))
 
         val result = sut.fetchJetpackConnectedEmail(SiteModel())
 
@@ -86,23 +87,28 @@ class AccountMismatchRepositoryTest : BaseUnitTest() {
 
     @Test
     fun `given an issue with Jetpack account, when fetching email, then return error`() = testBlocking {
-        whenever(jetpackStore.fetchJetpackUser(any(), eq(false)))
-            .thenReturn(JetpackStore.JetpackUserResult(createJetpackUser(isConnected = true, wpcomEmail = "")))
+        whenever(jetpackStore.fetchJetpackConnectionData(any(), eq(false)))
+            .thenReturn(JetpackStore.JetpackResult(createJetpackConnectionData(isConnected = true, wpcomEmail = "")))
 
         val result = sut.fetchJetpackConnectedEmail(SiteModel())
 
         assertThat(result.isFailure).isTrue()
     }
 
-    private fun createJetpackUser(
+    private fun createJetpackConnectionData(
         isConnected: Boolean = false,
         wpcomEmail: String = ""
-    ) = JetpackUser(
-        isConnected = isConnected,
-        wpcomEmail = wpcomEmail,
-        isMaster = false,
-        username = "username",
-        wpcomId = 1L,
-        wpcomUsername = "wpcomUsername"
+    ) = JetpackConnectionData(
+        currentUser = JetpackUser(
+            isConnected = isConnected,
+            wpcomEmail = wpcomEmail,
+            isMaster = false,
+            username = "username",
+            wpcomId = 1L,
+            wpcomUsername = "wpcomUsername"
+        ),
+        isSiteRegistered = null,
+        blogId = 1L,
+        connectionOwner = null
     )
 }

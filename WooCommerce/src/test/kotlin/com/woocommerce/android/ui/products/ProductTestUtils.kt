@@ -78,6 +78,7 @@ object ProductTestUtils {
             purchasable = isPurchasable
             manageStock = isStockManaged
             combineVariationQuantities = productCombinesVariationQuantities
+            permalink = "https://example.com/product/1"
         }.toAppModel()
     }
 

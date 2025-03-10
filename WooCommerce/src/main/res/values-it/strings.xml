@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-02-12 09:54:03+0000
+Translation-Revision-Date: 2025-02-25 15:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_confirm_submit_address_entered">Conferma l\'indirizzo inserito</string>
+    <string name="woo_shipping_confirm_submit_address_suggested">Conferma l\'indirizzo suggerito</string>
+    <string name="woo_shipping_confirm_address_suggested">Suggerito</string>
+    <string name="woo_shipping_confirm_address_entered">Dati inseriti</string>
+    <string name="woo_shipping_confirm_address_description">Abbiamo leggermente modificato l\'indirizzo inserito.\nSe è corretto, usa l\'indirizzo inserito per garantire una consegna accurata.</string>
+    <string name="woo_shipping_confirm_address_title">Conferma indirizzo</string>
+    <string name="woo_shipping_address_validate_message">Convalida dell\'indirizzo inserito</string>
+    <string name="woo_shipping_address_validate_title">Convalida</string>
+    <string name="woo_shipping_labels_loading_error">Impossibile caricare i dati</string>
+    <string name="woo_shipping_labels_loading_order_error">Impossibile caricare l\'ordine</string>
+    <string name="woo_shipping_address_missing_info_hint">Aggiungi le informazioni mancanti</string>
+    <string name="woo_shipping_address_validate_and_save">Verifica e salva</string>
+    <string name="woo_shipping_address_missing_info">Informazioni mancanti</string>
+    <string name="woo_shipping_address_unverified">Indirizzo non verificato</string>
+    <string name="woo_shipping_address_verified">Indirizzo verificato</string>
+    <string name="woopos_reader_not_connected_description">Assicurati che ci sia un lettore di carte connesso.</string>
+    <string name="woopos_documentation_title">Documentazione</string>
     <string name="woo_shipping_labels_customs_restriction_other">Altro</string>
     <string name="woo_shipping_labels_customs_restriction_sanitary">Ispezione sanitaria/fitosanitaria</string>
     <string name="woo_shipping_labels_customs_restriction_quarantine">Quarantena</string>
@@ -110,7 +127,6 @@ Language: it
     <string name="woopos_success_totals_error_reader_not_connected_subtitle">Per elaborare questo pagamento, collega il lettore.</string>
     <string name="woopos_success_totals_error_reader_not_connected_title">Lettore non connesso</string>
     <string name="woopos_payment_take_cash_payment_label">Pagamento in contanti</string>
-    <string name="woopos_receipt_sending_not_supported">Aggiorna WooCommerce alla versione %s o successiva</string>
     <string name="woopos_receipt_button">Ricevuta via e-mail</string>
     <string name="blaze_campaign_creation_no_product_modal_cta">Crea prodotto</string>
     <string name="blaze_campaign_creation_no_product_modal_body">Al momento non hai prodotti disponibili per la promozione. Vuoi creare un prodotto ora?</string>
@@ -163,7 +179,6 @@ Language: it
     <string name="shipping_label_purchased_note">Nota: il riutilizzo di un\'etichetta stampata viola i nostri termini di servizio e può comportare una denuncia penale.</string>
     <string name="shipping_label_purchased_success_message">Da qui puoi stampare di nuovo l\'etichetta di spedizione o cambiare il formato della carta per l\'etichetta.</string>
     <string name="shipping_label_purchased_success_title">La tua etichetta di spedizione è pronta per la stampa</string>
-    <string name="order_detail_edit_store_currency_mismatch">Spiacenti, puoi modificare questo ordine solo sul web, in quanto utilizza %1$s, mentre la valuta del tuo sito è %2$s</string>
     <string name="shipping_label_shipping_service_title">Servizio di spedizione</string>
     <string name="shipping_label_shipping_rates_sort_option_fastest">Più veloce</string>
     <string name="shipping_label_shipping_rates_sort_option_cheapest">Più economico</string>
@@ -3577,6 +3592,7 @@ Language: it
     <string name="settings_crash_reporting">Rapporti di arresto anomalo</string>
     <string name="share">Condividi</string>
     <string name="version_with_name_param">Versione %s</string>
+    <string name="default_web_client_id" a8c-src-lib="module:login">segnaposto</string>
     <string name="httppassword">Password HTTP</string>
     <string name="httpuser">HTTP nome utente</string>
     <string name="http_authorization_required">Autorizzazione richiesta</string>

@@ -28,6 +28,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemRemovedFromCart
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTrackingDataKeeper
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -45,6 +46,7 @@ class WooPosCartViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val formatPrice: WooPosFormatPrice,
     private val analyticsTracker: WooPosAnalyticsTracker,
+    private val analyticsTrackingDataKeeper: WooPosAnalyticsTrackingDataKeeper,
     savedState: SavedStateHandle,
 ) : ViewModel() {
     private val _state = savedState.getStateFlow(
@@ -55,7 +57,7 @@ class WooPosCartViewModel @Inject constructor(
 
     val state: LiveData<WooPosCartState> = _state
         .asLiveData()
-        .map { updateCartStatusDependingOnItems(it) }
+        .map { updateCartStatusDependingOnItems(it).also { newState -> updateAnalyticsData(newState) } }
         .map { updateToolbarState(it) }
         .map { updateStateDependingOnCartStatus(it) }
 
@@ -264,6 +266,13 @@ class WooPosCartViewModel @Inject constructor(
     private fun sendEventToParent(event: ChildToParentEvent) {
         viewModelScope.launch {
             childrenToParentEventSender.sendToParent(event)
+        }
+    }
+
+    private fun updateAnalyticsData(newState: WooPosCartState) {
+        if (newState.body == WooPosCartState.Body.Empty) {
+            analyticsTrackingDataKeeper.reset()
+            analyticsTrackingDataKeeper.interactionWithCustomerStartedTimestamp = System.currentTimeMillis()
         }
     }
 

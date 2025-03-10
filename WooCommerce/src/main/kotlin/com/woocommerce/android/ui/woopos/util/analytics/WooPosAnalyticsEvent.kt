@@ -38,6 +38,12 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
         data object CashCollectPaymentSuccess : Event() {
             override val name: String = "cash_collect_payment_success"
         }
+        data object CashPaymentTapped : Event() {
+            override val name: String = "cash_payment_tapped"
+        }
+        data object CashPaymentFailed : Event() {
+            override val name: String = "cash_payment_failed"
+        }
         data object CheckoutTapped : Event() {
             override val name: String = "checkout_tapped"
         }
@@ -61,6 +67,9 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
         }
         data object ExitTapped : Event() {
             override val name: String = "exit_menu_item_tapped"
+        }
+        data object ExitConfirmed : Event() {
+            override val name: String = "exit_confirmed"
         }
         data object GetSupportTapped : Event() {
             override val name: String = "get_support_tapped"

@@ -1,4 +1,6 @@
 /module/stats/active
 /connection/url
 /connection/data
+/connection/register
+/remote_provision
 /jitm

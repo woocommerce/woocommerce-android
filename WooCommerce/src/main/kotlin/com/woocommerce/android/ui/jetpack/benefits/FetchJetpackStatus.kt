@@ -38,7 +38,10 @@ class FetchJetpackStatus @Inject constructor(
 
     @Suppress("ReturnCount", "NestedBlockDepth")
     suspend operator fun invoke(): Result<JetpackStatusFetchResponse> {
-        return jetpackStore.fetchJetpackUser(selectedSite.get(), useApplicationPasswords = true).let { userResult ->
+        return jetpackStore.fetchJetpackConnectionData(
+            site = selectedSite.get(),
+            useApplicationPasswords = true
+        ).let { userResult ->
             when {
                 userResult.error?.errorCode == FORBIDDEN_CODE -> {
                     Result.success(JetpackStatusFetchResponse.ConnectionForbidden)
@@ -66,6 +69,7 @@ class FetchJetpackStatus @Inject constructor(
                             pluginResult.isError -> {
                                 return Result.failure(OnChangedException(pluginResult.error))
                             }
+
                             else -> {
                                 pluginResult.model!!.any { it.slug == JETPACK_SLUG && it.isActive }
                             }
@@ -76,8 +80,8 @@ class FetchJetpackStatus @Inject constructor(
                         JetpackStatusFetchResponse.Success(
                             JetpackStatus(
                                 isJetpackInstalled = isJetpackInstalled,
-                                isJetpackConnected = userResult.user!!.isConnected,
-                                wpComEmail = userResult.user!!.wpcomEmail.orNullIfEmpty()
+                                isJetpackConnected = userResult.data!!.currentUser.isConnected,
+                                wpComEmail = userResult.data!!.currentUser.wpcomEmail.orNullIfEmpty()
                             )
                         )
                     )

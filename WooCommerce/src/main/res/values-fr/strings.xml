@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-02-10 17:54:04+0000
+Translation-Revision-Date: 2025-02-25 13:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_confirm_submit_address_entered">Confirmer l’adresse saisie</string>
+    <string name="woo_shipping_confirm_submit_address_suggested">Confirmer l’adresse suggérée</string>
+    <string name="woo_shipping_confirm_address_suggested">Suggestion</string>
+    <string name="woo_shipping_confirm_address_entered">Ce que vous avez saisi</string>
+    <string name="woo_shipping_confirm_address_description">Nous avons légèrement modifié l’adresse saisie.\nSi l’adresse suggérée est correcte, utilisez-la pour garantir la précision de la livraison.</string>
+    <string name="woo_shipping_confirm_address_title">Confirmer l’adresse</string>
+    <string name="woo_shipping_address_validate_message">Validation de l’adresse saisie</string>
+    <string name="woo_shipping_address_validate_title">Validation</string>
+    <string name="woo_shipping_labels_loading_error">Impossible de charger les données</string>
+    <string name="woo_shipping_labels_loading_order_error">Impossible de charger la commande</string>
+    <string name="woo_shipping_address_missing_info_hint">Ajouter des informations manquantes</string>
+    <string name="woo_shipping_address_validate_and_save">Valider et enregistrer</string>
+    <string name="woo_shipping_address_missing_info">Informations manquantes</string>
+    <string name="woo_shipping_address_unverified">Adresse non vérifiée</string>
+    <string name="woo_shipping_address_verified">Adresse vérifiée</string>
+    <string name="woopos_reader_not_connected_description">Veuillez vérifier qu’un lecteur de carte est connecté.</string>
+    <string name="woopos_documentation_title">Documentation</string>
     <string name="woo_shipping_labels_customs_restriction_other">Autres</string>
     <string name="woo_shipping_labels_customs_restriction_sanitary">Inspection sanitaire/phytosanitaire</string>
     <string name="woo_shipping_labels_customs_restriction_quarantine">Quarantaine</string>
@@ -110,7 +127,6 @@ Language: fr
     <string name="woopos_success_totals_error_reader_not_connected_subtitle">Pour traiter ce paiement, veuillez connecter votre lecteur.</string>
     <string name="woopos_success_totals_error_reader_not_connected_title">Lecteur non connecté</string>
     <string name="woopos_payment_take_cash_payment_label">Paiement en espèces</string>
-    <string name="woopos_receipt_sending_not_supported">Veuillez mettre à jour WooCommerce vers la version %s ou plus récente</string>
     <string name="woopos_receipt_button">Reçu par e-mail</string>
     <string name="blaze_campaign_creation_no_product_modal_cta">Créer un produit</string>
     <string name="blaze_campaign_creation_no_product_modal_body">Actuellement, aucun de vos produits n’est disponible pour une campagne de promotion. Aimeriez-vous créer un produit maintenant ?</string>
@@ -163,7 +179,6 @@ Language: fr
     <string name="shipping_label_purchased_note">Remarque : la réutilisation d’une étiquette imprimée constitue une violation de nos conditions d’utilisation susceptible d’entraîner des poursuites judiciaires.</string>
     <string name="shipping_label_purchased_success_message">Vous pouvez réimprimer l’étiquette d’expédition ou modifier la dimension de l’étiquette ici.</string>
     <string name="shipping_label_purchased_success_title">Votre étiquette d’expédition est prête pour l’impression</string>
-    <string name="order_detail_edit_store_currency_mismatch">Toutes nos excuses, vous pouvez modifier cette commande sur le Web uniquement car elle est en %1$s et votre site est en %2$s</string>
     <string name="shipping_label_shipping_service_title">Service d’expédition</string>
     <string name="shipping_label_shipping_rates_sort_option_fastest">Le plus rapide</string>
     <string name="shipping_label_shipping_rates_sort_option_cheapest">Le moins cher</string>
@@ -3577,6 +3592,7 @@ Language: fr
     <string name="settings_crash_reporting">Rapports d’incident</string>
     <string name="share">Partager</string>
     <string name="version_with_name_param">Version %s</string>
+    <string name="default_web_client_id" a8c-src-lib="module:login">texte indicatif</string>
     <string name="httppassword">Mot de passe HTTP</string>
     <string name="httpuser">Nom d’utilisateur HTTP</string>
     <string name="http_authorization_required">Autorisation requise</string>

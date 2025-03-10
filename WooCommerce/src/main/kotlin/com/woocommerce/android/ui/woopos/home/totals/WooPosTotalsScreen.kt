@@ -30,6 +30,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -58,6 +59,7 @@ import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState.Total
 import com.woocommerce.android.ui.woopos.home.totals.payment.failed.WooPosPaymentFailedScreen
 import com.woocommerce.android.ui.woopos.home.totals.payment.inprogress.WooPosPaymentInProgressScreen
 import com.woocommerce.android.ui.woopos.home.totals.payment.success.WooPosPaymentSuccessScreen
+import com.woocommerce.android.ui.woopos.util.ext.announceForAccessibility
 
 @Composable
 fun WooPosTotalsScreen(modifier: Modifier = Modifier) {
@@ -88,6 +90,7 @@ private fun WooPosTotalsScreen(
 
         StateChangeAnimated(visible = state is WooPosTotalsViewState.PaymentSuccess) {
             if (state is WooPosTotalsViewState.PaymentSuccess) {
+                LocalContext.current.announceForAccessibility(stringResource(R.string.woopos_payment_successful_label))
                 WooPosPaymentSuccessScreen(
                     state,
                     onReceiptClicked = { onUIEvent(WooPosTotalsUIEvent.OnStartReceiptFlowClicked) },
@@ -104,6 +107,7 @@ private fun WooPosTotalsScreen(
 
         StateChangeAnimated(visible = state is WooPosTotalsViewState.Error) {
             if (state is WooPosTotalsViewState.Error) {
+                LocalContext.current.announceForAccessibility(state.message)
                 TotalsErrorScreen(
                     errorMessage = state.message,
                     onUIEvent = onUIEvent
@@ -113,12 +117,14 @@ private fun WooPosTotalsScreen(
 
         StateChangeAnimated(visible = state is WooPosTotalsViewState.PaymentInProgress) {
             if (state is WooPosTotalsViewState.PaymentInProgress) {
+                LocalContext.current.announceForAccessibility(state.title)
                 WooPosPaymentInProgressScreen(state, onUIEvent)
             }
         }
 
         StateChangeAnimated(visible = state is WooPosTotalsViewState.PaymentFailed) {
             if (state is WooPosTotalsViewState.PaymentFailed) {
+                LocalContext.current.announceForAccessibility(state.title)
                 WooPosPaymentFailedScreen(
                     state = state,
                     onUIEvent = onUIEvent,
@@ -164,6 +170,7 @@ private fun TotalsLoaded(
             when (val readerStatus = state.readerStatus) {
                 is WooPosTotalsViewState.ReaderStatus.Disconnected -> {
                     ReaderDisconnected(modifier = Modifier, status = readerStatus, onUIEvent = onUIEvent)
+                    LocalContext.current.announceForAccessibility(readerStatus.title)
                 }
 
                 is WooPosTotalsViewState.ReaderStatus.Preparing -> {
@@ -171,16 +178,19 @@ private fun TotalsLoaded(
                         title = readerStatus.title,
                         subtitle = readerStatus.subtitle
                     )
+                    LocalContext.current.announceForAccessibility(readerStatus.title)
                 }
                 is WooPosTotalsViewState.ReaderStatus.CheckingOrder -> {
                     PreparingReader(
                         title = readerStatus.title,
                         subtitle = readerStatus.subtitle
                     )
+                    LocalContext.current.announceForAccessibility(readerStatus.title)
                 }
 
                 is WooPosTotalsViewState.ReaderStatus.ReadyForPayment -> {
                     ReaderReadyForPayment(readerStatus)
+                    LocalContext.current.announceForAccessibility(readerStatus.title)
                 }
 
                 is WooPosTotalsViewState.ReaderStatus.Unavailable -> {

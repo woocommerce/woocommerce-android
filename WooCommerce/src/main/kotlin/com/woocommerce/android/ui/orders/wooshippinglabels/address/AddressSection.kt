@@ -23,6 +23,8 @@ import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreHoriz
+import androidx.compose.material.icons.outlined.CheckCircleOutline
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -36,6 +38,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.woocommerce.android.R
@@ -49,7 +52,9 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.RoundedCornerBoxWithB
 import com.woocommerce.android.ui.orders.wooshippinglabels.ShipmentDetailsSectionTitle
 import com.woocommerce.android.ui.orders.wooshippinglabels.VerticalDivider
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingAddresses
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
+import com.woocommerce.android.ui.orders.wooshippinglabels.purchased.successColor
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.shippingSelectedBackgroundColor
 import com.woocommerce.android.ui.orders.wooshippinglabels.toShippingFromString
 import kotlinx.coroutines.launch
@@ -59,6 +64,8 @@ import kotlinx.coroutines.launch
 internal fun AddressSectionPortrait(
     shippingAddresses: WooShippingAddresses,
     shipFromSelectionBottomSheetState: ModalBottomSheetState,
+    onEditDestinationAddress: (DestinationShippingAddress) -> Unit,
+    destinationStatus: AddressStatus,
     modifier: Modifier = Modifier,
     isReadOnly: Boolean = false
 ) {
@@ -71,12 +78,32 @@ internal fun AddressSectionPortrait(
                 shipToLabel,
                 shipToValue,
                 shipToEdit,
-                divider
+                divider,
+                destinationAddressStatus
             ) = createRefs()
 
             val barrier = createEndBarrier(shipFromLabel, shipToLabel)
             val endBarrier = createStartBarrier(shipFromSelect)
             val scope = rememberCoroutineScope()
+
+            val destinationStatusModifier = if (destinationStatus == AddressStatus.MISSING_ADDRESS) {
+                Modifier.constrainAs(destinationAddressStatus) {
+                    top.linkTo(divider.bottom)
+                    start.linkTo(shipToValue.start)
+                    bottom.linkTo(parent.bottom)
+                    end.linkTo(shipToEdit.start)
+                }
+            } else {
+                Modifier
+                    .padding(
+                        bottom = dimensionResource(R.dimen.major_100),
+                        start = dimensionResource(R.dimen.major_100)
+                    )
+                    .constrainAs(destinationAddressStatus) {
+                        top.linkTo(shipToValue.bottom)
+                        start.linkTo(shipToValue.start)
+                    }
+            }
 
             Text(
                 text = stringResource(id = R.string.orderdetail_shipping_label_item_shipfrom),
@@ -157,7 +184,7 @@ internal fun AddressSectionPortrait(
                     )
             )
             Text(
-                text = shippingAddresses.shipTo.toString(),
+                text = shippingAddresses.shipTo.address.toString(),
                 modifier = Modifier
                     .constrainAs(shipToValue) {
                         top.linkTo(shipToLabel.top)
@@ -167,14 +194,18 @@ internal fun AddressSectionPortrait(
                     }
                     .padding(
                         top = dimensionResource(R.dimen.major_100),
-                        bottom = dimensionResource(R.dimen.major_100),
+                        bottom = dimensionResource(R.dimen.minor_100),
                         start = dimensionResource(R.dimen.major_100),
                         end = dimensionResource(R.dimen.minor_100)
                     )
             )
+            AddressStatusIndicator(
+                addressStatus = destinationStatus,
+                modifier = destinationStatusModifier
+            )
             if (isReadOnly.not()) {
                 IconButton(
-                    onClick = { },
+                    onClick = { onEditDestinationAddress(shippingAddresses.shipTo) },
                     modifier = Modifier
                         .constrainAs(shipToEdit) {
                             top.linkTo(shipToLabel.top)
@@ -205,8 +236,30 @@ private fun AddressSectionPortraitPreview() {
                     shipTo = getShipTo(),
                     originAddresses = listOf(getShipFrom())
                 ),
+                onEditDestinationAddress = {},
                 shipFromSelectionBottomSheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden),
-                isReadOnly = false
+                isReadOnly = false,
+                destinationStatus = AddressStatus.VERIFIED
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun AddressSectionPortraitMissingAddressPreview() {
+    WooThemeWithBackground {
+        Box(modifier = Modifier.padding(dimensionResource(R.dimen.major_100))) {
+            AddressSectionPortrait(
+                shippingAddresses = WooShippingAddresses(
+                    shipFrom = getShipFrom(),
+                    shipTo = DestinationShippingAddress.EMPTY,
+                    originAddresses = listOf(getShipFrom())
+                ),
+                onEditDestinationAddress = {},
+                shipFromSelectionBottomSheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden),
+                isReadOnly = false,
+                destinationStatus = AddressStatus.VERIFIED
             )
         }
     }
@@ -217,6 +270,8 @@ private fun AddressSectionPortraitPreview() {
 internal fun AddressSectionLandscape(
     shippingAddresses: WooShippingAddresses,
     shipFromSelectionBottomSheetState: ModalBottomSheetState,
+    onEditDestinationAddress: (DestinationShippingAddress) -> Unit,
+    destinationStatus: AddressStatus,
     modifier: Modifier = Modifier,
     isReadOnly: Boolean = false
 ) {
@@ -244,34 +299,45 @@ internal fun AddressSectionLandscape(
                         )
                 )
 
-                Text(
-                    text = shippingAddresses.shipTo.toString(),
-                    modifier = Modifier
-                        .padding(
-                            top = dimensionResource(R.dimen.major_100),
-                            bottom = dimensionResource(R.dimen.major_100),
+                Column(modifier = Modifier.weight(1f)) {
+                    val destinationAddressStatusModifier = if (shippingAddresses.shipTo.address.hasInfo()) {
+                        Modifier.padding(
                             start = dimensionResource(R.dimen.major_100),
-                            end = dimensionResource(R.dimen.minor_100)
+                            bottom = dimensionResource(R.dimen.major_100)
                         )
-                        .weight(1f)
-                )
-
-                if (isReadOnly.not()) {
-                    val iconModifier = if (shippingAddresses.shipTo == Address.EMPTY) {
-                        Modifier
-                            .padding(end = dimensionResource(R.dimen.minor_100))
-                            .align(Alignment.CenterVertically)
                     } else {
-                        Modifier
-                            .padding(
-                                top = dimensionResource(R.dimen.minor_100),
-                                end = dimensionResource(R.dimen.minor_100)
-                            )
+                        Modifier.align(Alignment.CenterHorizontally)
+                            .padding(16.dp)
+                            .height(IntrinsicSize.Min)
                     }
 
+                    if (shippingAddresses.shipTo.address.hasInfo()) {
+                        Text(
+                            text = shippingAddresses.shipTo.address.toString(),
+                            modifier = Modifier
+                                .padding(
+                                    top = dimensionResource(R.dimen.major_100),
+                                    bottom = dimensionResource(R.dimen.minor_100),
+                                    start = dimensionResource(R.dimen.major_100),
+                                    end = dimensionResource(R.dimen.minor_100)
+                                )
+                        )
+                    }
+                    AddressStatusIndicator(
+                        addressStatus = destinationStatus,
+                        modifier = destinationAddressStatusModifier
+                    )
+                }
+
+                if (isReadOnly.not()) {
                     IconButton(
-                        onClick = { },
-                        modifier = iconModifier
+                        onClick = { onEditDestinationAddress(shippingAddresses.shipTo) },
+                        modifier = Modifier
+                            .padding(
+                                top = dimensionResource(R.dimen.minor_50),
+                                end = dimensionResource(R.dimen.minor_100),
+                                bottom = dimensionResource(R.dimen.minor_50)
+                            )
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_edit_pencil),
@@ -465,12 +531,70 @@ private fun AddressSectionLandscapePreview() {
                     originAddresses = listOf(getShipFrom())
                 ),
                 shipFromSelectionBottomSheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden),
-                isReadOnly = false
+                isReadOnly = false,
+                onEditDestinationAddress = {},
+                destinationStatus = AddressStatus.VERIFIED
             )
         }
     }
 }
 
+@Preview(widthDp = 750, heightDp = 100)
+@Composable
+private fun AddressSectionLandscapeMissingAddressPreview() {
+    WooThemeWithBackground {
+        Box(modifier = Modifier.padding(dimensionResource(R.dimen.major_100))) {
+            AddressSectionLandscape(
+                shippingAddresses = WooShippingAddresses(
+                    shipFrom = getShipFrom(),
+                    shipTo = DestinationShippingAddress.EMPTY,
+                    originAddresses = listOf(getShipFrom())
+                ),
+                shipFromSelectionBottomSheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden),
+                isReadOnly = false,
+                onEditDestinationAddress = {},
+                destinationStatus = AddressStatus.VERIFIED
+            )
+        }
+    }
+}
+
+@Composable
+fun AddressStatusIndicator(
+    addressStatus: AddressStatus,
+    modifier: Modifier = Modifier
+) {
+    val text = when (addressStatus) {
+        AddressStatus.VERIFIED -> stringResource(id = R.string.woo_shipping_address_verified)
+        AddressStatus.UNVERIFIED -> stringResource(id = R.string.woo_shipping_address_unverified)
+        AddressStatus.MISSING_INFO -> stringResource(id = R.string.woo_shipping_address_missing_info)
+        AddressStatus.SAVE_CHANGES -> stringResource(id = R.string.woo_shipping_address_unsaved_changes)
+        AddressStatus.MISSING_ADDRESS -> stringResource(id = R.string.woo_shipping_address_missing)
+    }
+
+    val color = when (addressStatus) {
+        AddressStatus.VERIFIED -> MaterialTheme.colors.successColor
+        else -> MaterialTheme.colors.error
+    }
+
+    val icon = when (addressStatus) {
+        AddressStatus.VERIFIED -> Icons.Outlined.CheckCircleOutline
+        else -> Icons.Outlined.Info
+    }
+
+    Row(modifier) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = color,
+            modifier = Modifier.padding(end = 8.dp)
+        )
+        Text(
+            text = text,
+            color = color
+        )
+    }
+}
 internal fun getShipFrom() = OriginShippingAddress(
     firstName = "first name",
     lastName = "last name",
@@ -488,18 +612,21 @@ internal fun getShipFrom() = OriginShippingAddress(
     isVerified = true
 )
 
-internal fun getShipTo() = Address(
-    firstName = "first name",
-    lastName = "last name",
-    company = "Company",
-    phone = "",
-    address1 = "Another Address",
-    address2 = "",
-    city = "City",
-    postcode = "",
-    email = "email",
-    country = Location("US", "USA"),
-    state = AmbiguousLocation.Defined(Location("CA", "California", "USA"))
+internal fun getShipTo() = DestinationShippingAddress(
+    address = Address(
+        firstName = "first name",
+        lastName = "last name",
+        company = "Company",
+        phone = "",
+        address1 = "Another Address",
+        address2 = "",
+        city = "City",
+        postcode = "",
+        email = "email",
+        country = Location("US", "USA"),
+        state = AmbiguousLocation.Defined(Location("CA", "California", "USA")),
+    ),
+    isVerified = true
 )
 
 fun OriginShippingAddress.getFormattedName(context: Context): String {

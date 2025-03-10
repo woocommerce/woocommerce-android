@@ -5,14 +5,11 @@ import io.gitlab.arturbosch.detekt.api.Config
 import io.gitlab.arturbosch.detekt.api.Debt
 import io.gitlab.arturbosch.detekt.api.Entity
 import io.gitlab.arturbosch.detekt.api.Issue
-import io.gitlab.arturbosch.detekt.api.Rule
 import io.gitlab.arturbosch.detekt.api.Severity
 import org.jetbrains.kotlin.psi.KtCallExpression
-import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtNameReferenceExpression
 
-class WooPosDesignSystemSpacingUsageRule(config: Config) : Rule(config) {
-    private val targetPackagePrefix = "com.woocommerce.android.ui.woopos"
+class WooPosDesignSystemSpacingUsageRule(config: Config) : WooPosBaseDetektRule(config) {
     private val dpRegex = Regex("\\d+\\.dp")
     private val dpWordRegex = Regex("\\b\\d+\\.dp\\b")
 
@@ -22,11 +19,6 @@ class WooPosDesignSystemSpacingUsageRule(config: Config) : Rule(config) {
         "Use spacing from the WooPosSpacing design system.",
         Debt.FIVE_MINS
     )
-
-    override fun visitKtFile(file: KtFile) {
-        if (!file.packageFqName.asString().startsWith(targetPackagePrefix)) return
-        super.visitKtFile(file)
-    }
 
     override fun visitCallExpression(expression: KtCallExpression) {
         super.visitCallExpression(expression)

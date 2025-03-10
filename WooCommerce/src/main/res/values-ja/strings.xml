@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-02-12 09:54:04+0000
+Translation-Revision-Date: 2025-02-25 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_confirm_submit_address_entered">入力された住所を確認</string>
+    <string name="woo_shipping_confirm_submit_address_suggested">提案された住所を確認</string>
+    <string name="woo_shipping_confirm_address_suggested">推奨</string>
+    <string name="woo_shipping_confirm_address_entered">入力内容</string>
+    <string name="woo_shipping_confirm_address_description">入力された住所が一部修正されました。\n正しい場合は、正確に配送できるように提案された住所を使用してください。</string>
+    <string name="woo_shipping_confirm_address_title">住所を確認</string>
+    <string name="woo_shipping_address_validate_message">入力された住所を検証中</string>
+    <string name="woo_shipping_address_validate_title">検証中</string>
+    <string name="woo_shipping_labels_loading_error">データを読み込めません</string>
+    <string name="woo_shipping_labels_loading_order_error">注文を読み込めません</string>
+    <string name="woo_shipping_address_missing_info_hint">不足情報を追加</string>
+    <string name="woo_shipping_address_validate_and_save">確認して保存</string>
+    <string name="woo_shipping_address_missing_info">不足情報</string>
+    <string name="woo_shipping_address_unverified">未確認の住所</string>
+    <string name="woo_shipping_address_verified">住所を確認済み</string>
+    <string name="woopos_reader_not_connected_description">カードリーダーが接続されていることを確認してください。</string>
+    <string name="woopos_documentation_title">ドキュメント</string>
     <string name="woo_shipping_labels_customs_restriction_other">その他</string>
     <string name="woo_shipping_labels_customs_restriction_sanitary">検疫 / 植物検疫検査</string>
     <string name="woo_shipping_labels_customs_restriction_quarantine">検疫</string>
@@ -110,7 +127,6 @@ Language: ja_JP
     <string name="woopos_success_totals_error_reader_not_connected_subtitle">この支払いを処理するには、リーダーを接続してください。</string>
     <string name="woopos_success_totals_error_reader_not_connected_title">リーダーが接続されていません</string>
     <string name="woopos_payment_take_cash_payment_label">現金での支払い</string>
-    <string name="woopos_receipt_sending_not_supported">WooCommerce をバージョン%s以降にアップデートしてください</string>
     <string name="woopos_receipt_button">領収書をメールで送信</string>
     <string name="blaze_campaign_creation_no_product_modal_cta">商品を作成</string>
     <string name="blaze_campaign_creation_no_product_modal_body">現在プロモーションに利用できる商品はありません。 今すぐ商品を作成してみませんか ?</string>
@@ -163,7 +179,6 @@ Language: ja_JP
     <string name="shipping_label_purchased_note">注意: 印刷されたラベルを再利用すると、弊社の利用規約違反となり、刑事責任を問われる可能性があります。</string>
     <string name="shipping_label_purchased_success_message">こちらから再度配送ラベルを印刷するか、ラベルの用紙サイズを変更することができます。</string>
     <string name="shipping_label_purchased_success_title">配送ラベルを印刷する準備ができました</string>
-    <string name="order_detail_edit_store_currency_mismatch">この注文は %1$s を使用しており、サイトの通貨は %2$s であるため、編集はウェブ上でしか行えません</string>
     <string name="shipping_label_shipping_service_title">配送サービス</string>
     <string name="shipping_label_shipping_rates_sort_option_fastest">最速</string>
     <string name="shipping_label_shipping_rates_sort_option_cheapest">最安値</string>
@@ -3577,6 +3592,7 @@ Language: ja_JP
     <string name="settings_crash_reporting">クラッシュレポート</string>
     <string name="share">共有</string>
     <string name="version_with_name_param">バージョン%s</string>
+    <string name="default_web_client_id" a8c-src-lib="module:login">プレースホルダー</string>
     <string name="httppassword">HTTP パスワード</string>
     <string name="httpuser">HTTP ユーザー名</string>
     <string name="http_authorization_required">認証が必要です</string>

@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoProvid
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTrackerEventProvider
 import com.woocommerce.android.ui.payments.tracking.StoreManagementPaymentsFlowTrackerEventProvider
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTrackingDataKeeper
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosPaymentsFlowTrackerEventProvider
 import dagger.Module
 import dagger.Provides
@@ -26,8 +27,10 @@ class AppModePaymentsFlowTrackingModule {
 
     @Provides
     @PointOfSaleMode
-    fun providePointOfSaleModePaymentsFlowTrackerEventProvider(): PaymentsFlowTrackerEventProvider =
-        WooPosPaymentsFlowTrackerEventProvider()
+    fun providePointOfSaleModePaymentsFlowTrackerEventProvider(
+        analyticsTrackingDataKeeper: WooPosAnalyticsTrackingDataKeeper
+    ): PaymentsFlowTrackerEventProvider =
+        WooPosPaymentsFlowTrackerEventProvider(analyticsTrackingDataKeeper)
 
     @Provides
     @StoreManagementMode

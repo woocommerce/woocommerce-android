@@ -1,8 +1,12 @@
 package com.woocommerce.android.ui.woopos.emailreceipt
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -17,9 +21,6 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
@@ -31,7 +32,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolba
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 
 @Composable
@@ -88,14 +88,13 @@ private fun EmailState(
         keyboardController?.show()
     }
 
-    ConstraintLayout(
+    Column(
         modifier = Modifier
             .fillMaxSize()
-            .imePadding()
+            .imePadding(),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        val (email, error, button) = createRefs()
-        val standardMargin = WooPosSpacing.Medium.value.toAdaptivePadding()
-        val topMargin = 72.dp.toAdaptivePadding()
+        Spacer(modifier = Modifier.weight(1f))
 
         WooPosInputField(
             value = state.email,
@@ -109,27 +108,22 @@ private fun EmailState(
                 keyboardType = KeyboardType.Email
             ),
             modifier = Modifier
-                .constrainAs(email) {
-                    top.linkTo(parent.top, margin = topMargin)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                }
-                .focusRequester(focusRequester),
+                .focusRequester(focusRequester)
+                .padding(horizontal = WooPosSpacing.Medium.value)
         )
 
         if (state.errorMessage != null) {
+            Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+
             WooPosText(
                 text = state.errorMessage,
                 color = MaterialTheme.colorScheme.error,
                 style = WooPosTypography.BodyLarge,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.constrainAs(error) {
-                    top.linkTo(email.bottom, margin = WooPosSpacing.Small.value)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                }
             )
         }
+
+        Spacer(modifier = Modifier.weight(1f))
 
         WooPosButton(
             text = state.button.text,
@@ -139,12 +133,9 @@ private fun EmailState(
                 WooPosEmailReceiptState.Email.Button.Status.DISABLED -> WooPosButtonState.DISABLED
                 WooPosEmailReceiptState.Email.Button.Status.LOADING -> WooPosButtonState.LOADING
             },
-            modifier = Modifier.constrainAs(button) {
-                bottom.linkTo(parent.bottom, margin = WooPosSpacing.Medium.value)
-                start.linkTo(parent.start, margin = standardMargin)
-                end.linkTo(parent.end, margin = standardMargin)
-                width = Dimension.fillToConstraints
-            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(WooPosSpacing.Medium.value)
         )
     }
 }

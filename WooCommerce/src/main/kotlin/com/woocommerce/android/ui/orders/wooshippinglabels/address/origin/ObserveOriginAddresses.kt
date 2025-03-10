@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.wooshippinglabels.address
+package com.woocommerce.android.ui.orders.wooshippinglabels.address.origin
 
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingAddressDataStore
 import kotlinx.coroutines.ExperimentalCoroutinesApi

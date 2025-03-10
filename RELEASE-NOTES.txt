@@ -1,9 +1,15 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
+22.0
+-----
+
+
 21.9
 -----
+- [*][Internal] Added Analytics events in POS [https://github.com/woocommerce/woocommerce-android/pull/13622]
 - [*] Fixed an issue that can cause a crash when adding a new payment card in Blaze campaign form [https://github.com/woocommerce/woocommerce-android/pull/13624]
+- [*] POS: improved accessibility for the payments status changes [https://github.com/woocommerce/woocommerce-android/pull/13643]
 
 21.8
 -----

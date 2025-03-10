@@ -16,10 +16,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
+import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.generated.SiteActionBuilder
 import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
+import org.wordpress.android.fluxc.store.NotificationStore.OnDeviceUnregistered
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.account.CloseAccountStore
 import org.wordpress.android.fluxc.store.account.CloseAccountStore.CloseAccountErrorType
@@ -52,9 +54,12 @@ class AccountRepository @Inject constructor(
             (selectedSite.connectionType == SiteConnectionType.ApplicationPasswords)
     }
 
+    @Suppress("ReturnCount")
     suspend fun logout(): Boolean {
         if (!isUserLoggedIn()) return true
         return if (accountStore.hasAccessToken()) {
+            unregisterDevice()
+
             // WordPress.com account logout
             val event: OnAccountChanged = dispatcher.dispatchAndAwait(AccountActionBuilder.newSignOutAction())
             if (event.isError) {
@@ -124,6 +129,12 @@ class AccountRepository @Inject constructor(
 
         // Delete sites
         dispatcher.dispatch(SiteActionBuilder.newRemoveAllSitesAction())
+    }
+
+    private suspend fun unregisterDevice() {
+        dispatcher.dispatchAndAwait<Void, OnDeviceUnregistered>(
+            NotificationActionBuilder.newUnregisterDeviceAction()
+        )
     }
 
     sealed class CloseAccountResult {

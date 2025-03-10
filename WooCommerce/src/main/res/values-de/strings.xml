@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-02-11 15:54:04+0000
+Translation-Revision-Date: 2025-02-24 15:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_confirm_submit_address_entered">Eingegebene Adresse bestätigen</string>
+    <string name="woo_shipping_confirm_submit_address_suggested">Vorgeschlagene Adresse bestätigen</string>
+    <string name="woo_shipping_confirm_address_suggested">Vorgeschlagen</string>
+    <string name="woo_shipping_confirm_address_entered">Deine Eingabe</string>
+    <string name="woo_shipping_confirm_address_description">Wir haben die eingegebene Adresse leicht verändert.\nWenn die vorgeschlagene Adresse korrekt ist, verwende diese bitte, um eine korrekte Zustellung sicherzustellen.</string>
+    <string name="woo_shipping_confirm_address_title">Adresse bestätigen</string>
+    <string name="woo_shipping_address_validate_message">Eingegebene Adresse wird überprüft</string>
+    <string name="woo_shipping_address_validate_title">Überprüfung läuft</string>
+    <string name="woo_shipping_labels_loading_error">Daten konnten nicht geladen werden</string>
+    <string name="woo_shipping_labels_loading_order_error">Bestellung konnte nicht geladen werden</string>
+    <string name="woo_shipping_address_missing_info_hint">Fehlende Informationen hinzufügen</string>
+    <string name="woo_shipping_address_validate_and_save">Bestätigen und speichern</string>
+    <string name="woo_shipping_address_missing_info">Fehlende Informationen</string>
+    <string name="woo_shipping_address_unverified">Adresse nicht verifiziert</string>
+    <string name="woo_shipping_address_verified">Adresse verifiziert</string>
+    <string name="woopos_reader_not_connected_description">Bitte vergewissere dich, dass ein Kartenlesegerät verknüpft ist.</string>
+    <string name="woopos_documentation_title">Dokumentation</string>
     <string name="woo_shipping_labels_customs_restriction_sanitary">Sanitäre/phytosanitäre Inspektion</string>
     <string name="woo_shipping_labels_customs_restriction_quarantine">Quarantäne</string>
     <string name="woo_shipping_labels_customs_restriction_none">Keine</string>
@@ -110,7 +127,6 @@ Language: de
     <string name="woopos_success_totals_error_reader_not_connected_subtitle">Verbinde deinen Leser, um diese Zahlung verarbeiten zu können.</string>
     <string name="woopos_success_totals_error_reader_not_connected_title">Leser nicht verbunden</string>
     <string name="woopos_payment_take_cash_payment_label">Barzahlung</string>
-    <string name="woopos_receipt_sending_not_supported">Bitte aktualisiere WooCommerce auf Version %s oder höher</string>
     <string name="woopos_receipt_button">Beleg per E-Mail senden</string>
     <string name="blaze_campaign_creation_no_product_modal_cta">Produkt erstellen</string>
     <string name="blaze_campaign_creation_no_product_modal_body">Derzeit ist kein Produkt für eine Werbeaktion verfügbar. Möchtest du jetzt ein Produkt erstellen?</string>
@@ -161,7 +177,6 @@ Language: de
     <string name="shipping_label_purchased_track_shipment">Sendung verfolgen</string>
     <string name="shipping_label_purchased_learn_how_to_print">So druckst du von deinem Mobilgerät aus</string>
     <string name="shipping_label_purchased_note">Hinweis: Das Wiederverwenden eines ausgedruckten Etiketts ist ein Verstoß gegen unsere Geschäftsbedingungen und kann strafrechtliche Konsequenzen nach sich ziehen.</string>
-    <string name="order_detail_edit_store_currency_mismatch">Leider kannst du diese Bestellung nur im Web bearbeiten, da %1$s verwendet wird und die Währung deiner Website %2$s ist</string>
     <string name="shipping_label_purchased_success_message">Hier kannst du das Versandetikett erneut drucken oder das Papierformat des Etiketts ändern.</string>
     <string name="shipping_label_purchased_success_title">Dein Versandetikett kann jetzt gedruckt werden</string>
     <string name="shipping_label_shipping_service_title">Versanddienst</string>
@@ -3635,6 +3650,7 @@ Language: de
     <string name="httpuser">HTTP-Benutzername</string>
     <string name="enter_wpcom_or_jetpack_site">Bitte gib den Namen einer WordPress.com-Website oder einer selbst gehosteten, mit Jetpack verbundenen WordPress-Website ein</string>
     <string name="xmlrpc_endpoint_forbidden_error">Verbindung fehlgeschlagen. Wir haben einen 403-Fehler erhalten, als wir versucht haben, den\n XMLRPC-Endpunkt deiner Website aufzurufen. Die App braucht diesen, um mit deiner Website zu kommunizieren. Kontaktiere deinen Host, um\n dieses Problem zu beheben.</string>
+    <string name="default_web_client_id" a8c-src-lib="module:login">Platzhalter</string>
     <string name="undo">Rückgängig</string>
     <string name="cancel">Abbrechen</string>
     <string name="today">Heute</string>

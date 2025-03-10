@@ -19,6 +19,7 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
@@ -62,11 +63,13 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
         )
 
     init {
-        launch {
+        loadData()
+    }
+
+    private fun loadData(): Job {
+        return launch {
             fetchPredefinedPackages().let { response ->
-                _viewState.update { viewState ->
-                    viewState.copy(predefinedPackagesState = response)
-                }
+                _viewState.update { viewState -> viewState.copy(predefinedPackagesState = response) }
             }
         }
     }
@@ -91,6 +94,14 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
                 ?.safelyUpdate(selectedPackage, selectedPackage.copy(isSelected = isSelected))
                 ?.let { viewState.copy(predefinedPackagesState = predefinedPackages.copy(savedPackages = it)) }
                 ?: _viewState.value
+        }
+    }
+
+    fun onRetryClick() {
+        triggerEvent(ShowLoadingDialog(true))
+        launch {
+            loadData().join()
+            triggerEvent(ShowLoadingDialog(false))
         }
     }
 

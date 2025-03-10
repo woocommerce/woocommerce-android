@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-02-10 15:54:04+0000
+Translation-Revision-Date: 2025-02-25 09:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_confirm_submit_address_entered">Confirmar endereço inserido</string>
+    <string name="woo_shipping_confirm_submit_address_suggested">Confirmar endereço sugerido</string>
+    <string name="woo_shipping_confirm_address_suggested">Sugestão</string>
+    <string name="woo_shipping_confirm_address_entered">O que você inseriu</string>
+    <string name="woo_shipping_confirm_address_description">Modificamos um pouco o endereço inserido.\nSe estiver certo, use o endereço sugerido para garantir uma entrega precisa.</string>
+    <string name="woo_shipping_confirm_address_title">Confirmar endereço</string>
+    <string name="woo_shipping_address_validate_message">Validando o endereço inserido</string>
+    <string name="woo_shipping_address_validate_title">Validando</string>
+    <string name="woo_shipping_labels_loading_error">Não foi possível carregar os dados</string>
+    <string name="woo_shipping_labels_loading_order_error">Não foi possível carregar o pedido</string>
+    <string name="woo_shipping_address_missing_info_hint">Adicionar informações não fornecidas</string>
+    <string name="woo_shipping_address_validate_and_save">Validar e salvar</string>
+    <string name="woo_shipping_address_missing_info">Informações não fornecidas</string>
+    <string name="woo_shipping_address_unverified">Endereço não verificado</string>
+    <string name="woo_shipping_address_verified">Endereço verificado</string>
+    <string name="woopos_reader_not_connected_description">Certifique-se de que o leitor de cartão esteja conectado.</string>
+    <string name="woopos_documentation_title">Documentação</string>
     <string name="woo_shipping_labels_customs_restriction_other">Outro</string>
     <string name="woo_shipping_labels_customs_restriction_sanitary">Inspeção sanitária/fitossanitária</string>
     <string name="woo_shipping_labels_customs_restriction_quarantine">Quarentena</string>
@@ -111,7 +128,6 @@ Language: pt_BR
     <string name="woopos_success_totals_error_reader_not_connected_title">Leitor não conectado</string>
     <string name="woopos_receipt_button">Enviar recibo por e-mail</string>
     <string name="woopos_payment_take_cash_payment_label">Pagamento em dinheiro</string>
-    <string name="woopos_receipt_sending_not_supported">Atualize o WooCommerce para a versão %s ou mais recente</string>
     <string name="blaze_campaign_creation_no_product_modal_cta">Criar produto</string>
     <string name="blaze_campaign_creation_no_product_modal_body">Você não tem nenhum produto disponível para divulgação. Quer criar um produto agora?</string>
     <string name="blaze_campaign_creation_no_product_modal_title">Nenhum produto encontrado</string>
@@ -161,7 +177,6 @@ Language: pt_BR
     <string name="shipping_label_purchased_track_shipment">Rastrear envio</string>
     <string name="shipping_label_purchased_learn_how_to_print">Saiba como imprimir do seu dispositivo móvel</string>
     <string name="shipping_label_purchased_note">Observação: reutilizar uma etiqueta impressa é uma violação dos nossos termos de serviço e pode resultar em acusações criminais.</string>
-    <string name="order_detail_edit_store_currency_mismatch">Você só pode editar este pedido no navegador Web, pois ele usa %1$s, e a moeda do seu site é %2$s</string>
     <string name="shipping_label_purchased_success_message">Aqui você pode imprimir a etiqueta de envio novamente ou alterar o tamanho do papel da etiqueta.</string>
     <string name="shipping_label_purchased_success_title">Sua etiqueta de envio está pronta para impressão</string>
     <string name="shipping_label_shipping_service_title">Serviço de entrega</string>
@@ -3635,6 +3650,7 @@ Language: pt_BR
     <string name="httppassword">Senha HTTP</string>
     <string name="httpuser">Usuário HTTP</string>
     <string name="enter_wpcom_or_jetpack_site">Insira um site do WordPress.com ou um site do WordPress auto-hospedado, vinculado ao Jetpack</string>
+    <string name="default_web_client_id" a8c-src-lib="module:login">espaço reservado</string>
     <string name="alternatively">Alternativamente:</string>
     <string name="notification_channel_general_title">Geral</string>
     <string name="at_username">\@%s</string>

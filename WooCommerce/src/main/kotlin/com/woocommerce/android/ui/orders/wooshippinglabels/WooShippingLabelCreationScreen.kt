@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.orders.wooshippinglabels
 
 import android.content.res.Configuration
 import android.os.Parcelable
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -15,7 +14,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -63,7 +61,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
-import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.modifiers.dashedBorder
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.CustomsState
@@ -73,9 +70,12 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreat
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.PackageSelectionState.DataAvailable
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.PackageSelectionState.NotSelected
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.AddressSelection
+import com.woocommerce.android.ui.orders.wooshippinglabels.address.AddressStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.getShipFrom
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.getShipTo
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.components.ErrorMessageWithButton
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRateUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRatesSection
@@ -112,7 +112,9 @@ fun WooShippingLabelCreationScreen(viewModel: WooShippingLabelCreationViewModel)
                 purchaseState = viewState.purchaseState,
                 onShipmentDetailsExpandedChange = viewModel::onShipmentDetailsExpandedChange,
                 onSelectAddressExpandedChange = viewModel::onSelectAddressExpandedChange,
-                onEditCustomsClick = viewModel::onEditCustomsClick
+                onEditCustomsClick = viewModel::onEditCustomsClick,
+                onEditDestinationAddress = viewModel::onEditDestinationAddress,
+                destinationStatus = viewState.destinationStatus
             )
         }
 
@@ -151,6 +153,8 @@ fun WooShippingLabelCreationScreen(
     purchaseState: WooShippingLabelCreationViewModel.PurchaseState,
     onEditCustomsClick: () -> Unit,
     onNavigateBack: () -> Unit,
+    onEditDestinationAddress: (DestinationShippingAddress) -> Unit,
+    destinationStatus: AddressStatus,
     modifier: Modifier = Modifier
 ) {
     val shipmentDetailsValue = if (uiState.isShipmentDetailsExpanded) {
@@ -211,7 +215,9 @@ fun WooShippingLabelCreationScreen(
             onMarkOrderCompleteChange = onMarkOrderCompleteChange,
             shipFromSelectionBottomSheetState = shipFromSelectionBottomSheetState,
             onShipmentDetailsExpandedChange = onShipmentDetailsExpandedChange,
-            onEditCustomsClick = onEditCustomsClick
+            onEditCustomsClick = onEditCustomsClick,
+            onEditDestinationAddress = onEditDestinationAddress,
+            destinationStatus = destinationStatus
         )
         val isDarkTheme = isSystemInDarkTheme()
         val isCollapsed = scaffoldState.bottomSheetState.isCollapsed
@@ -285,6 +291,8 @@ private fun LabelCreationScreenWithBottomSheet(
     onNavigateBack: () -> Unit,
     onShipmentDetailsExpandedChange: (Boolean) -> Boolean,
     onEditCustomsClick: () -> Unit,
+    onEditDestinationAddress: (DestinationShippingAddress) -> Unit,
+    destinationStatus: AddressStatus,
     modifier: Modifier = Modifier
 ) {
     val isPurchaseButtonDisplayed = shippingRatesState is WooShippingLabelCreationViewModel.ShippingRatesState.DataState
@@ -313,7 +321,9 @@ private fun LabelCreationScreenWithBottomSheet(
                     scaffoldState = scaffoldState,
                     isShipmentDetailsExpanded = uiState.isShipmentDetailsExpanded,
                     markOrderComplete = uiState.markOrderComplete,
-                    onShipmentDetailsExpandedChange = onShipmentDetailsExpandedChange
+                    onShipmentDetailsExpandedChange = onShipmentDetailsExpandedChange,
+                    onEditDestinationAddress = onEditDestinationAddress,
+                    destinationStatus = destinationStatus
                 )
             }
         },
@@ -425,6 +435,18 @@ private fun CustomsCard(
     onEditCustomsClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val (backgroundColor, labelText) = if (customsState is Unavailable) {
+        Pair(
+            colorResource(id = R.color.woo_red_20),
+            stringResource(id = R.string.shipping_labels_customs_missing_info_badge)
+        )
+    } else {
+        Pair(
+            colorResource(id = R.color.woo_green_20),
+            stringResource(id = R.string.shipping_labels_customs_completed_badge)
+        )
+    }
+
     if (customsState !is NotRequired) {
         Row(
             modifier = modifier
@@ -452,13 +474,13 @@ private fun CustomsCard(
             Box(
                 modifier = Modifier
                     .background(
-                        color = colorResource(id = R.color.woo_red_20),
+                        color = backgroundColor,
                         shape = RoundedCornerShape(dimensionResource(R.dimen.corner_radius_medium))
                     )
                     .align(Alignment.CenterVertically)
             ) {
                 Text(
-                    text = stringResource(id = R.string.shipping_labels_customs_missing_info_badge),
+                    text = labelText,
                     style = MaterialTheme.typography.caption,
                     color = MaterialTheme.colors.onSurface,
                     modifier = Modifier
@@ -703,32 +725,8 @@ internal fun ErrorScreen(
     modifier: Modifier = Modifier,
     onNavigateBack: () -> Unit = {},
     onRetryClick: () -> Unit = {}
-) {
-    Scaffold(topBar = { TopBar(onNavigateBack) }) { padding ->
-        Column(
-            modifier = modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .background(MaterialTheme.colors.surface)
-                .padding(padding),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(24.dp, Alignment.CenterVertically)
-        ) {
-            Image(
-                modifier = Modifier.size(87.dp),
-                painter = painterResource(id = R.drawable.ic_error),
-                contentDescription = stringResource(id = R.string.woopos_error_icon_content_description),
-            )
-            Text(
-                text = stringResource(R.string.woo_shipping_labels_loading_error),
-                style = MaterialTheme.typography.subtitle1,
-                color = MaterialTheme.colors.onSurface,
-            )
-            WCTextButton(onClick = onRetryClick) {
-                Text(stringResource(id = R.string.retry))
-            }
-        }
-    }
+) = Scaffold(topBar = { TopBar(onNavigateBack) }) { padding ->
+    ErrorMessageWithButton(modifier = modifier.padding(padding), onRetryClick = onRetryClick)
 }
 
 @Parcelize
@@ -790,7 +788,9 @@ private fun WooShippingLabelCreationScreenPreview() {
             ),
             onShipmentDetailsExpandedChange = { true },
             onSelectAddressExpandedChange = { true },
-            onEditCustomsClick = {}
+            onEditCustomsClick = {},
+            onEditDestinationAddress = {},
+            destinationStatus = AddressStatus.VERIFIED
         )
     }
 }
@@ -844,4 +844,4 @@ private fun PackageSelectedPreview() {
 
 @Preview
 @Composable
-private fun EmptyScreenPreview() = WooThemeWithBackground { ErrorScreen() }
+private fun ErrorScreenPreview() = WooThemeWithBackground { ErrorScreen() }
