@@ -197,6 +197,72 @@ android {
     }
 }
 
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach { task ->
+    task.doFirst {
+        def inputFile = task.project.file("build/task-inputs-${task.name}.txt")
+        inputFile.text = "Task: ${task.name}\nInputs:\n"
+
+        // Save input files with relative path
+        task.inputs.files.sort().each { file ->
+            inputFile.append("Input File: ${project.relativePath(file)}\n")
+        }
+
+        // Save input properties with casting to get real values
+        inputFile.append("\n=== Input Properties ===\n")
+        task.inputs.properties.sort().each { key, value ->
+            if (value != null) {
+                def valueString
+                if (value instanceof org.jetbrains.kotlin.gradle.tasks.CompilerPluginOptions) {
+                    valueString = value.asTaskInputArgs.join(', ')
+                } else if (value instanceof org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions) {
+                    valueString = """
+                        jvmTarget: ${value.jvmTarget}
+                        apiVersion: ${value.apiVersion}
+                        freeCompilerArgs: ${value.freeCompilerArgs.join(', ')}
+                        allWarningsAsErrors: ${value.allWarningsAsErrors}
+                    """.trim()
+                } else if (value instanceof org.jetbrains.kotlin.gradle.tasks.KotlinJavaToolchain) {
+                    valueString = "Java Version: ${value.javaVersion}"
+                } else {
+                    valueString = value.toString()
+                }
+                inputFile.append("$key = $valueString\n")
+            } else {
+                inputFile.append("$key = null\n")
+            }
+        }
+    }
+}
+
+tasks.withType(JavaCompile).configureEach { task ->
+    // Ensure this only runs for the specific task you want
+    task.doFirst {
+        def inputFile = task.project.file("build/task-inputs-${task.name}.txt")
+        inputFile.text = "Task: ${task.name}\nInputs:\n"
+
+        // Save input files with relative path
+        task.inputs.files.sort().each { file ->
+            inputFile.append("Input File: ${project.relativePath(file)}\n")
+        }
+
+        // Save input properties
+        inputFile.append("\n=== Input Properties ===\n")
+        inputFile.append("Source Compatibility: ${task.sourceCompatibility}\n")
+        inputFile.append("Target Compatibility: ${task.targetCompatibility}\n")
+
+        // Log the options if available
+        if (task.options) {
+            def optionsString = """
+                    Compiler Args: ${task.options.compilerArgs.join(', ')}
+                    Annotation Processor: ${task.options.annotationProcessorPath}
+                """.trim()
+            inputFile.append("Options:\n$optionsString\n")
+        }
+    }
+}
+
 dependencies {
     implementation(libs.wordpress.libaddressinput.common) {
         exclude group: "org.json", module: "json"
