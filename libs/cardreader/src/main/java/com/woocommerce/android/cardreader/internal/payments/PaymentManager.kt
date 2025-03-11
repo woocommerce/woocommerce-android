@@ -16,8 +16,15 @@ import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPayme
 import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentAction.ProcessPaymentStatus
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.*
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CapturingPayment
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.Generic
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CollectingPayment
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.InitializingPayment
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentCompleted
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentFailed
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentMethodType
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.ProcessingPayment
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.ProcessingPaymentCompleted
 import com.woocommerce.android.cardreader.payments.PaymentData
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import kotlinx.coroutines.flow.Flow
@@ -43,7 +50,19 @@ internal class PaymentManager(
         if (paymentIntent?.status != PaymentIntentStatus.REQUIRES_PAYMENT_METHOD) {
             return@flow
         }
-        processPaymentIntent(paymentInfo.orderId, paymentIntent).collect { emit(it) }
+        var eligibleForRetry = false
+        try {
+            processPaymentIntent(paymentInfo.orderId, paymentIntent).collect {
+                emit(it)
+                if (it is PaymentFailed && it.paymentDataForRetry != null) {
+                    eligibleForRetry = true
+                }
+            }
+        } finally {
+            if (!eligibleForRetry) {
+                cancelOngoingPayment(paymentIntent)
+            }
+        }
     }
 
     fun retryPayment(orderId: Long, paymentData: PaymentData) =
