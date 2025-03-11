@@ -2,7 +2,6 @@ package com.woocommerce.android.cardreader.internal.payments
 
 import com.stripe.stripeterminal.external.models.PaymentIntent
 import com.stripe.stripeterminal.external.models.PaymentIntentStatus
-import com.stripe.stripeterminal.external.models.PaymentIntentStatus.CANCELED
 import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
 import com.woocommerce.android.cardreader.config.CardReaderConfigFactory
@@ -63,7 +62,7 @@ internal class PaymentManager(
 
     private fun processPaymentIntent(orderId: Long, data: PaymentIntent) = flow {
         var paymentIntent = data
-        if (paymentIntent.status == null || paymentIntent.status == CANCELED) {
+        if (paymentIntent.status == null || paymentIntent.status == PaymentIntentStatus.CANCELED) {
             emit(errorMapper.mapError(errorMessage = "Cannot retry paymentIntent with status ${paymentIntent.status}"))
             return@flow
         }
