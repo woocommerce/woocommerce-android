@@ -12,9 +12,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -28,7 +30,6 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
@@ -52,6 +53,7 @@ import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.SearchLayoutWithParams
 import com.woocommerce.android.ui.compose.component.SearchLayoutWithParamsState
+import com.woocommerce.android.ui.compose.component.TopAppBarEdgeToEdge
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.products.ProductType.BUNDLE
@@ -77,9 +79,10 @@ fun ProductSelectorScreen(viewModel: ProductSelectorViewModel) {
     val viewState by viewModel.viewState.observeAsState()
     BackHandler(onBack = viewModel::onNavigateBack)
     viewState?.let { state ->
+        val showToolbar = state.selectionMode != SelectionMode.LIVE
         Scaffold(topBar = {
-            if (state.selectionMode != SelectionMode.LIVE) {
-                TopAppBar(
+            if (showToolbar) {
+                TopAppBarEdgeToEdge(
                     title = {
                         Text(
                             text = state.screenTitleOverride
@@ -98,13 +101,20 @@ fun ProductSelectorScreen(viewModel: ProductSelectorViewModel) {
                             )
                         }
                     },
-                    backgroundColor = colorResource(id = color.color_toolbar),
+                    backgroundColor = colorResource(id = R.color.color_toolbar),
                     elevation = 0.dp,
                 )
             }
         }) { padding ->
+            val modifier = if (showToolbar) {
+                Modifier.padding(padding)
+            } else {
+                Modifier
+                    .padding(padding)
+                    .statusBarsPadding()
+            }.navigationBarsPadding()
             ProductSelectorScreen(
-                modifier = Modifier.padding(padding),
+                modifier = modifier,
                 state = state,
                 onDoneButtonClick = viewModel::onDoneButtonClick,
                 onClearButtonClick = viewModel::onClearButtonClick,

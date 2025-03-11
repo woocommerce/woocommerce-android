@@ -8,7 +8,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
@@ -21,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.component.TopAppBarEdgeToEdge
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.customer.CustomerListScreen
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
@@ -54,7 +54,7 @@ fun OrderCustomerListScreen(
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(
+            TopAppBarEdgeToEdge(
                 title = { Text(stringResource(id = R.string.order_creation_add_customer)) },
                 navigationIcon = {
                     IconButton(onNavigateBack) {

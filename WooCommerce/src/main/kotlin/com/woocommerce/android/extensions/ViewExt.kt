@@ -19,16 +19,19 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
 import androidx.transition.ChangeBounds
 import androidx.transition.Transition
 import androidx.transition.TransitionListenerAdapter
 import androidx.transition.TransitionManager
+import com.google.android.material.appbar.AppBarLayout
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
+import org.wordpress.android.util.DisplayUtils
 
 const val EXPAND_COLLAPSE_ANIMATION_DURATION_MILLIS = 300L
 
@@ -192,9 +195,25 @@ fun View.edgeToEdgeHandlingForNavigationBar() {
     }
 }
 
-fun View.edgeToEdgeHandlingForNavigationAndStatusBar() {
-    doOnApplyWindowInsets {
-        setPadding(it.left, it.top, it.right, it.bottom)
+fun View.edgeToEdgeForInLandscape() {
+    if (DisplayUtils.isLandscape(context)) {
+        edgeToEdgeHandlingForNavigationBar()
+    }
+}
+
+fun View.edgeToEdgeHandlingForNavigationAndStatusBar(appBarLayout: AppBarLayout? = null) {
+    doOnApplyWindowInsets(consumeInsets = true) { insets ->
+        updatePadding(
+            left = insets.left,
+            right = insets.right,
+            bottom = insets.bottom
+        )
+
+        if (appBarLayout != null) {
+            appBarLayout.updatePadding(top = insets.top)
+        } else {
+            updatePadding(top = insets.top)
+        }
     }
 }
 

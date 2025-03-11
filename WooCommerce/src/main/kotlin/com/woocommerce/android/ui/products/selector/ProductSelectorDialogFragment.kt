@@ -6,11 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.core.view.WindowCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.edgeToEdgeForInLandscape
 import com.woocommerce.android.extensions.isTwoPanesShouldBeUsed
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -57,6 +59,7 @@ class ProductSelectorDialogFragment : DialogFragment() {
         return ComposeView(requireContext()).apply {
             id = R.id.product_selector_compose_view
 
+            edgeToEdgeForInLandscape()
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
             setContent {
@@ -80,6 +83,9 @@ class ProductSelectorDialogFragment : DialogFragment() {
                 (DisplayUtils.getWindowPixelWidth(requireContext()) * TABLET_LANDSCAPE_WIDTH_RATIO).toInt(),
                 (DisplayUtils.getWindowPixelHeight(requireContext()) * TABLET_LANDSCAPE_HEIGHT_RATIO).toInt()
             )
+        }
+        dialog?.window?.let {
+            WindowCompat.setDecorFitsSystemWindows(it, false)
         }
     }
 

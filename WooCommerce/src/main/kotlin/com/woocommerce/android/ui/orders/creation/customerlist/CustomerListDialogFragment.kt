@@ -11,6 +11,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.extensions.edgeToEdgeForInLandscape
 import com.woocommerce.android.extensions.isTwoPanesShouldBeUsed
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
@@ -45,6 +46,7 @@ class CustomerListDialogFragment : DialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ) = ComposeView(requireContext()).apply {
+        edgeToEdgeForInLandscape()
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
             WooThemeWithBackground {
