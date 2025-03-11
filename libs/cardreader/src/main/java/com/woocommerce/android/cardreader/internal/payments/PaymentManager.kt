@@ -51,10 +51,15 @@ internal class PaymentManager(
 
     fun cancelPayment(paymentData: PaymentData) {
         val paymentIntent = (paymentData as PaymentDataImpl).paymentIntent
+        cancelOngoingPayment(paymentIntent)
+    }
+
+    private fun cancelOngoingPayment(paymentIntent: PaymentIntent) {
         /* If the paymentIntent is in REQUIRES_CAPTURE state the app should not cancel the payment intent as it
         doesn't know if it was already captured or not during one of the previous attempts to capture it. */
-        if (paymentIntent.status == PaymentIntentStatus.REQUIRES_PAYMENT_METHOD ||
-            paymentIntent.status == PaymentIntentStatus.REQUIRES_CONFIRMATION
+        if (paymentIntent.status != PaymentIntentStatus.SUCCEEDED &&
+            paymentIntent.status != PaymentIntentStatus.CANCELED &&
+            paymentIntent.status != PaymentIntentStatus.REQUIRES_CAPTURE
         ) {
             cancelPaymentAction.cancelPayment(paymentIntent)
         }
