@@ -51,26 +51,11 @@ internal class PaymentManager(
             return@flow
         }
 
-        val paymentIntentReference = PaymentIntentReference(paymentIntent)
-        var eligibleForRetry = false
-        try {
-            /* Passing PI as reference is a hack so we can access the updated PI in the finally block */
-            processPaymentIntent(paymentInfo.orderId, paymentIntentReference).collect {
-                emit(it)
-                if (it is PaymentFailed && it.paymentDataForRetry != null) {
-                    eligibleForRetry = true
-                }
-            }
-        } finally {
-            if (!eligibleForRetry) {
-                cancelOngoingPayment(paymentIntentReference.value)
-            }
-        }
+        processPayment(paymentInfo.orderId, paymentIntent)
     }
 
     fun retryPayment(orderId: Long, paymentData: PaymentData) =
-        // TODO Make sure we are cancelling even in this code path
-        processPaymentIntent(orderId, PaymentIntentReference((paymentData as PaymentDataImpl).paymentIntent))
+        processPayment(orderId, (paymentData as PaymentDataImpl).paymentIntent)
 
     fun cancelPayment(paymentData: PaymentData) {
         val paymentIntent = (paymentData as PaymentDataImpl).paymentIntent
@@ -85,6 +70,24 @@ internal class PaymentManager(
             paymentIntent.status != PaymentIntentStatus.REQUIRES_CAPTURE
         ) {
             cancelPaymentAction.cancelPayment(paymentIntent)
+        }
+    }
+
+    private fun processPayment(orderId: Long, paymentIntent: PaymentIntent) = flow {
+        val paymentIntentReference = PaymentIntentReference(paymentIntent)
+        var eligibleForRetry = false
+        try {
+            /* Passing PI as reference is a hack so we can access the updated PI in the finally block */
+            processPaymentIntent(orderId, paymentIntentReference).collect {
+                emit(it)
+                if (it is PaymentFailed && it.paymentDataForRetry != null) {
+                    eligibleForRetry = true
+                }
+            }
+        } finally {
+            if (!eligibleForRetry) {
+                cancelOngoingPayment(paymentIntentReference.value)
+            }
         }
     }
 
