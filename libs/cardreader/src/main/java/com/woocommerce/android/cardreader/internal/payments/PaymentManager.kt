@@ -50,9 +50,12 @@ internal class PaymentManager(
         if (paymentIntent?.status != PaymentIntentStatus.REQUIRES_PAYMENT_METHOD) {
             return@flow
         }
+
+        val paymentIntentReference = PaymentIntentReference(paymentIntent)
         var eligibleForRetry = false
         try {
-            processPaymentIntent(paymentInfo.orderId, paymentIntent).collect {
+            /* Passing PI as reference is a hack so we can access the updated PI in the finally block */
+            processPaymentIntent(paymentInfo.orderId, paymentIntentReference).collect {
                 emit(it)
                 if (it is PaymentFailed && it.paymentDataForRetry != null) {
                     eligibleForRetry = true
@@ -60,13 +63,14 @@ internal class PaymentManager(
             }
         } finally {
             if (!eligibleForRetry) {
-                cancelOngoingPayment(paymentIntent)
+                cancelOngoingPayment(paymentIntentReference.value)
             }
         }
     }
 
     fun retryPayment(orderId: Long, paymentData: PaymentData) =
-        processPaymentIntent(orderId, (paymentData as PaymentDataImpl).paymentIntent)
+        // TODO Make sure we are cancelling even in this code path
+        processPaymentIntent(orderId, PaymentIntentReference((paymentData as PaymentDataImpl).paymentIntent))
 
     fun cancelPayment(paymentData: PaymentData) {
         val paymentIntent = (paymentData as PaymentDataImpl).paymentIntent
@@ -84,18 +88,21 @@ internal class PaymentManager(
         }
     }
 
-    private fun processPaymentIntent(orderId: Long, data: PaymentIntent) = flow {
-        var paymentIntent = data
-        if (paymentIntent.status == null || paymentIntent.status == PaymentIntentStatus.CANCELED) {
-            emit(errorMapper.mapError(errorMessage = "Cannot retry paymentIntent with status ${paymentIntent.status}"))
+    private fun processPaymentIntent(orderId: Long, paymentIntentRef: PaymentIntentReference) = flow {
+        if (paymentIntentRef.value.status == null || paymentIntentRef.value.status == PaymentIntentStatus.CANCELED) {
+            emit(
+                errorMapper.mapError(
+                    errorMessage = "Cannot retry paymentIntent with status ${paymentIntentRef.value.status}"
+                )
+            )
             return@flow
         }
 
-        if (paymentIntent.status == PaymentIntentStatus.REQUIRES_PAYMENT_METHOD) {
-            paymentIntent = collectPayment(paymentIntent)
+        if (paymentIntentRef.value.status == PaymentIntentStatus.REQUIRES_PAYMENT_METHOD) {
+            paymentIntentRef.value = collectPayment(paymentIntentRef.value)
         }
-        if (paymentIntent.status == PaymentIntentStatus.REQUIRES_CONFIRMATION) {
-            paymentIntent = processPayment(paymentIntent)
+        if (paymentIntentRef.value.status == PaymentIntentStatus.REQUIRES_CONFIRMATION) {
+            paymentIntentRef.value = processPayment(paymentIntentRef.value)
         }
 
         /*
@@ -111,9 +118,11 @@ internal class PaymentManager(
             the success/failure of the actual payment.
          */
 
-        if (paymentIntent.status == PaymentIntentStatus.REQUIRES_CAPTURE || isInteracPaymentSuccessful(paymentIntent)) {
-            retrieveReceiptUrl(paymentIntent)?.let { receiptUrl ->
-                capturePayment(receiptUrl, orderId, cardReaderStore, paymentIntent)
+        if (paymentIntentRef.value.status == PaymentIntentStatus.REQUIRES_CAPTURE ||
+            isInteracPaymentSuccessful(paymentIntentRef.value)
+        ) {
+            retrieveReceiptUrl(paymentIntentRef.value)?.let { receiptUrl ->
+                capturePayment(receiptUrl, orderId, cardReaderStore, paymentIntentRef.value)
             }
         }
     }
@@ -222,3 +231,4 @@ internal class PaymentManager(
 }
 
 internal data class PaymentDataImpl(val paymentIntent: PaymentIntent) : PaymentData
+internal data class PaymentIntentReference(var value: PaymentIntent)

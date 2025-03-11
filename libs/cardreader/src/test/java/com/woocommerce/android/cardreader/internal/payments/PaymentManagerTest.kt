@@ -658,13 +658,13 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
     @Test
     fun `given non-retryable error, when collecting payment intent fails, then payment automatically cancelled`() =
         testBlocking {
-        whenever(collectPaymentAction.collectPayment(anyOrNull()))
-            .thenReturn(flow { emit(CollectPaymentStatus.Failure(mock())) })
+            whenever(collectPaymentAction.collectPayment(anyOrNull()))
+                .thenReturn(flow { emit(CollectPaymentStatus.Failure(mock())) })
 
-        manager.acceptPayment(createPaymentInfo()).toList()
+            manager.acceptPayment(createPaymentInfo()).toList()
 
-        verify(cancelPaymentAction).cancelPayment(any())
-    }
+            verify(cancelPaymentAction).cancelPayment(any())
+        }
 
     @Test
     fun `given retryable error, when collecting payment intent fails, then payment NOT cancelled`() =
@@ -681,14 +681,15 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
         }
 
     @Test
-    fun `given non-retryable error, when processing payment fails, then payment automatically cancelled`() = testBlocking {
-        whenever(processPaymentAction.processPayment(anyOrNull()))
-            .thenReturn(flow { emit(ProcessPaymentStatus.Failure(mock())) })
+    fun `given non-retryable error, when processing payment fails, then payment automatically cancelled`() =
+        testBlocking {
+            whenever(processPaymentAction.processPayment(anyOrNull()))
+                .thenReturn(flow { emit(ProcessPaymentStatus.Failure(mock())) })
 
-        manager.acceptPayment(createPaymentInfo()).toList()
+            manager.acceptPayment(createPaymentInfo()).toList()
 
-        verify(cancelPaymentAction).cancelPayment(any())
-    }
+            verify(cancelPaymentAction).cancelPayment(any())
+        }
 
     @Test
     fun `given retryable error, when processing payment fails, then payment NOT cancelled`() = testBlocking {
