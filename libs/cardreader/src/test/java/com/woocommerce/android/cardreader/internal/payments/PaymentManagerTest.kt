@@ -5,6 +5,8 @@ import com.stripe.stripeterminal.external.models.Charge
 import com.stripe.stripeterminal.external.models.PaymentIntent
 import com.stripe.stripeterminal.external.models.PaymentIntentStatus
 import com.stripe.stripeterminal.external.models.PaymentIntentStatus.CANCELED
+import com.stripe.stripeterminal.external.models.PaymentIntentStatus.PROCESSING
+import com.stripe.stripeterminal.external.models.PaymentIntentStatus.REQUIRES_ACTION
 import com.stripe.stripeterminal.external.models.PaymentIntentStatus.REQUIRES_CAPTURE
 import com.stripe.stripeterminal.external.models.PaymentIntentStatus.REQUIRES_CONFIRMATION
 import com.stripe.stripeterminal.external.models.PaymentIntentStatus.REQUIRES_PAYMENT_METHOD
@@ -599,6 +601,28 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
         }
 
     @Test
+    fun `given PaymentStatus PROCESSING, when canceling payment, then payment intent canceled`() =
+        testBlocking {
+            val paymentIntent = createPaymentIntent(PROCESSING)
+            val paymentData = PaymentDataImpl(paymentIntent)
+
+            manager.cancelPayment(paymentData)
+
+            verify(cancelPaymentAction).cancelPayment(paymentIntent)
+        }
+
+    @Test
+    fun `given PaymentStatus REQUIRES_ACTION, when canceling payment, then payment intent canceled`() =
+        testBlocking {
+            val paymentIntent = createPaymentIntent(REQUIRES_ACTION)
+            val paymentData = PaymentDataImpl(paymentIntent)
+
+            manager.cancelPayment(paymentData)
+
+            verify(cancelPaymentAction).cancelPayment(paymentIntent)
+        }
+
+    @Test
     fun `given PaymentStatus REQUIRES_CAPTURE, when canceling payment, then payment intent NOT canceled`() =
         testBlocking {
             val paymentIntent = createPaymentIntent(REQUIRES_CAPTURE)
@@ -608,6 +632,76 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
 
             verify(cancelPaymentAction, never()).cancelPayment(paymentIntent)
         }
+
+    @Test
+    fun `given PaymentStatus SUCCEEDED, when canceling payment, then payment intent NOT canceled`() =
+        testBlocking {
+            val paymentIntent = createPaymentIntent(SUCCEEDED)
+            val paymentData = PaymentDataImpl(paymentIntent)
+
+            manager.cancelPayment(paymentData)
+
+            verify(cancelPaymentAction, never()).cancelPayment(paymentIntent)
+        }
+
+    @Test
+    fun `given PaymentStatus CANCELED, when canceling payment, then payment intent NOT canceled`() =
+        testBlocking {
+            val paymentIntent = createPaymentIntent(CANCELED)
+            val paymentData = PaymentDataImpl(paymentIntent)
+
+            manager.cancelPayment(paymentData)
+
+            verify(cancelPaymentAction, never()).cancelPayment(paymentIntent)
+        }
+
+    @Test
+    fun `given non-retryable error, when collecting payment intent fails, then payment automatically cancelled`() =
+        testBlocking {
+        whenever(collectPaymentAction.collectPayment(anyOrNull()))
+            .thenReturn(flow { emit(CollectPaymentStatus.Failure(mock())) })
+
+        manager.acceptPayment(createPaymentInfo()).toList()
+
+        verify(cancelPaymentAction).cancelPayment(any())
+    }
+
+    @Test
+    fun `given retryable error, when collecting payment intent fails, then payment NOT cancelled`() =
+        testBlocking {
+            whenever(collectPaymentAction.collectPayment(anyOrNull()))
+                .thenReturn(flow { emit(CollectPaymentStatus.Failure(mock())) })
+            val dataForRetry = mock<PaymentDataImpl>()
+            whenever(paymentErrorMapper.mapTerminalError(anyOrNull(), anyOrNull()))
+                .thenReturn(PaymentFailed(CardPaymentStatusErrorType.Generic, dataForRetry, ""))
+
+            manager.acceptPayment(createPaymentInfo()).toList()
+
+            verify(cancelPaymentAction, never()).cancelPayment(any())
+        }
+
+    @Test
+    fun `given non-retryable error, when processing payment fails, then payment automatically cancelled`() = testBlocking {
+        whenever(processPaymentAction.processPayment(anyOrNull()))
+            .thenReturn(flow { emit(ProcessPaymentStatus.Failure(mock())) })
+
+        manager.acceptPayment(createPaymentInfo()).toList()
+
+        verify(cancelPaymentAction).cancelPayment(any())
+    }
+
+    @Test
+    fun `given retryable error, when processing payment fails, then payment NOT cancelled`() = testBlocking {
+        whenever(processPaymentAction.processPayment(anyOrNull()))
+            .thenReturn(flow { emit(ProcessPaymentStatus.Failure(mock())) })
+        val dataForRetry = mock<PaymentDataImpl>()
+        whenever(paymentErrorMapper.mapTerminalError(anyOrNull(), anyOrNull()))
+            .thenReturn(PaymentFailed(CardPaymentStatusErrorType.Generic, dataForRetry, ""))
+
+        manager.acceptPayment(createPaymentInfo()).toList()
+
+        verify(cancelPaymentAction, never()).cancelPayment(any())
+    }
     // END - Cancel
 
     private fun createPaymentIntent(
