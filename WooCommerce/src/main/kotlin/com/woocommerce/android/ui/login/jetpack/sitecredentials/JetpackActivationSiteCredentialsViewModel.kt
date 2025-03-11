@@ -8,6 +8,7 @@ import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.model.JetpackStatus
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.ui.login.WPApiSiteRepository
@@ -38,7 +39,7 @@ class JetpackActivationSiteCredentialsViewModel @Inject constructor(
     private val _viewState = savedStateHandle.getStateFlow(
         scope = viewModelScope,
         initialValue = JetpackActivationSiteCredentialsViewState(
-            isJetpackInstalled = navArgs.isJetpackInstalled,
+            isJetpackInstalled = navArgs.jetpackStatus.isJetpackInstalled,
             siteUrl = UrlUtils.removeScheme(navArgs.siteUrl)
         )
     )
@@ -90,8 +91,8 @@ class JetpackActivationSiteCredentialsViewModel @Inject constructor(
                 analyticsTrackerWrapper.track(AnalyticsEvent.LOGIN_JETPACK_SITE_CREDENTIAL_DID_FINISH_LOGIN)
                 triggerEvent(
                     NavigateToJetpackActivationSteps(
-                        navArgs.siteUrl,
-                        navArgs.isJetpackInstalled
+                        siteUrl = navArgs.siteUrl,
+                        jetpackStatus = navArgs.jetpackStatus
                     )
                 )
             },
@@ -134,7 +135,7 @@ class JetpackActivationSiteCredentialsViewModel @Inject constructor(
 
     data class NavigateToJetpackActivationSteps(
         val siteUrl: String,
-        val isJetpackInstalled: Boolean
+        val jetpackStatus: JetpackStatus
     ) : MultiLiveEvent.Event()
 
     data class ResetPassword(val siteUrl: String) : MultiLiveEvent.Event()

@@ -38,7 +38,7 @@ class JetpackActivationDispatcherFragment : BaseFragment() {
             JetpackActivationDispatcherFragmentDirections
                 .actionJetpackActivationDispatcherFragmentToJetpackActivationStartFragment(
                     siteUrl = event.siteUrl,
-                    isJetpackInstalled = event.isJetpackInstalled
+                    jetpackStatus = event.jetpackStatus
                 )
         )
     }

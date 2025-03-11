@@ -12,7 +12,7 @@ sealed interface ConnectingState
 sealed class CardReaderConnectViewState(
     val headerLabel: UiString? = null,
     @DrawableRes val illustration: Int? = null,
-    @StringRes val hintLabel: Int? = null,
+    @StringRes open val hintLabel: Int? = null,
     val primaryActionLabel: Int? = null,
     val secondaryActionLabel: Int? = null,
     val tertiaryActionLabel: Int? = null,
@@ -105,7 +105,8 @@ sealed class CardReaderConnectViewState(
 
     data class ConnectingFailedState(
         override val onPrimaryActionClicked: () -> Unit,
-        override val onSecondaryActionClicked: () -> Unit
+        override val onSecondaryActionClicked: () -> Unit,
+        override val hintLabel: Int?
     ) : CardReaderConnectViewState(
         headerLabel = UiString.UiStringRes(R.string.card_reader_connect_failed_header),
         illustration = R.drawable.img_products_error,

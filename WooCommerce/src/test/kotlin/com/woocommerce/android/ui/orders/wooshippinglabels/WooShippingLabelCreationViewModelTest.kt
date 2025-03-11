@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.wooshippinglabels
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.R
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.OrderTestUtils
@@ -12,6 +13,8 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreat
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.PurchaseState
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.WooShippingViewState
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.WooShippingViewState.DataState
+import com.woocommerce.android.ui.orders.wooshippinglabels.address.AddressNotification
+import com.woocommerce.android.ui.orders.wooshippinglabels.address.GetAddressNotification
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.destination.VerifyDestinationAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.origin.ObserveOriginAddresses
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.ShouldRequireCustomsForm
@@ -41,6 +44,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
@@ -217,6 +221,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     private val purchaseShippingLabel: PurchaseShippingLabel = mock()
     private val observeStoreOptions: ObserveStoreOptions = mock()
     private val verifyDestinationAddress: VerifyDestinationAddress = mock()
+    private val getAddressNotification: GetAddressNotification = mock()
 
     private lateinit var sut: WooShippingLabelCreationViewModel
 
@@ -233,6 +238,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
             fetchAccountSettings = mock(),
             shouldRequireCustoms = shouldRequireCustomsForm,
             verifyDestinationAddress = verifyDestinationAddress,
+            getAddressNotification = getAddressNotification,
             savedState = savedState
         )
     }
@@ -853,5 +859,62 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         // Navigate back
         val shouldNavigateBack = sut.allowBackNavigation()
         assertThat(shouldNavigateBack).isTrue()
+    }
+
+    @Test
+    fun `when there are address notifications then display the notification`() = testBlocking {
+        val order = OrderTestUtils.generateTestOrder(orderId = orderId)
+        val notification = AddressNotification(
+            isSuccess = false,
+            message = R.string.woo_shipping_address_notification_destination_missing,
+            isDestinationNotification = false
+        )
+
+        whenever(orderDetailRepository.getOrderById(any())) doReturn order
+        whenever(getShippableItems(any())) doReturn defaultShippableItems
+        whenever(observeOriginAddresses()) doReturn flowOf(defaultOriginAddresses)
+        whenever(observeStoreOptions()) doReturn flowOf(defaultStoreOptions)
+        whenever(getAddressNotification(any(), anyOrNull())) doReturn notification
+
+        createViewModel()
+
+        advanceUntilIdle()
+
+        val currentViewState = sut.viewState.value
+        assertThat(currentViewState).isInstanceOf(DataState::class.java)
+        val dataState = currentViewState as DataState
+        assertThat(dataState.uiState.addressNotification).isEqualTo(notification)
+    }
+
+    @Test
+    fun `when an address notifications is displayed then dismissAddressNotification should dismiss the notification`() = testBlocking {
+        val order = OrderTestUtils.generateTestOrder(orderId = orderId)
+        val notification = AddressNotification(
+            isSuccess = false,
+            message = R.string.woo_shipping_address_notification_destination_missing,
+            isDestinationNotification = false
+        )
+
+        whenever(orderDetailRepository.getOrderById(any())) doReturn order
+        whenever(getShippableItems(any())) doReturn defaultShippableItems
+        whenever(observeOriginAddresses()) doReturn flowOf(defaultOriginAddresses)
+        whenever(observeStoreOptions()) doReturn flowOf(defaultStoreOptions)
+        whenever(getAddressNotification(any(), anyOrNull())) doReturn notification
+
+        createViewModel()
+
+        advanceUntilIdle()
+
+        var currentViewState = sut.viewState.value
+        assertThat(currentViewState).isInstanceOf(DataState::class.java)
+        var dataState = currentViewState as DataState
+        assertThat(dataState.uiState.addressNotification).isEqualTo(notification)
+
+        sut.onDismissAddressNotification()
+
+        currentViewState = sut.viewState.value
+        assertThat(currentViewState).isInstanceOf(DataState::class.java)
+        dataState = currentViewState as DataState
+        assertThat(dataState.uiState.addressNotification).isNull()
     }
 }

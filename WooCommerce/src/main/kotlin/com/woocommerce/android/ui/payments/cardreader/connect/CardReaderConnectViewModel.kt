@@ -282,8 +282,10 @@ class CardReaderConnectViewModel @Inject constructor(
                 is CardReaderStatus.Connected -> onReaderConnected(status.cardReader)
                 is CardReaderStatus.NotConnected -> {
                     if (connectionStarted) {
-                        status.errorMessage?.let { triggerEvent(ShowToastString(it)) }
-                        onReaderConnectionFailed()
+                        onReaderConnectionFailed(
+                            errorCode = status.errorCode,
+                            errorMessage = status.errorMessage
+                        )
                     } else {
                         Unit
                     }
@@ -480,10 +482,26 @@ class CardReaderConnectViewModel @Inject constructor(
         }
     }
 
-    private fun onReaderConnectionFailed() {
+    private fun onReaderConnectionFailed(
+        errorCode: CardReaderStatus.NotConnected.ErrorCode? = null,
+        errorMessage: String? = null
+    ) {
         tracker.trackConnectionFailed()
         WooLog.e(WooLog.T.CARD_READER, "Connecting to reader failed.")
-        viewState.value = ConnectingFailedState(::restartFlow, ::onCancelClicked)
+        val hintLabel = when (errorCode) {
+            CardReaderStatus.NotConnected.ErrorCode.BATTERY_CRITICALLY_LOW ->
+                R.string.card_reader_connect_failed_battery_low_hint
+            CardReaderStatus.NotConnected.ErrorCode.OTHER -> null
+            null -> null
+        }
+        if (hintLabel == null && errorMessage != null) {
+            triggerEvent(ShowToastString(errorMessage))
+        }
+        viewState.value = ConnectingFailedState(
+            onPrimaryActionClicked = ::restartFlow,
+            onSecondaryActionClicked = ::onCancelClicked,
+            hintLabel = hintLabel
+        )
         cardReaderOnboardingChecker.invalidateCache()
     }
 

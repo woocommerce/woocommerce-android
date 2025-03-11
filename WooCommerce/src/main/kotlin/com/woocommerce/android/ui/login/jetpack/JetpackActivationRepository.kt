@@ -4,6 +4,8 @@ import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.model.JetpackConnectionStatus
+import com.woocommerce.android.model.JetpackSiteRegistrationStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
@@ -34,6 +36,58 @@ class JetpackActivationRepository @Inject constructor(
 
     suspend fun getSiteByUrl(url: String): SiteModel? = withContext(Dispatchers.IO) {
         SiteUtils.getSiteByMatchingUrl(siteStore, url)
+    }
+
+    suspend fun connectJetpackAccount(
+        site: SiteModel,
+        jetpackConnectionStatus: JetpackConnectionStatus.AccountNotConnected,
+        useApplicationPasswords: Boolean
+    ): Result<Unit> {
+        suspend fun registerSite(): Result<Long> {
+            return jetpackStore.registerSite(site, useApplicationPasswords).let {
+                when {
+                    it.isError -> Result.failure<Long>(OnChangedException(it.error))
+                    it.data == null -> Result.failure<Long>(IllegalStateException("Blog ID missing"))
+                    else -> Result.success(it.data!!)
+                }
+            }
+        }
+
+        suspend fun connectJetpackAccount(blogId: Long): Result<Unit> {
+            return jetpackStore.connectJetpackAccount(site, blogId, useApplicationPasswords).let {
+                if (it.isError) {
+                    Result.failure<Unit>(OnChangedException(it.error))
+                } else {
+                    Result.success(Unit)
+                }
+            }
+        }
+
+        WooLog.d(WooLog.T.LOGIN, "Connecting Jetpack using the API")
+
+        val blogId: Long = when (jetpackConnectionStatus.siteRegistrationStatus) {
+            JetpackSiteRegistrationStatus.NOT_REGISTERED -> {
+                registerSite().getOrElse {
+                    WooLog.w(WooLog.T.LOGIN, "Jetpack registration failed: ${it.message}")
+                    return Result.failure(it)
+                }
+            }
+
+            JetpackSiteRegistrationStatus.REGISTERED -> {
+                requireNotNull(jetpackConnectionStatus.blogId) {
+                    "Invalid Jetpack Connection Status: site registered but blogId is missing $jetpackConnectionStatus"
+                }
+            }
+
+            else -> error("The site doesn't support Jetpack Connection API")
+        }
+
+        return connectJetpackAccount(blogId)
+            .onSuccess {
+                WooLog.d(WooLog.T.LOGIN, "Jetpack connected successfully")
+            }.onFailure {
+                WooLog.w(WooLog.T.LOGIN, "Jetpack connection failed: ${it.message}")
+            }
     }
 
     suspend fun fetchJetpackConnectionUrl(

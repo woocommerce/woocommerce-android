@@ -15,6 +15,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateToHelpScreen
+import com.woocommerce.android.model.JetpackConnectionStatus
+import com.woocommerce.android.model.JetpackSiteRegistrationStatus
 import com.woocommerce.android.model.JetpackStatus
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.requests.SupportRequestFormActivity
@@ -112,8 +114,10 @@ class SitePickerSiteDiscoveryFragment : BaseFragment() {
                     siteUrl = event.siteAddress,
                     jetpackStatus = JetpackStatus(
                         isJetpackInstalled = event.isJetpackInstalled,
-                        isJetpackConnected = false,
-                        wpComEmail = null
+                        jetpackConnectionStatus = JetpackConnectionStatus.AccountNotConnected(
+                            siteRegistrationStatus = JetpackSiteRegistrationStatus.UNKNOWN,
+                            blogId = null
+                        )
                     )
                 )
         )

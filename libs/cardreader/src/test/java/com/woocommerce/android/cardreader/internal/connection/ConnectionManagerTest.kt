@@ -244,7 +244,7 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
                 on { cardReader }.thenReturn(reader)
             }
             whenever(terminalWrapper.connectToReader(any(), any(), any(), any())).thenAnswer {
-                (it.arguments[2] as ReaderCallback).onFailure(mock())
+                (it.arguments[2] as ReaderCallback).onSuccess(mock())
             }
 
             connectionManager.startConnectionToReader(cardReader, "location_id")
@@ -253,7 +253,7 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
         }
 
     @Test
-    fun `given reader with location id, when connectToReader fails, then status updated with not connected`() =
+    fun `given reader with location id, when connectToReader fails, then status updated with not connected and other error code`() =
         testBlocking {
             val reader: Reader = mock {
                 on { deviceType }.thenReturn(DeviceType.CHIPPER_2X)
@@ -262,8 +262,10 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
                 on { cardReader }.thenReturn(reader)
             }
             val message = "error_message"
+            val errorCode = TerminalException.TerminalErrorCode.READER_SOFTWARE_UPDATE_FAILED_READER_ERROR
             val exception: TerminalException = mock {
                 on { errorMessage }.thenReturn(message)
+                on { this.errorCode }.thenReturn(errorCode)
             }
             whenever(terminalWrapper.connectToReader(any(), any(), any(), any())).thenAnswer {
                 (it.arguments[2] as ReaderCallback).onFailure(exception)
@@ -271,7 +273,41 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
 
             connectionManager.startConnectionToReader(cardReader, "location_id")
 
-            verify(terminalListenerImpl).updateReaderStatus(CardReaderStatus.NotConnected(message))
+            verify(terminalListenerImpl).updateReaderStatus(
+                CardReaderStatus.NotConnected(
+                    errorCode = CardReaderStatus.NotConnected.ErrorCode.OTHER,
+                    errorMessage = message,
+                )
+            )
+        }
+
+    @Test
+    fun `given reader with location id, when connectToReader fails with low batter, then status updated with not connected and batter error code`() =
+        testBlocking {
+            val reader: Reader = mock {
+                on { deviceType }.thenReturn(DeviceType.CHIPPER_2X)
+            }
+            val cardReader: CardReaderImpl = mock {
+                on { cardReader }.thenReturn(reader)
+            }
+            val message = "error_message"
+            val errorCode = TerminalException.TerminalErrorCode.READER_BATTERY_CRITICALLY_LOW
+            val exception: TerminalException = mock {
+                on { errorMessage }.thenReturn(message)
+                on { this.errorCode }.thenReturn(errorCode)
+            }
+            whenever(terminalWrapper.connectToReader(any(), any(), any(), any())).thenAnswer {
+                (it.arguments[2] as ReaderCallback).onFailure(exception)
+            }
+
+            connectionManager.startConnectionToReader(cardReader, "location_id")
+
+            verify(terminalListenerImpl).updateReaderStatus(
+                CardReaderStatus.NotConnected(
+                    errorCode = CardReaderStatus.NotConnected.ErrorCode.BATTERY_CRITICALLY_LOW,
+                    errorMessage = message,
+                )
+            )
         }
 
     @Test

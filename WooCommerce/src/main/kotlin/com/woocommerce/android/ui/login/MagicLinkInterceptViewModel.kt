@@ -5,6 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
+import com.woocommerce.android.model.JetpackConnectionStatus
+import com.woocommerce.android.model.JetpackSiteRegistrationStatus
 import com.woocommerce.android.model.JetpackStatus
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.tools.SelectedSite
@@ -108,8 +110,14 @@ class MagicLinkInterceptViewModel @Inject constructor(
 
         return JetpackStatus(
             isJetpackInstalled = isJetpackInstalled,
-            isJetpackConnected = isJetpackConnected,
-            wpComEmail = wpComEmail
+            jetpackConnectionStatus = if (isJetpackConnected) {
+                JetpackConnectionStatus.AccountConnected(wpComEmail.orEmpty())
+            } else {
+                JetpackConnectionStatus.AccountNotConnected(
+                    siteRegistrationStatus = JetpackSiteRegistrationStatus.UNKNOWN,
+                    blogId = null
+                )
+            }
         )
     }
 

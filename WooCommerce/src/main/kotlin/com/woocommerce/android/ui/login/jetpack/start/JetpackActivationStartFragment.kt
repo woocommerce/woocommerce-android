@@ -68,7 +68,7 @@ class JetpackActivationStartFragment : BaseFragment() {
             JetpackActivationStartFragmentDirections
                 .actionJetpackActivationStartFragmentToJetpackActivationSiteCredentialsFragment(
                     siteUrl = event.siteUrl,
-                    isJetpackInstalled = event.isJetpackInstalled
+                    jetpackStatus = event.jetpackStatus
                 )
         )
     }
@@ -78,7 +78,7 @@ class JetpackActivationStartFragment : BaseFragment() {
             JetpackActivationStartFragmentDirections
                 .actionJetpackActivationStartFragmentToJetpackActivationMainFragment(
                     siteUrl = event.siteUrl,
-                    isJetpackInstalled = true
+                    jetpackStatus = event.jetpackStatus
                 )
         )
     }

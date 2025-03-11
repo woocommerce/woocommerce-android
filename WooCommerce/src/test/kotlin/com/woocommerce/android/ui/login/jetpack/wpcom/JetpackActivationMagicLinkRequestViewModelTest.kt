@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.login.jetpack.wpcom
 
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.model.JetpackConnectionStatus
+import com.woocommerce.android.model.JetpackSiteRegistrationStatus
 import com.woocommerce.android.model.JetpackStatus
 import com.woocommerce.android.ui.login.MagicLinkFlow
 import com.woocommerce.android.ui.login.MagicLinkSource
@@ -22,8 +24,10 @@ class JetpackActivationMagicLinkRequestViewModelTest : BaseUnitTest() {
         private const val EMAIL = "email@example.com"
         private val JetpackStatus = JetpackStatus(
             isJetpackInstalled = true,
-            isJetpackConnected = false,
-            wpComEmail = null
+            jetpackConnectionStatus = JetpackConnectionStatus.AccountNotConnected(
+                siteRegistrationStatus = JetpackSiteRegistrationStatus.REGISTERED,
+                blogId = 1
+            )
         )
     }
 

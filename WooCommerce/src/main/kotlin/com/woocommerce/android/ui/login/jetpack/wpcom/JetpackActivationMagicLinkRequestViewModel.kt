@@ -110,7 +110,7 @@ class JetpackActivationMagicLinkRequestViewModel @Inject constructor(
         )
         val source = when {
             !navArgs.jetpackStatus.isJetpackInstalled -> MagicLinkSource.JetpackInstallation
-            !navArgs.jetpackStatus.isJetpackConnected -> MagicLinkSource.JetpackConnection
+            !navArgs.jetpackStatus.isCurrentUserConnected -> MagicLinkSource.JetpackConnection
             else -> MagicLinkSource.WPComAuthentication
         }
         wpComLoginRepository.requestMagicLink(

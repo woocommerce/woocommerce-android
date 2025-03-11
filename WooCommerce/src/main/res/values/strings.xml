@@ -1797,6 +1797,7 @@
     <string name="card_reader_connect_missing_bluetooth_permissions_header">Missing required nearby devices permission</string>
     <string name="card_reader_connect_missing_bluetooth_permission_button">Open settings</string>
     <string name="card_reader_connect_learn_more">&lt;a href=\'\'&gt;Learn more&lt;/a&gt; about In-Person Payments</string>
+    <string name="card_reader_connect_failed_battery_low_hint">The reader battery is low. Please charge the reader and try again</string>
 
     <!--
         Card Reader Detail
@@ -4524,6 +4525,13 @@
     <string name="woo_shipping_address_unsaved_changes">Unsaved changes</string>
     <string name="woo_shipping_verifying_address_failed">The address verification failed. Please try again.</string>
     <string name="woo_shipping_updating_address_failed">We couldn\'t update your address. Please try again.</string>
+
+    <string name="woo_shipping_address_notification_destination_unverified">Destination address unverified</string>
+    <string name="woo_shipping_address_notification_origin_unverified">Origin address unverified</string>
+    <string name="woo_shipping_address_notification_destination_missing">Destination address missing</string>
+
+    <string name="woo_shipping_address_notification_destination_verified">Verified destination address</string>
+    <string name="woo_shipping_address_notification_origin_verified">Verified origin address</string>
 
 
     <string name="woo_shipping_address_validate_and_save">Validate &amp; Save</string>

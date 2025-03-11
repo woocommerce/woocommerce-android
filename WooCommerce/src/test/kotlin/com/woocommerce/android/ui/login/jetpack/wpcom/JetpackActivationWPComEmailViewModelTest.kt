@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.login.jetpack.wpcom
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.model.JetpackConnectionStatus
+import com.woocommerce.android.model.JetpackSiteRegistrationStatus
 import com.woocommerce.android.model.JetpackStatus
 import com.woocommerce.android.ui.login.WPComLoginRepository
 import com.woocommerce.android.ui.login.jetpack.wpcom.JetpackActivationWPComEmailViewModel.ShowMagicLinkScreen
@@ -31,8 +33,10 @@ class JetpackActivationWPComEmailViewModelTest : BaseUnitTest() {
         const val UNKNOWN_USERNAME = "newUser"
         val JETPACK_STATUS = JetpackStatus(
             isJetpackInstalled = true,
-            isJetpackConnected = false,
-            wpComEmail = ""
+            jetpackConnectionStatus = JetpackConnectionStatus.AccountNotConnected(
+                siteRegistrationStatus = JetpackSiteRegistrationStatus.REGISTERED,
+                blogId = 1
+            )
         )
     }
 

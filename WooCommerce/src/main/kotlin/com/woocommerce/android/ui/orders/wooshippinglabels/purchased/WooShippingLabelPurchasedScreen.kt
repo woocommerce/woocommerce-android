@@ -16,7 +16,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.BottomSheetScaffold
 import androidx.compose.material.ButtonDefaults.buttonColors
-import androidx.compose.material.Colors
 import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
@@ -41,7 +40,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -61,16 +59,6 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.ShippingProductsCard
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.AddressStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.generateItems
 import kotlinx.coroutines.launch
-
-@Suppress("MagicNumber")
-private val darkGreen = Color(0xFF005C12)
-
-@Suppress("MagicNumber")
-private val lightGreen = Color(0xFFEDFAEF)
-
-val Colors.successColor: Color get() = if (isLight) darkGreen else lightGreen
-
-val Colors.successSurface: Color get() = if (isLight) lightGreen else darkGreen
 
 @Composable
 fun WooShippingLabelPurchasedScreen(viewModel: WooShippingLabelPurchasedViewModel) {
@@ -127,7 +115,9 @@ internal fun WooShippingLabelPurchasedWithBottomSheetScreen(
                         }
                         true
                     },
+                    addressNotification = null,
                     onEditDestinationAddress = {},
+                    onEditOriginAddress = {},
                     destinationStatus = AddressStatus.VERIFIED
                 )
             }
@@ -332,12 +322,12 @@ private fun PrintShippingLabelCard(
     Column(
         modifier = modifier
             .background(
-                color = MaterialTheme.colors.successSurface,
+                color = colorResource(id = R.color.woo_shipping_label_success),
                 shape = RoundedCornerShape(dimensionResource(R.dimen.corner_radius_large))
             )
             .padding(16.dp)
     ) {
-        RoundedCornerBoxWithBorder(backgroundColor = MaterialTheme.colors.successSurface) {
+        RoundedCornerBoxWithBorder(backgroundColor = colorResource(id = R.color.woo_shipping_label_success_surface)) {
             LabelPaperSizeDropdownMenu(
                 selectedLabelPaperSizeOption = selectedLabelPaperSizeOption,
                 onLabelPaperSizeOptionSelected = onLabelPaperSizeOptionSelected,
@@ -355,7 +345,7 @@ private fun PrintShippingLabelCard(
                 .fillMaxWidth()
                 .padding(top = 12.dp, bottom = 4.dp),
             colors = buttonColors(
-                backgroundColor = MaterialTheme.colors.successColor,
+                backgroundColor = colorResource(id = R.color.woo_shipping_label_success),
                 contentColor = MaterialTheme.colors.surface
             )
         )
@@ -371,12 +361,12 @@ private fun PrintShippingLabelCard(
                 modifier = Modifier
                     .padding(end = 8.dp)
                     .size(16.dp),
-                tint = MaterialTheme.colors.successColor
+                tint = colorResource(id = R.color.woo_shipping_label_success)
             )
             Text(
                 text = stringResource(id = R.string.shipping_label_purchased_learn_how_to_print),
                 style = MaterialTheme.typography.caption,
-                color = MaterialTheme.colors.successColor
+                color = colorResource(id = R.color.woo_shipping_label_success)
             )
         }
         Divider(modifier = Modifier.padding(vertical = 8.dp))
@@ -435,7 +425,7 @@ private fun LabelPaperSizeDropdownMenu(
                     R.string.sorted_by,
                     stringResource(selectedLabelPaperSizeOption.stringResource)
                 ),
-                tint = MaterialTheme.colors.successColor
+                tint = colorResource(id = R.color.woo_shipping_label_success)
 
             )
         }
@@ -475,14 +465,14 @@ private fun ShippingLabelLink(
         Text(
             text = text,
             style = MaterialTheme.typography.subtitle1,
-            color = MaterialTheme.colors.successColor,
+            color = colorResource(id = R.color.woo_shipping_label_success),
             fontWeight = FontWeight.Bold
         )
         if (showIcon) {
             Icon(
                 imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
                 contentDescription = null,
-                tint = MaterialTheme.colors.successColor,
+                tint = colorResource(id = R.color.woo_shipping_label_success),
                 modifier = Modifier.padding(start = 8.dp)
             )
         }

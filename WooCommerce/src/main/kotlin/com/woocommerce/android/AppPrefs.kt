@@ -113,7 +113,6 @@ object AppPrefs {
         UPDATE_SIMULATED_READER_OPTION,
         ENABLE_SIMULATED_INTERAC,
         CUSTOM_DOMAINS_SOURCE,
-        JETPACK_INSTALLATION_FROM_BANNER,
         NOTIFICATIONS_PERMISSION_BAR,
         IS_EU_SHIPPING_NOTICE_DISMISSED,
         HAS_SAVED_PRIVACY_SETTINGS,
@@ -903,12 +902,6 @@ object AppPrefs {
     }
 
     fun getCustomDomainsSource() = getString(DeletablePrefKey.CUSTOM_DOMAINS_SOURCE, DomainFlowSource.SETTINGS.name)
-
-    fun setJetpackInstallationIsFromBanner(isFromBanner: Boolean) {
-        setBoolean(DeletablePrefKey.JETPACK_INSTALLATION_FROM_BANNER, isFromBanner)
-    }
-
-    fun getJetpackInstallationIsFromBanner() = getBoolean(DeletablePrefKey.JETPACK_INSTALLATION_FROM_BANNER, false)
 
     fun setWasNotificationsPermissionBarDismissed(source: Boolean) {
         setBoolean(DeletablePrefKey.NOTIFICATIONS_PERMISSION_BAR, source)

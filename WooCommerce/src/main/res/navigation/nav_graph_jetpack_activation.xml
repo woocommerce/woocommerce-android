@@ -40,11 +40,11 @@
         android:name="com.woocommerce.android.ui.login.jetpack.start.JetpackActivationStartFragment"
         android:label="JetpackActivationStartFragment">
         <argument
+            android:name="jetpackStatus"
+            app:argType="com.woocommerce.android.model.JetpackStatus" />
+        <argument
             android:name="siteUrl"
             app:argType="string" />
-        <argument
-            android:name="isJetpackInstalled"
-            app:argType="boolean" />
         <action
             android:id="@+id/action_jetpackActivationStartFragment_to_jetpackActivationSiteCredentialsFragment"
             app:destination="@id/jetpackActivationSiteCredentialsFragment" />
@@ -57,11 +57,11 @@
         android:name="com.woocommerce.android.ui.login.jetpack.sitecredentials.JetpackActivationSiteCredentialsFragment"
         android:label="JetpackActivationSiteCredentialsFragment">
         <argument
+            android:name="jetpackStatus"
+            app:argType="com.woocommerce.android.model.JetpackStatus" />
+        <argument
             android:name="siteUrl"
             app:argType="string" />
-        <argument
-            android:name="isJetpackInstalled"
-            app:argType="boolean" />
         <action
             android:id="@+id/action_jetpackActivationSiteCredentialsFragment_to_jetpackActivationMainFragment"
             app:destination="@id/jetpackActivationMainFragment"
@@ -76,8 +76,8 @@
             android:name="siteUrl"
             app:argType="string" />
         <argument
-            android:name="isJetpackInstalled"
-            app:argType="boolean" />
+            android:name="jetpackStatus"
+            app:argType="com.woocommerce.android.model.JetpackStatus" />
         <action
             android:id="@+id/action_jetpackActivationMainFragment_to_jetpackActivationWebViewFragment"
             app:destination="@id/jetpackActivationWebViewFragment" />

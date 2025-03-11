@@ -246,14 +246,12 @@ class DashboardFragment :
     }
 
     private fun prepareJetpackBenefitsBanner() {
-        appPrefsWrapper.setJetpackInstallationIsFromBanner(false)
         binding.jetpackBenefitsBanner.root.isVisible = false
         binding.jetpackBenefitsBanner.root.setOnClickListener {
             AnalyticsTracker.track(
                 stat = AnalyticsEvent.FEATURE_JETPACK_BENEFITS_BANNER,
                 properties = mapOf(AnalyticsTracker.KEY_JETPACK_BENEFITS_BANNER_ACTION to "tapped")
             )
-            appPrefsWrapper.setJetpackInstallationIsFromBanner(true)
             findNavController().navigateSafely(DashboardFragmentDirections.actionDashboardToJetpackBenefitsDialog())
         }
         // For the banner to be above the bottom navigation view when the toolbar is expanded

@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.jetpack.benefits
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.model.JetpackConnectionStatus
+import com.woocommerce.android.model.JetpackSiteRegistrationStatus
 import com.woocommerce.android.model.JetpackStatus
 import com.woocommerce.android.model.User
 import com.woocommerce.android.model.UserRole
@@ -74,8 +76,7 @@ class JetpackBenefitsViewModelTest : BaseUnitTest() {
         // Given
         val jetpackStatus = JetpackStatus(
             isJetpackInstalled = true,
-            isJetpackConnected = true,
-            wpComEmail = null
+            jetpackConnectionStatus = JetpackConnectionStatus.AccountConnected("email")
         )
         givenConnectionType(SiteConnectionType.ApplicationPasswords)
         givenJetpackFetchResult(
@@ -118,8 +119,10 @@ class JetpackBenefitsViewModelTest : BaseUnitTest() {
         // Given
         val jetpackStatus = JetpackStatus(
             isJetpackInstalled = false,
-            isJetpackConnected = false,
-            wpComEmail = null
+            jetpackConnectionStatus = JetpackConnectionStatus.AccountNotConnected(
+                siteRegistrationStatus = JetpackSiteRegistrationStatus.NOT_REGISTERED,
+                blogId = null
+            )
         )
         givenConnectionType(SiteConnectionType.ApplicationPasswords)
         givenJetpackFetchResult(FetchJetpackStatus.JetpackStatusFetchResponse.Success(jetpackStatus))
@@ -142,8 +145,10 @@ class JetpackBenefitsViewModelTest : BaseUnitTest() {
         // Given
         val jetpackStatus = JetpackStatus(
             isJetpackInstalled = false,
-            isJetpackConnected = false,
-            wpComEmail = null
+            jetpackConnectionStatus = JetpackConnectionStatus.AccountNotConnected(
+                siteRegistrationStatus = JetpackSiteRegistrationStatus.NOT_REGISTERED,
+                blogId = null
+            )
         )
         givenConnectionType(SiteConnectionType.ApplicationPasswords)
         givenJetpackFetchResult(FetchJetpackStatus.JetpackStatusFetchResponse.Success(jetpackStatus))

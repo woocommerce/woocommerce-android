@@ -3,7 +3,7 @@
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 22.0
 -----
-
+- [*] Payments: display specific error for the cases when a reader with low battery level attempted to connect [https://github.com/woocommerce/woocommerce-android/pull/13642]
 
 21.9
 -----

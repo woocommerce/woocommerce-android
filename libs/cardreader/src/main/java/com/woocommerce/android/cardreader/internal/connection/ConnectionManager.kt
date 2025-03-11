@@ -130,7 +130,12 @@ internal class ConnectionManager(
                 }
 
                 override fun onFailure(e: TerminalException) {
-                    updateReaderStatus(CardReaderStatus.NotConnected(e.errorMessage))
+                    updateReaderStatus(
+                        CardReaderStatus.NotConnected(
+                            errorCode = e.errorCode.toErrorCode(),
+                            errorMessage = e.errorMessage,
+                        )
+                    )
                 }
             }
 
@@ -211,4 +216,12 @@ internal class ConnectionManager(
             readerCallback
         )
     }
+
+    private fun TerminalException.TerminalErrorCode.toErrorCode(): CardReaderStatus.NotConnected.ErrorCode =
+        when (this) {
+            TerminalException.TerminalErrorCode.READER_BATTERY_CRITICALLY_LOW ->
+                CardReaderStatus.NotConnected.ErrorCode.BATTERY_CRITICALLY_LOW
+
+            else -> CardReaderStatus.NotConnected.ErrorCode.OTHER
+        }
 }

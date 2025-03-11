@@ -65,8 +65,8 @@ class JetpackActivationSiteCredentialsFragment : BaseFragment() {
         findNavController().navigateSafely(
             JetpackActivationSiteCredentialsFragmentDirections
                 .actionJetpackActivationSiteCredentialsFragmentToJetpackActivationMainFragment(
-                    siteUrl = event.siteUrl,
-                    isJetpackInstalled = event.isJetpackInstalled
+                    jetpackStatus = event.jetpackStatus,
+                    siteUrl = event.siteUrl
                 )
         )
     }

@@ -54,7 +54,6 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.VerticalDivider
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingAddresses
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
-import com.woocommerce.android.ui.orders.wooshippinglabels.purchased.successColor
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.shippingSelectedBackgroundColor
 import com.woocommerce.android.ui.orders.wooshippinglabels.toShippingFromString
 import kotlinx.coroutines.launch
@@ -573,8 +572,8 @@ fun AddressStatusIndicator(
     }
 
     val color = when (addressStatus) {
-        AddressStatus.VERIFIED -> MaterialTheme.colors.successColor
-        else -> MaterialTheme.colors.error
+        AddressStatus.VERIFIED -> colorResource(id = R.color.woo_shipping_label_success)
+        else -> colorResource(id = R.color.woo_shipping_label_error)
     }
 
     val icon = when (addressStatus) {

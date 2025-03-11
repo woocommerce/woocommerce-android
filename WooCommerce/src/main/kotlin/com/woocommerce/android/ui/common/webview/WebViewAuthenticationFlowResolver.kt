@@ -22,27 +22,22 @@ class WebViewAuthenticationFlowResolver @Inject constructor(
         val isWPComAuthenticated = accountStore.accessToken.isNotNullOrEmpty() &&
             accountStore.account.userName.isNotNullOrEmpty()
 
-        return if (isWPComAuthenticated) {
-            when {
-                wpComAuthAcceptedDomains.any { it == urlDomain } -> {
-                    WebViewAuthenticationFlow.WPCom
-                }
-
-                currentSite?.supportsJetpackSSO() == true && url.isPartOf(currentSite) -> {
-                    WebViewAuthenticationFlow.JetpackSSO
-                }
-
-                else -> {
-                    WebViewAuthenticationFlow.None
-                }
+        return when {
+            isWPComAuthenticated && wpComAuthAcceptedDomains.any { it == urlDomain } -> {
+                WebViewAuthenticationFlow.WPCom
             }
-        } else if (currentSite?.username.isNotNullOrEmpty() &&
-            currentSite.password.isNotNullOrEmpty() &&
-            url.isPartOf(currentSite)
-        ) {
-            WebViewAuthenticationFlow.SiteCredentials
-        } else {
-            WebViewAuthenticationFlow.None
+
+            isWPComAuthenticated && currentSite?.supportsJetpackSSO() == true && url.isPartOf(currentSite) -> {
+                WebViewAuthenticationFlow.JetpackSSO
+            }
+
+            currentSite?.hasCredentials() == true && url.isPartOf(currentSite) -> {
+                WebViewAuthenticationFlow.SiteCredentials
+            }
+
+            else -> {
+                WebViewAuthenticationFlow.None
+            }
         }
     }
 
@@ -60,6 +55,10 @@ class WebViewAuthenticationFlowResolver @Inject constructor(
 
     private fun SiteModel.supportsJetpackSSO(): Boolean {
         return jetpackModules?.contains("sso") == true
+    }
+
+    private fun SiteModel.hasCredentials(): Boolean {
+        return username.isNotNullOrEmpty() && password.isNotNullOrEmpty()
     }
 
     enum class WebViewAuthenticationFlow {

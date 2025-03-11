@@ -92,9 +92,9 @@ class JetpackBenefitsViewModel @Inject constructor(
             analyticsTrackerWrapper.track(
                 stat = JETPACK_SETUP_CONNECTION_CHECK_COMPLETED,
                 properties = mapOf(
-                    AnalyticsTracker.KEY_JETPACK_SETUP_IS_ALREADY_CONNECTED to jetpackStatus.isJetpackConnected,
+                    AnalyticsTracker.KEY_JETPACK_SETUP_IS_ALREADY_CONNECTED to jetpackStatus.isCurrentUserConnected,
                     AnalyticsTracker.KEY_JETPACK_SETUP_REQUIRES_CONNECTION_ONLY to
-                        (jetpackStatus.isJetpackInstalled && !jetpackStatus.isJetpackConnected)
+                        (jetpackStatus.isJetpackInstalled && !jetpackStatus.isCurrentUserConnected)
                 )
             )
         }

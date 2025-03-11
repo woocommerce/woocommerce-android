@@ -87,7 +87,7 @@ class JetpackActivationWPComPasswordFragment : BaseFragment() {
         findNavController().navigateSafely(
             JetpackActivationWPComPasswordFragmentDirections
                 .actionJetpackActivationWPComPasswordFragmentToJetpackActivationMainFragment(
-                    isJetpackInstalled = event.isJetpackInstalled,
+                    jetpackStatus = event.jetpackStatus,
                     siteUrl = event.siteUrl
                 )
         )
