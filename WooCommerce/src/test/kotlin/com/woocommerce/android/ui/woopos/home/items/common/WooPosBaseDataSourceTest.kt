@@ -5,6 +5,8 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.verify
 
 class WooPosBaseDataSourceTest {
 
@@ -46,6 +48,27 @@ class WooPosBaseDataSourceTest {
         assertTrue(result[0] is FetchResult.Cached)
         assertTrue(result[1] is FetchResult.Remote)
         assertTrue((result[1] as FetchResult.Remote).result.isFailure)
+    }
+
+    @Test
+    fun `given forceRefresh true when fetchData then clears cache and fetches new data`() = runTest {
+        // GIVEN
+        val mockCacheUpdate = mock<(Long?, List<String>) -> Unit>()
+        val testDataSource = object : BaseDataSource<String>() {
+            override suspend fun fetchFromCache(productId: Long?): List<String> = emptyList()
+            override suspend fun fetchFromRemote(productId: Long?): Result<List<String>> =
+                Result.success(listOf("New Item"))
+            override suspend fun updateCache(productId: Long?, data: List<String>) =
+                mockCacheUpdate(productId, data)
+        }
+
+        // WHEN
+        val result = testDataSource.fetchData(FetchOptions(forceRefresh = true)).toList()
+
+        // THEN
+        verify(mockCacheUpdate).invoke(null, emptyList())
+        assertTrue(result[0] is FetchResult.Cached)
+        assertTrue(result[1] is FetchResult.Remote)
     }
 
 }
