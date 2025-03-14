@@ -7,6 +7,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.verify
+import org.mockito.kotlin.eq
 
 class WooPosBaseDataSourceTest {
 
@@ -66,9 +67,51 @@ class WooPosBaseDataSourceTest {
         val result = testDataSource.fetchData(FetchOptions(forceRefresh = true)).toList()
 
         // THEN
-        verify(mockCacheUpdate).invoke(null, emptyList())
+        verify(mockCacheUpdate).invoke(eq(null), eq(emptyList()))
+        verify(mockCacheUpdate).invoke(eq(null), eq(listOf("New Item")))
         assertTrue(result[0] is FetchResult.Cached)
         assertTrue(result[1] is FetchResult.Remote)
     }
 
+    @Test
+    fun `given remote success when fetchData then updates cache with remote data`() = runTest {
+        // GIVEN
+        val mockCacheUpdate = mock<(Long?, List<String>) -> Unit>()
+        val testDataSource = object : BaseDataSource<String>() {
+            override suspend fun fetchFromCache(productId: Long?): List<String> = listOf("Cached Item")
+            override suspend fun fetchFromRemote(productId: Long?): Result<List<String>> =
+                Result.success(listOf("New Item"))
+            override suspend fun updateCache(productId: Long?, data: List<String>) =
+                mockCacheUpdate(productId, data)
+        }
+
+        // WHEN
+        val result = testDataSource.fetchData(FetchOptions()).toList()
+
+        // THEN
+        verify(mockCacheUpdate).invoke(eq(null), eq(listOf("New Item")))
+        assertEquals(listOf("New Item"), (result[1] as FetchResult.Remote).result.getOrThrow())
+        assertTrue(result[1] is FetchResult.Remote)
+    }
+
+    @Test
+    fun `given no cached data and remote failure when fetchData then emits empty cache and failure`() = runTest {
+        // GIVEN
+        val testDataSource = object : BaseDataSource<String>() {
+            override suspend fun fetchFromCache(productId: Long?): List<String> = emptyList()
+            override suspend fun fetchFromRemote(productId: Long?): Result<List<String>> =
+                Result.failure(Exception("Network Error"))
+            override suspend fun updateCache(productId: Long?, data: List<String>) = Unit
+        }
+
+        // WHEN
+        val result = testDataSource.fetchData(FetchOptions()).toList()
+
+        // THEN
+        assertEquals(2, result.size)
+        assertTrue(result[0] is FetchResult.Cached)
+        assertEquals(emptyList<String>(), (result[0] as FetchResult.Cached).data)
+        assertTrue(result[1] is FetchResult.Remote)
+        assertTrue((result[1] as FetchResult.Remote).result.isFailure)
+    }
 }
