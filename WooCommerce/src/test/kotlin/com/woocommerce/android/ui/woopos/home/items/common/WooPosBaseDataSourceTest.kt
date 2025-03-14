@@ -27,4 +27,25 @@ class WooPosBaseDataSourceTest {
         assertEquals(listOf("Cached Item"), (result[0] as FetchResult.Cached).data)
         assertEquals(listOf("Remote Item"), (result[1] as FetchResult.Remote).result.getOrThrow())
     }
+
+    @Test
+    fun `given cached data and remote failure when fetchData then emits cached data and failure`() = runTest {
+        // GIVEN
+        val testDataSource = object : BaseDataSource<String>() {
+            override suspend fun fetchFromCache(productId: Long?): List<String> = listOf("Cached Item")
+            override suspend fun fetchFromRemote(productId: Long?): Result<List<String>> =
+                Result.failure(Exception("Network Error"))
+            override suspend fun updateCache(productId: Long?, data: List<String>) = Unit
+        }
+
+        // WHEN
+        val result = testDataSource.fetchData(FetchOptions()).toList()
+
+        // THEN
+        assertEquals(2, result.size)
+        assertTrue(result[0] is FetchResult.Cached)
+        assertTrue(result[1] is FetchResult.Remote)
+        assertTrue((result[1] as FetchResult.Remote).result.isFailure)
+    }
+
 }
