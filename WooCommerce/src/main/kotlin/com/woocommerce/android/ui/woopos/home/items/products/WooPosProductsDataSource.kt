@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.woopos.home.items.products
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.selector.ProductListHandler
-import com.woocommerce.android.ui.woopos.home.items.common.BaseDataSource
+import com.woocommerce.android.ui.woopos.home.items.common.WooPosBaseDataSource
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -17,7 +17,7 @@ import javax.inject.Singleton
 @Singleton
 class WooPosProductsDataSource @Inject constructor(
     private val handler: ProductListHandler,
-) : BaseDataSource<Product>() {
+) : WooPosBaseDataSource<Product>() {
     private var productCache: List<Product> = emptyList()
     private val cacheMutex = Mutex()
 

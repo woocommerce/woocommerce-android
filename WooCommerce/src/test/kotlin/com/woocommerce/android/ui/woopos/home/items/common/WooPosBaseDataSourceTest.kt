@@ -11,7 +11,7 @@ import org.mockito.kotlin.eq
 
 class WooPosBaseDataSourceTest {
 
-    private val testDataSource = object : BaseDataSource<String>() {
+    private val testDataSource = object : WooPosBaseDataSource<String>() {
         override suspend fun fetchFromCache(productId: Long?): List<String> = listOf("Cached Item")
         override suspend fun fetchFromRemote(productId: Long?): Result<List<String>> =
             Result.success(listOf("Remote Item"))
@@ -34,7 +34,7 @@ class WooPosBaseDataSourceTest {
     @Test
     fun `given cached data and remote failure when fetchData then emits cached data and failure`() = runTest {
         // GIVEN
-        val testDataSource = object : BaseDataSource<String>() {
+        val testDataSource = object : WooPosBaseDataSource<String>() {
             override suspend fun fetchFromCache(productId: Long?): List<String> = listOf("Cached Item")
             override suspend fun fetchFromRemote(productId: Long?): Result<List<String>> =
                 Result.failure(Exception("Network Error"))
@@ -55,7 +55,7 @@ class WooPosBaseDataSourceTest {
     fun `given forceRefresh true when fetchData then clears cache and fetches new data`() = runTest {
         // GIVEN
         val mockCacheUpdate = mock<(Long?, List<String>) -> Unit>()
-        val testDataSource = object : BaseDataSource<String>() {
+        val testDataSource = object : WooPosBaseDataSource<String>() {
             override suspend fun fetchFromCache(productId: Long?): List<String> = emptyList()
             override suspend fun fetchFromRemote(productId: Long?): Result<List<String>> =
                 Result.success(listOf("New Item"))
@@ -77,7 +77,7 @@ class WooPosBaseDataSourceTest {
     fun `given remote success when fetchData then updates cache with remote data`() = runTest {
         // GIVEN
         val mockCacheUpdate = mock<(Long?, List<String>) -> Unit>()
-        val testDataSource = object : BaseDataSource<String>() {
+        val testDataSource = object : WooPosBaseDataSource<String>() {
             override suspend fun fetchFromCache(productId: Long?): List<String> = listOf("Cached Item")
             override suspend fun fetchFromRemote(productId: Long?): Result<List<String>> =
                 Result.success(listOf("New Item"))
@@ -97,7 +97,7 @@ class WooPosBaseDataSourceTest {
     @Test
     fun `given no cached data and remote failure when fetchData then emits empty cache and failure`() = runTest {
         // GIVEN
-        val testDataSource = object : BaseDataSource<String>() {
+        val testDataSource = object : WooPosBaseDataSource<String>() {
             override suspend fun fetchFromCache(productId: Long?): List<String> = emptyList()
             override suspend fun fetchFromRemote(productId: Long?): Result<List<String>> =
                 Result.failure(Exception("Network Error"))
