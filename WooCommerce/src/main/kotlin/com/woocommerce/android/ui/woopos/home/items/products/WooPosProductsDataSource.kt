@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.home.items.products
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.selector.ProductListHandler
+import com.woocommerce.android.ui.woopos.home.items.common.FetchOptions
 import com.woocommerce.android.ui.woopos.home.items.common.WooPosBaseDataSource
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
@@ -53,13 +54,11 @@ class WooPosProductsDataSource @Inject constructor(
         data class Remote(val productsResult: Result<List<Product>>) : ProductsResult()
     }
 
-    override suspend fun fetchFromCache(productId: Long?): List<Product> {
+    override suspend fun fetchFromCache(fetchOptions: FetchOptions): List<Product> {
         return productCache
     }
 
-    override suspend fun fetchFromRemote(
-        productId: Long?
-    ): Result<List<Product>> {
+    override suspend fun fetchFromRemote(fetchOptions: FetchOptions): Result<List<Product>> {
         val result = handler.loadFromCacheAndFetch(
             forceRefresh = true,
             includeType = listOf(WCProductStore.IncludeType.Simple, WCProductStore.IncludeType.Variable),
@@ -76,10 +75,7 @@ class WooPosProductsDataSource @Inject constructor(
         }
     }
 
-    override suspend fun updateCache(
-        productId: Long?,
-        data: List<Product>
-    ) {
+    override suspend fun updateCache(fetchOptions: FetchOptions, data: List<Product>) {
         updateProductCache(data)
     }
 }
