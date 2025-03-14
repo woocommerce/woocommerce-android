@@ -13,6 +13,9 @@ import com.woocommerce.android.ui.woopos.home.items.PaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItem
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.home.items.WooPosVariationsViewState
+import com.woocommerce.android.ui.woopos.home.items.common.FetchOptions
+import com.woocommerce.android.ui.woopos.home.items.common.FetchResult.Cached
+import com.woocommerce.android.ui.woopos.home.items.common.FetchResult.Remote
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.VariationsPullToRefreshTriggered
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
@@ -76,15 +79,17 @@ class WooPosVariationsViewModel @Inject constructor(
                 WooPosVariationsViewState.Loading(withCart = withCart)
             }
 
-            variationsDataSource.fetchFirstPage(productId, forceRefresh = forceRefresh).collect { result ->
+            variationsDataSource.fetchData(
+                fetchOptions = FetchOptions(productId, forceRefresh)
+            ).collect { result ->
                 when (result) {
-                    is FetchResult.Cached -> {
+                    is Cached -> {
                         if (result.data.isNotEmpty()) {
                             updateViewStateWithVariations(result.data, productId)
                         }
                     }
 
-                    is FetchResult.Remote -> {
+                    is Remote -> {
                         _viewState.value = when {
                             result.result.isSuccess -> {
                                 val variations = result.result.getOrThrow()
