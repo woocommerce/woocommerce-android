@@ -16,7 +16,10 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertThrows
 import org.junit.Rule
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.store.WCProductStore
@@ -355,5 +358,15 @@ class WooPosVariationsDataSourceTest {
         val cachedResult = flow[0] as FetchResult.Cached
 
         assertFalse(cachedResult.data.any { it.remoteVariationId == 1L })
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun `given null productId when fetchData is called then throws exception`() = runTest {
+        // GIVEN
+        val sut = WooPosVariationsDataSource(handler, variationsCache)
+        val fetchOptions = FetchOptions(productId = null)
+
+        // WHEN
+        sut.fetchData(fetchOptions).collect { }
     }
 }
