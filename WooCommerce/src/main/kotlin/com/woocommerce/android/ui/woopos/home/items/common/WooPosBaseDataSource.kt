@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 
-abstract class BaseDataSource<T> : FetchDataSource<T> {
+abstract class WooPosBaseDataSource<T> : FetchDataSource<T> {
 
     protected abstract suspend fun fetchFromCache(productId: Long? = null): List<T>
     protected abstract suspend fun fetchFromRemote(
