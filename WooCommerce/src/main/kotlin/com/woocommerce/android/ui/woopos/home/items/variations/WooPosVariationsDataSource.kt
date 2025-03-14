@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.woopos.home.items.variations
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.variations.selector.VariationListHandler
-import com.woocommerce.android.ui.woopos.home.items.common.BaseDataSource
+import com.woocommerce.android.ui.woopos.home.items.common.WooPosBaseDataSource
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -17,7 +17,7 @@ import javax.inject.Singleton
 class WooPosVariationsDataSource @Inject constructor(
     private val handler: VariationListHandler,
     private val variationCache: VariationsLRUCache<Long, List<ProductVariation>>
-) : BaseDataSource<ProductVariation>() {
+) : WooPosBaseDataSource<ProductVariation>() {
     private suspend fun getCachedVariations(productId: Long): List<ProductVariation> {
         return variationCache.get(productId) ?: emptyList()
     }
