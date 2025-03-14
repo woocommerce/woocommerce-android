@@ -9,7 +9,8 @@ import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.PaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.home.items.WooPosVariationsViewState
-import com.woocommerce.android.ui.woopos.home.items.variations.FetchResult
+import com.woocommerce.android.ui.woopos.home.items.common.FetchOptions
+import com.woocommerce.android.ui.woopos.home.items.common.FetchResult
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsDataSource
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsUIEvents
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsViewModel
@@ -28,7 +29,6 @@ import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.mockito.kotlin.any
-import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -61,7 +61,7 @@ class WooPosVariationsViewModelTest {
             ProductTestUtils.generateProductVariation(1, 1, "10.0"),
             ProductTestUtils.generateProductVariation(2, 1, "20.0")
         )
-        whenever(variationsDataSource.fetchFirstPage(any(), any())).thenReturn(
+        whenever(variationsDataSource.fetchData(fetchOptions = any())).thenReturn(
             flowOf(FetchResult.Remote(Result.success(variations)))
         )
 
@@ -84,7 +84,7 @@ class WooPosVariationsViewModelTest {
         val variations = listOf(
             ProductTestUtils.generateProductVariation(1, 1, "0.00"),
         )
-        whenever(variationsDataSource.fetchFirstPage(any(), any())).thenReturn(
+        whenever(variationsDataSource.fetchData(fetchOptions = any())).thenReturn(
             flowOf(FetchResult.Remote(Result.success(variations)))
         )
 
@@ -107,7 +107,7 @@ class WooPosVariationsViewModelTest {
         val variations = listOf(
             ProductTestUtils.generateProductVariation(1, 1, ""),
         )
-        whenever(variationsDataSource.fetchFirstPage(any(), any())).thenReturn(
+        whenever(variationsDataSource.fetchData(fetchOptions = any())).thenReturn(
             flowOf(FetchResult.Remote(Result.success(variations)))
         )
 
@@ -127,7 +127,7 @@ class WooPosVariationsViewModelTest {
     @Test
     fun `given empty variations list returned, when view model created, then view state is empty`() = runTest {
         // GIVEN
-        whenever(variationsDataSource.fetchFirstPage(any(), any())).thenReturn(
+        whenever(variationsDataSource.fetchData(fetchOptions = any())).thenReturn(
             flowOf(FetchResult.Remote(Result.success(emptyList())))
         )
 
@@ -143,7 +143,7 @@ class WooPosVariationsViewModelTest {
     @Test
     fun `given error fetching variations, when view model created, then view state is error`() = runTest {
         // GIVEN
-        whenever(variationsDataSource.fetchFirstPage(any(), any())).thenReturn(
+        whenever(variationsDataSource.fetchData(fetchOptions = any())).thenReturn(
             flowOf(FetchResult.Remote(Result.failure(Exception("Fetch error"))))
         )
 
@@ -164,7 +164,7 @@ class WooPosVariationsViewModelTest {
             ProductTestUtils.generateProductVariation(1, 1, "10.0"),
             ProductTestUtils.generateProductVariation(2, 1, "20.0")
         )
-        whenever(variationsDataSource.fetchFirstPage(any(), eq(true))).thenReturn(
+        whenever(variationsDataSource.fetchData(fetchOptions = any())).thenReturn(
             flowOf(FetchResult.Remote(Result.success(variations)))
         )
 
@@ -173,12 +173,12 @@ class WooPosVariationsViewModelTest {
         viewModel.onUIEvent(WooPosVariationsUIEvents.PullToRefreshTriggered(123L))
 
         // THEN
-        verify(variationsDataSource).fetchFirstPage(eq(123L), eq(true))
+        verify(variationsDataSource).fetchData(fetchOptions = FetchOptions(productId = 123L, forceRefresh = true))
     }
 
     @Test
     fun `when pull to refresh triggered, then should track event`() = runTest {
-        whenever(variationsDataSource.fetchFirstPage(any(), eq(true))).thenReturn(
+        whenever(variationsDataSource.fetchData(fetchOptions = any())).thenReturn(
             flowOf(FetchResult.Remote(Result.success(emptyList())))
         )
 
@@ -197,7 +197,7 @@ class WooPosVariationsViewModelTest {
             ProductTestUtils.generateProductVariation(1, 1, "10.0"),
             ProductTestUtils.generateProductVariation(2, 1, "20.0")
         )
-        whenever(variationsDataSource.fetchFirstPage(any(), any())).thenReturn(
+        whenever(variationsDataSource.fetchData(fetchOptions = any())).thenReturn(
             flowOf(FetchResult.Remote(Result.success(variations)))
         )
         whenever(variationsDataSource.canLoadMore(any())).thenReturn(false)
@@ -225,7 +225,7 @@ class WooPosVariationsViewModelTest {
         )
         whenever(variationsDataSource.loadMore(any())).thenReturn(Result.success(variations))
         whenever(variationsDataSource.canLoadMore(any())).thenReturn(true)
-        whenever(variationsDataSource.fetchFirstPage(any(), any())).thenReturn(
+        whenever(variationsDataSource.fetchData(fetchOptions = any())).thenReturn(
             flow {
                 emit(
                     FetchResult.Remote(
@@ -257,7 +257,7 @@ class WooPosVariationsViewModelTest {
         // GIVEN
         whenever(variationsDataSource.loadMore(any())).thenReturn(Result.failure(Exception()))
         whenever(variationsDataSource.canLoadMore(any())).thenReturn(true)
-        whenever(variationsDataSource.fetchFirstPage(any(), any())).thenReturn(
+        whenever(variationsDataSource.fetchData(fetchOptions = any())).thenReturn(
             flow {
                 emit(
                     FetchResult.Remote(
@@ -293,7 +293,7 @@ class WooPosVariationsViewModelTest {
                 ProductTestUtils.generateProductVariation(1, 1, "10.0"),
                 ProductTestUtils.generateProductVariation(2, 1, "20.0")
             )
-            whenever(variationsDataSource.fetchFirstPage(any(), any())).thenReturn(
+            whenever(variationsDataSource.fetchData(fetchOptions = any())).thenReturn(
                 flowOf(FetchResult.Remote(Result.success(variations)))
             )
 
@@ -319,7 +319,7 @@ class WooPosVariationsViewModelTest {
                 ProductTestUtils.generateProductVariation(1, 1, "10.0"),
                 ProductTestUtils.generateProductVariation(2, 1, "20.0")
             )
-            whenever(variationsDataSource.fetchFirstPage(any(), any())).thenReturn(
+            whenever(variationsDataSource.fetchData(fetchOptions = any())).thenReturn(
                 flowOf(FetchResult.Remote(Result.success(variations)))
             )
 
