@@ -5,6 +5,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
+import com.woocommerce.android.ui.woopos.home.items.common.FetchOptions
+import com.woocommerce.android.ui.woopos.home.items.common.FetchResult
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
@@ -19,10 +21,11 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule
 import org.mockito.kotlin.any
-import org.mockito.kotlin.eq
+import org.mockito.kotlin.argThat
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.store.WCProductStore
 import java.math.BigDecimal
 import kotlin.test.Test
 import kotlin.test.assertTrue
@@ -71,9 +74,13 @@ class WooPosItemsViewModelTest {
             ).copy(firstImageUrl = "https://test.com")
         )
 
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+        whenever(
+            productsDataSource.fetchData(
+                argThat { !forceRefresh }
+            )
+        ).thenReturn(
             flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
+                FetchResult.Remote(
                     Result.success(products)
                 )
             )
@@ -101,9 +108,13 @@ class WooPosItemsViewModelTest {
     @Test
     fun `given empty products list returned, when view model created, then view state is empty`() = runTest {
         // GIVEN
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+        whenever(
+            productsDataSource.fetchData(
+                argThat { !forceRefresh }
+            )
+        ).thenReturn(
             flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
+                FetchResult.Remote(
                     Result.success(emptyList())
                 )
             )
@@ -121,9 +132,13 @@ class WooPosItemsViewModelTest {
     @Test
     fun `given loading products is failure, when view model created, then view state is error`() = runTest {
         // GIVEN
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+        whenever(
+            productsDataSource.fetchData(
+                argThat { !forceRefresh }
+            )
+        ).thenReturn(
             flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
+                FetchResult.Remote(
                     Result.failure(Exception())
                 )
             )
@@ -157,9 +172,13 @@ class WooPosItemsViewModelTest {
                 ).copy(firstImageUrl = "https://test.com")
             )
 
-            whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+            whenever(
+                productsDataSource.fetchData(
+                    fetchOptions = any()
+                )
+            ).thenReturn(
                 flowOf(
-                    WooPosProductsDataSource.ProductsResult.Remote(
+                    FetchResult.Remote(
                         Result.success(products)
                     )
                 )
@@ -170,7 +189,9 @@ class WooPosItemsViewModelTest {
             viewModel.onUIEvent(WooPosItemsUIEvent.PullToRefreshTriggered)
             viewModel.viewState.test {
                 // THEN
-                verify(productsDataSource).loadSimpleProducts(forceRefreshProducts = true)
+                verify(productsDataSource).fetchData(
+                    argThat { productId == null && !forceRefresh }
+                )
                 cancelAndConsumeRemainingEvents()
             }
         }
@@ -192,9 +213,13 @@ class WooPosItemsViewModelTest {
                 productType = "simple"
             ).copy(firstImageUrl = "https://test.com")
         )
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+        whenever(
+            productsDataSource.fetchData(
+                fetchOptions = any()
+            )
+        ).thenReturn(
             flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
+                FetchResult.Remote(
                     Result.success(products)
                 )
             )
@@ -229,9 +254,13 @@ class WooPosItemsViewModelTest {
                 productType = "simple"
             ).copy(firstImageUrl = "https://test.com")
         )
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+        whenever(
+            productsDataSource.fetchData(
+                fetchOptions = any()
+            )
+        ).thenReturn(
             flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
+                FetchResult.Remote(
                     Result.success(products)
                 )
             )
@@ -278,9 +307,13 @@ class WooPosItemsViewModelTest {
                     productType = "simple"
                 ).copy(firstImageUrl = "https://test.com")
             )
-            whenever(productsDataSource.loadSimpleProducts(eq(false))).thenReturn(
+            whenever(
+                productsDataSource.fetchData(
+                    fetchOptions = any()
+                )
+            ).thenReturn(
                 flowOf(
-                    WooPosProductsDataSource.ProductsResult.Remote(
+                    FetchResult.Remote(
                         Result.success(products)
                     )
                 )
@@ -313,9 +346,13 @@ class WooPosItemsViewModelTest {
             ).copy(firstImageUrl = "https://test.com")
         )
 
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+        whenever(
+            productsDataSource.fetchData(
+                fetchOptions = any()
+            )
+        ).thenReturn(
             flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
+                FetchResult.Remote(
                     Result.success(products)
                 )
             )
@@ -326,7 +363,7 @@ class WooPosItemsViewModelTest {
 
         viewModel.viewState.test {
             // THEN
-            verify(productsDataSource).loadSimpleProducts(forceRefreshProducts = false)
+            verify(productsDataSource).fetchData(FetchOptions(productId = null, forceRefresh = false))
             cancelAndConsumeRemainingEvents()
         }
     }
@@ -334,9 +371,13 @@ class WooPosItemsViewModelTest {
     @Test
     fun `when loadProducts called, then view state is Loading`() = runTest {
         // GIVEN
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+        whenever(
+            productsDataSource.fetchData(
+                fetchOptions = any()
+            )
+        ).thenReturn(
             flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
+                FetchResult.Remote(
                     Result.success(emptyList())
                 )
             )
@@ -360,9 +401,13 @@ class WooPosItemsViewModelTest {
                 productType = "simple"
             )
         )
-        whenever(productsDataSource.loadSimpleProducts(eq(false))).thenReturn(
+        whenever(
+            productsDataSource.fetchData(
+                fetchOptions = any()
+            )
+        ).thenReturn(
             flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
+                FetchResult.Remote(
                     Result.success(products)
                 )
             )
@@ -384,9 +429,13 @@ class WooPosItemsViewModelTest {
     @Test
     fun `given no products, when pull to refresh, then state is Empty`() = runTest {
         // GIVEN
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+        whenever(
+            productsDataSource.fetchData(
+                fetchOptions = any()
+            )
+        ).thenReturn(
             flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
+                FetchResult.Remote(
                     Result.success(emptyList())
                 )
             )
@@ -406,9 +455,13 @@ class WooPosItemsViewModelTest {
     @Test
     fun `given empty list, when pull to refresh, then parent notified correctly`() = runTest {
         // GIVEN
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+        whenever(
+            productsDataSource.fetchData(
+                fetchOptions = any()
+            )
+        ).thenReturn(
             flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
+                FetchResult.Remote(
                     Result.success(emptyList())
                 )
             )
@@ -434,9 +487,13 @@ class WooPosItemsViewModelTest {
                 productType = "simple"
             )
         )
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+        whenever(
+            productsDataSource.fetchData(
+                fetchOptions = any()
+            )
+        ).thenReturn(
             flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
+                FetchResult.Remote(
                     Result.success(products)
                 )
             )
@@ -445,6 +502,7 @@ class WooPosItemsViewModelTest {
         viewModel.onUIEvent(WooPosItemsUIEvent.PullToRefreshTriggered)
         viewModel.viewState.test {
             // THEN
+            awaitItem()
             verify(fromChildToParentEventSender).sendToParent(ChildToParentEvent.ProductsStatusChanged.WithCart)
             cancelAndConsumeRemainingEvents()
         }
@@ -453,10 +511,28 @@ class WooPosItemsViewModelTest {
     @Test
     fun `when pull to refresh, then should track event`() = runTest {
         // GIVEN
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+        val products = listOf(
+            ProductTestUtils.generateProduct(
+                productId = 1,
+                productName = "Product 1",
+                amount = "10.0",
+                productType = "simple"
+            ),
+            ProductTestUtils.generateProduct(
+                productId = 2,
+                productName = "Product 2",
+                amount = "20.0",
+                productType = "simple"
+            ).copy(firstImageUrl = "https://test.com")
+        )
+        whenever(
+            productsDataSource.fetchData(
+                fetchOptions = any()
+            )
+        ).thenReturn(
             flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
-                    Result.success(emptyList())
+                FetchResult.Remote(
+                    Result.success(products)
                 )
             )
         )
@@ -487,9 +563,13 @@ class WooPosItemsViewModelTest {
             ).copy(firstImageUrl = "https://test.com")
         )
 
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+        whenever(
+            productsDataSource.fetchData(
+                fetchOptions = any()
+            )
+        ).thenReturn(
             flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
+                FetchResult.Remote(
                     Result.success(products)
                 )
             )
@@ -527,9 +607,13 @@ class WooPosItemsViewModelTest {
             ).copy(firstImageUrl = "https://test.com")
         )
 
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+        whenever(
+            productsDataSource.fetchData(
+                fetchOptions = any()
+            )
+        ).thenReturn(
             flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
+                FetchResult.Remote(
                     Result.success(products)
                 )
             )
@@ -565,9 +649,13 @@ class WooPosItemsViewModelTest {
                 ).copy(firstImageUrl = "https://test.com")
             )
 
-            whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+            whenever(
+                productsDataSource.fetchData(
+                    fetchOptions = any()
+                )
+            ).thenReturn(
                 flowOf(
-                    WooPosProductsDataSource.ProductsResult.Remote(
+                    FetchResult.Remote(
                         Result.success(products)
                     )
                 )
@@ -605,9 +693,13 @@ class WooPosItemsViewModelTest {
                 ).copy(firstImageUrl = "https://test.com")
             )
 
-            whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+            whenever(
+                productsDataSource.fetchData(
+                    fetchOptions = any()
+                )
+            ).thenReturn(
                 flowOf(
-                    WooPosProductsDataSource.ProductsResult.Remote(
+                    FetchResult.Remote(
                         Result.success(products)
                     )
                 )
@@ -644,9 +736,13 @@ class WooPosItemsViewModelTest {
             ).copy(firstImageUrl = "https://test.com")
         )
 
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+        whenever(
+            productsDataSource.fetchData(
+                fetchOptions = any()
+            )
+        ).thenReturn(
             flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
+                FetchResult.Remote(
                     Result.success(products)
                 )
             )
@@ -683,9 +779,13 @@ class WooPosItemsViewModelTest {
             ).copy(firstImageUrl = "https://test.com")
         )
 
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+        whenever(
+            productsDataSource.fetchData(
+                fetchOptions = any()
+            )
+        ).thenReturn(
             flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
+                FetchResult.Remote(
                     Result.success(products)
                 )
             )
@@ -722,9 +822,13 @@ class WooPosItemsViewModelTest {
             ).copy(firstImageUrl = "https://test.com")
         )
 
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+        whenever(
+            productsDataSource.fetchData(
+                fetchOptions = any()
+            )
+        ).thenReturn(
             flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
+                FetchResult.Remote(
                     Result.success(products)
                 )
             )
@@ -762,9 +866,13 @@ class WooPosItemsViewModelTest {
             ).copy(firstImageUrl = "https://test.com")
         )
 
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+        whenever(
+            productsDataSource.fetchData(
+                fetchOptions = any()
+            )
+        ).thenReturn(
             flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
+                FetchResult.Remote(
                     Result.success(products)
                 )
             )
@@ -800,9 +908,13 @@ class WooPosItemsViewModelTest {
                 ).copy(firstImageUrl = "https://test.com")
             )
 
-            whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+            whenever(
+                productsDataSource.fetchData(
+                    fetchOptions = any()
+                )
+            ).thenReturn(
                 flowOf(
-                    WooPosProductsDataSource.ProductsResult.Remote(
+                    FetchResult.Remote(
                         Result.success(products)
                     )
                 )
@@ -831,9 +943,13 @@ class WooPosItemsViewModelTest {
                 isVariable = true
             )
         )
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+        whenever(
+            productsDataSource.fetchData(
+                fetchOptions = any()
+            )
+        ).thenReturn(
             flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
+                FetchResult.Remote(
                     Result.success(products)
                 )
             )
@@ -875,9 +991,13 @@ class WooPosItemsViewModelTest {
                 isVariable = true
             )
         )
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+        whenever(
+            productsDataSource.fetchData(
+                fetchOptions = any()
+            )
+        ).thenReturn(
             flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
+                FetchResult.Remote(
                     Result.success(products)
                 )
             )
@@ -912,9 +1032,13 @@ class WooPosItemsViewModelTest {
                 ).copy(firstImageUrl = "https://test.com")
             )
 
-            whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+            whenever(
+                productsDataSource.fetchData(
+                    fetchOptions = any()
+                )
+            ).thenReturn(
                 flowOf(
-                    WooPosProductsDataSource.ProductsResult.Remote(
+                    FetchResult.Remote(
                         Result.success(products)
                     )
                 )
