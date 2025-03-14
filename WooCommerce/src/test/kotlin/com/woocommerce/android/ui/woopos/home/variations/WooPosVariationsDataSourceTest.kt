@@ -1,9 +1,11 @@
 package com.woocommerce.android.ui.woopos.home.variations
 
 import com.woocommerce.android.model.ProductVariation
+import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.variations.selector.VariationListHandler
-import com.woocommerce.android.ui.woopos.home.items.variations.FetchResult
+import com.woocommerce.android.ui.woopos.home.items.common.FetchOptions
+import com.woocommerce.android.ui.woopos.home.items.common.FetchResult
 import com.woocommerce.android.ui.woopos.home.items.variations.VariationsLRUCache
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsDataSource
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
@@ -74,17 +76,17 @@ class WooPosVariationsDataSourceTest {
         whenever(variationsCache.get(productId)).thenReturn(sampleProducts)
         val sut = WooPosVariationsDataSource(handler, variationsCache)
 
-        sut.fetchFirstPage(productId, forceRefresh = true).first()
+        sut.fetchData(fetchOptions = FetchOptions(productId = productId, forceRefresh = true)).first()
         assertThat(
-            sut.fetchFirstPage(productId, forceRefresh = true).first()
+            sut.fetchData(fetchOptions = FetchOptions(productId = productId, forceRefresh = true)).first()
         ).isInstanceOf(FetchResult.Cached::class.java)
 
         // WHEN
-        sut.fetchFirstPage(productId, forceRefresh = true).first()
+        sut.fetchData(fetchOptions = FetchOptions(productId = productId, forceRefresh = true)).first()
 
         // THEN
         // Ensure the cache is cleared (by checking that the cache was reloaded)
-        val result = sut.fetchFirstPage(productId, forceRefresh = false).first()
+        val result = sut.fetchData(fetchOptions = FetchOptions(productId = productId, forceRefresh = false)).first()
         assertThat(result).isInstanceOf(FetchResult.Cached::class.java)
         val cachedResult = result as FetchResult.Cached
         assertThat(cachedResult.data).containsExactlyElementsOf(sampleProducts)
@@ -99,10 +101,10 @@ class WooPosVariationsDataSourceTest {
         whenever(variationsCache.get(productId)).thenReturn(sampleProducts)
         val sut = WooPosVariationsDataSource(handler, variationsCache)
 
-        sut.fetchFirstPage(productId, forceRefresh = true).first()
+        sut.fetchData(fetchOptions = FetchOptions(productId = productId, forceRefresh = true)).first()
 
         // WHEN
-        val result = sut.fetchFirstPage(productId, forceRefresh = false).first()
+        val result = sut.fetchData(fetchOptions = FetchOptions(productId = productId, forceRefresh = false)).first()
 
         // THEN
         // Ensure the result is from cache
@@ -120,10 +122,10 @@ class WooPosVariationsDataSourceTest {
         whenever(variationsCache.get(productId)).thenReturn(sampleProducts)
         val sut = WooPosVariationsDataSource(handler, variationsCache)
 
-        sut.fetchFirstPage(productId, forceRefresh = true).first()
+        sut.fetchData(fetchOptions = FetchOptions(productId = productId, forceRefresh = true)).first()
 
         // WHEN
-        val flow = sut.fetchFirstPage(productId, forceRefresh = false).toList()
+        val flow = sut.fetchData(fetchOptions = FetchOptions(productId = productId, forceRefresh = false)).toList()
 
         // THEN
         val cachedResult = flow[0] as FetchResult.Cached
@@ -145,22 +147,23 @@ class WooPosVariationsDataSourceTest {
         val exception = Exception("Remote load failed")
         val sut = WooPosVariationsDataSource(handler, variationsCache)
 
-        sut.fetchFirstPage(productId, forceRefresh = true).first()
+        sut.fetchData(fetchOptions = FetchOptions(productId = productId, forceRefresh = true)).first()
 
         whenever(
             handler.fetchVariations(
                 productId,
                 forceRefresh = true,
-                mapOf(
-                    WCProductStore.VariationFilterOption.STATUS to "publish",
-                    WCProductStore.VariationFilterOption.DOWNLOADABLE to "false"
+                filterOptions = mapOf(
+                    WCProductStore.VariationFilterOption.STATUS to ProductStatus.PUBLISH.value,
+                    WCProductStore.VariationFilterOption.DOWNLOADABLE to
+                        WCProductStore.DownloadableOptions.FALSE.toString(),
                 )
             )
         )
             .thenReturn(Result.failure(exception))
 
         // WHEN
-        val flow = sut.fetchFirstPage(productId, forceRefresh = false).toList()
+        val flow = sut.fetchData(fetchOptions = FetchOptions(productId = productId, forceRefresh = true)).toList()
 
         // THEN
         val cachedResult = flow[0] as FetchResult.Cached
@@ -184,7 +187,7 @@ class WooPosVariationsDataSourceTest {
         whenever(handler.loadMore(productId)).thenReturn(Result.success(Unit))
         val sut = WooPosVariationsDataSource(handler, variationsCache)
 
-        sut.fetchFirstPage(productId, forceRefresh = false).first()
+        sut.fetchData(fetchOptions = FetchOptions(productId = productId, forceRefresh = true)).first()
 
         // WHEN
         val result = sut.loadMore(productId)
@@ -193,7 +196,9 @@ class WooPosVariationsDataSourceTest {
         assertThat(result.isSuccess).isTrue()
         assertThat(result.getOrNull()).containsExactlyElementsOf(sampleProducts + additionalProducts)
 
-        val cachedResult = sut.fetchFirstPage(productId, forceRefresh = false).first()
+        val cachedResult = sut.fetchData(
+            fetchOptions = FetchOptions(productId = productId, forceRefresh = false)
+        ).first()
         assertThat(cachedResult).isInstanceOf(FetchResult.Cached::class.java)
         val cachedVariations = (cachedResult as FetchResult.Cached).data
         assertThat(cachedVariations).containsExactlyElementsOf(sampleProducts + additionalProducts)
@@ -218,7 +223,7 @@ class WooPosVariationsDataSourceTest {
         whenever(variationsCache.get(productId)).thenReturn(sampleProducts)
         val sut = WooPosVariationsDataSource(handler, variationsCache)
 
-        sut.fetchFirstPage(productId, forceRefresh = false).first()
+        sut.fetchData(fetchOptions = FetchOptions(productId = productId, forceRefresh = false)).first()
 
         // WHEN
         val result = sut.loadMore(productId)
@@ -227,7 +232,9 @@ class WooPosVariationsDataSourceTest {
         assertThat(result.isFailure).isTrue()
         assertThat(result.exceptionOrNull()).isEqualTo(exception)
 
-        val cachedResult = sut.fetchFirstPage(productId, forceRefresh = false).first()
+        val cachedResult = sut.fetchData(
+            fetchOptions = FetchOptions(productId = productId, forceRefresh = false)
+        ).first()
         assertThat(cachedResult).isInstanceOf(FetchResult.Cached::class.java)
         val cachedVariations = (cachedResult as FetchResult.Cached).data
         assertThat(cachedVariations).containsExactlyElementsOf(sampleProducts)
@@ -244,9 +251,10 @@ class WooPosVariationsDataSourceTest {
             handler.fetchVariations(
                 productId,
                 forceRefresh = true,
-                mapOf(
-                    WCProductStore.VariationFilterOption.STATUS to "publish",
-                    WCProductStore.VariationFilterOption.DOWNLOADABLE to "false"
+                filterOptions = mapOf(
+                    WCProductStore.VariationFilterOption.STATUS to ProductStatus.PUBLISH.value,
+                    WCProductStore.VariationFilterOption.DOWNLOADABLE to
+                        WCProductStore.DownloadableOptions.FALSE.toString(),
                 )
             )
         ).thenReturn(Result.failure(exception))
@@ -255,10 +263,11 @@ class WooPosVariationsDataSourceTest {
         val sut = WooPosVariationsDataSource(handler, variationsCache)
 
         // WHEN
-        val flow = sut.fetchFirstPage(productId, forceRefresh = false).toList()
+        val flow = sut.fetchData(fetchOptions = FetchOptions(productId = productId, forceRefresh = false)).toList()
 
         // THEN
-        val remoteResult = flow[0] as FetchResult.Remote
+        flow[0] as FetchResult.Cached
+        val remoteResult = flow[1] as FetchResult.Remote
         assertThat(remoteResult.result.getOrNull()).isNull()
         assertThat(remoteResult.result.exceptionOrNull()).isEqualTo(exception)
     }
@@ -274,10 +283,10 @@ class WooPosVariationsDataSourceTest {
         val sut = WooPosVariationsDataSource(handler, variationsCache)
 
         // WHEN
-        val flow = sut.fetchFirstPage(productId, forceRefresh = false).toList()
+        val flow = sut.fetchData(fetchOptions = FetchOptions(productId = productId, forceRefresh = false)).toList()
 
         // THEN
-        val remoteResult = flow[0] as FetchResult.Remote
+        val remoteResult = flow[1] as FetchResult.Remote
         assertThat(remoteResult.result.getOrNull()).isNotNull
         assertThat(remoteResult.result.getOrNull()).isEmpty()
     }
@@ -306,7 +315,7 @@ class WooPosVariationsDataSourceTest {
         val sut = WooPosVariationsDataSource(handler, variationsCache)
 
         // WHEN
-        val flow = sut.fetchFirstPage(productId, forceRefresh = false).toList()
+        val flow = sut.fetchData(fetchOptions = FetchOptions(productId = productId, forceRefresh = false)).toList()
 
         // THEN
         val cachedResult = flow[0] as FetchResult.Cached
@@ -340,7 +349,7 @@ class WooPosVariationsDataSourceTest {
         val sut = WooPosVariationsDataSource(handler, variationsCache)
 
         // WHEN
-        val flow = sut.fetchFirstPage(productId, forceRefresh = false).toList()
+        val flow = sut.fetchData(fetchOptions = FetchOptions(productId = productId, forceRefresh = false)).toList()
 
         // THEN
         val cachedResult = flow[0] as FetchResult.Cached
