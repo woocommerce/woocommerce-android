@@ -5,11 +5,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.WooPosItem.SimpleProduct
 import com.woocommerce.android.ui.woopos.home.items.WooPosItem.VariableProduct
+import com.woocommerce.android.ui.woopos.home.items.common.FetchOptions
+import com.woocommerce.android.ui.woopos.home.items.common.FetchResult
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ProductsPullToRefreshTriggered
@@ -26,6 +29,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
 
 @HiltViewModel
@@ -174,18 +178,20 @@ class WooPosItemsViewModel @Inject constructor(
                 WooPosItemsViewState.Loading(withCart = withCart)
             }
 
-            productsDataSource.loadSimpleProducts(forceRefreshProducts = forceRefreshProducts).collect { result ->
+            productsDataSource.fetchData(
+                fetchOptions = FetchOptions(forceRefresh = forceRefreshProducts),
+            ).collect { result ->
                 when (result) {
-                    is WooPosProductsDataSource.ProductsResult.Cached -> {
-                        if (result.products.isNotEmpty()) {
-                            _viewState.value = result.products.toContentState()
+                    is FetchResult.Cached -> {
+                        if (result.data.isNotEmpty()) {
+                            _viewState.value = result.data.toContentState()
                         }
                     }
 
-                    is WooPosProductsDataSource.ProductsResult.Remote -> {
+                    is FetchResult.Remote -> {
                         _viewState.value = when {
-                            result.productsResult.isSuccess -> {
-                                val products = result.productsResult.getOrThrow()
+                            result.result.isSuccess -> {
+                                val products = result.result.getOrThrow()
                                 if (products.isNotEmpty()) {
                                     products.toContentState(
                                         paginationState = if (loadMoreProductsJob?.isActive == true) {
