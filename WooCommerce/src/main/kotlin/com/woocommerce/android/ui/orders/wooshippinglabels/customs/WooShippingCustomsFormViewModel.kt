@@ -45,8 +45,10 @@ class WooShippingCustomsFormViewModel @Inject constructor(
 
     private val List<WooShippingCustomsProductUIModel>.isITNRequired: Boolean
         get() = mapNotNull { it.shippingTotalValue }
-            .reduce { acc, current -> acc + current }
-            .let { it >= MAX_SHIPPING_ITEM_VALUE_FOR_CUSTOMS }
+            .takeIf { it.isNotEmpty() }
+            ?.reduce { acc, current -> acc + current }
+            ?.let { it >= MAX_SHIPPING_ITEM_VALUE_FOR_CUSTOMS }
+            ?: false
 
     init {
         launch { loadCountries() }

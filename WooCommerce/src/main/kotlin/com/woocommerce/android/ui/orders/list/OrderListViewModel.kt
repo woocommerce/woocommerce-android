@@ -781,7 +781,7 @@ class OrderListViewModel @Inject constructor(
         fun recreateNotificationChannel() {
             notificationChannelsHandler.recreateNotificationChannel(NotificationChannelType.NEW_ORDER)
             triggerEvent(
-                Event.ShowActionSnackbar(
+                Event.ShowActionStringSnackbar(
                     message = resourceProvider.getString(R.string.cha_ching_sound_succcess_snackbar),
                     actionText = resourceProvider.getString(R.string.cha_ching_sound_succcess_snackbar_action),
                     action = {

@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.login.jetpack.sitecredentials
 
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.JetpackConnectionStatus
@@ -8,6 +9,7 @@ import com.woocommerce.android.model.JetpackStatus
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.ui.jetpack.FetchJetpackStatus
 import com.woocommerce.android.ui.login.WPApiSiteRepository
+import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -17,6 +19,7 @@ import org.junit.Test
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.any
 import org.mockito.kotlin.given
+import org.mockito.kotlin.verify
 import org.wordpress.android.fluxc.model.SiteModel
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -25,6 +28,7 @@ class JetpackActivationSiteCredentialsViewModelTest : BaseUnitTest() {
     private val wpApiSiteRepository: WPApiSiteRepository = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val fetchJetpackStatus: FetchJetpackStatus = mock()
+    private val appPrefs: AppPrefsWrapper = mock()
 
     private lateinit var viewModel: JetpackActivationSiteCredentialsViewModel
 
@@ -43,7 +47,8 @@ class JetpackActivationSiteCredentialsViewModelTest : BaseUnitTest() {
             ).toSavedStateHandle(),
             wpApiSiteRepository,
             analyticsTrackerWrapper,
-            fetchJetpackStatus
+            fetchJetpackStatus,
+            appPrefs
         )
     }
 
@@ -130,6 +135,107 @@ class JetpackActivationSiteCredentialsViewModelTest : BaseUnitTest() {
                     )
                 )
             )
+        }
+
+    @Test
+    fun `given successful login, when Jetpack is already connected, then show an alert`() = testBlocking {
+        val isJetpackInstalled = true
+        setUp(isJetpackInstalled = isJetpackInstalled) {
+            givenLoginResult(Result.success(SiteModel()))
+
+            givenJetpackFetchResult(
+                Result.success(
+                    FetchJetpackStatus.JetpackStatusFetchResponse.Success(
+                        JetpackStatus(
+                            isJetpackInstalled = isJetpackInstalled,
+                            jetpackConnectionStatus = JetpackConnectionStatus.AccountConnected("email")
+                        )
+                    )
+                )
+            )
+        }
+
+        val dialogState = viewModel.dialogState.runAndCaptureValues {
+            viewModel.onUsernameChanged("username")
+            viewModel.onPasswordChanged("password")
+            viewModel.onContinueClick()
+        }.last()
+
+        assertThat(dialogState).matches {
+            it?.title == UiStringRes(R.string.login_jetpack_user_already_connected_dialog_title) &&
+                it.message == UiStringRes(R.string.login_jetpack_user_already_connected_dialog_message) &&
+                it.positiveButton?.text == UiStringRes(R.string.login_jetpack_user_already_connected_dialog_proceed_button) &&
+                it.negativeButton?.text == UiStringRes(R.string.login_jetpack_user_already_connected_dialog_cancel_button)
+        }
+    }
+
+    @Test
+    fun `given account connection alert is shown, when user confirms, then proceed to the WordPress_com login`() =
+        testBlocking {
+            val isJetpackInstalled = true
+            setUp(isJetpackInstalled = isJetpackInstalled) {
+                givenLoginResult(Result.success(SiteModel()))
+
+                givenJetpackFetchResult(
+                    Result.success(
+                        FetchJetpackStatus.JetpackStatusFetchResponse.Success(
+                            JetpackStatus(
+                                isJetpackInstalled = isJetpackInstalled,
+                                jetpackConnectionStatus = JetpackConnectionStatus.AccountConnected("email")
+                            )
+                        )
+                    )
+                )
+            }
+
+            val dialogState = viewModel.dialogState.runAndCaptureValues {
+                viewModel.onUsernameChanged("username")
+                viewModel.onPasswordChanged("password")
+                viewModel.onContinueClick()
+            }.last()
+
+            val event = viewModel.event.runAndCaptureValues {
+                dialogState?.positiveButton?.onClick?.invoke()
+            }.last()
+
+            assertThat(event).isEqualTo(
+                JetpackActivationSiteCredentialsViewModel.OpenWordPressComLogin("email")
+            )
+            verify(appPrefs).setLoginSiteAddress(siteUrl)
+        }
+
+    @Test
+    fun `given account connection alert is shown, when user cancels, then clear the username and password`() =
+        testBlocking {
+            val isJetpackInstalled = true
+            setUp(isJetpackInstalled = isJetpackInstalled) {
+                givenLoginResult(Result.success(SiteModel()))
+
+                givenJetpackFetchResult(
+                    Result.success(
+                        FetchJetpackStatus.JetpackStatusFetchResponse.Success(
+                            JetpackStatus(
+                                isJetpackInstalled = isJetpackInstalled,
+                                jetpackConnectionStatus = JetpackConnectionStatus.AccountConnected("email")
+                            )
+                        )
+                    )
+                )
+            }
+
+            val dialogState = viewModel.dialogState.runAndCaptureValues {
+                viewModel.onUsernameChanged("username")
+                viewModel.onPasswordChanged("password")
+                viewModel.onContinueClick()
+            }.last()
+
+            val viewState = viewModel.viewState.runAndCaptureValues {
+                dialogState?.negativeButton?.onClick?.invoke()
+            }.last()
+
+            assertThat(viewState.username).isEmpty()
+            assertThat(viewState.password).isEmpty()
+            assertThat(viewModel.dialogState.getOrAwaitValue()).isNull()
         }
 
     private suspend fun givenLoginResult(result: Result<SiteModel>) {

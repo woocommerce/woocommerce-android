@@ -45,10 +45,6 @@ import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow.LOGIN_SITE_ADDRESS
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Source
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step.ENTER_SITE_ADDRESS
-import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorFragment
-import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorFragmentArgs
-import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchErrorType
-import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton
 import com.woocommerce.android.ui.login.error.LoginNoWPcomAccountFoundDialogFragment
 import com.woocommerce.android.ui.login.error.LoginNotWPDialogFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailFragment
@@ -744,35 +740,19 @@ class LoginActivity :
         userAvatarUrl: String?,
         checkJetpackAvailability: Boolean
     ) {
-        if (connectSiteInfo?.isJetpackActive == true) {
-            // If jetpack is present, but we can't find the connected email, then show account mismatch error
-            val fragment = AccountMismatchErrorFragment().apply {
-                arguments = AccountMismatchErrorFragmentArgs(
-                    siteUrl = siteAddress,
-                    primaryButton = AccountMismatchPrimaryButton.CONNECT_JETPACK,
-                    errorType = AccountMismatchErrorType.ACCOUNT_NOT_CONNECTED
-                ).toBundle()
-            }
-            changeFragment(
-                fragment = fragment,
-                shouldAddToBackStack = true,
-                tag = AccountMismatchErrorFragment::class.java.simpleName
-            )
-        } else {
-            val jetpackReqFragment = LoginNoJetpackFragment.newInstance(
-                siteAddress,
-                endpointAddress,
-                username,
-                password,
-                userAvatarUrl,
-                checkJetpackAvailability
-            )
-            changeFragment(
-                fragment = jetpackReqFragment as Fragment,
-                shouldAddToBackStack = true,
-                tag = LoginNoJetpackFragment.TAG
-            )
-        }
+        val jetpackReqFragment = LoginNoJetpackFragment.newInstance(
+            siteAddress,
+            endpointAddress,
+            username,
+            password,
+            userAvatarUrl,
+            checkJetpackAvailability
+        )
+        changeFragment(
+            fragment = jetpackReqFragment as Fragment,
+            shouldAddToBackStack = true,
+            tag = LoginNoJetpackFragment.TAG
+        )
     }
 
     override fun helpHandleDiscoveryError(

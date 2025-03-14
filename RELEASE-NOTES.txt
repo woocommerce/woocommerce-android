@@ -4,6 +4,8 @@
 22.0
 -----
 - [*] Payments: display specific error for the cases when a reader with low battery level attempted to connect [https://github.com/woocommerce/woocommerce-android/pull/13642]
+- [**] Jetpack Setup: integrated the Connection API for a more seamless setup experience [https://github.com/woocommerce/woocommerce-android/issues/13628]
+- [*] [Internal] Improved the handling of Site Picker Jetpack setup to handle the case where the account is already connected to the site [https://github.com/woocommerce/woocommerce-android/pull/13693]
 
 21.9
 -----

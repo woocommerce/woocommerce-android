@@ -12,7 +12,7 @@ import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.variations.VariationDetailViewModel.HideImageUploadErrorSnackbar
 import com.woocommerce.android.ui.products.variations.VariationDetailViewModel.VariationViewState
 import com.woocommerce.android.viewmodel.BaseUnitTest
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionStringSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -160,7 +160,7 @@ class VariationDetailViewModelTest : BaseUnitTest() {
         errorEvents.emit(errors)
 
         assertThat(sut.event.value).matches {
-            it is ShowActionSnackbar &&
+            it is ShowActionStringSnackbar &&
                 it.message == errorMessage
         }
     }

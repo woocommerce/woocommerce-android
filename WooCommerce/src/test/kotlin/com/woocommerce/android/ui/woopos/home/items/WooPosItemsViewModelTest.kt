@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.woopos.home.items
 import app.cash.turbine.test
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.products.ProductTestUtils
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
+import com.woocommerce.android.ui.woopos.featureflags.WooPosIsProductsSearchEnabled
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.common.FetchOptions
@@ -14,6 +16,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
+import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
@@ -45,6 +48,8 @@ class WooPosItemsViewModelTest {
         onBlocking { invoke(BigDecimal("20.0")) }.thenReturn("$20.0")
     }
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
+    private val resourceProvider: ResourceProvider = mock()
+    private val isProductsSearchEnabled: WooPosIsProductsSearchEnabled = mock()
 
     @Before
     fun setup() {
@@ -1053,6 +1058,103 @@ class WooPosItemsViewModelTest {
             }
         }
 
+    @Test
+    fun `given products search feature enabled, when view model created, then search state is visible`() = runTest {
+        // GIVEN
+        val products = listOf(
+            ProductTestUtils.generateProduct(
+                productId = 1,
+                productName = "Product 1",
+                amount = "10.0",
+                productType = "simple"
+            )
+        )
+
+        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+            flowOf(
+                WooPosProductsDataSource.ProductsResult.Remote(
+                    Result.success(products)
+                )
+            )
+        )
+        whenever(isProductsSearchEnabled()).thenReturn(true)
+
+        // WHEN
+        val viewModel = createViewModel()
+
+        // THEN
+        viewModel.viewState.test {
+            val contentState = awaitItem() as WooPosItemsViewState.Content
+            assertThat(contentState.search).isInstanceOf(WooPosItemsViewState.Content.SearchState.Visible::class.java)
+            val searchState = contentState.search as WooPosItemsViewState.Content.SearchState.Visible
+            assertThat(searchState.state).isEqualTo(WooPosSearchInputState.Closed)
+        }
+    }
+
+    @Test
+    fun `given products search feature disabled, when view model created, then search state is hidden`() = runTest {
+        // GIVEN
+        val products = listOf(
+            ProductTestUtils.generateProduct(
+                productId = 1,
+                productName = "Product 1",
+                amount = "10.0",
+                productType = "simple"
+            )
+        )
+
+        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+            flowOf(
+                WooPosProductsDataSource.ProductsResult.Remote(
+                    Result.success(products)
+                )
+            )
+        )
+        whenever(isProductsSearchEnabled()).thenReturn(false)
+
+        // WHEN
+        val viewModel = createViewModel()
+
+        // THEN
+        viewModel.viewState.test {
+            val contentState = awaitItem() as WooPosItemsViewState.Content
+            assertThat(contentState.search).isInstanceOf(WooPosItemsViewState.Content.SearchState.Hidden::class.java)
+        }
+    }
+
+    @Test
+    fun `given search visible, when close search clicked, then search state is closed`() = runTest {
+        // GIVEN
+        val products = listOf(
+            ProductTestUtils.generateProduct(
+                productId = 1,
+                productName = "Product 1",
+                amount = "10.0",
+                productType = "simple"
+            )
+        )
+
+        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+            flowOf(
+                WooPosProductsDataSource.ProductsResult.Remote(
+                    Result.success(products)
+                )
+            )
+        )
+        whenever(isProductsSearchEnabled()).thenReturn(true)
+
+        // WHEN
+        val viewModel = createViewModel()
+        viewModel.onUIEvent(WooPosItemsUIEvent.CloseSearchClicked)
+
+        // THEN
+        viewModel.viewState.test {
+            val contentState = awaitItem() as WooPosItemsViewState.Content
+            val searchState = contentState.search as WooPosItemsViewState.Content.SearchState.Visible
+            assertThat(searchState.state).isEqualTo(WooPosSearchInputState.Closed)
+        }
+    }
+
     private fun createViewModel() =
         WooPosItemsViewModel(
             productsDataSource,
@@ -1061,5 +1163,7 @@ class WooPosItemsViewModelTest {
             posPreferencesRepository,
             wooPosItemsNavigator,
             analyticsTracker,
+            resourceProvider,
+            isProductsSearchEnabled,
         )
 }

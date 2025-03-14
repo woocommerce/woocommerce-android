@@ -655,7 +655,7 @@ class OrderListFragment :
                 }
 
                 is MultiLiveEvent.Event.ShowDialog -> event.showDialog()
-                is MultiLiveEvent.Event.ShowActionSnackbar -> uiMessageResolver.showActionSnack(
+                is MultiLiveEvent.Event.ShowActionStringSnackbar -> uiMessageResolver.showActionSnack(
                     message = event.message,
                     actionText = event.actionText,
                     action = event.action

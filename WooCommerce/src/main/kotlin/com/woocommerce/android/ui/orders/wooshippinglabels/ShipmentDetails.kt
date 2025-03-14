@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.wooshippinglabels
 import android.content.res.Configuration
 import android.os.Parcelable
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
@@ -80,6 +81,7 @@ fun ShipmentDetails(
     shippingAddresses: WooShippingAddresses,
     shippingRateSummary: ShippingRateSummaryUI?,
     addressNotification: AddressNotification?,
+    itnNotification: ItnMissingNotification? = null,
     modifier: Modifier = Modifier,
     isShipmentDetailsExpanded: Boolean = false,
     onShipmentDetailsExpandedChange: (Boolean) -> Boolean,
@@ -142,6 +144,7 @@ fun ShipmentDetails(
                             }
                         }
                     )
+                    ItnMissingNotification(itnNotification)
 
                     Spacer(
                         modifier = Modifier.size(
@@ -557,6 +560,78 @@ private fun ShipmentCostRow(
 }
 
 @Composable
+private fun ItnMissingNotification(
+    itnNotification: ItnMissingNotification?,
+    modifier: Modifier = Modifier
+) {
+    AnimatedVisibility(
+        visible = itnNotification != null,
+        enter = fadeIn(
+            animationSpec = tween(
+                durationMillis = 180
+            )
+        ) + scaleIn(
+            animationSpec = tween(
+                durationMillis = 180
+            )
+        ),
+        exit = fadeOut(
+            animationSpec = tween(
+                durationMillis = 90
+            )
+        ) + scaleOut(
+            animationSpec = tween(
+                durationMillis = 90
+            )
+
+        )
+    ) {
+        if (itnNotification == null) return@AnimatedVisibility
+
+        val rowModifier = when (LocalConfiguration.current.orientation) {
+            Configuration.ORIENTATION_LANDSCAPE -> {
+                modifier.widthIn(max = 600.dp).fillMaxWidth()
+            }
+            else -> {
+                modifier.fillMaxWidth()
+            }
+        }
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = rowModifier
+                .padding(dimensionResource(R.dimen.major_100))
+                .background(
+                    color = colorResource(R.color.woo_red_5),
+                    shape = RoundedCornerShape(dimensionResource(R.dimen.corner_radius_large))
+                )
+                .padding(vertical = 8.dp, horizontal = 16.dp),
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.Info,
+                tint = MaterialTheme.colors.error,
+                contentDescription = null
+            )
+            Spacer(Modifier.size(dimensionResource(R.dimen.minor_50)))
+            Text(
+                text = itnNotification.errorMessage,
+                style = MaterialTheme.typography.body2,
+                color = MaterialTheme.colors.error,
+                modifier = Modifier.weight(1f)
+            )
+            Icon(
+                imageVector = Icons.Outlined.Close,
+                tint = MaterialTheme.colors.error,
+                contentDescription = null,
+                modifier = Modifier.clickable {
+                    itnNotification.onErrorDismissed()
+                }
+            )
+        }
+    }
+}
+
+@Composable
 private fun ShippingAddressNotification(
     addressNotification: AddressNotification?,
     modifier: Modifier = Modifier,
@@ -566,20 +641,20 @@ private fun ShippingAddressNotification(
     AnimatedVisibility(
         visible = addressNotification != null && addressNotification.isExpired().not(),
         enter = fadeIn(
-            animationSpec = androidx.compose.animation.core.tween(
+            animationSpec = tween(
                 durationMillis = 180
             )
         ) + scaleIn(
-            animationSpec = androidx.compose.animation.core.tween(
+            animationSpec = tween(
                 durationMillis = 180
             )
         ),
         exit = fadeOut(
-            animationSpec = androidx.compose.animation.core.tween(
+            animationSpec = tween(
                 durationMillis = 90
             )
         ) + scaleOut(
-            animationSpec = androidx.compose.animation.core.tween(
+            animationSpec = tween(
                 durationMillis = 90
             )
 
@@ -695,6 +770,11 @@ data class ShippingRateSummaryUI(
     val optionName: String? = null,
     val optionFee: String? = null
 ) : Parcelable
+
+data class ItnMissingNotification(
+    val errorMessage: String,
+    val onErrorDismissed: () -> Unit
+)
 
 @Composable
 fun VerticalDivider(

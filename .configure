@@ -1,7 +1,7 @@
 {
   "project_name": "woocommerce-android",
   "branch": "trunk",
-  "pinned_hash": "50ebed193db7cab11a2d299fdd478b7600055cbf",
+  "pinned_hash": "021c6780418f845af0b15f5449ce51e467489b69",
   "files_to_copy": [
     {
       "file": "android/WCAndroid/secrets.properties",

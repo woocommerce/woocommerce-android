@@ -49,6 +49,7 @@
     <string name="untitled">Untitled</string>
     <string name="dialog_ok">OK</string>
     <string name="cancel">Cancel</string>
+    <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="cancel_anyway">Cancel anyway</string>
     <string name="keep_editing">Keep editing</string>
@@ -309,6 +310,10 @@
     <string name="login_jetpack_connect">Connect Jetpack</string>
     <string name="login_jetpack_installation_enter_site_credentials">Log in to &lt;b&gt;%1$s&lt;/b&gt; with your store credentials to install Jetpack.</string>
     <string name="login_jetpack_connection_enter_site_credentials">Log in to &lt;b&gt;%1$s&lt;/b&gt; with your store credentials to connect Jetpack.</string>
+    <string name="login_jetpack_user_already_connected_dialog_title">Account already connected</string>
+    <string name="login_jetpack_user_already_connected_dialog_message">This WordPress admin account is already connected to a different WordPress.com account.\nContinuing with that account will log you out of your current account.</string>
+    <string name="login_jetpack_user_already_connected_dialog_proceed_button">Proceed</string>
+    <string name="login_jetpack_user_already_connected_dialog_cancel_button">Cancel</string>
     <string name="login_jetpack_steps_installing">Installing Jetpack</string>
     <string name="login_jetpack_steps_activating">Activating</string>
     <string name="login_jetpack_steps_authorizing">Connect store to Jetpack</string>
@@ -4389,6 +4394,10 @@
     <string name="woopos_email_receipt_email_label">Type email</string>
     <string name="woopos_email_receipt_send_error">Error trying to send this email. Try again</string>
 
+    <string name="woopos_search_back_content_description">Back</string>
+    <string name="woopos_clear_back_content_description">Clear</string>
+    <string name="woopos_search_products">Search products…</string>
+
 
     <string name="customers_details_customer_section">Customer</string>
     <string name="customers_details_orders_section">Orders</string>
@@ -4488,7 +4497,8 @@
     <string name="woo_shipping_labels_customs_restriction_other">Other</string>
     <string name="woo_shipping_labels_customs_other_error_message">Type must not be empty</string>
     <string name="woo_shipping_labels_customs_itn_error_message">Invalid ITN format</string>
-    <string name="woo_shipping_labels_customs_itn_required_message">ITN must not be empty</string>
+    <string name="woo_shipping_labels_customs_itn_required_error">ITN is required</string>
+    <string name="woo_shipping_labels_customs_itn_required_message">For shipments over $2,500, you need to obtain a 14-digit AES ITN for U.S. export reporting verification.</string>
     <string name="woo_shipping_labels_customs_product_details_title">Product Details</string>
     <string name="woo_shipping_labels_customs_product_details_description">Description</string>
     <string name="woo_shipping_labels_customs_product_details_description_missing">Missing Description</string>
@@ -4537,6 +4547,7 @@
     <string name="woo_shipping_address_validate_and_save">Validate &amp; Save</string>
     <string name="woo_shipping_address_missing_info_hint">Add missing information</string>
     <string name="woo_shipping_labels_loading_order_error">Unable to load the order</string>
+    <string name="woo_shipping_labels_purchase_error">We are unable to purchase the shipping label. Please try again.</string>
     <string name="woo_shipping_labels_loading_error">Unable to load data</string>
     <string name="woo_shipping_address_save_changes">Save changes</string>
 
@@ -4558,4 +4569,6 @@
     <string name="error_user_username_instead_of_email">Please log in using your WordPress.com username instead of your email address.</string>
     <string name="about_automattic_x_item_title">X</string>
     <string name="default_web_client_id" a8c-src-lib="module:login">placeholder</string>
+
+    <string name="woo_shipping_split_shipment">Split shipment</string>
 </resources>

@@ -43,7 +43,7 @@ class NotificationSettingsFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is NotificationSettingsViewModel.OpenDeviceNotificationSettings -> openDeviceNotificationSettings()
-                is MultiLiveEvent.Event.ShowActionSnackbar -> uiMessageResolver.showActionSnack(
+                is MultiLiveEvent.Event.ShowActionStringSnackbar -> uiMessageResolver.showActionSnack(
                     event.message,
                     event.actionText,
                     event.action

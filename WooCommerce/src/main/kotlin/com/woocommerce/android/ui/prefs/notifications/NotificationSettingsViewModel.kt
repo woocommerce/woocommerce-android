@@ -42,7 +42,7 @@ class NotificationSettingsViewModel @Inject constructor(
         )
         notificationChannelsHandler.recreateNotificationChannel(NotificationChannelType.NEW_ORDER)
         triggerEvent(
-            MultiLiveEvent.Event.ShowActionSnackbar(
+            MultiLiveEvent.Event.ShowActionStringSnackbar(
                 message = resourceProvider.getString(R.string.cha_ching_sound_succcess_snackbar),
                 actionText = resourceProvider.getString(R.string.cha_ching_sound_succcess_snackbar_action),
                 action = {

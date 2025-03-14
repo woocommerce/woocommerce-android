@@ -5,7 +5,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingAddresses
 import javax.inject.Inject
 
-class GetAddressNotification @Inject constructor() {
+class GetAddressNotification @Inject constructor(private val addressValidationHelper: AddressValidationHelper) {
+
     operator fun invoke(
         addresses: WooShippingAddresses,
         previousNotification: AddressNotification? = null
@@ -19,7 +20,7 @@ class GetAddressNotification @Inject constructor() {
                 )
             }
 
-            addresses.shipTo.address.hasInfo().not() -> {
+            addressValidationHelper.isMissingDestinationAddress(addresses.shipTo.address) -> {
                 AddressNotification(
                     isSuccess = false,
                     message = R.string.woo_shipping_address_notification_destination_missing,

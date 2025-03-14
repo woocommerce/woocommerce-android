@@ -25,6 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.Render
 import com.woocommerce.android.ui.compose.annotatedStringResLegacy
 import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
@@ -49,6 +50,8 @@ fun JetpackActivationSiteCredentialsScreen(viewModel: JetpackActivationSiteCrede
             onCloseClick = viewModel::onCloseClick
         )
     }
+
+    viewModel.dialogState.observeAsState().value?.Render()
 }
 
 @Composable
