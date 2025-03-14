@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.home.items.variations
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.variations.selector.VariationListHandler
+import com.woocommerce.android.ui.woopos.home.items.common.FetchOptions
 import com.woocommerce.android.ui.woopos.home.items.common.WooPosBaseDataSource
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
@@ -58,25 +59,38 @@ class WooPosVariationsDataSource @Inject constructor(
         private const val VARIATION_DOWNLOADABLE_FALSE = "false"
     }
 
-    override suspend fun fetchFromCache(productId: Long?): List<ProductVariation> = getCachedVariations(productId!!)
+    override suspend fun fetchFromCache(fetchOptions: FetchOptions): List<ProductVariation> =
+        fetchOptions.productId?.let { productId ->
+            getCachedVariations(productId)
+        } ?: run {
+            throw IllegalArgumentException("Product ID is required to fetch variations from cache")
+        }
 
     override suspend fun fetchFromRemote(
-        productId: Long?
+        fetchOptions: FetchOptions
     ): Result<List<ProductVariation>> {
-        return handler.fetchVariations(
-            productId!!,
-            forceRefresh = true,
-            filterOptions = mapOf(
-                WCProductStore.VariationFilterOption.STATUS to ProductStatus.PUBLISH.value,
-                WCProductStore.VariationFilterOption.DOWNLOADABLE to
-                    WCProductStore.DownloadableOptions.FALSE.toString(),
+        fetchOptions.productId?.let { productId ->
+            return handler.fetchVariations(
+                productId,
+                forceRefresh = true,
+                filterOptions = mapOf(
+                    WCProductStore.VariationFilterOption.STATUS to ProductStatus.PUBLISH.value,
+                    WCProductStore.VariationFilterOption.DOWNLOADABLE to
+                        WCProductStore.DownloadableOptions.FALSE.toString(),
+                )
             )
-        )
-            .mapCatching { handler.getVariationsFlow(productId).firstOrNull()?.applyFilter() ?: emptyList() }
+                .mapCatching { handler.getVariationsFlow(productId).firstOrNull()?.applyFilter() ?: emptyList() }
+        } ?: run {
+            throw IllegalArgumentException("Product ID is required to fetch variations from cache")
+        }
     }
 
-    override suspend fun updateCache(productId: Long?, data: List<ProductVariation>) {
-        updateVariationCache(productId = productId!!, variations = data)
+    override suspend fun updateCache(fetchOptions: FetchOptions, data: List<ProductVariation>) {
+        fetchOptions.productId?.let { productId ->
+            updateVariationCache(productId = productId, variations = data)
+        } ?: run {
+            throw IllegalArgumentException("Product ID is required to fetch variations from cache")
+        }
     }
 }
 
