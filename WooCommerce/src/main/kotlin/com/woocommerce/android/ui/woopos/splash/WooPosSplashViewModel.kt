@@ -2,6 +2,9 @@ package com.woocommerce.android.ui.woopos.splash
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.ui.products.ProductStatus
+import com.woocommerce.android.ui.woopos.home.items.common.FetchOptions
+import com.woocommerce.android.ui.woopos.home.items.common.FetchResult
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.Loaded
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
@@ -9,6 +12,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
 
 @HiltViewModel
@@ -23,11 +27,13 @@ class WooPosSplashViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            productsDataSource.loadSimpleProducts(forceRefreshProducts = true)
+            productsDataSource.fetchData(
+                fetchOptions = FetchOptions(forceRefresh = true)
+            )
                 .collect { result ->
                     when (result) {
-                        is WooPosProductsDataSource.ProductsResult.Cached -> {}
-                        is WooPosProductsDataSource.ProductsResult.Remote -> {
+                        is FetchResult.Cached -> {}
+                        is FetchResult.Remote -> {
                             _state.value = WooPosSplashState.Loaded
                             trackPosLoaded()
                         }
