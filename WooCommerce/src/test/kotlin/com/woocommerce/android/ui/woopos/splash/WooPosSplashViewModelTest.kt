@@ -1,7 +1,8 @@
 package com.woocommerce.android.ui.woopos.splash
 
+import com.woocommerce.android.ui.woopos.home.items.common.FetchOptions
+import com.woocommerce.android.ui.woopos.home.items.common.FetchResult
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
-import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource.ProductsResult
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
@@ -44,8 +45,8 @@ class WooPosSplashViewModelTest {
     @Test
     fun `given products load successfully, when vm created, should update state to Loaded`() = runTest {
         // GIVEN
-        whenever(productsDataSource.loadSimpleProducts(forceRefreshProducts = true)).thenReturn(
-            flowOf(ProductsResult.Remote(Result.success(emptyList())))
+        whenever(productsDataSource.fetchData(fetchOptions = FetchOptions(forceRefresh = true))).thenReturn(
+            flowOf(FetchResult.Remote(Result.success(emptyList())))
         )
 
         // WHEN
@@ -58,8 +59,8 @@ class WooPosSplashViewModelTest {
     @Test
     fun `given products load successfully, when vm created, should track event`() = runTest {
         // GIVEN
-        whenever(productsDataSource.loadSimpleProducts(forceRefreshProducts = true)).thenReturn(
-            flowOf(ProductsResult.Remote(Result.success(emptyList())))
+        whenever(productsDataSource.fetchData(fetchOptions = FetchOptions(forceRefresh = true))).thenReturn(
+            flowOf(FetchResult.Remote(Result.success(emptyList())))
         )
 
         // WHEN
@@ -72,8 +73,8 @@ class WooPosSplashViewModelTest {
     @Test
     fun `given products are cached, when vm created, should remain in loading state`() = runTest {
         // GIVEN
-        whenever(productsDataSource.loadSimpleProducts(forceRefreshProducts = true)).thenReturn(
-            flowOf(ProductsResult.Cached(emptyList()))
+        whenever(productsDataSource.fetchData(fetchOptions = FetchOptions(forceRefresh = true))).thenReturn(
+            flowOf(FetchResult.Cached(emptyList()))
         )
 
         // WHEN
