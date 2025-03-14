@@ -1070,9 +1070,13 @@ class WooPosItemsViewModelTest {
             )
         )
 
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+        whenever(
+            productsDataSource.fetchData(
+                fetchOptions = any()
+            )
+        ).thenReturn(
             flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
+                FetchResult.Remote(
                     Result.success(products)
                 )
             )
@@ -1103,9 +1107,13 @@ class WooPosItemsViewModelTest {
             )
         )
 
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+        whenever(
+            productsDataSource.fetchData(
+                fetchOptions = any()
+            )
+        ).thenReturn(
             flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
+                FetchResult.Remote(
                     Result.success(products)
                 )
             )
@@ -1134,9 +1142,13 @@ class WooPosItemsViewModelTest {
             )
         )
 
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+        whenever(
+            productsDataSource.fetchData(
+                fetchOptions = any()
+            )
+        ).thenReturn(
             flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
+                FetchResult.Remote(
                     Result.success(products)
                 )
             )
