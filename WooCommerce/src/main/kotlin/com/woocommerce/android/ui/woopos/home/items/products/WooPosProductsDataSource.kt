@@ -6,11 +6,7 @@ import com.woocommerce.android.ui.products.selector.ProductListHandler
 import com.woocommerce.android.ui.woopos.home.items.common.BaseDataSource
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -27,39 +23,6 @@ class WooPosProductsDataSource @Inject constructor(
 
     val hasMorePages: Boolean
         get() = handler.canLoadMore.get()
-
-    fun loadSimpleProducts(forceRefreshProducts: Boolean): Flow<ProductsResult> = flow {
-        if (forceRefreshProducts) {
-            updateProductCache(emptyList())
-        }
-
-        emit(ProductsResult.Cached(productCache))
-
-        val result = handler.loadFromCacheAndFetch(
-            forceRefresh = forceRefreshProducts,
-            searchType = ProductListHandler.SearchType.DEFAULT,
-            includeType = listOf(WCProductStore.IncludeType.Simple, WCProductStore.IncludeType.Variable),
-            filters = mapOf(
-                WCProductStore.ProductFilterOption.STATUS to ProductStatus.PUBLISH.value,
-                WCProductStore.ProductFilterOption.DOWNLOADABLE to WCProductStore.DownloadableOptions.FALSE.toString(),
-            )
-        )
-
-        if (result.isSuccess) {
-            val remoteProducts = handler.productsFlow.first()
-            updateProductCache(remoteProducts)
-            emit(ProductsResult.Remote(Result.success(productCache)))
-        } else {
-            result.logFailure()
-            emit(
-                ProductsResult.Remote(
-                    Result.failure(
-                        result.exceptionOrNull() ?: Exception("Unknown error")
-                    )
-                )
-            )
-        }
-    }.flowOn(Dispatchers.IO).take(2)
 
     suspend fun loadMore(): Result<List<Product>> = withContext(Dispatchers.IO) {
         val result = handler.loadMore(
