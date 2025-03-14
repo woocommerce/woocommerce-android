@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
@@ -29,7 +28,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
 
 @HiltViewModel

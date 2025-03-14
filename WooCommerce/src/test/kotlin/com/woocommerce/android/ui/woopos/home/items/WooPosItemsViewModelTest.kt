@@ -25,7 +25,6 @@ import org.mockito.kotlin.argThat
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.store.WCProductStore
 import java.math.BigDecimal
 import kotlin.test.Test
 import kotlin.test.assertTrue
