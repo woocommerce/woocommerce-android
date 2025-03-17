@@ -27,3 +27,5 @@ steps:
       - "**/build/task-inputs**.*"
       - "fluxc-annotations_jar-snapshot.bin"
       - "classes_jar-snapshot.bin"
+      - "modules"
+      - "jrt-fs.jar"

@@ -16,5 +16,7 @@ echo "--- :hammer_and_wrench: Building"
 
 find ~/.gradle/caches/8.12.1/transforms/ -type f -name "fluxc-annotations_jar-snapshot.bin" -exec cp {} . \;
 find ~/.gradle/caches/8.12.1/transforms/ -type f -name "classes_jar-snapshot.bin" -exec cp {} . \;
+find ~/.gradle/caches/8.12.1/transforms/ -type f -name "modules" -exec cp {} . \;
+find ~/.gradle/caches/8.12.1/transforms/ -type f -name "jrt-fs.jar" -exec cp {} . \;
 
 ls
