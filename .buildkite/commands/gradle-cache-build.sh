@@ -13,3 +13,8 @@ bundle exec fastlane run configure_apply
 
 echo "--- :hammer_and_wrench: Building"
 ./gradlew assembleWasabiDebug
+
+find ~/.gradle/caches/8.12.1/transforms/ -type f -name "fluxc-annotations_jar-snapshot.bin" -exec cp {} . \;
+find ~/.gradle/caches/8.12.1/transforms/ -type f -name "classes_jar-snapshot.bin" -exec cp {} . \;
+
+ls

@@ -23,4 +23,7 @@ steps:
   - label: "🐘 Populate Gradle build cache"
     command: ".buildkite/commands/gradle-cache-build.sh"
     plugins: [$CI_TOOLKIT]
-    artifact_paths: "**/build/task-inputs**.*"
+    artifact_paths:
+      - "**/build/task-inputs**.*"
+      - "fluxc-annotations_jar-snapshot.bin"
+      - "classes_jar-snapshot.bin"
