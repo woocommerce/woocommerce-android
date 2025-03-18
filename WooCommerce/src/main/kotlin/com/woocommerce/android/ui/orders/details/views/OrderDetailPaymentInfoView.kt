@@ -224,6 +224,7 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
         onPrintingInstructionsClickListener: (view: View) -> Unit
     ) {
         if (isPaymentCollectableWithCardReader) {
+            binding.paymentInfoPrintingInstructions.visibility = VISIBLE
             binding.paymentInfoPrintingInstructions.setOnClickListener(
                 onPrintingInstructionsClickListener
             )

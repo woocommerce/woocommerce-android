@@ -10,6 +10,7 @@
 - [*] POS: improved accessibility for the payments status changes [https://github.com/woocommerce/woocommerce-android/pull/13643]
 - [*] [Internal] Application Passwords: improve error handling when using some captcha plugins [https://github.com/woocommerce/woocommerce-android/pull/13776]
 - [*] Fix the dark mode color issue with the icon on the notification permission banner [https://github.com/woocommerce/woocommerce-android/pull/13773]
+- [*] Fixed visibility issue of the printing instructions in the order details screen [https://github.com/woocommerce/woocommerce-android/pull/13780]
 
 21.9
 -----
