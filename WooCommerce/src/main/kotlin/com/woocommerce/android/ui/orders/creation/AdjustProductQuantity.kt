@@ -22,42 +22,44 @@ class AdjustProductQuantity @Inject constructor() {
     }
 
     private fun adjustBundleQuantity(order: Order, product: OrderCreationProduct, quantityToAdd: Int): Order {
-        return (product as? OrderCreationProduct.GroupedProductItemWithRules)?.let { groupedProduct ->
-            val items = order.items.associateBy { it.itemId }.toMutableMap()
+        val groupedProduct = product as? OrderCreationProduct.GroupedProductItemWithRules
+            ?: return adjustQuantity(order, product.item.itemId, quantityToAdd)
 
-            if (product.item.quantity + quantityToAdd <= 0) {
-                items[product.item.itemId]?.let { parentItem ->
-                    items[product.item.itemId] = parentItem.copy(quantity = 0f)
+        val items = order.items.associateBy { it.itemId }.toMutableMap()
+        val parentItem = items[product.item.itemId] ?: return order
 
-                    for (child in product.children) {
-                        val childItem = items[child.item.itemId] ?: continue
-                        items[child.item.itemId] = childItem.copy(quantity = 0f)
-                    }
-                }
-            } else {
-                items[product.item.itemId]?.run {
-                    items[product.item.itemId] = copy(quantity = 0f)
+        var isProductRemoved = parentItem.quantity + quantityToAdd <= 0
+        if (isProductRemoved) {
+            items.clearBundleItems(groupedProduct)
+        } else {
+            items.updateBundleItems(groupedProduct, parentItem, quantityToAdd)
+        }
 
-                    val newQuantity = quantity + quantityToAdd
-                    val discountAmount = subtotal - total
-                    val newSubtotal = pricePreDiscount.multiply(newQuantity.toBigDecimal())
+        return order.copy(items = items.values.toList())
+    }
 
-                    items[itemId] = copy(
-                        quantity = newQuantity,
-                        subtotal = newSubtotal,
-                        total = newSubtotal - discountAmount,
-                        configuration = groupedProduct.getConfiguration()
-                    )
+    private fun MutableMap<Long, Order.Item>.clearBundleItems(product: OrderCreationProduct.GroupedProductItemWithRules) {
+        this[product.item.itemId]?.let { this[product.item.itemId] = it.copy(quantity = 0f) }
+        product.children.forEach { child -> this[child.item.itemId] = this[child.item.itemId]?.copy(quantity = 0f) ?: return@forEach }
+    }
 
-                    for (child in product.children) {
-                        val updatedItem = items[child.item.itemId]?.copy(quantity = 0f) ?: continue
-                        items[child.item.itemId] = updatedItem
-                    }
-                }
-            }
+    private fun MutableMap<Long, Order.Item>.updateBundleItems(
+        product: OrderCreationProduct.GroupedProductItemWithRules,
+        parentItem: Order.Item,
+        quantityToAdd: Int
+    ) {
+        val newQuantity = parentItem.quantity + quantityToAdd
+        val discountAmount = parentItem.subtotal - parentItem.total
+        val newSubtotal = parentItem.pricePreDiscount.multiply(newQuantity.toBigDecimal())
 
-            order.copy(items = items.values.toList())
-        } ?: run { adjustQuantity(order, product.item.itemId, quantityToAdd) }
+        this[product.item.itemId] = parentItem.copy(
+            quantity = newQuantity,
+            subtotal = newSubtotal,
+            total = newSubtotal - discountAmount,
+            configuration = product.getConfiguration()
+        )
+
+        product.children.forEach { child -> this[child.item.itemId] = this[child.item.itemId]?.copy(quantity = 0f) ?: return@forEach }
     }
 
     private fun adjustQuantity(order: Order, itemId: Long, quantityToAdd: Int): Order {
