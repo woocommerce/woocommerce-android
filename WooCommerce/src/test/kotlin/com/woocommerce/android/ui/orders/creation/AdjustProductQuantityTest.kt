@@ -64,39 +64,44 @@ class AdjustProductQuantityTest : BaseUnitTest() {
     }
 
     @Test
-    fun `increase quantity for bundle product`() {
+    fun `increase quantity for bundle product should create a new bundle entry with correct configuration`() {
         val quantityToAdd = 2
 
         val updatedOrder = adjustProductQuantity(order, bundleProduct, quantityToAdd)
-
         val items = updatedOrder.items.associateBy { it.itemId }
 
-        // Assert that we remove (quantity == 0) the bundle item and its children
-        assertThat(items.getValue(bundleItemID).quantity).isEqualTo(0f)
+        assertThat(items.getValue(bundleItemID).quantity).isEqualTo(6f)
         assertThat(items.getValue(bundleChildItemID).quantity).isEqualTo(0f)
 
-        // Assert that a new item is created
-        items.getValue(notSyncedItemID).let { notSyncedBundleItem ->
-            assertThat(notSyncedBundleItem.quantity).isEqualTo(bundleItem.quantity + quantityToAdd)
-        }
+        val newBundleItem = items.values.find { it.itemId == bundleItemID && it.productId == bundleItem.productId }
+        assertThat(newBundleItem).isNotNull
+        assertThat(newBundleItem!!.quantity).isEqualTo(bundleItem.quantity + quantityToAdd)
+        assertThat(newBundleItem.configuration).isEqualTo(bundleProduct.getConfiguration())
     }
 
     @Test
-    fun `decrease quantity for bundle product`() {
-        val quantityToDecrease = -2
+    fun `decrease quantity for bundle product should correctly zero out original bundle and children`() {
+        val quantityToDecrease = -bundleItem.quantity.toInt()
 
         val updatedOrder = adjustProductQuantity(order, bundleProduct, quantityToDecrease)
-
         val items = updatedOrder.items.associateBy { it.itemId }
 
-        // Assert that we remove (quantity == 0) the bundle item and its children
         assertThat(items.getValue(bundleItemID).quantity).isEqualTo(0f)
         assertThat(items.getValue(bundleChildItemID).quantity).isEqualTo(0f)
 
-        // Assert that a new item is created
-        items.getValue(notSyncedItemID).let { notSyncedBundleItem ->
-            assertThat(notSyncedBundleItem.quantity).isEqualTo(bundleItem.quantity + quantityToDecrease)
-        }
+        val newBundleItem = items.values.find { it.itemId != bundleItemID && it.productId == bundleItem.productId }
+        assertThat(newBundleItem).isNull()
+    }
+
+    @Test
+    fun `attempt to update not synced bundle product should not modify its quantity`() {
+        val quantityToAdd = 2
+        val orderWithNotSyncedBundle = order.copy(items = order.items + notSyncedItem)
+
+        val updatedOrder = adjustProductQuantity(orderWithNotSyncedBundle, notSyncedProduct, quantityToAdd)
+        val items = updatedOrder.items.associateBy { it.itemId }
+
+        assertThat(items.getValue(notSyncedItemID).quantity).isEqualTo(notSyncedItem.quantity)
     }
 
     @Test
