@@ -97,3 +97,8 @@ steps:
               api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_INSTRUMENTED_TESTS"
         artifact_paths:
           - "**/build/instrumented-tests/**/*"
+
+
+  - label: "🐘 Populate Gradle build cache"
+    command: ".buildkite/commands/gradle-cache-build.sh"
+    plugins: [$CI_TOOLKIT]

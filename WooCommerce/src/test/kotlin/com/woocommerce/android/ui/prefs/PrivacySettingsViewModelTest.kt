@@ -95,7 +95,7 @@ class PrivacySettingsViewModelTest : BaseUnitTest(StandardTestDispatcher()) {
 
             // then
             assertThat(sut.state.value?.sendUsageStats).isFalse
-            assertThat(sut.event.value).isInstanceOf(MultiLiveEvent.Event.ShowActionSnackbar::class.java)
+            assertThat(sut.event.value).isInstanceOf(MultiLiveEvent.Event.ShowActionStringSnackbar::class.java)
         }
 
     @Test
@@ -113,7 +113,7 @@ class PrivacySettingsViewModelTest : BaseUnitTest(StandardTestDispatcher()) {
 
             // then
             assertThat(sut.state.value?.sendUsageStats).isFalse
-            assertThat(sut.event.value).isInstanceOf(MultiLiveEvent.Event.ShowActionSnackbar::class.java)
+            assertThat(sut.event.value).isInstanceOf(MultiLiveEvent.Event.ShowActionStringSnackbar::class.java)
         }
 
     @Test
@@ -150,7 +150,7 @@ class PrivacySettingsViewModelTest : BaseUnitTest(StandardTestDispatcher()) {
             runCurrent()
 
             // then
-            with((sut.event.value as MultiLiveEvent.Event.ShowActionSnackbar)) {
+            with((sut.event.value as MultiLiveEvent.Event.ShowActionStringSnackbar)) {
                 action.onClick(null)
                 runCurrent()
             }

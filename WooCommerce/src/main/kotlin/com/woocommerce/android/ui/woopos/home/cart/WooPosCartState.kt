@@ -23,6 +23,7 @@ data class WooPosCartState(
 
         @Parcelize
         data class WithItems(val itemsInCart: List<Item>) : Body() {
+            // CouponsProject: Needs to be refactored in order to support non-product items
             @Parcelize
             data class Item(
                 val id: Id,
@@ -57,6 +58,7 @@ enum class WooPosCartStatus {
     EDITABLE, CHECKOUT, EMPTY,
 }
 
+// CouponsProject: Needs to be renamed or Item needs to be a sealed class
 enum class ProductType {
-    Simple, Variation
+    Simple, Variation, Coupon
 }

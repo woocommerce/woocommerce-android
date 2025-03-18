@@ -156,6 +156,7 @@ fun WooPosPaginationErrorScreenPreview() {
                 message = R.string.woopos_banner_simple_products_only_message,
                 icon = R.drawable.info,
             ),
+            search = WooPosItemsViewState.Content.SearchState.Hidden
         )
     WooPosTheme {
         WooPosItemList(

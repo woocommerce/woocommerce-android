@@ -10,6 +10,7 @@ import com.woocommerce.android.model.UserRole
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
+import com.woocommerce.android.ui.jetpack.FetchJetpackStatus
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -183,7 +184,7 @@ class JetpackBenefitsViewModelTest : BaseUnitTest() {
         jetpackStatusFetchResponse: FetchJetpackStatus.JetpackStatusFetchResponse
     ) = testBlocking {
         val result = Result.success(jetpackStatusFetchResponse)
-        whenever(fetchJetpackStatus.invoke()).thenReturn(result)
+        whenever(fetchJetpackStatus.invoke(site = siteModelMock, useApplicationPasswords = true)).thenReturn(result)
     }
 
     private fun givenUserEligibility(user: User, role: UserRole) = testBlocking {

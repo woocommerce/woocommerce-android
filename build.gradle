@@ -21,16 +21,8 @@ plugins {
 }
 
 ext {
-    secretProperties = loadPropertiesWithFallback(
-            logger,
-            file("${rootDir}/defaults.properties"),
-            file("${System.getProperty("user.home")}/.configure/woocommerce-android/secrets/secrets.properties")
-    )
-    developerProperties = loadPropertiesWithFallback(
-            logger,
-            file("${rootDir}/developer.properties-example"),
-            file("${rootDir}/developer.properties")
-    )
+    secretProperties = gradle.ext.secretProperties
+    developerProperties = gradle.ext.developerProperties
 }
 
 measureBuilds {
@@ -38,27 +30,6 @@ measureBuilds {
     automatticProject = MeasureBuildsExtension.AutomatticProject.WooCommerce
     attachGradleScanId = false
     authToken = secretProperties.get('appsMetricsToken')
-}
-
-static def loadPropertiesWithFallback(Logger logger, File fallbackFile, File primaryFile) {
-    def defaultProperties = readPropertiesFromFile(fallbackFile)
-    def primaryProperties
-    if (primaryFile.exists()) {
-        primaryProperties = readPropertiesFromFile(primaryFile)
-    } else {
-        logger.warn("Primary properties file not found: ${primaryFile}. Using fallback: ${fallbackFile}.")
-        primaryProperties = new Properties()
-    }
-
-    return defaultProperties + primaryProperties
-}
-
-static def readPropertiesFromFile(File file) {
-    def properties = new Properties()
-    file.withInputStream { stream ->
-        properties.load(stream)
-    }
-    return properties
 }
 
 allprojects {

@@ -38,7 +38,6 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
     fun updatePaymentInfo(
         order: Order,
         receiptButtonStatus: OrderDetailViewState.ReceiptButtonStatus,
-        isPaymentCollectableWithCardReader: Boolean,
         formatCurrencyForDisplay: (BigDecimal) -> String,
         onSeeReceiptClickListener: (view: View) -> Unit,
         onIssueRefundClickListener: (view: View) -> Unit,
@@ -92,7 +91,7 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
         updateRefundSection(order, formatCurrencyForDisplay, onIssueRefundClickListener)
         updateCollectPaymentSection(order, onCollectPaymentClickListener)
         updateSeeReceiptSection(receiptButtonStatus, onSeeReceiptClickListener)
-        updatePrintingInstructionSection(isPaymentCollectableWithCardReader, onPrintingInstructionsClickListener)
+        updatePrintingInstructionSection(onPrintingInstructionsClickListener)
     }
 
     private fun showPaymentSubDetails() {
@@ -220,16 +219,12 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
     }
 
     private fun updatePrintingInstructionSection(
-        isPaymentCollectableWithCardReader: Boolean,
         onPrintingInstructionsClickListener: (view: View) -> Unit
     ) {
-        if (isPaymentCollectableWithCardReader) {
-            binding.paymentInfoPrintingInstructions.setOnClickListener(
-                onPrintingInstructionsClickListener
-            )
-        } else {
-            binding.paymentInfoPrintingInstructions.visibility = GONE
-        }
+        binding.paymentInfoPrintingInstructions.visibility = VISIBLE
+        binding.paymentInfoPrintingInstructions.setOnClickListener(
+            onPrintingInstructionsClickListener
+        )
     }
 
     fun showRefunds(

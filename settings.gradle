@@ -20,7 +20,110 @@ plugins {
     id 'com.gradle.develocity' version '3.19'
 }
 
-gradle.ext.isCi = System.getenv('CI')?.toBoolean() ?: false
+ext {
+    USE_REMOTE_BUILD_CACHE_LOCALLY = "use_remote_build_cache_locally"
+}
+
+gradle.ext {
+    isCi = System.getenv('CI')?.toBoolean() ?: false
+    secretsPath = "${System.getProperty("user.home")}/.configure/woocommerce-android/secrets/secrets.properties"
+    secretProperties = loadPropertiesWithFallback(
+            logger,
+            file("${rootDir}/defaults.properties"),
+            file(secretsPath)
+    )
+    developerProperties = loadPropertiesWithFallback(
+            logger,
+            file("${rootDir}/developer.properties-example"),
+            file("${rootDir}/developer.properties")
+    )
+}
+
+static def loadPropertiesWithFallback(Logger logger, File fallbackFile, File primaryFile) {
+    def defaultProperties = readPropertiesFromFile(fallbackFile)
+    def primaryProperties
+    if (primaryFile.exists()) {
+        primaryProperties = readPropertiesFromFile(primaryFile)
+    } else {
+        logger.warn("Primary properties file not found: ${primaryFile}. Using fallback: ${fallbackFile}.")
+        primaryProperties = new Properties()
+    }
+
+    return defaultProperties + primaryProperties
+}
+
+static def readPropertiesFromFile(File file) {
+    def properties = new Properties()
+    file.withInputStream { stream ->
+        properties.load(stream)
+    }
+    return properties
+}
+
+buildCache {
+    if (gradle.ext.isCi) {
+        remote(HttpBuildCache) {
+            url = "http://10.0.2.214:5071/cache/"
+            allowUntrustedServer = true
+            allowInsecureProtocol = true
+            push = true
+            credentials {
+                username = "ci-user"
+                password = System.getenv('GRADLE_CACHE_NODE_PASSWORD')
+            }
+        }
+    } else if (gradle.ext.developerProperties.get(USE_REMOTE_BUILD_CACHE_LOCALLY).toBoolean() == true) {
+
+        checkForRemoteBuildCacheOptimizedExperience()
+
+        remote(HttpBuildCache) {
+            url = gradle.ext.secretProperties.get('gradleCacheNodeUrl')
+            push = false
+            credentials {
+                username = "developer"
+                password = gradle.ext.secretProperties.get('gradleCacheNodePassword')
+            }
+        }
+    } else {
+        logger.warn("\nℹ️ Remote build cache is disabled. If you have stable internet connection, consider enabling it via `developer.properties`.")
+    }
+}
+
+def checkForRemoteBuildCacheOptimizedExperience() {
+    assertSecretsApplied()
+    checkDeveloperPropertiesMatchDefaults()
+    assertJava17Amazon()
+}
+
+def assertSecretsApplied() {
+    if (!file(gradle.ext.secretsPath).exists()) {
+        throw new GradleException("The build requested remote build cache, but secrets file is not found. Please run `bundle exec fastlane run configure_apply` to apply secrets.")
+    }
+}
+
+static boolean propertiesEqualIgnoringKey(Properties p1, Properties p2, String ignoredKey) {
+    p1.clone().tap { it.remove(ignoredKey) } == p2.clone().tap { it.remove(ignoredKey) }
+}
+
+def checkDeveloperPropertiesMatchDefaults() {
+    Properties defaultDeveloperProperties = readPropertiesFromFile(file("${rootDir}/developer.properties-example"))
+
+    if (!propertiesEqualIgnoringKey(defaultDeveloperProperties, gradle.ext.developerProperties, USE_REMOTE_BUILD_CACHE_LOCALLY)) {
+        def yellow = "\u001B[33m"
+        def reset = "\u001B[0m"
+        logger.warn("${yellow}The developer properties file does not match the default developer properties file. This will reduce efficiency of remote build cache.$reset")
+    }
+}
+
+boolean assertJava17Amazon() {
+    def version = System.getProperty("java.version")
+    def vendor = System.getProperty("java.vendor")
+
+    if (!(version.contains("17") && vendor.toLowerCase().contains("amazon"))) {
+        logger.error("Java version: $version, vendor: $vendor")
+        throw new GradleException("Java version is not 17 or vendor is not Amazon Corretto. This significantly reduces efficiency of remote build cache. Please set up the matching JDK.")
+    }
+}
 
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
@@ -96,5 +199,4 @@ gradle.ext {
 }
 
 apply from: './config/gradle/include_builds.gradle'
-apply from: './config/gradle/gradle_build_cache.gradle'
 apply from: './config/gradle/gradle_build_scan.gradle'

@@ -4,12 +4,20 @@
 22.0
 -----
 - [*] Payments: display specific error for the cases when a reader with low battery level attempted to connect [https://github.com/woocommerce/woocommerce-android/pull/13642]
+- [*] Fixed an animation glitch on tablets when collecting payment from order creation screen [https://github.com/woocommerce/woocommerce-android/pull/13725]
+- [**] Jetpack Setup: integrated the Connection API for a more seamless setup experience [https://github.com/woocommerce/woocommerce-android/issues/13628]
+- [*] [Internal] Improved the handling of Site Picker Jetpack setup to handle the case where the account is already connected to the site [https://github.com/woocommerce/woocommerce-android/pull/13693]
+- [*] POS: improved accessibility for the payments status changes [https://github.com/woocommerce/woocommerce-android/pull/13643]
+- [*] [Internal] Application Passwords: improve error handling when using some captcha plugins [https://github.com/woocommerce/woocommerce-android/pull/13776]
+- [*] Fix the dark mode color issue with the icon on the notification permission banner [https://github.com/woocommerce/woocommerce-android/pull/13773]
+- [*] Fixed visibility issue of the printing instructions in the order details screen [https://github.com/woocommerce/woocommerce-android/pull/13780]
 
 21.9
 -----
 - [*][Internal] Added Analytics events in POS [https://github.com/woocommerce/woocommerce-android/pull/13622]
 - [*] Fixed an issue that can cause a crash when adding a new payment card in Blaze campaign form [https://github.com/woocommerce/woocommerce-android/pull/13624]
-- [*] POS: improved accessibility for the payments status changes [https://github.com/woocommerce/woocommerce-android/pull/13643]
+- [*] Fixed failing file upload for products [https://github.com/woocommerce/woocommerce-android/pull/13689]
+- [*] Fixed a rare bug that caused the app to crash when logging in on a self-hosted site. [https://github.com/woocommerce/woocommerce-android/pull/13768]
 
 21.8
 -----

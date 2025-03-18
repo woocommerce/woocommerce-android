@@ -1,5 +1,11 @@
 # The type of in app update FLEXIBLE = 0; IMMEDIATE = 1
-wc.in_app_update_type = 0
+# Changing these values will affect performance of remote build cache on local builds.
+# Consider using the default values for local builds, if it's not necessary to change them.
+# See details on internal P2: https://wp.me/paaHJt-82c
+wc.in_app_update_type=0
 wc.jitm_testing_json_file_name=
-wc.force_password_login = false
+wc.force_password_login=false
 enable_leak_canary=true
+
+# Build settings
+use_remote_build_cache_locally=false

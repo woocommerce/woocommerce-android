@@ -58,9 +58,16 @@
             android:name="primaryButton"
             android:defaultValue="NONE"
             app:argType="com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel$AccountMismatchPrimaryButton" />
-        <argument
-            android:name="errorType"
-            app:argType="com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel$AccountMismatchErrorType" />
+        <action
+            android:id="@+id/action_accountMismatchErrorFragment_to_nav_graph_jetpack_activation"
+            app:destination="@id/nav_graph_jetpack_activation" >
+            <argument
+                android:name="siteUrl"
+                app:argType="string" />
+            <argument
+                android:name="jetpackStatus"
+                app:argType="com.woocommerce.android.model.JetpackStatus" />
+        </action>
     </fragment>
     <dialog
         android:id="@+id/closeAccountDialogFragment"

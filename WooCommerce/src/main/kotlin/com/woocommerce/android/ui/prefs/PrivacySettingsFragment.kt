@@ -64,7 +64,7 @@ class PrivacySettingsFragment : BaseFragment() {
                 is OpenPolicies -> findNavController().navigateSafely(
                     PrivacySettingsFragmentDirections.actionPrivacySettingsFragmentToPrivacySettingsPolicesFragment()
                 )
-                is MultiLiveEvent.Event.ShowActionSnackbar ->
+                is MultiLiveEvent.Event.ShowActionStringSnackbar ->
                     snackbar = uiMessageResolver.getIndefiniteActionSnack(
                         event.message,
                         actionText = event.actionText,

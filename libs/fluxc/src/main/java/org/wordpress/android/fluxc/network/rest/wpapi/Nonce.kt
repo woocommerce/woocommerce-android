@@ -17,7 +17,6 @@ sealed interface Nonce {
     data class Unknown(override val username: String?) : Nonce
 
     enum class CookieNonceErrorType {
-        NOT_AUTHENTICATED,
         INVALID_RESPONSE,
         INVALID_CREDENTIALS,
         CUSTOM_LOGIN_URL,

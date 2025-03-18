@@ -80,6 +80,9 @@ class WooPosTotalsRepository @Inject constructor(
                         quantity,
                         itemData
                     )
+                    is WooPosItemsViewModel.ItemClickedData.Coupon -> throw IllegalArgumentException(
+                        "Coupons are not supported"
+                    )
                 }
             }
     }

@@ -4,13 +4,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
-import com.woocommerce.android.R.string
 import com.woocommerce.android.model.JetpackConnectionStatus
 import com.woocommerce.android.model.JetpackSiteRegistrationStatus
 import com.woocommerce.android.model.JetpackStatus
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
+import com.woocommerce.android.ui.jetpack.FetchJetpackStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -24,7 +24,7 @@ class MagicLinkInterceptViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val magicLinkInterceptRepository: MagicLinkInterceptRepository,
     private val selectedSite: SelectedSite,
-    private val accountRepository: AccountRepository
+    private val fetchJetpackStatus: FetchJetpackStatus
 ) : ScopedViewModel(savedState) {
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
@@ -33,11 +33,9 @@ class MagicLinkInterceptViewModel @Inject constructor(
     val showRetryOption: LiveData<Boolean> = _showRetryOption
 
     private var flow: MagicLinkFlow? = null
-    private var source: MagicLinkSource? = null
 
-    fun handleMagicLink(authToken: String, flow: MagicLinkFlow?, source: MagicLinkSource?) {
+    fun handleMagicLink(authToken: String, flow: MagicLinkFlow?) {
         this.flow = flow
-        this.source = source
         launch {
             _isLoading.value = true
             handleRequestResultResponse(
@@ -56,19 +54,12 @@ class MagicLinkInterceptViewModel @Inject constructor(
 
     private fun handleRequestResultResponse(requestResult: RequestResult) {
         _isLoading.value = false
-        val source = this.source
         when (requestResult) {
             RequestResult.SUCCESS -> {
-                if (flow == MagicLinkFlow.SiteCredentialsToWPCom &&
-                    source != null &&
+                if (flow == MagicLinkFlow.JetpackConnection &&
                     selectedSite.connectionType == SiteConnectionType.ApplicationPasswords
                 ) {
-                    triggerEvent(
-                        ContinueJetpackActivation(
-                            jetpackStatus = source.inferJetpackStatus(),
-                            siteUrl = selectedSite.get().url
-                        )
-                    )
+                    handleJetpackConnectionFlow()
                 } else {
                     triggerEvent(OpenSitePicker)
                 }
@@ -78,7 +69,7 @@ class MagicLinkInterceptViewModel @Inject constructor(
             // or if the user is not logged in
             // Either way, display error message and redirect user to login screen
             RequestResult.ERROR -> {
-                triggerEvent(ShowSnackbar(string.magic_link_update_error))
+                triggerEvent(ShowSnackbar(R.string.magic_link_update_error))
                 triggerEvent(OpenLogin)
             }
 
@@ -94,31 +85,42 @@ class MagicLinkInterceptViewModel @Inject constructor(
         }
     }
 
+    private fun handleJetpackConnectionFlow() {
+        _isLoading.value = true
+        launch {
+            fetchJetpackStatus(selectedSite.get(), useApplicationPasswords = true).fold(
+                onSuccess = { result ->
+                    _isLoading.value = false
+                    val jetpackStatus = when (result) {
+                        is FetchJetpackStatus.JetpackStatusFetchResponse.Success -> result.status
+
+                        FetchJetpackStatus.JetpackStatusFetchResponse.ConnectionForbidden -> {
+                            // Shouldn't happen unless the user changed their account's role after starting the setup.
+                            // If this occurs, we'll just use a default value, and then the next screens
+                            // will show an error message.
+                            JetpackStatus(
+                                isJetpackInstalled = false,
+                                jetpackConnectionStatus = JetpackConnectionStatus.AccountNotConnected(
+                                    siteRegistrationStatus = JetpackSiteRegistrationStatus.NOT_REGISTERED,
+                                    blogId = null
+                                )
+                            )
+                        }
+                    }
+                    triggerEvent(ContinueJetpackActivation(jetpackStatus, selectedSite.get().url))
+                },
+                onFailure = {
+                    triggerEvent(ShowSnackbar(R.string.magic_link_fetch_account_error))
+                    _isLoading.value = false
+                    _showRetryOption.value = true
+                }
+            )
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
         magicLinkInterceptRepository.onCleanup()
-    }
-
-    private fun MagicLinkSource.inferJetpackStatus(): JetpackStatus {
-        val isJetpackInstalled = this != MagicLinkSource.JetpackInstallation
-        val isJetpackConnected = this == MagicLinkSource.WPComAuthentication
-        val wpComEmail = if (isJetpackConnected) {
-            accountRepository.getUserAccount()?.email
-        } else {
-            null
-        }
-
-        return JetpackStatus(
-            isJetpackInstalled = isJetpackInstalled,
-            jetpackConnectionStatus = if (isJetpackConnected) {
-                JetpackConnectionStatus.AccountConnected(wpComEmail.orEmpty())
-            } else {
-                JetpackConnectionStatus.AccountNotConnected(
-                    siteRegistrationStatus = JetpackSiteRegistrationStatus.UNKNOWN,
-                    blogId = null
-                )
-            }
-        )
     }
 
     object OpenSitePicker : MultiLiveEvent.Event()
@@ -127,4 +129,5 @@ class MagicLinkInterceptViewModel @Inject constructor(
         val jetpackStatus: JetpackStatus,
         val siteUrl: String
     ) : MultiLiveEvent.Event()
+    data object CancelJetpackActivation : MultiLiveEvent.Event()
 }

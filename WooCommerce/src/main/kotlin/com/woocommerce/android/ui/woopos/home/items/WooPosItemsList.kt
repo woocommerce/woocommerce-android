@@ -439,6 +439,7 @@ fun ItemListPreview() {
     WooPosTheme {
         WooPosItemList(
             WooPosItemsViewState.Content(
+                WooPosItemsViewState.Content.SearchState.Hidden,
                 listOf(
                     SimpleProduct(
                         id = 1,

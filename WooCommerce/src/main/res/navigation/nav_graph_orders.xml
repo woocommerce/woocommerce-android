@@ -713,6 +713,9 @@
         <action
             android:id="@+id/action_wooShippingLabelCreationFragment_to_wooShippingLabelCustomsFormFragment"
             app:destination="@id/wooShippingLabelCustomsFormFragment" />
+        <action
+            android:id="@+id/action_wooShippingLabelCreationFragment_to_wooShippingSplitShipmentFragment"
+            app:destination="@id/wooShippingSplitShipmentFragment" />
     </fragment>
     <fragment
         android:id="@+id/wooShippingLabelPackageCreationFragment"
@@ -768,4 +771,8 @@
             android:id="@+id/action_search_filter_fragment"
             app:destination="@id/searchFilterFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/wooShippingSplitShipmentFragment"
+        android:name="com.woocommerce.android.ui.orders.wooshippinglabels.split.WooShippingSplitShipmentFragment"
+        android:label="WooShippingSplitShipmentFragment" />
 </navigation>

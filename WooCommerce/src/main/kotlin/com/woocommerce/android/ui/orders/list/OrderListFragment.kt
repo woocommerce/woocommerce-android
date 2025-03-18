@@ -547,6 +547,16 @@ class OrderListFragment :
             updatePagedListData(it)
             if (requireContext().isTwoPanesShouldBeUsed) {
                 when {
+                    communicationViewModel.event.value is
+                    OrdersCommunicationViewModel.CommunicationEvent.OrdersLoaded -> {
+                        // Prevents unintended navigation issues when opening an order list/detail in tablets.
+                        // When navigating from order creation to order details via the "Collect Payment" option,
+                        // the app correctly opens the Select Payment fragment inside the order details flow.
+                        // However, if the above condition is not present, this navigation is undone,
+                        // and only the order details screen is shown (skipping the Select Payment fragment).
+                        // This no-op block ensures the app doesn't mistakenly re-trigger the order details screen.
+                    }
+
                     // A specific order is set to be opened
                     viewModel.orderId.value != -1L -> {
                         openSpecificOrder(viewModel.orderId.value)
@@ -655,7 +665,7 @@ class OrderListFragment :
                 }
 
                 is MultiLiveEvent.Event.ShowDialog -> event.showDialog()
-                is MultiLiveEvent.Event.ShowActionSnackbar -> uiMessageResolver.showActionSnack(
+                is MultiLiveEvent.Event.ShowActionStringSnackbar -> uiMessageResolver.showActionSnack(
                     message = event.message,
                     actionText = event.actionText,
                     action = event.action

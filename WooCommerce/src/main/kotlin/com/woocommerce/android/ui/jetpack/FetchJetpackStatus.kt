@@ -1,11 +1,11 @@
-package com.woocommerce.android.ui.jetpack.benefits
+package com.woocommerce.android.ui.jetpack
 
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.JetpackConnectionStatus
 import com.woocommerce.android.model.JetpackSiteRegistrationStatus
 import com.woocommerce.android.model.JetpackStatus
-import com.woocommerce.android.tools.SelectedSite
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.jetpack.JetpackConnectionData
 import org.wordpress.android.fluxc.store.JetpackStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -25,7 +25,6 @@ import javax.inject.Inject
  */
 class FetchJetpackStatus @Inject constructor(
     private val jetpackStore: JetpackStore,
-    private val selectedSite: SelectedSite,
     private val wooCommerceStore: WooCommerceStore
 ) {
     companion object {
@@ -40,10 +39,14 @@ class FetchJetpackStatus @Inject constructor(
     }
 
     @Suppress("ReturnCount", "NestedBlockDepth")
-    suspend operator fun invoke(): Result<JetpackStatusFetchResponse> {
+    suspend operator fun invoke(
+        site: SiteModel,
+        useApplicationPasswords: Boolean,
+        isJetpackInstalled: Boolean? = null
+    ): Result<JetpackStatusFetchResponse> {
         return jetpackStore.fetchJetpackConnectionData(
-            site = selectedSite.get(),
-            useApplicationPasswords = true
+            site = site,
+            useApplicationPasswords = useApplicationPasswords
         ).let { userResult ->
             when {
                 userResult.error?.errorCode == FORBIDDEN_CODE -> {
@@ -69,7 +72,7 @@ class FetchJetpackStatus @Inject constructor(
                 }
 
                 else -> {
-                    val isJetpackInstalled = checkIfJetpackIsInstalled().getOrElse {
+                    val isJetpackInstalled = isJetpackInstalled ?: checkIfJetpackIsInstalled(site).getOrElse {
                         return Result.failure(it)
                     }
 
@@ -88,8 +91,8 @@ class FetchJetpackStatus @Inject constructor(
         }
     }
 
-    private suspend fun checkIfJetpackIsInstalled(): Result<Boolean> {
-        return wooCommerceStore.fetchSitePlugins(selectedSite.get())
+    private suspend fun checkIfJetpackIsInstalled(site: SiteModel): Result<Boolean> {
+        return wooCommerceStore.fetchSitePlugins(site)
             .let { pluginResult ->
                 when {
                     pluginResult.isError -> {

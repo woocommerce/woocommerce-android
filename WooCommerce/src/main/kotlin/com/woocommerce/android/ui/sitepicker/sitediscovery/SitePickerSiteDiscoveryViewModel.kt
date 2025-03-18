@@ -183,7 +183,7 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
                     !it.isWordPress -> stepFlow.value = Step.NotWordpress
                     !it.isWPCom -> {
                         triggerEvent(
-                            StartNativeJetpackActivation(
+                            StartJetpackActivation(
                                 siteAddress = siteAddress,
                                 isJetpackInstalled = it.isJetpackActive
                             )
@@ -204,14 +204,6 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
 
     fun onHelpButtonClick() {
         triggerEvent(NavigateToHelpScreen(LOGIN_SITE_ADDRESS))
-    }
-
-    fun onJetpackInstalled() {
-        navigateBackToSitePicker()
-    }
-
-    fun onJetpackConnected() {
-        navigateBackToSitePicker()
     }
 
     private fun navigateBackToSitePicker() {
@@ -263,8 +255,7 @@ class SitePickerSiteDiscoveryViewModel @Inject constructor(
     }
 
     object CreateZendeskTicket : MultiLiveEvent.Event()
-    data class StartWebBasedJetpackInstallation(val siteAddress: String) : MultiLiveEvent.Event()
-    data class StartNativeJetpackActivation(
+    data class StartJetpackActivation(
         val siteAddress: String,
         val isJetpackInstalled: Boolean
     ) : MultiLiveEvent.Event()

@@ -10,9 +10,6 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.woocommerce.android.NavGraphMainDirections
-import com.woocommerce.android.R
-import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateToHelpScreen
 import com.woocommerce.android.model.JetpackConnectionStatus
@@ -21,15 +18,11 @@ import com.woocommerce.android.model.JetpackStatus
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.requests.SupportRequestFormActivity
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewFragment
-import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewViewModel
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.LoginActivity
-import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorFragment
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryViewModel.CreateZendeskTicket
-import com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryViewModel.StartNativeJetpackActivation
-import com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryViewModel.StartWebBasedJetpackInstallation
+import com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryViewModel.StartJetpackActivation
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Logout
@@ -41,8 +34,6 @@ import org.wordpress.android.login.LoginMode
 class SitePickerSiteDiscoveryFragment : BaseFragment() {
     companion object {
         const val SITE_PICKER_SITE_ADDRESS_RESULT = "site-url"
-        private const val JETPACK_CONNECT_URL = "https://wordpress.com/jetpack/connect"
-        private const val JETPACK_CONNECTED_REDIRECT_URL = "woocommerce://jetpack-connected"
     }
 
     private val viewModel: SitePickerSiteDiscoveryViewModel by viewModels()
@@ -65,7 +56,6 @@ class SitePickerSiteDiscoveryFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupObservers()
-        setupResultHandlers()
     }
 
     private fun setupObservers() {
@@ -73,8 +63,7 @@ class SitePickerSiteDiscoveryFragment : BaseFragment() {
             when (event) {
                 is CreateZendeskTicket -> startSupportRequestForm()
                 is NavigateToHelpScreen -> navigateToHelpScreen(event.origin)
-                is StartWebBasedJetpackInstallation -> startWebBasedJetpackInstallation(event.siteAddress)
-                is StartNativeJetpackActivation -> startNativeJetpackActivation(event)
+                is StartJetpackActivation -> startJetpackActivation(event)
                 is Logout -> onLogout()
                 is ExitWithResult<*> -> navigateBackWithResult(SITE_PICKER_SITE_ADDRESS_RESULT, event.data)
                 is Exit -> findNavController().navigateUp()
@@ -82,38 +71,15 @@ class SitePickerSiteDiscoveryFragment : BaseFragment() {
         }
     }
 
-    private fun setupResultHandlers() {
-        handleNotice(AuthenticatedWebViewFragment.WEBVIEW_RESULT) {
-            viewModel.onJetpackInstalled()
-        }
-        handleNotice(AccountMismatchErrorFragment.JETPACK_CONNECTED_NOTICE) {
-            viewModel.onJetpackConnected()
-        }
-    }
-
-    private fun startWebBasedJetpackInstallation(siteAddress: String) {
-        val url = "$JETPACK_CONNECT_URL?" +
-            "url=$siteAddress" +
-            "&mobile_redirect=$JETPACK_CONNECTED_REDIRECT_URL" +
-            "&from=mobile"
-
-        findNavController().navigate(
-            NavGraphMainDirections.actionGlobalAuthenticatedWebViewFragment(
-                urlToLoad = url,
-                urlsToTriggerExit = arrayOf(JETPACK_CONNECTED_REDIRECT_URL),
-                urlComparisonMode = AuthenticatedWebViewViewModel.UrlComparisonMode.EQUALITY,
-                title = getString(R.string.login_jetpack_install)
-            )
-        )
-    }
-
-    private fun startNativeJetpackActivation(event: StartNativeJetpackActivation) {
+    private fun startJetpackActivation(event: StartJetpackActivation) {
         findNavController().navigate(
             SitePickerSiteDiscoveryFragmentDirections
                 .actionSitePickerSiteDiscoveryFragmentToJetpackActivation(
                     siteUrl = event.siteAddress,
                     jetpackStatus = JetpackStatus(
                         isJetpackInstalled = event.isJetpackInstalled,
+                        // Pass a default value, we'll update it later after the user signs in
+                        // See JetpackActivationSiteCredentialsViewModel
                         jetpackConnectionStatus = JetpackConnectionStatus.AccountNotConnected(
                             siteRegistrationStatus = JetpackSiteRegistrationStatus.UNKNOWN,
                             blogId = null

@@ -462,7 +462,7 @@ class VariationDetailViewModel @Inject constructor(
                     triggerEvent(HideImageUploadErrorSnackbar)
                 } else {
                     triggerEvent(
-                        Event.ShowActionSnackbar(
+                        Event.ShowActionStringSnackbar(
                             message = resources.getMediaUploadErrorMessage(errorList.size),
                             actionText = resources.getString(string.details),
                         ) {

@@ -8,5 +8,11 @@ sealed class WooPosItemsUIEvent {
     data object SimpleProductsBannerClosed : WooPosItemsUIEvent()
     data object SimpleProductsBannerLearnMoreClicked : WooPosItemsUIEvent()
     data object SimpleProductsDialogInfoIconClicked : WooPosItemsUIEvent()
+    data object CouponsButtonClicked : WooPosItemsUIEvent()
     data object BackButtonClicked : WooPosItemsUIEvent()
+
+    data object ClearSearchClicked : WooPosItemsUIEvent()
+    data class SearchChanged(val query: String) : WooPosItemsUIEvent()
+    data object CloseSearchClicked : WooPosItemsUIEvent()
+    object SearchAnimationCompleted : WooPosItemsUIEvent()
 }

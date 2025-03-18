@@ -1,10 +1,7 @@
 package com.woocommerce.android.ui.login.accountmismatch
 
-import android.annotation.SuppressLint
 import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -18,10 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -39,140 +33,46 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import coil.compose.AsyncImage
 import coil.request.ImageRequest.Builder
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.common.webview.WebViewAuthenticator
 import com.woocommerce.android.ui.compose.annotatedStringRes
-import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
-import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
-import com.woocommerce.android.ui.compose.component.WCPasswordField
 import com.woocommerce.android.ui.compose.component.WCTextButton
-import com.woocommerce.android.ui.compose.component.web.WCWebView
-import com.woocommerce.android.ui.compose.component.web.WebViewNavigator
-import com.woocommerce.android.ui.compose.component.web.rememberWebViewNavigator
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.ViewState
 import com.woocommerce.android.util.ChromeCustomTabUtils
-import org.wordpress.android.fluxc.network.UserAgent
 
 @Composable
 fun AccountMismatchErrorScreen(viewModel: AccountMismatchErrorViewModel) {
-    val webViewNavigator = rememberWebViewNavigator()
-
     viewModel.viewState.observeAsState().value?.let { viewState ->
         BackHandler(onBack = viewState.onBackPressed)
 
         Scaffold(topBar = {
             ToolbarWithHelpButton(
                 navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
-                onNavigationButtonClick = {
-                    if (webViewNavigator.canGoBack) {
-                        webViewNavigator.navigateBack()
-                    } else {
-                        viewState.onBackPressed()
-                    }
-                },
+                onNavigationButtonClick = viewState.onBackPressed,
                 onHelpButtonClick = viewModel::onHelpButtonClick
             )
         }) { paddingValues ->
-            val transition = updateTransition(targetState = viewState, label = "state")
-            transition.AnimatedContent(
-                contentKey = { viewState::class.java }
-            ) { targetState ->
-                when (targetState) {
-                    is ViewState.MainState -> AccountMismatchErrorScreen(
-                        viewState = targetState,
-                        modifier = Modifier.padding(paddingValues)
-                    )
-                    is ViewState.JetpackWebViewState -> JetpackConnectionWebView(
-                        viewState = targetState,
-                        webViewAuthenticator = viewModel.webViewAuthenticator,
-                        webViewNavigator = webViewNavigator,
-                        userAgent = viewModel.userAgent,
-                        modifier = Modifier.padding(paddingValues)
-                    )
-                    ViewState.FetchingJetpackEmailViewState -> FetchJetpackEmailScreen(
-                        modifier = Modifier.padding(paddingValues)
-                    )
-                    is ViewState.JetpackEmailErrorState -> JetpackEmailErrorScreen(
-                        modifier = Modifier.padding(paddingValues),
-                        retry = targetState.retry
-                    )
-                    is ViewState.SiteCredentialsViewState -> SiteCredentialsScreen(
-                        viewState = targetState,
-                        modifier = Modifier.padding(paddingValues)
-                    )
-                }
-            }
+            AccountMismatchErrorScreen(
+                viewState = viewState,
+                modifier = Modifier.padding(paddingValues)
+            )
         }
-    }
-    viewModel.loadingDialogMessage.observeAsState().value?.let {
-        ProgressDialog(title = "", subtitle = stringResource(id = it))
     }
 }
 
 @Composable
-private fun SiteCredentialsScreen(
-    viewState: ViewState.SiteCredentialsViewState,
+private fun AccountMismatchErrorScreen(
+    viewState: ViewState,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier
-            .background(MaterialTheme.colors.surface)
-            .fillMaxSize()
-            .padding(dimensionResource(id = R.dimen.major_100)),
-        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
-    ) {
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
-                .verticalScroll(rememberScrollState())
-        ) {
-            Text(text = stringResource(id = R.string.enter_credentials_for_site, viewState.siteUrl))
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
-            WCOutlinedTextField(
-                value = viewState.username,
-                onValueChange = viewState.onUsernameChanged,
-                label = stringResource(id = R.string.username),
-                isError = viewState.errorMessage != null,
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
-            )
-            WCPasswordField(
-                value = viewState.password,
-                onValueChange = viewState.onPasswordChanged,
-                label = stringResource(id = R.string.password),
-                isError = viewState.errorMessage != null,
-                helperText = viewState.errorMessage?.let { stringResource(id = it) },
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                keyboardActions = KeyboardActions(
-                    onDone = { viewState.onContinueClick() }
-                )
-            )
-        }
-
-        ButtonBar(
-            primaryButtonText = stringResource(id = R.string.continue_button),
-            primaryButtonClick = viewState.onContinueClick,
-            isPrimaryButtonEnabled = viewState.isValid,
-            secondaryButtonText = stringResource(id = R.string.login_try_another_account),
-            secondaryButtonClick = viewState.onLoginWithAnotherAccountClick,
-            modifier = Modifier.fillMaxWidth()
-        )
-    }
-}
-
-@Composable
-fun AccountMismatchErrorScreen(viewState: ViewState.MainState, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .background(MaterialTheme.colors.surface)
@@ -220,7 +120,7 @@ fun AccountMismatchErrorScreen(viewState: ViewState.MainState, modifier: Modifie
 
 @Composable
 private fun MainContent(
-    viewState: ViewState.MainState,
+    viewState: ViewState,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -314,66 +214,9 @@ private fun ButtonBar(
         ) {
             Buttons(modifier = Modifier.weight(1f))
         }
+
         else -> Column(modifier = modifier) {
             Buttons(modifier = Modifier.fillMaxWidth())
-        }
-    }
-}
-
-@SuppressLint("SetJavaScriptEnabled")
-@Composable
-private fun JetpackConnectionWebView(
-    viewState: ViewState.JetpackWebViewState,
-    webViewAuthenticator: WebViewAuthenticator,
-    webViewNavigator: WebViewNavigator,
-    userAgent: UserAgent,
-    modifier: Modifier = Modifier
-) {
-    WCWebView(
-        url = viewState.connectionUrl,
-        authenticator = webViewAuthenticator,
-        userAgent = userAgent,
-        webViewNavigator = webViewNavigator,
-        onUrlLoaded = { url: String ->
-            val urlWithoutScheme = url.replace("^https?://".toRegex(), "")
-            if (viewState.successConnectionUrls.any { urlWithoutScheme.startsWith(it) }) {
-                viewState.onConnected()
-            }
-        },
-        modifier = modifier.fillMaxSize()
-    )
-}
-
-@Composable
-private fun FetchJetpackEmailScreen(modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(
-            text = stringResource(id = R.string.login_jetpack_verify_connection),
-            textAlign = TextAlign.Center
-        )
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
-        CircularProgressIndicator()
-    }
-}
-
-@Composable
-private fun JetpackEmailErrorScreen(retry: () -> Unit, modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.major_100), Alignment.CenterVertically)
-    ) {
-        Image(painter = painterResource(id = R.drawable.img_wpcom_error), contentDescription = null)
-        Text(
-            text = stringResource(id = R.string.login_jetpack_connection_verification_failed),
-            textAlign = TextAlign.Center
-        )
-        WCColoredButton(onClick = retry) {
-            Text(text = stringResource(id = R.string.retry))
         }
     }
 }
@@ -383,7 +226,7 @@ private fun JetpackEmailErrorScreen(retry: () -> Unit, modifier: Modifier = Modi
 private fun AccountMismatchPreview() {
     WooThemeWithBackground {
         AccountMismatchErrorScreen(
-            viewState = ViewState.MainState(
+            viewState = ViewState(
                 userInfo = AccountMismatchErrorViewModel.UserInfo(
                     displayName = "displayname",
                     username = "username",
@@ -397,26 +240,6 @@ private fun AccountMismatchPreview() {
                 inlineButtonText = R.string.continue_button,
                 inlineButtonAction = {},
                 showJetpackTermsConsent = true,
-                onBackPressed = {}
-            )
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun SiteCredentialsScreenPreview() {
-    WooThemeWithBackground {
-        SiteCredentialsScreen(
-            viewState = ViewState.SiteCredentialsViewState(
-                siteUrl = "woocommerce.com",
-                username = "username",
-                password = "password",
-                errorMessage = null,
-                onUsernameChanged = {},
-                onPasswordChanged = {},
-                onContinueClick = {},
-                onLoginWithAnotherAccountClick = {},
                 onBackPressed = {}
             )
         )

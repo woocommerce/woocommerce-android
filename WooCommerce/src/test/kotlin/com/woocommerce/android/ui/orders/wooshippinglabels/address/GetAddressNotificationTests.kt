@@ -8,11 +8,16 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShipping
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
+import org.mockito.Mockito.mock
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.whenever
 import kotlin.test.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class GetAddressNotificationTests : BaseUnitTest() {
-    private val sut = GetAddressNotification()
+    private val addressValidationHelper: AddressValidationHelper = mock()
+
+    private val sut = GetAddressNotification(addressValidationHelper)
 
     private val defaultAddresses = WooShippingAddresses(
         shipFrom = OriginShippingAddress.EMPTY.copy(
@@ -98,6 +103,8 @@ class GetAddressNotificationTests : BaseUnitTest() {
     @Test
     fun `when shipTo is missing, then display destination missing`() {
         val addresses = defaultAddresses.copy(shipTo = DestinationShippingAddress.EMPTY)
+
+        whenever(addressValidationHelper.isMissingDestinationAddress(addresses.shipTo.address)) doReturn true
 
         val result = sut.invoke(addresses, null)
 

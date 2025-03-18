@@ -237,6 +237,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
             observeStoreOptions = observeStoreOptions,
             fetchAccountSettings = mock(),
             shouldRequireCustoms = shouldRequireCustomsForm,
+            addressValidationHelper = mock(),
             verifyDestinationAddress = verifyDestinationAddress,
             getAddressNotification = getAddressNotification,
             savedState = savedState
@@ -633,6 +634,61 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `CustomState is ItnMissing when shouldRequireCustomsForm returns true and ShippingLines exceeds the 2500 limit`() = testBlocking {
+        var currentViewState: WooShippingViewState? = null
+        val order = OrderTestUtils.generateTestOrder(orderId = orderId).copy(
+            shippingLines = defaultShippingLines
+        )
+        whenever(orderDetailRepository.getOrderById(any())) doReturn order
+        whenever(observeOriginAddresses()) doReturn flowOf(defaultOriginAddresses)
+        whenever(observeStoreOptions()) doReturn flowOf(defaultStoreOptions)
+        whenever(shouldRequireCustomsForm.invoke(any())) doReturn true
+        whenever(getShippableItems(any())) doReturn defaultShippableItems.map { it.copy(price = BigDecimal(10000)) }
+
+        createViewModel()
+
+        advanceUntilIdle()
+
+        sut.viewState.asLiveData().observeForever {
+            currentViewState = it
+        }
+
+        assertThat(currentViewState).isInstanceOf(DataState::class.java)
+        val dataState = currentViewState as DataState
+
+        assertThat(dataState.customsState).isEqualTo(CustomsState.ItnMissing)
+    }
+
+    @Test
+    fun `ItnMissing is dismissed when onDismissItnNotice is called`() = testBlocking {
+        var dataState: DataState? = null
+        val order = OrderTestUtils.generateTestOrder(orderId = orderId).copy(
+            shippingLines = defaultShippingLines
+        )
+        whenever(orderDetailRepository.getOrderById(any())) doReturn order
+        whenever(observeOriginAddresses()) doReturn flowOf(defaultOriginAddresses)
+        whenever(observeStoreOptions()) doReturn flowOf(defaultStoreOptions)
+        whenever(shouldRequireCustomsForm.invoke(any())) doReturn true
+        whenever(getShippableItems(any())) doReturn defaultShippableItems.map { it.copy(price = BigDecimal(10000)) }
+
+        createViewModel()
+
+        advanceUntilIdle()
+
+        sut.viewState.asLiveData().observeForever {
+            dataState = it as? DataState
+        }
+
+        assertThat(dataState?.customsState).isEqualTo(CustomsState.ItnMissing)
+
+        sut.onDismissItnNotice()
+
+        advanceUntilIdle()
+
+        assertThat(dataState?.customsState).isEqualTo(CustomsState.Unavailable)
+    }
+
+    @Test
     fun `when onPurchaseShippingLabel succeed then return the label data`() = testBlocking {
         val order = OrderTestUtils.generateTestOrder(orderId = orderId).copy(
             shippingLines = defaultShippingLines
@@ -686,7 +742,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when onPurchaseShippingLabel fails then display error`() = testBlocking {
+    fun `when onPurchaseShippingLabel fails then show a snackbar`() = testBlocking {
         val order = OrderTestUtils.generateTestOrder(orderId = orderId)
 
         whenever(orderDetailRepository.getOrderById(any())) doReturn order
@@ -708,8 +764,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
         sut.onPurchaseShippingLabel()
 
-        val currentViewState = sut.viewState.value
-        assertThat(currentViewState).isInstanceOf(WooShippingViewState.Error::class.java)
+        assertThat(sut.actionSnackbar).matches { it?.message == R.string.woo_shipping_labels_purchase_error }
     }
 
     @Test

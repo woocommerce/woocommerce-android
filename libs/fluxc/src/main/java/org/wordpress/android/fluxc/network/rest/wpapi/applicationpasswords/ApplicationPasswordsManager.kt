@@ -83,7 +83,7 @@ internal class ApplicationPasswordsManager @Inject constructor(
         username: String
     ): ApplicationPasswordCreationResult {
         if (!site.supportsApplicationPasswordsGeneration) {
-            ApplicationPasswordCreationResult.Failure(
+            return ApplicationPasswordCreationResult.Failure(
                 WPAPINetworkError(
                     BaseNetworkError(
                         GenericErrorType.NOT_AUTHENTICATED,
