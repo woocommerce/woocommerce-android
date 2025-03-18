@@ -21,6 +21,7 @@ class AdjustProductQuantity @Inject constructor() {
         }
     }
 
+    @Suppress("ReturnCount")
     private fun adjustBundleQuantity(order: Order, product: OrderCreationProduct, quantityToAdd: Int): Order {
         val groupedProduct = product as? OrderCreationProduct.GroupedProductItemWithRules
             ?: return adjustQuantity(order, product.item.itemId, quantityToAdd)
@@ -38,9 +39,13 @@ class AdjustProductQuantity @Inject constructor() {
         return order.copy(items = items.values.toList())
     }
 
-    private fun MutableMap<Long, Order.Item>.clearBundleItems(product: OrderCreationProduct.GroupedProductItemWithRules) {
+    private fun MutableMap<Long, Order.Item>.clearBundleItems(
+        product: OrderCreationProduct.GroupedProductItemWithRules
+    ) {
         this[product.item.itemId]?.let { this[product.item.itemId] = it.copy(quantity = 0f) }
-        product.children.forEach { child -> this[child.item.itemId] = this[child.item.itemId]?.copy(quantity = 0f) ?: return@forEach }
+        product.children.forEach { child ->
+            this[child.item.itemId] = this[child.item.itemId]?.copy(quantity = 0f) ?: return@forEach
+        }
     }
 
     private fun MutableMap<Long, Order.Item>.updateBundleItems(
@@ -59,7 +64,9 @@ class AdjustProductQuantity @Inject constructor() {
             configuration = product.getConfiguration()
         )
 
-        product.children.forEach { child -> this[child.item.itemId] = this[child.item.itemId]?.copy(quantity = 0f) ?: return@forEach }
+        product.children.forEach { child ->
+            this[child.item.itemId] = this[child.item.itemId]?.copy(quantity = 0f) ?: return@forEach
+        }
     }
 
     private fun adjustQuantity(order: Order, itemId: Long, quantityToAdd: Int): Order {
