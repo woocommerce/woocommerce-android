@@ -24,23 +24,38 @@ class AdjustProductQuantity @Inject constructor() {
     private fun adjustBundleQuantity(order: Order, product: OrderCreationProduct, quantityToAdd: Int): Order {
         return (product as? OrderCreationProduct.GroupedProductItemWithRules)?.let { groupedProduct ->
             val items = order.items.associateBy { it.itemId }.toMutableMap()
-            items[product.item.itemId]?.run {
-                items[product.item.itemId] = copy(quantity = 0f)
-                val newQuantity = quantity + quantityToAdd
-                val discountAmount = subtotal - total
-                val newSubtotal = pricePreDiscount.multiply(newQuantity.toBigDecimal())
-                items[0L] = copy(
-                    itemId = 0L,
-                    quantity = newQuantity,
-                    subtotal = newSubtotal,
-                    total = newSubtotal - discountAmount,
-                    configuration = groupedProduct.getConfiguration()
-                )
+
+            if (product.item.quantity + quantityToAdd <= 0) {
+                items[product.item.itemId]?.let { parentItem ->
+                    items[product.item.itemId] = parentItem.copy(quantity = 0f)
+
+                    for (child in product.children) {
+                        val childItem = items[child.item.itemId] ?: continue
+                        items[child.item.itemId] = childItem.copy(quantity = 0f)
+                    }
+                }
+            } else {
+                items[product.item.itemId]?.run {
+                    items[product.item.itemId] = copy(quantity = 0f)
+
+                    val newQuantity = quantity + quantityToAdd
+                    val discountAmount = subtotal - total
+                    val newSubtotal = pricePreDiscount.multiply(newQuantity.toBigDecimal())
+
+                    items[itemId] = copy(
+                        quantity = newQuantity,
+                        subtotal = newSubtotal,
+                        total = newSubtotal - discountAmount,
+                        configuration = groupedProduct.getConfiguration()
+                    )
+
+                    for (child in product.children) {
+                        val updatedItem = items[child.item.itemId]?.copy(quantity = 0f) ?: continue
+                        items[child.item.itemId] = updatedItem
+                    }
+                }
             }
-            for (child in product.children) {
-                val updatedItem = items[child.item.itemId]?.copy(quantity = 0f) ?: continue
-                items[child.item.itemId] = updatedItem
-            }
+
             order.copy(items = items.values.toList())
         } ?: run { adjustQuantity(order, product.item.itemId, quantityToAdd) }
     }
