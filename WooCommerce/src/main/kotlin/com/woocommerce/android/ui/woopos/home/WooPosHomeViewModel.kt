@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.home
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccessfullyPaid.PaymentMethod
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ExitConfirmationDialog
@@ -14,6 +15,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -41,6 +43,9 @@ class WooPosHomeViewModel @Inject constructor(
 
     private val _toastEvent = MutableSharedFlow<String>()
     val toastEvent: SharedFlow<String> = _toastEvent
+
+    private val _playChaChingEvent = MutableSharedFlow<String>(replay = 1)
+    val playChaChingEvent: SharedFlow<String> = _playChaChingEvent
 
     private val _navigationEvent = MutableSharedFlow<NavigationEvent>()
     val navigationEvent: SharedFlow<NavigationEvent> = _navigationEvent
@@ -214,10 +219,18 @@ class WooPosHomeViewModel @Inject constructor(
             wooPosItemsNavigator.sendNavigationEvent(
                 WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateBackToItemListScreen
             )
+            _playChaChingEvent.emit("Cha-Ching")
         }
         _state.value = _state.value.copy(
             screenPositionState = ScreenPositionState.Checkout.FullScreenTotals
         )
         sendEventToChildren(ParentToChildrenEvent.OrderSuccessfullyPaid(paymentMethod))
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    fun clearChaChingEvent() {
+        viewModelScope.launch {
+            _playChaChingEvent.resetReplayCache()
+        }
     }
 }
