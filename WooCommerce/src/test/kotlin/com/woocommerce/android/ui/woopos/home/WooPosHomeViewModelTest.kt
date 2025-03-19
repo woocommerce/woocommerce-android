@@ -477,6 +477,24 @@ class WooPosHomeViewModelTest {
         job.cancel()
     }
 
+    @Test
+    fun `given state is Checkout, when OrderSuccessfullyPaidByCard event passed, then cha ching event is emitted`() = runTest {
+        // GIVEN
+        whenever(childrenToParentEventReceiver.events).thenReturn(
+            flowOf(ChildToParentEvent.OrderSuccessfullyPaidByCard)
+        )
+        val viewModel = createViewModel()
+        val emittedValues = mutableListOf<String>()
+        val job = launch {
+            viewModel.playChaChingEvent.toList(emittedValues)
+        }
+
+        // THEN
+        advanceUntilIdle()
+        assertTrue(emittedValues.contains("Cha-Ching"))
+        job.cancel()
+    }
+
     private fun createViewModel() = WooPosHomeViewModel(
         childrenToParentEventReceiver,
         parentToChildrenEventSender,
