@@ -9,6 +9,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CAMPAIGN_LIST_ENTR
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_DISPLAYED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_OPTION
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_POS_NOT_ELIGIBLE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_ADMIN_MENU
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_COUPONS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_CUSTOMERS
@@ -19,8 +20,10 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_M
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_REVIEWS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_UPGRADES
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_VIEW_STORE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_POS_OUTDATED_WOOCOMMERCE_VERSION
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.adminUrlOrDefault
+import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.notifications.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
@@ -35,6 +38,7 @@ import com.woocommerce.android.ui.payments.taptopay.isAvailable
 import com.woocommerce.android.ui.plans.domain.SitePlan
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
 import com.woocommerce.android.ui.woopos.WooPosIsEnabled
+import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -71,7 +75,8 @@ class MoreMenuViewModel @Inject constructor(
     private val isGoogleForWooEnabled: IsGoogleForWooEnabled,
     private val hasGoogleAdsCampaigns: HasGoogleAdsCampaigns,
     private val isWooPosEnabled: WooPosIsEnabled,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val getWooCoreVersion: GetWooCorePluginCachedVersion,
 ) : ScopedViewModel(savedState) {
     private var storeHasGoogleAdsCampaigns = false
 
@@ -134,20 +139,41 @@ class MoreMenuViewModel @Inject constructor(
         }
     }
 
+    private fun isWooCoreVersionSupported(): Boolean {
+        val wooCoreVersion = getWooCoreVersion() ?: return false
+        return wooCoreVersion.semverCompareTo(WC_VERSION_SUPPORTS_POS_PRODUCT_FILTERING) >= 0
+    }
+
     private fun generatePOSSection(wooPosState: MoreMenuItemButton.State) =
-        MoreMenuItemSection(
-            title = null,
-            items = listOf(
-                MoreMenuItemButton(
-                    title = R.string.more_menu_button_woo_pos,
-                    description = R.string.more_menu_button_woo_pos_description,
-                    icon = R.drawable.ic_more_menu_pos,
-                    extraIcon = R.drawable.ic_more_menu_pos_extra,
-                    state = wooPosState,
-                    onClick = ::onWooPosButtonClick,
+        if (isWooCoreVersionSupported()) {
+            MoreMenuItemSection(
+                title = null,
+                items = listOf(
+                    MoreMenuItemButton(
+                        title = R.string.more_menu_button_woo_pos,
+                        description = R.string.more_menu_button_woo_pos_description,
+                        icon = R.drawable.ic_more_menu_pos,
+                        extraIcon = R.drawable.ic_more_menu_pos_extra,
+                        state = wooPosState,
+                        onClick = ::onWooPosButtonClick,
+                    )
                 )
             )
-        )
+        } else {
+            MoreMenuItemSection(
+                title = null,
+                items = listOf(
+                    MoreMenuItemButton(
+                        title = R.string.more_menu_button_woo_pos,
+                        description = R.string.more_menu_button_woo_pos_update_woocommerce_version_description,
+                        icon = R.drawable.ic_more_menu_pos,
+                        extraIcon = R.drawable.ic_more_menu_pos_extra,
+                        state = wooPosState,
+                        onClick = { onWooPOSNotEligibleButtonClick(WooPosNotEligible.OutdatedWooCommerceVersion) },
+                    )
+                )
+            )
+        }
 
     @Suppress("LongMethod")
     private fun generateGeneralSection(
@@ -400,6 +426,21 @@ class MoreMenuViewModel @Inject constructor(
         triggerEvent(MoreMenuEvent.NavigateToWooPosEvent)
     }
 
+    private fun onWooPOSNotEligibleButtonClick(reason: WooPosNotEligible) {
+        when (reason) {
+            WooPosNotEligible.OutdatedWooCommerceVersion -> {
+                trackMoreMenuOptionSelected(
+                    VALUE_MORE_MENU_POS,
+                    extraOptions = mapOf(
+                        KEY_POS_NOT_ELIGIBLE to VALUE_POS_OUTDATED_WOOCOMMERCE_VERSION
+                    )
+                )
+                triggerEvent(MoreMenuEvent.ShowWooPosWooCoreUpdateRequiredEvent)
+            }
+        }
+
+    }
+
     private fun onViewAdminButtonClick() {
         trackMoreMenuOptionSelected(VALUE_MORE_MENU_ADMIN_MENU)
         triggerEvent(MoreMenuEvent.ViewAdminEvent(selectedSite.get().adminUrlOrDefault))
@@ -488,4 +529,12 @@ class MoreMenuViewModel @Inject constructor(
 
     private val SitePlan.formattedPlanName
         get() = generateFormattedPlanName(resourceProvider)
+
+    sealed class WooPosNotEligible {
+        data object OutdatedWooCommerceVersion : WooPosNotEligible()
+    }
+
+    private companion object {
+        const val WC_VERSION_SUPPORTS_POS_PRODUCT_FILTERING = "9.6.0"
+    }
 }

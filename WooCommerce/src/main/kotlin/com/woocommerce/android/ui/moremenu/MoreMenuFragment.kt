@@ -28,6 +28,7 @@ import com.woocommerce.android.ui.moremenu.MoreMenuEvent.NavigateToSubscriptions
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.NavigateToWooPosEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.OpenBlazeCampaignCreationEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.OpenBlazeCampaignListEvent
+import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ShowWooPosWooCoreUpdateRequiredEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.StartSitePickerEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewAdminEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewCouponsEvent
@@ -42,6 +43,7 @@ import com.woocommerce.android.ui.woopos.root.WooPosActivity
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -113,6 +115,10 @@ class MoreMenuFragment : TopLevelFragment() {
                 is OpenBlazeCampaignCreationEvent -> openBlazeCreationFlow()
                 is OpenBlazeCampaignListEvent -> openBlazeCampaignList()
                 is NavigateToWooPosEvent -> openWooPos()
+                is ShowWooPosWooCoreUpdateRequiredEvent -> ToastUtils.showToast(
+                    requireContext(),
+                    R.string.more_menu_button_woo_pos_update_woocommerce_version_description
+                )
             }
         }
     }
