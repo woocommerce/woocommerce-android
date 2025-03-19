@@ -438,7 +438,6 @@ class MoreMenuViewModel @Inject constructor(
                 triggerEvent(MoreMenuEvent.ShowWooPosWooCoreUpdateRequiredEvent)
             }
         }
-
     }
 
     private fun onViewAdminButtonClick() {
