@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.home.toolbar
 
 import app.cash.turbine.test
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls.WOO_POS_DOCUMENTATION_URL
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
@@ -40,6 +41,7 @@ class WooPosToolbarViewModelTest {
     private val networkStatus: WooPosNetworkStatus = mock()
     private val resourceProvider: ResourceProvider = mock()
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
+    private val appPrefsWrapper: AppPrefsWrapper = mock()
 
     @Test
     fun `given card reader status is NotConnected, when initialized, then state should be NotConnected`() = runTest {
@@ -87,15 +89,20 @@ class WooPosToolbarViewModelTest {
             .isEqualTo(
                 WooPosToolbarState.Menu.Visible(
                     listOf(
-                        WooPosToolbarState.Menu.MenuItem(
+                        WooPosToolbarState.Menu.MenuItem.Toggleable(
+                            title = R.string.woopos_payment_success_sound_setting_title,
+                            icon = R.drawable.woo_pos_info_ic,
+                            isToggled = false
+                        ),
+                        WooPosToolbarState.Menu.MenuItem.Standard(
                             title = R.string.woopos_documentation_title,
                             icon = R.drawable.woo_pos_info_ic,
                         ),
-                        WooPosToolbarState.Menu.MenuItem(
+                        WooPosToolbarState.Menu.MenuItem.Standard(
                             title = R.string.woopos_get_support_title,
                             icon = R.drawable.woopos_ic_get_support,
                         ),
-                        WooPosToolbarState.Menu.MenuItem(
+                        WooPosToolbarState.Menu.MenuItem.Standard(
                             title = R.string.woopos_exit_confirmation_title,
                             icon = R.drawable.ic_woo_pos_exit,
                         ),
@@ -136,7 +143,7 @@ class WooPosToolbarViewModelTest {
     fun `when MenuItemClicked with ExitPosClicked, then ExitPosClicked event should be sent`() = runTest {
         // GIVEN
         val viewModel = createViewModel()
-        val menuItem = WooPosToolbarState.Menu.MenuItem(
+        val menuItem = WooPosToolbarState.Menu.MenuItem.Standard(
             title = R.string.woopos_exit_confirmation_title,
             icon = R.drawable.ic_woo_pos_exit
         )
@@ -184,7 +191,7 @@ class WooPosToolbarViewModelTest {
 
         viewModel.onUiEvent(
             WooPosToolbarUIEvent.MenuItemClicked(
-                WooPosToolbarState.Menu.MenuItem(
+                WooPosToolbarState.Menu.MenuItem.Standard(
                     title = R.string.woopos_get_support_title,
                     icon = R.drawable.woopos_ic_get_support,
                 )
@@ -232,7 +239,7 @@ class WooPosToolbarViewModelTest {
     fun `when Documentation MenuItemClicked, then openUrlEvent should be emitted with proper url`() = runTest {
         // GIVEN
         val viewModel = createViewModel()
-        val menuItem = WooPosToolbarState.Menu.MenuItem(
+        val menuItem = WooPosToolbarState.Menu.MenuItem.Standard(
             title = R.string.woopos_documentation_title,
             icon = R.drawable.ic_help_24dp
         )
@@ -252,7 +259,7 @@ class WooPosToolbarViewModelTest {
     @Test
     fun `when get Support is clicked, then should track analytics event`() = runTest {
         val viewModel = createViewModel()
-        val menuItem = WooPosToolbarState.Menu.MenuItem(
+        val menuItem = WooPosToolbarState.Menu.MenuItem.Standard(
             title = R.string.woopos_get_support_title,
             icon = R.drawable.ic_help_24dp
         )
@@ -264,7 +271,7 @@ class WooPosToolbarViewModelTest {
     @Test
     fun `when View Documentation is clicked, then should track analytics event`() = runTest {
         val viewModel = createViewModel()
-        val menuItem = WooPosToolbarState.Menu.MenuItem(
+        val menuItem = WooPosToolbarState.Menu.MenuItem.Standard(
             title = R.string.woopos_documentation_title,
             icon = R.drawable.ic_info_outline_20dp
         )
@@ -276,7 +283,7 @@ class WooPosToolbarViewModelTest {
     @Test
     fun `when Exit menu item is clicked, then should track analytics event`() = runTest {
         val viewModel = createViewModel()
-        val menuItem = WooPosToolbarState.Menu.MenuItem(
+        val menuItem = WooPosToolbarState.Menu.MenuItem.Standard(
             title = R.string.woopos_exit_confirmation_title,
             icon = R.drawable.ic_woo_pos_exit
         )
@@ -292,5 +299,6 @@ class WooPosToolbarViewModelTest {
         networkStatus,
         resourceProvider,
         analyticsTracker,
+        appPrefsWrapper = appPrefsWrapper
     )
 }

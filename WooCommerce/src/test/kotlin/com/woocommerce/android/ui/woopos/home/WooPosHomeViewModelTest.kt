@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.home
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccessfullyPaid.PaymentMethod
 import com.woocommerce.android.ui.woopos.home.WooPosHomeUIEvent.ExitPosClicked
@@ -38,6 +39,7 @@ class WooPosHomeViewModelTest {
     private val parentToChildrenEventSender: WooPosParentToChildrenEventSender = mock()
     private val wooPosItemsNavigator: WooPosItemsNavigator = mock()
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
+    private val appPrefsWrapper: AppPrefsWrapper = mock()
 
     @Test
     fun `given state checkout, when SystemBackClicked passed, then BackFromCheckoutToCartClicked event should be sent`() =
@@ -459,6 +461,7 @@ class WooPosHomeViewModelTest {
         parentToChildrenEventSender,
         wooPosItemsNavigator,
         analyticsTracker,
+        appPrefsWrapper = appPrefsWrapper,
         SavedStateHandle()
     )
 }
