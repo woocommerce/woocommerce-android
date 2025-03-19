@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.plans.domain.SitePlan
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
 import com.woocommerce.android.ui.woopos.WooPosIsEnabled
+import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -94,6 +95,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
 
     private lateinit var viewModel: MoreMenuViewModel
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus = mock()
+    private val getWooCoreVersion: GetWooCorePluginCachedVersion = mock()
 
     suspend fun setup(setupMocks: suspend () -> Unit = {}) {
         setupMocks()
@@ -113,6 +115,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             hasGoogleAdsCampaigns = hasGoogleAdsCampaigns,
             isWooPosEnabled = isWooPosEnabled,
             analyticsTrackerWrapper = analyticsTrackerWrapper,
+            getWooCoreVersion = getWooCoreVersion,
         )
     }
 
@@ -469,6 +472,54 @@ class MoreMenuViewModelTests : BaseUnitTest() {
     }
 
     @Test
+    fun `given outdated WooCommerce version, when building state, then WooPOS section is displayed with upgrade woocommerce description`() = testBlocking {
+        // GIVEN
+        setup {
+            whenever(isWooPosEnabled.invoke()).thenReturn(true)
+            whenever(getWooCoreVersion()).thenReturn("3.0.0")
+        }
+
+        // WHEN
+        val states = viewModel.moreMenuViewState.captureValues()
+
+        // THEN
+        assertThat(
+            states.last().menuSections.flatMap { it.items }
+                .first { it.title == R.string.more_menu_button_woo_pos }.state
+        ).isEqualTo(MoreMenuItemButton.State.Visible)
+        assertThat(
+            states.last().menuSections.flatMap { it.items }
+                .first {
+                    it.description == R.string.more_menu_button_woo_pos_update_woocommerce_version_description
+                }.state
+        ).isEqualTo(MoreMenuItemButton.State.Visible)
+    }
+
+    @Test
+    fun `given eligible WooCommerce version, when building state, then WooPOS section is displayed with proper description`() = testBlocking {
+        // GIVEN
+        setup {
+            whenever(isWooPosEnabled.invoke()).thenReturn(true)
+            whenever(getWooCoreVersion()).thenReturn("11.0.0")
+        }
+
+        // WHEN
+        val states = viewModel.moreMenuViewState.captureValues()
+
+        // THEN
+        assertThat(
+            states.last().menuSections.flatMap { it.items }
+                .first { it.title == R.string.more_menu_button_woo_pos }.state
+        ).isEqualTo(MoreMenuItemButton.State.Visible)
+        assertThat(
+            states.last().menuSections.flatMap { it.items }
+                .first {
+                    it.description == R.string.more_menu_button_woo_pos_description
+                }.state
+        ).isEqualTo(MoreMenuItemButton.State.Visible)
+    }
+
+    @Test
     fun `given isWooPosEnabled returns true, when building state, then 3 sections are shown without dividers at the end`() =
         testBlocking {
             // GIVEN
@@ -527,6 +578,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         // GIVEN
         setup {
             whenever(isWooPosEnabled()).thenReturn(true)
+            whenever(getWooCoreVersion()).thenReturn("11.0.0")
         }
 
         // WHEN
