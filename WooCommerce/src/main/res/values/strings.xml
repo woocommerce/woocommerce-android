@@ -4279,6 +4279,7 @@
     <string name="woopos_cart_item_content_description">Product in cart %s, Price %s</string>
     <string name="woopos_cart_title">Cart</string>
     <string name="woopos_clear_cart_button">Clear</string>
+    <string name="woopos_payment_success_sound_setting_title">Cha-Ching Sound</string>
 
     <string name="woopos_banner_simple_products_only_title">Showing simple, variable and virtual products only</string>
     <string name="woopos_banner_simple_products_only_message">Only simple physical, variable and virtual products are compatible with POS right now. Other product types will become available in future updates. </string>
