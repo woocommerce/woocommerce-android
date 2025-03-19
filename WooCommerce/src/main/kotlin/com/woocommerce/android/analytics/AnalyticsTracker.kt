@@ -479,6 +479,8 @@ class AnalyticsTracker private constructor(
 
         // We have to call in non consistent way to match the iOS naming
         const val VALUE_MORE_MENU_POS = "pointOfSale"
+        const val KEY_POS_NOT_ELIGIBLE = "not_eligible"
+        const val VALUE_POS_OUTDATED_WOOCOMMERCE_VERSION = "outdated_woocommerce_version"
 
         const val VALUE_MORE_MENU_PAYMENTS_BADGE_VISIBLE = "badge_visible"
 
