@@ -1,5 +1,9 @@
 package com.woocommerce.android.ui.woopos.home
 
+import android.content.ContentResolver
+import android.content.Context
+import android.media.MediaPlayer
+import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
@@ -26,6 +30,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosExitConfirmationDialog
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
@@ -41,6 +46,7 @@ import com.woocommerce.android.ui.woopos.home.toolbar.PreviewWooPosFloatingToolb
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosFloatingToolbar
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsScreen
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsScreenPreview
+import kotlinx.coroutines.flow.collectLatest
 import org.wordpress.android.util.ToastUtils
 
 @Composable
@@ -67,10 +73,27 @@ fun WooPosHomeScreen(
         }
     }
 
+    LaunchedEffect(Unit) {
+        viewModel.playChaChingEvent.collectLatest {
+            playChaChingSound(context)
+            viewModel.clearChaChingEvent()
+        }
+    }
+
     WooPosHomeScreen(
         state = state,
         onHomeUIEvent = { viewModel.onUIEvent(it) },
     )
+}
+
+fun playChaChingSound(context: Context) {
+    val chaChingUri =
+        Uri.parse(
+            ContentResolver.SCHEME_ANDROID_RESOURCE +
+                "://" + context.packageName + "/" + R.raw.cha_ching
+        )
+    val mp = MediaPlayer.create(context, chaChingUri)
+    mp.start()
 }
 
 @Composable
