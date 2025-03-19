@@ -17,9 +17,20 @@ data class WooPosToolbarState(
         data object Hidden : Menu()
         data class Visible(val items: List<MenuItem>) : Menu()
 
-        data class MenuItem(
-            @StringRes val title: Int,
-            @DrawableRes val icon: Int,
-        )
+        sealed class MenuItem(
+            @StringRes open val title: Int,
+            @DrawableRes open val icon: Int
+        ) {
+            data class Standard(
+                @StringRes override val title: Int,
+                @DrawableRes override val icon: Int
+            ) : MenuItem(title, icon)
+
+            data class Toggleable(
+                @StringRes override val title: Int,
+                @DrawableRes override val icon: Int,
+                val isToggled: Boolean
+            ) : MenuItem(title, icon)
+        }
     }
 }
