@@ -6,6 +6,7 @@ import com.woocommerce.android.util.IsRemoteFeatureFlagEnabled
 import com.woocommerce.android.util.RemoteFeatureFlag.WOO_POS
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
@@ -53,72 +54,72 @@ class WooPosIsEnabledTest : BaseUnitTest() {
             whenever(isRemoteFeatureFlagEnabled(WOO_POS)).thenReturn(true)
             whenever(isScreenSizeAllowed()).thenReturn(true)
 
-            assertTrue(sut())
+            assertThat(sut()).isInstanceOf(WooPosIsEnabled.Reason.Enabled::class.java)
         }
 
     @Test
     fun `given feature flag disabled, when invoked, then return false`() = testBlocking {
         whenever(isRemoteFeatureFlagEnabled.invoke(WOO_POS)).thenReturn(false)
-        assertFalse(sut())
+        assertThat(sut()).isInstanceOf(WooPosIsEnabled.Reason.Disabled.FeatureFlagDisabled::class.java)
     }
 
     @Test
     fun `given unsupported country, when invoked, then return false`() = testBlocking {
         val result = buildSiteSettings(countryCode = "CA", currencyCode = "USD")
         whenever(wooCommerceStore.getSiteSettings(any())).thenReturn(result)
-        assertFalse(sut())
+        assertThat(sut()).isInstanceOf(WooPosIsEnabled.Reason.Disabled.CountryCurrencyNotSupported::class.java)
     }
 
     @Test
     fun `given unsupported currency, when invoked, then return false`() = testBlocking {
         val result = buildSiteSettings(currencyCode = "CAD", countryCode = "US")
         whenever(wooCommerceStore.getSiteSettings(any())).thenReturn(result)
-        assertFalse(sut())
+        assertThat(sut()).isInstanceOf(WooPosIsEnabled.Reason.Disabled.CountryCurrencyNotSupported::class.java)
     }
 
     @Test
     fun `given uk country and pounds, when invoked, then return true`() = testBlocking {
         val result = buildSiteSettings(countryCode = "GB", currencyCode = "GBP")
         whenever(wooCommerceStore.getSiteSettings(any())).thenReturn(result)
-        assertTrue(sut())
+        assertThat(sut()).isInstanceOf(WooPosIsEnabled.Reason.Enabled::class.java)
     }
 
     @Test
     fun `given uk country and usd, when invoked, then return false`() = testBlocking {
         val result = buildSiteSettings(countryCode = "GB", currencyCode = "USD")
         whenever(wooCommerceStore.getSiteSettings(any())).thenReturn(result)
-        assertFalse(sut())
+        assertThat(sut()).isInstanceOf(WooPosIsEnabled.Reason.Disabled.CountryCurrencyNotSupported::class.java)
     }
 
     @Test
     fun `given us country and pounds, when invoked, then return false`() = testBlocking {
         val result = buildSiteSettings(countryCode = "US", currencyCode = "GBP")
         whenever(wooCommerceStore.getSiteSettings(any())).thenReturn(result)
-        assertFalse(sut())
+        assertThat(sut()).isInstanceOf(WooPosIsEnabled.Reason.Disabled.CountryCurrencyNotSupported::class.java)
     }
 
     @Test
     fun `given woo version 9_5_0, when invoked, then return false`() = testBlocking {
         whenever(getWooCoreVersion.invoke()).thenReturn("9.5.0")
-        assertFalse(sut())
+        assertThat(sut()).isInstanceOf(WooPosIsEnabled.Reason.Disabled.WooCoreVersionNotSupported::class.java)
     }
 
     @Test
     fun `given woo version 9_6_0, when invoked, then return true`() = testBlocking {
         whenever(getWooCoreVersion.invoke()).thenReturn("9.6.0")
-        assertTrue(sut())
+        assertThat(sut()).isInstanceOf(WooPosIsEnabled.Reason.Enabled::class.java)
     }
 
     @Test
     fun `given woo version 9_6_0_1, when invoked, then return true`() = testBlocking {
         whenever(getWooCoreVersion.invoke()).thenReturn("9.6.0.1")
-        assertTrue(sut())
+        assertThat(sut()).isInstanceOf(WooPosIsEnabled.Reason.Enabled::class.java)
     }
 
     @Test
     fun `given woo version 10_0_1, when invoked, then return true`() = testBlocking {
         whenever(getWooCoreVersion.invoke()).thenReturn("10.0.1")
-        assertTrue(sut())
+        assertThat(sut()).isInstanceOf(WooPosIsEnabled.Reason.Enabled::class.java)
     }
 
     private fun buildSiteSettings(
