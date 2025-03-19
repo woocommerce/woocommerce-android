@@ -32,6 +32,7 @@ sealed class MoreMenuEvent : MultiLiveEvent.Event() {
 
     data object ViewCustomersEvent : MoreMenuEvent()
     data object NavigateToWooPosEvent : MoreMenuEvent()
+    data object ShowWooPosWooCoreUpdateRequiredEvent : MoreMenuEvent()
 }
 
 data class MoreMenuItemSection(
