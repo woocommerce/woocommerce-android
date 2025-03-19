@@ -3832,6 +3832,7 @@
 
     <string name="more_menu_button_woo_pos">Point of Sale Mode</string>
     <string name="more_menu_button_woo_pos_description">Accept payments at your physical store</string>
+    <string name="more_menu_button_woo_pos_update_woocommerce_version_description">Upgrade your site to the latest WooCommerce to use Point of Sale</string>
 
     <string name="more_menu_customers_title">Customers</string>
 
