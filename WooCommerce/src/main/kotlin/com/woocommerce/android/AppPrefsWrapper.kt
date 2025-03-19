@@ -39,6 +39,8 @@ class AppPrefsWrapper @Inject constructor() {
 
     var isSiteWPComSuspended by AppPrefs::isSiteWPComSuspended
 
+    var isWooPosPaymentSoundEnabled by AppPrefs::isWooPosPaymentSoundEnabled
+
     fun getAppInstallationDate() = AppPrefs.installationDate
 
     fun getReceiptUrl(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long, orderId: Long) =
