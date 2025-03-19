@@ -11,8 +11,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -23,6 +25,8 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -32,6 +36,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -274,6 +279,9 @@ private fun PopUpMenuItem(
     menuItem: Menu.MenuItem,
     onClick: (Menu.MenuItem) -> Unit
 ) {
+    var isChaChingEnabled by remember {
+        mutableStateOf(menuItem is Menu.MenuItem.Toggleable && menuItem.isToggled)
+    }
     TextButton(onClick = { onClick(menuItem) }) {
         Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value.toAdaptivePadding()))
         Icon(
@@ -293,9 +301,46 @@ private fun PopUpMenuItem(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
+        if (menuItem is Menu.MenuItem.Toggleable) {
+            ToggleSwitch(
+                isChecked = isChaChingEnabled,
+                onToggleChange = {
+                    isChaChingEnabled = it
+                    onClick(menuItem.copy(isToggled = !menuItem.isToggled))
+                }
+            )
+        }
         Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value.toAdaptivePadding()))
     }
 }
+
+@Composable
+fun ToggleSwitch(
+    isChecked: Boolean,
+    onToggleChange: (Boolean) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        WooPosText(
+            modifier = Modifier
+                .padding(vertical = WooPosSpacing.Small.value.toAdaptivePadding())
+                .weight(1f),
+            text = stringResource(id = R.string.woopos_payment_success_sound_setting_title),
+            style = WooPosTypography.BodyMedium,
+            color = MaterialTheme.colorScheme.onSurface,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+        Switch(
+            checked = isChecked,
+            onCheckedChange = onToggleChange
+        )
+    }
+}
+
 
 @Composable
 private fun CardReaderStatusButton(
@@ -484,15 +529,20 @@ fun PreviewWooPosFloatingToolbarStatusConnectedWithMenu() {
                 cardReaderStatus = WooPosCardReaderStatus.Connected,
                 menu = Menu.Visible(
                     listOf(
-                        Menu.MenuItem(
+                        Menu.MenuItem.Toggleable(
+                            title = R.string.woopos_cart_title,
+                            icon = R.drawable.woo_pos_info_ic,
+                            isToggled = true
+                        ),
+                        Menu.MenuItem.Standard(
                             title = R.string.woopos_documentation_title,
                             icon = R.drawable.woo_pos_info_ic
                         ),
-                        Menu.MenuItem(
+                        Menu.MenuItem.Standard(
                             title = R.string.woopos_exit_confirmation_title,
                             icon = R.drawable.ic_woo_pos_exit,
                         ),
-                        Menu.MenuItem(
+                        Menu.MenuItem.Standard(
                             title = R.string.woopos_get_support_title,
                             icon = R.drawable.woopos_ic_get_support,
                         ),
