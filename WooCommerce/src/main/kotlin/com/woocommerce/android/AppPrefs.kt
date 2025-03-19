@@ -132,7 +132,8 @@ object AppPrefs {
         CUSTOM_FIELDS_TOP_BANNER_DISMISSED,
         BLAZE_CAMPAIGN_SELECTED_OBJECTIVE,
         BLAZE_CAMPAIGN_OBJECTIVE_SWITCH_CHECKED,
-        IS_SITE_WPCOM_SUSPENDED
+        IS_SITE_WPCOM_SUSPENDED,
+        WOO_POS_PAYMENT_SOUND_ENABLED,
     }
 
     /**
@@ -286,6 +287,10 @@ object AppPrefs {
     var isSiteWPComSuspended: Boolean
         get() = getBoolean(DeletablePrefKey.IS_SITE_WPCOM_SUSPENDED, false)
         set(value) = setBoolean(DeletablePrefKey.IS_SITE_WPCOM_SUSPENDED, value)
+
+    var isWooPosPaymentSoundEnabled: Boolean
+        get() = getBoolean(DeletablePrefKey.WOO_POS_PAYMENT_SOUND_ENABLED, true)
+        set(value) = setBoolean(DeletablePrefKey.WOO_POS_PAYMENT_SOUND_ENABLED, value)
 
     fun getProductSortingChoice(currentSiteId: Int) = getString(getProductSortingKey(currentSiteId)).orNullIfEmpty()
 
