@@ -46,12 +46,17 @@ data class MoreMenuItemButton(
     @StringRes val description: Int,
     @DrawableRes val icon: Int,
     @DrawableRes val extraIcon: Int? = null,
-    val state: State = State.Visible,
+    val state: State = State.Visible.Enabled,
     val badgeState: BadgeState? = null,
     val onClick: () -> Unit = {},
 ) {
-    enum class State {
-        Loading, Visible, Hidden,
+    sealed class State {
+        data object Loading : State()
+        sealed class Visible : State() {
+            data object Enabled : Visible()
+            data object WooCoreVersionNotSupported : Visible()
+        }
+        data object Hidden : State()
     }
 
     enum class Type {
