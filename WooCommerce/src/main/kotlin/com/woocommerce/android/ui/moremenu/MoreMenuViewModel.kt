@@ -9,7 +9,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CAMPAIGN_LIST_ENTR
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_DISPLAYED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_OPTION
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_POS_NOT_ELIGIBLE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_POS_NOT_ELIGIBLE_REASON
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_ADMIN_MENU
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_COUPONS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_CUSTOMERS
@@ -23,7 +23,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_M
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_POS_OUTDATED_WOOCOMMERCE_VERSION
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.adminUrlOrDefault
-import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.notifications.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
@@ -119,8 +118,8 @@ class MoreMenuViewModel @Inject constructor(
         buttonsStates: Map<MoreMenuItemButton.Type, MoreMenuItemButton.State>,
         count: Int,
         paymentsFeatureWasClicked: Boolean
-    ) = listOf(
-        generatePOSSection(buttonsStates[MoreMenuItemButton.Type.WooPos]!!),
+    ) = listOfNotNull(
+        generatePOSMenuButtons(buttonsStates),
         generateSettingsMenuButtons(buttonsStates[MoreMenuItemButton.Type.Settings]!!),
         generateGeneralSection(
             unseenReviewsCount = count,
@@ -131,6 +130,32 @@ class MoreMenuViewModel @Inject constructor(
         )
     )
 
+    private fun generatePOSMenuButtons(
+        buttonsStates: Map<MoreMenuItemButton.Type,
+            MoreMenuItemButton.State>
+    ): MoreMenuItemSection? {
+        return buttonsStates[MoreMenuItemButton.Type.WooPos]?.let { wooPosState ->
+            when (wooPosState) {
+                is MoreMenuItemButton.State.Loading, is MoreMenuItemButton.State.Visible.Enabled ->
+                    generateWooPosSection(
+                        wooPosState,
+                        R.string.more_menu_button_woo_pos_description
+                    ) {
+                        onWooPosButtonClick()
+                    }
+
+                is MoreMenuItemButton.State.Visible.WooCoreVersionNotSupported -> generateWooPosSection(
+                    wooPosState,
+                    R.string.more_menu_button_woo_pos_update_woocommerce_version_description
+                ) {
+                    onWooPOSNotEligibleButtonClick(WooPosNotEligible.OutdatedWooCommerceVersion)
+                }
+
+                else -> null
+            }
+        }
+    }
+
     fun onViewResumed() {
         moreMenuNewFeatureHandler.markNewFeatureAsSeen()
         launch {
@@ -139,41 +164,25 @@ class MoreMenuViewModel @Inject constructor(
         }
     }
 
-    private fun isWooCoreVersionSupported(): Boolean {
-        val wooCoreVersion = getWooCoreVersion() ?: return false
-        return wooCoreVersion.semverCompareTo(WC_VERSION_SUPPORTS_POS_PRODUCT_FILTERING) >= 0
+    private fun generateWooPosSection(
+        wooPosState: MoreMenuItemButton.State,
+        description: Int,
+        onPosButtonClick: () -> Unit
+    ): MoreMenuItemSection {
+        return MoreMenuItemSection(
+            title = null,
+            items = listOf(
+                MoreMenuItemButton(
+                    title = R.string.more_menu_button_woo_pos,
+                    description = description,
+                    icon = R.drawable.ic_more_menu_pos,
+                    extraIcon = R.drawable.ic_more_menu_pos_extra,
+                    state = wooPosState,
+                    onClick = onPosButtonClick,
+                )
+            )
+        )
     }
-
-    private fun generatePOSSection(wooPosState: MoreMenuItemButton.State) =
-        if (isWooCoreVersionSupported()) {
-            MoreMenuItemSection(
-                title = null,
-                items = listOf(
-                    MoreMenuItemButton(
-                        title = R.string.more_menu_button_woo_pos,
-                        description = R.string.more_menu_button_woo_pos_description,
-                        icon = R.drawable.ic_more_menu_pos,
-                        extraIcon = R.drawable.ic_more_menu_pos_extra,
-                        state = wooPosState,
-                        onClick = ::onWooPosButtonClick,
-                    )
-                )
-            )
-        } else {
-            MoreMenuItemSection(
-                title = null,
-                items = listOf(
-                    MoreMenuItemButton(
-                        title = R.string.more_menu_button_woo_pos,
-                        description = R.string.more_menu_button_woo_pos_update_woocommerce_version_description,
-                        icon = R.drawable.ic_more_menu_pos,
-                        extraIcon = R.drawable.ic_more_menu_pos_extra,
-                        state = wooPosState,
-                        onClick = { onWooPOSNotEligibleButtonClick(WooPosNotEligible.OutdatedWooCommerceVersion) },
-                    )
-                )
-            )
-        }
 
     @Suppress("LongMethod")
     private fun generateGeneralSection(
@@ -432,7 +441,7 @@ class MoreMenuViewModel @Inject constructor(
                 trackMoreMenuOptionSelected(
                     VALUE_MORE_MENU_POS,
                     extraOptions = mapOf(
-                        KEY_POS_NOT_ELIGIBLE to VALUE_POS_OUTDATED_WOOCOMMERCE_VERSION
+                        KEY_POS_NOT_ELIGIBLE_REASON to VALUE_POS_OUTDATED_WOOCOMMERCE_VERSION
                     )
                 )
                 triggerEvent(MoreMenuEvent.ShowWooPosWooCoreUpdateRequiredEvent)
@@ -500,16 +509,54 @@ class MoreMenuViewModel @Inject constructor(
         .onStart { emit("") }
 
     private fun checkFeaturesAvailability(): Flow<Map<MoreMenuItemButton.Type, MoreMenuItemButton.State>> {
-        val initialState = MoreMenuItemButton.Type.entries.associateWith {
-            MoreMenuItemButton.State.Loading
-        }.toMutableMap()
+        val initialState =
+            MoreMenuItemButton.Type.entries.associateWith<MoreMenuItemButton.Type, MoreMenuItemButton.State> {
+                MoreMenuItemButton.State.Loading
+            }.toMutableMap()
 
         return listOf(
-            doCheckAvailability(MoreMenuItemButton.Type.Blaze) { isBlazeEnabled() },
-            doCheckAvailability(MoreMenuItemButton.Type.GoogleForWoo) { isGoogleForWooEnabled() },
-            doCheckAvailability(MoreMenuItemButton.Type.Inbox) { moreMenuRepository.isInboxEnabled() },
-            doCheckAvailability(MoreMenuItemButton.Type.Settings) { moreMenuRepository.isUpgradesEnabled() },
-            doCheckAvailability(MoreMenuItemButton.Type.WooPos) { isWooPosEnabled() }
+            doCheckAvailability(MoreMenuItemButton.Type.Blaze) {
+                if (isBlazeEnabled()) {
+                    MoreMenuItemButton.State.Visible.Enabled
+                } else {
+                    MoreMenuItemButton.State.Hidden
+                }
+            },
+            doCheckAvailability(MoreMenuItemButton.Type.GoogleForWoo) {
+                if (isGoogleForWooEnabled()) {
+                    MoreMenuItemButton.State.Visible.Enabled
+                } else {
+                    MoreMenuItemButton.State.Hidden
+                }
+            },
+            doCheckAvailability(MoreMenuItemButton.Type.Inbox) {
+                if (moreMenuRepository.isInboxEnabled()) {
+                    MoreMenuItemButton.State.Visible.Enabled
+                } else {
+                    MoreMenuItemButton.State.Hidden
+                }
+            },
+            doCheckAvailability(MoreMenuItemButton.Type.Settings) {
+                if (moreMenuRepository.isUpgradesEnabled()) {
+                    MoreMenuItemButton.State.Visible.Enabled
+                } else {
+                    MoreMenuItemButton.State.Hidden
+                }
+            },
+            doCheckAvailability(MoreMenuItemButton.Type.WooPos) {
+                when (isWooPosEnabled()) {
+                    is WooPosIsEnabled.Reason.Disabled.CountryCurrencyNotSupported,
+                    WooPosIsEnabled.Reason.Disabled.FeatureFlagDisabled,
+                    WooPosIsEnabled.Reason.Disabled.InvalidSelectedSite,
+                    WooPosIsEnabled.Reason.Disabled.InvalidSiteSettings,
+                    WooPosIsEnabled.Reason.Disabled.ScreenSizeNotAllowed -> MoreMenuItemButton.State.Hidden
+
+                    WooPosIsEnabled.Reason.Disabled.WooCoreVersionNotSupported ->
+                        MoreMenuItemButton.State.Visible.WooCoreVersionNotSupported
+
+                    WooPosIsEnabled.Reason.Enabled -> MoreMenuItemButton.State.Visible.Enabled
+                }
+            }
         ).merge()
             .map { update ->
                 initialState[update.first] = update.second
@@ -520,9 +567,9 @@ class MoreMenuViewModel @Inject constructor(
 
     private fun doCheckAvailability(
         type: MoreMenuItemButton.Type,
-        checker: suspend () -> Boolean
+        checker: suspend () -> MoreMenuItemButton.State
     ): Flow<Pair<MoreMenuItemButton.Type, MoreMenuItemButton.State>> = flow {
-        val state = if (checker()) MoreMenuItemButton.State.Visible else MoreMenuItemButton.State.Hidden
+        val state = checker()
         emit(type to state)
     }
 
@@ -531,9 +578,5 @@ class MoreMenuViewModel @Inject constructor(
 
     sealed class WooPosNotEligible {
         data object OutdatedWooCommerceVersion : WooPosNotEligible()
-    }
-
-    private companion object {
-        const val WC_VERSION_SUPPORTS_POS_PRODUCT_FILTERING = "9.6.0"
     }
 }

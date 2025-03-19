@@ -294,7 +294,7 @@ private fun MoreMenuSection(section: MoreMenuItemSection) {
             section.items.forEach { item ->
                 when (item.state) {
                     MoreMenuItemButton.State.Loading -> MoreMenuLoading()
-                    MoreMenuItemButton.State.Visible -> MoreMenuButton(item)
+                    is MoreMenuItemButton.State.Visible -> MoreMenuButton(item)
                     MoreMenuItemButton.State.Hidden -> Unit
                 }
                 Spacer(modifier = Modifier.height(8.dp))
