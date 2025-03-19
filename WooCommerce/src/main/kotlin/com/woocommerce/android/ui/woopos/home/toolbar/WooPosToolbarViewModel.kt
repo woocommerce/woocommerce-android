@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.home.toolbar
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls.WOO_POS_DOCUMENTATION_URL
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
@@ -39,6 +40,7 @@ class WooPosToolbarViewModel @Inject constructor(
     private val networkStatus: WooPosNetworkStatus,
     private val resourceProvider: ResourceProvider,
     private val analyticsTracker: WooPosAnalyticsTracker,
+    private val appPrefsWrapper: AppPrefsWrapper,
 ) : ViewModel() {
     private val _state = MutableStateFlow(
         WooPosToolbarState(
@@ -70,8 +72,15 @@ class WooPosToolbarViewModel @Inject constructor(
 
         when (event) {
             is OnToolbarMenuClicked -> {
+                val updatedToolBarMenuItems = toolbarMenuItems.map {
+                    if (it is WooPosToolbarState.Menu.MenuItem.Toggleable) {
+                        it.copy(isToggled = appPrefsWrapper.isWooPosPaymentSoundEnabled)
+                    } else {
+                        it
+                    }
+                }
                 _state.value = currentState.copy(
-                    menu = WooPosToolbarState.Menu.Visible(toolbarMenuItems)
+                    menu = WooPosToolbarState.Menu.Visible(updatedToolBarMenuItems)
                 )
             }
 
@@ -86,7 +95,9 @@ class WooPosToolbarViewModel @Inject constructor(
     }
 
     private fun handleMenuItemClicked(event: MenuItemClicked) {
-        hideMenu()
+        if (event.menuItem !is WooPosToolbarState.Menu.MenuItem.Toggleable) {
+            hideMenu()
+        }
 
         when (event.menuItem.title) {
             R.string.woopos_get_support_title -> {
@@ -95,15 +106,23 @@ class WooPosToolbarViewModel @Inject constructor(
                     analyticsTracker.track(GetSupportTapped)
                 }
             }
+
             R.string.woopos_exit_confirmation_title ->
                 viewModelScope.launch {
                     childrenToParentEventSender.sendToParent(ChildToParentEvent.ExitPosClicked)
                     analyticsTracker.track(ExitTapped)
                 }
+
             R.string.woopos_documentation_title -> {
                 viewModelScope.launch {
                     _openUrlEvent.emit(WOO_POS_DOCUMENTATION_URL)
                     analyticsTracker.track(ViewDocsTapped)
+                }
+            }
+
+            R.string.woopos_payment_success_sound_setting_title -> {
+                viewModelScope.launch {
+                    appPrefsWrapper.isWooPosPaymentSoundEnabled = !appPrefsWrapper.isWooPosPaymentSoundEnabled
                 }
             }
         }
@@ -120,6 +139,7 @@ class WooPosToolbarViewModel @Inject constructor(
                     cardReaderFacade.disconnectFromReader()
                 }
             }
+
             WooPosToolbarState.WooPosCardReaderStatus.NotConnected -> {
                 if (!networkStatus.isConnected()) {
                     viewModelScope.launch {
@@ -143,20 +163,23 @@ class WooPosToolbarViewModel @Inject constructor(
         }
     }
 
-    private companion object {
-        val toolbarMenuItems = listOf(
-            WooPosToolbarState.Menu.MenuItem(
-                title = R.string.woopos_documentation_title,
-                icon = R.drawable.woo_pos_info_ic,
-            ),
-            WooPosToolbarState.Menu.MenuItem(
-                title = R.string.woopos_get_support_title,
-                icon = R.drawable.woopos_ic_get_support,
-            ),
-            WooPosToolbarState.Menu.MenuItem(
-                title = R.string.woopos_exit_confirmation_title,
-                icon = R.drawable.ic_woo_pos_exit,
-            ),
-        )
-    }
+    private val toolbarMenuItems = listOf(
+        WooPosToolbarState.Menu.MenuItem.Toggleable(
+            title = R.string.woopos_payment_success_sound_setting_title,
+            icon = R.drawable.woo_pos_info_ic,
+            isToggled = appPrefsWrapper.isWooPosPaymentSoundEnabled
+        ),
+        WooPosToolbarState.Menu.MenuItem.Standard(
+            title = R.string.woopos_documentation_title,
+            icon = R.drawable.woo_pos_info_ic,
+        ),
+        WooPosToolbarState.Menu.MenuItem.Standard(
+            title = R.string.woopos_get_support_title,
+            icon = R.drawable.woopos_ic_get_support,
+        ),
+        WooPosToolbarState.Menu.MenuItem.Standard(
+            title = R.string.woopos_exit_confirmation_title,
+            icon = R.drawable.ic_woo_pos_exit,
+        ),
+    )
 }
