@@ -19,19 +19,30 @@ class WooPosIsEnabled @Inject constructor(
     private val isRemoteFeatureFlagEnabled: IsRemoteFeatureFlagEnabled,
 ) {
     @Suppress("ReturnCount")
-    suspend operator fun invoke(): Boolean = coroutineScope {
-        val selectedSite = selectedSite.getOrNull() ?: return@coroutineScope false
+    suspend operator fun invoke(): Reason = coroutineScope {
+        val selectedSite = selectedSite.getOrNull()
+            ?: return@coroutineScope Reason.Disabled.InvalidSelectedSite
 
-        if (!isRemoteFeatureFlagEnabled(WOO_POS)) return@coroutineScope false
-        if (!isScreenSizeAllowed()) return@coroutineScope false
-        if (!isWooCoreSupportsOrderAutoDraftsAndExtraPaymentsProps()) return@coroutineScope false
+        if (!isRemoteFeatureFlagEnabled(WOO_POS)) return@coroutineScope Reason.Disabled.FeatureFlagDisabled
+        if (!isScreenSizeAllowed()) return@coroutineScope Reason.Disabled.ScreenSizeNotAllowed
+        if (!isWooCoreSupportsOrderAutoDraftsAndExtraPaymentsProps())
+            return@coroutineScope Reason.Disabled.WooCoreVersionNotSupported
 
-        val siteSettings = wooCommerceStore.getSiteSettings(selectedSite) ?: return@coroutineScope false
+        val siteSettings = wooCommerceStore.getSiteSettings(selectedSite)
+            ?: return@coroutineScope Reason.Disabled.InvalidSiteSettings
 
-        return@coroutineScope isCountryAndCurrencySupported(
-            countryCode = siteSettings.countryCode,
-            currency = siteSettings.currencyCode
-        )
+        return@coroutineScope if (isCountryAndCurrencySupported(
+                countryCode = siteSettings.countryCode,
+                currency = siteSettings.currencyCode
+            )
+        ) {
+            Reason.Enabled
+        } else {
+            Reason.Disabled.CountryCurrencyNotSupported(
+                country = siteSettings.countryCode,
+                currency = siteSettings.currencyCode
+            )
+        }
     }
 
     private fun isCountryAndCurrencySupported(countryCode: String, currency: String) =
@@ -46,5 +57,17 @@ class WooPosIsEnabled @Inject constructor(
         const val WC_VERSION_SUPPORTS_POS_PRODUCT_FILTERING = "9.6.0"
 
         val SUPPORTED_COUNTRY_CURRENCY_PAIRS = listOf("us" to "usd", "gb" to "gbp")
+    }
+
+    sealed class Reason {
+        data object Enabled : Reason()
+        sealed class Disabled : Reason() {
+            data object InvalidSelectedSite : Disabled()
+            data object InvalidSiteSettings : Disabled()
+            data object FeatureFlagDisabled : Disabled()
+            data object ScreenSizeNotAllowed : Disabled()
+            data class CountryCurrencyNotSupported(val country: String, val currency: String) : Disabled()
+            data object WooCoreVersionNotSupported : Disabled()
+        }
     }
 }
