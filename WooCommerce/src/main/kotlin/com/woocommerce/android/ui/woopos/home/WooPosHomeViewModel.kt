@@ -28,6 +28,7 @@ class WooPosHomeViewModel @Inject constructor(
     private val parentToChildrenEventSender: WooPosParentToChildrenEventSender,
     private val wooPosItemsNavigator: WooPosItemsNavigator,
     private val analyticsTracker: WooPosAnalyticsTracker,
+    private val appPrefsWrapper: AppPrefsWrapper,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     private val _state = savedStateHandle.getStateFlow(
@@ -219,7 +220,9 @@ class WooPosHomeViewModel @Inject constructor(
             wooPosItemsNavigator.sendNavigationEvent(
                 WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateBackToItemListScreen
             )
-            _playChaChingEvent.emit("Cha-Ching")
+            if (appPrefsWrapper.isWooPosPaymentSoundEnabled) {
+                _playChaChingEvent.emit("Cha-Ching")
+            }
         }
         _state.value = _state.value.copy(
             screenPositionState = ScreenPositionState.Checkout.FullScreenTotals
