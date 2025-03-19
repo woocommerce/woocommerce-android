@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.moremenu
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_POS_NOT_ELIGIBLE_REASON
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_POS_OUTDATED_WOOCOMMERCE_VERSION
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.notifications.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
@@ -86,7 +88,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
     private val hasGoogleAdsCampaigns: HasGoogleAdsCampaigns = mock()
 
     private val isWooPosEnabled: WooPosIsEnabled = mock {
-        onBlocking { invoke() } doReturn true
+        onBlocking { invoke() } doReturn WooPosIsEnabled.Reason.Enabled
     }
 
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
@@ -439,7 +441,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         testBlocking {
             // GIVEN
             setup {
-                whenever(isWooPosEnabled.invoke()).thenReturn(false)
+                whenever(isWooPosEnabled.invoke()).thenReturn(WooPosIsEnabled.Reason.Disabled.InvalidSiteSettings)
             }
 
             // WHEN
@@ -453,10 +455,31 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         }
 
     @Test
+    fun `given isWooPosEnabled returns outdated woocommerce version, when building state, then WooPOS section is displayed with appropriate description`() =
+        testBlocking {
+            // GIVEN
+            setup {
+                whenever(isWooPosEnabled.invoke())
+                    .thenReturn(WooPosIsEnabled.Reason.Disabled.WooCoreVersionNotSupported)
+            }
+
+            // WHEN
+            val states = viewModel.moreMenuViewState.captureValues()
+
+            // THEN
+            assertThat(
+                states.last().menuSections.flatMap { it.items }
+                    .firstOrNull {
+                        it.description == R.string.more_menu_button_woo_pos_update_woocommerce_version_description
+                    }?.state
+            ).isEqualTo(MoreMenuItemButton.State.Visible.WooCoreVersionNotSupported)
+        }
+
+    @Test
     fun `given isWooPosEnabled returns true, when building state, then WooPOS section is displayed`() = testBlocking {
         // GIVEN
         setup {
-            whenever(isWooPosEnabled.invoke()).thenReturn(true)
+            whenever(isWooPosEnabled.invoke()).thenReturn(WooPosIsEnabled.Reason.Enabled)
         }
 
         // WHEN
@@ -468,15 +491,14 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         assertThat(
             states.last().menuSections.flatMap { it.items }
                 .first { it.title == R.string.more_menu_button_woo_pos }.state
-        ).isEqualTo(MoreMenuItemButton.State.Visible)
+        ).isEqualTo(MoreMenuItemButton.State.Visible.Enabled)
     }
 
     @Test
     fun `given outdated WooCommerce version, when building state, then WooPOS section is displayed with upgrade woocommerce description`() = testBlocking {
         // GIVEN
         setup {
-            whenever(isWooPosEnabled.invoke()).thenReturn(true)
-            whenever(getWooCoreVersion()).thenReturn("3.0.0")
+            whenever(isWooPosEnabled.invoke()).thenReturn(WooPosIsEnabled.Reason.Disabled.WooCoreVersionNotSupported)
         }
 
         // WHEN
@@ -486,21 +508,20 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         assertThat(
             states.last().menuSections.flatMap { it.items }
                 .first { it.title == R.string.more_menu_button_woo_pos }.state
-        ).isEqualTo(MoreMenuItemButton.State.Visible)
+        ).isEqualTo(MoreMenuItemButton.State.Visible.WooCoreVersionNotSupported)
         assertThat(
             states.last().menuSections.flatMap { it.items }
                 .first {
                     it.description == R.string.more_menu_button_woo_pos_update_woocommerce_version_description
                 }.state
-        ).isEqualTo(MoreMenuItemButton.State.Visible)
+        ).isEqualTo(MoreMenuItemButton.State.Visible.WooCoreVersionNotSupported)
     }
 
     @Test
     fun `given eligible WooCommerce version, when building state, then WooPOS section is displayed with proper description`() = testBlocking {
         // GIVEN
         setup {
-            whenever(isWooPosEnabled.invoke()).thenReturn(true)
-            whenever(getWooCoreVersion()).thenReturn("11.0.0")
+            whenever(isWooPosEnabled.invoke()).thenReturn(WooPosIsEnabled.Reason.Enabled)
         }
 
         // WHEN
@@ -510,13 +531,13 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         assertThat(
             states.last().menuSections.flatMap { it.items }
                 .first { it.title == R.string.more_menu_button_woo_pos }.state
-        ).isEqualTo(MoreMenuItemButton.State.Visible)
+        ).isEqualTo(MoreMenuItemButton.State.Visible.Enabled)
         assertThat(
             states.last().menuSections.flatMap { it.items }
                 .first {
                     it.description == R.string.more_menu_button_woo_pos_description
                 }.state
-        ).isEqualTo(MoreMenuItemButton.State.Visible)
+        ).isEqualTo(MoreMenuItemButton.State.Visible.Enabled)
     }
 
     @Test
@@ -524,7 +545,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         testBlocking {
             // GIVEN
             setup {
-                whenever(isWooPosEnabled.invoke()).thenReturn(true)
+                whenever(isWooPosEnabled.invoke()).thenReturn(WooPosIsEnabled.Reason.Enabled)
                 whenever(moreMenuRepository.isUpgradesEnabled()).thenReturn(true)
             }
 
@@ -551,7 +572,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
     fun `when building state, then all optional buttons start with loading state`() = testBlocking {
         // GIVEN
         setup {
-            whenever(isWooPosEnabled()).thenReturn(true)
+            whenever(isWooPosEnabled()).thenReturn(WooPosIsEnabled.Reason.Enabled)
             whenever(isBlazeEnabled.invoke()).thenReturn(true)
             whenever(isGoogleForWooEnabled.invoke()).thenReturn(true)
             whenever(moreMenuRepository.isUpgradesEnabled()).thenReturn(true)
@@ -577,8 +598,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
     fun `when WooPOS button clicked, then VALUE_MORE_MENU_POS tracking is triggered`() = testBlocking {
         // GIVEN
         setup {
-            whenever(isWooPosEnabled()).thenReturn(true)
-            whenever(getWooCoreVersion()).thenReturn("11.0.0")
+            whenever(isWooPosEnabled()).thenReturn(WooPosIsEnabled.Reason.Enabled)
         }
 
         // WHEN
@@ -591,5 +611,43 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             AnalyticsEvent.HUB_MENU_OPTION_TAPPED,
             mapOf("option" to "pointOfSale")
         )
+    }
+
+    @Test
+    fun `given outdated woocommerce version, when WooPOS button clicked, then VALUE_MORE_MENU_POS tracking is triggered with appropriate properties`() = testBlocking {
+        // GIVEN
+        setup {
+            whenever(isWooPosEnabled()).thenReturn(WooPosIsEnabled.Reason.Disabled.WooCoreVersionNotSupported)
+        }
+
+        // WHEN
+        val state = viewModel.moreMenuViewState.captureValues().last()
+        val posButton = state.menuSections.flatMap { it.items }.first { it.title == R.string.more_menu_button_woo_pos }
+        posButton.onClick()
+
+        // THEN
+        verify(analyticsTrackerWrapper).track(
+            AnalyticsEvent.HUB_MENU_OPTION_TAPPED,
+            mapOf(
+                "option" to "pointOfSale",
+                KEY_POS_NOT_ELIGIBLE_REASON to VALUE_POS_OUTDATED_WOOCOMMERCE_VERSION
+            )
+        )
+    }
+
+    @Test
+    fun `given outdated woocommerce version, when WooPOS button clicked, then  appropriate event is triggered`() = testBlocking {
+        // GIVEN
+        setup {
+            whenever(isWooPosEnabled()).thenReturn(WooPosIsEnabled.Reason.Disabled.WooCoreVersionNotSupported)
+        }
+
+        // WHEN
+        val state = viewModel.moreMenuViewState.captureValues().last()
+        val posButton = state.menuSections.flatMap { it.items }.first { it.title == R.string.more_menu_button_woo_pos }
+        posButton.onClick()
+
+        // THEN
+        assertThat(viewModel.event.value).isEqualTo(MoreMenuEvent.ShowWooPosWooCoreUpdateRequiredEvent)
     }
 }
