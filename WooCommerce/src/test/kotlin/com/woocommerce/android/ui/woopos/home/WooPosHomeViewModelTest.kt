@@ -15,6 +15,9 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
@@ -452,6 +455,26 @@ class WooPosHomeViewModelTest {
 
         // THEN
         analyticsTracker.track(BackToCartTapped)
+    }
+
+    @Test
+    fun `given state is Checkout, when OnPaymentCompletedViaCash event passed, then cha ching event is emitted`() = runTest {
+        // GIVEN
+        val events = MutableSharedFlow<ChildToParentEvent>()
+        whenever(childrenToParentEventReceiver.events).thenReturn(events)
+        val viewModel = createViewModel()
+        val emittedValues = mutableListOf<String>()
+        val job = launch {
+            viewModel.playChaChingEvent.toList(emittedValues)
+        }
+
+        // WHEN
+        viewModel.onUIEvent(WooPosHomeUIEvent.OnPaymentCompletedViaCash)
+
+        // THEN
+        advanceUntilIdle()
+        assertTrue(emittedValues.contains("Cha-Ching"))
+        job.cancel()
     }
 
     private fun createViewModel() = WooPosHomeViewModel(
