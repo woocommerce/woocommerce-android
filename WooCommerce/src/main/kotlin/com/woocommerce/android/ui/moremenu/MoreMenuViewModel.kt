@@ -131,8 +131,7 @@ class MoreMenuViewModel @Inject constructor(
     )
 
     private fun generatePOSMenuButtons(
-        buttonsStates: Map<MoreMenuItemButton.Type,
-            MoreMenuItemButton.State>
+        buttonsStates: Map<MoreMenuItemButton.Type, MoreMenuItemButton.State>
     ): MoreMenuItemSection? {
         return buttonsStates[MoreMenuItemButton.Type.WooPos]?.let { wooPosState ->
             when (wooPosState) {

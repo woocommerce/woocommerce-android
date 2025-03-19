@@ -25,8 +25,9 @@ class WooPosIsEnabled @Inject constructor(
 
         if (!isRemoteFeatureFlagEnabled(WOO_POS)) return@coroutineScope Reason.Disabled.FeatureFlagDisabled
         if (!isScreenSizeAllowed()) return@coroutineScope Reason.Disabled.ScreenSizeNotAllowed
-        if (!isWooCoreSupportsOrderAutoDraftsAndExtraPaymentsProps())
+        if (!isWooCoreSupportsOrderAutoDraftsAndExtraPaymentsProps()) {
             return@coroutineScope Reason.Disabled.WooCoreVersionNotSupported
+        }
 
         val siteSettings = wooCommerceStore.getSiteSettings(selectedSite)
             ?: return@coroutineScope Reason.Disabled.InvalidSiteSettings
