@@ -394,13 +394,16 @@ private fun LabelCreationScreenWithBottomSheet(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            Column(modifier.verticalScroll(rememberScrollState())) {
+            Column(
+                modifier
+                    .verticalScroll(rememberScrollState())
+                    .padding(vertical = 16.dp)
+            ) {
                 val isExpanded = remember { mutableStateOf(false) }
                 Row(
                     modifier = Modifier.padding(
                         start = dimensionResource(R.dimen.major_100),
                         end = dimensionResource(R.dimen.major_100),
-                        top = dimensionResource(R.dimen.major_100),
                         bottom = dimensionResource(R.dimen.minor_100)
                     ),
                     verticalAlignment = Alignment.CenterVertically

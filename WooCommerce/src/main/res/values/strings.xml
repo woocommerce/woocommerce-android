@@ -4470,6 +4470,10 @@
     <string name="woo_shipping_labels_package_creation_carrier_loading_error">We are unable to load carrier packages.</string>
     <string name="woo_shipping_labels_package_creation_saved_loading_error">We are unable to load saved packages.</string>
     <string name="woo_shipping_labels_package_creation_shipping_rates_loading_error">We are unable to load shipping rates.</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_destination">Add a destination address to get shipping rates</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_destination_desc">We need to know where this package is going before we can show the available shipping rates.</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_weight">Add shipment weight to get shipping rates</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_weight_desc">We need to know the shipment weight before we can show the available shipping rates.</string>
     <string name="woo_shipping_labels_package_creation_box_type">Box</string>
     <string name="woo_shipping_labels_package_creation_envelope_type">Envelope</string>
     <string name="woo_shipping_labels_package_creation_error_title">We couldn\'t save the package as template</string>

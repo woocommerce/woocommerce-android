@@ -42,6 +42,7 @@ import javax.inject.Inject
 class WooShippingEditAddressViewModel @Inject constructor(
     private val addressValidator: AddressValidationHelper,
     private val getAcceptedOriginCountries: GetAcceptedOriginCountries,
+    private val getAllCountries: GetAllCountries,
     private val getStatesByCountryCode: GetStatesByCountryCode,
     private val normalizeAddress: NormalizeAddress,
     private val resourceProvider: ResourceProvider,
@@ -231,15 +232,20 @@ class WooShippingEditAddressViewModel @Inject constructor(
         country.value = findLocationByCode(addressInformation.country.code, countriesState.value)
         address = address.copy(value = fullAddress, error = null)
         city = city.copy(value = addressInformation.city, error = null)
-        selectedState.value =
-            findLocationByCode(addressInformation.state.codeOrRaw, statesState.value)
+        findLocationByCode(addressInformation.state.codeOrRaw, statesState.value).let {
+            selectedState.value = it
+            rawState = addressInformation.state.codeOrRaw
+        }
         postalCode = postalCode.copy(value = addressInformation.postcode, error = null)
         email = email.copy(value = addressInformation.email, error = null)
         phone = phone.copy(value = addressInformation.phone, error = null)
         isCompanyExpanded.value = addressInformation.company.isNotNullOrEmpty()
     }
 
-    private fun findLocationByCode(code: String, state: LocationState): Location {
+    private fun findLocationByCode(
+        code: String,
+        state: LocationState,
+    ): Location {
         val default = AmbiguousLocation.Raw(code).asLocation()
         return when (val currentState = state) {
             is LocationState.Loaded -> {
@@ -251,7 +257,11 @@ class WooShippingEditAddressViewModel @Inject constructor(
     }
 
     private suspend fun loadCountries() {
-        getAcceptedOriginCountries().fold(
+        val getCountries = when (navArgs.flow) {
+            is EditAddressFlow.EditDestinationAddress -> getAllCountries()
+            is EditAddressFlow.EditOriginAddress -> getAcceptedOriginCountries()
+        }
+        getCountries.fold(
             onSuccess = {
                 countriesState.value = LocationState.Loaded(it)
                 country.value = findLocationByCode(country.value.code, countriesState.value)
@@ -265,15 +275,24 @@ class WooShippingEditAddressViewModel @Inject constructor(
         country.mapLatest { country -> getStatesByCountryCode(country.code) }
             .collectLatest { states ->
                 statesState.value = LocationState.Loaded(states)
-                rawState = ""
-                if (states.isNotEmpty()) {
-                    findLocationByCode(selectedState.value.code, statesState.value)
-                        .takeIf { it != Location.EMPTY }
-                        ?.let { selectedState.value = it } ?: run {
+                val stateCode = if (country.value.code == currentAddress.value.country.code) {
+                    currentAddress.value.state.codeOrRaw
+                } else {
+                    ""
+                }
+                when {
+                    states.isNotEmpty() && stateCode.isNotEmpty() -> {
+                        selectedState.value = findLocationByCode(stateCode, statesState.value)
+                            .takeIf { it != Location.EMPTY } ?: states.first()
+                        rawState = ""
+                    }
+                    states.isNotEmpty() -> {
                         selectedState.value = states.first()
                     }
-                } else {
-                    selectedState.value = Location.EMPTY
+                    else -> {
+                        rawState = stateCode
+                        selectedState.value = Location.EMPTY
+                    }
                 }
             }
     }

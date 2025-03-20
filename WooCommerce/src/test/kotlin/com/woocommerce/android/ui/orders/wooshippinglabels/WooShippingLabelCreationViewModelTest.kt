@@ -4,6 +4,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Address
+import com.woocommerce.android.model.AmbiguousLocation
+import com.woocommerce.android.model.Location
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
@@ -14,6 +16,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreat
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.WooShippingViewState
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.WooShippingViewState.DataState
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.AddressNotification
+import com.woocommerce.android.ui.orders.wooshippinglabels.address.AddressValidationHelper
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.GetAddressNotification
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.destination.VerifyDestinationAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.origin.ObserveOriginAddresses
@@ -50,6 +53,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
 import java.util.Date
@@ -67,7 +71,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
             title = "Product $it",
             price = BigDecimal(it),
             quantity = it.toFloat(),
-            weight = it.toFloat(),
+            weight = it + 0.01f,
             currency = "USD",
             imageUrl = "https://example.com/image.jpg",
             width = it.toFloat(),
@@ -128,6 +132,12 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     private val defaultPackageName = "customPackage"
 
     private val defaultShipToAddress = Address.EMPTY.copy(
+        firstName = "first name",
+        lastName = "last name",
+        country = Location("US", "US"),
+        state = AmbiguousLocation.Raw("AA"),
+        city = "city",
+        postcode = "postcode",
         address1 = "1278 24st Perito AVE"
     )
     private val defaultStoreOptions = StoreOptionsModel(
@@ -216,6 +226,10 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         on { invoke(any()) } doReturn true
     }
 
+    private val addressValidationHelper: AddressValidationHelper = mock {
+        on { canFetchShippingRates(any()) } doReturn true
+    }
+
     private val observeOriginAddresses: ObserveOriginAddresses = mock()
     private val getShippingRates: GetShippingRates = mock()
     private val purchaseShippingLabel: PurchaseShippingLabel = mock()
@@ -237,7 +251,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
             observeStoreOptions = observeStoreOptions,
             fetchAccountSettings = mock(),
             shouldRequireCustoms = shouldRequireCustomsForm,
-            addressValidationHelper = mock(),
+            addressValidationHelper = addressValidationHelper,
             verifyDestinationAddress = verifyDestinationAddress,
             getAddressNotification = getAddressNotification,
             savedState = savedState
@@ -374,6 +388,57 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         assert(currentViewState is DataState)
         val dataState = currentViewState as DataState
         assertIs<WooShippingLabelCreationViewModel.ShippingRatesState.DataState>(dataState.shippingRates)
+    }
+
+    @Test
+    fun `when destination address is missing then display missing destination error`() = testBlocking {
+        val order = OrderTestUtils.generateTestOrder(orderId = orderId).copy(
+            shippingLines = defaultShippingLines,
+            customer = Order.Customer(
+                billingAddress = defaultShipToAddress,
+                shippingAddress = defaultShipToAddress
+            )
+        )
+        whenever(orderDetailRepository.getOrderById(any())) doReturn order
+        whenever(getShippableItems(any())) doReturn defaultShippableItems
+        whenever(observeOriginAddresses()) doReturn flowOf(defaultOriginAddresses)
+        whenever(addressValidationHelper.canFetchShippingRates(any())) doReturn false
+        whenever(observeStoreOptions()) doReturn flowOf(defaultStoreOptions)
+
+        createViewModel()
+        sut.onPackageSelected(defaultPackageData)
+
+        advanceUntilIdle()
+
+        val currentViewState = sut.viewState.value
+        assert(currentViewState is DataState)
+        val dataState = currentViewState as DataState
+        assertIs<WooShippingLabelCreationViewModel.ShippingRatesState.MissingInfo>(dataState.shippingRates)
+    }
+
+    @Test
+    fun `when weight is zero then display no weight error`() = testBlocking {
+        val order = OrderTestUtils.generateTestOrder(orderId = orderId).copy(
+            shippingLines = defaultShippingLines,
+            customer = Order.Customer(
+                billingAddress = defaultShipToAddress,
+                shippingAddress = defaultShipToAddress
+            )
+        )
+        whenever(orderDetailRepository.getOrderById(any())) doReturn order
+        whenever(getShippableItems(any())) doReturn defaultShippableItems.map { it.copy(weight = 0f) }
+        whenever(observeOriginAddresses()) doReturn flowOf(defaultOriginAddresses)
+        whenever(observeStoreOptions()) doReturn flowOf(defaultStoreOptions)
+
+        createViewModel()
+        sut.onPackageSelected(defaultPackageData.copy(weight = "0"))
+
+        advanceUntilIdle()
+
+        val currentViewState = sut.viewState.value
+        assert(currentViewState is DataState)
+        val dataState = currentViewState as DataState
+        assertIs<WooShippingLabelCreationViewModel.ShippingRatesState.MissingInfo>(dataState.shippingRates)
     }
 
     @Test
@@ -634,30 +699,31 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `CustomState is ItnMissing when shouldRequireCustomsForm returns true and ShippingLines exceeds the 2500 limit`() = testBlocking {
-        var currentViewState: WooShippingViewState? = null
-        val order = OrderTestUtils.generateTestOrder(orderId = orderId).copy(
-            shippingLines = defaultShippingLines
-        )
-        whenever(orderDetailRepository.getOrderById(any())) doReturn order
-        whenever(observeOriginAddresses()) doReturn flowOf(defaultOriginAddresses)
-        whenever(observeStoreOptions()) doReturn flowOf(defaultStoreOptions)
-        whenever(shouldRequireCustomsForm.invoke(any())) doReturn true
-        whenever(getShippableItems(any())) doReturn defaultShippableItems.map { it.copy(price = BigDecimal(10000)) }
+    fun `CustomState is ItnMissing when shouldRequireCustomsForm returns true and ShippingLines exceeds the 2500 limit`() =
+        testBlocking {
+            var currentViewState: WooShippingViewState? = null
+            val order = OrderTestUtils.generateTestOrder(orderId = orderId).copy(
+                shippingLines = defaultShippingLines
+            )
+            whenever(orderDetailRepository.getOrderById(any())) doReturn order
+            whenever(observeOriginAddresses()) doReturn flowOf(defaultOriginAddresses)
+            whenever(observeStoreOptions()) doReturn flowOf(defaultStoreOptions)
+            whenever(shouldRequireCustomsForm.invoke(any())) doReturn true
+            whenever(getShippableItems(any())) doReturn defaultShippableItems.map { it.copy(price = BigDecimal(10000)) }
 
-        createViewModel()
+            createViewModel()
 
-        advanceUntilIdle()
+            advanceUntilIdle()
 
-        sut.viewState.asLiveData().observeForever {
-            currentViewState = it
+            sut.viewState.asLiveData().observeForever {
+                currentViewState = it
+            }
+
+            assertThat(currentViewState).isInstanceOf(DataState::class.java)
+            val dataState = currentViewState as DataState
+
+            assertThat(dataState.customsState).isEqualTo(CustomsState.ItnMissing)
         }
-
-        assertThat(currentViewState).isInstanceOf(DataState::class.java)
-        val dataState = currentViewState as DataState
-
-        assertThat(dataState.customsState).isEqualTo(CustomsState.ItnMissing)
-    }
 
     @Test
     fun `ItnMissing is dismissed when onDismissItnNotice is called`() = testBlocking {
@@ -942,34 +1008,69 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when an address notifications is displayed then dismissAddressNotification should dismiss the notification`() = testBlocking {
+    fun `when an address notifications is displayed then dismissAddressNotification should dismiss the notification`() =
+        testBlocking {
+            val order = OrderTestUtils.generateTestOrder(orderId = orderId)
+            val notification = AddressNotification(
+                isSuccess = false,
+                message = R.string.woo_shipping_address_notification_destination_missing,
+                isDestinationNotification = false
+            )
+
+            whenever(orderDetailRepository.getOrderById(any())) doReturn order
+            whenever(getShippableItems(any())) doReturn defaultShippableItems
+            whenever(observeOriginAddresses()) doReturn flowOf(defaultOriginAddresses)
+            whenever(observeStoreOptions()) doReturn flowOf(defaultStoreOptions)
+            whenever(getAddressNotification(any(), anyOrNull())) doReturn notification
+
+            createViewModel()
+
+            advanceUntilIdle()
+
+            var currentViewState = sut.viewState.value
+            assertThat(currentViewState).isInstanceOf(DataState::class.java)
+            var dataState = currentViewState as DataState
+            assertThat(dataState.uiState.addressNotification).isEqualTo(notification)
+
+            sut.onDismissAddressNotification()
+
+            currentViewState = sut.viewState.value
+            assertThat(currentViewState).isInstanceOf(DataState::class.java)
+            dataState = currentViewState as DataState
+            assertThat(dataState.uiState.addressNotification).isNull()
+        }
+
+    @Test
+    fun `when the destination address is missing then verify endpoint should not be called`() = testBlocking {
         val order = OrderTestUtils.generateTestOrder(orderId = orderId)
-        val notification = AddressNotification(
-            isSuccess = false,
-            message = R.string.woo_shipping_address_notification_destination_missing,
-            isDestinationNotification = false
-        )
 
         whenever(orderDetailRepository.getOrderById(any())) doReturn order
         whenever(getShippableItems(any())) doReturn defaultShippableItems
         whenever(observeOriginAddresses()) doReturn flowOf(defaultOriginAddresses)
         whenever(observeStoreOptions()) doReturn flowOf(defaultStoreOptions)
-        whenever(getAddressNotification(any(), anyOrNull())) doReturn notification
+        whenever(addressValidationHelper.isMissingDestinationAddress(any())) doReturn true
 
         createViewModel()
 
         advanceUntilIdle()
 
-        var currentViewState = sut.viewState.value
-        assertThat(currentViewState).isInstanceOf(DataState::class.java)
-        var dataState = currentViewState as DataState
-        assertThat(dataState.uiState.addressNotification).isEqualTo(notification)
+        verifyNoInteractions(verifyDestinationAddress)
+    }
 
-        sut.onDismissAddressNotification()
+    @Test
+    fun `when the destination address exists then verify endpoint should be called`() = testBlocking {
+        val order = OrderTestUtils.generateTestOrder(orderId = orderId)
 
-        currentViewState = sut.viewState.value
-        assertThat(currentViewState).isInstanceOf(DataState::class.java)
-        dataState = currentViewState as DataState
-        assertThat(dataState.uiState.addressNotification).isNull()
+        whenever(orderDetailRepository.getOrderById(any())) doReturn order
+        whenever(getShippableItems(any())) doReturn defaultShippableItems
+        whenever(observeOriginAddresses()) doReturn flowOf(defaultOriginAddresses)
+        whenever(observeStoreOptions()) doReturn flowOf(defaultStoreOptions)
+        whenever(addressValidationHelper.isMissingDestinationAddress(any())) doReturn false
+
+        createViewModel()
+
+        advanceUntilIdle()
+
+        verify(verifyDestinationAddress).invoke(orderId)
     }
 }

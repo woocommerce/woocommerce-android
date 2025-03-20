@@ -167,7 +167,7 @@ class WooShippingLabelRestClient @Inject constructor(
             site = site,
             path = url,
             body = mapOf(
-                "address" to address,
+                "address" to address.copy(isVerified = true),
                 "isVerified" to true // We always verify the address before saving it
             ),
             clazz = UpdateAddressResponseDTO::class.java,
