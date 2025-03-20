@@ -237,7 +237,7 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach { 
 tasks.withType(JavaCompile).configureEach { task ->
     // Ensure this only runs for the specific task you want
     task.doFirst {
-        def inputFile = task.project.file("build/task-inputs-${task.name}.txt")
+        def inputFile = task.project.file("build/${project.name}-task-inputs-${task.name}.txt")
         inputFile.text = "Task: ${task.name}\nInputs:\n"
 
         // Save input files with relative path

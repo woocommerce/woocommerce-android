@@ -1,19 +1,17 @@
-
 // Only run build scan on CI builds.
-if (gradle.ext.isCi) {
-    develocity {
-        buildScan {
-            termsOfUseUrl = 'https://gradle.com/terms-of-service'
-            termsOfUseAgree = 'yes'
+develocity {
+    buildScan {
+        termsOfUseUrl = 'https://gradle.com/terms-of-service'
+        termsOfUseAgree = 'yes'
+        if (gradle.ext.isCi) {
             tag 'CI'
-            publishing.onlyIf { true }
             uploadInBackground = false
-        }
-    }
-} else {
-    develocity {
-        buildScan {
-            publishing.onlyIf { false }
+        } else {
+            obfuscation {
+                username { username -> username.digest('SHA-1') }
+                hostname { _ -> "" }
+                ipAddresses { addresses -> addresses.collect { address -> "0.0.0.0" } }
+            }
         }
     }
 }
