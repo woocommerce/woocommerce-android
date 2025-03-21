@@ -27,6 +27,16 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.lifecycle.viewmodel.savedstate)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.fragment.ktx)
+    implementation(libs.google.dagger.compiler)
+    implementation(libs.google.dagger.hilt.compiler)
+    implementation(libs.google.dagger.hilt.android.main)
+    implementation(libs.google.dagger.hilt.android.testing)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.compose.ui.tooling.main)
+
     testImplementation(libs.junit)
     testImplementation(libs.konsist)
 }
