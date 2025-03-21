@@ -1,0 +1,37 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
+plugins {
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.dependency.analysis)
+}
+
+kotlin {
+    sourceCompatibility = JvmTarget.fromTarget(libs.versions.java.get()).target
+    targetCompatibility = JvmTarget.fromTarget(libs.versions.java.get()).target
+}
+
+android {
+    namespace 'com.woocommerce.android.konsist.tests'
+
+    compileOptions {
+        sourceCompatibility libs.versions.java.get()
+        targetCompatibility libs.versions.java.get()
+    }
+
+    defaultConfig {
+        minSdkVersion gradle.ext.minSdkVersion
+        targetSdkVersion gradle.ext.targetSdkVersion
+        compileSdk gradle.ext.compileSdkVersion
+    }
+}
+
+dependencies {
+    testImplementation(libs.junit)
+    testImplementation(libs.konsist)
+}
+
+// See: https://docs.konsist.lemonappdev.com/advanced/isolate-konsist-tests#solution-1-module-is-always-out-of-date
+tasks.withType(Test).configureEach {
+    outputs.upToDateWhen { false }
+}

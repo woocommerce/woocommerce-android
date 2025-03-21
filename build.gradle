@@ -82,6 +82,15 @@ dependencies {
     detektPlugins project(':libs:detektrules')
 }
 
+/* KONSIST */
+
+tasks.register("konsist") {
+    group = "verification"
+    description = "Runs Konsist static code analysis."
+
+    dependsOn(':libs:konsist-tests:testDebugUnitTest')
+}
+
 /* OTHER */
 
 tasks.register('clean', Delete) {

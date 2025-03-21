@@ -81,6 +81,7 @@ jna = '5.5.0@aar'
 json-path = '2.9.0'
 junit = '4.13.2'
 lottie = '5.2.0'
+konsist = '0.17.3'
 kotlin = '2.1.10'
 kotlinx-coroutines = '1.8.1'
 ksp = '2.1.10-1.0.29'
@@ -242,6 +243,7 @@ jna = { module = "net.java.dev.jna:jna", version.ref = "jna" }
 json-path = { group = "com.jayway.jsonpath", name = "json-path", version.ref = "json-path" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 lottie-compose = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottie" }
+konsist = { module = "com.lemonappdev:konsist", version.ref = "konsist" }
 kotlin-test-junit = { group = "org.jetbrains.kotlin", name = "kotlin-test-junit", version.ref = "kotlin" }
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
