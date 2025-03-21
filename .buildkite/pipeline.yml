@@ -34,6 +34,13 @@ steps:
         agents:
           queue: "linter"
 
+      - label: "konsist"
+        command: ./gradlew konsist
+        plugins: [$CI_TOOLKIT]
+        artifact_paths:
+          - "**/build/reports/tests/**/*"
+          - "**/build/test-results/*/*.xml"
+
       - label: "detekt"
         command: ./gradlew detektAll
         plugins: [$CI_TOOLKIT]

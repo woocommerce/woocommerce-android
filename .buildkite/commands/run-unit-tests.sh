@@ -10,7 +10,7 @@ bundle exec fastlane run configure_apply
 
 echo "--- 🧪 Testing"
 set +e
-./gradlew testJalapenoDebugUnitTest testDebugUnitTest
+./gradlew testJalapenoDebugUnitTest testDebugUnitTest -x libs:konsist-test:testDebugUnitTest
 TESTS_EXIT_STATUS=$?
 set -e
 
