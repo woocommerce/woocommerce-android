@@ -59,8 +59,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
-import com.woocommerce.android.ui.woopos.home.items.WooPosItem.SimpleProduct
-import com.woocommerce.android.ui.woopos.home.items.WooPosItem.VariableProduct
+import com.woocommerce.android.ui.woopos.home.items.WooPosItem.Product
 import com.woocommerce.android.ui.woopos.home.items.WooPosItem.Variation
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState.Content.BannerState
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -85,7 +84,7 @@ fun WooPosItemList(
             key = { product -> product.id }
         ) { product ->
             when (product) {
-                is SimpleProduct -> {
+                is Product.Simple -> {
                     ProductItem(
                         modifier = Modifier.animateItem(),
                         item = product,
@@ -93,7 +92,7 @@ fun WooPosItemList(
                     )
                 }
 
-                is VariableProduct -> {
+                is Product.Variable -> {
                     VariableProductItem(
                         modifier = Modifier.animateItem(),
                         item = product,
@@ -141,7 +140,7 @@ fun WooPosItemList(
 @Composable
 private fun ProductItem(
     modifier: Modifier = Modifier,
-    item: SimpleProduct,
+    item: Product.Simple,
     onItemClicked: (item: WooPosItem) -> Unit
 ) {
     val itemContentDescription = stringResource(
@@ -149,13 +148,13 @@ private fun ProductItem(
         item.name,
         item.price
     )
-    ItemCard(modifier, itemContentDescription, onItemClicked, item)
+    WooPosItemCard(modifier, itemContentDescription, onItemClicked, item)
 }
 
 @Composable
 private fun VariableProductItem(
     modifier: Modifier = Modifier,
-    item: VariableProduct,
+    item: Product.Variable,
     onItemClicked: (item: WooPosItem) -> Unit
 ) {
     val itemContentDescription = stringResource(
@@ -163,7 +162,7 @@ private fun VariableProductItem(
         item.name,
         item.price
     )
-    ItemCard(modifier, itemContentDescription, onItemClicked, item)
+    WooPosItemCard(modifier, itemContentDescription, onItemClicked, item)
 }
 
 @Composable
@@ -177,11 +176,11 @@ private fun VariationItem(
         item.name,
         item.price
     )
-    ItemCard(modifier, itemContentDescription, onItemClicked, item)
+    WooPosItemCard(modifier, itemContentDescription, onItemClicked, item)
 }
 
 @Composable
-private fun ItemCard(
+fun WooPosItemCard(
     modifier: Modifier,
     itemContentDescription: String,
     onItemClicked: (item: WooPosItem) -> Unit,
@@ -232,8 +231,8 @@ private fun ProductInfo(item: WooPosItem) {
         )
         Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
         when (item) {
-            is SimpleProduct -> SimpleProductDetails(item = item)
-            is VariableProduct -> VariableProductDetails()
+            is Product.Simple -> SimpleProductDetails(item = item)
+            is Product.Variable -> VariableProductDetails()
             is Variation -> VariationProductDetails(item = item)
         }
     }
@@ -242,8 +241,8 @@ private fun ProductInfo(item: WooPosItem) {
 @Composable
 private fun ProductImage(item: WooPosItem) {
     val imageUrl = when (item) {
-        is SimpleProduct -> item.imageUrl
-        is VariableProduct -> item.imageUrl
+        is Product.Simple -> item.imageUrl
+        is Product.Variable -> item.imageUrl
         is Variation -> item.imageUrl
     }
     Box(
@@ -270,7 +269,7 @@ private fun ProductImage(item: WooPosItem) {
 }
 
 @Composable
-private fun SimpleProductDetails(item: SimpleProduct) {
+private fun SimpleProductDetails(item: Product.Simple) {
     WooPosText(
         text = item.price,
         style = WooPosTypography.BodyLarge,
@@ -441,14 +440,14 @@ fun ItemListPreview() {
             WooPosItemsViewState.Content(
                 WooPosItemsViewState.Content.SearchState.Hidden,
                 listOf(
-                    SimpleProduct(
+                    Product.Simple(
                         id = 1,
                         name = "Simple Product Simple Product Simple" +
                             " Product Simple Product Simple Product Simple Product Simple Product",
                         price = "$10.00",
                         imageUrl = ""
                     ),
-                    VariableProduct(id = 2, name = "Variable Product", price = "$10.00", "", 1, listOf()),
+                    Product.Variable(id = 2, name = "Variable Product", price = "$10.00", "", 1, listOf()),
                     Variation(3, "Variation", 0, "$10", ""),
                 ),
                 BannerState(

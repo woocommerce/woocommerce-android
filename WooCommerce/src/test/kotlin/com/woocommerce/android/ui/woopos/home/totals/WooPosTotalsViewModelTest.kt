@@ -13,7 +13,6 @@ import com.woocommerce.android.cardreader.payments.CardPaymentStatus
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
-import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderInteracRefundErrorMapper
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderInteracRefundableChecker
@@ -105,7 +104,6 @@ class WooPosTotalsViewModelTest {
     private val cardReaderPaymentOrderHelper: CardReaderPaymentOrderHelper = mock()
     private val paymentReceiptHelper: PaymentReceiptHelper = mock()
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker = mock()
-    private val cardReaderConfigProvider: CardReaderCountryConfigProvider = mock()
     private val paymentReceiptShare: PaymentReceiptShare = mock()
     private val uiStringParser: UiStringParser = mock()
     private val paymentControllerFactory = WooPosCardReaderPaymentControllerFactory(
@@ -127,7 +125,6 @@ class WooPosTotalsViewModelTest {
         cardReaderPaymentOrderHelper = cardReaderPaymentOrderHelper,
         paymentReceiptHelper = paymentReceiptHelper,
         cardReaderOnboardingChecker = cardReaderOnboardingChecker,
-        cardReaderConfigProvider = cardReaderConfigProvider,
         paymentReceiptShare = paymentReceiptShare,
     )
 

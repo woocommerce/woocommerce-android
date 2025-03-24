@@ -1,5 +1,8 @@
 package com.woocommerce.android.apifaker.ui.home
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -13,12 +16,16 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Card
 import androidx.compose.material.DismissDirection
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
+import androidx.compose.material.SnackbarHost
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.SwipeToDismiss
 import androidx.compose.material.Switch
 import androidx.compose.material.Text
@@ -27,9 +34,15 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.rememberDismissState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -50,14 +63,18 @@ import com.woocommerce.android.apifaker.ui.Screen
 internal fun HomeScreen(
     viewModel: HomeViewModel,
     navController: NavController,
+    snackbarHostState: SnackbarHostState,
     onExit: () -> Unit
 ) {
     HomeScreen(
         endpoints = viewModel.endpoints.collectAsStateWithLifecycle().value,
         isEnabled = viewModel.isEnabled.collectAsState(initial = false).value,
         navController = navController,
+        snackbarHostState = snackbarHostState,
         onRemoveRequest = viewModel::onRemoveRequest,
         onMockingToggleChanged = viewModel::onMockingToggleChanged,
+        onExportEndpoints = viewModel::onExportEndpoints,
+        onImportEndpoints = viewModel::onImportEndpoints,
         onExit = onExit
     )
 }
@@ -67,8 +84,11 @@ private fun HomeScreen(
     endpoints: List<MockedEndpoint>,
     isEnabled: Boolean,
     navController: NavController,
+    snackbarHostState: SnackbarHostState,
     onRemoveRequest: (Request) -> Unit,
     onMockingToggleChanged: (Boolean) -> Unit,
+    onExportEndpoints: (Uri) -> Unit,
+    onImportEndpoints: (Uri) -> Unit,
     onExit: () -> Unit
 ) {
     Scaffold(
@@ -85,10 +105,19 @@ private fun HomeScreen(
                 },
                 actions = {
                     Switch(checked = isEnabled, onCheckedChange = onMockingToggleChanged)
+
+                    TopMenu(
+                        hasEndpoints = endpoints.isNotEmpty(),
+                        onExportEndpoints = onExportEndpoints,
+                        onImportEndpoints = onImportEndpoints
+                    )
                 },
                 backgroundColor = MaterialTheme.colors.surface,
                 elevation = 4.dp
             )
+        },
+        snackbarHost = {
+            SnackbarHost(snackbarHostState)
         }
     ) { paddingValues ->
         Box(
@@ -121,6 +150,56 @@ private fun HomeScreen(
                 Icon(imageVector = Icons.Filled.Add, contentDescription = "Add endpoint")
             }
         }
+    }
+}
+
+@Composable
+private fun TopMenu(
+    hasEndpoints: Boolean,
+    onExportEndpoints: (Uri) -> Unit,
+    onImportEndpoints: (Uri) -> Unit
+) {
+    var expanded by rememberSaveable { mutableStateOf(false) }
+
+    @Composable
+    fun ExportButton() {
+        val launcher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/json")) {
+            expanded = false
+            it?.let { onExportEndpoints(it) }
+        }
+
+        DropdownMenuItem(onClick = { launcher.launch("endpoints.json") }) {
+            Text("Export")
+        }
+    }
+
+    @Composable
+    fun ImportButton() {
+        val launcher = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) {
+            expanded = false
+            it?.let { onImportEndpoints(it) }
+        }
+
+        DropdownMenuItem(onClick = { launcher.launch(arrayOf("application/json")) }) {
+            Text("Import")
+        }
+    }
+
+    IconButton(onClick = { expanded = !expanded }) {
+        Icon(
+            Icons.Default.MoreVert,
+            contentDescription = "More"
+        )
+    }
+
+    DropdownMenu(
+        expanded = expanded,
+        onDismissRequest = { expanded = false }
+    ) {
+        if (hasEndpoints) {
+            ExportButton()
+        }
+        ImportButton()
     }
 }
 
@@ -225,9 +304,12 @@ private fun HomeScreenPreview() {
             )
         ),
         isEnabled = true,
+        snackbarHostState = remember { SnackbarHostState() },
         navController = rememberNavController(),
         onRemoveRequest = {},
         onMockingToggleChanged = {},
+        onExportEndpoints = {},
+        onImportEndpoints = {},
         onExit = {}
     )
 }

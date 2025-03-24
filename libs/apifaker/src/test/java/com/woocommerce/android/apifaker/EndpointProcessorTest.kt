@@ -37,7 +37,7 @@ class EndpointProcessorTest {
         verify(endpointDaoMock).queryEndpoint(
             type = ApiType.WPCom,
             httpMethod = HttpMethod.GET,
-            path = "/v1.1/me",
+            path = "/rest/v1.1/me",
             body = ""
         )
     }
@@ -55,7 +55,7 @@ class EndpointProcessorTest {
         verify(endpointDaoMock).queryEndpoint(
             type = ApiType.WPCom,
             httpMethod = HttpMethod.POST,
-            path = "/v1.1/me",
+            path = "/rest/v1.1/me",
             body = body
         )
     }

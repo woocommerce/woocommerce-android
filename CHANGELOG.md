@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 22.0
+We've streamlined your experience with improved Jetpack integration for seamless setup. Payment processing now shows low battery alerts and handles minimum transaction amounts better. We've enhanced the order management system by fixing redundant network requests and improving printing instructions visibility. Dark mode icon colors on notification banners have been fixed, and we've boosted accessibility for payment status changes in POS. Tablet users will enjoy smoother animations during payment collection.
+
 ## 21.9
 We’ve squashed a pesky bug that could cause a crash when adding a new payment card in the Blaze campaign form. This update ensures a smoother and more reliable experience—enjoy hassle-free payments with WooCommerce! 🚀
 

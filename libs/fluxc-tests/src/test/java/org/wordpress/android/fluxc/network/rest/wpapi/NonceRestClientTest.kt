@@ -76,6 +76,7 @@ class NonceRestClientTest {
         val loginResponse = WPAPIResponse.Success(
             """
             <html>
+              <script>${NonceRestClient.INVALID_CREDENTIAL_HTML_PATTERN}</script>
               <head>
                     <div id="login_error">
                         <strong>Error:</strong> The password you entered for the username <strong>demo</strong> is incorrect. <a href="link/">Lost your password?</a><br>
@@ -89,8 +90,30 @@ class NonceRestClientTest {
         val actual = subject.requestNonce(site)
 
         assertIs<Nonce.FailedRequest>(actual)
-        assertEquals(Nonce.CookieNonceErrorType.NOT_AUTHENTICATED, actual.type)
+        assertEquals(Nonce.CookieNonceErrorType.INVALID_CREDENTIALS, actual.type)
         assertEquals("Error: The password you entered for the username demo is incorrect.", actual.errorMessage)
+    }
+
+    @Test
+    fun `when error message mentions captcha, treat error as invalid response`() = test {
+        @Suppress("MaxLineLength")
+        val loginResponse = WPAPIResponse.Success(
+            """
+            <html>
+              <script>${NonceRestClient.INVALID_CREDENTIAL_HTML_PATTERN}</script>
+              <head>
+                    <div id="login_error">Please enter the captcha to continue</div>
+              </head>
+            </html>
+        """.trimIndent()
+        )
+        givenLoginResponse(loginResponse)
+
+        val actual = subject.requestNonce(site)
+
+        assertIs<Nonce.FailedRequest>(actual)
+        assertEquals(Nonce.CookieNonceErrorType.INVALID_RESPONSE, actual.type)
+        assertEquals("Please enter the captcha to continue", actual.errorMessage)
     }
 
     @Test

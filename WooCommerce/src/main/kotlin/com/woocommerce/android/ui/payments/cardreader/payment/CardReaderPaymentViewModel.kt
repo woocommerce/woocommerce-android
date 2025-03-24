@@ -11,7 +11,6 @@ import com.woocommerce.android.cardreader.payments.PaymentData
 import com.woocommerce.android.di.StoreManagementMode
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
-import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentController
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentEvent
@@ -55,7 +54,6 @@ class CardReaderPaymentViewModel @Inject constructor(
     cardReaderPaymentOrderHelper: CardReaderPaymentOrderHelper,
     paymentReceiptHelper: PaymentReceiptHelper,
     cardReaderOnboardingChecker: CardReaderOnboardingChecker,
-    cardReaderConfigProvider: CardReaderCountryConfigProvider,
     paymentReceiptShare: PaymentReceiptShare,
     paymentStateMapper: CardReaderPaymentStateToViewStateMapper,
 ) : ScopedViewModel(savedState) {
@@ -86,7 +84,6 @@ class CardReaderPaymentViewModel @Inject constructor(
         cardReaderPaymentOrderHelper = cardReaderPaymentOrderHelper,
         paymentReceiptHelper = paymentReceiptHelper,
         cardReaderOnboardingChecker = cardReaderOnboardingChecker,
-        cardReaderConfigProvider = cardReaderConfigProvider,
         paymentReceiptShare = paymentReceiptShare,
         paymentOrRefund = arguments.paymentOrRefund,
         cardReaderType = arguments.cardReaderType,

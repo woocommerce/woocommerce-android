@@ -332,8 +332,8 @@
     Shipping labels
     -->
 
-    <color name="woo_shipping_label_success">@color/woo_green_50</color>
+    <color name="woo_shipping_label_success">@color/woo_green_60</color>
     <color name="woo_shipping_label_success_surface">@color/woo_green_0</color>
-    <color name="woo_shipping_label_error">@color/woo_red_50</color>
-    <color name="woo_shipping_label_error_surface">@color/woo_red_5</color>
+    <color name="woo_shipping_label_error">@color/woo_red_60</color>
+    <color name="woo_shipping_label_error_surface">@color/woo_red_0</color>
 </resources>

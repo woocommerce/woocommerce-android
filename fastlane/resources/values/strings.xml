@@ -49,6 +49,7 @@
     <string name="untitled">Untitled</string>
     <string name="dialog_ok">OK</string>
     <string name="cancel">Cancel</string>
+    <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="cancel_anyway">Cancel anyway</string>
     <string name="keep_editing">Keep editing</string>
@@ -309,6 +310,10 @@
     <string name="login_jetpack_connect">Connect Jetpack</string>
     <string name="login_jetpack_installation_enter_site_credentials">Log in to &lt;b&gt;%1$s&lt;/b&gt; with your store credentials to install Jetpack.</string>
     <string name="login_jetpack_connection_enter_site_credentials">Log in to &lt;b&gt;%1$s&lt;/b&gt; with your store credentials to connect Jetpack.</string>
+    <string name="login_jetpack_user_already_connected_dialog_title">Account already connected</string>
+    <string name="login_jetpack_user_already_connected_dialog_message">This WordPress admin account is already connected to a different WordPress.com account.\nContinuing with that account will log you out of your current account.</string>
+    <string name="login_jetpack_user_already_connected_dialog_proceed_button">Proceed</string>
+    <string name="login_jetpack_user_already_connected_dialog_cancel_button">Cancel</string>
     <string name="login_jetpack_steps_installing">Installing Jetpack</string>
     <string name="login_jetpack_steps_activating">Activating</string>
     <string name="login_jetpack_steps_authorizing">Connect store to Jetpack</string>
@@ -338,7 +343,7 @@
     <string name="login_jetpack_installation_retry_activating">Try activating again</string>
     <string name="login_jetpack_installation_retry_authorizing">Try authorising again</string>
     <string name="login_jetpack_installation_cancel">Cancel installation</string>
-    <string name="login_jetpack_installation_error_forbidden_suggestion">Please contact your shop manager or administrator for help.</string>
+    <string name="login_jetpack_installation_error_forbidden_suggestion">Please contact your administrator for help.</string>
     <string name="login_jetpack_installation_error_connection_permission_message">You don’t have permission to connect to Jetpack on this store</string>
     <string name="login_jetpack_installation_connection_dismissed">Jetpack is installed, but not connected.</string>
     <string name="login_jetpack_installation_connection_dismissed_explanation">Try connecting again to access your store.</string>
@@ -351,7 +356,7 @@
     <string name="login_jetpack_installation_enter_wpcom_password">Enter the password of your WordPress.com account to install Jetpack</string>
     <string name="login_jetpack_installation_continue_magic_link">Or continue using Magic Link</string>
     <string name="login_jetpack_installation_magic_link_failure">An error occurred while fetching your website, please retry!</string>
-    <string name="login_site_credentials_invalid_response">Login failed with an unexpected response from your site. We are working on fixing this issue.</string>
+    <string name="login_site_credentials_invalid_response">Login failed with an unexpected response from your site.</string>
     <string name="login_site_credentials_custom_login_url">Unable to login because we cannot identify your store\'s login URL</string>
     <string name="login_site_credentials_custom_admin_url">Unable to login because we cannot identify your store\'s admin URL</string>
     <string name="login_site_credentials_http_error">Login failed with status code %1$s</string>
@@ -1797,6 +1802,7 @@
     <string name="card_reader_connect_missing_bluetooth_permissions_header">Missing required nearby devices permission</string>
     <string name="card_reader_connect_missing_bluetooth_permission_button">Open settings</string>
     <string name="card_reader_connect_learn_more">&lt;a href=\'\'&gt;Learn more&lt;/a&gt; about In-Person Payments</string>
+    <string name="card_reader_connect_failed_battery_low_hint">The reader battery is low. Please charge the reader and try again</string>
 
     <!--
         Card Reader Detail
@@ -4388,6 +4394,12 @@
     <string name="woopos_email_receipt_email_label">Type email</string>
     <string name="woopos_email_receipt_send_error">Error trying to send this email. Try again</string>
 
+    <string name="woopos_search_back_content_description">Back</string>
+    <string name="woopos_clear_back_content_description">Clear</string>
+    <string name="woopos_search_products">Search products…</string>
+    <string name="woopos_search_popular_items_title">Popular items</string>
+    <string name="woopos_search_recent_searches_title">Recent searches</string>
+
 
     <string name="customers_details_customer_section">Customer</string>
     <string name="customers_details_orders_section">Orders</string>
@@ -4460,6 +4472,10 @@
     <string name="woo_shipping_labels_package_creation_carrier_loading_error">We are unable to load carrier packages.</string>
     <string name="woo_shipping_labels_package_creation_saved_loading_error">We are unable to load saved packages.</string>
     <string name="woo_shipping_labels_package_creation_shipping_rates_loading_error">We are unable to load shipping rates.</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_destination">Add a destination address to get shipping rates</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_destination_desc">We need to know where this package is going before we can show the available shipping rates.</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_weight">Add shipment weight to get shipping rates</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_weight_desc">We need to know the shipment weight before we can show the available shipping rates.</string>
     <string name="woo_shipping_labels_package_creation_box_type">Box</string>
     <string name="woo_shipping_labels_package_creation_envelope_type">Envelope</string>
     <string name="woo_shipping_labels_package_creation_error_title">We couldn\'t save the package as template</string>
@@ -4487,7 +4503,8 @@
     <string name="woo_shipping_labels_customs_restriction_other">Other</string>
     <string name="woo_shipping_labels_customs_other_error_message">Type must not be empty</string>
     <string name="woo_shipping_labels_customs_itn_error_message">Invalid ITN format</string>
-    <string name="woo_shipping_labels_customs_itn_required_message">ITN must not be empty</string>
+    <string name="woo_shipping_labels_customs_itn_required_error">ITN is required</string>
+    <string name="woo_shipping_labels_customs_itn_required_message">For shipments over $2,500, you need to obtain a 14-digit AES ITN for U.S. export reporting verification.</string>
     <string name="woo_shipping_labels_customs_product_details_title">Product Details</string>
     <string name="woo_shipping_labels_customs_product_details_description">Description</string>
     <string name="woo_shipping_labels_customs_product_details_description_missing">Missing Description</string>
@@ -4525,10 +4542,18 @@
     <string name="woo_shipping_verifying_address_failed">The address verification failed. Please try again.</string>
     <string name="woo_shipping_updating_address_failed">We couldn\'t update your address. Please try again.</string>
 
+    <string name="woo_shipping_address_notification_destination_unverified">Destination address unverified</string>
+    <string name="woo_shipping_address_notification_origin_unverified">Origin address unverified</string>
+    <string name="woo_shipping_address_notification_destination_missing">Destination address missing</string>
+
+    <string name="woo_shipping_address_notification_destination_verified">Verified destination address</string>
+    <string name="woo_shipping_address_notification_origin_verified">Verified origin address</string>
+
 
     <string name="woo_shipping_address_validate_and_save">Validate &amp; Save</string>
     <string name="woo_shipping_address_missing_info_hint">Add missing information</string>
     <string name="woo_shipping_labels_loading_order_error">Unable to load the order</string>
+    <string name="woo_shipping_labels_purchase_error">We are unable to purchase the shipping label. Please try again.</string>
     <string name="woo_shipping_labels_loading_error">Unable to load data</string>
     <string name="woo_shipping_address_save_changes">Save changes</string>
 
@@ -4550,4 +4575,6 @@
     <string name="error_user_username_instead_of_email">Please log in using your WordPress.com username instead of your email address.</string>
     <string name="about_automattic_x_item_title">X</string>
     <string name="default_web_client_id" a8c-src-lib="module:login">placeholder</string>
+
+    <string name="woo_shipping_split_shipment">Split shipment</string>
 </resources>

@@ -12,7 +12,8 @@ sealed class WooPosItemsViewState(
         override val items: List<WooPosItem>,
         val bannerState: BannerState,
         override val paginationState: PaginationState = PaginationState.None,
-        override val reloadingProductsWithPullToRefresh: Boolean = false
+        override val reloadingProductsWithPullToRefresh: Boolean = false,
+        val couponsEnabled: Boolean = false,
     ) : WooPosItemsViewState(reloadingProductsWithPullToRefresh), ContentViewState {
         data class BannerState(
             val isBannerHiddenByUser: Boolean,

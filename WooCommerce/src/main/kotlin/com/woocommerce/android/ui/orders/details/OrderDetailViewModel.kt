@@ -104,7 +104,7 @@ class OrderDetailViewModel @Inject constructor(
     private val addonsRepository: AddonRepository,
     private val selectedSite: SelectedSite,
     private val productImageMap: ProductImageMap,
-    private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker,
+    private val cardPaymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker,
     private val paymentsFlowTracker: PaymentsFlowTracker,
     private val tracker: OrderDetailTracker,
     private val shippingLabelOnboardingRepository: ShippingLabelOnboardingRepository,
@@ -720,12 +720,11 @@ class OrderDetailViewModel @Inject constructor(
 
     private suspend fun updateOrderState() {
         val order = awaitOrder()
-        val isPaymentCollectable = isPaymentCollectable(order)
         val orderStatus = orderDetailRepository.getOrderStatus(order.status.value)
         viewState = viewState.copy(
             orderInfo = OrderDetailViewState.OrderInfo(
                 order = order,
-                isPaymentCollectableWithCardReader = isPaymentCollectable,
+                isPaymentCollectableWithCardReader = isPaymentCollectableWithCardReader(order),
                 receiptButtonStatus = if (paymentReceiptHelper.isReceiptAvailable(order.id) && order.isOrderPaid) {
                     OrderDetailViewState.ReceiptButtonStatus.Visible
                 } else {
@@ -739,7 +738,8 @@ class OrderDetailViewModel @Inject constructor(
         )
     }
 
-    private suspend fun isPaymentCollectable(order: Order) = paymentCollectibilityChecker.isCollectable(order)
+    private suspend fun isPaymentCollectableWithCardReader(order: Order) =
+        cardPaymentCollectibilityChecker.isCollectable(order)
 
     private fun loadOrderNotes() {
         launch {

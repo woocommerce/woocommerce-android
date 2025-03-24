@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-02-25 11:54:11+0000
+Translation-Revision-Date: 2025-03-11 14:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_address_update_message">Girilen adres güncelleniyor</string>
+    <string name="woo_shipping_address_update_title">Güncelleniyor</string>
+    <string name="woo_shipping_address_save_changes">Değişiklikleri kaydet</string>
+    <string name="woo_shipping_updating_address_failed">Adresinizi doğrulayamadık. Lütfen tekrar deneyin.</string>
+    <string name="woo_shipping_verifying_address_failed">Adres doğrulama başarısız. Lütfen tekrar deneyin.</string>
+    <string name="woo_shipping_address_unsaved_changes">Kaydedilmemiş değişiklikler</string>
+    <string name="woo_shipping_address_missing">Adres yok</string>
+    <string name="woo_shipping_edit_destination_address_title">Hedef Adresini Düzenleyin</string>
+    <string name="woo_shipping_labels_customs_product_details_origin_country_selection">Bir ülke seç</string>
+    <string name="woo_shipping_labels_customs_product_details_origin_country_missing">Ülke eksik</string>
+    <string name="woo_shipping_labels_customs_product_details_origin_country">Menşe ülke</string>
+    <string name="woo_shipping_labels_customs_product_details_value_required">Değer gerekli</string>
+    <string name="woo_shipping_labels_customs_product_details_weight_per_unit">Birim başına ağırlık</string>
+    <string name="woo_shipping_labels_customs_product_details_value_per_unit">Birim başına değer</string>
+    <string name="woo_shipping_labels_customs_product_details_tariff_missing">Eksik tarife numarası</string>
+    <string name="woo_shipping_labels_customs_product_details_tariff">HS tarife numarası</string>
+    <string name="woo_shipping_labels_customs_product_details_description_missing">Açıklama Eksik</string>
+    <string name="woo_shipping_labels_customs_product_details_description">Açıklama</string>
+    <string name="woo_shipping_labels_customs_product_details_title">Ürün Ayrıntıları</string>
+    <string name="woo_shipping_labels_customs_itn_required_message">ITN boş olmamalıdır</string>
+    <string name="woo_shipping_labels_customs_itn_error_message">Geçersiz ITN biçimi</string>
+    <string name="woo_shipping_labels_customs_other_error_message">Tür boş olmamalıdır</string>
+    <string name="woo_shipping_labels_package_creation_shipping_rates_loading_error">Gönderim ücretlerini yükleyemiyoruz.</string>
+    <string name="woo_shipping_labels_package_creation_saved_loading_error">Kaydedilen paketleri yükleyemiyoruz.</string>
+    <string name="woo_shipping_labels_package_creation_carrier_loading_error">Kargo paketlerini yükleyemiyoruz.</string>
     <string name="woo_shipping_confirm_submit_address_entered">Girilen Adresi Onayla</string>
     <string name="woo_shipping_confirm_submit_address_suggested">Önerilen Adresi Onayla</string>
     <string name="woo_shipping_confirm_address_suggested">Önerilen</string>

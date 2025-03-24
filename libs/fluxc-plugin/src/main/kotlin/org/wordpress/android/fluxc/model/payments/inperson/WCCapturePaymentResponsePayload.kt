@@ -30,6 +30,7 @@ class WCCapturePaymentError(
 enum class WCCapturePaymentErrorType {
     GENERIC_ERROR,
     PAYMENT_ALREADY_CAPTURED,
+    AMOUNT_TOO_SMALL,
     MISSING_ORDER,
     CAPTURE_ERROR,
     SERVER_ERROR,

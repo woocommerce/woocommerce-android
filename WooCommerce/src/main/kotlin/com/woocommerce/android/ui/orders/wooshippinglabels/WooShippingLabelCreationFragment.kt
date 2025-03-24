@@ -92,6 +92,7 @@ class WooShippingLabelCreationFragment : BaseFragment(), BackPressListener {
                     WooShippingLabelCreationFragmentDirections
                         .actionWooShippingLabelCreationFragmentToWooShippingLabelCustomsFormFragment(
                             shippableItems = event.shippableItems.toTypedArray(),
+                            destinationCountryCode = event.destinationCountryCode,
                             customsData = event.customData
                         ).let { findNavController().navigateSafely(it) }
                 }

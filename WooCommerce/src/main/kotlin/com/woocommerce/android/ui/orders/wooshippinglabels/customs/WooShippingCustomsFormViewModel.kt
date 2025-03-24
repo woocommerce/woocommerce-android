@@ -7,7 +7,8 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.Location
-import com.woocommerce.android.ui.orders.wooshippinglabels.address.origin.GetAcceptedOriginCountries
+import com.woocommerce.android.ui.orders.wooshippinglabels.address.GetAllCountries
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ShouldRequireITN
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.products.WooShippingCustomsProductUIModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -27,12 +28,14 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WooShippingCustomsFormViewModel @Inject constructor(
-    private val getAcceptedOriginCountries: GetAcceptedOriginCountries,
+    private val getAllCountries: GetAllCountries,
+    private val shouldRequireITN: ShouldRequireITN,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     private val itnRegex by lazy { ITN_REGEX_STRING.toRegex() }
 
     private val navArgs: WooShippingCustomsFormFragmentArgs by savedState.navArgs()
+    private val destinationCountryCode = navArgs.destinationCountryCode
 
     private val _viewState = savedState.getStateFlow(
         scope = viewModelScope,
@@ -44,11 +47,14 @@ class WooShippingCustomsFormViewModel @Inject constructor(
     private var itemIndexUnderCountrySelection: Int? = null
 
     private val List<WooShippingCustomsProductUIModel>.isITNRequired: Boolean
-        get() = mapNotNull { it.shippingTotalValue }
-            .takeIf { it.isNotEmpty() }
-            ?.reduce { acc, current -> acc + current }
-            ?.let { it >= MAX_SHIPPING_ITEM_VALUE_FOR_CUSTOMS }
-            ?: false
+        get() {
+            val totalShippingValue = mapNotNull { it.shippingTotalValue }
+                .takeIf { it.isNotEmpty() }
+                ?.reduce { acc, current -> acc + current }
+                ?: 0f
+
+            return shouldRequireITN(destinationCountryCode, totalShippingValue)
+        }
 
     init {
         launch { loadCountries() }
@@ -268,7 +274,7 @@ class WooShippingCustomsFormViewModel @Inject constructor(
     }
 
     private suspend fun loadCountries() {
-        getAcceptedOriginCountries().fold(
+        getAllCountries().fold(
             onSuccess = { possibleLocations = it },
             onFailure = { possibleLocations = null }
         )
@@ -389,7 +395,5 @@ class WooShippingCustomsFormViewModel @Inject constructor(
          */
         private const val ITN_REGEX_STRING =
             """^(?:(?:AES X\d{14})|(?:NOEEI 30\.\d{1,2}(?:\([a-z]\)(?:\(\d\))?)?))${'$'}"""
-
-        private const val MAX_SHIPPING_ITEM_VALUE_FOR_CUSTOMS = 2500
     }
 }

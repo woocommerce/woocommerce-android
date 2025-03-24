@@ -1,6 +1,7 @@
 package com.woocommerce.android.apifaker.di
 
 import android.content.Context
+import androidx.compose.material.SnackbarHostState
 import com.woocommerce.android.apifaker.ApiFakerConfig
 import com.woocommerce.android.apifaker.ApiFakerInterceptor
 import com.woocommerce.android.apifaker.EndpointProcessor
@@ -31,4 +32,8 @@ object ApiFakerModule {
         apiFakerConfig: ApiFakerConfig,
         endpointProcessor: EndpointProcessor
     ): Interceptor = ApiFakerInterceptor(apiFakerConfig, endpointProcessor)
+
+    @Provides
+    @Singleton
+    internal fun providesSnackbarHostState() = SnackbarHostState()
 }

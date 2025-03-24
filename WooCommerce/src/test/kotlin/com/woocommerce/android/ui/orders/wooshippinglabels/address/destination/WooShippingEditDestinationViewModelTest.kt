@@ -4,6 +4,7 @@ import androidx.compose.runtime.snapshots.Snapshot
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.AmbiguousLocation
+import com.woocommerce.android.model.Location
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.AddressValidationState
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.EditAddressFlow
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.EditableAddress
@@ -37,13 +38,17 @@ class WooShippingEditDestinationViewModelTest : WooShippingEditAddressViewModelT
         ).toSavedStateHandle()
     }
 
+    override suspend fun mockCountries(countries: Result<List<Location>>) {
+        whenever(getAllCountries.invoke()).doReturn(countries)
+    }
+
     @Test
     fun `when update address succeed then restart address state`() = testBlocking {
         val initialAddress = Address.EMPTY
         val editableAddress = EditableAddress()
 
         whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
-        whenever(getAcceptedOriginCountries.invoke()).doReturn(Result.success(countries))
+        whenever(getAllCountries.invoke()).doReturn(Result.success(countries))
         whenever(getStatesByCountryCode.invoke(any())).doReturn(states)
         whenever(updateDestinationAddress.invoke(any(), any()))
             .doReturn(Result.success(DestinationShippingAddress.EMPTY))
@@ -73,7 +78,7 @@ class WooShippingEditDestinationViewModelTest : WooShippingEditAddressViewModelT
         )
 
         whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
-        whenever(getAcceptedOriginCountries.invoke()).doReturn(Result.success(countries))
+        whenever(getAllCountries.invoke()).doReturn(Result.success(countries))
         whenever(getStatesByCountryCode.invoke(any())).doReturn(states)
         whenever(updateDestinationAddress.invoke(any(), any())).doReturn(Result.failure(Exception("error")))
         whenever(resourceProvider.getString(any())).doReturn("error")
@@ -120,7 +125,7 @@ class WooShippingEditDestinationViewModelTest : WooShippingEditAddressViewModelT
         )
 
         whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
-        whenever(getAcceptedOriginCountries.invoke()).doReturn(Result.success(countries))
+        whenever(getAllCountries.invoke()).doReturn(Result.success(countries))
         whenever(getStatesByCountryCode.invoke(any())).doReturn(states)
         whenever(updateDestinationAddress.invoke(any(), any())).doReturn(Result.failure(Exception("error")))
         whenever(resourceProvider.getString(any())).doReturn("error")
@@ -151,7 +156,7 @@ class WooShippingEditDestinationViewModelTest : WooShippingEditAddressViewModelT
         )
 
         whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
-        whenever(getAcceptedOriginCountries.invoke()).doReturn(Result.success(countries))
+        whenever(getAllCountries.invoke()).doReturn(Result.success(countries))
         whenever(getStatesByCountryCode.invoke(any())).doReturn(states)
         whenever(updateDestinationAddress.invoke(any(), any()))
             .doReturn(Result.success(DestinationShippingAddress.EMPTY))
@@ -186,7 +191,7 @@ class WooShippingEditDestinationViewModelTest : WooShippingEditAddressViewModelT
         )
 
         whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
-        whenever(getAcceptedOriginCountries.invoke()).doReturn(Result.success(countries))
+        whenever(getAllCountries.invoke()).doReturn(Result.success(countries))
         whenever(getStatesByCountryCode.invoke(any())).doReturn(states)
         whenever(updateDestinationAddress.invoke(any(), any())).doReturn(Result.failure(Exception("error")))
         whenever(resourceProvider.getString(any())).doReturn("error")

@@ -155,6 +155,7 @@ private fun WooPosCartScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(WooPosSpacing.Medium.value.toAdaptivePadding())
+                .padding(bottom = WooPosSpacing.Small.value.toAdaptivePadding())
                 .constrainAs(checkoutButton) {
                     bottom.linkTo(parent.bottom)
                     start.linkTo(parent.start)

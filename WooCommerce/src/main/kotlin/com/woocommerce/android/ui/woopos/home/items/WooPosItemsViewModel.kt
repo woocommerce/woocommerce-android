@@ -7,13 +7,13 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
+import com.woocommerce.android.ui.woopos.featureflags.WooPosIsCouponsEnabled
 import com.woocommerce.android.ui.woopos.featureflags.WooPosIsProductsSearchEnabled
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
-import com.woocommerce.android.ui.woopos.home.items.WooPosItem.SimpleProduct
-import com.woocommerce.android.ui.woopos.home.items.WooPosItem.VariableProduct
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemNavigationData.VariableProductData
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
+import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateToVariationsScreen
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ProductsPullToRefreshTriggered
@@ -46,6 +46,7 @@ class WooPosItemsViewModel @Inject constructor(
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val resourceProvider: ResourceProvider,
     private val isProductsSearchEnabled: WooPosIsProductsSearchEnabled,
+    private val isCouponsEnabled: WooPosIsCouponsEnabled,
 ) : ViewModel() {
     private var loadMoreProductsJob: Job? = null
     private var searchJob: Job? = null
@@ -115,6 +116,14 @@ class WooPosItemsViewModel @Inject constructor(
             WooPosItemsUIEvent.CloseSearchClicked -> onCloseSearchClicked()
             is WooPosItemsUIEvent.SearchChanged -> onSearchChanged(event.query)
             WooPosItemsUIEvent.SearchAnimationCompleted -> onSearchAnimationCompleted()
+            WooPosItemsUIEvent.CouponsButtonClicked -> {
+                sendEventToParent(
+                    ChildToParentEvent.ItemClickedInProductSelector(
+                        // CouponsProject: Show available coupons instead
+                        ItemClickedData.Coupon(id = 0, couponCode = "DummyCoupon")
+                    )
+                )
+            }
         }
     }
 
@@ -237,14 +246,14 @@ class WooPosItemsViewModel @Inject constructor(
     private fun navigateBackToItemListScreen() {
         viewModelScope.launch {
             navigator.sendNavigationEvent(
-                WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateBackToItemListScreen
+                WooPosItemsScreenNavigationEvent.NavigateBackToItemListScreen
             )
         }
     }
 
     private fun handleItemClick(event: WooPosItemsUIEvent.ItemClicked) {
         when (event.item) {
-            is SimpleProduct -> {
+            is WooPosItem.Product.Simple -> {
                 onItemClicked(
                     ItemClickedData.SimpleProduct(
                         id = event.item.id
@@ -252,7 +261,7 @@ class WooPosItemsViewModel @Inject constructor(
                 )
             }
 
-            is VariableProduct -> {
+            is WooPosItem.Product.Variable -> {
                 viewModelScope.launch {
                     navigator.sendNavigationEvent(
                         NavigateToVariationsScreen(
@@ -351,7 +360,7 @@ class WooPosItemsViewModel @Inject constructor(
     ) = WooPosItemsViewState.Content(
         items = map { product ->
             if (product.isVariable()) {
-                VariableProduct(
+                WooPosItem.Product.Variable(
                     id = product.remoteId,
                     name = product.name,
                     price = priceFormat(product.price),
@@ -360,7 +369,7 @@ class WooPosItemsViewModel @Inject constructor(
                     variationIds = product.variationIds
                 )
             } else {
-                SimpleProduct(
+                WooPosItem.Product.Simple(
                     id = product.remoteId,
                     name = product.name,
                     price = priceFormat(product.price),
@@ -370,6 +379,7 @@ class WooPosItemsViewModel @Inject constructor(
         },
         paginationState = paginationState,
         reloadingProductsWithPullToRefresh = false,
+        couponsEnabled = isCouponsEnabled.invoke(),
         bannerState = WooPosItemsViewState.Content.BannerState(
             isBannerHiddenByUser = isBannerHiddenByUser(),
             title = R.string.woopos_banner_simple_products_only_title,
@@ -447,5 +457,6 @@ class WooPosItemsViewModel @Inject constructor(
     sealed class ItemClickedData(open val id: Long) : Parcelable {
         data class SimpleProduct(override val id: Long) : ItemClickedData(id)
         data class Variation(val productId: Long, override val id: Long) : ItemClickedData(id)
+        data class Coupon(override val id: Long, val couponCode: String) : ItemClickedData(id)
     }
 }

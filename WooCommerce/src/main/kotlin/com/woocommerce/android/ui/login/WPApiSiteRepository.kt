@@ -26,7 +26,6 @@ import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.CUSTOM_LOGIN_URL
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.INVALID_CREDENTIALS
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.INVALID_RESPONSE
-import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.NOT_AUTHENTICATED
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordCredentials
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsStore
 import org.wordpress.android.fluxc.store.SiteStore
@@ -184,18 +183,17 @@ class WPApiSiteRepository @Inject constructor(
     }
 
     /**
-     * If we don't have a network status code, and the error is either NOT_AUTHENTICATED or
+     * If we don't have a network status code, and the error is either INVALID_CREDENTIALS or
      * INVALID_RESPONSE, we can assume the response was 200
      */
     private fun Error.extractNetworkStatusCode() =
         networkError?.volleyError?.networkResponse?.statusCode
             ?: takeIf {
-                type == NOT_AUTHENTICATED || type == INVALID_RESPONSE
+                type == INVALID_CREDENTIALS || type == INVALID_RESPONSE
             }?.let { HTTP_SUCCESS }
 
     private fun Error.mapToUiString() = when (type) {
-        NOT_AUTHENTICATED -> message?.let { UiStringText(it) } ?: UiStringRes(string.username_or_password_incorrect)
-        INVALID_CREDENTIALS -> UiStringRes(string.login_invalid_credentials_message)
+        INVALID_CREDENTIALS -> message?.let { UiStringText(it) } ?: UiStringRes(string.login_invalid_credentials_message)
         INVALID_RESPONSE -> UiStringRes(string.login_site_credentials_invalid_response)
         CUSTOM_LOGIN_URL -> UiStringRes(string.login_site_credentials_custom_login_url)
         CUSTOM_ADMIN_URL -> UiStringRes(string.login_site_credentials_custom_admin_url)

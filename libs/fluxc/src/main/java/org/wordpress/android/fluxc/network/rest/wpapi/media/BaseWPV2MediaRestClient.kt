@@ -41,13 +41,12 @@ import java.io.IOException
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Named
 
-abstract class BaseWPV2MediaRestClient constructor(
+abstract class BaseWPV2MediaRestClient(
     private val dispatcher: Dispatcher,
     private val coroutineEngine: CoroutineEngine,
-    @Named("regular") private val okHttpClient: OkHttpClient
+    @Named("regular") private val okHttpClient: OkHttpClient,
+    private val gson: Gson
 ) {
-    private val gson: Gson by lazy { Gson() }
-
     private val currentUploads = ConcurrentHashMap<Int, CoroutineScope>()
 
     protected abstract fun WPAPIEndpoint.getFullUrl(site: SiteModel): String

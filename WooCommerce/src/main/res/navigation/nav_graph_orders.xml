@@ -759,6 +759,10 @@
             app:argType="com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel[]" />
 
         <argument
+            android:name="destinationCountryCode"
+            app:argType="string" />
+
+        <argument
             android:name="customsData"
             app:argType="com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData"
             app:nullable="true"/>

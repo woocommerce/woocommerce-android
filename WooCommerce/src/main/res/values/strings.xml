@@ -356,7 +356,7 @@
     <string name="login_jetpack_installation_enter_wpcom_password">Enter the password of your WordPress.com account to install Jetpack</string>
     <string name="login_jetpack_installation_continue_magic_link">Or continue using Magic Link</string>
     <string name="login_jetpack_installation_magic_link_failure">An error occurred while fetching your website, please retry!</string>
-    <string name="login_site_credentials_invalid_response">Login failed with an unexpected response from your site. We are working on fixing this issue.</string>
+    <string name="login_site_credentials_invalid_response">Login failed with an unexpected response from your site.</string>
     <string name="login_site_credentials_custom_login_url">Unable to login because we cannot identify your store\'s login URL</string>
     <string name="login_site_credentials_custom_admin_url">Unable to login because we cannot identify your store\'s admin URL</string>
     <string name="login_site_credentials_http_error">Login failed with status code %1$s</string>
@@ -4397,6 +4397,8 @@
     <string name="woopos_search_back_content_description">Back</string>
     <string name="woopos_clear_back_content_description">Clear</string>
     <string name="woopos_search_products">Search products…</string>
+    <string name="woopos_search_popular_items_title">Popular items</string>
+    <string name="woopos_search_recent_searches_title">Recent searches</string>
 
 
     <string name="customers_details_customer_section">Customer</string>
@@ -4470,6 +4472,10 @@
     <string name="woo_shipping_labels_package_creation_carrier_loading_error">We are unable to load carrier packages.</string>
     <string name="woo_shipping_labels_package_creation_saved_loading_error">We are unable to load saved packages.</string>
     <string name="woo_shipping_labels_package_creation_shipping_rates_loading_error">We are unable to load shipping rates.</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_destination">Add a destination address to get shipping rates</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_destination_desc">We need to know where this package is going before we can show the available shipping rates.</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_weight">Add shipment weight to get shipping rates</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_weight_desc">We need to know the shipment weight before we can show the available shipping rates.</string>
     <string name="woo_shipping_labels_package_creation_box_type">Box</string>
     <string name="woo_shipping_labels_package_creation_envelope_type">Envelope</string>
     <string name="woo_shipping_labels_package_creation_error_title">We couldn\'t save the package as template</string>
