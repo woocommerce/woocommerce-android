@@ -11,6 +11,7 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
@@ -211,7 +212,10 @@ class LoginActivity :
         enableEdgeToEdge()
 
         // Add system bar insets to the fragment's root
-        binding.snackRoot.doOnApplyWindowInsets(consumeInsets = true) { insets ->
+        binding.snackRoot.doOnApplyWindowInsets(
+            insetsMask = WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout() or WindowInsetsCompat.Type.ime(),
+            consumeInsets = true
+        ) { insets ->
             binding.snackRoot.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
         }
     }
