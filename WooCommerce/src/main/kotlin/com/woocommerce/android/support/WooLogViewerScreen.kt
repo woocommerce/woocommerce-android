@@ -12,7 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -73,11 +73,7 @@ fun WooLogViewerScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(color = colorResource(id = R.color.color_toolbar))
-            .windowInsetsPadding(
-                WindowInsets.systemBars.only(
-                    WindowInsetsSides.Start + WindowInsetsSides.Top + WindowInsetsSides.End
-                )
-            )
+            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)),
     ) { padding ->
         LogViewerEntries(
             entries,
@@ -93,7 +89,7 @@ fun LogViewerEntries(
 ) {
     LazyColumn(
         modifier = modifier,
-        contentPadding = WindowInsets.systemBars.only(WindowInsetsSides.Bottom).asPaddingValues()
+        contentPadding = WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom).asPaddingValues(),
     ) {
         itemsIndexed(entries) { index, entry ->
             LogViewerEntry(index, entry)
