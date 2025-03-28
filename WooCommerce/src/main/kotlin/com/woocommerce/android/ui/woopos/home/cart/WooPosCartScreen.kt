@@ -74,9 +74,10 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 
 @Composable
-fun WooPosCartScreen(modifier: Modifier = Modifier) {
-    val viewModel: WooPosCartViewModel = hiltViewModel()
-
+fun WooPosCartScreen(
+    modifier: Modifier = Modifier,
+    viewModel: WooPosCartViewModel = hiltViewModel()
+) {
     viewModel.state.observeAsState().value?.let {
         WooPosCartScreen(modifier, it, viewModel::onUIEvent)
     }
