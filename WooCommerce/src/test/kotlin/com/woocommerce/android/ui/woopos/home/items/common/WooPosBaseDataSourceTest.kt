@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.home.items.common
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.mockito.Mockito.mock
@@ -155,5 +156,24 @@ class WooPosBaseDataSourceTest {
         assertTrue(result.isFailure)
         assertEquals("loadMore failed", result.exceptionOrNull()?.message)
         assertEquals(listOf("Old"), testDataSource.getCache())
+    }
+
+    @Test
+    fun `given exception inside fetchMore then catches and returns failure`() = runTest {
+        val testDataSource = object : WooPosBaseDataSource<String>() {
+            override suspend fun fetchFromCache(fetchOptions: FetchOptions): List<String> = emptyList()
+            override suspend fun fetchFromRemote(fetchOptions: FetchOptions): Result<List<String>> = TODO()
+            override suspend fun updateCache(fetchOptions: FetchOptions, data: List<String>) = Unit
+        }
+
+        val result = runCatching {
+            testDataSource.fetchMore(
+                fetchMore = { Result.failure(Exception("Unexpected crash")) }
+            )
+        }.getOrNull()
+
+        assertNotNull(result)
+        assertTrue(result!!.isFailure)
+        assertEquals("Unexpected crash", result.exceptionOrNull()?.message)
     }
 }
