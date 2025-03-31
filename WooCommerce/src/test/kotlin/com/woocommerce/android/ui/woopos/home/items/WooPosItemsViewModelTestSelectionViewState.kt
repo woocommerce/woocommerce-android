@@ -9,6 +9,8 @@ import com.woocommerce.android.ui.woopos.featureflags.WooPosIsProductsSearchEnab
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState.Product
+import com.woocommerce.android.ui.woopos.home.items.common.FetchOptions
+import com.woocommerce.android.ui.woopos.home.items.common.FetchResult
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
@@ -66,9 +68,10 @@ class WooPosItemsViewModelTestSelectionViewState {
             ),
         )
 
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+
+        whenever(productsDataSource.fetchData(any())).thenReturn(
             flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
+                FetchResult.Remote(
                     Result.success(products)
                 )
             )
@@ -380,11 +383,9 @@ class WooPosItemsViewModelTestSelectionViewState {
     fun `when simple products only banner is closed, then state is updated to true`() = runTest {
         // WHEN
         val viewModel = createViewModel()
+        viewModel.onUIEvent(WooPosItemsUIEvent.SimpleProductsBannerClosed)
         viewModel.viewState.test {
             val contentState = awaitItem() as WooPosItemsViewState.Content
-            // WHEN
-            viewModel.onUIEvent(WooPosItemsUIEvent.SimpleProductsBannerClosed)
-
             // THEN
             assertTrue(contentState.bannerState.isBannerHiddenByUser)
         }
@@ -819,9 +820,9 @@ class WooPosItemsViewModelTestSelectionViewState {
             )
         )
 
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+        whenever(productsDataSource.fetchData(any())).thenReturn(
             flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
+                FetchResult.Remote(
                     Result.success(products)
                 )
             )
