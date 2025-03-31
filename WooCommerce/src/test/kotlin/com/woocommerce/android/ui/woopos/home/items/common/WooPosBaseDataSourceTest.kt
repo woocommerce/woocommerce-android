@@ -134,4 +134,26 @@ class WooPosBaseDataSourceTest {
         assertTrue(result.isSuccess)
         assertEquals(listOf("A", "B"), result.getOrThrow())
     }
+
+    @Test
+    fun `given failed fetchMore when loadMore then returns failure and does not update cache`() = runTest {
+        val testDataSource = object : WooPosBaseDataSource<String>() {
+            private val cache = mutableListOf("Old")
+
+            override suspend fun fetchFromCache(fetchOptions: FetchOptions): List<String> = cache.toList()
+            override suspend fun fetchFromRemote(fetchOptions: FetchOptions): Result<List<String>> = TODO()
+            override suspend fun updateCache(fetchOptions: FetchOptions, data: List<String>) {
+                cache.addAll(data)
+            }
+            fun getCache(): List<String> = cache.toList()
+        }
+
+        val result = testDataSource.fetchMore(
+            fetchMore = { Result.failure(Exception("loadMore failed")) }
+        )
+
+        assertTrue(result.isFailure)
+        assertEquals("loadMore failed", result.exceptionOrNull()?.message)
+        assertEquals(listOf("Old"), testDataSource.getCache())
+    }
 }
