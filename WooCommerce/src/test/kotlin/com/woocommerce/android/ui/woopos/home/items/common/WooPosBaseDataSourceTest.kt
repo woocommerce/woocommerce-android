@@ -176,4 +176,25 @@ class WooPosBaseDataSourceTest {
         assertTrue(result!!.isFailure)
         assertEquals("Unexpected crash", result.exceptionOrNull()?.message)
     }
+
+    @Test
+    fun `given successful fetchMore then updates cache with new data`() = runTest {
+        val cache = mutableListOf("Existing")
+
+        val testDataSource = object : WooPosBaseDataSource<String>() {
+            override suspend fun fetchFromCache(fetchOptions: FetchOptions): List<String> = cache.toList()
+            override suspend fun updateCache(fetchOptions: FetchOptions, data: List<String>) {
+                cache.addAll(data)
+            }
+            override suspend fun fetchFromRemote(fetchOptions: FetchOptions): Result<List<String>> = TODO()
+        }
+
+        val result = testDataSource.fetchMore(
+            fetchMore = { Result.success(listOf("New1", "New2")) },
+            productId = 101
+        )
+
+        assertTrue(result.isSuccess)
+        assertEquals(listOf("Existing", "New1", "New2"), result.getOrThrow())
+    }
 }
