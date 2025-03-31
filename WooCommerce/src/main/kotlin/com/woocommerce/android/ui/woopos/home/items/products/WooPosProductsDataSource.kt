@@ -5,12 +5,9 @@ import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.selector.ProductListHandler
 import com.woocommerce.android.ui.woopos.home.items.common.FetchOptions
 import com.woocommerce.android.ui.woopos.home.items.common.WooPosBaseDataSource
-import com.woocommerce.android.util.WooLog
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
 import javax.inject.Singleton
