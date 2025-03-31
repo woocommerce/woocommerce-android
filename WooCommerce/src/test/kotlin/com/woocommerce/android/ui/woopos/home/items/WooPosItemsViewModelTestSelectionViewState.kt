@@ -68,7 +68,6 @@ class WooPosItemsViewModelTestSelectionViewState {
             ),
         )
 
-
         whenever(productsDataSource.fetchData(any())).thenReturn(
             flowOf(
                 FetchResult.Remote(
