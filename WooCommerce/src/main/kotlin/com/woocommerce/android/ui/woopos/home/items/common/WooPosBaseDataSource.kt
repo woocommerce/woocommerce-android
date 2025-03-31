@@ -1,9 +1,11 @@
 package com.woocommerce.android.ui.woopos.home.items.common
 
+import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.withContext
 
 abstract class WooPosBaseDataSource<T> : FetchDataSource<T> {
 
@@ -36,4 +38,25 @@ abstract class WooPosBaseDataSource<T> : FetchDataSource<T> {
             )
         }
     }.flowOn(Dispatchers.IO)
+
+    suspend fun fetchMore(
+        fetchMore: suspend () -> Result<List<T>>,
+        productId: Long? = null,
+    ): Result<List<T>> = withContext(Dispatchers.IO) {
+        val result = fetchMore()
+        if (result.isSuccess) {
+            val newItems = result.getOrThrow()
+            updateCache(fetchOptions = FetchOptions(productId = productId), newItems)
+            Result.success(fetchFromCache(fetchOptions = FetchOptions(productId = productId)))
+        } else {
+            result.logFailure()
+            Result.failure(result.exceptionOrNull() ?: Exception("Unknown error while loading more data"))
+        }
+    }
+
+    private fun <T> Result<T>.logFailure() {
+        val error = exceptionOrNull()
+        val errorMessage = error?.message ?: "Unknown error"
+        WooLog.e(WooLog.T.POS, "Loading products failed - $errorMessage", error)
+    }
 }
