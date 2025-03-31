@@ -35,24 +35,20 @@ class WooPosVariationsDataSource @Inject constructor(
         return handler.canLoadMore(numOfVariations)
     }
 
-    suspend fun loadMore(productId: Long): Result<List<ProductVariation>> = withContext(Dispatchers.IO) {
-        val result = handler.loadMore(
-            productId,
-            filterOptions = mapOf(
-                WCProductStore.VariationFilterOption.STATUS to VARIATION_STATUS_PUBLISH,
-                WCProductStore.VariationFilterOption.DOWNLOADABLE to VARIATION_DOWNLOADABLE_FALSE
-            )
-        )
-        if (result.isSuccess) {
-            val fetchedVariations = handler.getVariationsFlow(productId).first().applyFilter()
-            Result.success(fetchedVariations)
-        } else {
-            result.logFailure()
-            Result.failure(
-                result.exceptionOrNull() ?: Exception("Unknown error while loading more variations")
-            )
-        }
-    }
+    suspend fun loadMore(productId: Long): Result<List<ProductVariation>> = fetchMore(
+        fetchMore = {
+            handler.loadMore(
+                productId = productId,
+                filterOptions = mapOf(
+                    WCProductStore.VariationFilterOption.STATUS to VARIATION_STATUS_PUBLISH,
+                    WCProductStore.VariationFilterOption.DOWNLOADABLE to VARIATION_DOWNLOADABLE_FALSE
+                )
+            ).map {
+                handler.getVariationsFlow(productId).first().applyFilter()
+            }
+        },
+        productId = productId
+    )
 
     companion object {
         private const val VARIATION_STATUS_PUBLISH = "publish"
