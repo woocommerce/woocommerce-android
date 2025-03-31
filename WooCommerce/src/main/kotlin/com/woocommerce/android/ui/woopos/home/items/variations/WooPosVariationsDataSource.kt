@@ -5,11 +5,8 @@ import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.variations.selector.VariationListHandler
 import com.woocommerce.android.ui.woopos.home.items.common.FetchOptions
 import com.woocommerce.android.ui.woopos.home.items.common.WooPosBaseDataSource
-import com.woocommerce.android.util.WooLog
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -88,12 +85,6 @@ class WooPosVariationsDataSource @Inject constructor(
             throw IllegalArgumentException("Product ID is required to fetch variations from cache")
         }
     }
-}
-
-private fun Result<Unit>.logFailure() {
-    val error = exceptionOrNull()
-    val errorMessage = error?.message ?: "Unknown error"
-    WooLog.e(WooLog.T.POS, "Loading variations failed - $errorMessage", error)
 }
 
 private fun List<ProductVariation>.applyFilter(): List<ProductVariation> {
