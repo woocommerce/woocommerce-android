@@ -25,28 +25,16 @@ class WooPosProductsDataSource @Inject constructor(
     val hasMorePages: Boolean
         get() = handler.canLoadMore.get()
 
-    suspend fun loadMore(): Result<List<Product>> = withContext(Dispatchers.IO) {
-        val result = handler.loadMore(
-            includeTypes = listOf(WCProductStore.IncludeType.Simple, WCProductStore.IncludeType.Variable),
-        )
-        if (result.isSuccess) {
-            val moreProducts = handler.productsFlow.first()
-            updateProductCache(moreProducts)
-            Result.success(productCache)
-        } else {
-            result.logFailure()
-            Result.failure(result.exceptionOrNull() ?: Exception("Unknown error"))
+    suspend fun loadMore(): Result<List<Product>> = fetchMore(
+        fetchMore = {
+            handler.loadMore(
+                includeTypes = listOf(WCProductStore.IncludeType.Simple, WCProductStore.IncludeType.Variable)
+            ).map { handler.productsFlow.first() }
         }
-    }
+    )
 
     private suspend fun updateProductCache(newList: List<Product>) {
         cacheMutex.withLock { productCache = newList }
-    }
-
-    private fun Result<Unit>.logFailure() {
-        val error = exceptionOrNull()
-        val errorMessage = error?.message ?: "Unknown error"
-        WooLog.e(WooLog.T.POS, "Loading products failed - $errorMessage", error)
     }
 
     sealed class ProductsResult {
