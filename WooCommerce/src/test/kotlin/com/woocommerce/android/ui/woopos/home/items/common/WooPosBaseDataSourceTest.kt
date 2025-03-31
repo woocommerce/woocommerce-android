@@ -114,4 +114,24 @@ class WooPosBaseDataSourceTest {
         assertTrue(result[1] is FetchResult.Remote)
         assertTrue((result[1] as FetchResult.Remote).result.isFailure)
     }
+
+    @Test
+    fun `given successful fetchMore then updates cache and returns merged data`() = runTest {
+        val testDataSource = object : WooPosBaseDataSource<String>() {
+            private val cache = mutableListOf<String>()
+
+            override suspend fun fetchFromCache(fetchOptions: FetchOptions): List<String> = cache.toList()
+            override suspend fun fetchFromRemote(fetchOptions: FetchOptions): Result<List<String>> = TODO()
+            override suspend fun updateCache(fetchOptions: FetchOptions, data: List<String>) {
+                cache.addAll(data)
+            }
+        }
+
+        val result = testDataSource.fetchMore(
+            fetchMore = { Result.success(listOf("A", "B")) }
+        )
+
+        assertTrue(result.isSuccess)
+        assertEquals(listOf("A", "B"), result.getOrThrow())
+    }
 }
