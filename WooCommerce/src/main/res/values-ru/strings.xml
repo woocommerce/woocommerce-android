@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-02-25 09:54:04+0000
+Translation-Revision-Date: 2025-03-11 09:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_address_update_message">Обновление указанного адреса</string>
+    <string name="woo_shipping_address_update_title">Обновление</string>
+    <string name="woo_shipping_address_save_changes">Сохранить изменения</string>
+    <string name="woo_shipping_updating_address_failed">Не удалось обновить адрес. Повторите попытку.</string>
+    <string name="woo_shipping_verifying_address_failed">Не удалось подтвердить адрес. Повторите попытку.</string>
+    <string name="woo_shipping_address_unsaved_changes">Изменения не сохранены</string>
+    <string name="woo_shipping_address_missing">Адрес не указан</string>
+    <string name="woo_shipping_edit_destination_address_title">Изменить адрес назначения</string>
+    <string name="woo_shipping_labels_customs_product_details_origin_country_selection">Выберите страну</string>
+    <string name="woo_shipping_labels_customs_product_details_origin_country_missing">Страна не указана</string>
+    <string name="woo_shipping_labels_customs_product_details_origin_country">Страна происхождения</string>
+    <string name="woo_shipping_labels_customs_product_details_value_required">Стоимость (обязательно)</string>
+    <string name="woo_shipping_labels_customs_product_details_weight_per_unit">Вес на единицу</string>
+    <string name="woo_shipping_labels_customs_product_details_value_per_unit">Стоимость на единицу</string>
+    <string name="woo_shipping_labels_customs_product_details_tariff_missing">Тарифный код не указан</string>
+    <string name="woo_shipping_labels_customs_product_details_tariff">Тарифный код HS</string>
+    <string name="woo_shipping_labels_customs_product_details_description_missing">Отсутствует описание</string>
+    <string name="woo_shipping_labels_customs_product_details_description">Описание</string>
+    <string name="woo_shipping_labels_customs_product_details_title">Сведения о товаре</string>
+    <string name="woo_shipping_labels_customs_itn_required_message">ITN не указан</string>
+    <string name="woo_shipping_labels_customs_itn_error_message">Недопустимый формат ITN</string>
+    <string name="woo_shipping_labels_customs_other_error_message">Тип не указан</string>
+    <string name="woo_shipping_labels_package_creation_shipping_rates_loading_error">Не удалось загрузить тарифы на доставку.</string>
+    <string name="woo_shipping_labels_package_creation_saved_loading_error">Не удалось загрузить сохранённые типы упаковки.</string>
+    <string name="woo_shipping_labels_package_creation_carrier_loading_error">Не удалось загрузить типы упаковки перевозчика.</string>
     <string name="woo_shipping_confirm_submit_address_entered">Подтвердить указанный адрес</string>
     <string name="woo_shipping_confirm_submit_address_suggested">Подтвердить предложенный адрес</string>
     <string name="woo_shipping_confirm_address_suggested">Предложено</string>

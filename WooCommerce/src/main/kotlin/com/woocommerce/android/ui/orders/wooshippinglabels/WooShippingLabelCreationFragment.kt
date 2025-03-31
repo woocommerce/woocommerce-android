@@ -16,12 +16,15 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.StartCustomsFormEdit
+import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.StartHazmatFormEdit
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.StartPackageSelection
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.EditAddressFlow
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.WooShippingEditAddressFragment.Companion.DESTINATION_ADDRESS_UPDATE_RESULT
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormFragment.Companion.CUSTOMS_DATA_RESULT
+import com.woocommerce.android.ui.orders.wooshippinglabels.hazmat.WooShippingLabelHazmatFormViewModel.Companion.HAZMAT_CATEGORY_RESULT
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationFragment.Companion.PACKAGE_SELECTION_RESULT
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
@@ -92,6 +95,7 @@ class WooShippingLabelCreationFragment : BaseFragment(), BackPressListener {
                     WooShippingLabelCreationFragmentDirections
                         .actionWooShippingLabelCreationFragmentToWooShippingLabelCustomsFormFragment(
                             shippableItems = event.shippableItems.toTypedArray(),
+                            destinationCountryCode = event.destinationCountryCode,
                             customsData = event.customData
                         ).let { findNavController().navigateSafely(it) }
                 }
@@ -108,6 +112,12 @@ class WooShippingLabelCreationFragment : BaseFragment(), BackPressListener {
                             findNavController().navigateSafely(it)
                         }
                 }
+
+                is StartHazmatFormEdit -> {
+                    WooShippingLabelCreationFragmentDirections
+                        .actionWooShippingLabelCreationFragmentToWooShippingLabelHazmatFormFragment()
+                        .let { findNavController().navigateSafely(it) }
+                }
             }
         }
     }
@@ -122,6 +132,10 @@ class WooShippingLabelCreationFragment : BaseFragment(), BackPressListener {
 
         handleResult<CustomsData>(CUSTOMS_DATA_RESULT) {
             viewModel.onCustomsDataAvailable(it)
+        }
+
+        handleResult<ShippingLabelHazmatCategory>(HAZMAT_CATEGORY_RESULT) {
+            viewModel.onHazmatCategorySelected(it)
         }
     }
 

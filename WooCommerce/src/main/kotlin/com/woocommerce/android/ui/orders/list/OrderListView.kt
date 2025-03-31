@@ -69,13 +69,6 @@ class OrderListView @JvmOverloads constructor(
     }
 
     /**
-     * Opens the given order id
-     */
-    fun openOrder(orderId: Long) {
-        ordersAdapter.openOrder(orderId)
-    }
-
-    /**
      * Submit new paged list data to the adapter
      */
     fun submitPagedList(list: PagedList<OrderListItemUIType>?) {

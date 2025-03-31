@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardRea
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState.CardReaderPaymentState
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
+import com.woocommerce.android.ui.woopos.featureflags.WooPosIsCouponsEnabled
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToCashPayment
@@ -57,6 +58,7 @@ class WooPosTotalsViewModel @Inject constructor(
     private val networkStatus: WooPosNetworkStatus,
     private val cardReaderPaymentControllerFactory: WooPosCardReaderPaymentControllerFactory,
     private val uiStringParser: UiStringParser,
+    private val isCouponsEnabled: WooPosIsCouponsEnabled,
     private val totalsAnalyticsTracker: WooPosTotalsAnalyticsTracker,
     savedState: SavedStateHandle,
 ) : ViewModel() {
@@ -278,7 +280,10 @@ class WooPosTotalsViewModel @Inject constructor(
                         showSuccessfulPaymentState(event.paymentMethod)
                     }
 
-                    is ParentToChildrenEvent.ItemClickedInProductSelector -> Unit
+                    is ParentToChildrenEvent.ItemClickedInProductSelector,
+                    is ParentToChildrenEvent.SearchEvent.ChangedQuery,
+                    ParentToChildrenEvent.SearchEvent.Finished,
+                    ParentToChildrenEvent.SearchEvent.Started -> Unit
                 }
             }
         }
@@ -409,7 +414,7 @@ class WooPosTotalsViewModel @Inject constructor(
         viewModelScope.launch {
             uiState.value = WooPosTotalsViewState.Loading
 
-            totalsRepository.createOrderWithProducts(itemClickedDataList = itemClickedDataList)
+            totalsRepository.createOrderFromCartItems(itemClickedDataList = itemClickedDataList)
                 .fold(
                     onSuccess = { order ->
                         dataState.value = dataState.value.copy(
@@ -450,6 +455,7 @@ class WooPosTotalsViewModel @Inject constructor(
     }
 
     private suspend fun buildWooPosTotalsViewState(order: Order): WooPosTotalsViewState.Checkout {
+        val discountAmount = order.discountTotal
         val subtotalAmount = order.productsTotal
         val taxAmount = order.totalTax
         val totalAmount = order.total
@@ -463,6 +469,8 @@ class WooPosTotalsViewModel @Inject constructor(
         }
         return WooPosTotalsViewState.Checkout(
             totals = Totals.Visible(
+                orderDiscountText =
+                if (isCouponsEnabled() && discountAmount > BigDecimal.ZERO) priceFormat(discountAmount) else null,
                 orderSubtotalText = priceFormat(subtotalAmount),
                 orderTaxText = priceFormat(taxAmount),
                 orderTotalText = priceFormat(totalAmount),

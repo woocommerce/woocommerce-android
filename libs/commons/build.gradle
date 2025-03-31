@@ -5,16 +5,16 @@ plugins {
 }
 
 android {
-    namespace 'com.woocommerce.commons'
-    compileSdk gradle.ext.compileSdkVersion
+    namespace = 'com.woocommerce.commons'
+    compileSdk = gradle.ext.compileSdkVersion
 
     defaultConfig {
-        minSdk gradle.ext.minSdkVersion
-        targetSdk gradle.ext.targetSdkVersion
+        minSdk = gradle.ext.minSdkVersion
+        targetSdk = gradle.ext.targetSdkVersion
     }
 
     compileOptions {
-        sourceCompatibility libs.versions.java.get()
-        targetCompatibility libs.versions.java.get()
+        sourceCompatibility = libs.versions.java.get()
+        targetCompatibility = libs.versions.java.get()
     }
 }

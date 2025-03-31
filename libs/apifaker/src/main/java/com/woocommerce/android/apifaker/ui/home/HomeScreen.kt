@@ -1,11 +1,14 @@
 package com.woocommerce.android.apifaker.ui.home
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -13,32 +16,45 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Card
 import androidx.compose.material.DismissDirection
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
+import androidx.compose.material.SnackbarHost
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.SwipeToDismiss
 import androidx.compose.material.Switch
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.rememberDismissState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.woocommerce.android.apifaker.ExportImportDestination
 import com.woocommerce.android.apifaker.models.ApiType
 import com.woocommerce.android.apifaker.models.HttpMethod
 import com.woocommerce.android.apifaker.models.MockedEndpoint
@@ -50,14 +66,18 @@ import com.woocommerce.android.apifaker.ui.Screen
 internal fun HomeScreen(
     viewModel: HomeViewModel,
     navController: NavController,
+    snackbarHostState: SnackbarHostState,
     onExit: () -> Unit
 ) {
     HomeScreen(
         endpoints = viewModel.endpoints.collectAsStateWithLifecycle().value,
         isEnabled = viewModel.isEnabled.collectAsState(initial = false).value,
         navController = navController,
+        snackbarHostState = snackbarHostState,
         onRemoveRequest = viewModel::onRemoveRequest,
         onMockingToggleChanged = viewModel::onMockingToggleChanged,
+        onExportEndpoints = viewModel::onExportEndpoints,
+        onImportEndpoints = viewModel::onImportEndpoints,
         onExit = onExit
     )
 }
@@ -67,8 +87,11 @@ private fun HomeScreen(
     endpoints: List<MockedEndpoint>,
     isEnabled: Boolean,
     navController: NavController,
+    snackbarHostState: SnackbarHostState,
     onRemoveRequest: (Request) -> Unit,
     onMockingToggleChanged: (Boolean) -> Unit,
+    onExportEndpoints: (ExportImportDestination) -> Unit,
+    onImportEndpoints: (ExportImportDestination) -> Unit,
     onExit: () -> Unit
 ) {
     Scaffold(
@@ -85,10 +108,19 @@ private fun HomeScreen(
                 },
                 actions = {
                     Switch(checked = isEnabled, onCheckedChange = onMockingToggleChanged)
+
+                    TopMenu(
+                        hasEndpoints = endpoints.isNotEmpty(),
+                        onExportEndpoints = onExportEndpoints,
+                        onImportEndpoints = onImportEndpoints
+                    )
                 },
                 backgroundColor = MaterialTheme.colors.surface,
                 elevation = 4.dp
             )
+        },
+        snackbarHost = {
+            SnackbarHost(snackbarHostState)
         }
     ) { paddingValues ->
         Box(
@@ -119,6 +151,134 @@ private fun HomeScreen(
                 modifier = Modifier.align(Alignment.BottomEnd)
             ) {
                 Icon(imageVector = Icons.Filled.Add, contentDescription = "Add endpoint")
+            }
+        }
+    }
+}
+
+@Composable
+private fun TopMenu(
+    hasEndpoints: Boolean,
+    onExportEndpoints: (ExportImportDestination) -> Unit,
+    onImportEndpoints: (ExportImportDestination) -> Unit
+) {
+    var expanded by rememberSaveable { mutableStateOf(false) }
+
+    IconButton(onClick = { expanded = !expanded }) {
+        Icon(
+            Icons.Default.MoreVert,
+            contentDescription = "More"
+        )
+    }
+
+    DropdownMenu(
+        expanded = expanded,
+        onDismissRequest = { expanded = false }
+    ) {
+        if (hasEndpoints) {
+            ExportMenuButton(
+                onDismiss = { expanded = false },
+                onExportEndpoints = {
+                    expanded = false
+                    onExportEndpoints(it)
+                }
+            )
+        }
+        ImportMenuButton(
+            onDismiss = { expanded = false },
+            onImportEndpoints = {
+                expanded = false
+                onImportEndpoints(it)
+            }
+        )
+    }
+}
+
+@Composable
+fun ExportMenuButton(
+    onDismiss: () -> Unit,
+    onExportEndpoints: (ExportImportDestination) -> Unit
+) {
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/json")) {
+        it?.let { onExportEndpoints(ExportImportDestination.File(it)) }
+    }
+
+    var showDialog by rememberSaveable { mutableStateOf(false) }
+
+    DropdownMenuItem(onClick = { showDialog = true }) {
+        Text("Export")
+    }
+
+    if (showDialog) {
+        Dialog({
+            showDialog = false
+            onDismiss()
+        }) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .background(MaterialTheme.colors.surface, MaterialTheme.shapes.medium)
+                    .padding(16.dp)
+                    .defaultMinSize(minWidth = 200.dp)
+            ) {
+                Text("Export to:", Modifier.align(Alignment.Start))
+                TextButton(onClick = {
+                    showDialog = false
+                    launcher.launch("endpoints.json")
+                }) {
+                    Text("File")
+                }
+                TextButton(onClick = {
+                    showDialog = false
+                    onExportEndpoints(ExportImportDestination.Clipboard)
+                }) {
+                    Text("Clipboard")
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ImportMenuButton(
+    onDismiss: () -> Unit,
+    onImportEndpoints: (ExportImportDestination) -> Unit
+) {
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) {
+        it?.let { onImportEndpoints(ExportImportDestination.File(it)) }
+    }
+
+    var showDialog by rememberSaveable { mutableStateOf(false) }
+
+    DropdownMenuItem(onClick = { showDialog = true }) {
+        Text("Import")
+    }
+
+    if (showDialog) {
+        Dialog({
+            showDialog = false
+            onDismiss()
+        }) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .background(MaterialTheme.colors.surface, MaterialTheme.shapes.medium)
+                    .padding(16.dp)
+                    .defaultMinSize(minWidth = 200.dp)
+            ) {
+                Text("Import from:", Modifier.align(Alignment.Start))
+                TextButton(onClick = {
+                    showDialog = false
+                    launcher.launch(arrayOf("application/json"))
+                }) {
+                    Text("File")
+                }
+                TextButton(onClick = {
+                    showDialog = false
+                    onImportEndpoints(ExportImportDestination.Clipboard)
+                }) {
+                    Text("Clipboard")
+                }
             }
         }
     }
@@ -225,9 +385,12 @@ private fun HomeScreenPreview() {
             )
         ),
         isEnabled = true,
+        snackbarHostState = remember { SnackbarHostState() },
         navController = rememberNavController(),
         onRemoveRequest = {},
         onMockingToggleChanged = {},
+        onExportEndpoints = {},
+        onImportEndpoints = {},
         onExit = {}
     )
 }

@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-02-25 09:54:04+0000
+Translation-Revision-Date: 2025-03-11 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_address_update_message">Memperbarui alamat yang dimasukkan</string>
+    <string name="woo_shipping_address_update_title">Memperbarui</string>
+    <string name="woo_shipping_address_save_changes">Simpan perubahan</string>
+    <string name="woo_shipping_updating_address_failed">Kami tidak dapat memperbarui alamat Anda. Coba lagi.</string>
+    <string name="woo_shipping_verifying_address_failed">Verifikasi alamat gagal. Coba lagi.</string>
+    <string name="woo_shipping_address_unsaved_changes">Perubahan yang belum disimpan</string>
+    <string name="woo_shipping_address_missing">Alamat tidak ada</string>
+    <string name="woo_shipping_edit_destination_address_title">Edit Tujuan</string>
+    <string name="woo_shipping_labels_customs_product_details_origin_country_selection">Pilih negara</string>
+    <string name="woo_shipping_labels_customs_product_details_origin_country_missing">Negara tidak ada</string>
+    <string name="woo_shipping_labels_customs_product_details_origin_country">Negara asal</string>
+    <string name="woo_shipping_labels_customs_product_details_value_required">Nilai wajib diisi</string>
+    <string name="woo_shipping_labels_customs_product_details_weight_per_unit">Berat per unit</string>
+    <string name="woo_shipping_labels_customs_product_details_value_per_unit">Nilai per unit</string>
+    <string name="woo_shipping_labels_customs_product_details_tariff_missing">Nomor tarif tidak ada</string>
+    <string name="woo_shipping_labels_customs_product_details_tariff">Nomor tarif HS</string>
+    <string name="woo_shipping_labels_customs_product_details_description_missing">Deskripsi Tidak Ada</string>
+    <string name="woo_shipping_labels_customs_product_details_description">Deskripsi</string>
+    <string name="woo_shipping_labels_customs_product_details_title">Rincian Produk</string>
+    <string name="woo_shipping_labels_customs_itn_required_message">ITN tidak boleh kosong</string>
+    <string name="woo_shipping_labels_customs_itn_error_message">Format ITN tidak valid</string>
+    <string name="woo_shipping_labels_customs_other_error_message">Tipe tidak boleh kosong</string>
+    <string name="woo_shipping_labels_package_creation_shipping_rates_loading_error">Kami tidak dapat memuat tarif pengiriman.</string>
+    <string name="woo_shipping_labels_package_creation_saved_loading_error">Kami tidak dapat memuat paket yang disimpan.</string>
+    <string name="woo_shipping_labels_package_creation_carrier_loading_error">Kami tidak dapat memuat paket operator.</string>
     <string name="woo_shipping_confirm_submit_address_entered">Konfirmasi Alamat yang Dimasukkan</string>
     <string name="woo_shipping_confirm_submit_address_suggested">Konfirmasi Alamat yang Disarankan</string>
     <string name="woo_shipping_confirm_address_suggested">Disarankan</string>

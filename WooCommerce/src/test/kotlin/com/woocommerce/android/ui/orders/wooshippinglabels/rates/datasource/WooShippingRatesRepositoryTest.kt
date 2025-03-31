@@ -4,6 +4,9 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.Location
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.ContentType
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.RestrictionType
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.WooShippingRatesRestClient
@@ -74,6 +77,18 @@ class WooShippingRatesRepositoryTest : BaseUnitTest() {
         isVerified = true
     )
 
+    private val defaultCustomData = CustomsData(
+        packageId = "1",
+        packageName = "Package 1",
+        contentType = ContentType.MERCHANDISE,
+        contentDescription = "",
+        restrictionType = RestrictionType.NONE,
+        restrictionDescription = "",
+        isReturnToSender = false,
+        itn = "",
+        items = emptyList()
+    )
+
     @Test
     fun `when the get shipping rates request fails then return an error`() = testBlocking {
         whenever(
@@ -85,7 +100,14 @@ class WooShippingRatesRepositoryTest : BaseUnitTest() {
                 message = "Error"
             )
         )
-        val result = sut.getShippingRates(1L, defaultPackageData, defaultAddress, defaultOriginAddress, 2f)
+        val result = sut.getShippingRates(
+            orderId = 1L,
+            selectedPackage = defaultPackageData,
+            shipTo = defaultAddress,
+            shipFrom = defaultOriginAddress,
+            weight = 2f,
+            customsData = defaultCustomData
+        )
 
         assert(result.isFailure)
     }
@@ -96,7 +118,14 @@ class WooShippingRatesRepositoryTest : BaseUnitTest() {
             restClient.getShippingRates(any(), any(), any(), any(), any())
         ) doReturn WooResult(emptyMap())
 
-        val result = sut.getShippingRates(1L, defaultPackageData, defaultAddress, defaultOriginAddress, 2f)
+        val result = sut.getShippingRates(
+            orderId = 1L,
+            selectedPackage = defaultPackageData,
+            shipTo = defaultAddress,
+            shipFrom = defaultOriginAddress,
+            weight = 2f,
+            customsData = defaultCustomData
+        )
 
         assert(result.isSuccess)
     }

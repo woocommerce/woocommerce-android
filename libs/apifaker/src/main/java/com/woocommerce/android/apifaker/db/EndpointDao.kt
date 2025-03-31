@@ -51,4 +51,11 @@ internal interface EndpointDao {
         val id = insertRequest(request)
         insertResponse(response.copy(endpointId = id))
     }
+
+    @Transaction
+    suspend fun insertEndpoints(endpoints: List<MockedEndpoint>) {
+        endpoints.forEach {
+            insertEndpoint(it.request, it.response)
+        }
+    }
 }

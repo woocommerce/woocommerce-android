@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-02-25 09:54:04+0000
+Translation-Revision-Date: 2025-03-11 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_address_update_message">입력한 주소 업데이트 중</string>
+    <string name="woo_shipping_address_update_title">업데이트 중</string>
+    <string name="woo_shipping_address_save_changes">변경 사항 저장</string>
+    <string name="woo_shipping_updating_address_failed">주소를 업데이트할 수 없습니다. 다시 시도해 주세요.</string>
+    <string name="woo_shipping_verifying_address_failed">주소를 확인하지 못했습니다. 다시 시도해 주세요.</string>
+    <string name="woo_shipping_address_unsaved_changes">저장하지 않은 변경사항</string>
+    <string name="woo_shipping_address_missing">이메일 누락</string>
+    <string name="woo_shipping_edit_destination_address_title">목적지 편집</string>
+    <string name="woo_shipping_labels_customs_product_details_origin_country_selection">국가 선택</string>
+    <string name="woo_shipping_labels_customs_product_details_origin_country_missing">국가 누락</string>
+    <string name="woo_shipping_labels_customs_product_details_origin_country">원산지 국가</string>
+    <string name="woo_shipping_labels_customs_product_details_value_required">값 필수</string>
+    <string name="woo_shipping_labels_customs_product_details_weight_per_unit">개당 무게</string>
+    <string name="woo_shipping_labels_customs_product_details_value_per_unit">개당 가격</string>
+    <string name="woo_shipping_labels_customs_product_details_tariff_missing">관세 번호 누락</string>
+    <string name="woo_shipping_labels_customs_product_details_tariff">HS 관세 번호</string>
+    <string name="woo_shipping_labels_customs_product_details_description_missing">설명 누락</string>
+    <string name="woo_shipping_labels_customs_product_details_description">설명</string>
+    <string name="woo_shipping_labels_customs_product_details_title">상품 상세 정보</string>
+    <string name="woo_shipping_labels_customs_itn_required_message">ITN은 비워둘 수 없습니다.</string>
+    <string name="woo_shipping_labels_customs_itn_error_message">유효하지 않은 ITN 형식</string>
+    <string name="woo_shipping_labels_customs_other_error_message">유형은 비워둘 수 없습니다.</string>
+    <string name="woo_shipping_labels_package_creation_shipping_rates_loading_error">배송비를 로드할 수 없습니다.</string>
+    <string name="woo_shipping_labels_package_creation_saved_loading_error">저장된 패키지를 로드할 수 없습니다.</string>
+    <string name="woo_shipping_labels_package_creation_carrier_loading_error">배송업체 패키지를 로드할 수 없습니다.</string>
     <string name="woo_shipping_confirm_submit_address_entered">입력된 주소 확인</string>
     <string name="woo_shipping_confirm_submit_address_suggested">제안된 주소 확인</string>
     <string name="woo_shipping_confirm_address_suggested">제안됨</string>

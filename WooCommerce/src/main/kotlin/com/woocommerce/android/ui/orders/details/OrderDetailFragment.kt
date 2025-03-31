@@ -176,6 +176,14 @@ class OrderDetailFragment :
     override fun getFragmentTitle() = screenTitle
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val isScreenLargerThanCompact = requireContext().isTwoPanesShouldBeUsed
+        if (isScreenLargerThanCompact) {
+            // Postpone the transition until the view is ready. We need to do this on tablets to avoid a flicker
+            // when navigating to order detail/list. For instance - While collecting payment during order creation
+            // we navigate from order creation to order detail screen. If we don't postpone the transition, we would
+            // see a flicker of empty order detail screen before the order detail is loaded.
+            postponeEnterTransition()
+        }
         super.onViewCreated(view, savedInstanceState)
 
         /**
@@ -195,7 +203,6 @@ class OrderDetailFragment :
          * during the payment collection process. If this is the case, it navigates to the
          * Select Payment screen on both phone and tablet devices.
          */
-        val isScreenLargerThanCompact = requireContext().isTwoPanesShouldBeUsed
         if (isOrderListFragmentNotVisible() && isScreenLargerThanCompact && !navArgs.startPaymentFlow) {
             navigateBackWithResult(KEY_ORDER_ID, navArgs.orderId)
             return
@@ -204,7 +211,14 @@ class OrderDetailFragment :
             return
         }
 
+        if (navArgs.startPaymentFlow) {
+            communicationViewModel.notifyOrdersLoaded()
+        }
+
         _binding = FragmentOrderDetailBinding.bind(view)
+        if (isScreenLargerThanCompact) {
+            view.post { startPostponedEnterTransition() }
+        }
 
         setMarginsIfTablet()
         setupToolbar()
@@ -365,7 +379,7 @@ class OrderDetailFragment :
     private fun setupObservers(viewModel: OrderDetailViewModel) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.orderInfo?.takeIfNotEqualTo(old?.orderInfo) {
-                showOrderDetail(it.order!!, it.isPaymentCollectableWithCardReader, it.receiptButtonStatus)
+                showOrderDetail(it.order!!, it.receiptButtonStatus)
                 if (requireContext().isTwoPanesShouldBeUsed) {
                     orderEditingViewModel.setOrderId(it.order.id)
                 }
@@ -611,7 +625,6 @@ class OrderDetailFragment :
 
     private fun showOrderDetail(
         order: Order,
-        isPaymentCollectableWithCardReader: Boolean,
         receiptButtonStatus: OrderDetailViewState.ReceiptButtonStatus
     ) {
         binding.orderDetailOrderStatus.updateOrder(order)
@@ -622,7 +635,6 @@ class OrderDetailFragment :
         )
         binding.orderDetailPaymentInfo.updatePaymentInfo(
             order = order,
-            isPaymentCollectableWithCardReader = isPaymentCollectableWithCardReader,
             receiptButtonStatus = receiptButtonStatus,
             formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(order.currency),
             onIssueRefundClickListener = { viewModel.onIssueOrderRefundClicked() },

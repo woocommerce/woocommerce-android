@@ -1,5 +1,6 @@
 package org.wordpress.android.fluxc.network.rest.wpapi.media
 
+import com.google.gson.Gson
 import okhttp3.Credentials
 import okhttp3.OkHttpClient
 import org.wordpress.android.fluxc.Dispatcher
@@ -23,9 +24,11 @@ class ApplicationPasswordsMediaRestClient @Inject constructor(
     dispatcher: Dispatcher,
     coroutineEngine: CoroutineEngine,
     @Named("no-cookies") okHttpClient: OkHttpClient,
-    private val applicationPasswordsNetwork: ApplicationPasswordsNetwork
-) : BaseWPV2MediaRestClient(dispatcher, coroutineEngine, okHttpClient) {
-    @Inject internal lateinit var applicationPasswordsManager: ApplicationPasswordsManager
+    private val applicationPasswordsNetwork: ApplicationPasswordsNetwork,
+    gson: Gson
+) : BaseWPV2MediaRestClient(dispatcher, coroutineEngine, okHttpClient, gson) {
+    @Inject
+    internal lateinit var applicationPasswordsManager: ApplicationPasswordsManager
 
     override fun WPAPIEndpoint.getFullUrl(site: SiteModel): String {
         return (site.wpApiRestUrl ?: site.url.slashJoin("wp-json")).slashJoin(urlV2)

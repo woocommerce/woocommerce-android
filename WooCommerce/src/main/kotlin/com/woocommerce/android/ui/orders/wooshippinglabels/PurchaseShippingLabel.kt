@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.wooshippinglabels
 
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PurchasedLabelData
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingLabelRepository
@@ -23,6 +24,7 @@ class PurchaseShippingLabel @Inject constructor(
         shippingRate: WooShippingRateModel,
         weight: Float,
         lastOrderComplete: Boolean,
+        customsData: List<CustomsData>? = null,
     ): Result<PurchasedLabelData> {
         return selectedSite.getOrNull()?.let {
             val response = wooShippingLabelRepository.purchaseShippingLabel(
@@ -33,6 +35,7 @@ class PurchaseShippingLabel @Inject constructor(
                 shipFrom = shipFrom,
                 selectedRate = shippingRate,
                 weight = weight,
+                customsData = customsData,
                 lastOrderComplete = lastOrderComplete,
                 site = it
             )

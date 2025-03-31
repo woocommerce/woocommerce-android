@@ -324,6 +324,15 @@ private fun TotalsGrid(totals: Totals.Visible) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
+        totals.orderDiscountText?.let {
+            TotalsGridRow(
+                textOne = stringResource(R.string.woopos_payment_discount_label),
+                textTwo = totals.orderDiscountText,
+            )
+
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
+        }
+
         TotalsGridRow(
             textOne = stringResource(R.string.woopos_payment_subtotal_label),
             textTwo = totals.orderSubtotalText,
@@ -445,6 +454,7 @@ fun WooPosTotalsScreenPreview(modifier: Modifier = Modifier) {
                     orderSubtotalText = "$420.00",
                     orderTotalText = "$462.00",
                     orderTaxText = "$42.00",
+                    orderDiscountText = "$20.00",
                 ),
                 readerStatus = WooPosTotalsViewState.ReaderStatus.ReadyForPayment(
                     title = "Ready for payment",
@@ -467,6 +477,7 @@ fun WooPosTotalsScreenPreviewReaderNotConnected(modifier: Modifier = Modifier) {
                     orderSubtotalText = "$420.00",
                     orderTotalText = "$462.00",
                     orderTaxText = "$42.00",
+                    orderDiscountText = "$20.00",
                 ),
                 readerStatus = WooPosTotalsViewState.ReaderStatus.Disconnected(
                     title = "Reader not connected",
@@ -490,6 +501,7 @@ fun WooPosTotalsScreenPreviewWithCashPaymentAvailable() {
                     orderSubtotalText = "$420.00",
                     orderTotalText = "$462.00",
                     orderTaxText = "$42.00",
+                    orderDiscountText = null,
                 ),
                 readerStatus = WooPosTotalsViewState.ReaderStatus.Disconnected(
                     title = "Reader not connected",
@@ -513,6 +525,7 @@ fun WooPosTotalsScreenPreviewForFreeOrders() {
                     orderSubtotalText = "$420.00",
                     orderTotalText = "$462.00",
                     orderTaxText = "$42.00",
+                    orderDiscountText = "$20.00",
                 ),
                 readerStatus = WooPosTotalsViewState.ReaderStatus.Unavailable,
             ),

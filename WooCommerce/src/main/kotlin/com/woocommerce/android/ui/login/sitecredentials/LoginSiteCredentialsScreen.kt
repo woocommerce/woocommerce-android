@@ -48,7 +48,8 @@ fun LoginSiteCredentialsScreen(viewModel: LoginSiteCredentialsViewModel) {
             onResetPasswordClick = viewModel::onResetPasswordClick,
             onBackClick = viewModel::onBackClick,
             onHelpButtonClick = viewModel::onHelpButtonClick,
-            onErrorDialogDismissed = viewModel::onErrorDialogDismissed
+            onErrorDialogDismissed = viewModel::onErrorDialogDismissed,
+            onStartWebAuthorizationClick = viewModel::onStartWebAuthorizationClick
         )
     }
 }
@@ -63,6 +64,7 @@ fun LoginSiteCredentialsScreen(
     onBackClick: () -> Unit,
     onHelpButtonClick: () -> Unit,
     onErrorDialogDismissed: () -> Unit,
+    onStartWebAuthorizationClick: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -156,6 +158,11 @@ fun LoginSiteCredentialsScreen(
                                 textAlign = TextAlign.End
                             )
                         }
+                        WCTextButton(
+                            onClick = onStartWebAuthorizationClick
+                        ) {
+                            Text(text = stringResource(id = R.string.login_site_credentials_use_web_authorization))
+                        }
                     }
                 }
             )
@@ -181,7 +188,8 @@ private fun LoginSiteCredentialsScreenPreview() {
             onResetPasswordClick = {},
             onBackClick = {},
             onHelpButtonClick = {},
-            onErrorDialogDismissed = {}
+            onErrorDialogDismissed = {},
+            onStartWebAuthorizationClick = {}
         )
     }
 }
@@ -201,7 +209,8 @@ private fun LoginSiteCredentialsScreenWithErrorPreview() {
             onResetPasswordClick = {},
             onBackClick = {},
             onHelpButtonClick = {},
-            onErrorDialogDismissed = {}
+            onErrorDialogDismissed = {},
+            onStartWebAuthorizationClick = {}
         )
     }
 }

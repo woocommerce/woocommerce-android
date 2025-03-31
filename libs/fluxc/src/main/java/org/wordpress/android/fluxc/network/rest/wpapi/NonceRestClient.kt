@@ -69,10 +69,10 @@ class NonceRestClient @Inject constructor(
                 // that it's an authentication issue, otherwise we'll assume it's an invalid response
                 val errorMessage = extractErrorMessage(response.data.orEmpty())
 
-                val errorType = if (hasInvalidCredentialsPattern(response.data.orEmpty())) {
+                val errorType = if (hasInvalidCredentialsPattern(response.data.orEmpty()) &&
+                    errorMessage?.contains("captcha", ignoreCase = true) != true
+                ) {
                     Nonce.CookieNonceErrorType.INVALID_CREDENTIALS
-                } else if (errorMessage != null) {
-                    Nonce.CookieNonceErrorType.NOT_AUTHENTICATED
                 } else {
                     Nonce.CookieNonceErrorType.INVALID_RESPONSE
                 }

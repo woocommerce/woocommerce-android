@@ -15,6 +15,7 @@ data class WooShippingCustomsProductUIModel(
     val valuePerUnit: InputValue,
     val weightPerUnit: InputValue,
     val originCountry: String,
+    val originCountryCode: String,
     val quantity: Float,
     val isExpanded: Boolean
 ) : Parcelable {
@@ -44,6 +45,7 @@ data class WooShippingCustomsProductUIModel(
             value = valuePerUnit.currentInput.toBigDecimalOrNull() ?: BigDecimal.ZERO,
             weight = weightPerUnit.currentInput.toFloatOrNull() ?: 0F,
             originCountry = originCountry,
+            originCountryCode = originCountryCode,
             quantity = quantity
         )
 }

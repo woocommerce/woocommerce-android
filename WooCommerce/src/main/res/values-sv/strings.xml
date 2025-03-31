@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-02-25 11:54:03+0000
+Translation-Revision-Date: 2025-03-11 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_address_update_message">Uppdaterar angiven adress</string>
+    <string name="woo_shipping_address_update_title">Uppdaterar</string>
+    <string name="woo_shipping_address_save_changes">Spara ändringar</string>
+    <string name="woo_shipping_updating_address_failed">Vi kunde inte uppdatera din adress. Försök igen.</string>
+    <string name="woo_shipping_verifying_address_failed">Adressverifieringen misslyckades. Försök igen.</string>
+    <string name="woo_shipping_address_unsaved_changes">Ej sparade ändringar</string>
+    <string name="woo_shipping_address_missing">Saknar adress</string>
+    <string name="woo_shipping_edit_destination_address_title">Redigera destination</string>
+    <string name="woo_shipping_labels_customs_product_details_origin_country_selection">Välj ett land</string>
+    <string name="woo_shipping_labels_customs_product_details_origin_country_missing">Saknar land</string>
+    <string name="woo_shipping_labels_customs_product_details_origin_country">Ursprungsland</string>
+    <string name="woo_shipping_labels_customs_product_details_value_required">Värde krävs</string>
+    <string name="woo_shipping_labels_customs_product_details_weight_per_unit">Vikt per enhet</string>
+    <string name="woo_shipping_labels_customs_product_details_value_per_unit">Värde per enhet</string>
+    <string name="woo_shipping_labels_customs_product_details_tariff_missing">Tariffnummer saknas</string>
+    <string name="woo_shipping_labels_customs_product_details_tariff">HS-tariffnummer</string>
+    <string name="woo_shipping_labels_customs_product_details_description_missing">Saknar beskrivning</string>
+    <string name="woo_shipping_labels_customs_product_details_description">Beskrivning</string>
+    <string name="woo_shipping_labels_customs_product_details_title">Produktdetaljer</string>
+    <string name="woo_shipping_labels_customs_itn_required_message">ITN får inte vara tomt</string>
+    <string name="woo_shipping_labels_customs_itn_error_message">Ogiltigt ITN-format</string>
+    <string name="woo_shipping_labels_customs_other_error_message">Typ får inte vara tomt</string>
+    <string name="woo_shipping_labels_package_creation_shipping_rates_loading_error">Vi kan inte ladda fraktavgifterna.</string>
+    <string name="woo_shipping_labels_package_creation_saved_loading_error">Vi kan inte ladda sparade paket.</string>
+    <string name="woo_shipping_labels_package_creation_carrier_loading_error">Vi kan inte ladda transportföretagspaketen.</string>
     <string name="woo_shipping_confirm_submit_address_entered">Bekräfta angiven adress</string>
     <string name="woo_shipping_confirm_submit_address_suggested">Bekräfta föreslagen adress</string>
     <string name="woo_shipping_confirm_address_suggested">Föreslagen</string>

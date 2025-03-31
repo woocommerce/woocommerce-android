@@ -46,6 +46,12 @@ sealed class ChildToParentEvent {
         data object ReturnHomeFromCashWhenCardPaymentStarted : NavigationEvent()
         data object ExitPos : NavigationEvent()
     }
+
+    sealed class SearchEvent : ChildToParentEvent() {
+        data class ChangedQuery(val query: String) : SearchEvent()
+        object Finished : SearchEvent()
+        object Started : SearchEvent()
+    }
 }
 
 interface WooPosChildrenToParentEventReceiver {

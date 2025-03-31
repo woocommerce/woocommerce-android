@@ -9,16 +9,16 @@ plugins {
 
 android {
     compileOptions {
-        sourceCompatibility libs.versions.java.get()
-        targetCompatibility libs.versions.java.get()
+        sourceCompatibility = libs.versions.java.get()
+        targetCompatibility = libs.versions.java.get()
     }
 
-    namespace "org.wordpress.android.login"
+    namespace = "org.wordpress.android.login"
 
     defaultConfig {
         minSdkVersion gradle.ext.minSdkVersion
         targetSdkVersion gradle.ext.targetSdkVersion
-        compileSdk gradle.ext.compileSdkVersion
+        compileSdk = gradle.ext.compileSdkVersion
 
         // Optional: used to autofill username and password fields at login on debug build only
         // Copy `developer.properties-example` to `developer.properties` and fill in the values
@@ -30,7 +30,7 @@ android {
         }
     }
     buildFeatures {
-        buildConfig true
+        buildConfig = true
     }
 }
 

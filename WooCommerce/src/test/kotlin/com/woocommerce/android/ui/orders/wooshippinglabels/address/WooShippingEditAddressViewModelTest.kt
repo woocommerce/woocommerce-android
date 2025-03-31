@@ -30,6 +30,7 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
     protected val normalizeAddress: NormalizeAddress = mock()
     protected val updateOriginAddress: UpdateOriginAddress = mock()
     protected val updateDestinationAddress: UpdateDestinationAddress = mock()
+    protected val getAllCountries: GetAllCountries = mock()
 
     protected val countries = listOf(
         Location("US", "United States"),
@@ -46,6 +47,7 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
     protected lateinit var sut: WooShippingEditAddressViewModel
 
     abstract fun createSavedStateHandle(address: Address, isVerified: Boolean = false): SavedStateHandle
+    abstract suspend fun mockCountries(countries: Result<List<Location>>)
 
     fun createViewModel(savedState: SavedStateHandle) {
         sut = WooShippingEditAddressViewModel(
@@ -56,7 +58,8 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
             normalizeAddress = normalizeAddress,
             resourceProvider = resourceProvider,
             updateOriginAddress = updateOriginAddress,
-            updateDestinationAddress = updateDestinationAddress
+            updateDestinationAddress = updateDestinationAddress,
+            getAllCountries = getAllCountries
         )
     }
 
@@ -309,7 +312,7 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
     fun `when get accepted countries succeed then don't display loading or error`() = testBlocking {
         val address = Address.EMPTY
         whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
-        whenever(getAcceptedOriginCountries.invoke()).doReturn(Result.success(countries))
+        mockCountries(Result.success(countries))
         Snapshot.withMutableSnapshot {
             val savedState = createSavedStateHandle(address)
             createViewModel(savedState)
@@ -329,7 +332,7 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
     fun `when get accepted countries fails then display error`() = testBlocking {
         val address = Address.EMPTY
         whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
-        whenever(getAcceptedOriginCountries.invoke()).doReturn(Result.failure(Exception("error")))
+        mockCountries(Result.failure(Exception("error")))
         whenever(resourceProvider.getString(any())).doReturn("error")
         Snapshot.withMutableSnapshot {
             val savedState = createSavedStateHandle(address)
@@ -350,7 +353,7 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
     fun `when get states is empty then use state input`() = testBlocking {
         val address = Address.EMPTY
         whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
-        whenever(getAcceptedOriginCountries.invoke()).doReturn(Result.success(countries))
+        mockCountries(Result.success(countries))
         whenever(getStatesByCountryCode.invoke(any())).doReturn(emptyList())
         Snapshot.withMutableSnapshot {
             val savedState = createSavedStateHandle(address)
@@ -367,10 +370,10 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when get states is empty then use state selection`() = testBlocking {
+    fun `when get states is NOT empty then use state selection`() = testBlocking {
         val address = Address.EMPTY
         whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
-        whenever(getAcceptedOriginCountries.invoke()).doReturn(Result.success(countries))
+        mockCountries(Result.success(countries))
         whenever(getStatesByCountryCode.invoke(any())).doReturn(states)
         Snapshot.withMutableSnapshot {
             val savedState = createSavedStateHandle(address)
@@ -390,7 +393,7 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
     fun `when the country selected has states then use the first state from the list`() = testBlocking {
         val address = Address.EMPTY
         whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
-        whenever(getAcceptedOriginCountries.invoke()).doReturn(Result.success(countries))
+        mockCountries(Result.success(countries))
         whenever(getStatesByCountryCode.invoke(any())).doReturn(states)
         Snapshot.withMutableSnapshot {
             val savedState = createSavedStateHandle(address)
@@ -408,10 +411,87 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when the country selected changes to a country with states then use the first state from the list`() = testBlocking {
+        val initialCountryCode = "AR"
+        val finalCountryCode = "US"
+        val initialStateCode = "BA"
+        val address = Address.EMPTY.copy(
+            country = AmbiguousLocation.Raw(initialCountryCode).asLocation(),
+            state = AmbiguousLocation.Raw("BA")
+        )
+        whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
+        mockCountries(Result.success(countries))
+        whenever(getStatesByCountryCode.invoke(initialCountryCode)).doReturn(emptyList())
+        whenever(getStatesByCountryCode.invoke(finalCountryCode)).doReturn(states)
+        Snapshot.withMutableSnapshot {
+            val savedState = createSavedStateHandle(address)
+            createViewModel(savedState)
+        }
+
+        advanceUntilIdle()
+
+        var result = sut.viewState.value
+
+        assertThat(result.shouldUseStatesInput).isTrue
+        assertThat(result.editableAddress.state.code).isEqualTo(initialStateCode)
+
+        sut.onCountryChanged(finalCountryCode)
+
+        result = sut.viewState.value
+
+        assertThat(result.shouldUseStatesInput).isFalse()
+        assertThat(result.editableAddress.state).isEqualTo(states.first())
+    }
+
+    @Test
+    fun `when the country selected changes to initial country then use initial state`() = testBlocking {
+        val initialCountryCode = "AR"
+        val finalCountryCode = "US"
+        val initialStateCode = "BA"
+        val address = Address.EMPTY.copy(
+            country = AmbiguousLocation.Raw(initialCountryCode).asLocation(),
+            state = AmbiguousLocation.Raw("BA")
+        )
+        whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
+        mockCountries(Result.success(countries))
+        whenever(getStatesByCountryCode.invoke(initialCountryCode)).doReturn(emptyList())
+        whenever(getStatesByCountryCode.invoke(finalCountryCode)).doReturn(states)
+        Snapshot.withMutableSnapshot {
+            val savedState = createSavedStateHandle(address)
+            createViewModel(savedState)
+        }
+
+        advanceUntilIdle()
+
+        var result = sut.viewState.value
+
+        assertThat(result.shouldUseStatesInput).isTrue
+        assertThat(result.editableAddress.state.code).isEqualTo(initialStateCode)
+
+        // Change country for the first time
+
+        sut.onCountryChanged(finalCountryCode)
+
+        result = sut.viewState.value
+
+        assertThat(result.shouldUseStatesInput).isFalse()
+        assertThat(result.editableAddress.state).isEqualTo(states.first())
+
+        // Reset country to the initial one
+
+        sut.onCountryChanged(initialCountryCode)
+
+        result = sut.viewState.value
+
+        assertThat(result.shouldUseStatesInput).isTrue
+        assertThat(result.editableAddress.state.code).isEqualTo(initialStateCode)
+    }
+
+    @Test
     fun `when the country selected has NO states then use the empty string`() = testBlocking {
         val address = Address.EMPTY
         whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
-        whenever(getAcceptedOriginCountries.invoke()).doReturn(Result.success(countries))
+        mockCountries(Result.success(countries))
         whenever(getStatesByCountryCode.invoke(any())).doReturn(emptyList())
         Snapshot.withMutableSnapshot {
             val savedState = createSavedStateHandle(address)
@@ -444,7 +524,7 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
             company = "",
         )
         whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
-        whenever(getAcceptedOriginCountries.invoke()).doReturn(Result.success(countries))
+        mockCountries(Result.success(countries))
         whenever(getStatesByCountryCode.invoke(any())).doReturn(states)
         Snapshot.withMutableSnapshot {
             val savedState = createSavedStateHandle(address, true)
@@ -476,7 +556,7 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
             company = ""
         )
         whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
-        whenever(getAcceptedOriginCountries.invoke()).doReturn(Result.success(countries))
+        mockCountries(Result.success(countries))
         whenever(getStatesByCountryCode.invoke(any())).doReturn(states)
         Snapshot.withMutableSnapshot {
             val savedState = createSavedStateHandle(address, true)
@@ -509,7 +589,7 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
             company = "",
         )
         whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
-        whenever(getAcceptedOriginCountries.invoke()).doReturn(Result.success(countries))
+        mockCountries(Result.success(countries))
         whenever(getStatesByCountryCode.invoke(any())).doReturn(states)
         Snapshot.withMutableSnapshot {
             val savedState = createSavedStateHandle(address, true)
@@ -543,7 +623,7 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
                 company = "",
             )
             whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
-            whenever(getAcceptedOriginCountries.invoke()).doReturn(Result.success(countries))
+            mockCountries(Result.success(countries))
             whenever(getStatesByCountryCode.invoke(any())).doReturn(states)
             Snapshot.withMutableSnapshot {
                 val savedState = createSavedStateHandle(address)
@@ -575,7 +655,7 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
             company = "",
         )
         whenever(addressValidator.validateFieldRequired(any())).doReturn("Field required")
-        whenever(getAcceptedOriginCountries.invoke()).doReturn(Result.success(countries))
+        mockCountries(Result.success(countries))
         whenever(getStatesByCountryCode.invoke(any())).doReturn(states)
         Snapshot.withMutableSnapshot {
             val savedState = createSavedStateHandle(address)
@@ -595,7 +675,7 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
     fun `when screen is initialized then normalize address is closed`() = testBlocking {
         val address = Address.EMPTY
         whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
-        whenever(getAcceptedOriginCountries.invoke()).doReturn(Result.success(countries))
+        mockCountries(Result.success(countries))
         whenever(getStatesByCountryCode.invoke(any())).doReturn(states)
         Snapshot.withMutableSnapshot {
             val savedState = createSavedStateHandle(address)
@@ -627,7 +707,7 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
             company = "",
         )
         whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
-        whenever(getAcceptedOriginCountries.invoke()).doReturn(Result.success(countries))
+        mockCountries(Result.success(countries))
         whenever(getStatesByCountryCode.invoke(any())).doReturn(states)
         whenever(normalizeAddress.invoke(any())).doReturn(Result.failure(Exception("error")))
         whenever(resourceProvider.getString(any())).doReturn("error")
@@ -660,7 +740,7 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
         )
 
         whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
-        whenever(getAcceptedOriginCountries.invoke()).doReturn(Result.success(countries))
+        mockCountries(Result.success(countries))
         whenever(getStatesByCountryCode.invoke(any())).doReturn(states)
         whenever(normalizeAddress.invoke(any())).doReturn(Result.success(normalizeAddressResponse))
         whenever(resourceProvider.getString(any())).doReturn("error")
@@ -694,7 +774,7 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
         )
 
         whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
-        whenever(getAcceptedOriginCountries.invoke()).doReturn(Result.success(countries))
+        mockCountries(Result.success(countries))
         whenever(getStatesByCountryCode.invoke(any())).doReturn(states)
         whenever(normalizeAddress.invoke(any())).doReturn(Result.success(normalizeAddressResponse))
         whenever(resourceProvider.getString(any())).doReturn("error")
@@ -727,7 +807,7 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
         )
 
         whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
-        whenever(getAcceptedOriginCountries.invoke()).doReturn(Result.success(countries))
+        mockCountries(Result.success(countries))
         whenever(getStatesByCountryCode.invoke(any())).doReturn(states)
         whenever(normalizeAddress.invoke(any())).doReturn(Result.success(normalizeAddressResponse))
         whenever(resourceProvider.getString(any())).doReturn("error")
@@ -767,7 +847,7 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
         )
 
         whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
-        whenever(getAcceptedOriginCountries.invoke()).doReturn(Result.success(countries))
+        mockCountries(Result.success(countries))
         whenever(getStatesByCountryCode.invoke(any())).doReturn(states)
         whenever(normalizeAddress.invoke(any())).doReturn(Result.success(normalizeAddressResponse))
         whenever(resourceProvider.getString(any())).doReturn("error")
@@ -806,7 +886,7 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
         )
 
         whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
-        whenever(getAcceptedOriginCountries.invoke()).doReturn(Result.success(countries))
+        mockCountries(Result.success(countries))
         whenever(getStatesByCountryCode.invoke(any())).doReturn(states)
         whenever(normalizeAddress.invoke(any())).doReturn(Result.success(normalizeAddressResponse))
         whenever(resourceProvider.getString(any())).doReturn("error")
@@ -829,7 +909,7 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
     @Test
     fun `when the address selection is NOT expanded then allow back navigation`() = testBlocking {
         whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
-        whenever(getAcceptedOriginCountries.invoke()).doReturn(Result.success(countries))
+        mockCountries(Result.success(countries))
         whenever(getStatesByCountryCode.invoke(any())).doReturn(states)
         Snapshot.withMutableSnapshot {
             val savedState = createSavedStateHandle(Address.EMPTY)

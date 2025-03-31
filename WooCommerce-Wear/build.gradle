@@ -36,17 +36,17 @@ def versionProperties = loadPropertiesFromFile(file("${rootDir}/version.properti
 def versionCodeDifferenceBetweenAppAndWear = 50000
 
 android {
-    namespace 'com.woocommerce.android'
-    compileSdk gradle.ext.compileSdkVersion
+    namespace = 'com.woocommerce.android'
+    compileSdk = gradle.ext.compileSdkVersion
 
     defaultConfig {
         applicationId "com.woocommerce.android"
-        minSdk gradle.ext.minSdkVersion
-        targetSdk gradle.ext.targetSdkVersion
+        minSdk = gradle.ext.minSdkVersion
+        targetSdk = gradle.ext.targetSdkVersion
         versionName "${versionProperties.getProperty("versionName")}w"
         versionCode versionProperties.getProperty("versionCode").toInteger() + versionCodeDifferenceBetweenAppAndWear
         vectorDrawables {
-            useSupportLibrary true
+            useSupportLibrary = true
         }
 
     }
@@ -58,12 +58,12 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility libs.versions.java.get()
-        targetCompatibility libs.versions.java.get()
+        sourceCompatibility = libs.versions.java.get()
+        targetCompatibility = libs.versions.java.get()
     }
     buildFeatures {
-        buildConfig true
-        compose true
+        buildConfig = true
+        compose = true
     }
     packaging {
         resources {
@@ -84,7 +84,7 @@ android {
         wasabi {
             applicationId "com.woocommerce.android.dev"
             dimension "buildType"
-            isDefault true
+            isDefault = true
 
             resConfigs("en", "xxhdpi")
         }
