@@ -1,5 +1,6 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.media.wpv2
 
+import com.google.gson.Gson
 import okhttp3.OkHttpClient
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.annotations.endpoint.WPAPIEndpoint
@@ -21,13 +22,14 @@ class WPComV2MediaRestClient @Inject constructor(
     coroutineEngine: CoroutineEngine,
     @Named("regular") okHttpClient: OkHttpClient,
     private val accessToken: AccessToken,
-    private val wpComNetwork: WPComNetwork
-) : BaseWPV2MediaRestClient(dispatcher, coroutineEngine, okHttpClient) {
+    private val wpComNetwork: WPComNetwork,
+    gson: Gson
+) : BaseWPV2MediaRestClient(dispatcher, coroutineEngine, okHttpClient, gson) {
     override fun WPAPIEndpoint.getFullUrl(site: SiteModel): String = getWPComUrl(site.siteId)
 
     override suspend fun getAuthorizationHeader(site: SiteModel): String = "Bearer ${accessToken.get()}"
 
-    override suspend fun <T:Any> executeGetGsonRequest(
+    override suspend fun <T : Any> executeGetGsonRequest(
         site: SiteModel,
         endpoint: WPAPIEndpoint,
         params: Map<String, String>,
@@ -41,7 +43,7 @@ class WPComV2MediaRestClient @Inject constructor(
             params = params,
         )
 
-        return when(response) {
+        return when (response) {
             is WPComGsonRequestBuilder.Response.Success -> WPAPIResponse.Success(response.data)
             is WPComGsonRequestBuilder.Response.Error -> WPAPIResponse.Error(
                 WPAPINetworkError(response.error, response.error.apiError)

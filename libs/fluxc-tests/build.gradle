@@ -7,17 +7,17 @@ plugins {
 }
 
 android {
-    namespace "org.wordpress.android.fluxc.example"
+    namespace = "org.wordpress.android.fluxc.example"
 
     compileOptions {
-        sourceCompatibility libs.versions.java.get()
-        targetCompatibility libs.versions.java.get()
+        sourceCompatibility = libs.versions.java.get()
+        targetCompatibility = libs.versions.java.get()
     }
 
     defaultConfig {
         minSdkVersion gradle.ext.minSdkVersion
         targetSdkVersion gradle.ext.targetSdkVersion
-        compileSdk gradle.ext.compileSdkVersion
+        compileSdk = gradle.ext.compileSdkVersion
     }
 
     testOptions.unitTests.includeAndroidResources = true

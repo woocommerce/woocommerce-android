@@ -32,6 +32,12 @@ sealed class ParentToChildrenEvent {
             CASH
         }
     }
+
+    sealed class SearchEvent : ParentToChildrenEvent() {
+        data class ChangedQuery(val query: String) : SearchEvent()
+        object Finished : SearchEvent()
+        object Started : SearchEvent()
+    }
 }
 
 interface WooPosParentToChildrenEventReceiver {

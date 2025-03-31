@@ -228,7 +228,8 @@ fun PreviewWooShippingCustomsFormScreen() {
                     tariffNumber = InputValue.Data("123456"),
                     valuePerUnit = InputValue.Data("10.00"),
                     weightPerUnit = InputValue.Data("1.00"),
-                    originCountry = "US",
+                    originCountry = "United Stats of America",
+                    originCountryCode = "US",
                     quantity = 1F,
                     isExpanded = false
                 ),
@@ -239,7 +240,8 @@ fun PreviewWooShippingCustomsFormScreen() {
                     tariffNumber = InputValue.Data("123456"),
                     valuePerUnit = InputValue.Data("10.00"),
                     weightPerUnit = InputValue.Data("1.00"),
-                    originCountry = "US",
+                    originCountry = "United Stats of America",
+                    originCountryCode = "US",
                     quantity = 1F,
                     isExpanded = true
                 )

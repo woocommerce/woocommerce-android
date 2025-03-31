@@ -76,7 +76,7 @@ class MainBottomNavigationView @JvmOverloads constructor(
         ordersBadge = getOrCreateBadge(R.id.orders)
         ordersBadge.isVisible = false
         ordersBadge.backgroundColor = ContextCompat.getColor(context, R.color.color_primary)
-        ordersBadge.maxCharacterCount = 3 // this includes the plus sign
+        ordersBadge.maxCharacterCount = MAX_CHARACTERS_IN_BADGE // this includes the plus sign
 
         moreMenuBadge = getOrCreateBadge(R.id.moreMenu)
         moreMenuBadge.isVisible = false
@@ -133,10 +133,6 @@ class MainBottomNavigationView @JvmOverloads constructor(
         }
     }
 
-    fun clearOrderBadgeCount() {
-        ordersBadge.clearNumber()
-    }
-
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         navController?.let { navController ->
             val navSuccess = NavigationUI.onNavDestinationSelected(item, navController)
@@ -160,4 +156,8 @@ class MainBottomNavigationView @JvmOverloads constructor(
 
     private fun NavDestination.matchDestination(@IdRes destId: Int): Boolean =
         hierarchy.any { it.id == destId }
+
+    companion object {
+        private const val MAX_CHARACTERS_IN_BADGE = 4
+    }
 }

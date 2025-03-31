@@ -1,8 +1,11 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.networking
 
+import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.text.toLowerCase
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.Location
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.AddressNormalizationModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PurchasedLabelData
@@ -263,10 +266,40 @@ class WooShippingNetworkingMapper @Inject constructor(
         )
     }
 
+    fun toCustomsDTO(
+        customsDataList: List<CustomsData>
+    ): Map<String, CustomsDTO> {
+        return customsDataList.map { customsData ->
+            CustomsDTO(
+                contentsType = customsData.contentType.name.toLowerCase(Locale.current),
+                contentExplanation = customsData.contentDescription,
+                restrictionType = customsData.restrictionType.name.toLowerCase(Locale.current),
+                restrictionComments = customsData.restrictionDescription,
+                isReturnToSender = if (customsData.isReturnToSender) "return" else "abandon",
+                itn = customsData.itn,
+                items = customsData.items.map {
+                    CustomsItemDTO(
+                        productId = it.productID,
+                        description = it.description,
+                        quantity = it.quantity,
+                        value = it.value.toDouble(),
+                        weight = it.weight.toDouble(),
+                        hsTariffNumber = it.hsTariffNumber,
+                        originCountry = it.originCountryCode
+                    )
+                }
+            )
+        }.withIndex().associateBy(
+            keySelector = { "${CUSTOMS_PACKAGE_PREFIX}${it.index}" },
+            valueTransform = { it.value }
+        )
+    }
+
     companion object {
         private const val PURCHASE_IN_PROGRESS_KEY = "PURCHASE_IN_PROGRESS"
         private const val PURCHASED_KEY = "PURCHASED"
         private const val PURCHASE_ERROR_KEY = "PURCHASE_ERROR"
         private const val ANONYMIZED_KEY = "ANONYMIZED"
+        private const val CUSTOMS_PACKAGE_PREFIX = "shipment_"
     }
 }

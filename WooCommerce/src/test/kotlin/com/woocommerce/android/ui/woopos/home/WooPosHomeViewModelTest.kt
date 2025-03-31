@@ -272,7 +272,7 @@ class WooPosHomeViewModelTest {
     @Test
     fun `given home screen is at checkout, when products are updated, then should not modify screen position`() {
         val itemClickedData = listOf(
-            ItemClickedData.SimpleProduct(
+            ItemClickedData.Product.Simple(
                 id = 1L
             )
         )
@@ -294,7 +294,7 @@ class WooPosHomeViewModelTest {
         whenever(childrenToParentEventReceiver.events).thenReturn(events)
 
         val viewModel: WooPosHomeViewModel = createViewModel()
-        events.emit(ChildToParentEvent.CheckoutClicked(listOf(ItemClickedData.SimpleProduct(1))))
+        events.emit(ChildToParentEvent.CheckoutClicked(listOf(ItemClickedData.Product.Simple(1))))
         assertThat(
             viewModel.state.value.screenPositionState
         ).isEqualTo(WooPosHomeState.ScreenPositionState.Checkout.CartWithTotals)
@@ -315,7 +315,7 @@ class WooPosHomeViewModelTest {
         whenever(childrenToParentEventReceiver.events).thenReturn(events)
 
         val viewModel: WooPosHomeViewModel = createViewModel()
-        events.emit(ChildToParentEvent.CheckoutClicked(listOf(ItemClickedData.SimpleProduct(1))))
+        events.emit(ChildToParentEvent.CheckoutClicked(listOf(ItemClickedData.Product.Simple(1))))
         assertThat(
             viewModel.state.value.screenPositionState
         ).isEqualTo(WooPosHomeState.ScreenPositionState.Checkout.CartWithTotals)
@@ -336,7 +336,7 @@ class WooPosHomeViewModelTest {
         whenever(childrenToParentEventReceiver.events).thenReturn(events)
 
         val viewModel: WooPosHomeViewModel = createViewModel()
-        events.emit(ChildToParentEvent.CheckoutClicked(listOf(ItemClickedData.SimpleProduct(1))))
+        events.emit(ChildToParentEvent.CheckoutClicked(listOf(ItemClickedData.Product.Simple(1))))
         assertThat(
             viewModel.state.value.screenPositionState
         ).isEqualTo(WooPosHomeState.ScreenPositionState.Checkout.CartWithTotals)
@@ -361,7 +361,7 @@ class WooPosHomeViewModelTest {
         whenever(childrenToParentEventReceiver.events).thenReturn(events)
 
         val viewModel: WooPosHomeViewModel = createViewModel()
-        events.emit(ChildToParentEvent.CheckoutClicked(listOf(ItemClickedData.SimpleProduct(1))))
+        events.emit(ChildToParentEvent.CheckoutClicked(listOf(ItemClickedData.Product.Simple(1))))
         assertThat(
             viewModel.state.value.screenPositionState
         ).isEqualTo(WooPosHomeState.ScreenPositionState.Checkout.CartWithTotals)
@@ -442,7 +442,7 @@ class WooPosHomeViewModelTest {
         whenever(childrenToParentEventReceiver.events).thenReturn(events)
 
         val viewModel: WooPosHomeViewModel = createViewModel()
-        events.emit(ChildToParentEvent.CheckoutClicked(listOf(ItemClickedData.SimpleProduct(1))))
+        events.emit(ChildToParentEvent.CheckoutClicked(listOf(ItemClickedData.Product.Simple(1))))
         assertThat(
             viewModel.state.value.screenPositionState
         ).isEqualTo(WooPosHomeState.ScreenPositionState.Checkout.CartWithTotals)

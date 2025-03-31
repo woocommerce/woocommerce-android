@@ -356,7 +356,7 @@
     <string name="login_jetpack_installation_enter_wpcom_password">Enter the password of your WordPress.com account to install Jetpack</string>
     <string name="login_jetpack_installation_continue_magic_link">Or continue using Magic Link</string>
     <string name="login_jetpack_installation_magic_link_failure">An error occurred while fetching your website, please retry!</string>
-    <string name="login_site_credentials_invalid_response">Login failed with an unexpected response from your site. We are working on fixing this issue.</string>
+    <string name="login_site_credentials_invalid_response">Login failed with an unexpected response from your site.</string>
     <string name="login_site_credentials_custom_login_url">Unable to login because we cannot identify your store\'s login URL</string>
     <string name="login_site_credentials_custom_admin_url">Unable to login because we cannot identify your store\'s admin URL</string>
     <string name="login_site_credentials_http_error">Login failed with status code %1$s</string>
@@ -1018,6 +1018,7 @@
     <string name="orderdetail_shipping_label_notice">Learn more about creating labels with your mobile device</string>
     <string name="orderdetail_custom_fields">Custom fields</string>
     <string name="orderdetail_ai_create_thank_you_note_button">✨Create thank-you note</string>
+    <string name="receipt_preview_toolbar_title">Receipt Preview</string>
     <string name="receipt_preview_print_menu_item">Print</string>
     <string name="receipt_preview_send_menu_item">Send</string>
     <string name="order_mark_complete">Mark order complete</string>
@@ -4276,7 +4277,8 @@
     <string name="woopos_product_item_content_description">Product %s, Price %s</string>
     <string name="woopos_variable_product_item_content_description">Variable Product %s, Price %s</string>
     <string name="woopos_variation_item_content_description">Variation %s, Price %s</string>
-    <string name="woopos_cart_item_content_description">Product in cart %s, Price %s</string>
+    <string name="woopos_cart_item_product_content_description">Product in cart %s, Price %s</string>
+    <string name="woopos_cart_item_coupon_content_description">Coupon in cart %s</string>
     <string name="woopos_cart_title">Cart</string>
     <string name="woopos_clear_cart_button">Clear</string>
 
@@ -4318,6 +4320,7 @@
     <string name="woopos_payment_successful_checkmark_icon_content_description">Payment successful checkmark icon</string>
     <string name="woopos_new_order_button">New order</string>
     <string name="woopos_receipt_button">Email receipt</string>
+    <string name="woopos_payment_discount_label">Discount</string>
     <string name="woopos_payment_subtotal_label">Subtotal</string>
     <string name="woopos_payment_tax_label">Taxes</string>
     <string name="woopos_payment_total_label">Total</string>
@@ -4397,6 +4400,8 @@
     <string name="woopos_search_back_content_description">Back</string>
     <string name="woopos_clear_back_content_description">Clear</string>
     <string name="woopos_search_products">Search products…</string>
+    <string name="woopos_search_popular_items_title">Popular items</string>
+    <string name="woopos_search_recent_searches_title">Recent searches</string>
 
 
     <string name="customers_details_customer_section">Customer</string>
@@ -4470,6 +4475,10 @@
     <string name="woo_shipping_labels_package_creation_carrier_loading_error">We are unable to load carrier packages.</string>
     <string name="woo_shipping_labels_package_creation_saved_loading_error">We are unable to load saved packages.</string>
     <string name="woo_shipping_labels_package_creation_shipping_rates_loading_error">We are unable to load shipping rates.</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_destination">Add a destination address to get shipping rates</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_destination_desc">We need to know where this package is going before we can show the available shipping rates.</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_weight">Add shipment weight to get shipping rates</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_weight_desc">We need to know the shipment weight before we can show the available shipping rates.</string>
     <string name="woo_shipping_labels_package_creation_box_type">Box</string>
     <string name="woo_shipping_labels_package_creation_envelope_type">Envelope</string>
     <string name="woo_shipping_labels_package_creation_error_title">We couldn\'t save the package as template</string>
@@ -4510,6 +4519,13 @@
     <string name="woo_shipping_labels_customs_product_details_origin_country">Origin country</string>
     <string name="woo_shipping_labels_customs_product_details_origin_country_missing">Missing country</string>
     <string name="woo_shipping_labels_customs_product_details_origin_country_selection">Select a country</string>
+    <string name="woo_shipping_labels_hazmat_info_title">Are you shipping dangerous goods or hazardous materials?</string>
+    <string name="woo_shipping_labels_hazmat_info_contains_hazmat">Contains hazardous materials</string>
+    <string name="woo_shipping_labels_hazmat_info_full_description">Potentially hazardous material includes items such as batteries, dry ice, flammable liquids, aerosols, ammunition, fireworks, nail polish, perfume, paint, solvents, and more. Hazardous items must ship in separate packages.</string>
+    <string name="woo_shipping_labels_hazmat_info_tooltip_1">Learn how to securely package, label, and ship HAZMAT through USPS® at &lt;a href=\'usps-hazmat\'&gt;&lt;u&gt;www.usps.com/hazmat&lt;/u&gt;&lt;/a&gt;. Determine your product\'s mailability using the &lt;a href=\'hazmat-tool\'&gt;&lt;u&gt;USPS HAZMAT Search Tool&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="woo_shipping_labels_hazmat_info_tooltip_2">WooCommerce Shipping does not currently support HAZMAT shipments through &lt;a href=\'dhl-hazmat\'&gt;&lt;u&gt;DHL Express&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="woo_shipping_labels_hazmat_info_select_category">Select Category</string>
+    <string name="woo_shipping_labels_hazmat_search_hint">Search a Category</string>
 
 
     <string name="email_not_registered_wpcom">Hmm, we can\'t find a WordPress.com account connected to this email address.</string>

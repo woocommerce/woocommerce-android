@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.networking
 
 import com.woocommerce.android.model.Address
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingAddressDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigurationDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.AddressNormalizationModel
@@ -79,6 +80,7 @@ class WooShippingLabelRepository @Inject constructor(
         selectedRate: WooShippingRateModel,
         weight: Float,
         lastOrderComplete: Boolean,
+        customsData: List<CustomsData>?
     ): WooResult<PurchasedLabelData> {
         val origin = mapper.toOriginAddressPurchaseDTO(shipFrom)
         val destination = mapper.toDestinationAddressDTO(shipTo)
@@ -89,6 +91,7 @@ class WooShippingLabelRepository @Inject constructor(
             weight = weight
         )
         val rateDTO = mapper.toRateDTO(selectedRate)
+        val customsDTO = customsData?.let { mapper.toCustomsDTO(it) }
         return restClient.purchaseShippingLabel(
             site = site,
             orderId = orderId,
@@ -96,6 +99,7 @@ class WooShippingLabelRepository @Inject constructor(
             destination = destination,
             selectedPackage = packageDTO,
             selectedRate = rateDTO,
+            customs = customsDTO ?: emptyMap(),
             markOrderComplete = lastOrderComplete
         ).asWooResult { mapper(it) }
     }

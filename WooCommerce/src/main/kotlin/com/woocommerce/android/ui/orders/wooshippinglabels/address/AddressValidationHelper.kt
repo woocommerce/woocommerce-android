@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.address
 
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.viewmodel.ResourceProvider
 import javax.inject.Inject
@@ -49,6 +50,11 @@ class AddressValidationHelper @Inject constructor(
     fun isMissingDestinationAddress(address: Address) = with(address) {
         (address1.isBlank() && address2.isBlank()) || city.isBlank() || postcode.isBlank() ||
             (firstName.isBlank() && lastName.isBlank() && company.isBlank())
+    }
+
+    fun canFetchShippingRates(address: Address) = with(address) {
+        city.isNotNullOrEmpty() && postcode.isNotNullOrEmpty() &&
+            (firstName.isNotNullOrEmpty() || lastName.isNotNullOrEmpty() || company.isNotNullOrEmpty())
     }
 
     companion object {

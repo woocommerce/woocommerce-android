@@ -1,5 +1,6 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.media.wpv2
 
+import com.google.gson.Gson
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaType
@@ -24,6 +25,7 @@ import org.wordpress.android.fluxc.action.UploadAction.UPLOADED_MEDIA
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.media.MediaTestUtils
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.rest.wpapi.media.MediaWPRESTResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComNetwork
 import org.wordpress.android.fluxc.network.rest.wpcom.auth.AccessToken
 import org.wordpress.android.fluxc.store.MediaStore.ProgressPayload
@@ -37,6 +39,7 @@ class WPComV2MediaRestClientTest {
     private val okHttpClient: OkHttpClient = mock()
     private val dispatcher: Dispatcher = mock()
     private val wpComNetwork: WPComNetwork = mock()
+    private val gson: Gson = Gson()
     private val mockedCall: Call = mock()
     private lateinit var countDownLatch: CountDownLatch
     private lateinit var restClient: WPComV2MediaRestClient
@@ -46,11 +49,12 @@ class WPComV2MediaRestClientTest {
     @Before
     fun setup() {
         restClient = WPComV2MediaRestClient(
-                dispatcher = dispatcher,
-                coroutineEngine = initCoroutineEngine(),
-                okHttpClient = okHttpClient,
-                accessToken = accessToken,
-                wpComNetwork = wpComNetwork
+            dispatcher = dispatcher,
+            coroutineEngine = initCoroutineEngine(),
+            okHttpClient = okHttpClient,
+            accessToken = accessToken,
+            wpComNetwork = wpComNetwork,
+            gson = gson
         )
         EventBus.getDefault().register(this)
     }
@@ -61,14 +65,14 @@ class WPComV2MediaRestClientTest {
             whenever(okHttpClient.newCall(any())).thenReturn(mockedCall)
             whenever(mockedCall.enqueue(any())).then {
                 (it.arguments.first() as Callback).onResponse(
-                        mockedCall,
-                        mock {
-                            on { body } doReturn UnitTestUtils.getStringFromResourceFile(
-                                    this::class.java,
-                                    "media/media-upload-wp-api-success.json"
-                            ).toResponseBody("application/json".toMediaType())
-                            on { isSuccessful } doReturn true
-                        }
+                    mockedCall,
+                    mock {
+                        on { body } doReturn UnitTestUtils.getStringFromResourceFile(
+                            this::class.java,
+                            "media/media-upload-wp-api-success.json"
+                        ).toResponseBody("application/json".toMediaType())
+                        on { isSuccessful } doReturn true
+                    }
                 )
                 countDownLatch.countDown()
             }
@@ -110,11 +114,11 @@ class WPComV2MediaRestClientTest {
             whenever(okHttpClient.newCall(any())).thenReturn(mockedCall)
             whenever(mockedCall.enqueue(any())).then {
                 (it.arguments.first() as Callback).onResponse(
-                        mockedCall,
-                        mock {
-                            on { body } doReturn "".toResponseBody("application/json".toMediaType())
-                            on { isSuccessful } doReturn true
-                        }
+                    mockedCall,
+                    mock {
+                        on { body } doReturn "".toResponseBody("application/json".toMediaType())
+                        on { isSuccessful } doReturn true
+                    }
                 )
                 countDownLatch.countDown()
             }

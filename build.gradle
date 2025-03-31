@@ -1,4 +1,7 @@
 import com.automattic.android.measure.MeasureBuildsExtension
+import com.automattic.android.measure.reporters.InternalA8cCiReporter
+import com.automattic.android.measure.reporters.SlowSlowTasksMetricsReporter
+import com.automattic.android.measure.reporters.RemoteBuildCacheMetricsReporter
 import io.gitlab.arturbosch.detekt.Detekt
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -26,10 +29,17 @@ ext {
 }
 
 measureBuilds {
-    enable = secretProperties.get('measureBuildsEnabled')?.toBoolean() ?: false
-    automatticProject = MeasureBuildsExtension.AutomatticProject.WooCommerce
+    enable = secretProperties.getProperty("measureBuildsEnabled", "false").toBoolean()
+    onBuildMetricsReadyListener { report ->
+        SlowSlowTasksMetricsReporter.report(report)
+        RemoteBuildCacheMetricsReporter.report(report)
+        InternalA8cCiReporter.reportBlocking(
+                report,
+                "woocommerce",
+                secretProperties.getProperty("appsMetricsToken")
+        )
+    }
     attachGradleScanId = false
-    authToken = secretProperties.get('appsMetricsToken')
 }
 
 allprojects {

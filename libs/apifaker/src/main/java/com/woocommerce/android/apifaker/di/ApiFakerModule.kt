@@ -1,6 +1,8 @@
 package com.woocommerce.android.apifaker.di
 
 import android.content.Context
+import androidx.compose.material.SnackbarHostState
+import com.google.gson.GsonBuilder
 import com.woocommerce.android.apifaker.ApiFakerConfig
 import com.woocommerce.android.apifaker.ApiFakerInterceptor
 import com.woocommerce.android.apifaker.EndpointProcessor
@@ -12,7 +14,9 @@ import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntoSet
 import okhttp3.Interceptor
 import javax.inject.Named
+import javax.inject.Qualifier
 import javax.inject.Singleton
+import kotlin.annotation.AnnotationRetention.RUNTIME
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -31,4 +35,18 @@ object ApiFakerModule {
         apiFakerConfig: ApiFakerConfig,
         endpointProcessor: EndpointProcessor
     ): Interceptor = ApiFakerInterceptor(apiFakerConfig, endpointProcessor)
+
+    @Provides
+    @Singleton
+    internal fun providesSnackbarHostState() = SnackbarHostState()
+
+    @Provides
+    @Singleton
+    @ApiFakerGson
+    internal fun providesGson() = GsonBuilder().setPrettyPrinting().create()
 }
+
+@Qualifier
+@MustBeDocumented
+@Retention(RUNTIME)
+internal annotation class ApiFakerGson

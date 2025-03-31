@@ -1,6 +1,9 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.rates.domain
 
 import com.woocommerce.android.model.Address
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.ContentType
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.RestrictionType
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingCarrier
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
@@ -35,6 +38,18 @@ class GetShippingRatesTest : BaseUnitTest() {
         isLetter = true
     )
 
+    private val defaultCustomData = CustomsData(
+        packageId = "1",
+        packageName = "Package 1",
+        contentType = ContentType.MERCHANDISE,
+        contentDescription = "",
+        restrictionType = RestrictionType.NONE,
+        restrictionDescription = "",
+        isReturnToSender = false,
+        itn = "",
+        items = emptyList()
+    )
+
     private val defaultRates = listOf(
         WooShippingRateOptionsModel(
             mapOf(
@@ -66,7 +81,7 @@ class GetShippingRatesTest : BaseUnitTest() {
     @Test
     fun `when shipping rates request succeeds then result is a success`() = testBlocking {
         whenever(mapper(any(), any())).doReturn(generateShippingRates())
-        whenever(repository.getShippingRates(any(), any(), any(), any(), any()))
+        whenever(repository.getShippingRates(any(), any(), any(), any(), any(), any()))
             .doReturn(Result.success(defaultRates))
 
         val result = sut.invoke(
@@ -75,7 +90,8 @@ class GetShippingRatesTest : BaseUnitTest() {
             shipTo = Address.EMPTY,
             shipFrom = OriginShippingAddress.EMPTY,
             weight = 15f,
-            currencyCode = "USD"
+            currencyCode = "USD",
+            customsData = defaultCustomData
         )
 
         assertTrue(result.isSuccess)
@@ -83,7 +99,7 @@ class GetShippingRatesTest : BaseUnitTest() {
 
     @Test
     fun `when shipping rates request fails then result is a failure`() = testBlocking {
-        whenever(repository.getShippingRates(any(), any(), any(), any(), any()))
+        whenever(repository.getShippingRates(any(), any(), any(), any(), any(), any()))
             .doReturn(Result.failure(Exception("Something fails")))
 
         val result = sut.invoke(
@@ -92,7 +108,8 @@ class GetShippingRatesTest : BaseUnitTest() {
             shipTo = Address.EMPTY,
             shipFrom = OriginShippingAddress.EMPTY,
             weight = 15f,
-            currencyCode = "USD"
+            currencyCode = "USD",
+            customsData = defaultCustomData
         )
 
         assertTrue(result.isFailure)

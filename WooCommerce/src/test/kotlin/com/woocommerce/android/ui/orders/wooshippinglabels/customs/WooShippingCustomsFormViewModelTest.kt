@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.customs
 
 import com.woocommerce.android.model.Location
-import com.woocommerce.android.ui.orders.wooshippinglabels.address.origin.GetAcceptedOriginCountries
+import com.woocommerce.android.ui.orders.wooshippinglabels.address.GetAllCountries
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.ContentType
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.InputValue
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.RestrictionType
@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCu
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.ShowCountrySelector
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.ShowRestrictionTypeDialog
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.ViewState
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ShouldRequireITN
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -17,6 +18,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import java.math.BigDecimal
@@ -24,7 +26,8 @@ import java.math.BigDecimal
 @ExperimentalCoroutinesApi
 class WooShippingCustomsFormViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: WooShippingCustomsFormViewModel
-    private lateinit var getAcceptedOriginCountries: GetAcceptedOriginCountries
+    private lateinit var getAllCountries: GetAllCountries
+    private lateinit var shouldRequireITN: ShouldRequireITN
 
     @Before
     fun setup() {
@@ -41,45 +44,15 @@ class WooShippingCustomsFormViewModelTest : BaseUnitTest() {
         )
 
         // Configure the mock to return our test locations
-        getAcceptedOriginCountries = mock {
+        getAllCountries = mock {
             onBlocking { invoke() } doReturn Result.success(mockLocations)
         }
 
-        // Create a test product with high value for ITN tests
-        val testProduct = ShippableItemModel(
-            itemId = 1,
-            productId = 1,
-            title = "Test Product",
-            price = BigDecimal.ONE,
-            quantity = 1f,
-            currency = "USD",
-            length = 1f,
-            width = 1f,
-            height = 1f,
-            weight = 1f
-        )
+        shouldRequireITN = mock {
+            on { invoke(any(), any()) } doReturn false
+        }
 
-        // Create expensive product for ITN required tests
-        val expensiveProduct = ShippableItemModel(
-            itemId = 2,
-            productId = 2,
-            title = "Expensive Product",
-            price = BigDecimal.valueOf(2600),
-            quantity = 1f,
-            currency = "USD",
-            length = 1f,
-            width = 1f,
-            height = 1f,
-            weight = 1f
-        )
-
-        viewModel = WooShippingCustomsFormViewModel(
-            savedState = WooShippingCustomsFormFragmentArgs(
-                shippableItems = arrayOf(testProduct, expensiveProduct),
-                customsData = null
-            ).toSavedStateHandle(),
-            getAcceptedOriginCountries = getAcceptedOriginCountries
-        )
+        createSut()
     }
 
     @Test
@@ -424,6 +397,10 @@ class WooShippingCustomsFormViewModelTest : BaseUnitTest() {
     fun `onITNChanged with blank value should set error when ITN is required`() = testBlocking {
         // Given
         val blankItn = ""
+        shouldRequireITN = mock {
+            on { invoke(any(), any()) } doReturn true
+        }
+        createSut()
 
         // The second product in our setup is the expensive one,
         // so expanding the second product will make the ITN required
@@ -438,5 +415,45 @@ class WooShippingCustomsFormViewModelTest : BaseUnitTest() {
 
         // Then
         assertThat(capturedViewState?.itnValue).isInstanceOf(InputValue.Error::class.java)
+    }
+
+    private fun createSut() {
+        // Create a test product with high value for ITN tests
+        val testProduct = ShippableItemModel(
+            itemId = 1,
+            productId = 1,
+            title = "Test Product",
+            price = BigDecimal.ONE,
+            quantity = 1f,
+            currency = "USD",
+            length = 1f,
+            width = 1f,
+            height = 1f,
+            weight = 1f
+        )
+
+        // Create expensive product for ITN required tests
+        val expensiveProduct = ShippableItemModel(
+            itemId = 2,
+            productId = 2,
+            title = "Expensive Product",
+            price = BigDecimal.valueOf(2600),
+            quantity = 1f,
+            currency = "USD",
+            length = 1f,
+            width = 1f,
+            height = 1f,
+            weight = 1f
+        )
+
+        viewModel = WooShippingCustomsFormViewModel(
+            savedState = WooShippingCustomsFormFragmentArgs(
+                shippableItems = arrayOf(testProduct, expensiveProduct),
+                destinationCountryCode = "CA",
+                customsData = null
+            ).toSavedStateHandle(),
+            getAllCountries = getAllCountries,
+            shouldRequireITN = shouldRequireITN
+        )
     }
 }

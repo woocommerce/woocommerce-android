@@ -28,9 +28,14 @@ class OrdersCommunicationViewModel @Inject constructor(
         triggerEvent(CommunicationEvent.OrdersLoadingNotified)
     }
 
+    fun notifyOrdersLoaded() {
+        triggerEvent(CommunicationEvent.OrdersLoaded)
+    }
+
     sealed class CommunicationEvent : MultiLiveEvent.Event() {
         data class OrderTrashed(val orderId: Long) : CommunicationEvent()
         data object OrdersEmptyNotified : CommunicationEvent()
         data object OrdersLoadingNotified : CommunicationEvent()
+        data object OrdersLoaded : CommunicationEvent()
     }
 }

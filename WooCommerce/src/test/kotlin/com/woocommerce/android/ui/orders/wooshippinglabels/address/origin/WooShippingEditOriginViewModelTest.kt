@@ -4,6 +4,7 @@ import androidx.compose.runtime.snapshots.Snapshot
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.AmbiguousLocation
+import com.woocommerce.android.model.Location
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.AddressValidationState
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.EditAddressFlow
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.EditableAddress
@@ -48,6 +49,10 @@ class WooShippingEditOriginViewModelTest : WooShippingEditAddressViewModelTest()
             isVerified = isVerified
         )
         return WooShippingEditAddressFragmentArgs(EditAddressFlow.EditOriginAddress(originAddress)).toSavedStateHandle()
+    }
+
+    override suspend fun mockCountries(countries: Result<List<Location>>) {
+        whenever(getAcceptedOriginCountries.invoke()).doReturn(countries)
     }
 
     @Test

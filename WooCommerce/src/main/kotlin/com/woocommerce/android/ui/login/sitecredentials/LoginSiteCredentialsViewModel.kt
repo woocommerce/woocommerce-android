@@ -142,6 +142,13 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         triggerEvent(ShowResetPasswordScreen(siteAddress))
     }
 
+    fun onStartWebAuthorizationClick() {
+        launch {
+            errorDialogMessage.value = null
+            fetchSiteForTutorial()
+        }
+    }
+
     fun onPasswordTutorialAborted() {
         fetchedSiteId.value = -1
     }

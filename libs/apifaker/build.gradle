@@ -8,23 +8,23 @@ plugins {
 }
 
 android {
-    namespace 'com.woocommerce.android.apifaker'
+    namespace = 'com.woocommerce.android.apifaker'
 
     defaultConfig {
         minSdkVersion gradle.ext.minSdkVersion
-        targetSdk gradle.ext.targetSdkVersion
-        compileSdk gradle.ext.compileSdkVersion
+        targetSdk = gradle.ext.targetSdkVersion
+        compileSdk = gradle.ext.compileSdkVersion
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildFeatures {
-        compose true
+        compose = true
     }
 
     compileOptions {
-        sourceCompatibility libs.versions.java.get()
-        targetCompatibility libs.versions.java.get()
+        sourceCompatibility = libs.versions.java.get()
+        targetCompatibility = libs.versions.java.get()
     }
 }
 
@@ -41,7 +41,10 @@ dependencies {
     implementation(libs.androidx.compose.material.icons.extended)
     debugImplementation(libs.androidx.compose.ui.tooling.main)
 
+    implementation(libs.google.gson)
+
     implementation(project(":libs:fluxc"))
+    implementation(project(":libs:fluxc-plugin"))
 
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
@@ -53,4 +56,5 @@ dependencies {
 
     testImplementation(libs.junit)
     testImplementation(libs.mockito.kotlin)
+    testImplementation(libs.kotlinx.coroutines.test)
 }

@@ -8,6 +8,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
@@ -31,6 +32,7 @@ import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewFragment
+import com.woocommerce.android.ui.compose.theme.WooTheme
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.LoginEmailHelpDialogFragment
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorFragment
@@ -43,7 +45,6 @@ import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToHelpFragmentEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToMainActivityEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToNewToWooEvent
-import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.ShowWooUpgradeDialogEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.NoStoreState
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.SimpleWPComState
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.StoreListState
@@ -157,6 +158,21 @@ class SitePickerFragment :
         binding.addStoreButton.setOnClickListener {
             viewModel.onAddStoreClick()
         }
+        binding.dialogComposeView.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                if (viewModel.isWooUpgradeDialogVisible.value) {
+                    WooTheme {
+                        WooUpgradeRequiredDialog(
+                            onUpdateInstructions = {
+                                ChromeCustomTabUtils.launchUrl(requireContext(), AppUrls.WOOCOMMERCE_UPGRADE)
+                            },
+                            onDismiss = { viewModel.onWooUpgradeDialogDismissed() }
+                        )
+                    }
+                }
+            }
+        }
     }
 
     @Suppress("LongMethod", "ComplexMethod")
@@ -226,7 +242,6 @@ class SitePickerFragment :
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is NavigateToMainActivityEvent -> (activity as? MainActivity)?.handleSitePickerResult()
-                is ShowWooUpgradeDialogEvent -> showWooUpgradeDialog()
                 is NavigateToHelpFragmentEvent -> navigateToHelpScreen(event.origin)
                 is NavigateToNewToWooEvent -> navigateToNewToWooScreen()
                 is NavigateToAddStoreEvent -> navigateToAddStoreScreen()
@@ -332,12 +347,6 @@ class SitePickerFragment :
                 it.show(parentFragmentManager, CustomProgressDialog.TAG)
             }
             progressDialog?.isCancelable = false
-        }
-    }
-
-    private fun showWooUpgradeDialog() {
-        WooUpgradeRequiredDialog.show().also {
-            it.show(parentFragmentManager, WooUpgradeRequiredDialog.TAG)
         }
     }
 

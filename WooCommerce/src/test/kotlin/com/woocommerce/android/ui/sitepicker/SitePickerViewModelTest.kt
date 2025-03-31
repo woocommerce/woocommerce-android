@@ -21,7 +21,6 @@ import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToHelpFragmentEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToMainActivityEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToNewToWooEvent
-import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.ShowWooUpgradeDialogEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.NoStoreState
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.StoreListState
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.WooNotFoundState
@@ -540,11 +539,6 @@ class SitePickerViewModelTest : BaseUnitTest() {
                 new.isProgressDiaLogVisible.takeIfNotEqualTo(old?.isProgressDiaLogVisible) { isProgressShown.add(it) }
             }
 
-            var view: ShowWooUpgradeDialogEvent? = null
-            viewModel.event.observeForever {
-                if (it is ShowWooUpgradeDialogEvent) view = it
-            }
-
             val selectedSiteModel = defaultExpectedSiteList[1]
 
             viewModel.onSiteSelected(selectedSiteModel)
@@ -555,7 +549,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
             verify(userEligibilityFetcher, times(0)).fetchUserInfo()
             verify(appPrefsWrapper, times(0)).removeLoginSiteAddress()
 
-            assertThat(view).isEqualTo(ShowWooUpgradeDialogEvent)
+            assertThat(viewModel.isWooUpgradeDialogVisible.value).isEqualTo(true)
             assertThat(isProgressShown).containsExactly(false, true, false)
         }
 

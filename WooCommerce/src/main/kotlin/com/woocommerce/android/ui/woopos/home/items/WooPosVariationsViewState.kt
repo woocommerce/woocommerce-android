@@ -1,25 +1,25 @@
 package com.woocommerce.android.ui.woopos.home.items
 
 sealed class WooPosVariationsViewState(
-    override val reloadingProductsWithPullToRefresh: Boolean
-) : WooPosBaseViewState(reloadingProductsWithPullToRefresh) {
+    override val reloadingWithPullToRefresh: Boolean
+) : WooPosBaseViewState(reloadingWithPullToRefresh) {
 
     data class Content(
-        override val items: List<WooPosItem.Variation>,
-        override val reloadingProductsWithPullToRefresh: Boolean = false,
+        override val items: List<WooPosItemSelectionViewState.Variation>,
+        override val reloadingWithPullToRefresh: Boolean = false,
         override val paginationState: PaginationState = PaginationState.None,
-    ) : WooPosVariationsViewState(reloadingProductsWithPullToRefresh), ContentViewState
+    ) : WooPosVariationsViewState(reloadingWithPullToRefresh), ContentViewState
 
     data class Loading(
-        override val reloadingProductsWithPullToRefresh: Boolean = false,
+        override val reloadingWithPullToRefresh: Boolean = false,
         val withCart: Boolean
-    ) : WooPosVariationsViewState(reloadingProductsWithPullToRefresh)
+    ) : WooPosVariationsViewState(reloadingWithPullToRefresh)
 
     data class Error(
-        override val reloadingProductsWithPullToRefresh: Boolean = false
-    ) : WooPosVariationsViewState(reloadingProductsWithPullToRefresh)
+        override val reloadingWithPullToRefresh: Boolean = false
+    ) : WooPosVariationsViewState(reloadingWithPullToRefresh)
 
     data class Empty(
-        override val reloadingProductsWithPullToRefresh: Boolean = false
-    ) : WooPosVariationsViewState(reloadingProductsWithPullToRefresh)
+        override val reloadingWithPullToRefresh: Boolean = false
+    ) : WooPosVariationsViewState(reloadingWithPullToRefresh)
 }
