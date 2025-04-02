@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState.Product
 import com.woocommerce.android.ui.woopos.home.items.common.FetchOptions
 import com.woocommerce.android.ui.woopos.home.items.common.FetchResult
+import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsDataSource
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
@@ -40,6 +41,7 @@ class WooPosItemsViewModelTestSelectionViewState {
     val coroutinesTestRule = WooPosCoroutineTestRule()
 
     private val productsDataSource: WooPosProductsDataSource = mock()
+    private val couponsDataSource: WooPosCouponsDataSource = mock()
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val posPreferencesRepository: WooPosPreferencesRepository = mock()
     private val wooPosItemsNavigator: WooPosItemsNavigator = mock()
@@ -837,6 +839,7 @@ class WooPosItemsViewModelTestSelectionViewState {
     private fun createViewModel() =
         WooPosItemsViewModel(
             productsDataSource,
+            couponsDataSource,
             fromChildToParentEventSender,
             priceFormat,
             posPreferencesRepository,
