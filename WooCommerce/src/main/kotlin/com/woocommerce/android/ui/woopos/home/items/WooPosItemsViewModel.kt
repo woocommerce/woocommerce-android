@@ -37,7 +37,7 @@ import javax.inject.Inject
 @HiltViewModel
 class WooPosItemsViewModel @Inject constructor(
     private val productsDataSource: WooPosProductsDataSource,
-    private val couponsDataSource: WooPosCouponsDataSource,
+    @Suppress("UnusedPrivateProperty") private val couponsDataSource: WooPosCouponsDataSource,
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender,
     private val priceFormat: WooPosFormatPrice,
     private val preferencesRepository: WooPosPreferencesRepository,

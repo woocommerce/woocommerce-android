@@ -21,8 +21,6 @@ class WooPosCouponsDataSourceTest {
     @Rule
     @JvmField
     val coroutinesTestRule = WooPosCoroutineTestRule()
-
-    private lateinit var dataSource: WooPosCouponsDataSource
     private val handler: CouponListHandler = mock()
 
     private val sampleCoupons = listOf(
@@ -83,7 +81,9 @@ class WooPosCouponsDataSourceTest {
         val sut = WooPosCouponsDataSource(handler)
 
         sut.fetchData(FetchOptions(forceRefresh = false)).first()
-        assertThat(sut.fetchData(FetchOptions(forceRefresh = false)).first()).isInstanceOf(FetchResult.Cached::class.java)
+        assertThat(
+            sut.fetchData(FetchOptions(forceRefresh = false)).first()
+        ).isInstanceOf(FetchResult.Cached::class.java)
 
         sut.fetchData(FetchOptions(forceRefresh = true)).first()
 
@@ -143,7 +143,6 @@ class WooPosCouponsDataSourceTest {
         assertThat(remoteResult.result.isFailure).isTrue()
         assertThat(remoteResult.result.exceptionOrNull()).isEqualTo(error)
     }
-
 
     @Test
     fun `given successful loadMore, when loadMore called, then should add coupons to cache and return them`() = runTest {
