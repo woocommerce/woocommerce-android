@@ -17,7 +17,7 @@ class CouponListHandler @Inject constructor(private val repository: CouponReposi
 
     private val mutex = Mutex()
     private var page = 1
-    private var canLoadMore = true
+    var canLoadMore = true
 
     private val searchQuery = MutableStateFlow<String?>(null)
     private val searchResults = MutableStateFlow(emptyList<Coupon>())
