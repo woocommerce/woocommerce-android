@@ -34,11 +34,6 @@ class WooPosProductsDataSource @Inject constructor(
         cacheMutex.withLock { productCache = newList }
     }
 
-    sealed class ProductsResult {
-        data class Cached(val products: List<Product>) : ProductsResult()
-        data class Remote(val productsResult: Result<List<Product>>) : ProductsResult()
-    }
-
     override suspend fun fetchFromCache(fetchOptions: FetchOptions): List<Product> {
         return productCache
     }
