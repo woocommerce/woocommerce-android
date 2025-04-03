@@ -16,31 +16,13 @@ data class WooPosCartState(
         abstract val amountOfItems: Int
 
         @Parcelize
-        data object Empty : Body() {
+        data object Empty : Body(), Parcelable {
             override val amountOfItems: Int
                 get() = 0
         }
 
         @Parcelize
-        data class WithItems(val itemsInCart: List<Item>) : Body() {
-            // CouponsProject: Needs to be refactored in order to support non-product items
-            @Parcelize
-            data class Item(
-                val id: Id,
-                val name: String,
-                val price: String,
-                val description: String?,
-                val imageUrl: String?,
-                val productType: ProductType,
-            ) : Parcelable {
-                @Parcelize
-                data class Id(
-                    val productId: Long,
-                    val variationId: Long,
-                    val itemNumber: Int
-                ) : Parcelable
-            }
-
+        data class WithItems(val itemsInCart: List<WooPosCartItemViewState>) : Body(), Parcelable {
             override val amountOfItems: Int
                 get() = itemsInCart.size
         }
@@ -58,7 +40,43 @@ enum class WooPosCartStatus {
     EDITABLE, CHECKOUT, EMPTY,
 }
 
-// CouponsProject: Needs to be renamed or Item needs to be a sealed class
-enum class ProductType {
-    Simple, Variation, Coupon
+@Parcelize
+sealed class WooPosCartItemViewState(open val itemNumber: Int, open val name: String) : Parcelable {
+    @Parcelize
+    sealed class Product(
+        override val itemNumber: Int,
+        open val id: Long,
+        override val name: String,
+        open val price: String,
+        open val description: String?,
+        open val imageUrl: String?,
+    ) : WooPosCartItemViewState(itemNumber, name), Parcelable {
+        @Parcelize
+        data class Simple(
+            override val itemNumber: Int,
+            override val id: Long,
+            override val name: String,
+            override val price: String,
+            override val description: String?,
+            override val imageUrl: String?,
+        ) : Product(itemNumber, id, name, price, description, imageUrl), Parcelable
+
+        @Parcelize
+        data class Variation(
+            override val itemNumber: Int,
+            override val id: Long,
+            val variationId: Long,
+            override val name: String,
+            override val price: String,
+            override val description: String?,
+            override val imageUrl: String?,
+        ) : Product(itemNumber, id, name, price, description, imageUrl), Parcelable
+    }
+
+    @Parcelize
+    data class Coupon(
+        override val itemNumber: Int,
+        override val name: String,
+        val id: Long,
+    ) : WooPosCartItemViewState(itemNumber, name), Parcelable
 }

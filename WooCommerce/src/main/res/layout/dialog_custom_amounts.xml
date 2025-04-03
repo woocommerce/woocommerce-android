@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/color_surface"
-    android:paddingVertical="@dimen/major_100"
-    tools:context="com.woocommerce.android.ui.payments.simplepayments.SimplePaymentsDialog">
+    android:paddingVertical="@dimen/major_100">
 
     <ScrollView
         android:id="@+id/scrollView"
@@ -72,7 +71,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="start"
-                    android:imeOptions="flagNoFullscreen"
+                    android:imeOptions="flagNoFullscreen|actionDone"
                     android:textSize="@dimen/line_height_major_100"
                     android:visibility="gone"
                     app:layout_constraintTop_toTopOf="parent"
@@ -96,7 +95,7 @@
                     android:layout_height="wrap_content"
                     android:maxWidth="@dimen/edit_percentage_max_width"
                     android:gravity="start"
-                    android:imeOptions="flagNoFullscreen"
+                    android:imeOptions="flagNoFullscreen|actionDone"
                     android:textSize="@dimen/line_height_major_100"
                     android:inputType="numberDecimal"
                     android:hint="@string/custom_amounts_percentage_hint"

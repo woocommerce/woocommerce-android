@@ -30,6 +30,8 @@ import dagger.hilt.android.AndroidEntryPoint
 class WooShippingCustomsFormFragment : BaseFragment() {
     private val viewModel: WooShippingCustomsFormViewModel by viewModels()
 
+    override fun getFragmentTitle() = getString(R.string.shipping_label_create_customs)
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(DisposeOnViewTreeLifecycleDestroyed)

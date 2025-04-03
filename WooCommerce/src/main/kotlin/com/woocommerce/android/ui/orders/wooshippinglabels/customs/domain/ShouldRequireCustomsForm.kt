@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.wooshippinglabels.customs
+package com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain
 
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingAddresses
 import javax.inject.Inject

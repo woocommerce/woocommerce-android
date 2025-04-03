@@ -4,6 +4,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent
+import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.CheckoutClicked
+import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.ItemClickedInProductSelector
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccessfullyPaid.PaymentMethod
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ExitConfirmationDialog
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ProductsInfoDialog
@@ -101,7 +103,7 @@ class WooPosHomeViewModel @Inject constructor(
         }
     }
 
-    @Suppress("LongMethod")
+    @Suppress("LongMethod", "CyclomaticComplexMethod")
     private fun listenBottomEvents() {
         viewModelScope.launch {
             childrenToParentEventReceiver.events.collect { event ->
@@ -110,7 +112,7 @@ class WooPosHomeViewModel @Inject constructor(
                         _state.value = _state.value.copy(
                             screenPositionState = ScreenPositionState.Checkout.CartWithTotals
                         )
-                        sendEventToChildren(ParentToChildrenEvent.CheckoutClicked(event.itemClickedDataList))
+                        sendEventToChildren(CheckoutClicked(event.itemClickedDataList))
                     }
 
                     is ChildToParentEvent.BackFromCheckoutToCartClicked -> {
@@ -122,7 +124,7 @@ class WooPosHomeViewModel @Inject constructor(
 
                     is ChildToParentEvent.ItemClickedInProductSelector -> {
                         sendEventToChildren(
-                            ParentToChildrenEvent.ItemClickedInProductSelector(event.itemData)
+                            ItemClickedInProductSelector(event.itemData)
                         )
                     }
 
@@ -176,6 +178,15 @@ class WooPosHomeViewModel @Inject constructor(
                     }
 
                     is NavigationEvent -> viewModelScope.launch { _navigationEvent.emit(event) }
+                    is ChildToParentEvent.SearchEvent.ChangedQuery -> {
+                        sendEventToChildren(ParentToChildrenEvent.SearchEvent.ChangedQuery(event.query))
+                    }
+                    ChildToParentEvent.SearchEvent.Finished -> {
+                        sendEventToChildren(ParentToChildrenEvent.SearchEvent.Finished)
+                    }
+                    ChildToParentEvent.SearchEvent.Started -> {
+                        sendEventToChildren(ParentToChildrenEvent.SearchEvent.Started)
+                    }
                 }
             }
         }

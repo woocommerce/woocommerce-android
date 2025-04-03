@@ -3,6 +3,9 @@ package com.woocommerce.android.ui.sitepicker
 import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.annotation.VisibleForTesting
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -90,6 +93,9 @@ class SitePickerViewModel @Inject constructor(
     val sites: LiveData<List<SitesListItem>> = _sites
 
     private val selectedSiteId: MutableLiveData<Int> = savedState.getLiveData("selected-site-id")
+
+    private val _isWooUpgradeDialogVisible: MutableState<Boolean> by lazy { mutableStateOf(false) }
+    val isWooUpgradeDialogVisible: State<Boolean> = _isWooUpgradeDialogVisible
 
     private var loginSiteAddress: String?
         get() = savedState["key"] ?: appPrefsWrapper.getLoginSiteAddress()
@@ -533,7 +539,7 @@ class SitePickerViewModel @Inject constructor(
 
                         else -> {
                             sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = false)
-                            triggerEvent(SitePickerEvent.ShowWooUpgradeDialogEvent)
+                            _isWooUpgradeDialogVisible.value = true
                         }
                     }
                 }
@@ -681,6 +687,10 @@ class SitePickerViewModel @Inject constructor(
         }
     }
 
+    fun onWooUpgradeDialogDismissed() {
+        _isWooUpgradeDialogVisible.value = false
+    }
+
     @Parcelize
     data class SitePickerViewState(
         val userInfo: UserInfo? = null,
@@ -739,7 +749,6 @@ class SitePickerViewModel @Inject constructor(
     }
 
     sealed class SitePickerEvent : MultiLiveEvent.Event() {
-        object ShowWooUpgradeDialogEvent : SitePickerEvent()
         object NavigateToMainActivityEvent : SitePickerEvent()
         object NavigateToEmailHelpDialogEvent : SitePickerEvent()
         object NavigateToNewToWooEvent : SitePickerEvent()

@@ -29,6 +29,8 @@ class WooShippingLabelPackageCreationFragment : BaseFragment() {
 
     private var progressDialog: CustomProgressDialog? = null
 
+    override fun getFragmentTitle() = getString(R.string.shipping_label_package_title)
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(DisposeOnViewTreeLifecycleDestroyed)

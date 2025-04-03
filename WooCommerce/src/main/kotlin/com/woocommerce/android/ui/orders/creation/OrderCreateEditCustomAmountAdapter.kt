@@ -42,10 +42,10 @@ class OrderCreateEditCustomAmountAdapter(
 
         fun bind(customAmountUIModel: CustomAmountUIModel) {
             binding.customAmountLayout.customAmountName.text = customAmountUIModel.name
-            binding.customAmountLayout.customAmountAmount.text = customAmountUIModel.currency?.let {
+            binding.customAmountLayout.customAmountAmount.text = customAmountUIModel.currencyCode?.let {
                 currencyFormatter.formatCurrency(
                     customAmountUIModel.amount.toString(),
-                    currencyCode = it
+                    currencyCode = it.value
                 )
             } ?: run {
                 currencyFormatter.formatCurrency(customAmountUIModel.amount.toString())

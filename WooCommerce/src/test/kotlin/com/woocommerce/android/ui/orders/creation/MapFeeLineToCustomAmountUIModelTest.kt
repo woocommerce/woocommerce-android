@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.creation
 
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.ui.common.CurrencyCode
 import com.woocommerce.android.ui.orders.CustomAmountUIModel
 import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -27,7 +28,7 @@ class MapFeeLineToCustomAmountUIModelTest : BaseUnitTest() {
             name = "Test Amount",
             taxStatus = CustomAmountsViewModel.TaxStatus(isTaxable = false),
             type = CustomAmountsViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT,
-            currency = "USD"
+            currencyCode = CurrencyCode("USD")
         )
 
         val mapperResult = MapFeeLineToCustomAmountUiModel().invoke(feeLine, "USD")
@@ -50,7 +51,7 @@ class MapFeeLineToCustomAmountUIModelTest : BaseUnitTest() {
             name = "Test Amount",
             taxStatus = CustomAmountsViewModel.TaxStatus(isTaxable = false),
             type = CustomAmountsViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT,
-            currency = "USD"
+            currencyCode = CurrencyCode("USD")
         )
 
         val mapperResult = MapFeeLineToCustomAmountUiModel().invoke(feeLine, "USD")
@@ -73,7 +74,7 @@ class MapFeeLineToCustomAmountUIModelTest : BaseUnitTest() {
             name = "Test Amount",
             taxStatus = CustomAmountsViewModel.TaxStatus(isTaxable = true),
             type = CustomAmountsViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT,
-            currency = "USD"
+            currencyCode = CurrencyCode("USD")
         )
 
         val mapperResult = MapFeeLineToCustomAmountUiModel().invoke(feeLine, "USD")

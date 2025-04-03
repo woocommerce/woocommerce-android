@@ -30,7 +30,7 @@ class WooPosTotalsRepository @Inject constructor(
 ) {
     private var orderCreationJob: Deferred<Result<Order>>? = null
 
-    suspend fun createOrderWithProducts(
+    suspend fun createOrderFromCartItems(
         itemClickedDataList: List<WooPosItemsViewModel.ItemClickedData>
     ): Result<Order> {
         check(itemClickedDataList.map { it.id }.isNotEmpty()) { "List of IDs is empty" }
@@ -38,7 +38,7 @@ class WooPosTotalsRepository @Inject constructor(
         orderCreationJob?.cancel()
 
         return withContext(IO) {
-            validateProductIds(itemClickedDataList)
+            check(itemClickedDataList.all { it.id >= 0 }) { "Invalid item ID" }
             orderCreationJob = async {
                 val order = createOrder(itemClickedDataList)
                 orderCreateEditRepository.createOrUpdateOrder(order)
@@ -47,24 +47,21 @@ class WooPosTotalsRepository @Inject constructor(
         }
     }
 
-    private fun validateProductIds(itemClickedDataList: List<WooPosItemsViewModel.ItemClickedData>) {
-        itemClickedDataList.map { it.id }.forEach { productId ->
-            require(productId >= 0) { "Invalid product ID: $productId" }
-        }
-    }
-
     private suspend fun createOrder(itemClickedDataList: List<WooPosItemsViewModel.ItemClickedData>): Order {
+        val products = itemClickedDataList.filterIsInstance<WooPosItemsViewModel.ItemClickedData.Product>()
+        val coupons = itemClickedDataList.filterIsInstance<WooPosItemsViewModel.ItemClickedData.Coupon>()
         return Order.getEmptyOrder(
             dateCreated = dateUtils.getCurrentDateInSiteTimeZone() ?: Date(),
             dateModified = dateUtils.getCurrentDateInSiteTimeZone() ?: Date()
         ).copy(
             status = Order.Status.Custom(Order.Status.AUTO_DRAFT),
-            items = createOrderItems(itemClickedDataList)
+            items = createProductItems(products),
+            couponLines = createCouponLines(coupons),
         )
     }
 
-    private suspend fun createOrderItems(
-        itemClickedDataList: List<WooPosItemsViewModel.ItemClickedData>
+    private suspend fun createProductItems(
+        itemClickedDataList: List<WooPosItemsViewModel.ItemClickedData.Product>
     ): List<Order.Item> {
         return itemClickedDataList
             .groupingBy { it.id }
@@ -72,24 +69,30 @@ class WooPosTotalsRepository @Inject constructor(
             .map { (id, quantity) ->
                 val itemData = itemClickedDataList.find { it.id == id }!!
                 when (itemData) {
-                    is WooPosItemsViewModel.ItemClickedData.SimpleProduct -> createSimpleProductOrderItem(
+                    is WooPosItemsViewModel.ItemClickedData.Product.Simple -> createSimpleProductOrderItem(
                         quantity,
                         itemData
                     )
-                    is WooPosItemsViewModel.ItemClickedData.Variation -> createVariationOrderItem(
+                    is WooPosItemsViewModel.ItemClickedData.Product.Variation -> createVariationOrderItem(
                         quantity,
                         itemData
-                    )
-                    is WooPosItemsViewModel.ItemClickedData.Coupon -> throw IllegalArgumentException(
-                        "Coupons are not supported"
                     )
                 }
             }
     }
 
+    private fun createCouponLines(coupons: List<WooPosItemsViewModel.ItemClickedData.Coupon>): List<Order.CouponLine> {
+        return coupons.map {
+            Order.CouponLine(
+                code = it.couponCode,
+                id = it.id,
+            )
+        }
+    }
+
     private suspend fun createSimpleProductOrderItem(
         quantity: Int,
-        itemData: WooPosItemsViewModel.ItemClickedData.SimpleProduct
+        itemData: WooPosItemsViewModel.ItemClickedData.Product.Simple
     ): Order.Item {
         val productResult = getProductById(itemData.id)!!
         return Order.Item.EMPTY.copy(
@@ -106,7 +109,7 @@ class WooPosTotalsRepository @Inject constructor(
 
     private suspend fun createVariationOrderItem(
         quantity: Int,
-        itemData: WooPosItemsViewModel.ItemClickedData.Variation
+        itemData: WooPosItemsViewModel.ItemClickedData.Product.Variation
     ): Order.Item {
         val productResult = getProductById(itemData.productId)!!
         val variationResult = getVariationById(

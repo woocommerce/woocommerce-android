@@ -3,7 +3,10 @@ package com.woocommerce.android.ui.payments.customamounts
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_ADD_CUSTOM_AMOUNT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_EDIT_CUSTOM_AMOUNT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.common.CurrencyCode
 import com.woocommerce.android.ui.orders.CustomAmountUIModel
+import com.woocommerce.android.ui.orders.creation.product.discount.CurrencySymbolFinder
 import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
 import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel.CustomAmountType.PERCENTAGE_CUSTOM_AMOUNT
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -13,6 +16,10 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.WCSettingsModel
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -21,6 +28,10 @@ import kotlin.test.assertTrue
 class CustomAmountsFragmentViewModelTest : BaseUnitTest() {
 
     private val tracker: AnalyticsTrackerWrapper = mock()
+    private val currencySymbolFinder: CurrencySymbolFinder = mock()
+    private val store: WooCommerceStore = mock()
+    private val selectedSite: SelectedSite = mock()
+    private val siteSettings: WCSettingsModel = mock()
     private lateinit var viewModel: CustomAmountsViewModel
 
     @Before
@@ -30,7 +41,10 @@ class CustomAmountsFragmentViewModelTest : BaseUnitTest() {
                 customAmountUIModel = CustomAmountUIModel.EMPTY,
                 orderTotal = null,
             ).toSavedStateHandle(),
-            tracker
+            tracker,
+            currencySymbolFinder,
+            store,
+            selectedSite
         )
     }
 
@@ -70,7 +84,10 @@ class CustomAmountsFragmentViewModelTest : BaseUnitTest() {
                 ),
                 orderTotal = null
             ).toSavedStateHandle(),
-            tracker
+            tracker,
+            currencySymbolFinder,
+            store,
+            selectedSite
         )
 
         verify(tracker).track(ORDER_CREATION_EDIT_CUSTOM_AMOUNT_TAPPED)
@@ -95,7 +112,9 @@ class CustomAmountsFragmentViewModelTest : BaseUnitTest() {
             ),
             orderTotal = "100"
         )
-        viewModel = CustomAmountsViewModel(args.toSavedStateHandle(), tracker)
+        viewModel = CustomAmountsViewModel(
+            args.toSavedStateHandle(), tracker, currencySymbolFinder, store, selectedSite
+        )
         viewModel.currentPercentage = BigDecimal.TEN
 
         assertTrue(viewModel.viewState.isDoneButtonEnabled)
@@ -113,7 +132,10 @@ class CustomAmountsFragmentViewModelTest : BaseUnitTest() {
                 ),
                 orderTotal = "200"
             ).toSavedStateHandle(),
-            tracker
+            tracker,
+            currencySymbolFinder,
+            store,
+            selectedSite
         )
 
         assertThat(viewModel.currentPercentage).isEqualTo(BigDecimal("5.00"))
@@ -131,7 +153,10 @@ class CustomAmountsFragmentViewModelTest : BaseUnitTest() {
                 ),
                 orderTotal = "200"
             ).toSavedStateHandle(),
-            tracker
+            tracker,
+            currencySymbolFinder,
+            store,
+            selectedSite
         )
         viewModel.currentPercentage = BigDecimal("20")
 
@@ -150,7 +175,10 @@ class CustomAmountsFragmentViewModelTest : BaseUnitTest() {
                 ),
                 orderTotal = "200"
             ).toSavedStateHandle(),
-            tracker
+            tracker,
+            currencySymbolFinder,
+            store,
+            selectedSite
         )
         assertThat(viewModel.viewState.customAmountUIModel.type).isEqualTo(FIXED_CUSTOM_AMOUNT)
     }
@@ -167,7 +195,10 @@ class CustomAmountsFragmentViewModelTest : BaseUnitTest() {
                 ),
                 orderTotal = "200"
             ).toSavedStateHandle(),
-            tracker
+            tracker,
+            currencySymbolFinder,
+            store,
+            selectedSite
         )
         assertThat(viewModel.viewState.customAmountUIModel.type).isEqualTo(PERCENTAGE_CUSTOM_AMOUNT)
     }
@@ -185,7 +216,10 @@ class CustomAmountsFragmentViewModelTest : BaseUnitTest() {
         )
         viewModel = CustomAmountsViewModel(
             customAmountUIModel.toSavedStateHandle(),
-            tracker
+            tracker,
+            currencySymbolFinder,
+            store,
+            selectedSite
         )
         assertThat(viewModel.viewState.customAmountUIModel.id).isEqualTo(
             customAmountUIModel.customAmountUIModel.id
@@ -216,7 +250,10 @@ class CustomAmountsFragmentViewModelTest : BaseUnitTest() {
                 ),
                 orderTotal = "0"
             ).toSavedStateHandle(),
-            tracker
+            tracker,
+            currencySymbolFinder,
+            store,
+            selectedSite
         )
 
         assertThat(viewModel.currentPercentage).isEqualTo(BigDecimal.ZERO)
@@ -234,10 +271,63 @@ class CustomAmountsFragmentViewModelTest : BaseUnitTest() {
                 ),
                 orderTotal = null
             ).toSavedStateHandle(),
-            tracker
+            tracker,
+            currencySymbolFinder,
+            store,
+            selectedSite
         )
 
         assertThat(viewModel.currentPercentage).isEqualTo(BigDecimal.ZERO)
+    }
+
+    @Test
+    fun `when currency code is not null, then return order currency symbol`() {
+        whenever(currencySymbolFinder.findCurrencySymbol("USD")).thenReturn("$")
+
+        viewModel = CustomAmountsViewModel(
+            CustomAmountsFragmentArgs(
+                customAmountUIModel = CustomAmountUIModel(
+                    id = 0L,
+                    amount = BigDecimal.TEN,
+                    name = "",
+                    type = PERCENTAGE_CUSTOM_AMOUNT,
+                    currencyCode = CurrencyCode("USD")
+                ),
+                orderTotal = null
+            ).toSavedStateHandle(),
+            tracker,
+            currencySymbolFinder,
+            store,
+            selectedSite
+        )
+        assertThat(viewModel.viewState.currencySymbol?.value).isEqualTo("$")
+    }
+
+    @Test
+    fun `when currency code is null, then return site currency symbol`() {
+        val site: SiteModel = mock()
+        whenever(selectedSite.get()).thenReturn(site)
+        whenever(store.getSiteSettings(site)).thenReturn(siteSettings)
+        whenever(siteSettings.currencyCode).thenReturn("INR")
+        whenever(currencySymbolFinder.findCurrencySymbol("INR")).thenReturn("₹")
+
+        viewModel = CustomAmountsViewModel(
+            CustomAmountsFragmentArgs(
+                customAmountUIModel = CustomAmountUIModel(
+                    id = 0L,
+                    amount = BigDecimal.TEN,
+                    name = "",
+                    type = PERCENTAGE_CUSTOM_AMOUNT,
+                ),
+                orderTotal = null
+            ).toSavedStateHandle(),
+            tracker,
+            currencySymbolFinder,
+            store,
+            selectedSite
+        )
+
+        assertThat(viewModel.viewState.currencySymbol?.value).isEqualTo("₹")
     }
     //endregion
 }

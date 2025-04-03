@@ -16,7 +16,6 @@ import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
-import androidx.compose.material.Colors
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -29,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,12 +36,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-
-@Suppress("MagicNumber")
-val Colors.feedbackSurface: Color get() = if (isLight) Color(0xFF1C1C1E) else Color(0xFFB999FF)
-
-@Suppress("MagicNumber")
-val Colors.onFeedbackSurface: Color get() = if (isLight) Color(0xFFB999FF) else Color(0xFF1C1C1E)
 
 @Composable
 fun FeedbackDialog(
@@ -55,7 +49,7 @@ fun FeedbackDialog(
 ) {
     val colorStops = arrayOf(
         .6f to Color.Transparent,
-        1f to MaterialTheme.colors.feedbackSurface.copy(alpha = .4f),
+        1f to colorResource(R.color.woo_message_surface).copy(alpha = .4f),
     )
 
     Box(modifier = modifier) {
@@ -80,7 +74,7 @@ fun FeedbackDialog(
             modifier = Modifier.align(Alignment.BottomCenter)
         ) {
             Card(
-                backgroundColor = MaterialTheme.colors.feedbackSurface,
+                backgroundColor = colorResource(R.color.woo_message_surface),
                 modifier = Modifier.padding(16.dp),
                 shape = RoundedCornerShape(corner = CornerSize(8.dp))
             ) {
@@ -109,7 +103,7 @@ fun FeedbackDialog(
                             icon = Icons.Outlined.Reviews,
                             text = action,
                             colors = ButtonDefaults
-                                .textButtonColors(contentColor = MaterialTheme.colors.onFeedbackSurface),
+                                .textButtonColors(contentColor = colorResource(R.color.woo_message_on_surface)),
                             modifier = Modifier.padding(start = 4.dp)
 
                         )

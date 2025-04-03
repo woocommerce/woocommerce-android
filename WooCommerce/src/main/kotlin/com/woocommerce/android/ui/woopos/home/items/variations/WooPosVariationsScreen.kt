@@ -41,11 +41,11 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
-import com.woocommerce.android.ui.woopos.home.items.ItemsEmptyList
-import com.woocommerce.android.ui.woopos.home.items.ItemsLoadingIndicator
-import com.woocommerce.android.ui.woopos.home.items.WooPosItem
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemList
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemNavigationData.VariableProductData
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsEmptyList
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsLoadingIndicator
 import com.woocommerce.android.ui.woopos.home.items.WooPosVariationsViewState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -105,7 +105,7 @@ private fun WooPosVariationsScreens(
 ) {
     val itemState = state.collectAsState()
     val pullToRefreshState = rememberPullRefreshState(
-        itemState.value.reloadingProductsWithPullToRefresh,
+        itemState.value.reloadingWithPullToRefresh,
         onPullToRefresh
     )
     val listState = rememberLazyListState()
@@ -136,7 +136,7 @@ private fun WooPosVariationsScreens(
                         listState = listState,
                         onItemClicked = {
                             onItemClicked(
-                                (it as WooPosItem.Variation).productId,
+                                (it as WooPosItemSelectionViewState.Variation).productId,
                                 it.id
                             )
                         },
@@ -151,7 +151,7 @@ private fun WooPosVariationsScreens(
 
                 is WooPosVariationsViewState.Loading -> {
                     Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-                    ItemsLoadingIndicator()
+                    WooPosItemsLoadingIndicator()
                 }
 
                 is WooPosVariationsViewState.Error -> {
@@ -161,7 +161,7 @@ private fun WooPosVariationsScreens(
                 }
 
                 is WooPosVariationsViewState.Empty -> {
-                    ItemsEmptyList(
+                    WooPosItemsEmptyList(
                         title = stringResource(id = R.string.woopos_variations_empty_list_title),
                         message = stringResource(id = R.string.woopos_variations_empty_list_message),
                         contentDescription = stringResource(
@@ -173,7 +173,7 @@ private fun WooPosVariationsScreens(
         }
         PullRefreshIndicator(
             modifier = Modifier.align(Alignment.TopCenter),
-            refreshing = itemState.value.reloadingProductsWithPullToRefresh,
+            refreshing = itemState.value.reloadingWithPullToRefresh,
             state = pullToRefreshState
         )
     }
@@ -254,7 +254,7 @@ fun WooPosVariationsScreenPreview() {
     val productState = MutableStateFlow(
         WooPosVariationsViewState.Content(
             items = listOf(
-                WooPosItem.Variation(
+                WooPosItemSelectionViewState.Variation(
                     1,
                     name = "Product 1, Product 1, Product 1, " +
                         "Product 1, Product 1, Product 1, Product 1, Product 1" +
@@ -263,14 +263,14 @@ fun WooPosVariationsScreenPreview() {
                     price = "10.0$",
                     imageUrl = null,
                 ),
-                WooPosItem.Variation(
+                WooPosItemSelectionViewState.Variation(
                     2,
                     name = "Product 2",
                     productId = 1,
                     price = "2000.00$",
                     imageUrl = null,
                 ),
-                WooPosItem.Variation(
+                WooPosItemSelectionViewState.Variation(
                     3,
                     name = "Product 3",
                     productId = 1,
@@ -278,7 +278,7 @@ fun WooPosVariationsScreenPreview() {
                     imageUrl = null,
                 ),
             ),
-            reloadingProductsWithPullToRefresh = true,
+            reloadingWithPullToRefresh = true,
         )
     )
     WooPosTheme {

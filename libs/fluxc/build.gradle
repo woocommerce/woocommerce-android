@@ -13,12 +13,12 @@ plugins {
 android {
     useLibrary 'org.apache.http.legacy'
 
-    namespace "org.wordpress.android.fluxc"
+    namespace = "org.wordpress.android.fluxc"
 
     defaultConfig {
         minSdkVersion gradle.ext.minSdkVersion
         targetSdkVersion gradle.ext.targetSdkVersion
-        compileSdk gradle.ext.compileSdkVersion
+        compileSdk = gradle.ext.compileSdkVersion
 
         room {
             schemaDirectory "$projectDir/schemas"
@@ -32,12 +32,12 @@ android {
     }
 
     buildFeatures {
-        buildConfig true
+        buildConfig = true
     }
 
     compileOptions {
-        sourceCompatibility libs.versions.java.get()
-        targetCompatibility libs.versions.java.get()
+        sourceCompatibility = libs.versions.java.get()
+        targetCompatibility = libs.versions.java.get()
     }
 }
 

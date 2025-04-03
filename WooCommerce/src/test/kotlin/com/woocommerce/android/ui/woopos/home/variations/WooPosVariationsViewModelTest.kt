@@ -345,7 +345,7 @@ class WooPosVariationsViewModelTest {
         // THEN
         verify(fromChildToParentEventSender).sendToParent(
             ChildToParentEvent.ItemClickedInProductSelector(
-                WooPosItemsViewModel.ItemClickedData.Variation(123L, 1L)
+                WooPosItemsViewModel.ItemClickedData.Product.Variation(123L, 1L)
             )
         )
     }

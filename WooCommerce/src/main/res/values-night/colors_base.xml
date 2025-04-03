@@ -241,4 +241,13 @@
     <color name="blaze_campaign_preview_header_background">@color/woo_white_alpha_012</color>
     <color name="blaze_campaign_objective_item_background">@color/woo_purple_90</color>
 
+    <!-- Shipping labels -->
+    <color name="woo_shipping_label_success">@color/woo_green_50</color>
+    <color name="woo_shipping_label_success_surface">@color/woo_green_100</color>
+    <!--
+    Custom Message Color
+    -->
+    <color name="woo_message_surface">@color/woo_purple_20</color>
+    <color name="woo_message_on_surface">@color/woo_black</color>
+
 </resources>

@@ -69,7 +69,6 @@ class CustomAmountsFragment : BaseFragment(R.layout.dialog_custom_amounts) {
     ) {
         when (arguments.customAmountUIModel.type) {
             FIXED_CUSTOM_AMOUNT -> {
-                binding.editPrice.orderCurrency = arguments.customAmountUIModel.currency
                 if (!isLandscape && binding.editPrice.editText.requestFocus()) {
                     binding.editPrice.postDelayed(
                         {
@@ -235,6 +234,11 @@ class CustomAmountsFragment : BaseFragment(R.layout.dialog_custom_amounts) {
                     PERCENTAGE_CUSTOM_AMOUNT -> {
                         binding.updatedAmount.text = viewModel.currentPrice.toString()
                     }
+                }
+            }
+            if (arguments.customAmountUIModel.type == FIXED_CUSTOM_AMOUNT) {
+                new.currencySymbol?.let { symbol ->
+                    binding.editPrice.orderCurrency = symbol.value
                 }
             }
         }

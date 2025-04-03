@@ -1,18 +1,14 @@
 pluginManagement {
     repositories {
         google()
-        exclusiveContent {
-            forRepository {
-                maven {
-                    url = uri("https://a8c-libs.s3.amazonaws.com/android")
-                }
-            }
-            filter {
+        gradlePluginPortal()
+        maven {
+            url = uri("https://a8c-libs.s3.amazonaws.com/android")
+            content {
                 includeGroup "com.automattic.android"
                 includeGroup "com.automattic.android.measure-builds"
             }
         }
-        gradlePluginPortal()
     }
 }
 
@@ -131,7 +127,7 @@ dependencyResolutionManagement {
         mavenCentral()
         google()
         maven {
-            url 'https://a8c-libs.s3.amazonaws.com/android'
+            url = 'https://a8c-libs.s3.amazonaws.com/android'
             content {
                 includeGroup "org.wordpress"
                 includeGroup "org.wordpress.fluxc"
@@ -145,14 +141,14 @@ dependencyResolutionManagement {
             }
         }
         maven {
-            url 'https://zendesk.jfrog.io/zendesk/repo'
+            url = 'https://zendesk.jfrog.io/zendesk/repo'
             content {
                 includeGroup "com.zendesk"
                 includeGroup "com.zendesk.belvedere2"
             }
         }
         maven {
-            url "https://a8c-libs.s3.amazonaws.com/android/jcenter-mirror"
+            url = "https://a8c-libs.s3.amazonaws.com/android/jcenter-mirror"
             content {
                 includeVersion "com.android.volley", "volley", "1.1.1"
                 includeVersion "com.google.android", "flexbox", "2.0.1"
@@ -162,7 +158,7 @@ dependencyResolutionManagement {
             }
         }
         maven {
-            url "https://jitpack.io"
+            url = "https://jitpack.io"
             content {
                 includeModule("com.github.wordpress-mobile.WordPress-Aztec-Android", "aztec")
                 includeModule("com.github.wordpress-mobile.WordPress-Aztec-Android", "glide-loader")

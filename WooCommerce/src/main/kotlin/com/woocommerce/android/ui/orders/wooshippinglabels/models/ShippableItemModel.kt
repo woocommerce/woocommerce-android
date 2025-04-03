@@ -21,4 +21,8 @@ data class ShippableItemModel(
 ) : IProduct, Parcelable {
     val shippingTotalValue
         get() = price * quantity.toBigDecimal()
+
+    companion object {
+        const val SINGLE_QUANTITY = 1f
+    }
 }

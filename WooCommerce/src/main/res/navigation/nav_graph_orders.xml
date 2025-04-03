@@ -716,6 +716,9 @@
         <action
             android:id="@+id/action_wooShippingLabelCreationFragment_to_wooShippingSplitShipmentFragment"
             app:destination="@id/wooShippingSplitShipmentFragment" />
+        <action
+            android:id="@+id/action_wooShippingLabelCreationFragment_to_wooShippingLabelHazmatFormFragment"
+            app:destination="@id/wooShippingLabelHazmatFormFragment" />
     </fragment>
     <fragment
         android:id="@+id/wooShippingLabelPackageCreationFragment"
@@ -759,6 +762,10 @@
             app:argType="com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel[]" />
 
         <argument
+            android:name="destinationCountryCode"
+            app:argType="string" />
+
+        <argument
             android:name="customsData"
             app:argType="com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData"
             app:nullable="true"/>
@@ -774,5 +781,22 @@
     <fragment
         android:id="@+id/wooShippingSplitShipmentFragment"
         android:name="com.woocommerce.android.ui.orders.wooshippinglabels.split.WooShippingSplitShipmentFragment"
-        android:label="WooShippingSplitShipmentFragment" />
+        android:label="WooShippingSplitShipmentFragment" >
+        <argument
+            android:name="shipmentArgs"
+            app:argType="com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel$SplitShipmentArgs" />
+    </fragment>
+    <fragment
+        android:id="@+id/wooShippingLabelHazmatFormFragment"
+        android:name="com.woocommerce.android.ui.orders.wooshippinglabels.hazmat.WooShippingLabelHazmatFormFragment"
+        android:label="WooShippingLabelHazmatFormFragment" >
+        <argument
+            android:name="selectedCategoryName"
+            app:argType="string"
+            app:nullable="true" />
+
+        <action
+            android:id="@+id/action_wooShippingLabelHazmatFormFragment_to_hazmatCategorySelector"
+            app:destination="@id/searchFilterFragment" />
+    </fragment>
 </navigation>

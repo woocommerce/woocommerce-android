@@ -2,18 +2,25 @@ package com.woocommerce.android.ui.payments.customamounts
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_ADD_CUSTOM_AMOUNT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_EDIT_CUSTOM_AMOUNT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.common.CurrencySymbol
 import com.woocommerce.android.ui.orders.CustomAmountUIModel
+import com.woocommerce.android.ui.orders.creation.product.discount.CurrencySymbolFinder
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import kotlinx.parcelize.RawValue
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.math.RoundingMode
 import javax.inject.Inject
@@ -23,6 +30,9 @@ import kotlin.math.roundToInt
 class CustomAmountsViewModel @Inject constructor(
     savedState: SavedStateHandle,
     tracker: AnalyticsTrackerWrapper,
+    private val currencySymbolFinder: CurrencySymbolFinder,
+    private val store: WooCommerceStore,
+    private val selectedSite: SelectedSite,
 ) : ScopedViewModel(savedState) {
     /**
      * Saving more data than necessary into the SavedState has associated risks which were not known at the time this
@@ -104,15 +114,22 @@ class CustomAmountsViewModel @Inject constructor(
             populateUIWithExistingData()
             tracker.track(ORDER_CREATION_EDIT_CUSTOM_AMOUNT_TAPPED)
         }
-        updateCustomAmountType()
+        updateCustomAmountTypeAndSetCurrencySymbol()
     }
 
-    private fun updateCustomAmountType() {
-        viewState = viewState.copy(
-            customAmountUIModel = viewState.customAmountUIModel.copy(
-                type = args.customAmountUIModel.type
+    private fun updateCustomAmountTypeAndSetCurrencySymbol() {
+        viewModelScope.launch {
+            val code = args.customAmountUIModel.currencyCode?.value
+                ?: store.getSiteSettings(selectedSite.get())?.currencyCode
+
+            val symbol = code?.let { currencySymbolFinder.findCurrencySymbol(it) }
+            viewState = viewState.copy(
+                customAmountUIModel = viewState.customAmountUIModel.copy(
+                    type = args.customAmountUIModel.type
+                ),
+                currencySymbol = symbol?.let { CurrencySymbol(it) }
             )
-        )
+        }
     }
 
     private fun populateUIWithExistingData() {
@@ -153,6 +170,7 @@ class CustomAmountsViewModel @Inject constructor(
     @Parcelize
     data class ViewState(
         val customAmountUIModel: CustomAmountUIState = CustomAmountUIState(),
+        val currencySymbol: @RawValue CurrencySymbol? = null,
         val isDoneButtonEnabled: Boolean = false,
         val isProgressShowing: Boolean = false,
         val createdOrder: Order? = null,

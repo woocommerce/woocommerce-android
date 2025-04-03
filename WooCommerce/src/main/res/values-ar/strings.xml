@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-02-24 15:54:04+0000
+Translation-Revision-Date: 2025-03-10 22:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_address_update_message">تحديث العنوان الذي تم إدخاله…</string>
+    <string name="woo_shipping_address_update_title">التحديث</string>
+    <string name="woo_shipping_address_save_changes">حفظ التغييرات</string>
+    <string name="woo_shipping_updating_address_failed">يتعذر علينا تحديث عنوانك. يرجى المحاولة مجددًا.</string>
+    <string name="woo_shipping_verifying_address_failed">فشل التحقق من صحة العنوان. يرجى المحاولة مجددًا.</string>
+    <string name="woo_shipping_address_unsaved_changes">تغييرات غير محفوظة</string>
+    <string name="woo_shipping_address_missing">عنوان مفقود</string>
+    <string name="woo_shipping_edit_destination_address_title">تحرير الوجهة</string>
+    <string name="woo_shipping_labels_customs_product_details_origin_country_selection">تحديد بلد</string>
+    <string name="woo_shipping_labels_customs_product_details_origin_country_missing">البلد المفقود</string>
+    <string name="woo_shipping_labels_customs_product_details_origin_country">بلد المنشأ</string>
+    <string name="woo_shipping_labels_customs_product_details_value_required">القيمة مطلوبة</string>
+    <string name="woo_shipping_labels_customs_product_details_weight_per_unit">الوزن لكل وحدة</string>
+    <string name="woo_shipping_labels_customs_product_details_value_per_unit">القيمة لكل وحدة</string>
+    <string name="woo_shipping_labels_customs_product_details_tariff_missing">رقم تعريفة مفقود</string>
+    <string name="woo_shipping_labels_customs_product_details_tariff">رقم تعريفة النظام المنسق</string>
+    <string name="woo_shipping_labels_customs_product_details_description_missing">الوصف مفقود</string>
+    <string name="woo_shipping_labels_customs_product_details_description">وصف</string>
+    <string name="woo_shipping_labels_customs_product_details_title">تفاصيل المنتج</string>
+    <string name="woo_shipping_labels_customs_itn_required_message">يجب ألا يكون رقم المعاملة الداخلي (ITN) فارغًا</string>
+    <string name="woo_shipping_labels_customs_itn_error_message">تنسيق رقم المعاملة الداخلي غير صالح</string>
+    <string name="woo_shipping_labels_customs_other_error_message">يجب ألا يكون النوع فارغًا</string>
+    <string name="woo_shipping_labels_package_creation_shipping_rates_loading_error">يتعذر علينا تحميل أسعار الشحن.</string>
+    <string name="woo_shipping_labels_package_creation_saved_loading_error">يتعذر علينا تحميل الطرود المحفوظة.</string>
+    <string name="woo_shipping_labels_package_creation_carrier_loading_error">يتعذر علينا تحميل طرود شركات النقل.</string>
     <string name="woo_shipping_confirm_submit_address_entered">تأكيد العنوان الذي تم إدخاله</string>
     <string name="woo_shipping_confirm_submit_address_suggested">تأكيد العنوان المقترح</string>
     <string name="woo_shipping_confirm_address_suggested">مقترح</string>

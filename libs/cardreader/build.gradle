@@ -6,9 +6,9 @@ plugins {
 }
 
 android {
-    namespace "com.woocommerce.android.cardreader"
+    namespace = "com.woocommerce.android.cardreader"
 
-    compileSdk gradle.ext.compileSdkVersion
+    compileSdk = gradle.ext.compileSdkVersion
 
     defaultConfig {
         minSdkVersion gradle.ext.minSdkVersion
@@ -22,8 +22,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility libs.versions.java.get()
-        targetCompatibility libs.versions.java.get()
+        sourceCompatibility = libs.versions.java.get()
+        targetCompatibility = libs.versions.java.get()
     }
 }
 

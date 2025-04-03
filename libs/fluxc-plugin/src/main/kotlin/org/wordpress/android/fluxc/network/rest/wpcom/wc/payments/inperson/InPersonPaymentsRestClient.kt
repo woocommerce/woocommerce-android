@@ -1,11 +1,12 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.wc.payments.inperson
 
-import com.android.volley.VolleyError
+import androidx.core.text.HtmlCompat
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import org.wordpress.android.fluxc.generated.endpoint.WOOCOMMERCE
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.payments.inperson.WCCapturePaymentError
+import org.wordpress.android.fluxc.model.payments.inperson.WCCapturePaymentErrorType.AMOUNT_TOO_SMALL
 import org.wordpress.android.fluxc.model.payments.inperson.WCCapturePaymentErrorType.CAPTURE_ERROR
 import org.wordpress.android.fluxc.model.payments.inperson.WCCapturePaymentErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.model.payments.inperson.WCCapturePaymentErrorType.MISSING_ORDER
@@ -15,10 +16,10 @@ import org.wordpress.android.fluxc.model.payments.inperson.WCCapturePaymentError
 import org.wordpress.android.fluxc.model.payments.inperson.WCCapturePaymentResponsePayload
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentChargeApiResult
+import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentTransactionsSummaryResult
 import org.wordpress.android.fluxc.model.payments.inperson.WCTerminalStoreLocationError
 import org.wordpress.android.fluxc.model.payments.inperson.WCTerminalStoreLocationErrorType
 import org.wordpress.android.fluxc.model.payments.inperson.WCTerminalStoreLocationResult
-import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentTransactionsSummaryResult
 import org.wordpress.android.fluxc.model.payments.inperson.WCTerminalStoreLocationResult.StoreAddress
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
@@ -29,8 +30,8 @@ import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore.InPersonPayment
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore.InPersonPaymentsPluginType.STRIPE
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS
 import org.wordpress.android.fluxc.utils.toWooPayload
-import javax.inject.Inject
 import org.wordpress.android.util.AppLog
+import javax.inject.Inject
 
 class InPersonPaymentsRestClient @Inject constructor(
     private val wooNetwork: WooNetwork,
@@ -220,6 +221,7 @@ class InPersonPaymentsRestClient @Inject constructor(
             error.errorCode == "wcpay_payment_uncapturable" -> PAYMENT_ALREADY_CAPTURED
             error.errorCode == "wcpay_capture_error" -> CAPTURE_ERROR
             error.errorCode == "wcpay_server_error" -> SERVER_ERROR
+            error.errorCode == "wcpay_capture_error_amount_too_small" -> AMOUNT_TOO_SMALL
             error.type == GenericErrorType.TIMEOUT -> NETWORK_ERROR
             error.type == GenericErrorType.NO_CONNECTION -> NETWORK_ERROR
             error.type == GenericErrorType.NETWORK_ERROR -> NETWORK_ERROR
@@ -228,18 +230,18 @@ class InPersonPaymentsRestClient @Inject constructor(
         return WCCapturePaymentError(
             type,
             message,
-            extraData = error?.volleyError?.getExtraData()
+            extraData = message.getExtraData()
         )
     }
 
     @Suppress("TooGenericExceptionCaught")
-    private fun VolleyError.getExtraData(): Map<String, Any>? {
-        val jsonString = this.networkResponse?.data?.toString(Charsets.UTF_8)
+    private fun String.getExtraData(): Map<String, Any>? {
         return try {
+            val decodedString = HtmlCompat.fromHtml(this, HtmlCompat.FROM_HTML_MODE_LEGACY).toString()
             val mapType = object : TypeToken<Map<String, Any>>() {}.type
-            return gson.fromJson<Map<String, Any>>(jsonString, mapType)["data"] as Map<String, Any>?
+            gson.fromJson<Map<String, Any>>(decodedString, mapType)
         } catch (e: Throwable) {
-            AppLog.e(AppLog.T.API, "Error parsing volley error $jsonString", e)
+            AppLog.e(AppLog.T.API, "Error parsing volley error $this", e)
             null
         }
     }

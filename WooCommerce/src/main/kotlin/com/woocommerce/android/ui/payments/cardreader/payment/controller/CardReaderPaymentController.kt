@@ -6,7 +6,6 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
-import com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.ReaderType
 import com.woocommerce.android.cardreader.connection.event.BluetoothCardReaderMessages
@@ -46,7 +45,6 @@ import com.woocommerce.android.cardreader.payments.StatementDescriptor
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
-import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
@@ -109,7 +107,6 @@ class CardReaderPaymentController(
     private val cardReaderPaymentOrderHelper: CardReaderPaymentOrderHelper,
     private val paymentReceiptHelper: PaymentReceiptHelper,
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker,
-    private val cardReaderConfigProvider: CardReaderCountryConfigProvider,
     private val paymentReceiptShare: PaymentReceiptShare,
     private val paymentOrRefund: CardReaderFlowParam.PaymentOrRefund,
     private val cardReaderType: CardReaderType,
@@ -308,7 +305,7 @@ class CardReaderPaymentController(
     }
 
     @Suppress("LongMethod")
-    private suspend fun onPaymentStatusChanged(
+    private fun onPaymentStatusChanged(
         orderId: Long,
         billingEmail: String,
         paymentStatus: CardPaymentStatus,
@@ -530,7 +527,7 @@ class CardReaderPaymentController(
             )
     }
 
-    private suspend fun emitFailedPaymentState(
+    private fun emitFailedPaymentState(
         orderId: Long,
         billingEmail: String,
         error: PaymentFailed,
@@ -543,15 +540,9 @@ class CardReaderPaymentController(
                 retry(orderId, billingEmail, it, amountLabel)
             }
         } ?: { initPaymentFlow(isRetry = true) }
-        val config = cardReaderConfigProvider.provideCountryConfigFor(getStoreCountryCode())
-
-        require(config is CardReaderConfigForSupportedCountry) {
-            "State mismatch: received unsupported country config"
-        }
 
         val errorType = errorMapper.mapPaymentErrorToUiError(
             error.type,
-            config,
             cardReaderType == CardReaderType.BUILT_IN
         )
         _paymentState.value = buildFailedPaymentState(errorType, amountLabel, onRetryClicked)

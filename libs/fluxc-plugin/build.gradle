@@ -10,12 +10,12 @@ plugins {
 }
 
 android {
-    namespace "org.wordpress.android.fluxc.plugins.woocommerce"
+    namespace = "org.wordpress.android.fluxc.plugins.woocommerce"
 
     defaultConfig {
         minSdkVersion gradle.ext.minSdkVersion
         targetSdkVersion gradle.ext.targetSdkVersion
-        compileSdk gradle.ext.compileSdkVersion
+        compileSdk = gradle.ext.compileSdkVersion
 
         room {
             schemaDirectory "$projectDir/schemas"
@@ -29,8 +29,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility libs.versions.java.get()
-        targetCompatibility libs.versions.java.get()
+        sourceCompatibility = libs.versions.java.get()
+        targetCompatibility = libs.versions.java.get()
     }
 
     testOptions {

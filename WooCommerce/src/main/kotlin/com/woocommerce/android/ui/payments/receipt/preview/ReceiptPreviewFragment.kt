@@ -1,21 +1,20 @@
 package com.woocommerce.android.ui.payments.receipt.preview
 
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentReceiptPreviewBinding
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.util.PrintHtmlHelper
 import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.util.WooLog
@@ -27,7 +26,7 @@ import java.net.URL
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ReceiptPreviewFragment : BaseFragment(R.layout.fragment_receipt_preview), MenuProvider {
+class ReceiptPreviewFragment : BaseFragment(R.layout.fragment_receipt_preview) {
     val viewModel: ReceiptPreviewViewModel by viewModels()
 
     @Inject lateinit var printHtmlHelper: PrintHtmlHelper
@@ -39,23 +38,36 @@ class ReceiptPreviewFragment : BaseFragment(R.layout.fragment_receipt_preview), 
     private var _binding: FragmentReceiptPreviewBinding? = null
     private val binding get() = _binding!!
 
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
+
     private var urlToLoad: String? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        requireActivity().addMenuProvider(this, viewLifecycleOwner)
-
         _binding = FragmentReceiptPreviewBinding.bind(view)
+        setupToolbar(binding)
         initViews(binding, savedInstanceState)
         initObservers(binding)
     }
 
-    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_receipt_preview, menu)
+    private fun setupToolbar(binding: FragmentReceiptPreviewBinding) {
+        binding.toolbar.title = getString(R.string.receipt_preview_toolbar_title)
+        binding.toolbar.setOnMenuItemClickListener { menuItem ->
+            onMenuItemSelected(menuItem)
+        }
+        binding.toolbar.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
+        setupToolbarMenu()
     }
 
-    override fun onMenuItemSelected(item: MenuItem): Boolean {
+    private fun setupToolbarMenu() {
+        binding.toolbar.inflateMenu(R.menu.menu_receipt_preview)
+    }
+
+    private fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_print -> {
                 viewModel.onPrintClicked()

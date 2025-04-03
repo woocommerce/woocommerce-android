@@ -5,7 +5,6 @@ import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.di.PointOfSaleMode
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
-import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
@@ -47,7 +46,6 @@ class WooPosCardReaderPaymentControllerFactory @Inject constructor(
     private val cardReaderPaymentOrderHelper: CardReaderPaymentOrderHelper,
     private val paymentReceiptHelper: PaymentReceiptHelper,
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker,
-    private val cardReaderConfigProvider: CardReaderCountryConfigProvider,
     private val paymentReceiptShare: PaymentReceiptShare,
 ) {
     fun create(
@@ -73,7 +71,6 @@ class WooPosCardReaderPaymentControllerFactory @Inject constructor(
         cardReaderPaymentOrderHelper = cardReaderPaymentOrderHelper,
         paymentReceiptHelper = paymentReceiptHelper,
         cardReaderOnboardingChecker = cardReaderOnboardingChecker,
-        cardReaderConfigProvider = cardReaderConfigProvider,
         paymentReceiptShare = paymentReceiptShare,
         paymentOrRefund = PaymentOrRefund.Payment(
             orderId = orderId,

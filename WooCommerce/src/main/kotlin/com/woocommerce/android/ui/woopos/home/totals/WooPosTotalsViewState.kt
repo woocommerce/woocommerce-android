@@ -18,6 +18,7 @@ sealed class WooPosTotalsViewState : Parcelable {
 
         @Parcelize
         data class Visible(
+            val orderDiscountText: String?,
             val orderSubtotalText: String,
             val orderTaxText: String,
             val orderTotalText: String,
