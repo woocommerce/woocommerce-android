@@ -66,9 +66,9 @@ fun JetpackActivationWPComEmailScreen(
     ) { paddingValues ->
         Column(
             modifier = Modifier
-                .imePadding()
                 .background(MaterialTheme.colors.surface)
                 .padding(paddingValues)
+                .imePadding()
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
         ) {
