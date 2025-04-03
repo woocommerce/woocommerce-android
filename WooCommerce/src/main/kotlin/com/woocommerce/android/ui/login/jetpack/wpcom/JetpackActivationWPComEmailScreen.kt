@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
@@ -65,10 +66,11 @@ fun JetpackActivationWPComEmailScreen(
     ) { paddingValues ->
         Column(
             modifier = Modifier
+                .imePadding()
                 .background(MaterialTheme.colors.surface)
                 .padding(paddingValues)
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState()),
+                .verticalScroll(rememberScrollState())
         ) {
             Column(
                 modifier = Modifier
@@ -98,6 +100,7 @@ fun JetpackActivationWPComEmailScreen(
                     )
                 )
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+
                 WCOutlinedTextField(
                     value = viewState.emailOrUsername,
                     onValueChange = onEmailChanged,
@@ -118,6 +121,7 @@ fun JetpackActivationWPComEmailScreen(
                     )
                 )
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+
                 if (!viewState.usernameOnly) {
                     Text(
                         style = MaterialTheme.typography.body2,
