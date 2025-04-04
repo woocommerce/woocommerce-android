@@ -1,17 +1,39 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking
 
 import com.google.gson.annotations.SerializedName
+import com.woocommerce.android.ui.orders.wooshippinglabels.networking.CustomsDTO
+import com.woocommerce.android.ui.orders.wooshippinglabels.networking.CustomsItemDTO
 import java.math.BigDecimal
 
-data class PackageDTO(
-    val id: String = "custom_box",
-    @SerializedName("box_id") val boxId: String = "0",
-    val length: Double,
-    val width: Double,
-    val height: Double,
-    @SerializedName("is_letter") val isLetter: Boolean,
-    val weight: Double,
-)
+sealed class PackageDTO {
+    data class CommonPackageDTO(
+        val id: String = "custom_box",
+        @SerializedName("box_id") val boxId: String = "0",
+        val length: Double,
+        val width: Double,
+        val height: Double,
+        @SerializedName("is_letter") val isLetter: Boolean,
+        val weight: Double,
+        val customs: CustomsDTO? = null
+    ) : PackageDTO()
+
+    data class PackageWithCustomsDTO(
+        val id: String = "custom_box",
+        @SerializedName("box_id") val boxId: String = "0",
+        val length: Double,
+        val width: Double,
+        val height: Double,
+        @SerializedName("is_letter") val isLetter: Boolean,
+        val weight: Double,
+        @SerializedName("contents_type") val contentsType: String,
+        @SerializedName("contents_explanation") val contentExplanation: String,
+        @SerializedName("restriction_type") val restrictionType: String,
+        @SerializedName("restriction_comments") val restrictionComments: String,
+        @SerializedName("non_delivery_option") val isReturnToSender: String,
+        val itn: String,
+        val items: List<CustomsItemDTO>
+    ) : PackageDTO()
+}
 
 data class DestinationAddressDTO(
     val company: String? = null,

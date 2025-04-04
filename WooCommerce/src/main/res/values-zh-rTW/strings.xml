@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-02-25 09:54:04+0000
+Translation-Revision-Date: 2025-03-11 14:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_address_update_message">正在更新輸入的地址</string>
+    <string name="woo_shipping_address_update_title">更新</string>
+    <string name="woo_shipping_address_save_changes">儲存變更</string>
+    <string name="woo_shipping_updating_address_failed">無法更新地址， 請再試一次。</string>
+    <string name="woo_shipping_verifying_address_failed">地址驗證失敗， 請再試一次。</string>
+    <string name="woo_shipping_address_unsaved_changes">未儲存的變更</string>
+    <string name="woo_shipping_address_missing">地址未填</string>
+    <string name="woo_shipping_edit_destination_address_title">編輯目的地</string>
+    <string name="woo_shipping_labels_customs_product_details_origin_country_selection">選取國家/地區</string>
+    <string name="woo_shipping_labels_customs_product_details_origin_country_missing">未填國家/地區</string>
+    <string name="woo_shipping_labels_customs_product_details_origin_country">來源國家/地區</string>
+    <string name="woo_shipping_labels_customs_product_details_value_required">金額 (必填)</string>
+    <string name="woo_shipping_labels_customs_product_details_weight_per_unit">重量 (每單位)</string>
+    <string name="woo_shipping_labels_customs_product_details_value_per_unit">金額 (每單位)</string>
+    <string name="woo_shipping_labels_customs_product_details_tariff_missing">未填關稅代碼</string>
+    <string name="woo_shipping_labels_customs_product_details_tariff">HS 關稅代碼</string>
+    <string name="woo_shipping_labels_customs_product_details_description_missing">未填描述</string>
+    <string name="woo_shipping_labels_customs_product_details_description">描述</string>
+    <string name="woo_shipping_labels_customs_product_details_title">商品詳細資料</string>
+    <string name="woo_shipping_labels_customs_itn_required_message">國際交易號碼不可為空白</string>
+    <string name="woo_shipping_labels_customs_itn_error_message">國際交易號碼格式無效</string>
+    <string name="woo_shipping_labels_customs_other_error_message">類型不可為空白</string>
+    <string name="woo_shipping_labels_package_creation_shipping_rates_loading_error">無法載入運費。</string>
+    <string name="woo_shipping_labels_package_creation_saved_loading_error">無法載入儲存的包裝。</string>
+    <string name="woo_shipping_labels_package_creation_carrier_loading_error">無法載入貨運業者專用包裝。</string>
     <string name="woo_shipping_confirm_submit_address_entered">確認輸入的地址</string>
     <string name="woo_shipping_confirm_submit_address_suggested">確認建議的地址</string>
     <string name="woo_shipping_confirm_address_suggested">建議</string>

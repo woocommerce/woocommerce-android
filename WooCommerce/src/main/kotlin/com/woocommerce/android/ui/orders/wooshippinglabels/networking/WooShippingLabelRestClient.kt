@@ -84,6 +84,7 @@ class WooShippingLabelRestClient @Inject constructor(
         selectedRate: RateDTO,
         markOrderComplete: Boolean,
         hazmat: HazmatDTO = HazmatDTO(),
+        customs: Map<String, CustomsDTO>,
     ): WooPayload<PurchasedShippingLabelResponseDTO> {
         val url = "/wcshipping/v1/label/purchase/$orderId/"
         return wooNetwork.executePostGsonRequest(
@@ -103,7 +104,7 @@ class WooShippingLabelRestClient @Inject constructor(
                 // TODO: `selected_rate_options` will be updated while adding UPS support PaJDVv-2Gf-p2
                 "selected_rate_options" to "",
                 "hazmat" to mapOf(selectedPackage.boxId to hazmat),
-                "customs" to emptyMap<String, String>(),
+                "customs" to customs,
                 "user_meta" to mapOf("last_order_completed" to markOrderComplete)
             ),
             clazz = PurchasedShippingLabelResponseDTO::class.java,

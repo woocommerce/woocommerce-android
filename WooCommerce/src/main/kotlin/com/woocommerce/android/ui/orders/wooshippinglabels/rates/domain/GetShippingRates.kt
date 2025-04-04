@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.rates.domain
 
 import com.woocommerce.android.model.Address
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRatesRepository
@@ -20,14 +21,16 @@ class GetShippingRates @Inject constructor(
         shipTo: Address,
         shipFrom: OriginShippingAddress,
         weight: Float,
-        currencyCode: String?
+        currencyCode: String?,
+        customsData: CustomsData?
     ): Result<Map<CarrierUI, List<ShippingRateUI>>> {
         val result = repository.getShippingRates(
             orderId = orderId,
             selectedPackage = selectedPackage,
             shipTo = shipTo,
             shipFrom = shipFrom,
-            weight = weight
+            weight = weight,
+            customsData = customsData
         )
         return if (result.isSuccess) {
             val rates = shippingMapper(result.getOrThrow(), currencyCode)

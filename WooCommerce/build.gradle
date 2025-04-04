@@ -62,9 +62,9 @@ sentry {
 def versionProperties = loadPropertiesFromFile(file("${rootDir}/version.properties"))
 
 android {
-    namespace "com.woocommerce.android"
+    namespace = "com.woocommerce.android"
 
-    compileSdk gradle.ext.compileSdkVersion
+    compileSdk = gradle.ext.compileSdkVersion
 
     defaultConfig {
         applicationId "com.woocommerce.android"
@@ -97,15 +97,15 @@ android {
     }
 
     buildFeatures {
-        buildConfig true
-        compose true
-        viewBinding true
+        buildConfig = true
+        compose = true
+        viewBinding = true
     }
 
     compileOptions {
-        sourceCompatibility libs.versions.java.get()
-        targetCompatibility libs.versions.java.get()
-        coreLibraryDesugaringEnabled true
+        sourceCompatibility = libs.versions.java.get()
+        targetCompatibility = libs.versions.java.get()
+        coreLibraryDesugaringEnabled = true
     }
 
     flavorDimensions = ["buildType"]
@@ -122,7 +122,7 @@ android {
         wasabi {
             applicationId "com.woocommerce.android.dev"
             dimension "buildType"
-            isDefault true
+            isDefault = true
 
             resConfigs("en", "xxhdpi")
         }
@@ -140,14 +140,14 @@ android {
         release {
             // Proguard is used to shrink our apk, and reduce the number of methods in our final apk,
             // but we don't obfuscate the bytecode.
-            minifyEnabled true
+            minifyEnabled = true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
 
         debug {
-            minifyEnabled false
-            pseudoLocalesEnabled true
-            isDefault true
+            minifyEnabled = false
+            pseudoLocalesEnabled = true
+            isDefault = true
         }
     }
 
@@ -164,8 +164,8 @@ android {
     }
 
     lintOptions {
-        sarifReport gradle.ext.isCi
-        checkDependencies true
+        sarifReport = gradle.ext.isCi
+        checkDependencies = true
         disable 'InvalidPackage'
     }
 

@@ -75,7 +75,7 @@ internal class EndpointProcessor @Inject constructor(
             EndpointData(
                 apiType = ApiType.WPCom,
                 httpMethod = httpMethod,
-                path = url.encodedPath.substringAfter("/rest"),
+                path = url.encodedPath,
                 body = originalBody
             )
         }

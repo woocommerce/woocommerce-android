@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-02-24 15:54:04+0000
+Translation-Revision-Date: 2025-03-11 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_address_update_message">Eingegebene Adresse wird aktualisiert …</string>
+    <string name="woo_shipping_address_update_title">Wird aktualisiert</string>
+    <string name="woo_shipping_address_save_changes">Änderungen speichern</string>
+    <string name="woo_shipping_updating_address_failed">Deine Adresse konnte nicht aktualisiert werden. Bitte versuche es erneut.</string>
+    <string name="woo_shipping_verifying_address_failed">Verifizierung der Adresse fehlgeschlagen. Bitte versuche es erneut.</string>
+    <string name="woo_shipping_address_unsaved_changes">Ungespeicherte Änderungen</string>
+    <string name="woo_shipping_address_missing">Adresse fehlt</string>
+    <string name="woo_shipping_edit_destination_address_title">Adresse des Empfängers bearbeiten</string>
+    <string name="woo_shipping_labels_customs_product_details_origin_country_selection">Wähle ein Land</string>
+    <string name="woo_shipping_labels_customs_product_details_origin_country_missing">Land fehlt</string>
+    <string name="woo_shipping_labels_customs_product_details_origin_country">Ursprungsland</string>
+    <string name="woo_shipping_labels_customs_product_details_value_required">Wert erforderlich</string>
+    <string name="woo_shipping_labels_customs_product_details_weight_per_unit">Gewicht pro Einheit</string>
+    <string name="woo_shipping_labels_customs_product_details_value_per_unit">Wert pro Einheit</string>
+    <string name="woo_shipping_labels_customs_product_details_tariff_missing">Tarifnummer fehlt</string>
+    <string name="woo_shipping_labels_customs_product_details_tariff">HS-Tarifnummer</string>
+    <string name="woo_shipping_labels_customs_product_details_description_missing">Beschreibung fehlt</string>
+    <string name="woo_shipping_labels_customs_product_details_description">Beschreibung</string>
+    <string name="woo_shipping_labels_customs_product_details_title">Produktdetails</string>
+    <string name="woo_shipping_labels_customs_itn_required_message">ITN darf nicht leer sein</string>
+    <string name="woo_shipping_labels_customs_itn_error_message">Ungültiges ITN-Format</string>
+    <string name="woo_shipping_labels_customs_other_error_message">Typ darf nicht leer sein</string>
+    <string name="woo_shipping_labels_package_creation_shipping_rates_loading_error">Die Versandkosten können nicht geladen werden.</string>
+    <string name="woo_shipping_labels_package_creation_saved_loading_error">Gespeicherte Pakete können nicht geladen werden.</string>
+    <string name="woo_shipping_labels_package_creation_carrier_loading_error">Versanddienstleister-Pakete können nicht geladen werden.</string>
     <string name="woo_shipping_confirm_submit_address_entered">Eingegebene Adresse bestätigen</string>
     <string name="woo_shipping_confirm_submit_address_suggested">Vorgeschlagene Adresse bestätigen</string>
     <string name="woo_shipping_confirm_address_suggested">Vorgeschlagen</string>

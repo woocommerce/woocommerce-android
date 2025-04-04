@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.purchased
 
+import android.content.res.Configuration
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -115,9 +116,7 @@ internal fun WooShippingLabelPurchasedWithBottomSheetScreen(
                         }
                         true
                     },
-                    addressNotification = null,
                     onEditDestinationAddress = {},
-                    onEditOriginAddress = {},
                     destinationStatus = AddressStatus.VERIFIED
                 )
             }
@@ -322,7 +321,7 @@ private fun PrintShippingLabelCard(
     Column(
         modifier = modifier
             .background(
-                color = colorResource(id = R.color.woo_shipping_label_success),
+                color = colorResource(id = R.color.woo_shipping_label_success_surface),
                 shape = RoundedCornerShape(dimensionResource(R.dimen.corner_radius_large))
             )
             .padding(16.dp)
@@ -346,7 +345,7 @@ private fun PrintShippingLabelCard(
                 .padding(top = 12.dp, bottom = 4.dp),
             colors = buttonColors(
                 backgroundColor = colorResource(id = R.color.woo_shipping_label_success),
-                contentColor = MaterialTheme.colors.surface
+                contentColor = colorResource(id = R.color.woo_white)
             )
         )
         Row(
@@ -479,7 +478,8 @@ private fun ShippingLabelLink(
     }
 }
 
-@Preview(showSystemUi = true, device = Devices.PIXEL_4)
+@Preview(name = "dark", uiMode = Configuration.UI_MODE_NIGHT_YES, showSystemUi = true, device = Devices.PIXEL_4)
+@Preview(name = "light", uiMode = Configuration.UI_MODE_NIGHT_NO, showSystemUi = true, device = Devices.PIXEL_4)
 @Composable
 internal fun WooShippingLabelPurchasedScreenPreview() {
     WooThemeWithBackground {

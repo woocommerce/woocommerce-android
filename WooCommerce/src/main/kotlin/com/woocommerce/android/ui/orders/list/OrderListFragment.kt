@@ -389,9 +389,6 @@ class OrderListFragment :
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
         viewModel.loadOrders()
-        if (requireContext().isTwoPanesShouldBeUsed) {
-            refreshOrders()
-        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -569,14 +566,7 @@ class OrderListFragment :
                         selectedOrder.selectedOrderId.value == null ||
                         selectedOrder.selectedOrderId.value == -1L -> {
                         handler.postDelayed({
-                            val firstOrder = it
-                                .filterIsInstance<OrderListItemUIType.OrderListItemUI>()
-                                .firstOrNull()
-
-                            firstOrder?.let { firstOrder ->
-                                openFirstOrder()
-                                selectedOrder.selectOrder(firstOrder.orderId)
-                            }
+                            openFirstOrder(it)
                         }, HANDLER_DELAY)
                     }
 
@@ -589,7 +579,7 @@ class OrderListFragment :
                         // The first time the user logs in, we need to add some delay
                         // before opening the first order.
                         handler.postDelayed({
-                            openFirstOrder()
+                            openFirstOrder(it)
                         }, HANDLER_DELAY)
                     }
                 }
@@ -845,12 +835,24 @@ class OrderListFragment :
         }
     }
 
-    private fun openFirstOrder() {
-        binding.orderListView.openFirstOrder()
+    private fun openFirstOrder(orderList: PagedOrdersList) {
+        val firstOrder = orderList
+            .filterIsInstance<OrderListItemUIType.OrderListItemUI>()
+            .firstOrNull()
+
+        firstOrder?.let { firstOrder ->
+            if (firstOrder.orderId != selectedOrder.selectedOrderId.value) {
+                binding.orderListView.openFirstOrder()
+                selectedOrder.selectOrder(firstOrder.orderId)
+            }
+        }
     }
 
     private fun openSpecificOrder(orderId: Long?, startPaymentsFlow: Boolean = false) {
-        binding.orderListView.openOrder(orderId ?: -1L, startPaymentsFlow)
+        val currentSelectedId = selectedOrder.selectedOrderId.value
+        if (orderId != currentSelectedId) {
+            binding.orderListView.openOrder(orderId ?: -1L, startPaymentsFlow)
+        }
     }
 
     private fun clearSelectedOrderIdInViewModel() {

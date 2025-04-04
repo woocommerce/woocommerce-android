@@ -5,17 +5,23 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -43,6 +49,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.formatToString
+import com.woocommerce.android.ui.compose.component.SelectionCheck
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.util.StringUtils
 
@@ -129,33 +136,14 @@ private fun ShippingProductsCardHeader(
     Box(
         modifier = boxModifier
     ) {
-        val items = StringUtils.getQuantityString(
-            context = LocalContext.current,
-            quantity = shippableItems.shippableItems.size,
-            default = R.string.shipping_label_package_details_items_count_many,
-            one = R.string.shipping_label_package_details_items_count_one,
-        )
-        Row {
-            Text(
-                text = items,
-                style = MaterialTheme.typography.subtitle1,
-                color = MaterialTheme.colors.onSurface,
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            ProductsSummary(
+                totalItems = shippableItems.shippableItems.size,
+                totalWeight = shippableItems.formattedTotalWeight,
+                totalPrice = shippableItems.formattedTotalPrice,
                 modifier = Modifier
                     .weight(1f)
-                    .align(Alignment.CenterVertically),
-                fontWeight = FontWeight.SemiBold
-            )
-            Text(
-                text = stringResource(
-                    R.string.shipping_label_package_details_items_weight_price,
-                    shippableItems.formattedTotalWeight,
-                    shippableItems.formattedTotalPrice
-                ),
-                modifier = Modifier
-                    .align(Alignment.CenterVertically)
-                    .padding(end = dimensionResource(R.dimen.major_100)),
-                style = MaterialTheme.typography.subtitle1,
-                color = colorResource(id = R.color.color_on_surface_medium)
+                    .padding(dimensionResource(R.dimen.minor_100))
             )
             Icon(
                 painter = painterResource(R.drawable.ic_arrow_down),
@@ -163,7 +151,6 @@ private fun ShippingProductsCardHeader(
                 contentDescription =
                 stringResource(id = R.string.shipping_label_package_details_items_expand_content_description),
                 modifier = Modifier
-                    .align(Alignment.CenterVertically)
                     .size(dimensionResource(R.dimen.image_minor_100))
                     .rotate(rotationAnimation.value)
             )
@@ -271,10 +258,12 @@ private fun ShippingProductDetails(
     weight: String,
     quantity: Float,
     modifier: Modifier = Modifier,
-    imageUrl: String? = null
+    imageUrl: String? = null,
+    imageSize: Dp = dimensionResource(R.dimen.image_major_56),
+    displayQuantity: Boolean = true
 ) {
     Row(modifier = modifier) {
-        Box {
+        Box(modifier = Modifier.align(Alignment.CenterVertically)) {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(imageUrl)
@@ -285,19 +274,21 @@ private fun ShippingProductDetails(
                 contentDescription = stringResource(R.string.product_image_content_description),
                 contentScale = ContentScale.FillWidth,
                 modifier = Modifier
-                    .size(dimensionResource(R.dimen.major_300))
+                    .size(imageSize)
                     .clip(RoundedCornerShape(3.dp))
             )
-            val quantityPadding = dimensionResource(R.dimen.image_minor_40) / 2
-            QuantityBadge(
-                quantity = quantity,
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .graphicsLayer {
-                        translationY = -quantityPadding.toPx()
-                        translationX = quantityPadding.toPx()
-                    }
-            )
+            if (displayQuantity) {
+                val quantityPadding = dimensionResource(R.dimen.image_minor_40) / 2
+                QuantityBadge(
+                    quantity = quantity,
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .graphicsLayer {
+                            translationY = -quantityPadding.toPx()
+                            translationX = quantityPadding.toPx()
+                        }
+                )
+            }
         }
 
         Column(
@@ -423,6 +414,267 @@ fun RoundedCornerBoxWithBorder(
 
     ) {
         content()
+    }
+}
+
+@Composable
+fun ProductsSummary(
+    totalItems: Int,
+    totalWeight: String,
+    totalPrice: String,
+    modifier: Modifier = Modifier
+) {
+    val items = StringUtils.getQuantityString(
+        context = LocalContext.current,
+        quantity = totalItems,
+        default = R.string.shipping_label_package_details_items_count_many,
+        one = R.string.shipping_label_package_details_items_count_one,
+    )
+    Row(modifier = modifier) {
+        Text(
+            text = items,
+            style = MaterialTheme.typography.subtitle1,
+            color = MaterialTheme.colors.onSurface,
+            modifier = Modifier
+                .weight(1f)
+                .align(Alignment.CenterVertically),
+            fontWeight = FontWeight.SemiBold
+        )
+        Text(
+            text = stringResource(
+                R.string.shipping_label_package_details_items_weight_price,
+                totalWeight,
+                totalPrice
+            ),
+            modifier = Modifier.align(Alignment.CenterVertically),
+            style = MaterialTheme.typography.subtitle1,
+            color = colorResource(id = R.color.color_on_surface_medium)
+        )
+    }
+}
+
+@Composable
+fun SelectableShippingProduct(
+    title: String,
+    description: String,
+    weight: String,
+    price: String,
+    quantity: Float,
+    isSelected: Boolean,
+    onSelectionChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+    imageUrl: String? = null,
+) {
+    RoundedCornerBoxWithBorder(
+        modifier = modifier,
+        innerModifier = Modifier
+            .clickable { onSelectionChange(!isSelected) }
+            .padding(
+                top = 16.dp,
+                start = 8.dp,
+                end = 16.dp,
+                bottom = 16.dp
+            )
+    ) {
+        SelectableShippingProductDetails(
+            title = title,
+            description = description,
+            weight = weight,
+            price = price,
+            quantity = quantity,
+            isSelected = isSelected,
+            onSelectionChange = onSelectionChange,
+            imageUrl = imageUrl
+        )
+    }
+}
+
+@Composable
+fun ExpandableSelectableShippingProduct(
+    title: String,
+    description: String,
+    weight: String,
+    price: String,
+    quantity: Float,
+    isSelected: Boolean,
+    onSelectionChange: (Boolean) -> Unit,
+    onInnerSelectionChange: (Boolean, Int) -> Unit,
+    selectedIndexes: Set<Int>,
+    isExpanded: Boolean,
+    onExpand: (Boolean) -> Unit,
+    singleWeight: String,
+    singlePrice: String,
+    modifier: Modifier = Modifier,
+    imageUrl: String? = null,
+) {
+    val rotationAnimation = animateFloatAsState(targetValue = if (isExpanded) 180f else 0f, label = "rotationAnimation")
+    RoundedCornerBoxWithBorder(
+        modifier = modifier,
+        innerModifier = Modifier.clickable { onSelectionChange(!isSelected) }
+    ) {
+        Column(modifier = Modifier.animateContentSize()) {
+            Row(
+                Modifier
+                    .height(IntrinsicSize.Min)
+                    .padding(start = 8.dp)
+            ) {
+                SelectionCheck(
+                    isSelected = isSelected,
+                    onSelectionChange = onSelectionChange,
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically)
+                        .padding(8.dp)
+                )
+                ShippingProductDetails(
+                    title = title,
+                    description = description,
+                    weight = weight,
+                    imageUrl = imageUrl,
+                    quantity = quantity,
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically)
+                        .padding(vertical = 16.dp)
+                        .weight(1f)
+                )
+
+                Column(
+                    modifier = Modifier
+                        .padding(end = 8.dp, bottom = 16.dp)
+                        .fillMaxHeight(),
+                    verticalArrangement = Arrangement.Bottom,
+                    horizontalAlignment = Alignment.End
+                ) {
+                    IconButton(onClick = { onExpand(!isExpanded) }) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_arrow_down),
+                            tint = MaterialTheme.colors.primary,
+                            contentDescription = stringResource(
+                                id = R.string.shipping_label_package_details_items_expand_content_description
+                            ),
+                            modifier = Modifier
+                                .size(dimensionResource(R.dimen.image_minor_100))
+                                .rotate(rotationAnimation.value)
+                        )
+                    }
+                    Spacer(modifier = Modifier.weight(1f))
+                    Text(
+                        text = price,
+                        style = MaterialTheme.typography.body2,
+                        color = MaterialTheme.colors.onSurface,
+                        modifier = modifier.padding(end = 8.dp)
+                    )
+                }
+            }
+            if (isExpanded) {
+                for (index in 0 until quantity.toInt()) {
+                    Divider()
+                    val isInnerItemSelected = index in selectedIndexes
+                    SelectableShippingProductDetails(
+                        title = title,
+                        description = description,
+                        weight = singleWeight,
+                        price = singlePrice,
+                        quantity = quantity,
+                        isSelected = isInnerItemSelected,
+                        onSelectionChange = {
+                            onInnerSelectionChange(isInnerItemSelected, index)
+                        },
+                        imageUrl = imageUrl,
+                        modifier = Modifier
+                            .clickable { onInnerSelectionChange(isInnerItemSelected, index) }
+                            .padding(start = 24.dp, top = 16.dp, end = 16.dp, bottom = 16.dp),
+                        imageSize = dimensionResource(R.dimen.image_minor_100),
+                        displayQuantity = false
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun SelectableShippingProductDetails(
+    title: String,
+    description: String,
+    weight: String,
+    price: String,
+    quantity: Float,
+    isSelected: Boolean,
+    onSelectionChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+    imageUrl: String? = null,
+    imageSize: Dp = dimensionResource(R.dimen.image_major_50),
+    displayQuantity: Boolean = true
+) {
+    Row(modifier) {
+        SelectionCheck(
+            isSelected = isSelected,
+            onSelectionChange = onSelectionChange,
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
+                .padding(8.dp)
+        )
+        ShippingProductDetails(
+            title = title,
+            description = description,
+            weight = weight,
+            imageUrl = imageUrl,
+            quantity = quantity,
+            imageSize = imageSize,
+            displayQuantity = displayQuantity,
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
+                .weight(1f)
+        )
+
+        Text(
+            text = price,
+            style = MaterialTheme.typography.body2,
+            color = MaterialTheme.colors.onSurface,
+            modifier = Modifier.align(Alignment.Bottom)
+        )
+    }
+}
+
+@Preview
+@Composable
+fun SelectableShippingProductPreview() {
+    WooThemeWithBackground {
+        Box(modifier = Modifier.padding(dimensionResource(R.dimen.major_100))) {
+            SelectableShippingProduct(
+                title = "Title",
+                description = "23 x 23 x 52 cm",
+                weight = "0.6kg",
+                quantity = 1f,
+                price = "$12.99",
+                isSelected = true,
+                onSelectionChange = {}
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+fun ExpandableSelectableShippingProductPreview(@PreviewParameter(IsExpandedProvider::class) isExpanded: Boolean) {
+    WooThemeWithBackground {
+        Box(modifier = Modifier.padding(dimensionResource(R.dimen.major_100))) {
+            ExpandableSelectableShippingProduct(
+                title = "Title",
+                description = "23 x 23 x 52 cm",
+                weight = "0.6kg",
+                quantity = 3f,
+                price = "$12.99",
+                isSelected = true,
+                onSelectionChange = {},
+                isExpanded = isExpanded,
+                onExpand = {},
+                singleWeight = "0.6kg",
+                singlePrice = "$12.99",
+                selectedIndexes = setOf(0, 1),
+                onInnerSelectionChange = { _, _ -> }
+            )
+        }
     }
 }
 

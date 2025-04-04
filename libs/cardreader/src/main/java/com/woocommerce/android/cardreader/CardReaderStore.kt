@@ -11,12 +11,20 @@ interface CardReaderStore {
             object PaymentAlreadyCaptured : Successful()
         }
 
-        sealed class Error(val message: String) : CapturePaymentResponse() {
-            data class GenericError(val errorMsg: String) : Error(errorMsg)
-            data class MissingOrder(val errorMsg: String) : Error(errorMsg)
-            data class CaptureError(val errorMsg: String) : Error(errorMsg)
-            data class ServerError(val errorMsg: String) : Error(errorMsg)
-            data class NetworkError(val errorMsg: String) : Error(errorMsg)
+        sealed class Error(open val message: String) : CapturePaymentResponse() {
+            data class GenericError(override val message: String) : Error(message)
+            data class MissingOrder(override val message: String) : Error(message)
+            sealed class CaptureError(override val message: String) : Error(message) {
+                data class AmountTooSmall(
+                    override val message: String,
+                    val minAmountInMicroUnits: Long,
+                    val currency: String,
+                ) : CaptureError(message)
+
+                data class Generic(override val message: String) : CaptureError(message)
+            }
+            data class ServerError(override val message: String) : Error(message)
+            data class NetworkError(override val message: String) : Error(message)
         }
     }
 }

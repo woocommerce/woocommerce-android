@@ -263,6 +263,7 @@ fun WooShippingCustomsProductListCollapsedItemPreview() {
                     valuePerUnit = InputValue.Data("$20.00"),
                     weightPerUnit = InputValue.Data("0.3kg"),
                     originCountry = "Japan",
+                    originCountryCode = "JP",
                     quantity = 1F,
                     isExpanded = false
                 ),
@@ -291,6 +292,7 @@ fun WooShippingCustomsProductListCollapsedItemErrorPreview() {
                     valuePerUnit = InputValue.Data("$20.00"),
                     weightPerUnit = InputValue.Data("0.3kg"),
                     originCountry = "Japan",
+                    originCountryCode = "JP",
                     quantity = 1F,
                     isExpanded = false
                 ),
@@ -319,6 +321,7 @@ fun WooShippingCustomsProductListExpandedItemPreview() {
                     valuePerUnit = InputValue.Data("$20.00"),
                     weightPerUnit = InputValue.Data("0.3kg"),
                     originCountry = "Japan",
+                    originCountryCode = "JP",
                     quantity = 1F,
                     isExpanded = true
                 ),
@@ -347,6 +350,7 @@ fun WooShippingCustomsProductListExpandedItemErrorPreview() {
                     valuePerUnit = InputValue.Data("$20.00"),
                     weightPerUnit = InputValue.Data("0.3kg"),
                     originCountry = "Japan",
+                    originCountryCode = "JP",
                     quantity = 1F,
                     isExpanded = true
                 ),

@@ -182,11 +182,10 @@ private fun Collecting(
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(
-                    horizontal = WooPosSpacing.Medium.value,
-                    vertical = WooPosSpacing.Medium.value
-                )
+                .padding(WooPosSpacing.Medium.value)
         )
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
     }
 }
 

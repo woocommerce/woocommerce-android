@@ -1,6 +1,24 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
+22.1
+- [*] Visually improved the disabled products selection in the completed order [https://github.com/woocommerce/woocommerce-android/pull/13782]
+
+-----
+- [*] The order count badge is now fully visible for counts higher than 99 [https://github.com/woocommerce/woocommerce-android/pull/13825]
+- [*] Fix rare crash in the POS upon adding an item to the cart [https://github.com/woocommerce/woocommerce-android/pull/13838]
+- [**] Fixed a crash in the custom amount dialog on Android version 12 and older.
+- [*] Updated the Woo upgrade dialog to resolve layout issues and align it with the current app design [https://github.com/woocommerce/woocommerce-android/pull/13851]
+- [*] Fix: Use currency code instead of symbol in Custom Amounts screen [https://github.com/woocommerce/woocommerce-android/pull/13875]
+
+22.0.2
+-----
+- [**] Fixed crash during order creation when currency symbol instead of currency code provided in an order [https://github.com/woocommerce/woocommerce-android/pull/13844]
+
+22.0.1
+-----
+- [**] Fixed a missing toolbar on tablets on the Receipt Preview screen [https://github.com/woocommerce/woocommerce-android/pull/13830]
+
 22.0
 -----
 - [*] Payments: display specific error for the cases when a reader with low battery level attempted to connect [https://github.com/woocommerce/woocommerce-android/pull/13642]
@@ -10,7 +28,9 @@
 - [*] POS: improved accessibility for the payments status changes [https://github.com/woocommerce/woocommerce-android/pull/13643]
 - [*] [Internal] Application Passwords: improve error handling when using some captcha plugins [https://github.com/woocommerce/woocommerce-android/pull/13776]
 - [*] Fix the dark mode color issue with the icon on the notification permission banner [https://github.com/woocommerce/woocommerce-android/pull/13773]
+- [*] Fixed multiple redundant network requests on the order list and details screen [https://github.com/woocommerce/woocommerce-android/pull/13779]
 - [*] Fixed visibility issue of the printing instructions in the order details screen [https://github.com/woocommerce/woocommerce-android/pull/13780]
+- [*] Payments: handling of transactions below minimal amount which got broken due to changes on the backend [https://github.com/woocommerce/woocommerce-android/pull/13415]
 
 21.9
 -----

@@ -59,9 +59,8 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
-import com.woocommerce.android.ui.woopos.home.items.WooPosItem.SimpleProduct
-import com.woocommerce.android.ui.woopos.home.items.WooPosItem.VariableProduct
-import com.woocommerce.android.ui.woopos.home.items.WooPosItem.Variation
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState.Product
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState.Variation
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState.Content.BannerState
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
@@ -71,7 +70,7 @@ import kotlinx.coroutines.flow.filter
 fun WooPosItemList(
     state: ContentViewState,
     listState: LazyListState,
-    onItemClicked: (item: WooPosItem) -> Unit,
+    onItemClicked: (item: WooPosItemSelectionViewState) -> Unit,
     onEndOfProductsListReached: () -> Unit,
     onErrorWhilePaginating: @Composable () -> Unit,
 ) {
@@ -85,7 +84,7 @@ fun WooPosItemList(
             key = { product -> product.id }
         ) { product ->
             when (product) {
-                is SimpleProduct -> {
+                is Product.Simple -> {
                     ProductItem(
                         modifier = Modifier.animateItem(),
                         item = product,
@@ -93,7 +92,7 @@ fun WooPosItemList(
                     )
                 }
 
-                is VariableProduct -> {
+                is Product.Variable -> {
                     VariableProductItem(
                         modifier = Modifier.animateItem(),
                         item = product,
@@ -141,51 +140,51 @@ fun WooPosItemList(
 @Composable
 private fun ProductItem(
     modifier: Modifier = Modifier,
-    item: SimpleProduct,
-    onItemClicked: (item: WooPosItem) -> Unit
+    item: Product.Simple,
+    onItemClicked: (item: WooPosItemSelectionViewState) -> Unit
 ) {
     val itemContentDescription = stringResource(
         id = R.string.woopos_product_item_content_description,
         item.name,
         item.price
     )
-    ItemCard(modifier, itemContentDescription, onItemClicked, item)
+    WooPosItemCard(modifier, itemContentDescription, onItemClicked, item)
 }
 
 @Composable
 private fun VariableProductItem(
     modifier: Modifier = Modifier,
-    item: VariableProduct,
-    onItemClicked: (item: WooPosItem) -> Unit
+    item: Product.Variable,
+    onItemClicked: (item: WooPosItemSelectionViewState) -> Unit
 ) {
     val itemContentDescription = stringResource(
         id = R.string.woopos_variable_product_item_content_description,
         item.name,
         item.price
     )
-    ItemCard(modifier, itemContentDescription, onItemClicked, item)
+    WooPosItemCard(modifier, itemContentDescription, onItemClicked, item)
 }
 
 @Composable
 private fun VariationItem(
     modifier: Modifier = Modifier,
     item: Variation,
-    onItemClicked: (item: WooPosItem) -> Unit
+    onItemClicked: (item: WooPosItemSelectionViewState) -> Unit
 ) {
     val itemContentDescription = stringResource(
         id = R.string.woopos_variation_item_content_description,
         item.name,
         item.price
     )
-    ItemCard(modifier, itemContentDescription, onItemClicked, item)
+    WooPosItemCard(modifier, itemContentDescription, onItemClicked, item)
 }
 
 @Composable
-private fun ItemCard(
+fun WooPosItemCard(
     modifier: Modifier,
     itemContentDescription: String,
-    onItemClicked: (item: WooPosItem) -> Unit,
-    item: WooPosItem
+    onItemClicked: (item: WooPosItemSelectionViewState) -> Unit,
+    item: WooPosItemSelectionViewState
 ) {
     WooPosCard(
         modifier = modifier
@@ -212,7 +211,7 @@ private fun ItemCard(
 }
 
 @Composable
-private fun ProductInfo(item: WooPosItem) {
+private fun ProductInfo(item: WooPosItemSelectionViewState) {
     Column(
         modifier = Modifier
             .fillMaxHeight()
@@ -232,18 +231,18 @@ private fun ProductInfo(item: WooPosItem) {
         )
         Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
         when (item) {
-            is SimpleProduct -> SimpleProductDetails(item = item)
-            is VariableProduct -> VariableProductDetails()
+            is Product.Simple -> SimpleProductDetails(item = item)
+            is Product.Variable -> VariableProductDetails()
             is Variation -> VariationProductDetails(item = item)
         }
     }
 }
 
 @Composable
-private fun ProductImage(item: WooPosItem) {
+private fun ProductImage(item: WooPosItemSelectionViewState) {
     val imageUrl = when (item) {
-        is SimpleProduct -> item.imageUrl
-        is VariableProduct -> item.imageUrl
+        is Product.Simple -> item.imageUrl
+        is Product.Variable -> item.imageUrl
         is Variation -> item.imageUrl
     }
     Box(
@@ -270,7 +269,7 @@ private fun ProductImage(item: WooPosItem) {
 }
 
 @Composable
-private fun SimpleProductDetails(item: SimpleProduct) {
+private fun SimpleProductDetails(item: Product.Simple) {
     WooPosText(
         text = item.price,
         style = WooPosTypography.BodyLarge,
@@ -298,7 +297,7 @@ fun VariationProductDetails(item: Variation) {
 }
 
 @Composable
-fun ItemsLoadingIndicator(itemsCount: Int = 10) {
+fun WooPosItemsLoadingIndicator(itemsCount: Int = 10) {
     WooPosLazyColumn(
         verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value),
         contentPadding = PaddingValues(2.dp),
@@ -314,7 +313,7 @@ fun ItemsLoadingIndicator(itemsCount: Int = 10) {
 }
 
 @Composable
-fun ItemsLoadingItem() {
+private fun ItemsLoadingItem() {
     WooPosCard(
         shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
         backgroundColor = MaterialTheme.colorScheme.surfaceContainerLowest,
@@ -363,7 +362,7 @@ fun ItemsLoadingItem() {
 }
 
 @Composable
-fun ItemsEmptyList(
+fun WooPosItemsEmptyList(
     title: String,
     message: String,
     contentDescription: String,
@@ -423,7 +422,7 @@ private fun InfiniteListHandler(
         }
     }
 
-    LaunchedEffect(state.reloadingProductsWithPullToRefresh) {
+    LaunchedEffect(state.reloadingWithPullToRefresh) {
         snapshotFlow { loadMore.value }
             .distinctUntilChanged()
             .filter { it }
@@ -441,14 +440,14 @@ fun ItemListPreview() {
             WooPosItemsViewState.Content(
                 WooPosItemsViewState.Content.SearchState.Hidden,
                 listOf(
-                    SimpleProduct(
+                    Product.Simple(
                         id = 1,
                         name = "Simple Product Simple Product Simple" +
                             " Product Simple Product Simple Product Simple Product Simple Product",
                         price = "$10.00",
                         imageUrl = ""
                     ),
-                    VariableProduct(id = 2, name = "Variable Product", price = "$10.00", "", 1, listOf()),
+                    Product.Variable(id = 2, name = "Variable Product", price = "$10.00", "", 1, listOf()),
                     Variation(3, "Variation", 0, "$10", ""),
                 ),
                 BannerState(
@@ -470,7 +469,7 @@ fun ItemListPreview() {
 @Composable
 fun EmptyListPreview() {
     WooPosTheme {
-        ItemsEmptyList("Empty List", "This list is empty", "")
+        WooPosItemsEmptyList("Empty List", "This list is empty", "")
     }
 }
 
@@ -478,6 +477,6 @@ fun EmptyListPreview() {
 @Composable
 fun LoadingListPreview() {
     WooPosTheme {
-        ItemsLoadingIndicator(10)
+        WooPosItemsLoadingIndicator(10)
     }
 }

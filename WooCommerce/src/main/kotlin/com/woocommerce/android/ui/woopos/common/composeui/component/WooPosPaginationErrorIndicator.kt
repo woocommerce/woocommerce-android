@@ -30,9 +30,8 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.items.PaginationState
-import com.woocommerce.android.ui.woopos.home.items.WooPosItem.SimpleProduct
-import com.woocommerce.android.ui.woopos.home.items.WooPosItem.VariableProduct
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemList
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState.Product
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState
 
 @Composable
@@ -125,7 +124,7 @@ fun WooPosPaginationErrorScreenPreview() {
     val itemsState =
         WooPosItemsViewState.Content(
             items = listOf(
-                SimpleProduct(
+                Product.Simple(
                     1,
                     name = "Product 1, Product 1, Product 1, " +
                         "Product 1, Product 1, Product 1, Product 1, Product 1" +
@@ -133,13 +132,13 @@ fun WooPosPaginationErrorScreenPreview() {
                     price = "10.0$",
                     imageUrl = null,
                 ),
-                SimpleProduct(
+                Product.Simple(
                     2,
                     name = "Product 2",
                     price = "2000.00$",
                     imageUrl = null,
                 ),
-                VariableProduct(
+                Product.Variable(
                     3,
                     name = "Product 3",
                     price = "2000.00$",
@@ -149,7 +148,7 @@ fun WooPosPaginationErrorScreenPreview() {
                 ),
             ),
             paginationState = PaginationState.Error,
-            reloadingProductsWithPullToRefresh = true,
+            reloadingWithPullToRefresh = true,
             bannerState = WooPosItemsViewState.Content.BannerState(
                 isBannerHiddenByUser = true,
                 title = R.string.woopos_banner_simple_products_only_title,

@@ -125,13 +125,12 @@ private fun AnimatedSearchInput(
         val focusRequester = remember { FocusRequester() }
         var isExpanded by remember { mutableStateOf(false) }
         var isClosing by remember { mutableStateOf(false) }
+        var isAnimationComplete by remember { mutableStateOf(false) }
 
-        val animationTime = 300L
         val transition = updateTransition(
             targetState = if (isClosing) false else isExpanded,
             label = "searchTransition"
         )
-
         val width = animateSearchWidth(transition, maxWidthPx)
         val height = animateSearchHeight(transition)
         val cornerRadius = animateCornerRadius(transition)
@@ -145,7 +144,7 @@ private fun AnimatedSearchInput(
         OutlinedTextField(
             value = query,
             onValueChange = {
-                if (state.animationState == WooPosSearchInputState.Open.AnimationState.Complete) {
+                if (isAnimationComplete) {
                     onEvent(WooPosSearchUIEvent.Search(it))
                 }
             },
@@ -165,7 +164,7 @@ private fun AnimatedSearchInput(
             shape = RoundedCornerShape(cornerRadius),
             keyboardActions = KeyboardActions(
                 onSearch = {
-                    if (state.animationState == WooPosSearchInputState.Open.AnimationState.Complete) {
+                    if (isAnimationComplete) {
                         onEvent(WooPosSearchUIEvent.Search(query))
                     }
                 }
@@ -197,11 +196,10 @@ private fun AnimatedSearchInput(
                                 .alpha(iconAlpha)
                         )
                     }
-
                     query.isNotEmpty() -> {
                         IconButton(
                             onClick = {
-                                if (state.animationState == WooPosSearchInputState.Open.AnimationState.Complete) {
+                                if (isAnimationComplete) {
                                     onEvent(WooPosSearchUIEvent.Clear)
                                 }
                             },
@@ -221,15 +219,15 @@ private fun AnimatedSearchInput(
 
         LaunchedEffect(Unit) {
             isExpanded = true
-            delay(animationTime)
-            onEvent(WooPosSearchUIEvent.AnimationComplete)
+            delay(ANIMATION_TIME)
+            isAnimationComplete = true
             focusRequester.requestFocus()
         }
 
         LaunchedEffect(isClosing) {
             if (isClosing) {
-                delay(animationTime)
-                onEvent(WooPosSearchUIEvent.AnimationComplete)
+                isAnimationComplete = false
+                delay(ANIMATION_TIME)
                 onEvent(WooPosSearchUIEvent.Close)
             }
         }
@@ -310,20 +308,13 @@ private fun animateIconAlpha(
 sealed class WooPosSearchInputState {
     data class Open(
         val input: Input,
-        val isLoading: Boolean,
-        val animationState: AnimationState = AnimationState.InProgress
+        val isLoading: Boolean
     ) : WooPosSearchInputState() {
         sealed class Input(val text: String) {
             data class Query(val query: String) : Input(query)
             data class Hint(val hint: String) : Input(hint)
         }
-
-        enum class AnimationState {
-            InProgress,
-            Complete
-        }
     }
-
     object Closed : WooPosSearchInputState()
 }
 
@@ -331,7 +322,6 @@ sealed class WooPosSearchUIEvent {
     object Clear : WooPosSearchUIEvent()
     data class Search(val query: String) : WooPosSearchUIEvent()
     object Close : WooPosSearchUIEvent()
-    object AnimationComplete : WooPosSearchUIEvent()
 }
 
 @WooPosPreview

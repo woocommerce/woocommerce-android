@@ -137,6 +137,8 @@ private fun EmailState(
                 .fillMaxWidth()
                 .padding(WooPosSpacing.Medium.value)
         )
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
     }
 }
 
