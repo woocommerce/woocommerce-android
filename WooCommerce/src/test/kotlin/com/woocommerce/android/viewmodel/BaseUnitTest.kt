@@ -1,6 +1,7 @@
 package com.woocommerce.android.viewmodel
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.woocommerce.android.util.BlockHoundTestRule
 import com.woocommerce.android.util.CoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestDispatcher
@@ -40,6 +41,9 @@ abstract class BaseUnitTest(testDispatcher: TestDispatcher = UnconfinedTestDispa
 
     @Rule @JvmField
     val coroutinesTestRule = CoroutineTestRule(testDispatcher)
+
+    @Rule @JvmField
+    val blockHoundTestRule = BlockHoundTestRule()
 
     protected fun testBlocking(block: suspend TestScope.() -> Unit) =
         runTest(coroutinesTestRule.testDispatcher) {

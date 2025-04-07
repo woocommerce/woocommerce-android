@@ -87,8 +87,11 @@ android {
         packagingOptions {
             exclude 'META-INF/gradle/incremental.annotation.processors'
             exclude("META-INF/*.kotlin_module")
+            exclude("win32-x86-64/attach_hotspot_windows.dll")
+            exclude("win32-x86/attach_hotspot_windows.dll")
             pickFirst 'META-INF/AL2.0'
             pickFirst 'META-INF/LGPL2.1'
+            pickFirst 'META-INF/licenses/ASM'
         }
 
         resConfigs(
@@ -170,6 +173,11 @@ android {
     }
 
     testOptions {
+        unitTests {
+            all {
+                jvmArgs '-XX:+AllowRedefinitionToAddDeleteMethods'
+            }
+        }
         animationsDisabled = true
     }
 
@@ -438,6 +446,11 @@ dependencies {
     implementation(libs.google.protobuf.javalite)
 
     lintChecks(libs.android.security.lint)
+
+    testImplementation(libs.kotlinx.coroutines.debug) {
+        exclude group: 'net.java.dev.jna', module: 'jna'
+    }
+    testImplementation(libs.blockhound)
 }
 
 protobuf {
