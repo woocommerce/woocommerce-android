@@ -13,4 +13,3 @@ interface WooPosProductsCache {
 
     suspend fun searchLocally(query: String): List<Product>
 }
-
