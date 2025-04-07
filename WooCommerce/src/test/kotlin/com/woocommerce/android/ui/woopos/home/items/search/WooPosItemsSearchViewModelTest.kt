@@ -70,10 +70,7 @@ class WooPosItemsSearchViewModelTest {
     fun `given less than max popular items and recent searches, when view model created, then all items are shown`() =
         runTest {
             // GIVEN
-            val popularItems = listOf(
-                Product.Simple(id = 1, name = "Popular Item 1", price = "$10.0", imageUrl = null),
-                Product.Simple(id = 2, name = "Popular Item 2", price = "$15.0", imageUrl = null)
-            )
+            val popularItems = listOf(defaultProduct)
             val recentSearches = listOf("Recent Search 1")
 
             whenever(mockEmptyStateProvider.getPopularItems()).thenReturn(popularItems)
@@ -88,7 +85,7 @@ class WooPosItemsSearchViewModelTest {
                 assertThat(value).isInstanceOf(WooPosItemsSearchViewState.EmptySearchQuery::class.java)
 
                 val emptySearchQuery = value as WooPosItemsSearchViewState.EmptySearchQuery
-                assertThat(emptySearchQuery.popularItems).hasSize(2)
+                assertThat(emptySearchQuery.popularItems).hasSize(1)
                 assertThat(emptySearchQuery.recentSearches).hasSize(1)
             }
         }
@@ -125,12 +122,7 @@ class WooPosItemsSearchViewModelTest {
     @Test
     fun `given more than max items count, when view model created, then only max items are shown`() = runTest {
         // GIVEN
-        val popularItems = listOf(
-            Product.Simple(id = 1, name = "Popular Item 1", price = "$10.0", imageUrl = null),
-            Product.Simple(id = 2, name = "Popular Item 2", price = "$15.0", imageUrl = null),
-            Product.Simple(id = 3, name = "Popular Item 3", price = "$20.0", imageUrl = null),
-            Product.Simple(id = 4, name = "Popular Item 4", price = "$25.0", imageUrl = null)
-        )
+        val popularItems = listOf(defaultProduct, defaultProduct.copy(remoteId = 2))
         val recentSearches = listOf(
             "Recent Search 1",
             "Recent Search 2",
@@ -148,8 +140,8 @@ class WooPosItemsSearchViewModelTest {
             val value = awaitItem()
             assertThat(value).isInstanceOf(WooPosItemsSearchViewState.EmptySearchQuery::class.java)
             val emptySearchQuery = value as WooPosItemsSearchViewState.EmptySearchQuery
-            assertThat(emptySearchQuery.popularItems).hasSize(3)
-            assertThat(emptySearchQuery.popularItems.map { it.id }).containsExactly(1, 2, 3)
+            assertThat(emptySearchQuery.popularItems).hasSize(2)
+            assertThat(emptySearchQuery.popularItems.map { it.id }).containsExactly(1, 2)
             assertThat(emptySearchQuery.recentSearches).hasSize(3)
             assertThat(emptySearchQuery.recentSearches).containsExactly(
                 "Recent Search 1",
@@ -683,6 +675,21 @@ class WooPosItemsSearchViewModelTest {
         assertThrows(IllegalStateException::class.java) {
             viewModel.onUIEvent(WooPosItemsSearchUiEvent.ItemClicked(variation))
         }
+    }
+
+    @Test
+    fun `given recent search, when recent search clicked, then send event to parent`() = runTest {
+        // GIVEN
+        val recentSearch = "T-shirt"
+
+        // WHEN
+        val viewModel = createViewModel()
+        viewModel.onUIEvent(WooPosItemsSearchUiEvent.OnRecentSearchClicked(recentSearch))
+
+        // THEN
+        verify(mockChildToParentEventSender).sendToParent(
+            ChildToParentEvent.SearchEvent.RecentSearchSelected(recentSearch)
+        )
     }
 
     private fun mockSuccessfulSearch(query: String, products: List<com.woocommerce.android.model.Product>) {
