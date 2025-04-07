@@ -44,7 +44,7 @@ fun WooShippingLabelPackageCreationScreen(
         tabs = viewState.value?.pageTabs.orEmpty(),
         createCustomPackageScreen = { WooShippingCustomPackageCreationScreen(viewModel) },
         createCarrierPackageScreen = { onTabChange -> WooShippingCarrierPackageScreen(viewModel, onTabChange) },
-        createSavedPackageScreen = { WooShippingSavedPackageScreen(viewModel) }
+        createSavedPackageScreen = { onTabChange -> WooShippingSavedPackageScreen(viewModel, onTabChange) }
     )
 }
 
@@ -55,7 +55,7 @@ fun WooShippingLabelPackageCreationScreen(
     tabs: List<PageTab>,
     createCustomPackageScreen: @Composable () -> Unit,
     createCarrierPackageScreen: @Composable (onTabChange: (PageType) -> Unit) -> Unit,
-    createSavedPackageScreen: @Composable () -> Unit
+    createSavedPackageScreen: @Composable (onTabChange: (PageType) -> Unit) -> Unit,
 ) {
     var tabIndex by remember { mutableIntStateOf(0) }
     val pagerState = rememberPagerState { tabs.size }
@@ -97,7 +97,7 @@ fun WooShippingLabelPackageCreationScreen(
                 when (tabs[currentPageIndex].type) {
                     CUSTOM -> createCustomPackageScreen()
                     CARRIER -> createCarrierPackageScreen { newPage -> tabIndex = findIndex(newPage) }
-                    SAVED -> createSavedPackageScreen()
+                    SAVED -> createSavedPackageScreen { newPage -> tabIndex = findIndex(newPage) }
                 }
             }
         }
