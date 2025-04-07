@@ -163,7 +163,8 @@ fun WooShippingSavedPackageScreenPreview() {
             isAddPackageEnabled = true,
             onAddPackageClick = {},
             onSavedPackageSelected = { _, _ -> },
-            onRetryClick = {}
+            onRetryClick = {},
+            onTabChange = {}
         )
     }
 }
@@ -177,7 +178,8 @@ fun WooShippingSavedPackageScreenLoadingPreview() {
             isAddPackageEnabled = false,
             onAddPackageClick = {},
             onSavedPackageSelected = { _, _ -> },
-            onRetryClick = {}
+            onRetryClick = {},
+            onTabChange = {}
         )
     }
 }
@@ -191,7 +193,8 @@ fun WooShippingSavedPackageScreenErrorPreview() {
             isAddPackageEnabled = false,
             onAddPackageClick = {},
             onSavedPackageSelected = { _, _ -> },
-            onRetryClick = {}
+            onRetryClick = {},
+            onTabChange = {}
         )
     }
 }
