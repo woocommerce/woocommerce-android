@@ -41,6 +41,7 @@ object CardReaderManagerFactory {
         )
         val terminalListener = TerminalListenerImpl(logWrapper)
         val cardReaderConfigFactory = CardReaderConfigFactory()
+        val paymentUtils = PaymentUtils(logWrapper)
 
         return CardReaderManagerImpl(
             application,
@@ -55,12 +56,12 @@ object CardReaderManagerFactory {
                     terminal,
                     logWrapper,
                     cardReaderConfigFactory,
-                    PaymentUtils
+                    paymentUtils,
                 ),
                 CollectPaymentAction(terminal, logWrapper),
                 ProcessPaymentAction(terminal, logWrapper),
                 CancelPaymentAction(terminal),
-                PaymentUtils,
+                paymentUtils,
                 PaymentErrorMapper(),
                 cardReaderConfigFactory
             ),
@@ -68,7 +69,7 @@ object CardReaderManagerFactory {
                 CollectInteracRefundAction(terminal),
                 ProcessInteracRefundAction(terminal),
                 RefundErrorMapper(),
-                PaymentUtils
+                paymentUtils,
             ),
             ConnectionManager(
                 terminal,
