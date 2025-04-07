@@ -112,6 +112,10 @@ class WooPosSearchProductsDataSource @Inject constructor(
         searchResultsCache[query.lowercase()] = results
     }
 
+    fun getPopularProducts(): List<Product> {
+        return searchResultsCache.entries.firstOrNull()?.value?.shuffled() ?: emptyList()
+    }
+
     sealed class ProductsResult {
         data class Cached(val products: List<Product>) : ProductsResult()
         data class Remote(val productsResult: Result<List<Product>>) : ProductsResult()

@@ -48,7 +48,8 @@ sealed class ChildToParentEvent {
     }
 
     sealed class SearchEvent : ChildToParentEvent() {
-        data class ChangedQuery(val query: String) : SearchEvent()
+        data class QueryChanged(val query: String) : SearchEvent()
+        data class RecentSearchSelected(val query: String) : SearchEvent()
         object Finished : SearchEvent()
         object Started : SearchEvent()
     }

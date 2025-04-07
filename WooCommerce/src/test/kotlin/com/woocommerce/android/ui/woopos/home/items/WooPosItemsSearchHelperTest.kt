@@ -86,7 +86,7 @@ class WooPosItemsSearchHelperTest {
 
         // THEN
         verify(mockChildToParentEventSender).sendToParent(
-            ChildToParentEvent.SearchEvent.ChangedQuery(searchQuery)
+            ChildToParentEvent.SearchEvent.QueryChanged(searchQuery)
         )
     }
 

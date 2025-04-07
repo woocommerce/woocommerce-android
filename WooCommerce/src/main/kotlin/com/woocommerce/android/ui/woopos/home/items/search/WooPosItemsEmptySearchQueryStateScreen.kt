@@ -44,7 +44,10 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemCard
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
 
 @Composable
-fun WooPosItemsEmptySearchQueryState(state: WooPosItemsSearchViewState.EmptySearchQuery) {
+fun WooPosItemsEmptySearchQueryStateScreen(
+    state: WooPosItemsSearchViewState.EmptySearchQuery,
+    onUIEvent: (WooPosItemsSearchUiEvent) -> Unit
+) {
     val scrollState = rememberScrollState()
     Column(
         Modifier
@@ -60,7 +63,12 @@ fun WooPosItemsEmptySearchQueryState(state: WooPosItemsSearchViewState.EmptySear
                     Column(
                         modifier = Modifier.weight(1f)
                     ) {
-                        PopularItemsSection(state.popularItems)
+                        PopularItemsSection(
+                            popularItems = state.popularItems,
+                            onPopularItemClicked = { popularItem ->
+                                onUIEvent(WooPosItemsSearchUiEvent.ItemClicked(popularItem))
+                            }
+                        )
                     }
                 }
 
@@ -72,7 +80,12 @@ fun WooPosItemsEmptySearchQueryState(state: WooPosItemsSearchViewState.EmptySear
                     Column(
                         modifier = Modifier.weight(1f)
                     ) {
-                        RecentSearchesSection(state)
+                        RecentSearchesSection(
+                            state = state,
+                            onRecentSearchClicked = { recentSearch ->
+                                onUIEvent(WooPosItemsSearchUiEvent.OnRecentSearchClicked(recentSearch))
+                            }
+                        )
                     }
                 }
             }
@@ -84,7 +97,10 @@ fun WooPosItemsEmptySearchQueryState(state: WooPosItemsSearchViewState.EmptySear
 }
 
 @Composable
-private fun PopularItemsSection(popularItems: List<WooPosItemSelectionViewState.Product>) {
+private fun PopularItemsSection(
+    popularItems: List<WooPosItemSelectionViewState.Product>,
+    onPopularItemClicked: (WooPosItemSelectionViewState.Product) -> Unit,
+) {
     SectionHeader(
         icon = Icons.AutoMirrored.Outlined.TrendingUp,
         title = stringResource(R.string.woopos_search_popular_items_title)
@@ -102,7 +118,7 @@ private fun PopularItemsSection(popularItems: List<WooPosItemSelectionViewState.
         WooPosItemCard(
             modifier = Modifier,
             itemContentDescription = itemContentDescription,
-            onItemClicked = { },
+            onItemClicked = { onPopularItemClicked(popularItem) },
             item = popularItem,
         )
 
@@ -111,7 +127,10 @@ private fun PopularItemsSection(popularItems: List<WooPosItemSelectionViewState.
 }
 
 @Composable
-private fun RecentSearchesSection(state: WooPosItemsSearchViewState.EmptySearchQuery) {
+private fun RecentSearchesSection(
+    state: WooPosItemsSearchViewState.EmptySearchQuery,
+    onRecentSearchClicked: (String) -> Unit,
+) {
     SectionHeader(
         icon = Icons.Filled.History,
         title = stringResource(R.string.woopos_search_recent_searches_title)
@@ -127,7 +146,7 @@ private fun RecentSearchesSection(state: WooPosItemsSearchViewState.EmptySearchQ
         ) {
             Row(
                 modifier = Modifier
-                    .clickable { }
+                    .clickable { onRecentSearchClicked(recentSearch) }
                     .height(112.dp)
                     .fillMaxWidth()
                     .padding(horizontal = WooPosSpacing.Medium.value.toAdaptivePadding()),
@@ -202,7 +221,7 @@ fun WooPosItemsEmptySearchQueryStatePreview() {
                 .fillMaxSize()
                 .padding(WooPosSpacing.Medium.value)
         ) {
-            WooPosItemsEmptySearchQueryState(
+            WooPosItemsEmptySearchQueryStateScreen(
                 state = WooPosItemsSearchViewState.EmptySearchQuery(
                     popularItems = listOf(
                         WooPosItemSelectionViewState.Product.Simple(
@@ -227,7 +246,8 @@ fun WooPosItemsEmptySearchQueryStatePreview() {
                         ),
                     ),
                     recentSearches = listOf("T-shirt", "Jeans", "Shoes"),
-                )
+                ),
+                onUIEvent = { },
             )
         }
     }
@@ -242,7 +262,7 @@ fun WooPosItemsEmptySearchQueryStateOnyItemsPreview() {
                 .fillMaxSize()
                 .padding(WooPosSpacing.Medium.value)
         ) {
-            WooPosItemsEmptySearchQueryState(
+            WooPosItemsEmptySearchQueryStateScreen(
                 state = WooPosItemsSearchViewState.EmptySearchQuery(
                     popularItems = listOf(
                         WooPosItemSelectionViewState.Product.Simple(
@@ -267,7 +287,8 @@ fun WooPosItemsEmptySearchQueryStateOnyItemsPreview() {
                         ),
                     ),
                     recentSearches = emptyList()
-                )
+                ),
+                onUIEvent = { },
             )
         }
     }
