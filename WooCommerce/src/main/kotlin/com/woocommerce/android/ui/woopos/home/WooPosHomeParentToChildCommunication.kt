@@ -5,6 +5,7 @@ import dagger.hilt.android.scopes.ActivityRetainedScoped
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import java.math.BigDecimal
 import javax.inject.Inject
 
 @ActivityRetainedScoped
@@ -38,6 +39,15 @@ sealed class ParentToChildrenEvent {
         data class RecentSearchSelected(val query: String) : SearchEvent()
         object Finished : SearchEvent()
         object Started : SearchEvent()
+    }
+
+    data class OrderCreated(val updatedProducts: List<ProductInfo>): ParentToChildrenEvent() {
+        data class ProductInfo(
+            val id: Long,
+            val name: String,
+            val price: BigDecimal,
+            val quantity: Float,
+        )
     }
 }
 

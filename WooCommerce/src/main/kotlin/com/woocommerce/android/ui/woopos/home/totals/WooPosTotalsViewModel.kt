@@ -284,6 +284,7 @@ class WooPosTotalsViewModel @Inject constructor(
                     is ParentToChildrenEvent.ItemClickedInProductSelector,
                     is ParentToChildrenEvent.SearchEvent.ChangedQuery,
                     ParentToChildrenEvent.SearchEvent.Finished,
+                    is ParentToChildrenEvent.OrderCreated,
                     ParentToChildrenEvent.SearchEvent.Started -> Unit
                 }
             }

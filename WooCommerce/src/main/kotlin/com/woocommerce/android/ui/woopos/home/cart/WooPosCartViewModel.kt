@@ -33,6 +33,7 @@ import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicInteger
@@ -145,6 +146,8 @@ class WooPosCartViewModel @Inject constructor(
 
                     is ParentToChildrenEvent.OrderSuccessfullyPaid -> clearCart()
 
+                    is ParentToChildrenEvent.OrderCreated -> updateProductsWithUpdateProducts(event.updatedProducts)
+
                     is ParentToChildrenEvent.SearchEvent.RecentSearchSelected,
                     is ParentToChildrenEvent.CheckoutClicked,
                     is ParentToChildrenEvent.SearchEvent.ChangedQuery,
@@ -153,6 +156,11 @@ class WooPosCartViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private fun CoroutineScope.updateProductsWithUpdateProducts(
+        products: List<ParentToChildrenEvent.OrderCreated.ProductInfo>
+    ) {
     }
 
     private fun handleBackFromCheckoutToCartClicked() {

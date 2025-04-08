@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.CheckoutClicked
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.ItemClickedInProductSelector
+import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderCreated
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccessfullyPaid.PaymentMethod
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.SearchEvent.ChangedQuery
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.SearchEvent.RecentSearchSelected
@@ -191,6 +192,19 @@ class WooPosHomeViewModel @Inject constructor(
                     }
                     is ChildToParentEvent.SearchEvent.RecentSearchSelected -> {
                         sendEventToChildren(RecentSearchSelected(event.query))
+                    }
+
+                    is ChildToParentEvent.OrderCreated ->  {
+                        sendEventToChildren(
+                            OrderCreated(updatedProducts = event.updatedProducts.map {
+                                OrderCreated.ProductInfo(
+                                    id = it.id,
+                                    name = it.name,
+                                    price = it.price,
+                                    quantity = it.quantity
+                                )
+                            })
+                        )
                     }
                 }
             }
