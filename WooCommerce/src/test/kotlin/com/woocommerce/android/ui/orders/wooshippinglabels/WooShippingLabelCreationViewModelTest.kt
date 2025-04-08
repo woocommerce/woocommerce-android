@@ -768,7 +768,8 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
             items = mock(),
             rateSummary = mock(),
             shippingLines = mock(),
-            addresses = mock()
+            addresses = mock(),
+            hazmatSelection = ShippingLabelHazmatCategory.CLASS_1
         )
 
         createViewModel()

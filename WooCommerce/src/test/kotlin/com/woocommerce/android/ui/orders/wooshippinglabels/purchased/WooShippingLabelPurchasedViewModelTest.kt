@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.purchased
 
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus.PurchaseInProgress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus.Purchased
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus.Unknown
@@ -38,7 +39,8 @@ class WooShippingLabelPurchasedViewModelTest : BaseUnitTest() {
         addresses = mock(),
         rateSummary = mock(),
         shippingLines = emptyList(),
-        items = mock()
+        items = mock(),
+        hazmatSelection = ShippingLabelHazmatCategory.CLASS_1
     )
 
     private val navArgs = WooShippingLabelPurchasedFragmentArgs(

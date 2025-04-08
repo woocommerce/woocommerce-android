@@ -27,15 +27,18 @@ class FetchPredefinedPackagesFromStore @Inject constructor(
         )
     }
 
-    private fun StorePackagesDAO.filterCarrierData() = mapOf(
-        carrierPackages
-            .parseCarrierData(CarrierType.USPS)
-            .let { Carrier.USPS to it },
+    private fun StorePackagesDAO.filterCarrierData(): Map<Carrier, List<CarrierPackageGroup>> {
+        val result = mutableMapOf<Carrier, List<CarrierPackageGroup>>()
+        carrierPackages.parseCarrierData(CarrierType.USPS).takeIf { it.isNotEmpty() }?.let { carrierData ->
+            result[Carrier.USPS] = carrierData
+        }
 
-        carrierPackages
-            .parseCarrierData(CarrierType.DHL)
-            .let { Carrier.DHL to it }
-    )
+        carrierPackages.parseCarrierData(CarrierType.DHL).takeIf { it.isNotEmpty() }?.let { carrierData ->
+            result[Carrier.DHL] = carrierData
+        }
+
+        return result
+    }
 
     private fun StoreOptionsDAO.toStoreOptionsForPackages() =
         StoreOptionsForPackages(

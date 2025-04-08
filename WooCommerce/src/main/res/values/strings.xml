@@ -4470,6 +4470,8 @@
     <string name="woo_shipping_labels_package_creation_package_name">Package Name</string>
     <string name="woo_shipping_labels_package_creation_save_package_option">Save this as a new package template</string>
     <string name="woo_shipping_labels_package_creation_add_package">Add Package</string>
+    <string name="woo_shipping_labels_package_creation_empty_button">Create a custom package</string>
+    <string name="woo_shipping_labels_package_creation_empty_carrier_message">No carrier information found</string>
     <string name="woo_shipping_labels_package_creation_error">Failed to load the package data</string>
     <string name="woo_shipping_labels_package_creation_carrier_loading_error">We are unable to load carrier packages.</string>
     <string name="woo_shipping_labels_package_creation_saved_loading_error">We are unable to load saved packages.</string>

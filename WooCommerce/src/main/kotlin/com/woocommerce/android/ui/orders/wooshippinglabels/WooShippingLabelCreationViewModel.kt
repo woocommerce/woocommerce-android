@@ -547,6 +547,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             ?.let { purchasedLabel ->
                 val currentViewState = (viewState.value as? WooShippingViewState.DataState)
                 val selectedRate = selectedRate.value
+                val hazmatSelection = hazmatState.value.hazmatSelection
                 if (currentViewState != null && selectedRate != null) {
                     PurchasedShippingLabelData(
                         labelId = purchasedLabel.labelId,
@@ -556,7 +557,8 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                         addresses = currentViewState.shippingAddresses,
                         items = currentViewState.shippableItems,
                         rateSummary = selectedRate.summary,
-                        shippingLines = currentViewState.shippingLines
+                        shippingLines = currentViewState.shippingLines,
+                        hazmatSelection = hazmatSelection
                     ).let { triggerEvent(LabelPurchased(purchaseData = it)) }
                 }
             }

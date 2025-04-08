@@ -74,10 +74,14 @@ class WooShippingLabelPackageMapper @Inject constructor() {
             }
         }.let { CarrierDAO(it) }
 
-        return mapOf(
-            USPS to uspsPackages,
-            DHL to dhlPackages
-        )
+        val result = mutableMapOf<CarrierType, CarrierDAO>()
+        if (uspsPackages.packageGroup.isNotEmpty()) {
+            result[USPS] = uspsPackages
+        }
+        if (dhlPackages.packageGroup.isNotEmpty()) {
+            result[DHL] = dhlPackages
+        }
+        return result
     }
 
     private fun CarrierPackageGroupDTO.toCarrierGroup(

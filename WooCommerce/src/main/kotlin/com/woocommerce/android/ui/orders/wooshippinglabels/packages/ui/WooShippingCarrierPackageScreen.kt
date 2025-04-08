@@ -1,6 +1,9 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui
 
+import android.content.res.Configuration
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -37,11 +40,14 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PageType
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PredefinedPackagesState
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.components.ErrorMessageWithButton
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.components.WooShippingPackageListItem
@@ -49,14 +55,18 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.packages.components.W
 import kotlinx.coroutines.launch
 
 @Composable
-fun WooShippingCarrierPackageScreen(viewModel: WooShippingLabelPackageCreationViewModel) {
+fun WooShippingCarrierPackageScreen(
+    viewModel: WooShippingLabelPackageCreationViewModel,
+    onTabChange: (PageType) -> Unit
+) {
     val viewState by viewModel.viewState.observeAsState()
     WooShippingCarrierPackageScreen(
         packageState = viewState?.predefinedPackagesState ?: PredefinedPackagesState.Waiting,
-        isAddPackageEnabled = viewState?.predefinedPackagesData?.hasCarrierSelection ?: false,
+        isAddPackageEnabled = viewState?.predefinedPackagesData?.hasCarrierSelection == true,
         onPackageSelected = viewModel::onCarrierPackageSelected,
         onAddPackageClick = viewModel::onAddCarrierPackageClick,
-        onRetryClick = viewModel::onRetryClick
+        onRetryClick = viewModel::onRetryClick,
+        onTabChange = onTabChange
     )
 }
 
@@ -67,24 +77,31 @@ fun WooShippingCarrierPackageScreen(
     onPackageSelected: (PackageData, Boolean) -> Unit,
     isAddPackageEnabled: Boolean = false,
     onAddPackageClick: () -> Unit = {},
-    onRetryClick: () -> Unit
+    onRetryClick: () -> Unit,
+    onTabChange: (PageType) -> Unit
 ) {
     Column(modifier = modifier) {
         Box(modifier = modifier.weight(1f)) {
-            when (packageState) {
-                is PredefinedPackagesState.Data -> WooShippingCarrierPackageContent(
+            when {
+                packageState is PredefinedPackagesState.Data && packageState.carrierPackages.isEmpty() -> EmptyPackages(
+                    modifier = modifier,
+                    R.drawable.ic_delivery,
+                    R.string.woo_shipping_labels_package_creation_empty_carrier_message
+                ) { onTabChange(PageType.CUSTOM) }
+
+                packageState is PredefinedPackagesState.Data -> WooShippingCarrierPackageContent(
                     modifier = modifier,
                     carrierPackages = packageState.carrierPackages,
                     onPackageSelected = onPackageSelected,
                 )
 
-                is PredefinedPackagesState.Error -> ErrorMessageWithButton(
+                packageState is PredefinedPackagesState.Error -> ErrorMessageWithButton(
                     modifier = modifier,
                     message = R.string.woo_shipping_labels_package_creation_carrier_loading_error,
                     onRetryClick = onRetryClick
                 )
 
-                is PredefinedPackagesState.Waiting -> Column(
+                packageState is PredefinedPackagesState.Waiting -> Column(
                     modifier = modifier
                         .fillMaxSize()
                         .padding(16.dp)
@@ -105,6 +122,37 @@ fun WooShippingCarrierPackageScreen(
             onClick = onAddPackageClick
         ) {
             Text(stringResource(id = R.string.woo_shipping_labels_package_creation_add_package))
+        }
+    }
+}
+
+@Composable
+fun EmptyPackages(
+    modifier: Modifier = Modifier,
+    @DrawableRes image: Int,
+    @StringRes message: Int,
+    onButtonClick: () -> Unit
+) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colors.surface)
+            .verticalScroll(rememberScrollState())
+            .padding(vertical = 16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(painter = painterResource(id = image), contentDescription = null)
+        Spacer(modifier = Modifier.height(14.dp))
+        Text(
+            stringResource(message),
+            style = MaterialTheme.typography.subtitle1,
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colors.onSurface,
+        )
+        Spacer(modifier = Modifier.height(37.dp))
+        WCColoredButton(onClick = onButtonClick) {
+            Text(stringResource(id = R.string.woo_shipping_labels_package_creation_empty_button))
         }
     }
 }
@@ -340,6 +388,24 @@ fun WooShippingCarrierPackageScreenPreview() {
                 )
             ),
             onPackageSelected = { _, _ -> }
+        )
+    }
+}
+
+@Preview(name = "light", uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(name = "dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun WooShippingCarrierPackageEmptyScreenPreview() {
+    WooThemeWithBackground {
+        WooShippingCarrierPackageScreen(
+            packageState = PredefinedPackagesState.Data(
+                storeOptions = StoreOptionsForPackages.DEFAULT,
+                savedPackages = emptyList(),
+                carrierPackages = emptyMap()
+            ),
+            onPackageSelected = { _, _ -> },
+            onRetryClick = {},
+            onTabChange = {}
         )
     }
 }

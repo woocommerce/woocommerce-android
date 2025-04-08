@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.packages
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -22,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PageTab
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PageType
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PageType.CARRIER
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PageType.CUSTOM
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PageType.SAVED
@@ -42,30 +42,29 @@ fun WooShippingLabelPackageCreationScreen(
     WooShippingLabelPackageCreationScreen(
         tabs = viewState.value?.pageTabs.orEmpty(),
         createCustomPackageScreen = { WooShippingCustomPackageCreationScreen(viewModel) },
-        createCarrierPackageScreen = { WooShippingCarrierPackageScreen(viewModel) },
+        createCarrierPackageScreen = { onTabChange -> WooShippingCarrierPackageScreen(viewModel, onTabChange) },
         createSavedPackageScreen = { WooShippingSavedPackageScreen(viewModel) }
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun WooShippingLabelPackageCreationScreen(
     modifier: Modifier = Modifier,
     tabs: List<PageTab>,
     createCustomPackageScreen: @Composable () -> Unit,
-    createCarrierPackageScreen: @Composable () -> Unit,
+    createCarrierPackageScreen: @Composable (onTabChange: (PageType) -> Unit) -> Unit,
     createSavedPackageScreen: @Composable () -> Unit
 ) {
     var tabIndex by remember { mutableIntStateOf(0) }
     val pagerState = rememberPagerState { tabs.size }
-    LaunchedEffect(key1 = tabIndex) {
+    LaunchedEffect(tabIndex) {
         pagerState.animateScrollToPage(tabIndex)
     }
-    LaunchedEffect(key1 = pagerState.currentPage, pagerState.isScrollInProgress) {
-        if (!pagerState.isScrollInProgress) {
-            tabIndex = pagerState.currentPage
-        }
+    LaunchedEffect(pagerState.targetPage) {
+        tabIndex = pagerState.targetPage
     }
+
+    fun findIndex(type: PageType) = tabs.indexOfFirst { it.type == type }
 
     Scaffold(
         topBar = {
@@ -93,7 +92,7 @@ fun WooShippingLabelPackageCreationScreen(
             ) { currentPageIndex ->
                 when (tabs[currentPageIndex].type) {
                     CUSTOM -> createCustomPackageScreen()
-                    CARRIER -> createCarrierPackageScreen()
+                    CARRIER -> createCarrierPackageScreen { newPage -> tabIndex = findIndex(newPage) }
                     SAVED -> createSavedPackageScreen()
                 }
             }

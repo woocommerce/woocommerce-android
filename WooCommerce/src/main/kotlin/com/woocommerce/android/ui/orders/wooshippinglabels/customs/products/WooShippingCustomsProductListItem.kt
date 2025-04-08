@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.customs.products
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
@@ -56,7 +57,7 @@ fun WooShippingCustomsProductListItem(
         .let { animateFloatAsState(targetValue = it, label = "rotationAnimation") }
 
     val borderColor = when {
-        itemData.isExpanded -> colorResource(R.color.woo_black)
+        itemData.isExpanded -> colorResource(R.color.color_on_surface)
         itemData.isValid.not() -> colorResource(R.color.color_error)
         else -> colorResource(R.color.divider_color)
     }
@@ -66,7 +67,7 @@ fun WooShippingCustomsProductListItem(
             .fillMaxWidth()
             .animateContentSize()
             .background(
-                color = MaterialTheme.colorScheme.onPrimary,
+                color = colorResource(R.color.color_surface),
                 shape = RoundedCornerShape(dimensionResource(R.dimen.corner_radius_large))
             )
             .border(
@@ -82,6 +83,7 @@ fun WooShippingCustomsProductListItem(
                 text = itemData.name,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
+                color = colorResource(id = R.color.color_on_surface),
                 modifier = modifier.weight(1f)
             )
 
@@ -140,12 +142,14 @@ fun WooShippingCustomsProductCollapsedListItem(
             Text(
                 style = MaterialTheme.typography.bodySmall,
                 modifier = modifier.weight(1f),
+                color = colorResource(id = R.color.color_on_surface),
                 text = itemData.description.currentInput
                     .takeIf { it.isNotBlank() }
                     ?: stringResource(id = R.string.woo_shipping_labels_customs_product_details_description_missing)
             )
             Text(
                 style = MaterialTheme.typography.bodySmall,
+                color = colorResource(id = R.color.color_on_surface),
                 text = itemData.tariffNumber.currentInput
                     .takeIf { it.isNotBlank() }
                     ?: stringResource(id = R.string.woo_shipping_labels_customs_product_details_tariff_missing)
@@ -155,12 +159,14 @@ fun WooShippingCustomsProductCollapsedListItem(
             Text(
                 style = MaterialTheme.typography.bodySmall,
                 modifier = modifier.weight(1f),
+                color = colorResource(id = R.color.color_on_surface),
                 text = itemData.originCountry
                     .takeIf { it.isNotBlank() }
                     ?: stringResource(id = R.string.woo_shipping_labels_customs_product_details_origin_country_missing)
             )
             Text(
                 text = itemData.valueAndWeightForDisplay,
+                color = colorResource(id = R.color.color_on_surface),
                 style = MaterialTheme.typography.bodySmall,
             )
         }
@@ -250,6 +256,7 @@ fun WooShippingCustomsProductExpandedListItem(
 }
 
 @Preview
+@Preview(uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun WooShippingCustomsProductListCollapsedItemPreview() {
     WooThemeWithBackground {
@@ -279,6 +286,7 @@ fun WooShippingCustomsProductListCollapsedItemPreview() {
 }
 
 @Preview
+@Preview(uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun WooShippingCustomsProductListCollapsedItemErrorPreview() {
     WooThemeWithBackground {
@@ -308,6 +316,7 @@ fun WooShippingCustomsProductListCollapsedItemErrorPreview() {
 }
 
 @Preview
+@Preview(uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun WooShippingCustomsProductListExpandedItemPreview() {
     WooThemeWithBackground {
@@ -337,6 +346,7 @@ fun WooShippingCustomsProductListExpandedItemPreview() {
 }
 
 @Preview
+@Preview(uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun WooShippingCustomsProductListExpandedItemErrorPreview() {
     WooThemeWithBackground {
