@@ -4,8 +4,11 @@ import com.woocommerce.android.WooException
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
@@ -17,59 +20,80 @@ import javax.inject.Singleton
 @Singleton
 class WooPosSearchProductsDataSource @Inject constructor(
     private val productStore: WCProductStore,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val productsCache: WooPosProductsCache,
+    private val searchResultsCache: WooPosSearchResultsCache,
+    private val searchPredicate: ProductSearchPredicate,
 ) {
     companion object {
         private const val PAGE_SIZE = 25
-        private const val MAX_CACHE_SIZE = 1000
     }
 
     private val canLoadMore = AtomicBoolean(true)
-    private val searchResultsCache =
-        object : LinkedHashMap<String, List<Product>>(16, 0.75f, true) {
-            override fun removeEldestEntry(eldest: Map.Entry<String, List<Product>>): Boolean {
-                return size > MAX_CACHE_SIZE
-            }
-        }
 
     val hasMorePages: Boolean
         get() = canLoadMore.get()
 
     fun searchProducts(query: String): Flow<ProductsResult> = flow {
-        val cachedResults = getCachedSearchResults(query)
-        emit(ProductsResult.Cached(cachedResults))
+        if (searchResultsCache.hasSearchResults(query)) {
+            emit(ProductsResult.Cached(searchResultsCache.getSearchResults(query)))
+            return@flow
+        }
 
-        val remoteResults = remoteSearch(query)
-        remoteResults.fold(
-            onSuccess = { result ->
-                canLoadMore.set(result.canLoadMore)
-                updateSearchResultsCache(query, result.products)
-                emit(ProductsResult.Remote(Result.success(result.products)))
-            },
-            onFailure = { error ->
-                emit(ProductsResult.Remote(Result.failure(error)))
+        coroutineScope {
+            val localSearchDeferred = async { productsCache.getAll().filter(searchPredicate(query)) }
+            val remoteSearchDeferred = async { remoteSearch(query) }
+
+            val localResults = localSearchDeferred.await()
+            if (localResults.isNotEmpty()) {
+                // Show local results first
+                emit(ProductsResult.Cached(localResults))
             }
-        )
+
+            // Wait for remote search results and merge with local results
+            val remoteResults = remoteSearchDeferred.await()
+            remoteResults.fold(
+                onSuccess = { result ->
+                    canLoadMore.set(result.canLoadMore)
+                    productsCache.addAll(result.products)
+                    // Merge local and remote results
+                    val mergedResults = mergeSearchResults(localResults, result.products)
+                    // Store the merged results for this query
+                    searchResultsCache.storeSearchResults(query, mergedResults.map { it.remoteId })
+                    emit(ProductsResult.Remote(Result.success(mergedResults)))
+                },
+                onFailure = { error ->
+                    // If remote search fails but we have local results, store those
+                    if (localResults.isNotEmpty()) {
+                        searchResultsCache.storeSearchResults(query, localResults.map { it.remoteId })
+                    }
+
+                    emit(ProductsResult.Remote(Result.failure(error)))
+                }
+            )
+        }
     }.flowOn(Dispatchers.IO)
 
-    private fun getCachedSearchResults(query: String): List<Product> {
-        return searchResultsCache[query.lowercase()] ?: emptyList()
+    private fun mergeSearchResults(localResults: List<Product>, remoteResults: List<Product>): List<Product> {
+        return (localResults + remoteResults).distinctBy { it.remoteId }
     }
 
     suspend fun loadMore(query: String): Result<List<Product>> {
         if (!canLoadMore.get()) {
-            return Result.success(getCachedSearchResults(query))
+            return Result.success(searchResultsCache.getSearchResults(query))
         }
 
-        val currentResults = searchResultsCache[query.lowercase()] ?: emptyList()
+        val currentResults = searchResultsCache.getSearchResults(query)
         val offset = currentResults.size
 
         return remoteSearch(query, offset).fold(
             onSuccess = { result ->
                 canLoadMore.set(result.canLoadMore)
-                val combinedResults = currentResults + result.products
-                updateSearchResultsCache(query, combinedResults)
-                Result.success(combinedResults)
+                // Add new products to the shared cache
+                productsCache.addAll(result.products)
+                // Update the search results for this query with new products
+                searchResultsCache.storeSearchResults(query, result.products.map { it.remoteId })
+                Result.success(searchResultsCache.getSearchResults(query))
             },
             onFailure = { error ->
                 Result.failure(error)
@@ -77,8 +101,7 @@ class WooPosSearchProductsDataSource @Inject constructor(
         )
     }
 
-    fun getProductById(productId: Long): Product? =
-        searchResultsCache.values.flatten().find { it.remoteId == productId }
+    suspend fun getProductById(productId: Long): Product? = productsCache.getProductById(productId)
 
     private suspend fun remoteSearch(
         searchQuery: String,
@@ -106,14 +129,6 @@ class WooPosSearchProductsDataSource @Inject constructor(
                 )
             }
         }
-    }
-
-    private fun updateSearchResultsCache(query: String, results: List<Product>) {
-        searchResultsCache[query.lowercase()] = results
-    }
-
-    fun getPopularProducts(): List<Product> {
-        return searchResultsCache.entries.firstOrNull()?.value?.shuffled() ?: emptyList()
     }
 
     sealed class ProductsResult {
