@@ -167,7 +167,8 @@ private fun AnimatedSearchInput(
                     textFieldValue = newValue
                     onEvent(
                         WooPosSearchUIEvent.Search(
-                            newValue.text, newValue.selection.start
+                            newValue.text,
+                            newValue.selection.start
                         )
                     )
                 }
@@ -191,7 +192,8 @@ private fun AnimatedSearchInput(
                     if (isAnimationComplete) {
                         onEvent(
                             WooPosSearchUIEvent.Search(
-                                textFieldValue.text, textFieldValue.selection.start
+                                textFieldValue.text,
+                                textFieldValue.selection.start
                             )
                         )
                     }
