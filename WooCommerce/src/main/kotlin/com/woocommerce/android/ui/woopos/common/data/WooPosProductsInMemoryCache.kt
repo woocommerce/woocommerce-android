@@ -12,13 +12,13 @@ class WooPosProductsInMemoryCache @Inject constructor() : WooPosProductsCache {
 
     private val productsCache = mutableMapOf<Long, Product>()
 
-    override suspend fun addProducts(products: List<Product>) = mutex.withLock {
+    override suspend fun addAll(products: List<Product>) = mutex.withLock {
         products.forEach { product ->
             productsCache[product.remoteId] = product
         }
     }
 
-    override suspend fun getProducts(): List<Product> = mutex.withLock {
+    override suspend fun getAll(): List<Product> = mutex.withLock {
         return productsCache.values.toList()
     }
 
@@ -26,20 +26,7 @@ class WooPosProductsInMemoryCache @Inject constructor() : WooPosProductsCache {
         return productsCache[productId]
     }
 
-    override suspend fun searchLocally(query: String): List<Product> = mutex.withLock {
-        if (query.isBlank()) return emptyList()
-
-        val searchTerms = query.lowercase().split(" ").filter { it.isNotBlank() }
-        return productsCache.values.filter { product ->
-            searchTerms.all { term ->
-                product.name.lowercase().contains(term) ||
-                    product.description.lowercase().contains(term) == true ||
-                    product.shortDescription.lowercase().contains(term) == true
-            }
-        }
-    }
-
-    override suspend fun clearCache() = mutex.withLock {
+    override suspend fun clear() = mutex.withLock {
         productsCache.clear()
     }
 }
