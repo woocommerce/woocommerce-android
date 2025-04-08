@@ -42,7 +42,9 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
@@ -53,6 +55,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import kotlinx.coroutines.delay
+import kotlin.math.min
 
 private val BUTTON_SIZE = 40.dp
 private val INPUT_FIELD_HEIGHT = 56.dp
@@ -90,7 +93,7 @@ fun WooPosSearchInput(
 fun SearchButton(onEvent: (WooPosSearchUIEvent) -> Unit) {
     IconButton(
         modifier = Modifier.size(BUTTON_SIZE),
-        onClick = { onEvent(WooPosSearchUIEvent.Search("")) },
+        onClick = { onEvent(WooPosSearchUIEvent.Search("", 0)) },
         colors = IconButtonDefaults.outlinedIconButtonColors(
             containerColor = WooPosTheme.colors.transparent,
             contentColor = MaterialTheme.colorScheme.onSurface
@@ -137,11 +140,36 @@ private fun AnimatedSearchInput(
             is Input.Hint -> state.input.text to ""
         }
 
+        var textFieldValue by remember {
+            mutableStateOf(
+                TextFieldValue(
+                    text = query,
+                    selection = TextRange(state.input.cursorPosition)
+                )
+            )
+        }
+
+        LaunchedEffect(query) {
+            if (query != textFieldValue.text) {
+                textFieldValue = TextFieldValue(
+                    text = query,
+                    selection = TextRange(
+                        min(state.input.cursorPosition, query.length)
+                    )
+                )
+            }
+        }
+
         OutlinedTextField(
-            value = query,
-            onValueChange = {
+            value = textFieldValue,
+            onValueChange = { newValue ->
                 if (isAnimationComplete) {
-                    onEvent(WooPosSearchUIEvent.Search(it))
+                    textFieldValue = newValue
+                    onEvent(
+                        WooPosSearchUIEvent.Search(
+                            newValue.text, newValue.selection.start
+                        )
+                    )
                 }
             },
             modifier = Modifier
@@ -161,7 +189,11 @@ private fun AnimatedSearchInput(
             keyboardActions = KeyboardActions(
                 onSearch = {
                     if (isAnimationComplete) {
-                        onEvent(WooPosSearchUIEvent.Search(query))
+                        onEvent(
+                            WooPosSearchUIEvent.Search(
+                                textFieldValue.text, textFieldValue.selection.start
+                            )
+                        )
                     }
                 }
             ),
@@ -193,7 +225,7 @@ private fun AnimatedSearchInput(
                         )
                     }
 
-                    query.isNotEmpty() -> {
+                    textFieldValue.text.isNotEmpty() -> {
                         IconButton(
                             onClick = {
                                 if (isAnimationComplete) {
@@ -318,7 +350,7 @@ sealed class WooPosSearchInputState {
 
 sealed class WooPosSearchUIEvent {
     object Clear : WooPosSearchUIEvent()
-    data class Search(val query: String) : WooPosSearchUIEvent()
+    data class Search(val query: String, val cursorPosition: Int) : WooPosSearchUIEvent()
     object Close : WooPosSearchUIEvent()
 }
 
