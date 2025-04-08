@@ -11,7 +11,6 @@ enum class FeatureFlag {
     BETTER_CUSTOMER_SEARCH_M2,
     ORDER_CREATION_AUTO_TAX_RATE,
     NEW_SHIPPING_SUPPORT,
-    ENDLESS_CAMPAIGNS_SUPPORT,
     REVAMP_WOO_SHIPPING,
     POS_PRODUCTS_SEARCH,
     POS_COUPONS,
@@ -32,7 +31,6 @@ enum class FeatureFlag {
             REVAMP_WOO_SHIPPING -> PackageUtils.isDebugBuild()
 
             NEW_SHIPPING_SUPPORT,
-            ENDLESS_CAMPAIGNS_SUPPORT,
             BULK_UPDATE_ORDERS_STATUS,
             HIDE_SITES_FROM_SITE_PICKER -> true
         }
