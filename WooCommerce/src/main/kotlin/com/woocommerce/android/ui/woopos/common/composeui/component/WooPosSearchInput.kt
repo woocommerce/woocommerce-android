@@ -370,7 +370,8 @@ fun WooPosSearchInputOpenSearchPreview() {
                     Input.Query(
                         "Search products...",
                         cursorPosition = 0
-                    ), false
+                    ),
+                    false
                 ),
                 onEvent = {}
             )
