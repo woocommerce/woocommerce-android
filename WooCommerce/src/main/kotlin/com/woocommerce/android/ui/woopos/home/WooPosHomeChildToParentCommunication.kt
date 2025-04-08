@@ -55,7 +55,7 @@ sealed class ChildToParentEvent {
         object Started : SearchEvent()
     }
 
-    data class OrderCreated(val updatedProducts: List<ProductInfo>): ChildToParentEvent() {
+    data class OrderCreated(val updatedProducts: List<ProductInfo>) : ChildToParentEvent() {
         data class ProductInfo(
             val id: Long,
             val name: String,

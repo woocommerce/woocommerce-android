@@ -194,16 +194,18 @@ class WooPosHomeViewModel @Inject constructor(
                         sendEventToChildren(RecentSearchSelected(event.query))
                     }
 
-                    is ChildToParentEvent.OrderCreated ->  {
+                    is ChildToParentEvent.OrderCreated -> {
                         sendEventToChildren(
-                            OrderCreated(updatedProducts = event.updatedProducts.map {
-                                OrderCreated.ProductInfo(
-                                    id = it.id,
-                                    name = it.name,
-                                    price = it.price,
-                                    quantity = it.quantity
-                                )
-                            })
+                            OrderCreated(
+                                updatedProducts = event.updatedProducts.map {
+                                    OrderCreated.ProductInfo(
+                                        id = it.id,
+                                        name = it.name,
+                                        price = it.price,
+                                        quantity = it.quantity
+                                    )
+                                }
+                            )
                         )
                     }
                 }
