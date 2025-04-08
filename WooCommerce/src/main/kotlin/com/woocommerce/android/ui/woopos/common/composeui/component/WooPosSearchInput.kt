@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.common.composeui.component
 
 import android.annotation.SuppressLint
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.Transition
@@ -64,6 +65,11 @@ fun WooPosSearchInput(
     state: WooPosSearchInputState = WooPosSearchInputState.Closed,
     onEvent: (WooPosSearchUIEvent) -> Unit = {},
 ) {
+    BackHandler(
+        enabled = state is WooPosSearchInputState.Open,
+        onBack = { onEvent(WooPosSearchUIEvent.Close) }
+    )
+
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -119,9 +125,9 @@ private fun AnimatedSearchInput(
     ) {
         val maxWidthPx = maxWidth
         val focusRequester = remember { FocusRequester() }
-        var isExpanded by remember { mutableStateOf(false) }
+
+        var isExpanded by remember { mutableStateOf(state.hasAnimationPlayed) }
         var isClosing by remember { mutableStateOf(false) }
-        var isAnimationComplete by remember { mutableStateOf(false) }
 
         val transition = updateTransition(
             targetState = if (isClosing) false else isExpanded,
@@ -140,9 +146,7 @@ private fun AnimatedSearchInput(
         OutlinedTextField(
             value = query,
             onValueChange = {
-                if (isAnimationComplete) {
-                    onEvent(WooPosSearchUIEvent.Search(it))
-                }
+                onEvent(WooPosSearchUIEvent.Search(it))
             },
             modifier = Modifier
                 .width(width)
@@ -160,9 +164,7 @@ private fun AnimatedSearchInput(
             shape = RoundedCornerShape(cornerRadius),
             keyboardActions = KeyboardActions(
                 onSearch = {
-                    if (isAnimationComplete) {
-                        onEvent(WooPosSearchUIEvent.Search(query))
-                    }
+                    onEvent(WooPosSearchUIEvent.Search(query))
                 }
             ),
             colors = OutlinedTextFieldDefaults.colors(
@@ -192,13 +194,10 @@ private fun AnimatedSearchInput(
                                 .alpha(iconAlpha)
                         )
                     }
+
                     query.isNotEmpty() -> {
                         IconButton(
-                            onClick = {
-                                if (isAnimationComplete) {
-                                    onEvent(WooPosSearchUIEvent.Clear)
-                                }
-                            },
+                            onClick = { onEvent(WooPosSearchUIEvent.Clear) },
                             modifier = Modifier.alpha(iconAlpha)
                         ) {
                             Icon(
@@ -214,15 +213,16 @@ private fun AnimatedSearchInput(
         )
 
         LaunchedEffect(Unit) {
-            isExpanded = true
-            delay(ANIMATION_TIME)
-            isAnimationComplete = true
-            focusRequester.requestFocus()
+            if (!state.hasAnimationPlayed) {
+                isExpanded = true
+                delay(ANIMATION_TIME)
+                focusRequester.requestFocus()
+                onEvent(WooPosSearchUIEvent.AnimationComplete)
+            }
         }
 
         LaunchedEffect(isClosing) {
             if (isClosing) {
-                isAnimationComplete = false
                 delay(ANIMATION_TIME)
                 onEvent(WooPosSearchUIEvent.Close)
             }
@@ -304,13 +304,15 @@ private fun animateIconAlpha(
 sealed class WooPosSearchInputState {
     data class Open(
         val input: Input,
-        val isLoading: Boolean
+        val isLoading: Boolean,
+        val hasAnimationPlayed: Boolean = false,
     ) : WooPosSearchInputState() {
         sealed class Input(val text: String) {
             data class Query(val query: String) : Input(query)
             data class Hint(val hint: String) : Input(hint)
         }
     }
+
     object Closed : WooPosSearchInputState()
 }
 
@@ -318,6 +320,7 @@ sealed class WooPosSearchUIEvent {
     object Clear : WooPosSearchUIEvent()
     data class Search(val query: String) : WooPosSearchUIEvent()
     object Close : WooPosSearchUIEvent()
+    object AnimationComplete : WooPosSearchUIEvent()
 }
 
 @WooPosPreview

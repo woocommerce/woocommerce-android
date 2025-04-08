@@ -8,7 +8,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.woocommerce.android.ui.woopos.home.items.WooPosItemNavigationData.VariableProductData
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsScreen
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsScreen
 import kotlinx.coroutines.flow.StateFlow
@@ -37,26 +36,13 @@ fun WooPosItemsScreens(
                 }
 
                 is WooPosItemsScreenViewModel.ItemsScreens.VariationsScreen -> {
-                    NavigateToVariationsScreen(
-                        variableProductData = navigationState.product,
+                    WooPosVariationsScreen(
                         modifier = modifier,
+                        variableProductData = navigationState.product,
                         onBackClicked = { onNavigateToItemsListScreen() }
                     )
                 }
             }
         }
     }
-}
-
-@Composable
-private fun NavigateToVariationsScreen(
-    variableProductData: VariableProductData,
-    modifier: Modifier,
-    onBackClicked: () -> Unit,
-) {
-    WooPosVariationsScreen(
-        modifier,
-        variableProductData,
-        onBackClicked = onBackClicked
-    )
 }

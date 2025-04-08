@@ -114,6 +114,7 @@ class WooPosItemsViewModel @Inject constructor(
             WooPosItemsUIEvent.ClearSearchClicked -> searchHelper.onClearSearchClicked()
             WooPosItemsUIEvent.CloseSearchClicked -> searchHelper.onCloseSearchClicked()
             is WooPosItemsUIEvent.SearchChanged -> searchHelper.onSearchChanged(event.query)
+            WooPosItemsUIEvent.SearchAnimationComplete -> searchHelper.onAnimationComplete()
 
             WooPosItemsUIEvent.CouponsButtonClicked -> {
                 sendEventToParent(
