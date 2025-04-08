@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.home.items.products
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.selector.ProductListHandler
+import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -10,8 +11,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.take
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
@@ -20,19 +19,18 @@ import javax.inject.Singleton
 @Singleton
 class WooPosProductsDataSource @Inject constructor(
     private val handler: ProductListHandler,
+    private val productsCache: WooPosProductsCache
 ) {
-    private var productCache: List<Product> = emptyList()
-    private val cacheMutex = Mutex()
-
     val hasMorePages: Boolean
         get() = handler.canLoadMore.get()
 
     fun loadSimpleProducts(forceRefreshProducts: Boolean): Flow<ProductsResult> = flow {
         if (forceRefreshProducts) {
-            updateProductCache(emptyList())
+            productsCache.clear()
         }
 
-        emit(ProductsResult.Cached(productCache))
+        val cachedProducts = productsCache.getAll()
+        emit(ProductsResult.Cached(cachedProducts))
 
         val result = handler.loadFromCacheAndFetch(
             forceRefresh = forceRefreshProducts,
@@ -46,8 +44,8 @@ class WooPosProductsDataSource @Inject constructor(
 
         if (result.isSuccess) {
             val remoteProducts = handler.productsFlow.first()
-            updateProductCache(remoteProducts)
-            emit(ProductsResult.Remote(Result.success(productCache)))
+            productsCache.addAll(remoteProducts)
+            emit(ProductsResult.Remote(Result.success(productsCache.getAll())))
         } else {
             result.logFailure()
             emit(
@@ -66,16 +64,12 @@ class WooPosProductsDataSource @Inject constructor(
         )
         if (result.isSuccess) {
             val moreProducts = handler.productsFlow.first()
-            updateProductCache(moreProducts)
-            Result.success(productCache)
+            productsCache.addAll(moreProducts)
+            Result.success(productsCache.getAll())
         } else {
             result.logFailure()
             Result.failure(result.exceptionOrNull() ?: Exception("Unknown error"))
         }
-    }
-
-    private suspend fun updateProductCache(newList: List<Product>) {
-        cacheMutex.withLock { productCache = newList }
     }
 
     private fun Result<Unit>.logFailure() {
