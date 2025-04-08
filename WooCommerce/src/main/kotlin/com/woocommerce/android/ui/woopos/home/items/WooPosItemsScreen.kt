@@ -451,7 +451,7 @@ fun WooPosItemsScreenPreview(modifier: Modifier = Modifier) {
             ),
             search = WooPosItemsViewState.Content.SearchState.Visible(
                 state = WooPosSearchInputState.Open(
-                    input = WooPosSearchInputState.Open.Input.Query(""),
+                    input = WooPosSearchInputState.Open.Input.Query("", 0),
                     isLoading = false,
                 )
             )
@@ -606,7 +606,7 @@ fun WooPosHomeScreenItemsWithSimpleProductsOnlyBannerPreview() {
             ),
             search = WooPosItemsViewState.Content.SearchState.Visible(
                 state = WooPosSearchInputState.Open(
-                    input = WooPosSearchInputState.Open.Input.Query(""),
+                    input = WooPosSearchInputState.Open.Input.Query("", 0),
                     isLoading = false,
                 )
             )
@@ -658,7 +658,7 @@ fun WooPosHomeScreenItemsWithInfoIconInToolbarPreview() {
             ),
             search = WooPosItemsViewState.Content.SearchState.Visible(
                 state = WooPosSearchInputState.Open(
-                    input = WooPosSearchInputState.Open.Input.Query(""),
+                    input = WooPosSearchInputState.Open.Input.Query("", 0),
                     isLoading = false,
                 )
             )

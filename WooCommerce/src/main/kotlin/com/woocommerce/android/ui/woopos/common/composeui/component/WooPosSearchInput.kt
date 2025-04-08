@@ -192,6 +192,7 @@ private fun AnimatedSearchInput(
                                 .alpha(iconAlpha)
                         )
                     }
+
                     query.isNotEmpty() -> {
                         IconButton(
                             onClick = {
@@ -306,11 +307,12 @@ sealed class WooPosSearchInputState {
         val input: Input,
         val isLoading: Boolean
     ) : WooPosSearchInputState() {
-        sealed class Input(val text: String) {
-            data class Query(val query: String) : Input(query)
-            data class Hint(val hint: String) : Input(hint)
+        sealed class Input(val text: String, open val cursorPosition: Int) {
+            data class Query(val query: String, override val cursorPosition: Int) : Input(query, cursorPosition)
+            data class Hint(val hint: String) : Input(hint, 0)
         }
     }
+
     object Closed : WooPosSearchInputState()
 }
 
@@ -330,7 +332,12 @@ fun WooPosSearchInputOpenSearchPreview() {
                 .padding(WooPosSpacing.Small.value)
         ) {
             WooPosSearchInput(
-                state = WooPosSearchInputState.Open(Input.Query("Search products..."), false),
+                state = WooPosSearchInputState.Open(
+                    Input.Query(
+                        "Search products...",
+                        cursorPosition = 0
+                    ), false
+                ),
                 onEvent = {}
             )
         }
