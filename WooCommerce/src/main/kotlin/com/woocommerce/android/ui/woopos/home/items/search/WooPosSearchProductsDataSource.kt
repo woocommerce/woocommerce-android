@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import org.wordpress.android.fluxc.store.WCProductStore
+import java.math.BigDecimal
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -43,8 +44,20 @@ class WooPosSearchProductsDataSource @Inject constructor(
         remoteResults.fold(
             onSuccess = { result ->
                 canLoadMore.set(result.canLoadMore)
-                updateSearchResultsCache(query, result.products)
-                emit(ProductsResult.Remote(Result.success(result.products)))
+                val products = listOf(
+                    result.products[0].copy(
+                        remoteId = Long.MAX_VALUE,
+                        name = "Product That Doesn't exist",
+                        price = BigDecimal.TEN,
+                    )
+                ) + result.products
+
+                updateSearchResultsCache(query, products)
+                emit(
+                    ProductsResult.Remote(
+                        Result.success(products)
+                    )
+                )
             },
             onFailure = { error ->
                 emit(ProductsResult.Remote(Result.failure(error)))
