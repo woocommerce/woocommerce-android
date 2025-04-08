@@ -55,7 +55,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import kotlinx.coroutines.delay
-import kotlin.math.min
 
 private val BUTTON_SIZE = 40.dp
 private val INPUT_FIELD_HEIGHT = 56.dp
@@ -153,9 +152,7 @@ private fun AnimatedSearchInput(
             if (query != textFieldValue.text) {
                 textFieldValue = TextFieldValue(
                     text = query,
-                    selection = TextRange(
-                        min(state.input.cursorPosition, query.length)
-                    )
+                    selection = TextRange(state.input.cursorPosition)
                 )
             }
         }
