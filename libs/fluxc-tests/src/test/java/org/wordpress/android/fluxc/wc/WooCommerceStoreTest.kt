@@ -30,6 +30,7 @@ import org.wordpress.android.fluxc.model.settings.WCSettingsMapper
 import org.wordpress.android.fluxc.model.taxes.TaxBasedOnSettingEntity
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.NETWORK_ERROR
 import org.wordpress.android.fluxc.network.discovery.RootWPAPIRestResponse
+import org.wordpress.android.fluxc.network.discovery.RootWPAPIRestResponse.Authentication
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooCommerceRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.INVALID_RESPONSE
@@ -306,6 +307,30 @@ class WooCommerceStoreTest {
             assertThat(result.model).isNotNull
             assertThat(result.model?.apiVersion).isEqualTo(SUPPORTED_API_VERSION)
             assertThat(result.model?.siteModel).isEqualTo(site)
+        }
+    }
+
+    @Test
+    fun `when fetching api version succeeds, then update application passwords authorization URL`() {
+        runBlocking {
+            // Sanity check
+            assertThat(site.applicationPasswordsAuthorizeUrl).isNull()
+
+            val authorizationUrl = "https://example.com/authorization-url"
+            TestSiteSqlUtils.siteSqlUtils.insertOrUpdateSite(site)
+
+            fetchSupportedWooApiVersion(
+                response = RootWPAPIRestResponse(
+                    authentication = Authentication(
+                        applicationPasswords = Authentication.ApplicationPasswords(
+                            endpoints = Authentication.ApplicationPasswords.Endpoints(authorizationUrl)
+                        )
+                    )
+                )
+            )
+
+            val updateSite = TestSiteSqlUtils.siteSqlUtils.getSiteWithLocalId(site.localId())
+            assertThat(updateSite!!.applicationPasswordsAuthorizeUrl).isEqualTo(authorizationUrl)
         }
     }
 
