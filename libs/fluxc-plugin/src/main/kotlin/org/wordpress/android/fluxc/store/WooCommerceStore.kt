@@ -362,7 +362,7 @@ open class WooCommerceStore @Inject constructor(
         overrideRetryPolicy: Boolean = false
     ): WooResult<WCApiVersionResponse> {
         return coroutineEngine.withDefaultContext(T.API, this, "fetchSupportedWooApiVersion") {
-            val response = wcCoreRestClient.fetchSupportedWooApiVersion(site, overrideRetryPolicy)
+            val response = wcCoreRestClient.fetchSiteRootAPIEndpoint(site, overrideRetryPolicy)
             return@withDefaultContext when {
                 response.isError -> {
                     AppLog.w(

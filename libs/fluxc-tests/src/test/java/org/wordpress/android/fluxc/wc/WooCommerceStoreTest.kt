@@ -489,9 +489,9 @@ class WooCommerceStoreTest {
     ): WooResult<WCApiVersionResponse> {
         val payload = WooPayload(response)
         if (isError) {
-            whenever(wcrestClient.fetchSupportedWooApiVersion(any(), any())).thenReturn(WooPayload(error))
+            whenever(wcrestClient.fetchSiteRootAPIEndpoint(any(), any())).thenReturn(WooPayload(error))
         } else {
-            whenever(wcrestClient.fetchSupportedWooApiVersion(any(), any())).thenReturn(payload)
+            whenever(wcrestClient.fetchSiteRootAPIEndpoint(any(), any())).thenReturn(payload)
         }
         return wooCommerceStore.fetchSupportedApiVersion(site)
     }
