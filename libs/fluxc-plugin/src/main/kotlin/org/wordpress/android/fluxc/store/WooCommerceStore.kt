@@ -373,6 +373,11 @@ open class WooCommerceStore @Inject constructor(
                 }
 
                 response.result != null -> {
+                    // Persist the Application Passwords auhtorization URL
+                    site.applicationPasswordsAuthorizeUrl = response.result.authentication
+                        ?.applicationPasswords?.endpoints?.authorization
+                    siteSqlUtils.insertOrUpdateSite(site)
+
                     val namespaces = response.result.namespaces
                     val maxWooApiVersion = namespaces?.run {
                         find { it == WOO_API_NAMESPACE_V3 }

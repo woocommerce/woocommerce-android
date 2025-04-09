@@ -1510,15 +1510,7 @@ open class SiteStore @Inject constructor(
             OnSiteChanged(SiteErrorUtils.genericToSiteError(siteModel.error))
         } else {
             try {
-                // The REST API doesn't return info about the editor(s). Make sure to copy current values
-                // available on the DB. Otherwise the apps will receive an update site without editor prefs set.
-                // The apps will dispatch the action to update editor(s) when necessary.
-                val freshSiteFromDB = getSiteByLocalId(siteModel.id)
-                if (freshSiteFromDB != null) {
-                    siteModel.mobileEditor = freshSiteFromDB.mobileEditor
-                    siteModel.webEditor = freshSiteFromDB.webEditor
-                }
-                OnSiteChanged(siteSqlUtils.insertOrUpdateSite(siteModel))
+                OnSiteChanged(createOrUpdateSite(siteModel))
             } catch (e: DuplicateSiteException) {
                 OnSiteChanged(SiteError(DUPLICATE_SITE))
             }
@@ -1568,15 +1560,7 @@ open class SiteStore @Inject constructor(
         val updatedSites = mutableListOf<SiteModel>()
         for (site in sites.sites) {
             try {
-                // The REST API doesn't return info about the editor(s). Make sure to copy current values
-                // available on the DB. Otherwise the apps will receive an update site without editor prefs set.
-                // The apps will dispatch the action to update editor(s) when necessary.
-                val siteFromDB = getSiteBySiteId(site.siteId)
-                if (siteFromDB != null) {
-                    site.mobileEditor = siteFromDB.mobileEditor
-                    site.webEditor = siteFromDB.webEditor
-                }
-                val isUpdated = (siteSqlUtils.insertOrUpdateSite(site) == 1)
+                val isUpdated = (createOrUpdateSite(site) == 1)
                 if (isUpdated) {
                     rowsAffected++
                     updatedSites.add(site)
@@ -1586,6 +1570,21 @@ open class SiteStore @Inject constructor(
             }
         }
         return UpdateSitesResult(rowsAffected, updatedSites, duplicateSiteFound)
+    }
+
+    private fun createOrUpdateSite(site: SiteModel): Int {
+        val freshSiteFromDB = getSiteBySiteId(site.siteId)
+        // Update the site with existing values from the DB that are not returned by the WPCom REST API
+        if (freshSiteFromDB != null) {
+            // The REST API doesn't return info about the editor(s).
+            site.mobileEditor = freshSiteFromDB.mobileEditor
+            site.webEditor = freshSiteFromDB.webEditor
+
+            // The REST API doesn't return info about the application passwords authorize URL.
+            site.applicationPasswordsAuthorizeUrl = freshSiteFromDB.applicationPasswordsAuthorizeUrl
+        }
+
+        return siteSqlUtils.insertOrUpdateSite(site)
     }
 
     // Insert Jetpack CP connected sites, with updated local id info if they are also in the fetched sites list
