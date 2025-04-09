@@ -51,7 +51,7 @@ object WooLog {
     enum class LogLevel { v, d, i, w, e }
 
     const val TAG = "WooCommerce"
-    private const val MAX_ENTRIES = 99
+    private const val MAX_ENTRIES = 999
     val logEntries = RollingLogEntries(MAX_ENTRIES)
 
     init {
