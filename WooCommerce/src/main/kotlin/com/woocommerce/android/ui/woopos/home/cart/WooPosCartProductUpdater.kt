@@ -21,10 +21,23 @@ class WooPosCartProductUpdater @Inject constructor(
         val mutableCurrentBodyList = currentBodyState.itemsInCart.toMutableList()
         var changesDone = false
 
+        val expandedUpdatedProductsBasedOnQuantity = updatedProducts.flatMap { product ->
+            List(product.quantity.toInt()) { product }
+        }.toMutableList()
+
         currentBodyState.itemsInCart.forEachIndexed { index, item ->
             when (item) {
                 is WooPosCartItemViewState.Product -> {
-                    updatedProducts.forEach { updatedProduct ->
+                    val updatedProductIndex = expandedUpdatedProductsBasedOnQuantity.indexOfFirst { updatedProduct ->
+                        val productExists = updatedProduct.id == item.id && updatedProduct.id != 0L
+                        val productDoesNotExist = updatedProduct.id == 0L && updatedProduct.name == item.name
+                        productExists || productDoesNotExist
+                    }
+
+                    if (updatedProductIndex != -1) {
+                        val updatedProduct = expandedUpdatedProductsBasedOnQuantity[updatedProductIndex]
+                        expandedUpdatedProductsBasedOnQuantity.removeAt(updatedProductIndex)
+
                         val productExists = updatedProduct.id == item.id && updatedProduct.id != 0L
                         val productDoesNotExist = updatedProduct.id == 0L && updatedProduct.name == item.name
 
@@ -40,7 +53,6 @@ class WooPosCartProductUpdater @Inject constructor(
                                         changesDone = changesDone || itemChanged
                                         newItem
                                     }
-
                                     productDoesNotExist -> {
                                         val newItem = item.copy(
                                             price = formatPrice(updatedProduct.price),
@@ -49,11 +61,9 @@ class WooPosCartProductUpdater @Inject constructor(
                                         changesDone = true
                                         newItem
                                     }
-
                                     else -> item
                                 }
                             }
-
                             is WooPosCartItemViewState.Product.Variation -> {
                                 when {
                                     productExists -> {
@@ -65,7 +75,6 @@ class WooPosCartProductUpdater @Inject constructor(
                                         changesDone = changesDone || itemChanged
                                         newItem
                                     }
-
                                     productDoesNotExist -> {
                                         val newItem = item.copy(
                                             price = formatPrice(updatedProduct.price),
@@ -74,14 +83,12 @@ class WooPosCartProductUpdater @Inject constructor(
                                         changesDone = true
                                         newItem
                                     }
-
                                     else -> item
                                 }
                             }
                         }
                     }
                 }
-
                 is WooPosCartItemViewState.Coupon -> {
                 }
             }
