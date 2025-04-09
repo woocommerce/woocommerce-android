@@ -1,5 +1,6 @@
 package com.woocommerce.android.util
 
+import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.locale.LocaleProvider
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -29,8 +30,9 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
     private val localeProvider: LocaleProvider = mock()
     private val wcStore: WooCommerceStore = mock()
     private val selectedSite: SelectedSite = mock()
+    private val crashLogging: CrashLogging = mock()
     private val siteIndependentCurrencyFormatter: SiteIndependentCurrencyFormatter =
-        SiteIndependentCurrencyFormatter(localeProvider)
+        SiteIndependentCurrencyFormatter(localeProvider, crashLogging)
 
     @Test
     fun `when the selected site changes the default currency code updates`() =
