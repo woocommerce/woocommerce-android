@@ -10,11 +10,19 @@ import javax.inject.Singleton
 class WooPosProductsInMemoryCache @Inject constructor() : WooPosProductsCache {
     private val mutex = Mutex()
 
-    private val productsCache = mutableMapOf<Long, Product>()
+    companion object {
+        private const val MAX_CACHE_SIZE = 10_000
+    }
+
+    private val productsCache = LinkedHashMap<Long, Product>(16, 0.75f, false)
 
     override suspend fun addAll(products: List<Product>) = mutex.withLock {
         products.forEach { product ->
             productsCache[product.remoteId] = product
+            if (productsCache.size > MAX_CACHE_SIZE) {
+                val keysToRemove = productsCache.keys.take(productsCache.size - MAX_CACHE_SIZE)
+                keysToRemove.forEach { productsCache.remove(it) }
+            }
         }
     }
 
