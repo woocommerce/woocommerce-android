@@ -37,6 +37,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -421,7 +422,7 @@ private fun ProductItem(
                         .build(),
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier.size(96.dp)
+                    modifier = Modifier.size(96.dp).alpha(if (item.productDoesNotExist) 0.5f else 1f)
                 )
             }
 
@@ -436,7 +437,9 @@ private fun ProductItem(
                     style = WooPosTypography.BodyLarge,
                     fontWeight = FontWeight.Bold,
                     overflow = TextOverflow.Ellipsis,
+                    color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.clearAndSetSemantics { }
+                        .alpha(if (item.productDoesNotExist) 0.2f else 1f)
                 )
                 Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value.toAdaptivePadding()))
                 if (item.description.isNotNullOrEmpty()) {
@@ -658,6 +661,7 @@ fun WooPosCartScreenCheckoutPreview(modifier: Modifier = Modifier) {
                             name = "VW California",
                             description = null,
                             price = "€250,000",
+                            productDoesNotExist = true,
                         )
                     )
                 ),

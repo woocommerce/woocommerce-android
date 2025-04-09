@@ -56,7 +56,7 @@ class WooPosCartProductUpdater @Inject constructor(
                                     productDoesNotExist -> {
                                         val newItem = item.copy(
                                             price = formatPrice(updatedProduct.price),
-                                            productDoesNotExist = false
+                                            productDoesNotExist = true
                                         )
                                         changesDone = true
                                         newItem
@@ -78,7 +78,7 @@ class WooPosCartProductUpdater @Inject constructor(
                                     productDoesNotExist -> {
                                         val newItem = item.copy(
                                             price = formatPrice(updatedProduct.price),
-                                            productDoesNotExist = false
+                                            productDoesNotExist = true
                                         )
                                         changesDone = true
                                         newItem
