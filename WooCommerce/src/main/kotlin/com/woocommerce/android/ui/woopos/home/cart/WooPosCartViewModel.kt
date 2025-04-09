@@ -12,6 +12,7 @@ import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetVariationById
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.ToastMessageDisplayed
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
@@ -33,7 +34,6 @@ import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicInteger
@@ -158,9 +158,82 @@ class WooPosCartViewModel @Inject constructor(
         }
     }
 
-    private fun CoroutineScope.updateProductsWithUpdateProducts(
-        products: List<ParentToChildrenEvent.OrderCreated.ProductInfo>
+    private suspend fun updateProductsWithUpdateProducts(
+        updatedProducts: List<ParentToChildrenEvent.OrderCreated.ProductInfo>
     ) {
+        val currentBodyState = _state.value.body as? WooPosCartState.Body.WithItems ?: return
+        val mutableCurrentBodyList = currentBodyState.itemsInCart.toMutableList()
+
+        for (updatedProduct in updatedProducts) {
+            for (i in 0 until updatedProduct.quantity.toInt()) {
+                mutableCurrentBodyList.forEachIndexed { index, item ->
+                    when (item) {
+                        is WooPosCartItemViewState.Product.Simple -> {
+                            if (updatedProduct.id == item.id && updatedProduct.id != 0L) {
+                                mutableCurrentBodyList[index] = item.copy(
+                                    name = updatedProduct.name,
+                                    price = formatPrice(updatedProduct.price),
+
+                                )
+                            }
+                        }
+
+                        is WooPosCartItemViewState.Product.Variation -> {
+                            if (updatedProduct.id == item.id && updatedProduct.id != 0L) {
+                                mutableCurrentBodyList[index] = item.copy(
+                                    name = updatedProduct.name,
+                                    price = formatPrice(updatedProduct.price),
+                                )
+                            }
+                        }
+
+                        is WooPosCartItemViewState.Coupon -> {
+                        }
+                    }
+                }
+
+                mutableCurrentBodyList.forEachIndexed { index, item ->
+                    when (item) {
+                        is WooPosCartItemViewState.Product.Simple -> {
+                            if (updatedProduct.id == 0L && updatedProduct.name == item.name) {
+                                mutableCurrentBodyList[index] = item.copy(
+                                    price = formatPrice(updatedProduct.price),
+                                    productDoesNotExist = true,
+                                )
+                            }
+                        }
+
+                        is WooPosCartItemViewState.Product.Variation -> {
+                            if (updatedProduct.id == 0L && updatedProduct.name == item.name) {
+                                mutableCurrentBodyList[index] = item.copy(
+                                    price = formatPrice(updatedProduct.price),
+                                    productDoesNotExist = true,
+                                )
+                            }
+                        }
+
+                        is WooPosCartItemViewState.Coupon -> {
+                        }
+                    }
+                }
+            }
+        }
+
+        if (mutableCurrentBodyList.any { it is WooPosCartItemViewState.Product && it.productDoesNotExist }) {
+            viewModelScope.launch {
+                childrenToParentEventSender.sendToParent(
+                    ToastMessageDisplayed(
+                        message = resourceProvider.getString(R.string.woopos_cart_changes_in_the_cart)
+                    )
+                )
+            }
+        }
+
+        _state.value = _state.value.copy(
+            body = currentBodyState.copy(
+                itemsInCart = mutableCurrentBodyList
+            )
+        )
     }
 
     private fun handleBackFromCheckoutToCartClicked() {
