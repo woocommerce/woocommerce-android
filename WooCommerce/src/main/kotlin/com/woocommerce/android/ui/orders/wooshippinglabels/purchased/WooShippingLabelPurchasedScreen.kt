@@ -51,11 +51,12 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
 import com.woocommerce.android.ui.orders.wooshippinglabels.RoundedCornerBoxWithBorder
 import com.woocommerce.android.ui.orders.wooshippinglabels.ShipmentDetails
 import com.woocommerce.android.ui.orders.wooshippinglabels.ShippableItemsUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.ShippingProductsCard
+import com.woocommerce.android.ui.orders.wooshippinglabels.ShippingRateSummaryUI
+import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingAddresses
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.AddressStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.generateItems
 import com.woocommerce.android.ui.orders.wooshippinglabels.hazmat.HazmatCard
@@ -202,103 +203,6 @@ internal fun WooShippingLabelPurchasedWithBottomSheetScreen(
                     subtitle = stringResource(R.string.please_wait),
                 )
             }
-        }
-    }
-}
-
-@Composable
-internal fun WooShippingLabelPurchasedScreen(
-    isLoading: Boolean,
-    isPurchaseFinished: Boolean?,
-    shippingData: ShippableItemsUI?,
-    selectedLabelPaperSizeOption: WooShippingLabelPaperSize,
-    onLabelPaperSizeOptionSelected: (WooShippingLabelPaperSize) -> Unit,
-    onPrintShippingLabelClicked: () -> Unit,
-    onTrackShipmentClicked: () -> Unit,
-    onSchedulePickUpClicked: () -> Unit,
-    onRefundClicked: () -> Unit,
-    onLearnMoreClicked: () -> Unit,
-    modifier: Modifier = Modifier,
-    selectedHazmatCategory: ShippingLabelHazmatCategory? = null,
-) {
-    Column(
-        modifier = modifier
-            .verticalScroll(rememberScrollState())
-    ) {
-        Column(
-            modifier = modifier.padding(16.dp)
-        ) {
-            val (titleResId, messageResId) = when (isPurchaseFinished) {
-                true -> Pair(
-                    R.string.shipping_label_purchased_success_title,
-                    R.string.shipping_label_purchased_success_message
-                )
-
-                false -> Pair(
-                    R.string.shipping_label_purchased_in_progress_title,
-                    R.string.shipping_label_purchased_in_progress_message
-                )
-
-                null -> Pair(
-                    R.string.shipping_label_purchased_failure_title,
-                    R.string.shipping_label_purchased_failure_message
-                )
-            }
-
-            Text(
-                text = stringResource(id = titleResId),
-                style = MaterialTheme.typography.subtitle1,
-                fontWeight = FontWeight.Bold,
-            )
-            Text(
-                text = stringResource(id = messageResId),
-                modifier = Modifier.padding(top = 8.dp),
-                style = MaterialTheme.typography.subtitle1,
-            )
-            Spacer(modifier = Modifier.padding(top = 16.dp))
-            PrintShippingLabelCard(
-                isPrintButtonEnabled = isPurchaseFinished == true,
-                selectedLabelPaperSizeOption = selectedLabelPaperSizeOption,
-                onLabelPaperSizeOptionSelected = onLabelPaperSizeOptionSelected,
-                onPrintShippingLabelClicked = onPrintShippingLabelClicked,
-                onTrackShipmentClicked = onTrackShipmentClicked,
-                onSchedulePickUpClicked = onSchedulePickUpClicked,
-                onRefundClicked = onRefundClicked,
-                onLearnMoreClicked = onLearnMoreClicked,
-            )
-            Text(
-                text = stringResource(id = R.string.shipping_label_purchased_note),
-                style = MaterialTheme.typography.caption,
-                color = colorResource(id = R.color.color_on_surface_medium),
-                modifier = Modifier.padding(top = 8.dp),
-            )
-
-            shippingData?.let { shippingData ->
-                val isExpanded = remember { mutableStateOf(false) }
-                ShippingProductsCard(
-                    shippableItems = ShippableItemsUI(
-                        shippableItems = shippingData.shippableItems,
-                        formattedTotalWeight = shippingData.formattedTotalWeight,
-                        formattedTotalPrice = shippingData.formattedTotalPrice
-                    ),
-                    isExpanded = isExpanded.value,
-                    onExpand = { isExpanded.value = it },
-                    iconColor = MaterialTheme.colors.onSurface,
-                    modifier = Modifier.padding(top = 24.dp)
-                )
-            }
-            Spacer(modifier = Modifier.padding(top = 16.dp))
-        }
-
-        HazmatCard(
-            selectedCategory = selectedHazmatCategory
-        )
-
-        if (isLoading) {
-            ProgressDialog(
-                title = stringResource(R.string.loading),
-                subtitle = stringResource(R.string.please_wait),
-            )
         }
     }
 }
@@ -482,16 +386,25 @@ internal fun WooShippingLabelPurchasedScreenPreview() {
     WooThemeWithBackground {
         Surface {
             val selectedLabelPaperSizeOption = remember { mutableStateOf(WooShippingLabelPaperSize.LEGAL) }
-            WooShippingLabelPurchasedScreen(
+            WooShippingLabelPurchasedWithBottomSheetScreen(
                 isLoading = false,
                 isPurchaseFinished = true,
-                shippingData = ShippableItemsUI(
-                    shippableItems = generateItems(6),
-                    formattedTotalWeight = "8.5kg",
-                    formattedTotalPrice = "$92.78"
+                shippingData = PurchasedShippingLabelData(
+                    labelId = 0,
+                    orderId = 0,
+                    carrierId = "",
+                    trackingNumber = "",
+                    items = ShippableItemsUI(
+                        shippableItems = generateItems(6),
+                        formattedTotalWeight = "8.5kg",
+                        formattedTotalPrice = "$92.78"
+                    ),
+                    addresses = WooShippingAddresses.EMPTY,
+                    rateSummary = ShippingRateSummaryUI(serviceName = "", total = ""),
+                    shippingLines = emptyList(),
+                    hazmatSelection = null
                 ),
                 selectedLabelPaperSizeOption = selectedLabelPaperSizeOption.value,
-                selectedHazmatCategory = ShippingLabelHazmatCategory.CLASS_1,
                 onLabelPaperSizeOptionSelected = { selectedLabelPaperSizeOption.value = it },
                 onPrintShippingLabelClicked = {},
                 onTrackShipmentClicked = {},
