@@ -66,7 +66,7 @@ import kotlinx.coroutines.launch
 fun WooShippingLabelPurchasedScreen(viewModel: WooShippingLabelPurchasedViewModel) {
     val viewState = viewModel.viewState.observeAsState()
     WooShippingLabelPurchasedWithBottomSheetScreen(
-        isLoading = viewState.value?.isLoadingData ?: false,
+        isLoading = viewState.value?.isLoadingData == true,
         isPurchaseFinished = viewState.value?.isPurchaseFinished,
         shippingData = viewState.value?.shippingLabelData,
         selectedLabelPaperSizeOption = viewState.value?.paperSizeOption ?: WooShippingLabelPaperSize.LEGAL,
