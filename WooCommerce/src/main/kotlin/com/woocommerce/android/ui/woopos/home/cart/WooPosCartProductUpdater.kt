@@ -26,12 +26,13 @@ class WooPosCartProductUpdater @Inject constructor(
         currentBodyState.itemsInCart.forEachIndexed { index, item ->
             when (item) {
                 is WooPosCartItemViewState.Product -> {
-                    val availableQuantity = availableProductsMap[item.id] ?: 0
+                    val productKey = getProductKey(item)
+                    val availableQuantity = availableProductsMap[productKey] ?: 0
 
                     if (availableQuantity > 0) {
-                        availableProductsMap[item.id] = availableQuantity - 1
+                        availableProductsMap[productKey] = availableQuantity - 1
 
-                        val updatedProduct = updatedProducts.find { it.id == item.id }
+                        val updatedProduct = findMatchingProduct(item, updatedProducts)
 
                         if (updatedProduct != null) {
                             val updatedItem = updateProductWithNewInfo(
@@ -48,6 +49,7 @@ class WooPosCartProductUpdater @Inject constructor(
                         changesDone = true
                     }
                 }
+
                 is WooPosCartItemViewState.Coupon -> {
                     // We may need to update the coupon in the future
                 }
@@ -69,14 +71,45 @@ class WooPosCartProductUpdater @Inject constructor(
         )
     }
 
+    private fun getProductKey(item: WooPosCartItemViewState.Product): String {
+        return when (item) {
+            is WooPosCartItemViewState.Product.Simple -> "simple_${item.id}"
+            is WooPosCartItemViewState.Product.Variation -> "variation_${item.id}_${item.variationId}"
+        }
+    }
+
+    private fun findMatchingProduct(
+        item: WooPosCartItemViewState.Product,
+        updatedProducts: List<ParentToChildrenEvent.OrderCreated.ProductInfo>
+    ): ParentToChildrenEvent.OrderCreated.ProductInfo? {
+        return when (item) {
+            is WooPosCartItemViewState.Product.Simple ->
+                updatedProducts.find {
+                    it is ParentToChildrenEvent.OrderCreated.ProductInfo.Simple && it.id == item.id
+                }
+
+            is WooPosCartItemViewState.Product.Variation ->
+                updatedProducts.find { product ->
+                    product is ParentToChildrenEvent.OrderCreated.ProductInfo.Variation &&
+                        product.id == item.id &&
+                        product.variationId == item.variationId
+                }
+        }
+    }
+
     private fun createAvailableProductsMap(
         updatedProducts: List<ParentToChildrenEvent.OrderCreated.ProductInfo>
-    ): MutableMap<Long, Int> {
-        val productMap = mutableMapOf<Long, Int>()
+    ): MutableMap<String, Int> {
+        val productMap = mutableMapOf<String, Int>()
 
         updatedProducts.forEach { product ->
-            val currentQuantity = productMap[product.id] ?: 0
-            productMap[product.id] = currentQuantity + product.quantity.toInt()
+            val key = when (product) {
+                is ParentToChildrenEvent.OrderCreated.ProductInfo.Simple -> "simple_${product.id}"
+                is ParentToChildrenEvent.OrderCreated.ProductInfo.Variation ->
+                    "variation_${product.id}_${product.variationId}"
+            }
+            val currentQuantity = productMap[key] ?: 0
+            productMap[key] = currentQuantity + product.quantity.toInt()
         }
 
         return productMap
@@ -88,16 +121,25 @@ class WooPosCartProductUpdater @Inject constructor(
     ): WooPosCartItemViewState.Product {
         return when (item) {
             is WooPosCartItemViewState.Product.Simple -> {
-                item.copy(
-                    name = updatedProduct.name,
-                    price = formatPrice(updatedProduct.price)
-                )
+                if (updatedProduct is ParentToChildrenEvent.OrderCreated.ProductInfo.Simple) {
+                    item.copy(
+                        name = updatedProduct.name,
+                        price = formatPrice(updatedProduct.price)
+                    )
+                } else {
+                    item
+                }
             }
+
             is WooPosCartItemViewState.Product.Variation -> {
-                item.copy(
-                    name = updatedProduct.name,
-                    price = formatPrice(updatedProduct.price)
-                )
+                if (updatedProduct is ParentToChildrenEvent.OrderCreated.ProductInfo.Variation) {
+                    item.copy(
+                        name = updatedProduct.name,
+                        price = formatPrice(updatedProduct.price)
+                    )
+                } else {
+                    item
+                }
             }
         }
     }
@@ -109,6 +151,7 @@ class WooPosCartProductUpdater @Inject constructor(
             is WooPosCartItemViewState.Product.Simple -> {
                 item.copy(productDoesNotExist = true)
             }
+
             is WooPosCartItemViewState.Product.Variation -> {
                 item.copy(productDoesNotExist = true)
             }
