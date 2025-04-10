@@ -5,12 +5,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.selection.SelectionContainer
@@ -86,11 +84,7 @@ fun SSRScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(color = colorResource(id = R.color.color_toolbar))
-            .windowInsetsPadding(
-                WindowInsets.systemBars.only(
-                    WindowInsetsSides.Start + WindowInsetsSides.Top + WindowInsetsSides.End
-                )
-            )
+            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)),
     ) { padding ->
         val scrollState = rememberScrollState()
 
@@ -103,6 +97,7 @@ fun SSRScreen(
                 modifier = Modifier
                     .background(color = MaterialTheme.colors.surface)
                     .verticalScroll(scrollState)
+                    .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom))
                     .padding(padding)
                     .padding(vertical = dimensionResource(id = R.dimen.major_100))
                     .fillMaxSize()
@@ -128,11 +123,6 @@ fun SSRContent(isLoading: Boolean, formattedSSR: String, modifier: Modifier) {
                     text = formattedSSR,
                     modifier = Modifier
                         .padding(dimensionResource(R.dimen.major_100))
-                        .padding(
-                            WindowInsets.navigationBars
-                                .only(WindowInsetsSides.Bottom)
-                                .asPaddingValues()
-                        )
                 )
             }
         }
