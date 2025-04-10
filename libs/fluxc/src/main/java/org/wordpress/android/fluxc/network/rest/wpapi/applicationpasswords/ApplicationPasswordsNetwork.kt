@@ -10,6 +10,7 @@ import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
 import org.wordpress.android.fluxc.network.HttpMethod
 import org.wordpress.android.fluxc.network.UserAgent
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIGsonRequest
+import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetwork
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.WPComGsonNetworkError
@@ -31,12 +32,13 @@ class ApplicationPasswordsNetwork @Inject constructor(
     @Named("no-cookies") private val requestQueue: RequestQueue,
     private val userAgent: UserAgent,
     private val listener: Optional<ApplicationPasswordsListener>
-) {
+) : WPAPINetwork {
     // We can't use construction injection for this variable, as its class is internal
-    @Inject internal lateinit var mApplicationPasswordsManager: ApplicationPasswordsManager
+    @Inject
+    internal lateinit var mApplicationPasswordsManager: ApplicationPasswordsManager
 
     @Suppress("ReturnCount", "ComplexMethod")
-    suspend fun <T> executeGsonRequest(
+    private suspend fun <T> executeGsonRequest(
         site: SiteModel,
         method: HttpMethod,
         path: String,
@@ -92,12 +94,14 @@ class ApplicationPasswordsNetwork @Inject constructor(
                 }
                 credentialsResult.credentials
             }
+
             is ApplicationPasswordCreationResult.Failure -> {
                 if (listener.isPresent) {
                     listener.get().onPasswordGenerationFailed(credentialsResult.error.toWPAPINetworkError())
                 }
                 return WPAPIResponse.Error(credentialsResult.error.toWPAPINetworkError())
             }
+
             is ApplicationPasswordCreationResult.NotSupported -> {
                 if (listener.isPresent) {
                     listener.get().onFeatureUnavailable(site, credentialsResult.originalError.toWPAPINetworkError())
@@ -113,7 +117,7 @@ class ApplicationPasswordsNetwork @Inject constructor(
 
         val authorizationHeader = Credentials.basic(credentials.userName, credentials.password)
 
-        val response = suspendCancellableCoroutine<WPAPIResponse<T>> { continuation ->
+        val response = suspendCancellableCoroutine { continuation ->
             val request = buildRequest(continuation, authorizationHeader)
             requestQueue.add(request)
 
@@ -138,16 +142,16 @@ class ApplicationPasswordsNetwork @Inject constructor(
         }
     }
 
-    suspend fun <T> executeGetGsonRequest(
+    override suspend fun <T : Any> executeGetGsonRequest(
         site: SiteModel,
         path: String,
         clazz: Class<T>,
-        params: Map<String, String> = emptyMap(),
-        enableCaching: Boolean = false,
-        cacheTimeToLive: Int = BaseRequest.DEFAULT_CACHE_LIFETIME,
-        forced: Boolean = false,
-        requestTimeout: Int = BaseRequest.DEFAULT_REQUEST_TIMEOUT,
-        retries: Int = BaseRequest.DEFAULT_MAX_RETRIES
+        params: Map<String, String>,
+        enableCaching: Boolean,
+        cacheTimeToLive: Int,
+        forced: Boolean,
+        requestTimeout: Int,
+        retries: Int
     ) = executeGsonRequest(
         site = site,
         method = HttpMethod.GET,
@@ -161,29 +165,26 @@ class ApplicationPasswordsNetwork @Inject constructor(
         retries = retries
     )
 
-    suspend fun <T> executePostGsonRequest(
+    override suspend fun <T : Any> executePostGsonRequest(
         site: SiteModel,
         path: String,
         clazz: Class<T>,
-        body: Map<String, Any> = emptyMap(),
-        params: Map<String, String> = emptyMap()
-    ) = executeGsonRequest(site, HttpMethod.POST, path, clazz, params, body)
+        body: Map<String, Any>
+    ) = executeGsonRequest(site, HttpMethod.POST, path, clazz, body = body)
 
-    suspend fun <T> executePutGsonRequest(
+    override suspend fun <T : Any> executePutGsonRequest(
         site: SiteModel,
         path: String,
         clazz: Class<T>,
-        body: Map<String, Any> = emptyMap(),
-        params: Map<String, String> = emptyMap()
-    ) = executeGsonRequest(site, HttpMethod.PUT, path, clazz, params, body)
+        body: Map<String, Any>,
+    ) = executeGsonRequest(site, HttpMethod.PUT, path, clazz, body = body)
 
-    suspend fun <T> executeDeleteGsonRequest(
+    override suspend fun <T : Any> executeDeleteGsonRequest(
         site: SiteModel,
         path: String,
         clazz: Class<T>,
-        params: Map<String, String> = emptyMap(),
-        body: Map<String, Any> = emptyMap()
-    ) = executeGsonRequest(site, HttpMethod.DELETE, path, clazz, params, body)
+        params: Map<String, String>
+    ) = executeGsonRequest(site, HttpMethod.DELETE, path, clazz, params)
 
     companion object {
         const val APPLICATION_PASSWORDS_NOT_SUPPORT_ERROR_CODE = "application_passwords_not_supported"
@@ -197,6 +198,7 @@ private fun BaseNetworkError.toWPAPINetworkError(): WPAPINetworkError {
             baseError = this,
             errorCode = this.apiError
         )
+
         else -> WPAPINetworkError(this)
     }
 }
