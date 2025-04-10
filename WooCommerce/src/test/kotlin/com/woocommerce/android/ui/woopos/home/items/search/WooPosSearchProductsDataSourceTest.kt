@@ -60,7 +60,9 @@ class WooPosSearchProductsDataSourceTest {
         whenever(searchResultsCache.hasSearchResults(query)).thenReturn(true)
         whenever(searchResultsCache.getSearchResults(query)).thenReturn(emptyList())
         whenever(wooPosProductsCache.getAll()).thenReturn(products)
-        whenever(productStore.searchProducts(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull()))
+        whenever(
+            productStore.searchProducts(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull())
+        )
             .thenReturn(WooResult(ProductSearchResult(emptyList(), false)))
 
         // WHEN
