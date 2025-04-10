@@ -445,6 +445,7 @@ class WooCommerceStoreTest {
             whenever(siteStore.sites).thenReturn(listOf(site))
             whenever(siteStore.getSiteByLocalId(any())).thenReturn(site)
             whenever(restClient.checkIfWooCommerceIsAvailable(site)).thenReturn(WooPayload(true))
+            fetchSupportedWooApiVersion(response = RootWPAPIRestResponse())
 
             wooCommerceStore.fetchWooCommerceSite(site)
 
@@ -462,6 +463,7 @@ class WooCommerceStoreTest {
             whenever(siteStore.sites).thenReturn(listOf(site))
             whenever(siteStore.getSiteByLocalId(any())).thenReturn(site)
             whenever(restClient.checkIfWooCommerceIsAvailable(site)).thenReturn(WooPayload(true))
+            fetchSupportedWooApiVersion(response = RootWPAPIRestResponse())
 
             wooCommerceStore.fetchWooCommerceSite(site)
 
