@@ -1574,14 +1574,16 @@ open class SiteStore @Inject constructor(
 
     private fun createOrUpdateSite(site: SiteModel): Int {
         val freshSiteFromDB = getSiteBySiteId(site.siteId)
-        // Update the site with existing values from the DB that are not returned by the WPCom REST API
+        // Update the site with existing values from the DB that are not returned by the REST API
         if (freshSiteFromDB != null) {
             // The REST API doesn't return info about the editor(s).
             site.mobileEditor = freshSiteFromDB.mobileEditor
             site.webEditor = freshSiteFromDB.webEditor
 
-            // The REST API doesn't return info about the application passwords authorize URL.
-            site.applicationPasswordsAuthorizeUrl = freshSiteFromDB.applicationPasswordsAuthorizeUrl
+            // The WPCom REST API doesn't return info about the application passwords authorize URL.
+            if (site.origin == SiteModel.ORIGIN_WPCOM_REST) {
+                site.applicationPasswordsAuthorizeUrl = freshSiteFromDB.applicationPasswordsAuthorizeUrl
+            }
         }
 
         return siteSqlUtils.insertOrUpdateSite(site)
