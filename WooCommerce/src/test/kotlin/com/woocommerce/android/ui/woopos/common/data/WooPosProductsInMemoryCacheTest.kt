@@ -24,95 +24,95 @@ class WooPosProductsInMemoryCacheTest {
 
     @Test
     fun `when cache is empty, getAll returns empty list`() = runTest {
-        // When
+        // WHEN
         val result = cache.getAll()
 
-        // Then
+        // THEN
         assertThat(result).isEmpty()
     }
 
     @Test
     fun `when product is added, getAll returns all products`() = runTest {
-        // Given
+        // GIVEN
         val products = listOf(createTestProduct(1), createTestProduct(2))
 
-        // When
+        // WHEN
         cache.addAll(products)
         val result = cache.getAll()
 
-        // Then
+        // THEN
         assertThat(result).hasSize(2)
         assertThat(result).containsExactlyInAnyOrderElementsOf(products)
     }
 
     @Test
     fun `when product is added, getProductById returns correct product`() = runTest {
-        // Given
+        // GIVEN
         val product1 = createTestProduct(1)
         val product2 = createTestProduct(2)
         cache.addAll(listOf(product1, product2))
 
-        // When
+        // WHEN
         val result = cache.getProductById(1)
 
-        // Then
+        // THEN
         assertThat(result).isEqualTo(product1)
     }
 
     @Test
     fun `when product is not in cache, getProductById returns null`() = runTest {
-        // Given
+        // GIVEN
         val product = createTestProduct(1)
         cache.addAll(listOf(product))
 
-        // When
+        // WHEN
         val result = cache.getProductById(999)
 
-        // Then
+        // THEN
         assertThat(result).isNull()
     }
 
     @Test
     fun `when cache is cleared, getAll returns empty list`() = runTest {
-        // Given
+        // GIVEN
         val products = listOf(createTestProduct(1), createTestProduct(2))
         cache.addAll(products)
 
-        // When
+        // WHEN
         cache.clear()
         val result = cache.getAll()
 
-        // Then
+        // THEN
         assertThat(result).isEmpty()
     }
 
     @Test
     fun `when adding product with existing id, it should replace old product`() = runTest {
-        // Given
+        // GIVEN
         val product1 = createTestProduct(1, "Product 1")
         val product1Updated = createTestProduct(1, "Product 1 Updated")
 
-        // When
+        // WHEN
         cache.addAll(listOf(product1))
         cache.addAll(listOf(product1Updated))
         val result = cache.getProductById(1)
 
-        // Then
+        // THEN
         assertThat(result).isEqualTo(product1Updated)
         assertThat(result?.name).isEqualTo("Product 1 Updated")
     }
 
     @Test
     fun `when adding more products than max cache size, oldest products should be removed`() = runTest {
-        // Given
+        // GIVEN
         val products = (1..10005L).map { createTestProduct(it) }
 
-        // When
+        // WHEN
         cache.addAll(products)
         val firstProduct = cache.getProductById(1)
         val lastProduct = cache.getProductById(10005)
 
-        // Then
+        // THEN
         // The first products should have been removed to maintain the cache size limit
         assertThat(firstProduct).isNull()
         assertThat(lastProduct).isNotNull
@@ -121,11 +121,11 @@ class WooPosProductsInMemoryCacheTest {
 
     @Test
     fun `when multiple threads access cache concurrently, data remains consistent`() = runTest {
-        // Given
+        // GIVEN
         val initialProducts = (1..100L).map { createTestProduct(it) }
         cache.addAll(initialProducts)
 
-        // When - simulate concurrent access from multiple coroutines
+        // WHEN - simulate concurrent access from multiple coroutines
         val concurrentOperations = (101..200L).map { id ->
             async {
                 val product = createTestProduct(id)
@@ -134,7 +134,7 @@ class WooPosProductsInMemoryCacheTest {
             }
         }
 
-        // Then - all operations should complete without errors and data should be consistent
+        // THEN - all operations should complete without errors and data should be consistent
         val results = concurrentOperations.awaitAll()
         assertThat(results).hasSize(100)
         assertThat(results).doesNotContainNull()
