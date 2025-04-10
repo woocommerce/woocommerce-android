@@ -487,10 +487,6 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         return true
     }
 
-    fun onDismissItnNotice() {
-        customsState.value = Unavailable
-    }
-
     fun onSelectPackageClicked() {
         triggerEvent(StartPackageSelection)
     }
