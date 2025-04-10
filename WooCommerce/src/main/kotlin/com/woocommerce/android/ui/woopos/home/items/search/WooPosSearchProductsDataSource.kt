@@ -29,7 +29,7 @@ class WooPosSearchProductsDataSource @Inject constructor(
         private const val PAGE_SIZE = 100
     }
 
-    private val canLoadMore = AtomicBoolean(true)
+    private val canLoadMore = AtomicBoolean(false)
 
     val hasMorePages: Boolean
         get() = canLoadMore.get()
@@ -57,7 +57,6 @@ class WooPosSearchProductsDataSource @Inject constructor(
                     if (localResults.isNotEmpty()) {
                         searchResultsCache.storeSearchResults(query, localResults.map { it.remoteId })
                     }
-
                     emit(ProductsResult.Remote(Result.failure(error)))
                 }
             )
