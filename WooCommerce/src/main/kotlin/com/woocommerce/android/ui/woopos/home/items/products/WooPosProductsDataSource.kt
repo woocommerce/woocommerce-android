@@ -30,7 +30,7 @@ class WooPosProductsDataSource @Inject constructor(
         }
 
         val cachedProducts = productsCache.getAll()
-        emit(ProductsResult.Cached(cachedProducts))
+        emit(ProductsResult.Cached(sortProductsByName(cachedProducts)))
 
         val result = handler.loadFromCacheAndFetch(
             forceRefresh = forceRefreshProducts,
@@ -45,7 +45,7 @@ class WooPosProductsDataSource @Inject constructor(
         if (result.isSuccess) {
             val remoteProducts = handler.productsFlow.first()
             productsCache.addAll(remoteProducts)
-            emit(ProductsResult.Remote(Result.success(productsCache.getAll())))
+            emit(ProductsResult.Remote(Result.success(sortProductsByName(productsCache.getAll()))))
         } else {
             result.logFailure()
             emit(
@@ -65,11 +65,15 @@ class WooPosProductsDataSource @Inject constructor(
         if (result.isSuccess) {
             val moreProducts = handler.productsFlow.first()
             productsCache.addAll(moreProducts)
-            Result.success(productsCache.getAll())
+            Result.success(sortProductsByName(productsCache.getAll()))
         } else {
             result.logFailure()
             Result.failure(result.exceptionOrNull() ?: Exception("Unknown error"))
         }
+    }
+
+    private fun sortProductsByName(products: List<Product>): List<Product> {
+        return products.sortedBy { it.name }
     }
 
     private fun Result<Unit>.logFailure() {

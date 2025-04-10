@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.home.items
 
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.selector.ProductListHandler
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
@@ -365,4 +366,85 @@ class WooPosProductsDataSourceTest {
 
             assertThat(remoteResult.productsResult.getOrNull()).hasSize(2)
         }
+
+    @Test
+    fun `when loading products, they should be sorted by name in ascending order`() = runTest {
+        // GIVEN
+        val mockProductC = mock<Product>()
+        whenever(mockProductC.name).thenReturn("C Product")
+
+        val mockProductA = mock<Product>()
+        whenever(mockProductA.name).thenReturn("A Product")
+
+        val mockProductB = mock<Product>()
+        whenever(mockProductB.name).thenReturn("B Product")
+
+        val customUnsortedProducts = listOf(mockProductC, mockProductA, mockProductB)
+
+        whenever(handler.canLoadMore).thenReturn(AtomicBoolean(true))
+        whenever(handler.productsFlow).thenReturn(flowOf(customUnsortedProducts))
+        whenever(productsCache.getAll()).thenReturn(customUnsortedProducts)
+        whenever(
+            handler.loadFromCacheAndFetch(any(), any(), any(), any(), any(), any())
+        ).thenReturn(Result.success(Unit))
+
+        val sut = WooPosProductsDataSource(handler, productsCache)
+
+        // WHEN
+        val result = sut.loadSimpleProducts(forceRefreshProducts = false).first()
+
+        // THEN
+        assertThat(result).isInstanceOf(WooPosProductsDataSource.ProductsResult.Cached::class.java)
+        val cachedResult = result as WooPosProductsDataSource.ProductsResult.Cached
+
+        assertThat(cachedResult.products[0].name).isEqualTo("A Product")
+        assertThat(cachedResult.products[1].name).isEqualTo("B Product")
+        assertThat(cachedResult.products[2].name).isEqualTo("C Product")
+    }
+
+    @Test
+    fun `when loading more products, they should be sorted by name in ascending order`() = runTest {
+        // GIVEN
+        val mockProductD = mock<Product>()
+        whenever(mockProductD.name).thenReturn("D Product")
+
+        val mockProductE = mock<Product>()
+        whenever(mockProductE.name).thenReturn("E Product")
+
+        val mockProductC = mock<Product>()
+        whenever(mockProductC.name).thenReturn("C Product")
+
+        val mockProductA = mock<Product>()
+        whenever(mockProductA.name).thenReturn("A Product")
+
+        val mockProductB = mock<Product>()
+        whenever(mockProductB.name).thenReturn("B Product")
+
+        val initialProducts = listOf(mockProductC, mockProductA, mockProductB)
+        val additionalUnsortedProducts = listOf(mockProductE, mockProductD)
+        val allProducts = initialProducts + additionalUnsortedProducts
+
+        whenever(handler.canLoadMore).thenReturn(AtomicBoolean(true))
+        whenever(handler.productsFlow).thenReturn(flowOf(additionalUnsortedProducts))
+        whenever(handler.loadMore()).thenReturn(Result.success(Unit))
+        whenever(productsCache.getAll()).thenReturn(allProducts)
+
+        val sut = WooPosProductsDataSource(handler, productsCache)
+
+        // WHEN
+        val result = sut.loadMore()
+
+        // THEN
+        assertThat(result.isSuccess).isTrue()
+        val sortedProducts = result.getOrNull()
+        assertThat(sortedProducts).isNotNull
+
+        assertThat(sortedProducts!![0].name).isEqualTo("A Product")
+        assertThat(sortedProducts[1].name).isEqualTo("B Product")
+        assertThat(sortedProducts[2].name).isEqualTo("C Product")
+        assertThat(sortedProducts[3].name).isEqualTo("D Product")
+        assertThat(sortedProducts[4].name).isEqualTo("E Product")
+
+        verify(productsCache).addAll(additionalUnsortedProducts)
+    }
 }
