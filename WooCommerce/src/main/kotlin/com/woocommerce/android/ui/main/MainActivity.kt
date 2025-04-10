@@ -1081,7 +1081,7 @@ class MainActivity :
         binding.bottomNav.currentPosition = ORDERS
         binding.bottomNav.active(ORDERS.position)
         val action = OrderListFragmentDirections.actionOrderListFragmentToOrderCreationFragment(
-            OrderCreateEditViewModel.Mode.Creation(),
+            OrderCreateEditViewModel.Mode.Creation,
             null,
             null,
         )

@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -285,7 +286,7 @@ private fun CartToolbar(
     ConstraintLayout(
         modifier = modifier
             .fillMaxWidth()
-            .height(40.dp)
+            .height(56.dp)
     ) {
         val (backButton, title, spacer, itemsCount, clearAllButton) = createRefs()
 
@@ -307,7 +308,9 @@ private fun CartToolbar(
                     imageVector = ImageVector.vectorResource(R.drawable.ic_back_24dp),
                     contentDescription = stringResource(R.string.woopos_cart_back_content_description),
                     tint = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier.size(iconSize)
+                    modifier = Modifier
+                        .size(iconSize)
+                        .offset(y = 4.dp)
                 )
             }
         }

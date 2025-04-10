@@ -145,6 +145,7 @@ class WooPosCartViewModel @Inject constructor(
 
                     is ParentToChildrenEvent.OrderSuccessfullyPaid -> clearCart()
 
+                    is ParentToChildrenEvent.SearchEvent.RecentSearchSelected,
                     is ParentToChildrenEvent.CheckoutClicked,
                     is ParentToChildrenEvent.SearchEvent.ChangedQuery,
                     ParentToChildrenEvent.SearchEvent.Finished,

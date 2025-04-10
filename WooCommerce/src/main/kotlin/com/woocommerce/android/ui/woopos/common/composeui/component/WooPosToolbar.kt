@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
@@ -33,7 +34,7 @@ fun WooPosToolbar(
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = WooPosSpacing.XLarge.value.toAdaptivePadding())
-            .height(40.dp)
+            .height(48.dp),
     ) {
         val (backButton, title) = createRefs()
         IconButton(
@@ -41,8 +42,7 @@ fun WooPosToolbar(
             modifier = Modifier
                 .constrainAs(backButton) {
                     start.linkTo(parent.start)
-                    top.linkTo(parent.top)
-                    centerVerticallyTo(parent)
+                    bottom.linkTo(parent.bottom)
                 }
                 .padding(start = WooPosSpacing.Small.value.toAdaptivePadding())
         ) {
@@ -50,7 +50,9 @@ fun WooPosToolbar(
                 imageVector = ImageVector.vectorResource(R.drawable.ic_back_24dp),
                 contentDescription = stringResource(R.string.woopos_toolbar_icon_content_description),
                 tint = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier.size(28.dp)
+                modifier = Modifier
+                    .size(28.dp)
+                    .offset(y = 2.dp)
             )
         }
 
@@ -63,9 +65,8 @@ fun WooPosToolbar(
             maxLines = 1,
             modifier = Modifier
                 .constrainAs(title) {
-                    top.linkTo(backButton.top)
                     start.linkTo(backButton.end, margin = iconTitlePadding)
-                    centerVerticallyTo(parent)
+                    bottom.linkTo(parent.bottom)
                 }
         )
     }

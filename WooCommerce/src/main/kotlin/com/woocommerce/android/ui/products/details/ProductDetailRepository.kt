@@ -328,7 +328,7 @@ class ProductDetailRepository @Inject constructor(
         return ProductAggregate(product, subscriptionDetails)
     }
 
-    fun isSkuAvailableLocally(sku: String) = !productStore.geProductExistsBySku(selectedSite.get(), sku)
+    fun isSkuAvailableLocally(sku: String) = !productStore.isProductExists(selectedSite.get(), sku)
 
     fun getCachedVariationCount(remoteProductId: Long) =
         productStore.getVariationsForProduct(selectedSite.get(), remoteProductId).size

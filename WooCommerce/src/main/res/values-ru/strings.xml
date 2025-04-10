@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-03-11 09:54:04+0000
+Translation-Revision-Date: 2025-03-26 09:54:03+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_split_shipment">Раздельная доставка</string>
+    <string name="woo_shipping_labels_purchase_error">Не удалось приобрести транспортную этикетку. Повторите попытку.</string>
+    <string name="woo_shipping_address_notification_origin_verified">Подтверждённый адрес отправителя</string>
+    <string name="woo_shipping_address_notification_destination_verified">Подтверждённый адрес назначения</string>
+    <string name="woo_shipping_address_notification_destination_missing">Адрес назначения не указан</string>
+    <string name="woo_shipping_address_notification_origin_unverified">Адрес отправителя не подтверждён</string>
+    <string name="woo_shipping_address_notification_destination_unverified">Адрес назначения не подтверждён</string>
+    <string name="woo_shipping_labels_customs_itn_required_error">Необходимо ввести номер ITN</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_weight_desc">Чтобы сообщить вам тарифы на доставку, нам необходимо знать вес посылки.</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_weight">Введите вес посылки, чтобы узнать тарифы на доставку</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_destination_desc">Чтобы сообщить вам тарифы на доставку, нам необходимо знать, куда отправляется посылка.</string>
+    <string name="woo_shipping_labels_customs_itn_required_message">При доставке посылок стоимостью от 2500 долл. США необходимо получить 14-значный номер AES ITN для проверки экспортной отчётности в США.</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_destination">Добавьте адрес назначения, чтобы узнать тарифы на доставку</string>
+    <string name="woopos_search_recent_searches_title">Недавние запросы поиска</string>
+    <string name="woopos_search_popular_items_title">Популярные товары</string>
+    <string name="woopos_search_products">Поиск по товарам…</string>
+    <string name="woopos_clear_back_content_description">Очистить</string>
+    <string name="woopos_search_back_content_description">Назад</string>
+    <string name="card_reader_connect_failed_battery_low_hint">Низкий уровень заряда аккумулятора платёжного терминала. Зарядите аккумулятор платёжного терминала и повторите попытку.</string>
+    <string name="login_site_credentials_invalid_response">Не удалось войти из-за неожиданного ответа сайта.</string>
+    <string name="yes">Да</string>
+    <string name="login_jetpack_user_already_connected_dialog_cancel_button">Отмена</string>
+    <string name="login_jetpack_user_already_connected_dialog_proceed_button">Продолжить</string>
+    <string name="login_jetpack_user_already_connected_dialog_message">Эта учётная запись администратора WordPress уже подключена к другой учётной записи WordPress.com.\nЕсли продолжить работу с этой учётной записью, вы выйдете из текущей учётной записи.</string>
+    <string name="login_jetpack_user_already_connected_dialog_title">Учётная запись уже подключена</string>
     <string name="woo_shipping_address_update_message">Обновление указанного адреса</string>
     <string name="woo_shipping_address_update_title">Обновление</string>
     <string name="woo_shipping_address_save_changes">Сохранить изменения</string>
@@ -25,7 +50,6 @@ Language: ru
     <string name="woo_shipping_labels_customs_product_details_description_missing">Отсутствует описание</string>
     <string name="woo_shipping_labels_customs_product_details_description">Описание</string>
     <string name="woo_shipping_labels_customs_product_details_title">Сведения о товаре</string>
-    <string name="woo_shipping_labels_customs_itn_required_message">ITN не указан</string>
     <string name="woo_shipping_labels_customs_itn_error_message">Недопустимый формат ITN</string>
     <string name="woo_shipping_labels_customs_other_error_message">Тип не указан</string>
     <string name="woo_shipping_labels_package_creation_shipping_rates_loading_error">Не удалось загрузить тарифы на доставку.</string>
@@ -1417,7 +1441,6 @@ Language: ru
     <string name="login_site_credentials_custom_admin_url">Не удалось войти, так как не удается найти URL-адрес администратора магазина</string>
     <string name="login_site_credentials_custom_login_url">Не удалось войти, так как не удается найти URL-адрес входа в магазин</string>
     <string name="something_went_wrong_try_again">Произошла ошибка. Повторите попытку позже.</string>
-    <string name="login_site_credentials_invalid_response">Не удалось войти из-за неожиданного ответа сайта. Мы работаем над этой проблемой.</string>
     <string name="card_reader_onboarding_account_pending_requirements_without_date_hint">Для вашей учётной записи есть требования на утверждении. Чтобы получать очные платежи, выполните эти требования.</string>
     <string name="analytics_banner_message">Оцените ваши впечатления от работы с аналитикой</string>
     <string name="analytics_banner_title">Нравится аналитика?</string>
@@ -1579,10 +1602,10 @@ Language: ru
     <string name="domain_picker_empty_suggestions">Нет доступных доменов по этому запросу</string>
     <string name="login_jetpack_installation_exit_without_connection">Выйти без подключения</string>
     <string name="login_jetpack_installation_continue_connection">Продолжить подключение</string>
-    <string name="login_jetpack_installation_error_forbidden_suggestion">Обратитесь к менеджеру магазина или администратору.</string>
     <string name="login_jetpack_installation_connection_dismissed_explanation">Попробуйте подключиться ещё раз, чтобы войти в магазин.</string>
     <string name="login_jetpack_installation_connection_dismissed">Jetpack установлен, но не подключён.</string>
     <string name="login_jetpack_installation_error_connection_permission_message">У вас нет разрешения на подключение Jetpack к этому магазину</string>
+    <string name="login_jetpack_installation_error_forbidden_suggestion">Обратитесь к администратору за помощью.</string>
     <string name="login_jetpack_installation_cancel">Отменить установку</string>
     <string name="login_jetpack_installation_retry_authorizing">Повторить авторизацию</string>
     <string name="login_jetpack_installation_retry_activating">Повторить активацию</string>

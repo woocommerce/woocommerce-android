@@ -219,7 +219,6 @@ class OrderCreateEditViewModel @Inject constructor(
     companion object {
         val EMPTY_BIG_DECIMAL = -Double.MAX_VALUE.toBigDecimal()
         const val MAX_PRODUCT_QUANTITY = 100_000
-        const val DELAY_BEFORE_SHOWING_SIMPLE_PAYMENTS_MIGRATION_BOTTOM_SHEET = 500L
         private const val PARAMETERS_KEY = "parameters_key"
         private const val ORDER_CUSTOM_FEE_NAME = "order_custom_fee"
         const val DELAY_BEFORE_SHOWING_SHIPPING_FEEDBACK = 1000L
@@ -438,13 +437,6 @@ class OrderCreateEditViewModel @Inject constructor(
                     getAutoTaxRateSetting()?.let {
                         onTaxRateSelected(it)
                     }
-                }
-
-                if (mode.indicateSimplePaymentsMigration) {
-                    triggerEventWithDelay(
-                        OrderCreateEditNavigationTarget.SimplePaymentsMigrationBottomSheet,
-                        delay = DELAY_BEFORE_SHOWING_SIMPLE_PAYMENTS_MIGRATION_BOTTOM_SHEET,
-                    )
                 }
             }
 
@@ -2097,7 +2089,7 @@ class OrderCreateEditViewModel @Inject constructor(
 
     sealed class Mode : Parcelable {
         @Parcelize
-        data class Creation(val indicateSimplePaymentsMigration: Boolean = false) : Mode()
+        object Creation : Mode()
 
         @Parcelize
         data class Edit(val orderId: Long) : Mode()

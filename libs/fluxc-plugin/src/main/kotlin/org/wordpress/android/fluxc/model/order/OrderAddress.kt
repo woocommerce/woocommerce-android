@@ -1,6 +1,6 @@
 package org.wordpress.android.fluxc.model.order
 
-import org.wordpress.android.fluxc.model.OrderEntity
+import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 
 sealed class OrderAddress {
     abstract val firstName: String

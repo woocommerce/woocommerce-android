@@ -15,6 +15,7 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Test
+import org.mockito.ArgumentMatchers.isNull
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
@@ -81,7 +82,7 @@ class GetShippingRatesTest : BaseUnitTest() {
     @Test
     fun `when shipping rates request succeeds then result is a success`() = testBlocking {
         whenever(mapper(any(), any())).doReturn(generateShippingRates())
-        whenever(repository.getShippingRates(any(), any(), any(), any(), any(), any()))
+        whenever(repository.getShippingRates(any(), any(), any(), any(), any(), any(), isNull()))
             .doReturn(Result.success(defaultRates))
 
         val result = sut.invoke(
@@ -99,7 +100,7 @@ class GetShippingRatesTest : BaseUnitTest() {
 
     @Test
     fun `when shipping rates request fails then result is a failure`() = testBlocking {
-        whenever(repository.getShippingRates(any(), any(), any(), any(), any(), any()))
+        whenever(repository.getShippingRates(any(), any(), any(), any(), any(), any(), isNull()))
             .doReturn(Result.failure(Exception("Something fails")))
 
         val result = sut.invoke(

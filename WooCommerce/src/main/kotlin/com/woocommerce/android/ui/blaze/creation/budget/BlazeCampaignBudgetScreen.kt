@@ -67,7 +67,6 @@ import com.woocommerce.android.ui.compose.component.WCSwitch
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.component.dismissWCModalBottomSheet
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
-import com.woocommerce.android.util.FeatureFlag
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.Calendar
@@ -535,24 +534,22 @@ private fun EditDurationBottomSheet(
                     style = MaterialTheme.typography.body1,
                 )
             }
-            if (FeatureFlag.ENDLESS_CAMPAIGNS_SUPPORT.isEnabled()) {
-                WCSwitch(
-                    text = stringResource(id = R.string.blaze_campaign_budget_duration_endless_switch_label),
-                    checked = !isEndlessCampaign,
-                    onCheckedChange = { isEndlessCampaign = !it },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp),
-                    colors = BottomSheetSwitchColors()
+            WCSwitch(
+                text = stringResource(id = R.string.blaze_campaign_budget_duration_endless_switch_label),
+                checked = !isEndlessCampaign,
+                onCheckedChange = { isEndlessCampaign = !it },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp),
+                colors = BottomSheetSwitchColors()
+            )
+            AnimatedVisibility(isEndlessCampaign) {
+                Text(
+                    modifier = Modifier.padding(top = 10.dp),
+                    text = stringResource(id = R.string.blaze_campaign_budget_duration_endless_description),
+                    style = MaterialTheme.typography.body1,
+                    color = colorResource(id = color.color_on_surface_medium)
                 )
-                AnimatedVisibility(isEndlessCampaign) {
-                    Text(
-                        modifier = Modifier.padding(top = 10.dp),
-                        text = stringResource(id = R.string.blaze_campaign_budget_duration_endless_description),
-                        style = MaterialTheme.typography.body1,
-                        color = colorResource(id = color.color_on_surface_medium)
-                    )
-                }
             }
             AnimatedVisibility(isEndlessCampaign.not()) {
                 Column(modifier = Modifier.padding(top = 16.dp)) {

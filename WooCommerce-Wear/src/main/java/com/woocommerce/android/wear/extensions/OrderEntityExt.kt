@@ -3,8 +3,8 @@ package com.woocommerce.android.wear.extensions
 import com.woocommerce.commons.WearOrder
 import com.woocommerce.commons.WearOrderAddress
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
-import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.model.order.OrderAddress
+import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 
 fun OrderEntity.toWearOrder() = WearOrder(
     localSiteId = localSiteId.value,

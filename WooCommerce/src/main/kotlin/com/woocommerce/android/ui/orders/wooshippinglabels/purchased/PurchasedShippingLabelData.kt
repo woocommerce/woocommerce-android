@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.purchased
 
 import android.os.Parcelable
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
 import com.woocommerce.android.ui.orders.wooshippinglabels.ShippableItemsUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.ShippingLineSummaryUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.ShippingRateSummaryUI
@@ -17,6 +18,7 @@ data class PurchasedShippingLabelData(
     val addresses: WooShippingAddresses,
     val rateSummary: ShippingRateSummaryUI,
     val shippingLines: List<ShippingLineSummaryUI>,
+    val hazmatSelection: ShippingLabelHazmatCategory?
 ) : Parcelable
 
 @Parcelize

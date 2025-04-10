@@ -37,7 +37,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreateEditFormBinding
 import com.woocommerce.android.databinding.LayoutOrderCreationCustomerInfoBinding
 import com.woocommerce.android.databinding.OrderCreationAdditionalInfoCollectionSectionBinding
-import com.woocommerce.android.extensions.handleDialogNotice
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.hide
@@ -79,7 +78,6 @@ import com.woocommerce.android.ui.orders.creation.shipping.OrderShippingFragment
 import com.woocommerce.android.ui.orders.creation.shipping.OrderShippingFragment.Companion.UPDATE_SHIPPING_RESULT
 import com.woocommerce.android.ui.orders.creation.shipping.ShippingLineFormSection
 import com.woocommerce.android.ui.orders.creation.shipping.ShippingUpdateResult
-import com.woocommerce.android.ui.orders.creation.simplepaymentsmigration.OrderCreateEditSimplePaymentsMigrationBottomSheetFragment
 import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRate
 import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRateSelectorFragment.Companion.KEY_SELECTED_TAX_RATE
 import com.woocommerce.android.ui.orders.creation.totals.OrderCreateEditTotalsView
@@ -161,7 +159,7 @@ class OrderCreateEditFormFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         with(FragmentOrderCreateEditFormBinding.bind(view)) {
             setupObserversWith(this)
-            setupHandleResults(this)
+            setupHandleResults()
             initView()
         }
         handleCouponEditResult()
@@ -1124,17 +1122,11 @@ class OrderCreateEditFormFragment :
         }
     }
 
-    private fun setupHandleResults(fragmentOrderCreateEditFormBinding: FragmentOrderCreateEditFormBinding) {
+    private fun setupHandleResults() {
         handleDialogResult<OrderStatusUpdateSource>(
             key = KEY_ORDER_STATUS_RESULT,
             entryId = R.id.orderCreationFragment
         ) { viewModel.onOrderStatusChanged(Order.Status.fromValue(it.newStatus)) }
-        handleDialogNotice(
-            key = OrderCreateEditSimplePaymentsMigrationBottomSheetFragment.KEY_ON_ADD_CUSTOM_AMOUNT_CLICKED_NOTICE,
-            entryId = R.id.orderCreationFragment
-        ) {
-            navigateToCustomAmountDialogWhenViewIsCreated(fragmentOrderCreateEditFormBinding.root)
-        }
 
         handleResult<Collection<SelectedItem>>(ProductSelectorFragment.PRODUCT_SELECTOR_RESULT) {
             viewModel.onProductsSelected(it)
@@ -1246,15 +1238,6 @@ class OrderCreateEditFormFragment :
         } else {
             orderUpdateFailureSnackBar?.dismiss()
         }
-    }
-
-    /**
-     * This is workaround, as in this point navigation component
-     * still didn't finish previous navigation, we have to make sure
-     * that to delay navigation to the dialog. As marker that we can navigate is the view is created
-     */
-    private fun navigateToCustomAmountDialogWhenViewIsCreated(root: View) {
-        root.post { viewModel.onCustomAmountTapped() }
     }
 
     private fun hideProgressDialog() {

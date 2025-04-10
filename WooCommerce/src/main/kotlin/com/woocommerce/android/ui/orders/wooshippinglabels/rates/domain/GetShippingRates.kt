@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.rates.domain
 
 import com.woocommerce.android.model.Address
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
@@ -22,7 +23,8 @@ class GetShippingRates @Inject constructor(
         shipFrom: OriginShippingAddress,
         weight: Float,
         currencyCode: String?,
-        customsData: CustomsData?
+        customsData: CustomsData?,
+        hazmatSelection: ShippingLabelHazmatCategory? = null
     ): Result<Map<CarrierUI, List<ShippingRateUI>>> {
         val result = repository.getShippingRates(
             orderId = orderId,
@@ -30,7 +32,8 @@ class GetShippingRates @Inject constructor(
             shipTo = shipTo,
             shipFrom = shipFrom,
             weight = weight,
-            customsData = customsData
+            customsData = customsData,
+            hazmatSelection = hazmatSelection
         )
         return if (result.isSuccess) {
             val rates = shippingMapper(result.getOrThrow(), currencyCode)

@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-03-10 22:54:04+0000
+Translation-Revision-Date: 2025-03-24 23:54:06+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_split_shipment">تقسيم الشحنة</string>
+    <string name="woo_shipping_labels_purchase_error">يتعذر علينا شراء ملصق الشحن. يرجى المحاولة مجددًا.</string>
+    <string name="woo_shipping_address_notification_origin_verified">عنوان المنشأ المتحقق منه</string>
+    <string name="woo_shipping_address_notification_destination_verified">عنوان الوجهة المتحقق منه</string>
+    <string name="woo_shipping_address_notification_destination_missing">عنوان الوجهة مفقود</string>
+    <string name="woo_shipping_address_notification_origin_unverified">لم يتم التحقق من صحة العنوان الأصلي</string>
+    <string name="woo_shipping_address_notification_destination_unverified">لم يتم التحقق من عنوان الوجهة</string>
+    <string name="woo_shipping_labels_customs_itn_required_message">بالنسبة إلى الشحنات التي تزيد على 2500 دولار، يلزم الحصول على رقم المعاملة الدولي الخاص بنظام التصدير الآلي المكوَّن من 14 رقمًا للتحقق من إعداد تقارير التصدير في الولايات المتحدة.</string>
+    <string name="woo_shipping_labels_customs_itn_required_error">رقم المعاملة الدولي مطلوب.</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_weight_desc">يتعين علينا معرفة وزن الشحنة قبل أن نتمكن من عرض أسعار الشحن المتوفرة.</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_weight">إضافة وزن الشحنة للحصول على أسعار الشحن</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_destination_desc">يتعين علينا معرفة المسار الذي يذهب إليه هذا الطرد قبل أن نتمكن من عرض أسعار الشحن المتوفرة.</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_destination">إضافة عنوان وجهة للحصول على أسعار الشحن</string>
+    <string name="woopos_search_recent_searches_title">آخر عمليات بحث</string>
+    <string name="woopos_search_popular_items_title">العناصر الشائعة</string>
+    <string name="woopos_search_products">البحث عن المنتجات…</string>
+    <string name="woopos_clear_back_content_description">مسح</string>
+    <string name="woopos_search_back_content_description">رجوع</string>
+    <string name="card_reader_connect_failed_battery_low_hint">بطارية القارئ منخفضة. يرجى شحن القارئ والمحاولة مجددًا</string>
+    <string name="login_site_credentials_invalid_response">فشل تسجيل الدخول مع وجود استجابة غير متوقعة من موقعك.</string>
+    <string name="login_jetpack_user_already_connected_dialog_cancel_button">إلغاء</string>
+    <string name="login_jetpack_user_already_connected_dialog_proceed_button">المتابعة</string>
+    <string name="login_jetpack_user_already_connected_dialog_message">حساب مسؤول ووردبريس هذا متصل بالفعل بحساب مختلف على ووردبريس.كوم.\nستؤدي متابعة ذلك الحساب إلى تسجيل خروجك من حسابك الحالي.</string>
+    <string name="login_jetpack_user_already_connected_dialog_title">الحساب متصل بالفعل</string>
+    <string name="yes">نعم</string>
     <string name="woo_shipping_address_update_message">تحديث العنوان الذي تم إدخاله…</string>
     <string name="woo_shipping_address_update_title">التحديث</string>
     <string name="woo_shipping_address_save_changes">حفظ التغييرات</string>
@@ -25,7 +50,6 @@ Language: ar
     <string name="woo_shipping_labels_customs_product_details_description_missing">الوصف مفقود</string>
     <string name="woo_shipping_labels_customs_product_details_description">وصف</string>
     <string name="woo_shipping_labels_customs_product_details_title">تفاصيل المنتج</string>
-    <string name="woo_shipping_labels_customs_itn_required_message">يجب ألا يكون رقم المعاملة الداخلي (ITN) فارغًا</string>
     <string name="woo_shipping_labels_customs_itn_error_message">تنسيق رقم المعاملة الداخلي غير صالح</string>
     <string name="woo_shipping_labels_customs_other_error_message">يجب ألا يكون النوع فارغًا</string>
     <string name="woo_shipping_labels_package_creation_shipping_rates_loading_error">يتعذر علينا تحميل أسعار الشحن.</string>
@@ -1416,7 +1440,6 @@ Language: ar
     <string name="login_site_credentials_http_error">فشل تسجيل الدخول باستخدام رمز الحالة ⁦%1$s⁩</string>
     <string name="login_site_credentials_custom_admin_url">يتعذر تسجيل لدخول نظرًا إلى عدم تمكنا من التعرف على عنوان URL لمسؤول متجرك</string>
     <string name="login_site_credentials_custom_login_url">يتعذر تسجيل لدخول نظرًا إلى عدم تمكنا من التعرف على عنوان URL لتسجيل الدخول إلى متجرك</string>
-    <string name="login_site_credentials_invalid_response">فشل تسجيل الدخول مع وجود استجابة غير متوقعة من موقعك. إننا نعمل على إصلاح هذه المشكلة.</string>
     <string name="something_went_wrong_try_again">هناك خطأ ما. ترجى المحاولة مجددًا في وقت لاحق.</string>
     <string name="card_reader_onboarding_account_pending_requirements_without_date_hint">توجد متطلبات معلقة في حسابك. يرجى إكمال هذه المتطلبات للاستمرار في قبول المدفوعات الشخصية.</string>
     <string name="analytics_banner_message">يرجى تقييم خبرة التحليلات الخاصة بك</string>
@@ -1582,7 +1605,7 @@ Language: ar
     <string name="login_jetpack_installation_connection_dismissed_explanation">حاول الاتصال مجددًا للوصول إلى متجرك.</string>
     <string name="login_jetpack_installation_connection_dismissed">تم تثبيت Jetpack، ولكن من دون اتصال.</string>
     <string name="login_jetpack_installation_error_connection_permission_message">ليس لديك إذن للاتصال بـ Jetpack على هذا المتجر</string>
-    <string name="login_jetpack_installation_error_forbidden_suggestion">يرجى الاتصال بمدير متجرك أو المسؤول لديك للمساعدة.</string>
+    <string name="login_jetpack_installation_error_forbidden_suggestion">يرجى الاتصال بالمسؤول لديك للحصول على مساعدة. </string>
     <string name="login_jetpack_installation_cancel">إلغاء التثبيت</string>
     <string name="login_jetpack_installation_retry_authorizing">محاولة التخويل مجددًا</string>
     <string name="login_jetpack_installation_retry_activating">محاولة التفعيل مجددًا</string>

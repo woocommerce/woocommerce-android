@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-03-11 16:54:03+0000
+Translation-Revision-Date: 2025-03-26 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_split_shipment">לפצל את המשלוח</string>
+    <string name="woo_shipping_labels_purchase_error">לא הצלחנו לרכוש את תווית המשלוח. יש לנסות שוב.</string>
+    <string name="woo_shipping_address_notification_origin_verified">כתובת מוצא מאומתת</string>
+    <string name="woo_shipping_address_notification_destination_verified">כתובת היעד מאומתת</string>
+    <string name="woo_shipping_address_notification_destination_missing">כתובת היעד חסרה</string>
+    <string name="woo_shipping_address_notification_origin_unverified">כתובת מוצא לא מאומתת</string>
+    <string name="woo_shipping_address_notification_destination_unverified">כתובת היעד לא מאומתת</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_weight_desc">אנחנו צריכים לדעת את משקל המשלוח לפני שנוכל להציג את תעריפי המשלוח הזמינים.</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_weight">יש להוסיף משקל משלוח כדי לקבל תעריפי משלוח</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_destination_desc">אנחנו צריכים לדעת לאן החבילה הזאת נשלחת לפני שנוכל להציג את תעריפי המשלוח הזמינים.</string>
+    <string name="woo_shipping_labels_customs_itn_required_message">במשלוחים מעל 2,500 $, עליך לקבל מספר ITN של AES באורך 14 ספרות לצורך דיווח לרשויות הייצוא של ארה\"ב.</string>
+    <string name="woo_shipping_labels_customs_itn_required_error">חובה להזין ITN</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_destination">יש להוסיף כתובת יעד כדי להציג את תעריפי המשלוח</string>
+    <string name="woopos_search_recent_searches_title">חיפושים אחרונים</string>
+    <string name="woopos_search_popular_items_title">פריטים פופולריים</string>
+    <string name="woopos_search_products">לחפש מוצרים…</string>
+    <string name="woopos_clear_back_content_description">למחוק</string>
+    <string name="woopos_search_back_content_description">חזרה</string>
+    <string name="login_site_credentials_invalid_response">הכניסה נכשלה עם תגובה לא צפויה מהאתר שלך.</string>
+    <string name="card_reader_connect_failed_battery_low_hint">רמת הסוללה של הקורא נמוכה. יש לטעון את הקורא ולנסות שוב</string>
+    <string name="yes">כן</string>
+    <string name="login_jetpack_user_already_connected_dialog_cancel_button">ביטול</string>
+    <string name="login_jetpack_user_already_connected_dialog_proceed_button">המשך</string>
+    <string name="login_jetpack_user_already_connected_dialog_message">חשבון מנהל המערכת של WordPress.com כבר מחובר לחשבון WordPress.com אחר.\nהמשך הפעולה עם החשבון הזה יגרום להתנתקות מהחשבון הנוכחי שלך.</string>
+    <string name="login_jetpack_user_already_connected_dialog_title">החשבון כבר מחובר</string>
     <string name="woo_shipping_address_update_message">מעדכן את הכתובת שהוזנה</string>
     <string name="woo_shipping_address_update_title">מעדכן</string>
     <string name="woo_shipping_address_save_changes">לשמור את השינויים</string>
@@ -25,7 +50,6 @@ Language: he_IL
     <string name="woo_shipping_labels_customs_product_details_description_missing">תיאור חסר</string>
     <string name="woo_shipping_labels_customs_product_details_description">תיאור</string>
     <string name="woo_shipping_labels_customs_product_details_title">פרטי המוצר</string>
-    <string name="woo_shipping_labels_customs_itn_required_message">השדה ITN לא יכול להיות ריק</string>
     <string name="woo_shipping_labels_customs_itn_error_message">פורמט לא חוקי ל-ITN</string>
     <string name="woo_shipping_labels_customs_other_error_message">הסוג לא יכול להיות ריק</string>
     <string name="woo_shipping_labels_package_creation_shipping_rates_loading_error">לא הצלחנו לטעון את תעריפי המשלוח.</string>
@@ -1416,7 +1440,6 @@ Language: he_IL
     <string name="login_site_credentials_http_error">הכניסה נכשלה עם קוד סטטוס ⁦%1$s⁩</string>
     <string name="login_site_credentials_custom_admin_url">לא ניתן להתחבר מאחר שלא הצלחנו לזהות את כתובת ה-URL למנהל המערכת של החנות שלך</string>
     <string name="login_site_credentials_custom_login_url">לא ניתן להתחבר מאחר שלא הצלחנו לזהות את כתובת ה-URL לכניסה לחנות שלך</string>
-    <string name="login_site_credentials_invalid_response">הכניסה נכשלה עם תגובה לא צפויה מהאתר שלך. אנחנו מנסים כעת לפתור את הבעיה.</string>
     <string name="something_went_wrong_try_again">משהו השתבש, יש לנסות שוב מאוחר יותר.</string>
     <string name="card_reader_onboarding_account_pending_requirements_without_date_hint">ישנן דרישות ממתינות בחשבון שלך. כדי להמשיך לקבל תשלומים באופן אישי, עליך להשלים את הדרישות הללו.</string>
     <string name="analytics_banner_message">כדאי לדרג את חוויית השימוש שלך בנתונים האנליטיים</string>
@@ -1582,7 +1605,7 @@ Language: he_IL
     <string name="login_jetpack_installation_connection_dismissed_explanation">יש לנסות להתחבר שוב כדי לגשת לחנות שלך.</string>
     <string name="login_jetpack_installation_connection_dismissed">השירות של Jetpack מותקן אך לא מחובר.</string>
     <string name="login_jetpack_installation_error_connection_permission_message">אין לך הרשאה לחבר את Jetpack לחנות הזאת</string>
-    <string name="login_jetpack_installation_error_forbidden_suggestion">יש ליצור קשר עם מנהל החנות או מנהל המערכת לקבלת עזרה.</string>
+    <string name="login_jetpack_installation_error_forbidden_suggestion">יש ליצור קשר עם מנהל המערכת לקבלת עזרה.</string>
     <string name="login_jetpack_installation_cancel">לבטל את ההתקנה</string>
     <string name="login_jetpack_installation_retry_authorizing">יש לנסות לאשר שוב</string>
     <string name="login_jetpack_installation_retry_activating">יש לנסות להפעיל שוב</string>

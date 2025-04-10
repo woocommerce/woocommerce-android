@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.networking
 
 import com.woocommerce.android.model.Address
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingAddressDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigurationDataStore
@@ -80,7 +81,8 @@ class WooShippingLabelRepository @Inject constructor(
         selectedRate: WooShippingRateModel,
         weight: Float,
         lastOrderComplete: Boolean,
-        customsData: List<CustomsData>?
+        customsData: List<CustomsData>?,
+        hazmatSelection: ShippingLabelHazmatCategory? = null
     ): WooResult<PurchasedLabelData> {
         val origin = mapper.toOriginAddressPurchaseDTO(shipFrom)
         val destination = mapper.toDestinationAddressDTO(shipTo)
@@ -92,6 +94,7 @@ class WooShippingLabelRepository @Inject constructor(
         )
         val rateDTO = mapper.toRateDTO(selectedRate)
         val customsDTO = customsData?.let { mapper.toCustomsDTO(it) }
+        val hazmatDTO = mapper.toHazmatDTO(hazmatSelection)
         return restClient.purchaseShippingLabel(
             site = site,
             orderId = orderId,
@@ -100,6 +103,7 @@ class WooShippingLabelRepository @Inject constructor(
             selectedPackage = packageDTO,
             selectedRate = rateDTO,
             customs = customsDTO ?: emptyMap(),
+            hazmat = hazmatDTO,
             markOrderComplete = lastOrderComplete
         ).asWooResult { mapper(it) }
     }

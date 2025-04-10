@@ -1,6 +1,9 @@
 package com.woocommerce.android.ui.woopos.home.items
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,23 +16,26 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.LocalOffer
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
-import androidx.compose.material.pullrefresh.PullRefreshState
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -81,14 +87,9 @@ private fun WooPosItemsScreen(
     onUIEvent: (WooPosItemsUIEvent) -> Unit,
 ) {
     val state = itemsStateFlow.collectAsState()
-    val pullToRefreshState = rememberPullRefreshState(
-        state.value.reloadingWithPullToRefresh,
-        onRefresh = { onUIEvent(PullToRefreshTriggered) },
-    )
 
     MainItemsList(
         modifier = modifier,
-        pullToRefreshState = pullToRefreshState,
         state = state,
         listState = listState,
         onToolbarInfoIconClicked = {
@@ -110,9 +111,13 @@ private fun WooPosItemsScreen(
                 WooPosSearchUIEvent.Clear -> onUIEvent(WooPosItemsUIEvent.ClearSearchClicked)
                 WooPosSearchUIEvent.Close -> onUIEvent(WooPosItemsUIEvent.CloseSearchClicked)
                 is WooPosSearchUIEvent.Search -> onUIEvent(SearchChanged(it.query))
+                is WooPosSearchUIEvent.AnimationComplete -> {
+                    onUIEvent(WooPosItemsUIEvent.SearchAnimationComplete)
+                }
             }
         },
         onCouponsButtonClicked = { onUIEvent(WooPosItemsUIEvent.CouponsButtonClicked) },
+        onPullToRefreshTriggered = { onUIEvent(PullToRefreshTriggered) },
     )
 }
 
@@ -120,7 +125,6 @@ private fun WooPosItemsScreen(
 @Composable
 private fun MainItemsList(
     modifier: Modifier,
-    pullToRefreshState: PullRefreshState,
     state: State<WooPosItemsViewState>,
     listState: LazyListState,
     onToolbarInfoIconClicked: () -> Unit,
@@ -131,11 +135,20 @@ private fun MainItemsList(
     onRetryClicked: () -> Unit,
     onSearchEvent: (WooPosSearchUIEvent) -> Unit,
     onCouponsButtonClicked: () -> Unit,
+    onPullToRefreshTriggered: () -> Unit,
 ) {
+    val pullToRefreshState = rememberPullRefreshState(
+        refreshing = state.value.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
+        onRefresh = onPullToRefreshTriggered,
+    )
+
     Box(
         modifier = modifier
             .fillMaxSize()
-            .pullRefresh(pullToRefreshState)
+            .pullRefresh(
+                state = pullToRefreshState,
+                enabled = state.value.pullToRefreshState == WooPosPullToRefreshState.Enabled,
+            )
             .padding(
                 start = WooPosSpacing.Medium.value.toAdaptivePadding(),
                 end = WooPosSpacing.Medium.value.toAdaptivePadding(),
@@ -153,7 +166,13 @@ private fun MainItemsList(
 
                 is WooPosItemsViewState.Content -> MaterialTheme.colorScheme.onSurface
             }
-            ItemsToolbar(state.value, titleColor, onToolbarInfoIconClicked, onCouponsButtonClicked)
+            ItemsToolbar(
+                state = state.value,
+                titleColor = titleColor,
+                onToolbarInfoIconClicked = onToolbarInfoIconClicked,
+                onCouponsButtonClicked = onCouponsButtonClicked,
+                onSearchEvent = onSearchEvent,
+            )
 
             Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
 
@@ -168,10 +187,6 @@ private fun MainItemsList(
 
                         when (itemsState.search) {
                             is WooPosItemsViewState.Content.SearchState.Visible -> {
-                                WooPosSearchInput(
-                                    state = itemsState.search.state,
-                                    onEvent = onSearchEvent,
-                                )
                                 when (itemsState.search.state) {
                                     WooPosSearchInputState.Closed -> {
                                         WooPosItemList(
@@ -187,6 +202,7 @@ private fun MainItemsList(
                                             )
                                         }
                                     }
+
                                     is WooPosSearchInputState.Open -> WooPosItemsSearchScreen()
                                 }
                             }
@@ -222,7 +238,7 @@ private fun MainItemsList(
         }
         PullRefreshIndicator(
             modifier = Modifier.align(Alignment.TopCenter),
-            refreshing = state.value.reloadingWithPullToRefresh,
+            refreshing = state.value.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
             state = pullToRefreshState
         )
     }
@@ -230,61 +246,110 @@ private fun MainItemsList(
 
 @Composable
 private fun ItemsToolbar(
-    productViewState: WooPosItemsViewState,
+    state: WooPosItemsViewState,
     titleColor: Color,
     onToolbarInfoIconClicked: () -> Unit,
     onCouponsButtonClicked: () -> Unit,
+    onSearchEvent: (WooPosSearchUIEvent) -> Unit,
 ) {
+    val isSearchExpanded = state is WooPosItemsViewState.Content &&
+        state.search is WooPosItemsViewState.Content.SearchState.Visible &&
+        state.search.state is WooPosSearchInputState.Open
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(40.dp),
+            .height(56.dp),
+        verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.Top,
     ) {
-        WooPosText(
-            text = stringResource(id = R.string.woopos_products_screen_title),
-            style = WooPosTypography.Heading,
-            fontWeight = FontWeight.Bold,
-            color = titleColor,
-        )
-        when (productViewState) {
-            is WooPosItemsViewState.Content -> {
-                if (productViewState.couponsEnabled) {
-                    Spacer(modifier = Modifier.weight(1f))
-                    IconButton(
-                        modifier = Modifier.size(40.dp),
-                        onClick = {
-                            onCouponsButtonClicked()
+        AnimatedVisibility(
+            visible = !isSearchExpanded,
+            enter = fadeIn(animationSpec = tween(200)),
+            exit = fadeOut(animationSpec = tween(200)),
+        ) {
+            WooPosText(
+                text = stringResource(id = R.string.woopos_products_screen_title),
+                style = WooPosTypography.Heading,
+                fontWeight = FontWeight.Bold,
+                color = titleColor,
+            )
+        }
+
+        Row(
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            when (state) {
+                is WooPosItemsViewState.Content -> {
+                    when (val searchState = state.search) {
+                        WooPosItemsViewState.Content.SearchState.Hidden -> Unit
+                        is WooPosItemsViewState.Content.SearchState.Visible -> {
+                            WooPosSearchInput(
+                                state = searchState.state,
+                                onEvent = onSearchEvent,
+                                modifier = Modifier.weight(1f)
+                            )
+
+                            Spacer(modifier = Modifier.width(WooPosSpacing.Small.value))
+
+                            VerticalDivider(
+                                modifier = Modifier.padding(vertical = WooPosSpacing.Small.value),
+                                thickness = 1.dp,
+                            )
+
+                            Spacer(modifier = Modifier.width(WooPosSpacing.Small.value))
                         }
-                    ) {
-                        Icon(
-                            painterResource(id = R.drawable.ic_more_menu_coupons),
-                            contentDescription = stringResource(
-                                id = R.string.coupons
-                            ),
-                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.87f),
+                    }
+
+                    if (state.couponsEnabled) {
+                        IconButton(
+                            modifier = Modifier.size(40.dp),
+                            onClick = {
+                                onCouponsButtonClicked()
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.LocalOffer,
+                                contentDescription = stringResource(
+                                    id = R.string.coupons
+                                ),
+                                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.87f),
+                                modifier = Modifier.size(32.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(WooPosSpacing.Small.value))
+
+                        VerticalDivider(
+                            modifier = Modifier.padding(vertical = WooPosSpacing.Small.value),
+                            thickness = 1.dp,
                         )
+
+                        Spacer(modifier = Modifier.width(WooPosSpacing.Small.value))
+                    }
+
+                    if (state.bannerState.isBannerHiddenByUser) {
+                        IconButton(
+                            modifier = Modifier.size(40.dp),
+                            onClick = {
+                                onToolbarInfoIconClicked()
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.Info,
+                                contentDescription = stringResource(
+                                    id = R.string.woopos_banner_simple_products_info_content_description
+                                ),
+                                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.87f),
+                                modifier = Modifier.size(32.dp)
+                            )
+                        }
                     }
                 }
-                if (productViewState.bannerState.isBannerHiddenByUser) {
-                    IconButton(
-                        modifier = Modifier.size(40.dp),
-                        onClick = {
-                            onToolbarInfoIconClicked()
-                        }
-                    ) {
-                        Icon(
-                            painterResource(id = R.drawable.info),
-                            contentDescription = stringResource(
-                                id = R.string.woopos_banner_simple_products_info_content_description
-                            ),
-                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.87f),
-                        )
-                    }
-                }
-            }
-            else -> {
+
+                is WooPosItemsViewState.Empty,
+                is WooPosItemsViewState.Error,
+                is WooPosItemsViewState.Loading -> Unit
             }
         }
     }
@@ -379,8 +444,8 @@ fun WooPosItemsScreenPreview(modifier: Modifier = Modifier) {
                     imageUrl = null,
                 ),
             ),
-            paginationState = PaginationState.Loading,
-            reloadingWithPullToRefresh = true,
+            paginationState = WooPosPaginationState.Loading,
+            pullToRefreshState = WooPosPullToRefreshState.Refreshing,
             bannerState = WooPosItemsViewState.Content.BannerState(
                 isBannerHiddenByUser = true,
                 title = R.string.woopos_banner_simple_products_only_title,
@@ -435,8 +500,8 @@ fun WooPosItemsScreenPaginationErrorPreview(modifier: Modifier = Modifier) {
                     variationIds = listOf()
                 ),
             ),
-            paginationState = PaginationState.Error,
-            reloadingWithPullToRefresh = true,
+            paginationState = WooPosPaginationState.Error,
+            pullToRefreshState = WooPosPullToRefreshState.Refreshing,
             bannerState = WooPosItemsViewState.Content.BannerState(
                 isBannerHiddenByUser = true,
                 title = R.string.woopos_banner_simple_products_only_title,
@@ -462,7 +527,7 @@ fun WooPosItemsScreenPaginationErrorPreview(modifier: Modifier = Modifier) {
 fun WooPosItemsScreenLoadingPreview() {
     val productState = MutableStateFlow(
         WooPosItemsViewState.Loading(
-            reloadingWithPullToRefresh = true,
+            pullToRefreshState = WooPosPullToRefreshState.Refreshing,
             withCart = false
         )
     )
@@ -479,7 +544,11 @@ fun WooPosItemsScreenLoadingPreview() {
 @Composable
 @WooPosPreview
 fun WooPosProductsScreenEmptyListPreview() {
-    val productState = MutableStateFlow(WooPosItemsViewState.Empty(true))
+    val productState = MutableStateFlow(
+        WooPosItemsViewState.Empty(
+            WooPosPullToRefreshState.Refreshing,
+        )
+    )
     WooPosTheme {
         WooPosItemsScreen(
             itemsStateFlow = productState,
@@ -531,7 +600,7 @@ fun WooPosHomeScreenItemsWithSimpleProductsOnlyBannerPreview() {
                     imageUrl = null,
                 ),
             ),
-            reloadingWithPullToRefresh = true,
+            pullToRefreshState = WooPosPullToRefreshState.Refreshing,
             bannerState = WooPosItemsViewState.Content.BannerState(
                 isBannerHiddenByUser = false,
                 title = R.string.woopos_banner_simple_products_only_title,
@@ -583,7 +652,7 @@ fun WooPosHomeScreenItemsWithInfoIconInToolbarPreview() {
                     imageUrl = null,
                 ),
             ),
-            reloadingWithPullToRefresh = false,
+            pullToRefreshState = WooPosPullToRefreshState.Disabled,
             bannerState = WooPosItemsViewState.Content.BannerState(
                 isBannerHiddenByUser = true,
                 title = R.string.woopos_banner_simple_products_only_title,

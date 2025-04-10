@@ -1,6 +1,6 @@
 package com.woocommerce.android.extensions
 
-import org.wordpress.android.fluxc.model.OrderEntity
+import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 
 internal const val CASH_ON_DELIVERY_PAYMENT_TYPE = "cod"
 internal const val WOOCOMMERCE_PAYMENTS_PAYMENT_TYPE = "woocommerce_payments"

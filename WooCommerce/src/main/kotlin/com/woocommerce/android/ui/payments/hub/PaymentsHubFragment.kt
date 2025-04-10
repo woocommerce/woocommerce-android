@@ -22,7 +22,6 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.AppBarStatus
-import com.woocommerce.android.ui.orders.list.OrderListViewModel
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingParams
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.NavigateToTapToPaySummaryScreen
@@ -110,13 +109,6 @@ class PaymentsHubFragment : BaseFragment(R.layout.fragment_payments_hub) {
                                 onboardingState = event.onboardingState
                             ),
                             cardReaderType = null
-                        )
-                    )
-                }
-                is PaymentsHubViewModel.PaymentsHubEvents.NavigateToOrderCreationScreen -> {
-                    findNavController().navigate(
-                        PaymentsHubFragmentDirections.actionCardReaderHubFragmentToOrderListFragment(
-                            mode = OrderListViewModel.Mode.START_ORDER_CREATION_WITH_SIMPLE_PAYMENTS_MIGRATION
                         )
                     )
                 }

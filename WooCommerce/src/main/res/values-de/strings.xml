@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-03-11 09:54:04+0000
+Translation-Revision-Date: 2025-03-25 17:54:07+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_split_shipment">Sendung aufteilen</string>
+    <string name="woo_shipping_labels_purchase_error">Das Versandetikett kann nicht gekauft werden. Bitte versuche es erneut.</string>
+    <string name="woo_shipping_address_notification_origin_verified">Verifizierte Absenderadresse</string>
+    <string name="woo_shipping_labels_customs_itn_required_error">ITN erforderlich</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_weight_desc">Wir benötigen das Versandgewicht, um die verfügbaren Versandkosten anzeigen zu können.</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_weight">Versandgewicht hinzufügen, um Informationen zu den Versandkosten zu erhalten</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_destination_desc">Wir müssen wissen, wohin dieses Paket geht, um die verfügbaren Versandkosten anzeigen zu können.</string>
+    <string name="woo_shipping_address_notification_destination_verified">Verifizierte Empfängeradresse</string>
+    <string name="woo_shipping_address_notification_destination_missing">Empfängeradresse fehlt</string>
+    <string name="woo_shipping_address_notification_origin_unverified">Absenderadresse nicht verifiziert</string>
+    <string name="woo_shipping_address_notification_destination_unverified">Empfängeradresse nicht verifiziert</string>
+    <string name="woo_shipping_labels_customs_itn_required_message">Für Sendungen über 2.500 USD musst du eine 14-stellige AES-ITN für die Verifizierung der US-Ausfuhrmeldung anfordern.</string>
+    <string name="woopos_search_recent_searches_title">Aktuelle Suchen</string>
+    <string name="woopos_search_popular_items_title">Beliebte Artikel</string>
+    <string name="woopos_search_products">Produkte suchen …</string>
+    <string name="woopos_clear_back_content_description">Löschen</string>
+    <string name="woopos_search_back_content_description">Zurück</string>
+    <string name="card_reader_connect_failed_battery_low_hint">Der Akkustand des Lesegeräts ist niedrig. Bitte lade das Lesegerät und versuche es erneut</string>
+    <string name="login_site_credentials_invalid_response">Die Anmeldung ist fehlgeschlagen: unerwartete Antwort von deiner Website.</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_destination">Füge eine Empfängeradresse hinzu, um Versandkosten anzuzeigen</string>
+    <string name="yes">Ja</string>
+    <string name="login_jetpack_user_already_connected_dialog_cancel_button">Abbrechen</string>
+    <string name="login_jetpack_user_already_connected_dialog_proceed_button">Fortfahren</string>
+    <string name="login_jetpack_user_already_connected_dialog_message">Dieses WordPress-Administratorkonto ist bereits mit einem anderen WordPress.com-Konto verbunden.\nWenn du mit diesem Konto fortfährst, wirst du von deinem aktuellen Konto abgemeldet.</string>
+    <string name="login_jetpack_user_already_connected_dialog_title">Konto bereits verbunden</string>
     <string name="woo_shipping_address_update_message">Eingegebene Adresse wird aktualisiert …</string>
     <string name="woo_shipping_address_update_title">Wird aktualisiert</string>
     <string name="woo_shipping_address_save_changes">Änderungen speichern</string>
@@ -25,7 +50,6 @@ Language: de
     <string name="woo_shipping_labels_customs_product_details_description_missing">Beschreibung fehlt</string>
     <string name="woo_shipping_labels_customs_product_details_description">Beschreibung</string>
     <string name="woo_shipping_labels_customs_product_details_title">Produktdetails</string>
-    <string name="woo_shipping_labels_customs_itn_required_message">ITN darf nicht leer sein</string>
     <string name="woo_shipping_labels_customs_itn_error_message">Ungültiges ITN-Format</string>
     <string name="woo_shipping_labels_customs_other_error_message">Typ darf nicht leer sein</string>
     <string name="woo_shipping_labels_package_creation_shipping_rates_loading_error">Die Versandkosten können nicht geladen werden.</string>
@@ -1416,7 +1440,6 @@ Language: de
     <string name="login_site_credentials_http_error">Die Anmeldung ist fehlgeschlagen: Statuscode %1$s</string>
     <string name="login_site_credentials_custom_admin_url">Die Anmeldung ist fehlgeschlagen, da die Admin-URL deines Shops nicht ermitteln werden konnte</string>
     <string name="login_site_credentials_custom_login_url">Die Anmeldung ist fehlgeschlagen, da die Anmelde-URL deines Shops nicht ermittelt werden konnte</string>
-    <string name="login_site_credentials_invalid_response">Die Anmeldung ist fehlgeschlagen: unerwartete Antwort von deiner Website. Wir arbeiten daran, das Problem zu beheben.</string>
     <string name="something_went_wrong_try_again">Es ist ein Fehler aufgetreten. Bitte versuche es später erneut.</string>
     <string name="card_reader_onboarding_account_pending_requirements_without_date_hint">Dein Konto weist ausstehende Anforderungen auf. Bitte erfülle diese Anforderungen, um weiterhin persönliche Zahlungen zu erhalten.</string>
     <string name="analytics_banner_message">Bitte bewerte deine Analyse-Erfahrung</string>
@@ -1581,8 +1604,8 @@ Language: de
     <string name="login_jetpack_installation_continue_connection">Mit der Verbindung fortfahren</string>
     <string name="login_jetpack_installation_connection_dismissed">Jetpack ist installiert, aber nicht verbunden.</string>
     <string name="login_jetpack_installation_error_connection_permission_message">Du bist nicht berechtigt, diesen Shop mit Jetpack zu verbinden</string>
-    <string name="login_jetpack_installation_error_forbidden_suggestion">Wende dich an deinen Shop-Manager oder Administrator, um Hilfe zu erhalten.</string>
     <string name="login_jetpack_installation_connection_dismissed_explanation">Versuche erneut, eine Verbindung herzustellen, um auf deinen Shop zuzugreifen.</string>
+    <string name="login_jetpack_installation_error_forbidden_suggestion">Bitte wende dich an deinen Administrator, um Hilfe zu erhalten.</string>
     <string name="login_jetpack_installation_cancel">Installation abbrechen</string>
     <string name="login_jetpack_installation_retry_authorizing">Autorisierung erneut versuchen</string>
     <string name="login_jetpack_installation_retry_activating">Aktivierung erneut versuchen</string>

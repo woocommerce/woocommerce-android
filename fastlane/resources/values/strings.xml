@@ -811,10 +811,6 @@
     <string name="order_creation_recalculate_button">Recalculate</string>
     <string name="order_creation_expand_collapse_order_totals">Expand collapse order totals</string>
     <string name="order_creation_payment_shipping_tax_label">Shipping Tax</string>
-    <string name="order_creation_simple_payment_migration_title">Collect Payment \nhas moved</string>
-    <string name="order_creation_simple_payment_migration_message_one">We’ve combined payment collection with order creation, making it more accessible and more powerful.</string>
-    <string name="order_creation_simple_payment_migration_message_two">To set a payment amount, add a custom amount to your new order.</string>
-    <string name="order_creation_simple_payment_migration_button">Add a Custom Amount</string>
     <string name="customer_picker_guest_customer_not_allowed_message">This user is a guest, and guests can\'t be used for filtering orders.</string>
     <string name="customer_picker_guest">Guest</string>
 
@@ -1018,6 +1014,7 @@
     <string name="orderdetail_shipping_label_notice">Learn more about creating labels with your mobile device</string>
     <string name="orderdetail_custom_fields">Custom fields</string>
     <string name="orderdetail_ai_create_thank_you_note_button">✨Create thank-you note</string>
+    <string name="receipt_preview_toolbar_title">Receipt Preview</string>
     <string name="receipt_preview_print_menu_item">Print</string>
     <string name="receipt_preview_send_menu_item">Send</string>
     <string name="order_mark_complete">Mark order complete</string>
@@ -1281,6 +1278,7 @@
     <string name="shipping_label_package_details_items_weight_price">%1$s  ·  %2$s</string>
     <string name="shipping_label_package_details_items_expand_content_description">Collapse/expand items card</string>
     <string name="shipping_label_hazmat_title">Are you shipping dangerous goods or hazardous materials?</string>
+    <string name="shipping_label_package_title">Select a Package</string>
     <string name="shipping_label_select_package_button">Select a Package</string>
     <string name="shipping_label_select_package_title">Select a package to get shipping rates</string>
     <string name="shipping_label_package_default_name">Custom Package</string>
@@ -1559,8 +1557,6 @@
             Card Reader Hub
         -->
     <string name="payments_hub_title">Payments</string>
-    <string name="card_reader_hub_collect_payment">Collect Payment</string>
-    <string name="card_reader_hub_actions_category_header">ACTIONS</string>
     <string name="card_reader_manage_card_reader">Manage Card Reader</string>
     <string name="card_reader_settings_header">SETTINGS</string>
     <string name="card_reader_enable_pay_in_person">Pay In Person</string>
@@ -4276,7 +4272,8 @@
     <string name="woopos_product_item_content_description">Product %s, Price %s</string>
     <string name="woopos_variable_product_item_content_description">Variable Product %s, Price %s</string>
     <string name="woopos_variation_item_content_description">Variation %s, Price %s</string>
-    <string name="woopos_cart_item_content_description">Product in cart %s, Price %s</string>
+    <string name="woopos_cart_item_product_content_description">Product in cart %s, Price %s</string>
+    <string name="woopos_cart_item_coupon_content_description">Coupon in cart %s</string>
     <string name="woopos_cart_title">Cart</string>
     <string name="woopos_clear_cart_button">Clear</string>
 
@@ -4318,6 +4315,7 @@
     <string name="woopos_payment_successful_checkmark_icon_content_description">Payment successful checkmark icon</string>
     <string name="woopos_new_order_button">New order</string>
     <string name="woopos_receipt_button">Email receipt</string>
+    <string name="woopos_payment_discount_label">Discount</string>
     <string name="woopos_payment_subtotal_label">Subtotal</string>
     <string name="woopos_payment_tax_label">Taxes</string>
     <string name="woopos_payment_total_label">Total</string>
@@ -4399,7 +4397,11 @@
     <string name="woopos_search_products">Search products…</string>
     <string name="woopos_search_popular_items_title">Popular items</string>
     <string name="woopos_search_recent_searches_title">Recent searches</string>
-
+    <string name="woopos_search_items_empty_title">Nothing found</string>
+    <string name="woopos_search_empty_description">We couldn\'t find anything matching your search.</string>
+    <string name="woopos_search_empty_image_content_description">No items found</string>
+    <string name="woopos_search_items_error_title">We couldn\'t load your items</string>
+    <string name="woopos_search_items_error_description">Give it another go?</string>
 
     <string name="customers_details_customer_section">Customer</string>
     <string name="customers_details_orders_section">Orders</string>
@@ -4516,6 +4518,15 @@
     <string name="woo_shipping_labels_customs_product_details_origin_country">Origin country</string>
     <string name="woo_shipping_labels_customs_product_details_origin_country_missing">Missing country</string>
     <string name="woo_shipping_labels_customs_product_details_origin_country_selection">Select a country</string>
+    <string name="woo_shipping_labels_hazmat_info_title">Are you shipping dangerous goods or hazardous materials?</string>
+    <string name="woo_shipping_labels_hazmat_info_contains_hazmat">Contains hazardous materials</string>
+    <string name="woo_shipping_labels_hazmat_info_full_description">Potentially hazardous material includes items such as batteries, dry ice, flammable liquids, aerosols, ammunition, fireworks, nail polish, perfume, paint, solvents, and more. Hazardous items must ship in separate packages.</string>
+    <string name="woo_shipping_labels_hazmat_info_tooltip_1">Learn how to securely package, label, and ship HAZMAT through USPS® at &lt;a href=\'usps-hazmat\'&gt;&lt;u&gt;www.usps.com/hazmat&lt;/u&gt;&lt;/a&gt;. Determine your product\'s mailability using the &lt;a href=\'hazmat-tool\'&gt;&lt;u&gt;USPS HAZMAT Search Tool&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="woo_shipping_labels_hazmat_info_tooltip_2">WooCommerce Shipping does not currently support HAZMAT shipments through &lt;a href=\'dhl-hazmat\'&gt;&lt;u&gt;DHL Express&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="woo_shipping_labels_hazmat_info_select_category">Select Category</string>
+    <string name="woo_shipping_labels_hazmat_search_hint">Search a Category</string>
+    <string name="woo_shipping_labels_hazmat_selection_set">Hazardous materials category set</string>
+    <string name="woo_shipping_labels_hazmat_selection_removed">Removed hazardous materials category</string>
 
 
     <string name="email_not_registered_wpcom">Hmm, we can\'t find a WordPress.com account connected to this email address.</string>
@@ -4577,4 +4588,9 @@
     <string name="default_web_client_id" a8c-src-lib="module:login">placeholder</string>
 
     <string name="woo_shipping_split_shipment">Split shipment</string>
+    <string name="woo_shipping_split_shipment_instructions"><![CDATA[To split, select the items, and tap <b>move to new shipment</b> when the toolbar appears.]]></string>
+    <string name="woo_shipping_split_move_to_new">Move to new shipment</string>
+    <string name="woo_shipping_split_move_to">Move to</string>
+    <string name="woo_shipping_split_shipment_shipment_name">Shipment %s</string>
+    <string name="woo_shipping_split_shipment_shipment_new">New shipment</string>
 </resources>

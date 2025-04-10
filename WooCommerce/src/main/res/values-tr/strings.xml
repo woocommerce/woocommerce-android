@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-03-11 14:54:04+0000
+Translation-Revision-Date: 2025-03-25 11:54:05+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_split_shipment">Gönderimi böl</string>
+    <string name="woo_shipping_labels_purchase_error">Gönderim etiketini satın alamıyoruz. Lütfen tekrar deneyin.</string>
+    <string name="woo_shipping_address_notification_origin_verified">Doğrulanmış menşe adresi</string>
+    <string name="woo_shipping_address_notification_destination_verified">Doğrulanmış hedef adresi</string>
+    <string name="woo_shipping_address_notification_destination_missing">Hedef adresi yok</string>
+    <string name="woo_shipping_address_notification_origin_unverified">Menşe adresi doğrulanmadı</string>
+    <string name="woo_shipping_address_notification_destination_unverified">Hedef adresi doğrulanmadı</string>
+    <string name="woo_shipping_labels_customs_itn_required_message">2.500 ABD Dolarının üzerindeki gönderimlerde ABD ihracat raporlaması doğrulaması için 14 haneli AES ITN almanız gerekir.</string>
+    <string name="woo_shipping_labels_customs_itn_required_error">ITN zorunludur.</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_weight_desc">Mevcut gönderim ücretlerini göstermeden önce gönderim ağırlığını bilmemiz gerekiyor.</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_weight">Gönderim ücretlerini almak için gönderim ağırlığı ekleyin</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_destination_desc">Mevcut gönderim ücretlerini göstermeden önce bu paketin nereye gittiğini bilmemiz gerekiyor.</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_destination">Gönderim ücretlerini almak için bir hedef adres ekleyin</string>
+    <string name="woopos_search_recent_searches_title">Son aramalar</string>
+    <string name="woopos_search_popular_items_title">Popüler öğeler</string>
+    <string name="woopos_search_products">Ürün ara…</string>
+    <string name="woopos_clear_back_content_description">Temizle</string>
+    <string name="woopos_search_back_content_description">Geri</string>
+    <string name="card_reader_connect_failed_battery_low_hint">Okuyucunun pili düşük. Lütfen okuyucuyu şarj edin ve yeniden deneyin.</string>
+    <string name="login_site_credentials_invalid_response">Giriş, sitenizden beklenmeyen bir yanıtla başarısız oldu.</string>
+    <string name="login_jetpack_user_already_connected_dialog_cancel_button">İptal Et</string>
+    <string name="login_jetpack_user_already_connected_dialog_proceed_button">İlerle</string>
+    <string name="login_jetpack_user_already_connected_dialog_message">Bu WordPress yönetici hesabı zaten farklı bir WordPress.com hesabına bağlı.\nBu hesapla devam etmeniz mevcut hesabınızın oturumunu kapatır.</string>
+    <string name="login_jetpack_user_already_connected_dialog_title">Hesap zaten bağlandı</string>
+    <string name="yes">Evet</string>
     <string name="woo_shipping_address_update_message">Girilen adres güncelleniyor</string>
     <string name="woo_shipping_address_update_title">Güncelleniyor</string>
     <string name="woo_shipping_address_save_changes">Değişiklikleri kaydet</string>
@@ -25,7 +50,6 @@ Language: tr
     <string name="woo_shipping_labels_customs_product_details_description_missing">Açıklama Eksik</string>
     <string name="woo_shipping_labels_customs_product_details_description">Açıklama</string>
     <string name="woo_shipping_labels_customs_product_details_title">Ürün Ayrıntıları</string>
-    <string name="woo_shipping_labels_customs_itn_required_message">ITN boş olmamalıdır</string>
     <string name="woo_shipping_labels_customs_itn_error_message">Geçersiz ITN biçimi</string>
     <string name="woo_shipping_labels_customs_other_error_message">Tür boş olmamalıdır</string>
     <string name="woo_shipping_labels_package_creation_shipping_rates_loading_error">Gönderim ücretlerini yükleyemiyoruz.</string>
@@ -1416,7 +1440,6 @@ Language: tr
     <string name="login_site_credentials_http_error">Durum kodu %1$s ile giriş başarısız oldu</string>
     <string name="login_site_credentials_custom_admin_url">Mağazanızın yönetici URL\'sini belirleyemediğimiz için giriş yapılamıyor</string>
     <string name="login_site_credentials_custom_login_url">Mağazanızın giriş URL\'sini belirleyemediğimiz için giriş yapılamıyor</string>
-    <string name="login_site_credentials_invalid_response">Giriş, sitenizden beklenmeyen bir yanıtla başarısız oldu. Bu sorunu düzeltmek için çalışıyoruz.</string>
     <string name="something_went_wrong_try_again">Bir yanlışlık oldu, lütfen daha sonra tekrar deneyin.</string>
     <string name="card_reader_onboarding_account_pending_requirements_without_date_hint">Hesabınızda bekleyen gereksinimler var. Şahsen Ödemeleri kabul etmeye devam etmek için lütfen bu gereksinimleri karşılayın.</string>
     <string name="analytics_banner_message">Lütfen analizler deneyiminizi değerlendirin</string>
@@ -1582,7 +1605,7 @@ Language: tr
     <string name="login_jetpack_installation_connection_dismissed_explanation">Mağazanıza erişmek için tekrar bağlanmayı deneyin.</string>
     <string name="login_jetpack_installation_connection_dismissed">Jetpack yüklendi, ancak bağlı değil.</string>
     <string name="login_jetpack_installation_error_connection_permission_message">Bu mağazada Jetpack\'e bağlanma izniniz yok</string>
-    <string name="login_jetpack_installation_error_forbidden_suggestion">Lütfen yardım için mağaza yöneticinizle veya site yöneticisiyle iletişime geçin.</string>
+    <string name="login_jetpack_installation_error_forbidden_suggestion">Lütfen yardım için site yöneticinizle iletişime geçin.</string>
     <string name="login_jetpack_installation_cancel">Kurulumu iptal edin</string>
     <string name="login_jetpack_installation_retry_authorizing">Tekrar yetkilendirmeyi deneyin</string>
     <string name="login_jetpack_installation_retry_activating">Tekrar etkinleştirmeyi deneyin</string>

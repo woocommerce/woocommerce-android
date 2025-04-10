@@ -32,7 +32,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialFadeThrough
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.AppUrls
-import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -112,9 +111,6 @@ class OrderListFragment :
 
     @Inject
     internal lateinit var currencyFormatter: CurrencyFormatter
-
-    @Inject
-    lateinit var feedbackPrefs: FeedbackPrefs
 
     private var tracker: SelectionTracker<Long>? = null
     private var actionMode: ActionMode? = null
@@ -662,9 +658,6 @@ class OrderListFragment :
                 )
 
                 is OrderListViewModel.OrderListEvent.RetryLoadingOrders -> refreshOrders()
-                is OrderListViewModel.OrderListEvent.OpenOrderCreationWithSimplePaymentsMigration ->
-                    openOrderCreationFragment(indicateSimplePaymentsMigration = true)
-
                 is OrderListViewModel.OrderListEvent.ShowUpdateStatusDialog -> {
                     showBulkUpdateStatusDialog(event.currentStatus, event.orderStatusList)
                 }
@@ -930,13 +923,12 @@ class OrderListFragment :
     private fun openOrderCreationFragment(
         code: String? = null,
         barcodeFormat: BarcodeFormat? = null,
-        indicateSimplePaymentsMigration: Boolean = false,
     ) {
         OrderDurationRecorder.startRecording()
         AnalyticsTracker.track(AnalyticsEvent.ORDERS_ADD_NEW)
         findNavController().navigateSafely(
             OrderListFragmentDirections.actionOrderListFragmentToOrderCreationFragment(
-                OrderCreateEditViewModel.Mode.Creation(indicateSimplePaymentsMigration),
+                OrderCreateEditViewModel.Mode.Creation,
                 code,
                 barcodeFormat,
             )

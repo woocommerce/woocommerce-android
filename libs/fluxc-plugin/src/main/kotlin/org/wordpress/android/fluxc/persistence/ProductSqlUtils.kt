@@ -332,7 +332,7 @@ object ProductSqlUtils {
         }
     }
 
-    fun geProductExistsByRemoteId(site: SiteModel, remoteProductId: Long): Boolean {
+    fun getProductExistsByRemoteId(site: SiteModel, remoteProductId: Long): Boolean {
         return WellSql.select(WCProductModel::class.java)
                 .where().beginGroup()
                 .equals(WCProductModelTable.REMOTE_PRODUCT_ID, remoteProductId)

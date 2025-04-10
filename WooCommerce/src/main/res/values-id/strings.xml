@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-03-11 09:54:04+0000
+Translation-Revision-Date: 2025-03-25 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_split_shipment">Pisahkan pengiriman</string>
+    <string name="woo_shipping_labels_purchase_error">Kami tidak dapat membeli label pengiriman. Coba lagi.</string>
+    <string name="woo_shipping_address_notification_origin_verified">Alamat asal terverifikasi</string>
+    <string name="woo_shipping_address_notification_destination_verified">Alamat tujuan terverifikasi</string>
+    <string name="woo_shipping_address_notification_destination_missing">Alamat tujuan tidak ada</string>
+    <string name="woo_shipping_address_notification_origin_unverified">Alamat asal tidak terverifikasi</string>
+    <string name="woo_shipping_address_notification_destination_unverified">Alamat tujuan tidak terverifikasi</string>
+    <string name="woo_shipping_labels_customs_itn_required_message">Untuk pengiriman melebihi $2.500, Anda perlu memperoleh AES ITN 14 digit untuk verifikasi pelaporan ekspor AS.</string>
+    <string name="woo_shipping_labels_customs_itn_required_error">ITN wajib diisi</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_weight">Tambahkan berat paket untuk mendapatkan tarif pengiriman</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_weight_desc">Kami perlu mengetahui berat paket ini agar dapat menampilkan tarif pengiriman yang tersedia.</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_destination_desc">Kami perlu mengetahui tujuan paket ini agar dapat menampilkan tarif pengiriman yang tersedia.</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_destination">Tambahkan alamat tujuan untuk mendapatkan tarif pengiriman</string>
+    <string name="woopos_search_recent_searches_title">Pencarian terbaru</string>
+    <string name="woopos_search_popular_items_title">Item populer</string>
+    <string name="woopos_search_products">Cari produk…</string>
+    <string name="woopos_clear_back_content_description">Hapus</string>
+    <string name="woopos_search_back_content_description">Kembali</string>
+    <string name="login_site_credentials_invalid_response">Login gagal dengan respons tak terduga dari situs Anda.</string>
+    <string name="card_reader_connect_failed_battery_low_hint">Daya baterai pembaca lemah. Isi daya pembaca lalu coba lagi</string>
+    <string name="yes">Ya</string>
+    <string name="login_jetpack_user_already_connected_dialog_cancel_button">Batalkan</string>
+    <string name="login_jetpack_user_already_connected_dialog_proceed_button">Lanjutkan</string>
+    <string name="login_jetpack_user_already_connected_dialog_message">Akun admin WordPress ini sudah terhubung ke akun WordPress.com lain.\nJika melanjutkan dengan akun tersebut, Anda akan logout dari akun saat ini.</string>
+    <string name="login_jetpack_user_already_connected_dialog_title">Akun telah terhubung</string>
     <string name="woo_shipping_address_update_message">Memperbarui alamat yang dimasukkan</string>
     <string name="woo_shipping_address_update_title">Memperbarui</string>
     <string name="woo_shipping_address_save_changes">Simpan perubahan</string>
@@ -25,7 +50,6 @@ Language: id
     <string name="woo_shipping_labels_customs_product_details_description_missing">Deskripsi Tidak Ada</string>
     <string name="woo_shipping_labels_customs_product_details_description">Deskripsi</string>
     <string name="woo_shipping_labels_customs_product_details_title">Rincian Produk</string>
-    <string name="woo_shipping_labels_customs_itn_required_message">ITN tidak boleh kosong</string>
     <string name="woo_shipping_labels_customs_itn_error_message">Format ITN tidak valid</string>
     <string name="woo_shipping_labels_customs_other_error_message">Tipe tidak boleh kosong</string>
     <string name="woo_shipping_labels_package_creation_shipping_rates_loading_error">Kami tidak dapat memuat tarif pengiriman.</string>
@@ -713,6 +737,7 @@ Language: id
     <string name="blaze_campaign_edit_ad_change_image_button">Ganti gambar</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_apply_button">Terapkan</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_duration">%1$s hari</string>
+    <string name="blaze_campaign_budget_impressions_info">Tayangan menunjukkan frekuensi iklan ditampilkan kepada calon pembeli.\n\n\n        Meskipun jumlah persisnya tidak dapat dijamin karena fluktuasi lalu lintas online dan perilaku pengguna, kami berupaya agar tayangan aktual iklan Anda sedekat mungkin dengan jumlah yang Anda targetkan.\n\n\n        Jangan lupa, tayangan berhubungan dengan visibilitas, bukan tindakan yang dilakukan pembaca.</string>
     <string name="blaze_campaign_budget_impressions_done_button">Selesai</string>
     <string name="blaze_campaign_budget_impressions_title">Tayangan</string>
     <string name="blaze_campaign_budget_update_button">Perbarui</string>
@@ -723,7 +748,6 @@ Language: id
     <string name="blaze_campaign_budget_toolbar_title">Tentukan anggaran</string>
     <string name="blaze_campaign_preview_target_default_value">Semua</string>
     <string name="blaze_campaign_preview_days_duration">%1$s hari sejak %2$s</string>
-    <string name="blaze_campaign_budget_impressions_info">Tayangan menunjukkan frekuensi iklan ditampilkan kepada calon pembeli.\n\n\n        Meskipun jumlah persisnya tidak dapat dijamin karena fluktuasi lalu lintas online dan perilaku pengguna, kami berupaya agar tayangan aktual iklan Anda sedekat mungkin dengan jumlah yang Anda targetkan.\n\n\n        Jangan lupa, tayangan berhubungan dengan visibilitas, bukan tindakan yang dilakukan pembaca.</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_start_date">Tanggal mulai</string>
     <string name="product_creation_survey_button_dont_show_again">Jangan Tampilkan Lagi</string>
     <string name="product_creation_survey_button_remind_me_later">Ingatkan Saya Nanti</string>
@@ -1416,7 +1440,6 @@ Language: id
     <string name="login_site_credentials_http_error">Login gagal dengan kode status %1$s</string>
     <string name="login_site_credentials_custom_admin_url">Tidak dapat login karena kami tidak dapat mengidentifikasi URL admin toko Anda</string>
     <string name="login_site_credentials_custom_login_url">Tidak dapat login karena kami tidak dapat mengidentifikasi URL login toko Anda</string>
-    <string name="login_site_credentials_invalid_response">Login gagal dengan respons tak terduga dari situs Anda. Kami sedang berupaya mengatasi masalah ini.</string>
     <string name="something_went_wrong_try_again">Terjadi masalah. Silakan coba lagi nanti.</string>
     <string name="card_reader_onboarding_account_pending_requirements_without_date_hint">Ada persyaratan yang tertunda di akun Anda. Penuhi persyaratan tersebut agar dapat tetap menerima Pembayaran Langsung.</string>
     <string name="analytics_banner_message">Silakan beri nilai pengalaman analitik Anda</string>
@@ -1582,7 +1605,7 @@ Language: id
     <string name="login_jetpack_installation_connection_dismissed_explanation">Coba sambungkan lagi untuk mengakses toko Anda.</string>
     <string name="login_jetpack_installation_connection_dismissed">Jetpack sudah terinstal tetapi belum tersambung.</string>
     <string name="login_jetpack_installation_error_connection_permission_message">Anda tidak memiliki izin untuk menyambungkan ke Jetpack di toko ini</string>
-    <string name="login_jetpack_installation_error_forbidden_suggestion">Hubungi manajer atau administrator toko Anda untuk mendapatkan bantuan.</string>
+    <string name="login_jetpack_installation_error_forbidden_suggestion">Hubungi administrator Anda untuk mendapatkan bantuan.</string>
     <string name="login_jetpack_installation_cancel">Batalkan instalasi</string>
     <string name="login_jetpack_installation_retry_authorizing">Coba beri izin lagi</string>
     <string name="login_jetpack_installation_retry_activating">Coba aktifkan ulang</string>

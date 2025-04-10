@@ -90,7 +90,7 @@ import kotlin.test.assertNotNull
 
 @ExperimentalCoroutinesApi
 class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() {
-    override val mode: Mode = Creation()
+    override val mode: Mode = Creation
     override val sku: String = ""
     override val barcodeFormat: BarcodeFormat = BarcodeFormat.FormatUPCA
     override val tracksFlow: String = VALUE_FLOW_CREATION
@@ -1277,7 +1277,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `given sku, when view model init, then fetch product information`() {
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
-                Creation(),
+                Creation,
                 "123",
                 BarcodeFormat.FormatUPCA,
             ).toSavedStateHandle()
@@ -1305,7 +1305,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `given sku, when view model init, then display progress indicator`() {
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
-                Creation(),
+                Creation,
                 "123",
                 BarcodeFormat.FormatUPCA,
             ).toSavedStateHandle()
@@ -1334,7 +1334,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `given empty sku, when view model init, then do not fetch product information`() {
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
-                Creation(),
+                Creation,
                 "",
                 null,
             ).toSavedStateHandle()
@@ -1362,7 +1362,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `given scanning initiated from the order list screen, when product search via sku succeeds, then track event with proper source`() {
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
-                Creation(),
+                Creation,
                 "12345",
                 BarcodeFormat.FormatUPCA,
             ).toSavedStateHandle()
@@ -1407,7 +1407,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `given scanning initiated from the order list screen, when product search via sku fails, then track event with proper source`() {
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
-                Creation(),
+                Creation,
                 "12345",
                 BarcodeFormat.FormatUPCA,
             ).toSavedStateHandle()
@@ -1447,7 +1447,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `given variable product from order list screen, when product added via scanning, then track correct source`() {
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
-                Creation(),
+                Creation,
                 "12345",
                 BarcodeFormat.FormatUPCA,
             ).toSavedStateHandle()
@@ -1496,7 +1496,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `given non-variable product from order list screen, when product added via scanning, then track correct source`() {
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
-                Creation(),
+                Creation,
                 "12345",
                 BarcodeFormat.FormatUPCA,
             ).toSavedStateHandle()

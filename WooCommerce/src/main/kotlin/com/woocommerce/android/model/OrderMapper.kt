@@ -5,7 +5,6 @@ import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.model.Order.Item
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.StringUtils
-import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.model.metadata.WCMetaData
 import org.wordpress.android.fluxc.model.metadata.get
 import org.wordpress.android.fluxc.model.order.FeeLineTaxStatus
@@ -13,6 +12,7 @@ import org.wordpress.android.fluxc.model.order.OrderAddress
 import org.wordpress.android.fluxc.model.order.TaxLine
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderMappingConst.CHARGE_ID_KEY
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderMappingConst.SHIPPING_PHONE_KEY
+import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import java.math.BigDecimal
 import java.util.Date
 import javax.inject.Inject

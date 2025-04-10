@@ -5,8 +5,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
@@ -16,11 +18,12 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorS
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosPaginationErrorIndicator
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
-import com.woocommerce.android.ui.woopos.home.items.PaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemList
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsEmptyList
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsLoadingIndicator
+import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
+import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 
 @Composable
 fun WooPosItemsSearchScreen(
@@ -46,7 +49,7 @@ private fun WooPosItemsSearchScreen(
     ) {
         when (state) {
             is WooPosItemsSearchViewState.EmptySearchQuery -> {
-                WooPosItemsEmptySearchQueryState(state)
+                WooPosItemsEmptySearchQueryStateScreen(state, onUIEvent)
             }
 
             is WooPosItemsSearchViewState.Content -> {
@@ -85,6 +88,14 @@ private fun WooPosItemsSearchContent(
     onUIEvent: (WooPosItemsSearchUiEvent) -> Unit
 ) {
     val listState = rememberLazyListState()
+    val focusManager = LocalFocusManager.current
+
+    LaunchedEffect(listState.isScrollInProgress) {
+        if (listState.isScrollInProgress) {
+            focusManager.clearFocus()
+        }
+    }
+
     WooPosItemList(
         state = state,
         listState = listState,
@@ -112,7 +123,7 @@ fun WooPosItemsSearchScreenPreview() {
                 .fillMaxSize()
                 .padding(WooPosSpacing.Medium.value)
         ) {
-            WooPosItemsEmptySearchQueryState(
+            WooPosItemsEmptySearchQueryStateScreen(
                 state = WooPosItemsSearchViewState.EmptySearchQuery(
                     popularItems = listOf<WooPosItemSelectionViewState.Product>(
                         WooPosItemSelectionViewState.Product.Simple(
@@ -127,7 +138,8 @@ fun WooPosItemsSearchScreenPreview() {
                         "Recent Search 2",
                         "Recent Search 3",
                     )
-                )
+                ),
+                onUIEvent = { }
             )
         }
     }
@@ -159,8 +171,8 @@ fun WooPosItemsSearchContentPreview() {
                             imageUrl = "https://example.com/image2.jpg",
                         ),
                     ),
-                    reloadingWithPullToRefresh = false,
-                    paginationState = PaginationState.None
+                    pullToRefreshState = WooPosPullToRefreshState.Enabled,
+                    paginationState = WooPosPaginationState.None
                 ),
                 onUIEvent = {}
             )
