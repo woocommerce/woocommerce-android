@@ -43,6 +43,7 @@ enum class WooPosCartStatus {
 @Parcelize
 sealed class WooPosCartItemViewState(open val itemNumber: Int, open val name: String) : Parcelable {
     @Parcelize
+    @Suppress("LongParameterList")
     sealed class Product(
         override val itemNumber: Int,
         open val id: Long,
