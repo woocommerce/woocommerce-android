@@ -35,11 +35,6 @@ class WooPosSearchProductsDataSource @Inject constructor(
         get() = canLoadMore.get()
 
     fun searchProducts(query: String): Flow<ProductsResult> = flow {
-        if (searchResultsCache.hasSearchResults(query)) {
-            emit(ProductsResult.Cached(searchResultsCache.getSearchResults(query)))
-            return@flow
-        }
-
         coroutineScope {
             val localSearchDeferred = async { productsCache.getAll().filter(searchPredicate(query)) }
             val remoteSearchDeferred = async { remoteSearch(query) }
