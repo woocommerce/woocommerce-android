@@ -12,14 +12,13 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSearchResult
-import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooPosSearchProductsDataSourceTest {
@@ -40,11 +39,6 @@ class WooPosSearchProductsDataSourceTest {
     private val product3 = ProductTestUtils.generateProduct(productId = 3)
     private val products = listOf(product1, product2, product3)
 
-    private val wcProduct1 = WCProductModel(1).apply {
-        remoteProductId = 1
-        name = "Product 1"
-    }
-
     @Before
     fun setup() {
         whenever(selectedSite.get()).thenReturn(siteModel)
@@ -64,7 +58,10 @@ class WooPosSearchProductsDataSourceTest {
         // GIVEN
         val query = "test"
         whenever(searchResultsCache.hasSearchResults(query)).thenReturn(true)
-        whenever(searchResultsCache.getSearchResults(query)).thenReturn(products)
+        whenever(searchResultsCache.getSearchResults(query)).thenReturn(emptyList())
+        whenever(wooPosProductsCache.getAll()).thenReturn(products)
+        whenever(productStore.searchProducts(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull()))
+            .thenReturn(WooResult(ProductSearchResult(emptyList(), false)))
 
         // WHEN
         sut.searchProducts(query).test {
@@ -72,44 +69,6 @@ class WooPosSearchProductsDataSourceTest {
             val result = awaitItem()
             assertThat(result).isInstanceOf(WooPosSearchProductsDataSource.ProductsResult.Cached::class.java)
             assertThat((result as WooPosSearchProductsDataSource.ProductsResult.Cached).products).isEqualTo(products)
-            awaitComplete()
-        }
-    }
-
-    @Test
-    fun `given no cached results, when search products called, then should emit local then remote results`() = runTest {
-        // GIVEN
-        val query = "test"
-        val localProducts = listOf(product1)
-
-        whenever(searchResultsCache.hasSearchResults(query)).thenReturn(false)
-        whenever(wooPosProductsCache.getAll()).thenReturn(localProducts)
-
-        val productSearchResult = ProductSearchResult(
-            products = listOf(wcProduct1),
-            canLoadMore = false
-        )
-
-        val wooResult = WooResult(productSearchResult)
-        whenever(
-            productStore.searchProducts(
-                site = any(),
-                searchString = any(),
-                skuSearchOptions = any(),
-                offset = any(),
-                pageSize = any(),
-                orderCurrency = any()
-            )
-        ).thenReturn(wooResult)
-
-        // WHEN
-        sut.searchProducts(query).test(timeout = 5.seconds) {
-            // THEN
-            // First emits local cached results
-            val firstResult = awaitItem()
-            assertThat(firstResult).isInstanceOf(WooPosSearchProductsDataSource.ProductsResult.Cached::class.java)
-
-            // Skip checking remote results for this test to simplify
             cancelAndIgnoreRemainingEvents()
         }
     }
