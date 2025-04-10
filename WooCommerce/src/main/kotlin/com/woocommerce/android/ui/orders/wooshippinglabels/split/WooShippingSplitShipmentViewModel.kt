@@ -112,6 +112,7 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
     }
 
     fun onUpdateShipment(splitMovement: SplitMovement) {
+        val currentShipmentBackup = currentShipments.value
         currentShipments.update {
             val shipments = it.toMutableMap()
             if (splitMovement.updatedCurrentShipmentItems.isEmpty()) {
@@ -125,6 +126,12 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
                 ?: splitMovement.updatedShipmentItems
             shipments
         }
+
+        val undoAction = { currentShipments.update { currentShipmentBackup } }
+
+        showUndoSnackbar(splitMovement, undoAction)
+    }
+
     private fun showUndoSnackbar(splitMovement: SplitMovement, undoAction: () -> Unit) {
         val snackbarMessage = if (splitMovement.totalItemsToMove > 1) {
             R.string.woo_shipping_split_shipment_moved_notice_plural
