@@ -6,10 +6,12 @@ import javax.inject.Singleton
 
 @Singleton
 class ProductSearchPredicate @Inject constructor() {
+    private val whitespaceRegex = "\\s+".toRegex()
+
     operator fun invoke(query: String): (Product) -> Boolean {
         if (query.isBlank()) return { true }
 
-        val searchTerms = query.lowercase().split(" ").filter { it.isNotBlank() }
+        val searchTerms = query.lowercase().split(whitespaceRegex).filter { it.isNotBlank() }
 
         return { product ->
             searchTerms.all { term ->
