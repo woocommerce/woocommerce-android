@@ -38,7 +38,7 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
 
     init {
         launch {
-            delay(NOTIFICATIONS_DELAY)
+            delay(TOOLTIP_DELAY)
             splitMessage.value = SplitShipmentMessage.Instructions
         }
         launch {
@@ -158,7 +158,7 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
     )
 
     companion object {
-        const val NOTIFICATIONS_DELAY = 500L
+        private const val TOOLTIP_DELAY = 800L
     }
 }
 
