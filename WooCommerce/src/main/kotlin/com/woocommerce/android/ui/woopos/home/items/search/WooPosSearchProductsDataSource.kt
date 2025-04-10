@@ -46,24 +46,19 @@ class WooPosSearchProductsDataSource @Inject constructor(
 
             val localResults = localSearchDeferred.await()
             if (localResults.isNotEmpty()) {
-                // Show local results first
                 emit(ProductsResult.Cached(localResults))
             }
 
-            // Wait for remote search results and merge with local results
             val remoteResults = remoteSearchDeferred.await()
             remoteResults.fold(
                 onSuccess = { result ->
                     canLoadMore.set(result.canLoadMore)
                     productsCache.addAll(result.products)
-                    // Merge local and remote results
                     val mergedResults = mergeSearchResults(localResults, result.products)
-                    // Store the merged results for this query
                     searchResultsCache.storeSearchResults(query, mergedResults.map { it.remoteId })
                     emit(ProductsResult.Remote(Result.success(mergedResults)))
                 },
                 onFailure = { error ->
-                    // If remote search fails but we have local results, store those
                     if (localResults.isNotEmpty()) {
                         searchResultsCache.storeSearchResults(query, localResults.map { it.remoteId })
                     }
@@ -89,9 +84,7 @@ class WooPosSearchProductsDataSource @Inject constructor(
         return remoteSearch(query, offset).fold(
             onSuccess = { result ->
                 canLoadMore.set(result.canLoadMore)
-                // Add new products to the shared cache
                 productsCache.addAll(result.products)
-                // Update the search results for this query with new products
                 searchResultsCache.storeSearchResults(query, result.products.map { it.remoteId })
                 Result.success(searchResultsCache.getSearchResults(query))
             },
