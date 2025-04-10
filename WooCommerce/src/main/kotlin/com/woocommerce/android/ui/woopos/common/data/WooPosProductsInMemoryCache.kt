@@ -12,9 +12,11 @@ class WooPosProductsInMemoryCache @Inject constructor() : WooPosProductsCache {
 
     companion object {
         private const val MAX_CACHE_SIZE = 10_000
+        private const val INITIAL_CAPACITY = 200
+        private const val LOAD_FACTOR = 0.75f
     }
 
-    private val productsCache = LinkedHashMap<Long, Product>(16, 0.75f, false)
+    private val productsCache = LinkedHashMap<Long, Product>(INITIAL_CAPACITY, LOAD_FACTOR, true)
 
     override suspend fun addAll(products: List<Product>) = mutex.withLock {
         products.forEach { product ->
