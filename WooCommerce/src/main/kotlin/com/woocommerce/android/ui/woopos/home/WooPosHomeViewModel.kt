@@ -194,23 +194,39 @@ class WooPosHomeViewModel @Inject constructor(
                         sendEventToChildren(RecentSearchSelected(event.query))
                     }
 
-                    is ChildToParentEvent.OrderCreated -> {
-                        sendEventToChildren(
-                            OrderCreated(
-                                updatedProducts = event.updatedProducts.map {
-                                    OrderCreated.ProductInfo(
-                                        id = it.id,
-                                        name = it.name,
-                                        price = it.price,
-                                        quantity = it.quantity
-                                    )
-                                }
-                            )
-                        )
-                    }
+                    is ChildToParentEvent.OrderCreated -> handleOrderCreated(event)
                 }
             }
         }
+    }
+
+    private fun handleOrderCreated(event: ChildToParentEvent.OrderCreated) {
+        sendEventToChildren(
+            OrderCreated(
+                updatedProducts = event.updatedProducts.map {
+                    when (it) {
+                        is ChildToParentEvent.OrderCreated.ProductInfo.Simple -> {
+                            OrderCreated.ProductInfo.Simple(
+                                id = it.id,
+                                name = it.name,
+                                price = it.price,
+                                quantity = it.quantity
+                            )
+                        }
+
+                        is ChildToParentEvent.OrderCreated.ProductInfo.Variation -> {
+                            OrderCreated.ProductInfo.Variation(
+                                id = it.id,
+                                name = it.name,
+                                price = it.price,
+                                quantity = it.quantity,
+                                variationId = it.variationId
+                            )
+                        }
+                    }
+                }
+            )
+        )
     }
 
     private fun handleProductsStatusChanged(event: ChildToParentEvent.ProductsStatusChanged) {

@@ -56,12 +56,27 @@ sealed class ChildToParentEvent {
     }
 
     data class OrderCreated(val updatedProducts: List<ProductInfo>) : ChildToParentEvent() {
-        data class ProductInfo(
-            val id: Long,
-            val name: String,
-            val price: BigDecimal,
-            val quantity: Float,
-        )
+        sealed class ProductInfo(
+            open val id: Long,
+            open val name: String,
+            open val price: BigDecimal,
+            open val quantity: Float,
+        ) {
+            data class Simple(
+                override val id: Long,
+                override val name: String,
+                override val price: BigDecimal,
+                override val quantity: Float,
+            ): ProductInfo(id, name, price, quantity)
+
+            data class Variation(
+                override val id: Long,
+                override val name: String,
+                override val price: BigDecimal,
+                override val quantity: Float,
+                val variationId: Long,
+            ): ProductInfo(id, name, price, quantity)
+        }
     }
 }
 

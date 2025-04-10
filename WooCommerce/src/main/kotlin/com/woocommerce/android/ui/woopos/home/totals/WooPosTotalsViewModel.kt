@@ -446,12 +446,26 @@ class WooPosTotalsViewModel @Inject constructor(
             childrenToParentEventSender.sendToParent(
                 ChildToParentEvent.OrderCreated(
                     updatedProducts = order.items.map {
-                        ChildToParentEvent.OrderCreated.ProductInfo(
-                            id = it.productId,
-                            name = it.name,
-                            price = it.price,
-                            quantity = it.quantity
-                        )
+                        when {
+                            (it.variationId == 0L) -> {
+                                ChildToParentEvent.OrderCreated.ProductInfo.Simple(
+                                    id = it.productId,
+                                    name = it.name,
+                                    price = it.price,
+                                    quantity = it.quantity
+                                )
+                            }
+
+                            else -> {
+                                ChildToParentEvent.OrderCreated.ProductInfo.Variation(
+                                    id = it.productId,
+                                    name = it.name,
+                                    price = it.price,
+                                    quantity = it.quantity,
+                                    variationId = it.variationId
+                                )
+                            }
+                        }
                     }
                 )
             )
