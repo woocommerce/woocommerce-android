@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.split
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.orders.wooshippinglabels.ShippableItemUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.ActionSnackbar
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
@@ -19,8 +20,6 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.collections.mapValues
-import kotlin.getValue
 
 @HiltViewModel
 class WooShippingSplitShipmentViewModel @Inject constructor(
@@ -126,6 +125,22 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
                 ?: splitMovement.updatedShipmentItems
             shipments
         }
+    private fun showUndoSnackbar(splitMovement: SplitMovement, undoAction: () -> Unit) {
+        val snackbarMessage = if (splitMovement.totalItemsToMove > 1) {
+            R.string.woo_shipping_split_shipment_moved_notice_plural
+        } else {
+            R.string.woo_shipping_split_shipment_moved_notice_one
+        }
+
+        splitMessage.value = SplitShipmentMessage.Success(
+            ActionSnackbar(
+                message = snackbarMessage,
+                messageParameters = listOf(splitMovement.totalItemsToMove, splitMovement.updatedShipment + 1),
+                actionLabel = R.string.undo,
+                dismissAction = { splitMessage.value = null },
+                action = undoAction
+            )
+        )
     }
 
     data class SplitShipmentViewState(
