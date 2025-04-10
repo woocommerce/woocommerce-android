@@ -26,7 +26,7 @@ class WooPosSearchProductsDataSource @Inject constructor(
     private val searchPredicate: ProductSearchPredicate,
 ) {
     companion object {
-        private const val PAGE_SIZE = 25
+        private const val PAGE_SIZE = 100
     }
 
     private val canLoadMore = AtomicBoolean(true)
