@@ -21,75 +21,35 @@ class WooPosCartProductUpdater @Inject constructor(
         val mutableCurrentBodyList = currentBodyState.itemsInCart.toMutableList()
         var changesDone = false
 
-        val expandedUpdatedProductsBasedOnQuantity = updatedProducts.flatMap { product ->
-            List(product.quantity.toInt()) { product }
-        }.toMutableList()
+        val availableProductsMap = createAvailableProductsMap(updatedProducts)
 
         currentBodyState.itemsInCart.forEachIndexed { index, item ->
             when (item) {
                 is WooPosCartItemViewState.Product -> {
-                    val updatedProductIndex = expandedUpdatedProductsBasedOnQuantity.indexOfFirst { updatedProduct ->
-                        val productExists = updatedProduct.id == item.id && updatedProduct.id != 0L
-                        val productDoesNotExist = updatedProduct.id == 0L && updatedProduct.name == item.name
-                        productExists || productDoesNotExist
-                    }
+                    val availableQuantity = availableProductsMap[item.id] ?: 0
 
-                    if (updatedProductIndex != -1) {
-                        val updatedProduct = expandedUpdatedProductsBasedOnQuantity[updatedProductIndex]
-                        expandedUpdatedProductsBasedOnQuantity.removeAt(updatedProductIndex)
+                    if (availableQuantity > 0) {
+                        availableProductsMap[item.id] = availableQuantity - 1
 
-                        val productExists = updatedProduct.id == item.id && updatedProduct.id != 0L
-                        val productDoesNotExist = updatedProduct.id == 0L && updatedProduct.name == item.name
+                        val updatedProduct = updatedProducts.find { it.id == item.id }
 
-                        mutableCurrentBodyList[index] = when (item) {
-                            is WooPosCartItemViewState.Product.Simple -> {
-                                when {
-                                    productExists -> {
-                                        val newItem = item.copy(
-                                            name = updatedProduct.name,
-                                            price = formatPrice(updatedProduct.price)
-                                        )
-                                        val itemChanged = newItem.name != item.name || newItem.price != item.price
-                                        changesDone = changesDone || itemChanged
-                                        newItem
-                                    }
-                                    productDoesNotExist -> {
-                                        val newItem = item.copy(
-                                            price = formatPrice(updatedProduct.price),
-                                            productDoesNotExist = true
-                                        )
-                                        changesDone = true
-                                        newItem
-                                    }
-                                    else -> item
-                                }
-                            }
-                            is WooPosCartItemViewState.Product.Variation -> {
-                                when {
-                                    productExists -> {
-                                        val newItem = item.copy(
-                                            name = updatedProduct.name,
-                                            price = formatPrice(updatedProduct.price)
-                                        )
-                                        val itemChanged = newItem.name != item.name || newItem.price != item.price
-                                        changesDone = changesDone || itemChanged
-                                        newItem
-                                    }
-                                    productDoesNotExist -> {
-                                        val newItem = item.copy(
-                                            price = formatPrice(updatedProduct.price),
-                                            productDoesNotExist = true
-                                        )
-                                        changesDone = true
-                                        newItem
-                                    }
-                                    else -> item
-                                }
-                            }
+                        if (updatedProduct != null) {
+                            val updatedItem = updateProductWithNewInfo(
+                                item = item,
+                                updatedProduct = updatedProduct
+                            )
+                            val itemChanged = (updatedItem.name != item.name || updatedItem.price != item.price)
+
+                            mutableCurrentBodyList[index] = updatedItem
+                            changesDone = changesDone || itemChanged
                         }
+                    } else {
+                        mutableCurrentBodyList[index] = markProductAsNotExisting(item)
+                        changesDone = true
                     }
                 }
                 is WooPosCartItemViewState.Coupon -> {
+                    // We may need to update the coupon in the future
                 }
             }
         }
@@ -107,5 +67,51 @@ class WooPosCartProductUpdater @Inject constructor(
                 itemsInCart = mutableCurrentBodyList
             )
         )
+    }
+
+    private fun createAvailableProductsMap(
+        updatedProducts: List<ParentToChildrenEvent.OrderCreated.ProductInfo>
+    ): MutableMap<Long, Int> {
+        val productMap = mutableMapOf<Long, Int>()
+
+        updatedProducts.forEach { product ->
+            val currentQuantity = productMap[product.id] ?: 0
+            productMap[product.id] = currentQuantity + product.quantity.toInt()
+        }
+
+        return productMap
+    }
+
+    private suspend fun updateProductWithNewInfo(
+        item: WooPosCartItemViewState.Product,
+        updatedProduct: ParentToChildrenEvent.OrderCreated.ProductInfo
+    ): WooPosCartItemViewState.Product {
+        return when (item) {
+            is WooPosCartItemViewState.Product.Simple -> {
+                item.copy(
+                    name = updatedProduct.name,
+                    price = formatPrice(updatedProduct.price)
+                )
+            }
+            is WooPosCartItemViewState.Product.Variation -> {
+                item.copy(
+                    name = updatedProduct.name,
+                    price = formatPrice(updatedProduct.price)
+                )
+            }
+        }
+    }
+
+    private fun markProductAsNotExisting(
+        item: WooPosCartItemViewState.Product
+    ): WooPosCartItemViewState.Product {
+        return when (item) {
+            is WooPosCartItemViewState.Product.Simple -> {
+                item.copy(productDoesNotExist = true)
+            }
+            is WooPosCartItemViewState.Product.Variation -> {
+                item.copy(productDoesNotExist = true)
+            }
+        }
     }
 }
