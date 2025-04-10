@@ -7,6 +7,8 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.CheckoutClicked
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.ItemClickedInProductSelector
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccessfullyPaid.PaymentMethod
+import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.SearchEvent.ChangedQuery
+import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.SearchEvent.RecentSearchSelected
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ExitConfirmationDialog
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ProductsInfoDialog
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ScreenPositionState
@@ -178,14 +180,17 @@ class WooPosHomeViewModel @Inject constructor(
                     }
 
                     is NavigationEvent -> viewModelScope.launch { _navigationEvent.emit(event) }
-                    is ChildToParentEvent.SearchEvent.ChangedQuery -> {
-                        sendEventToChildren(ParentToChildrenEvent.SearchEvent.ChangedQuery(event.query))
+                    is ChildToParentEvent.SearchEvent.QueryChanged -> {
+                        sendEventToChildren(ChangedQuery(event.query))
                     }
                     ChildToParentEvent.SearchEvent.Finished -> {
                         sendEventToChildren(ParentToChildrenEvent.SearchEvent.Finished)
                     }
                     ChildToParentEvent.SearchEvent.Started -> {
                         sendEventToChildren(ParentToChildrenEvent.SearchEvent.Started)
+                    }
+                    is ChildToParentEvent.SearchEvent.RecentSearchSelected -> {
+                        sendEventToChildren(RecentSearchSelected(event.query))
                     }
                 }
             }

@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-03-11 09:54:04+0000
+Translation-Revision-Date: 2025-03-25 09:54:05+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_split_shipment">분할 배송</string>
+    <string name="woo_shipping_labels_purchase_error">배송 레이블을 구매할 수 없습니다. 다시 시도해 주세요.</string>
+    <string name="woo_shipping_address_notification_origin_verified">확인된 출발지 주소</string>
+    <string name="woo_shipping_address_notification_destination_verified">확인된 목적지 주소</string>
+    <string name="woo_shipping_address_notification_destination_missing">목적지 주소 누락</string>
+    <string name="woo_shipping_address_notification_origin_unverified">출발지 주소 미확인됨</string>
+    <string name="woo_shipping_address_notification_destination_unverified">목적지 주소 미확인됨</string>
+    <string name="woo_shipping_labels_customs_itn_required_message">$2,500를 초과하는 배송의 경우 미국 수출 신고 확인용 14자리 AES ITN을 받아야 합니다.</string>
+    <string name="woo_shipping_labels_customs_itn_required_error">ITN은 필수 항목입니다.</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_weight_desc">적용되는 배송비를 표시하려면 배송 무게를 알아야 합니다.</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_weight">배송비를 확인하려면 배송 무게를 추가하세요.</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_destination_desc">적용되는 배송비를 표시하려면 이 패키지의 행선지를 알아야 합니다.</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_destination">배송비를 확인하려면 목적지 주소를 추가하세요.</string>
+    <string name="woopos_search_recent_searches_title">최근 검색 항목</string>
+    <string name="woopos_search_popular_items_title">인기 아이템</string>
+    <string name="woopos_search_products">상품 검색…</string>
+    <string name="woopos_clear_back_content_description">지우기</string>
+    <string name="woopos_search_back_content_description">뒤로</string>
+    <string name="card_reader_connect_failed_battery_low_hint">리더 배터리 잔량이 부족합니다. 리더를 충전하고 다시 시도해 주세요.</string>
+    <string name="login_site_credentials_invalid_response">사이트의 예기치 않은 응답으로 인해 로그인에 실패했습니다.</string>
+    <string name="login_jetpack_user_already_connected_dialog_cancel_button">취소</string>
+    <string name="login_jetpack_user_already_connected_dialog_proceed_button">진행</string>
+    <string name="login_jetpack_user_already_connected_dialog_message">이 워드프레스 관리자 계정은 이미 다른 워드프레스닷컴 계정에 연결되어 있습니다.\n해당 계정으로 계속하면 현재 계정에서 로그아웃됩니다.</string>
+    <string name="login_jetpack_user_already_connected_dialog_title">계정이 이미 연결됨</string>
+    <string name="yes">예</string>
     <string name="woo_shipping_address_update_message">입력한 주소 업데이트 중</string>
     <string name="woo_shipping_address_update_title">업데이트 중</string>
     <string name="woo_shipping_address_save_changes">변경 사항 저장</string>
@@ -25,7 +50,6 @@ Language: ko_KR
     <string name="woo_shipping_labels_customs_product_details_description_missing">설명 누락</string>
     <string name="woo_shipping_labels_customs_product_details_description">설명</string>
     <string name="woo_shipping_labels_customs_product_details_title">상품 상세 정보</string>
-    <string name="woo_shipping_labels_customs_itn_required_message">ITN은 비워둘 수 없습니다.</string>
     <string name="woo_shipping_labels_customs_itn_error_message">유효하지 않은 ITN 형식</string>
     <string name="woo_shipping_labels_customs_other_error_message">유형은 비워둘 수 없습니다.</string>
     <string name="woo_shipping_labels_package_creation_shipping_rates_loading_error">배송비를 로드할 수 없습니다.</string>
@@ -1416,7 +1440,6 @@ Language: ko_KR
     <string name="login_site_credentials_http_error">로그인 실패(상태 코드 %1$s)</string>
     <string name="login_site_credentials_custom_admin_url">스토어의 관리 URL이 식별되지 않아서 로그인할 수 없습니다.</string>
     <string name="login_site_credentials_custom_login_url">스토어의 로그인 URL이 식별되지 않아서 로그인할 수 없습니다.</string>
-    <string name="login_site_credentials_invalid_response">사이트의 예기치 않은 응답으로 인해 로그인에 실패했습니다. 이 문제를 해결하는 중입니다.</string>
     <string name="something_went_wrong_try_again">문제가 발생했습니다. 나중에 다시 시도하세요.</string>
     <string name="card_reader_onboarding_account_pending_requirements_without_date_hint">계정에 대기 중인 요구 사항이 있습니다. 직접 결제 수락을 유지하려면 해당 요구 사항을 완료하세요.</string>
     <string name="analytics_banner_message">회원님이 경험하신 분석에 대해 평가해 주세요.</string>
@@ -1582,7 +1605,7 @@ Language: ko_KR
     <string name="login_jetpack_installation_connection_dismissed_explanation">스토어에 접근하려면 다시 연결해 보세요.</string>
     <string name="login_jetpack_installation_connection_dismissed">젯팩이 설치되었지만 연결되지 않았습니다.</string>
     <string name="login_jetpack_installation_error_connection_permission_message">이 스토어의 젯팩에 연결하는 권한이 없습니다.</string>
-    <string name="login_jetpack_installation_error_forbidden_suggestion">도움말은 매장 관리자에게 문의하세요.</string>
+    <string name="login_jetpack_installation_error_forbidden_suggestion">도움말은 관리자에게 문의하세요.</string>
     <string name="login_jetpack_installation_cancel">설치 취소</string>
     <string name="login_jetpack_installation_retry_authorizing">다시 권한 부여 시도</string>
     <string name="login_jetpack_installation_retry_activating">다시 활성화 시도</string>

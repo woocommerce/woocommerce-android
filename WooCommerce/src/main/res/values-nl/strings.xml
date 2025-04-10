@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-03-11 09:54:04+0000
+Translation-Revision-Date: 2025-03-25 15:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_split_shipment">Verzending spreiden</string>
+    <string name="woo_shipping_labels_purchase_error">We kunnen het verzendlabel niet aanschaffen. Probeer het nog eens.</string>
+    <string name="woo_shipping_address_notification_origin_verified">Adres van oorsprong geverifieerd</string>
+    <string name="woo_shipping_address_notification_destination_verified">Adres van bestemming geverifieerd</string>
+    <string name="woo_shipping_address_notification_destination_missing">Adres van bestemming ontbreekt</string>
+    <string name="woo_shipping_address_notification_origin_unverified">Adres van herkomst niet geverifieerd</string>
+    <string name="woo_shipping_address_notification_destination_unverified">Adres van bestemming niet geverifieerd</string>
+    <string name="woo_shipping_labels_customs_itn_required_message">Voor zendingen van meer dan $ 2500 moet je een 14-cijferige AES ITN verkrijgen voor verificatie van de exportrapportage voor de VS.</string>
+    <string name="woo_shipping_labels_customs_itn_required_error">ITN is vereist</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_weight_desc">We moeten het verzendgewicht weten voordat we de verzendkostenopties kunnen weergeven.</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_weight">Verzendgewicht toevoegen om verzendkosten te krijgen</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_destination_desc">We moeten weten waar dit pakket naartoe gaat voordat we de verzendkostenopties kunnen weergeven.</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_destination">Voeg een bestemmingsadres toe om verzendkosten op te halen</string>
+    <string name="woopos_search_recent_searches_title">Recente zoekopdrachten</string>
+    <string name="woopos_search_popular_items_title">Populaire items</string>
+    <string name="woopos_search_products">Producten zoeken …</string>
+    <string name="woopos_clear_back_content_description">Wissen</string>
+    <string name="woopos_search_back_content_description">Terug</string>
+    <string name="card_reader_connect_failed_battery_low_hint">De batterij van de lezer is bijna leeg. Laad de lezer op en probeer het opnieuw</string>
+    <string name="login_site_credentials_invalid_response">Vanwege een onverwachte reactie van je website is het niet gelukt om in te loggen.</string>
+    <string name="login_jetpack_user_already_connected_dialog_cancel_button">Annuleren</string>
+    <string name="login_jetpack_user_already_connected_dialog_proceed_button">Doorgaan</string>
+    <string name="login_jetpack_user_already_connected_dialog_message">Dit WordPress-beheerdersaccount is al gekoppeld aan een ander WordPress.com-account.\nAls je met dat account doorgaat, word je uitgelogd bij je huidige account.</string>
+    <string name="login_jetpack_user_already_connected_dialog_title">Account al gekoppeld</string>
+    <string name="yes">Ja</string>
     <string name="woo_shipping_address_update_message">Ingevoerd adres wordt bijgewerkt</string>
     <string name="woo_shipping_address_update_title">Bijwerken</string>
     <string name="woo_shipping_address_save_changes">Wijzigingen opslaan</string>
@@ -25,7 +50,6 @@ Language: nl
     <string name="woo_shipping_labels_customs_product_details_description_missing">Ontbrekende beschrijving</string>
     <string name="woo_shipping_labels_customs_product_details_description">Omschrijving</string>
     <string name="woo_shipping_labels_customs_product_details_title">Productgegevens</string>
-    <string name="woo_shipping_labels_customs_itn_required_message">ITN mag niet leeg zijn</string>
     <string name="woo_shipping_labels_customs_itn_error_message">Ongeldige ITN-indeling</string>
     <string name="woo_shipping_labels_customs_other_error_message">Type mag niet leeg zijn</string>
     <string name="woo_shipping_labels_package_creation_shipping_rates_loading_error">We kunnen verzendkosten niet laden.</string>
@@ -1416,7 +1440,6 @@ Language: nl
     <string name="login_site_credentials_http_error">Login mislukt met statuscode %1$s</string>
     <string name="login_site_credentials_custom_admin_url">Het is niet gelukt om in te loggen omdat we de admin-URL van je winkel niet konden identificeren</string>
     <string name="login_site_credentials_custom_login_url">Het is niet gelukt om in te loggen omdat we de login-URL van je winkel niet konden identificeren</string>
-    <string name="login_site_credentials_invalid_response">Vanwege een onverwachte reactie van je website is het niet gelukt om in te loggen. Wij zijn bezig dit probleem te verhelpen.</string>
     <string name="something_went_wrong_try_again">Er ging iets fout, probeer het later nog eens.</string>
     <string name="card_reader_onboarding_account_pending_requirements_without_date_hint">Er zijn openstaande verplichtingen op je account. Voltooi deze verplichtingen om fysieke betalingen te kunnen blijven aannemen.</string>
     <string name="analytics_banner_message">Gelieve je analyse-ervaring te beoordelen</string>
@@ -1582,7 +1605,7 @@ Language: nl
     <string name="login_jetpack_installation_connection_dismissed_explanation">Probeer opnieuw verbinding te maken om toegang te krijgen tot je winkel.</string>
     <string name="login_jetpack_installation_connection_dismissed">Jetpack is geïnstalleerd, maar niet verbonden.</string>
     <string name="login_jetpack_installation_error_connection_permission_message">Je hebt geen toestemming om Jetpack te verbinden met deze winkel</string>
-    <string name="login_jetpack_installation_error_forbidden_suggestion">Neem contact op met je winkelmanager of beheerder voor hulp.</string>
+    <string name="login_jetpack_installation_error_forbidden_suggestion">Neem contact op met je beheerder voor ondersteuning.</string>
     <string name="login_jetpack_installation_cancel">Installatie annuleren</string>
     <string name="login_jetpack_installation_retry_authorizing">Probeer opnieuw te autoriseren</string>
     <string name="login_jetpack_installation_retry_activating">Probeer opnieuw te activeren</string>

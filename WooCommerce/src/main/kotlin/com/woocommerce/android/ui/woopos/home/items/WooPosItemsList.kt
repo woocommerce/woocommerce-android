@@ -68,7 +68,7 @@ import kotlinx.coroutines.flow.filter
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun WooPosItemList(
-    state: ContentViewState,
+    state: WooPosContentViewState,
     listState: LazyListState,
     onItemClicked: (item: WooPosItemSelectionViewState) -> Unit,
     onEndOfProductsListReached: () -> Unit,
@@ -111,19 +111,19 @@ fun WooPosItemList(
         }
 
         when (state.paginationState) {
-            PaginationState.Error -> {
+            WooPosPaginationState.Error -> {
                 item {
                     onErrorWhilePaginating()
                 }
             }
 
-            PaginationState.Loading -> {
+            WooPosPaginationState.Loading -> {
                 item {
                     ItemsLoadingItem()
                 }
             }
 
-            PaginationState.None -> {
+            WooPosPaginationState.None -> {
             }
         }
 
@@ -408,7 +408,7 @@ fun WooPosItemsEmptyList(
 @Composable
 private fun InfiniteListHandler(
     listState: LazyListState,
-    state: ContentViewState,
+    state: WooPosContentViewState,
     onEndOfProductsListReached: () -> Unit
 ) {
     val buffer = 5
@@ -422,7 +422,7 @@ private fun InfiniteListHandler(
         }
     }
 
-    LaunchedEffect(state.reloadingWithPullToRefresh) {
+    LaunchedEffect(state.pullToRefreshState) {
         snapshotFlow { loadMore.value }
             .distinctUntilChanged()
             .filter { it }

@@ -27,11 +27,6 @@
             app:enterAnim="@anim/slide_up"
             app:exitAnim="@anim/slide_down" />
         <action
-            android:id="@+id/action_orderCreationFragment_to_simplePaymentsMigrationBottomSheetFragment"
-            app:destination="@+id/simplePaymentsMigrationBottomSheetFragment"
-            app:enterAnim="@anim/slide_up"
-            app:exitAnim="@anim/slide_down" />
-        <action
             android:id="@+id/action_orderCreationFragment_to_orderStatusSelectorDialog"
             app:destination="@id/orderStatusSelectorDialog"
             app:enterAnim="@anim/activity_fade_in"
@@ -372,10 +367,6 @@
             android:name="autoTaxRateSettingState"
             app:argType="com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel$AutoTaxRateSettingState" />
     </dialog>
-    <dialog
-        android:id="@+id/simplePaymentsMigrationBottomSheetFragment"
-        android:name="com.woocommerce.android.ui.orders.creation.simplepaymentsmigration.OrderCreateEditSimplePaymentsMigrationBottomSheetFragment"
-        android:label="SimplePaymentsMigrationBottomSheetFragment"/>
     <fragment
         android:id="@+id/productConfigurationFragment"
         android:name="com.woocommerce.android.ui.orders.creation.configuration.ProductConfigurationFragment"

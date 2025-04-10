@@ -42,9 +42,8 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult.ActionPerformed
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -56,7 +55,6 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -83,7 +81,8 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.address.AddressSelect
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.AddressStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.getShipFrom
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.getShipTo
-import com.woocommerce.android.ui.orders.wooshippinglabels.hazmat.HazmatSelectionCard
+import com.woocommerce.android.ui.orders.wooshippinglabels.components.SuccessSnackbarHost
+import com.woocommerce.android.ui.orders.wooshippinglabels.hazmat.HazmatCard
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.components.ErrorMessageWithButton
@@ -347,7 +346,7 @@ private fun LabelCreationScreenWithBottomSheet(
 
     BottomSheetScaffold(
         snackbarHost = {
-            SnackbarHost(
+            SuccessSnackbarHost(
                 snackbarHostState,
                 modifier = Modifier.padding(bottom = snackbarPaddingBottom)
             )
@@ -431,9 +430,7 @@ private fun LabelCreationScreenWithBottomSheet(
                 )
                 HazmatCard(
                     onClick = onHazmatNoticeClick,
-                    selectedCategory = hazmatState
-                        .run { this as? Declared }
-                        ?.hazmatCategory,
+                    selectedCategory = hazmatState.hazmatSelection,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(start = 4.dp, end = 8.dp)
@@ -464,16 +461,17 @@ private fun LabelCreationScreenWithBottomSheet(
             val actionSnackbarActionLabel = actionSnackbar?.let { stringResource(it.actionLabel) }
 
             LaunchedEffect(actionSnackbar) {
-                if (actionSnackbar != null) {
-                    val snackBarResult = snackbarHostState.showSnackbar(
+                actionSnackbar?.let {
+                    val result = snackbarHostState.showSnackbar(
                         message = actionSnackbarMessage ?: "",
                         actionLabel = actionSnackbarActionLabel,
-                        duration = SnackbarDuration.Short
+                        duration = SnackbarDuration.Short,
                     )
-                    if (snackBarResult == ActionPerformed) {
-                        actionSnackbar.action()
+                    when (result) {
+                        SnackbarResult.ActionPerformed -> actionSnackbar.action()
+                        SnackbarResult.Dismissed -> actionSnackbar.onDismissed()
                     }
-                }
+                } ?: snackbarHostState.currentSnackbarData?.dismiss()
             }
         }
     }
@@ -493,51 +491,6 @@ private fun TopBar(onNavigateBack: () -> Unit) = TopAppBar(
     backgroundColor = colorResource(id = R.color.color_toolbar),
     elevation = 0.dp,
 )
-
-@Composable
-internal fun HazmatCard(
-    modifier: Modifier = Modifier,
-    selectedCategory: ShippingLabelHazmatCategory? = null,
-    onClick: () -> Unit = {}
-) {
-    Row(modifier = modifier.clickable { onClick() }) {
-        Text(
-            text = stringResource(R.string.shipping_label_hazmat_title),
-            style = MaterialTheme.typography.subtitle1,
-            color = MaterialTheme.colors.onSurface,
-            modifier = Modifier
-                .weight(1f)
-                .padding(dimensionResource(id = R.dimen.major_100))
-                .align(Alignment.CenterVertically)
-        )
-
-        Text(
-            text = if (selectedCategory == null) stringResource(R.string.no) else stringResource(R.string.yes),
-            style = MaterialTheme.typography.subtitle1,
-            color = colorResource(id = R.color.color_on_surface_medium),
-            modifier = Modifier
-                .align(Alignment.CenterVertically)
-        )
-
-        Icon(
-            painter = painterResource(R.drawable.ic_arrow_right),
-            tint = colorResource(id = R.color.color_on_surface_medium),
-            contentDescription = stringResource(
-                id = R.string.shipping_label_package_details_items_expand_content_description
-            ),
-            modifier = Modifier
-                .align(Alignment.CenterVertically)
-                .padding(end = dimensionResource(R.dimen.minor_50))
-        )
-    }
-
-    if (selectedCategory != null) {
-        HazmatSelectionCard(
-            selectedCategory = selectedCategory,
-            modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100))
-        )
-    }
-}
 
 @Composable
 private fun CustomsCard(
@@ -904,14 +857,6 @@ private fun WooShippingLabelCreationScreenPreview() {
             onEditDestinationAddress = {},
             destinationStatus = AddressStatus.VERIFIED
         )
-    }
-}
-
-@Preview
-@Composable
-private fun HazmatCardPreview() {
-    WooThemeWithBackground {
-        HazmatCard(modifier = Modifier.padding(16.dp))
     }
 }
 

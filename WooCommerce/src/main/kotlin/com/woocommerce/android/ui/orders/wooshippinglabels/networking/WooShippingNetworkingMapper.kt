@@ -5,6 +5,7 @@ import androidx.compose.ui.text.toLowerCase
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.Location
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.AddressNormalizationModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
@@ -294,6 +295,14 @@ class WooShippingNetworkingMapper @Inject constructor(
             valueTransform = { it.value }
         )
     }
+
+    fun toHazmatDTO(hazmatSelection: ShippingLabelHazmatCategory?) =
+        hazmatSelection?.let {
+            HazmatDTO(
+                isHazmat = true,
+                category = hazmatSelection.requestFieldValue
+            )
+        } ?: HazmatDTO()
 
     companion object {
         private const val PURCHASE_IN_PROGRESS_KEY = "PURCHASE_IN_PROGRESS"

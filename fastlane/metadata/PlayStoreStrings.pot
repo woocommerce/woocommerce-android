@@ -16,16 +16,16 @@ msgid "We've improved WooCommerce app! This time we've fixed several bugs and fo
 msgstr ""
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_221"
+msgid ""
+"22.1:\n"
+"This update brings several improvements to the WooCommerce app, including the removal of the "Collect Payment" flow, replaced by a custom order creation process. We've enhanced the display of disabled products in completed orders, fixed crashes in POS and custom amount dialogs, and improved the visibility of order count badges. The Woo upgrade dialog has been redesigned, and currency codes now appear in the Custom Amounts screen.\n"
+msgstr ""
+
 msgctxt "release_note_220"
 msgid ""
 "22.0:\n"
 "We've streamlined your experience with improved Jetpack integration for seamless setup. Payment processing now shows low battery alerts and handles minimum transaction amounts better. We've enhanced the order management system by fixing redundant network requests and improving printing instructions visibility. Dark mode icon colors on notification banners have been fixed, and we've boosted accessibility for payment status changes in POS. Tablet users will enjoy smoother animations during payment collection.\n"
-msgstr ""
-
-msgctxt "release_note_219"
-msgid ""
-"21.9:\n"
-"We’ve squashed a pesky bug that could cause a crash when adding a new payment card in the Blaze campaign form. This update ensures a smoother and more reliable experience—enjoy hassle-free payments with WooCommerce! 🚀\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!

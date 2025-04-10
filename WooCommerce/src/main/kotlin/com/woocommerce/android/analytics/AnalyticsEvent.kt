@@ -232,8 +232,6 @@ enum class AnalyticsEvent(override val siteless: Boolean = false) : IAnalyticsEv
     // -- Simple Payments
     SIMPLE_PAYMENTS_FLOW_NOTE_ADDED,
     SIMPLE_PAYMENTS_FLOW_TAXES_TOGGLED,
-    SIMPLE_PAYMENTS_MIGRATION_SHEET_ADD_CUSTOM_AMOUNT,
-    SIMPLE_PAYMENTS_MIGRATION_SHEET_SHOWN,
 
     // -- Upsell Banner
     FEATURE_CARD_SHOWN,
@@ -531,7 +529,6 @@ enum class AnalyticsEvent(override val siteless: Boolean = false) : IAnalyticsEv
     SETTINGS_DOMAINS_TAPPED,
 
     // -- Payments Hub
-    PAYMENTS_HUB_COLLECT_PAYMENT_TAPPED,
     PAYMENTS_HUB_ORDER_CARD_READER_TAPPED,
     PAYMENTS_HUB_CARD_READER_MANUALS_TAPPED,
     PAYMENTS_HUB_MANAGE_CARD_READERS_TAPPED,

@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.customs
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Surface
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.MaterialTheme
@@ -19,6 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
@@ -165,6 +168,7 @@ fun WooShippingCustomsFormScreen(
             ) {
                 Text(
                     text = stringResource(id = R.string.woo_shipping_labels_customs_return_to_sender_label),
+                    color = colorResource(id = R.color.color_on_surface),
                     modifier = modifier
                         .align(Alignment.CenterVertically)
                         .weight(1f)
@@ -174,14 +178,15 @@ fun WooShippingCustomsFormScreen(
                     onCheckedChange = onReturnToSenderChanged,
                     colors = CheckboxDefaults.colors(
                         checkedColor = MaterialTheme.colorScheme.primary,
-                        uncheckedColor = MaterialTheme.colorScheme.onSurface
+                        uncheckedColor = colorResource(id = R.color.color_on_surface_disabled),
                     )
                 )
             }
 
             Text(
                 text = stringResource(R.string.woo_shipping_labels_customs_product_details_title),
-                style = MaterialTheme.typography.titleMedium,
+                color = colorResource(id = R.color.color_on_surface),
+                style = MaterialTheme.typography.titleMedium
             )
 
             shippingProducts.forEachIndexed { index, product ->
@@ -207,58 +212,61 @@ fun WooShippingCustomsFormScreen(
 }
 
 @Preview
+@Preview(uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun PreviewWooShippingCustomsFormScreen() {
     WooThemeWithBackground {
-        WooShippingCustomsFormScreen(
-            contentType = ContentType.MERCHANDISE,
-            restrictionType = RestrictionType.NONE,
-            itnValue = InputValue.Data("123456"),
-            otherContentDetailsInput = InputValue.Data("Important Stuff"),
-            otherRestrictionDetailsInput = InputValue.Data("Restricted Stuff"),
-            returnToSenderChecked = false,
-            isAddCustomsButtonEnabled = true,
-            shouldDisplayContentTypeInput = true,
-            shouldDisplayRestrictionTypeInput = false,
-            shippingProducts = listOf(
-                WooShippingCustomsProductUIModel(
-                    productId = 0,
-                    name = "Little Nap Brazil 250g",
-                    description = InputValue.Data("Product Description"),
-                    tariffNumber = InputValue.Data("123456"),
-                    valuePerUnit = InputValue.Data("10.00"),
-                    weightPerUnit = InputValue.Data("1.00"),
-                    originCountry = "United Stats of America",
-                    originCountryCode = "US",
-                    quantity = 1F,
-                    isExpanded = false
+        Surface {
+            WooShippingCustomsFormScreen(
+                contentType = ContentType.MERCHANDISE,
+                restrictionType = RestrictionType.NONE,
+                itnValue = InputValue.Data("123456"),
+                otherContentDetailsInput = InputValue.Data("Important Stuff"),
+                otherRestrictionDetailsInput = InputValue.Data("Restricted Stuff"),
+                returnToSenderChecked = false,
+                isAddCustomsButtonEnabled = true,
+                shouldDisplayContentTypeInput = true,
+                shouldDisplayRestrictionTypeInput = false,
+                shippingProducts = listOf(
+                    WooShippingCustomsProductUIModel(
+                        productId = 0,
+                        name = "Little Nap Brazil 250g",
+                        description = InputValue.Data("Product Description"),
+                        tariffNumber = InputValue.Data("123456"),
+                        valuePerUnit = InputValue.Data("10.00"),
+                        weightPerUnit = InputValue.Data("1.00"),
+                        originCountry = "United Stats of America",
+                        originCountryCode = "US",
+                        quantity = 1F,
+                        isExpanded = false
+                    ),
+                    WooShippingCustomsProductUIModel(
+                        productId = 0,
+                        name = "Little Nap Brazil 250g",
+                        description = InputValue.Data("Product Description"),
+                        tariffNumber = InputValue.Data("123456"),
+                        valuePerUnit = InputValue.Data("10.00"),
+                        weightPerUnit = InputValue.Data("1.00"),
+                        originCountry = "United Stats of America",
+                        originCountryCode = "US",
+                        quantity = 1F,
+                        isExpanded = true
+                    )
                 ),
-                WooShippingCustomsProductUIModel(
-                    productId = 0,
-                    name = "Little Nap Brazil 250g",
-                    description = InputValue.Data("Product Description"),
-                    tariffNumber = InputValue.Data("123456"),
-                    valuePerUnit = InputValue.Data("10.00"),
-                    weightPerUnit = InputValue.Data("1.00"),
-                    originCountry = "United Stats of America",
-                    originCountryCode = "US",
-                    quantity = 1F,
-                    isExpanded = true
-                )
-            ),
-            onContentTypeClick = {},
-            onRestrictionTypeClick = {},
-            onItnChanged = {},
-            onReturnToSenderChanged = {},
-            onOtherContentDetailsInputChanged = {},
-            onOtherRestrictionDetailsInputChanged = {},
-            onProductExpanded = { _, _ -> },
-            onAddCustomsDataClick = {},
-            onDescriptionChanged = { _, _ -> },
-            onTariffChanged = { _, _ -> },
-            onValuePerUnitChanged = { _, _ -> },
-            onWeightPerUnitChanged = { _, _ -> },
-            onCountrySelectorClick = { }
-        )
+                onContentTypeClick = {},
+                onRestrictionTypeClick = {},
+                onItnChanged = {},
+                onReturnToSenderChanged = {},
+                onOtherContentDetailsInputChanged = {},
+                onOtherRestrictionDetailsInputChanged = {},
+                onProductExpanded = { _, _ -> },
+                onAddCustomsDataClick = {},
+                onDescriptionChanged = { _, _ -> },
+                onTariffChanged = { _, _ -> },
+                onValuePerUnitChanged = { _, _ -> },
+                onWeightPerUnitChanged = { _, _ -> },
+                onCountrySelectorClick = { }
+            )
+        }
     }
 }

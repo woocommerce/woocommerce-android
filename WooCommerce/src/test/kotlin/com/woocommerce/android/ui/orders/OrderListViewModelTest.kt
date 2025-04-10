@@ -150,8 +150,8 @@ class OrderListViewModelTest : BaseUnitTest() {
         viewModel = createViewModel()
     }
 
-    private fun createViewModel(mode: OrderListViewModel.Mode = OrderListViewModel.Mode.STANDARD) = OrderListViewModel(
-        savedState = OrderListFragmentArgs(mode = mode).toSavedStateHandle(),
+    private fun createViewModel() = OrderListViewModel(
+        savedState = OrderListFragmentArgs().toSavedStateHandle(),
         dispatchers = coroutinesTestRule.testDispatchers,
         orderListRepository = orderListRepository,
         orderDetailRepository = orderDetailRepository,
@@ -645,33 +645,6 @@ class OrderListViewModelTest : BaseUnitTest() {
         // then
         assertThat(shouldDisplayTroubleshootingBanner).isTrue
     }
-
-    @Test
-    fun `given start order creation mode, when view model created, then OpenOrderCreationWithSimplePaymentsMigration emitted`() =
-        testBlocking {
-            // GIVEN
-            val mode = OrderListViewModel.Mode.START_ORDER_CREATION_WITH_SIMPLE_PAYMENTS_MIGRATION
-
-            // WHEN
-            viewModel = createViewModel(mode = mode)
-
-            // THEN
-            assertThat(viewModel.event.value).isEqualTo(OrderListEvent.OpenOrderCreationWithSimplePaymentsMigration)
-        }
-
-    @Test
-    fun `given standard mode, when view model created, then OpenOrderCreationWithSimplePaymentsMigration is not emitted`() =
-        testBlocking {
-            // GIVEN
-            val mode = OrderListViewModel.Mode.STANDARD
-
-            // WHEN
-            viewModel = createViewModel(mode = mode)
-
-            // THEN
-            assertThat(viewModel.event.value).isNull()
-        }
-
     // region barcode scanner
 
     @Test

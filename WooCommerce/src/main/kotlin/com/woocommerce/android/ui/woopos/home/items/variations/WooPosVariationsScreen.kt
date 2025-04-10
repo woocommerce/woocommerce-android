@@ -46,6 +46,7 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemNavigationData.Var
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsEmptyList
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsLoadingIndicator
+import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.home.items.WooPosVariationsViewState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -105,14 +106,17 @@ private fun WooPosVariationsScreens(
 ) {
     val itemState = state.collectAsState()
     val pullToRefreshState = rememberPullRefreshState(
-        itemState.value.reloadingWithPullToRefresh,
-        onPullToRefresh
+        refreshing = itemState.value.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
+        onRefresh = onPullToRefresh
     )
     val listState = rememberLazyListState()
     Box(
         modifier = modifier
             .fillMaxSize()
-            .pullRefresh(pullToRefreshState)
+            .pullRefresh(
+                state = pullToRefreshState,
+                enabled = itemState.value.pullToRefreshState == WooPosPullToRefreshState.Enabled
+            )
             .padding(
                 start = WooPosSpacing.Medium.value.toAdaptivePadding(),
                 end = WooPosSpacing.Medium.value.toAdaptivePadding(),
@@ -173,7 +177,7 @@ private fun WooPosVariationsScreens(
         }
         PullRefreshIndicator(
             modifier = Modifier.align(Alignment.TopCenter),
-            refreshing = itemState.value.reloadingWithPullToRefresh,
+            refreshing = itemState.value.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
             state = pullToRefreshState
         )
     }
@@ -278,7 +282,7 @@ fun WooPosVariationsScreenPreview() {
                     imageUrl = null,
                 ),
             ),
-            reloadingWithPullToRefresh = true,
+            pullToRefreshState = WooPosPullToRefreshState.Refreshing,
         )
     )
     WooPosTheme {

@@ -23,7 +23,7 @@ class ProductsMapper @Inject constructor(private val site: SelectedSite) {
         site: SiteModel,
     ): List<WCProductModel> {
         return this
-            .filter { ProductSqlUtils.geProductExistsByRemoteId(site, it) }
+            .filter { ProductSqlUtils.getProductExistsByRemoteId(site, it) }
             .mapNotNull { ProductSqlUtils.getProductByRemoteId(site, it) }
     }
 }

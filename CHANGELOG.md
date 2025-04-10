@@ -1,8 +1,11 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 22.1
+This update brings several improvements to the WooCommerce app, including the removal of the "Collect Payment" flow, replaced by a custom order creation process. We've enhanced the display of disabled products in completed orders, fixed crashes in POS and custom amount dialogs, and improved the visibility of order count badges. The Woo upgrade dialog has been redesigned, and currency codes now appear in the Custom Amounts screen.
+
 ## 22.0
-We've streamlined your experience with improved Jetpack integration for seamless setup. Payment processing now shows low battery alerts and handles minimum transaction amounts better. We've enhanced the order management system by fixing redundant network requests and improving printing instructions visibility. Dark mode icon colors on notification banners have been fixed, and we've boosted accessibility for payment status changes in POS. Tablet users will enjoy smoother animations during payment collection.
+We've streamlined your experience with improved Jetpack integration for easier setup. Payment processing now includes low battery alerts and better handling of minimum transaction amounts. We've enhanced order management by fixing redundant network requests and improving printing instructions visibility. Dark mode icon colors on notification banners are fixed, and payment status accessibility in POS is boosted. Tablet users will enjoy smoother animations during payment collection.
 
 ## 21.9
 We’ve squashed a pesky bug that could cause a crash when adding a new payment card in the Blaze campaign form. This update ensures a smoother and more reliable experience—enjoy hassle-free payments with WooCommerce! 🚀

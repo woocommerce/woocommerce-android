@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-03-11 09:54:04+0000
+Translation-Revision-Date: 2025-03-25 09:54:14+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_split_shipment">分割配送</string>
+    <string name="woo_shipping_labels_purchase_error">配送ラベルを購入できません。 もう一度お試しください。</string>
+    <string name="woo_shipping_address_notification_origin_verified">確認済みの配送元住所</string>
+    <string name="woo_shipping_address_notification_destination_verified">確認済みの配送先住所</string>
+    <string name="woo_shipping_address_notification_destination_missing">配送先住所がありません</string>
+    <string name="woo_shipping_address_notification_origin_unverified">配送元住所が確認されていません</string>
+    <string name="woo_shipping_address_notification_destination_unverified">配送先住所が確認されていません</string>
+    <string name="woo_shipping_labels_customs_itn_required_message">$2,500を超える荷物の出荷には、米国の輸出申告確認用に14桁の AES ITN が必要です。</string>
+    <string name="woo_shipping_labels_customs_itn_required_error">ITN は必須項目です</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_weight_desc">利用可能な配送料金を表示するには、配送重量を入力する必要があります。</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_weight">配送重量を追加して配送料金を取得</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_destination_desc">利用可能な配送料金を表示するには、この荷物の配送先を入力する必要があります。</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_destination">配送先住所を追加して配送料金を取得</string>
+    <string name="woopos_search_recent_searches_title">最近の検索</string>
+    <string name="woopos_search_popular_items_title">人気のアイテム</string>
+    <string name="woopos_search_products">商品を検索…</string>
+    <string name="woopos_clear_back_content_description">消去</string>
+    <string name="woopos_search_back_content_description">戻る</string>
+    <string name="card_reader_connect_failed_battery_low_hint">リーダーのバッテリー残量が少なくなっています。 リーダーを充電してもう一度お試しください。</string>
+    <string name="login_site_credentials_invalid_response">サイトからの予期しない応答のためログインに失敗しました。</string>
+    <string name="login_jetpack_user_already_connected_dialog_cancel_button">キャンセル</string>
+    <string name="login_jetpack_user_already_connected_dialog_proceed_button">続行</string>
+    <string name="login_jetpack_user_already_connected_dialog_message">この WordPress 管理アカウントはすでに別の WordPress.com アカウントと連携しています。\nそのアカウントで続行すると、現在のアカウントからログアウトします。</string>
+    <string name="login_jetpack_user_already_connected_dialog_title">アカウントはすでに連携しています</string>
+    <string name="yes">はい</string>
     <string name="woo_shipping_address_update_message">入力された住所を更新しています</string>
     <string name="woo_shipping_address_update_title">更新しています</string>
     <string name="woo_shipping_address_save_changes">変更を保存</string>
@@ -25,7 +50,6 @@ Language: ja_JP
     <string name="woo_shipping_labels_customs_product_details_description_missing">説明なし</string>
     <string name="woo_shipping_labels_customs_product_details_description">説明</string>
     <string name="woo_shipping_labels_customs_product_details_title">商品情報</string>
-    <string name="woo_shipping_labels_customs_itn_required_message">ITN は空白にできません</string>
     <string name="woo_shipping_labels_customs_itn_error_message">無効な ITN フォーマットです</string>
     <string name="woo_shipping_labels_customs_other_error_message">種類は空白にできません</string>
     <string name="woo_shipping_labels_package_creation_shipping_rates_loading_error">配送料金を読み込めません。</string>
@@ -1416,7 +1440,6 @@ Language: ja_JP
     <string name="login_site_credentials_http_error">ステータスコード%1$sのためログインに失敗しました</string>
     <string name="login_site_credentials_custom_admin_url">ストアの管理 URL を識別できないためログインできません</string>
     <string name="login_site_credentials_custom_login_url">ストアのログイン URL を識別できないためログインできません</string>
-    <string name="login_site_credentials_invalid_response">サイトからの予期しない応答のためログインに失敗しました。 この問題を修復中です。</string>
     <string name="something_went_wrong_try_again">エラーが発生しました。後ほどもう一度お試しください。</string>
     <string name="card_reader_onboarding_account_pending_requirements_without_date_hint">口座に保留中の要件があります。 引き続きオフラインで支払いを受け取る場合は、要件を完了してください。</string>
     <string name="analytics_banner_message">分析の使い心地を評価してください</string>
@@ -1582,7 +1605,7 @@ Language: ja_JP
     <string name="login_jetpack_installation_connection_dismissed_explanation">ストアにアクセスするには、もう一度連携してみてください。</string>
     <string name="login_jetpack_installation_connection_dismissed">Jetpack はインストールされていますが、連携されていません。</string>
     <string name="login_jetpack_installation_error_connection_permission_message">このストアでは Jetpack を連携する権限がありません</string>
-    <string name="login_jetpack_installation_error_forbidden_suggestion">ショップ運営者または管理者にお問い合わせください。</string>
+    <string name="login_jetpack_installation_error_forbidden_suggestion">サポートをご希望の場合は管理者にお問い合わせください。</string>
     <string name="login_jetpack_installation_cancel">インストールをキャンセル</string>
     <string name="login_jetpack_installation_retry_authorizing">認証を再試行</string>
     <string name="login_jetpack_installation_retry_activating">有効化を再試行</string>

@@ -7,13 +7,13 @@ import com.woocommerce.android.util.UnitTestUtils.jsonFileAs
 import com.woocommerce.android.util.UnitTestUtils.jsonFileToString
 import org.wordpress.android.fluxc.domain.Addon
 import org.wordpress.android.fluxc.domain.Addon.HasAdjustablePrice.Price.Adjusted.*
-import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.addons.RemoteAddonDto
 import org.wordpress.android.fluxc.model.metadata.WCMetaData
 import org.wordpress.android.fluxc.model.metadata.get
 import org.wordpress.android.fluxc.model.order.LineItem
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.addons.mappers.RemoteAddonMapper
+import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 
 object AddonTestFixtures {
     val defaultOrderModel: OrderEntity by lazy {

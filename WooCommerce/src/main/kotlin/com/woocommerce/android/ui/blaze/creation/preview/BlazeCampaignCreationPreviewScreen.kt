@@ -58,7 +58,6 @@ import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
-import com.woocommerce.android.util.FeatureFlag
 
 @Composable
 fun BlazeCampaignCreationPreviewScreen(viewModel: BlazeCampaignCreationPreviewViewModel) {
@@ -220,8 +219,7 @@ fun AdPreview(
             modifier = Modifier
                 .fillMaxWidth(),
             backgroundColor = colorResource(id = R.color.woo_white),
-            contentColor =
-            if (isSystemInDarkTheme()) {
+            contentColor = if (isSystemInDarkTheme()) {
                 colorResource(id = R.color.color_surface)
             } else {
                 colorResource(id = R.color.color_on_surface)
@@ -330,11 +328,7 @@ fun CampaignDetails(
             style = MaterialTheme.typography.body2
         )
         // Campaign Details
-        if (FeatureFlag.OBJECTIVE_SECTION.isEnabled()) {
-            CampaignPropertyGroupItem(items = listOf(campaignDetails.selectedObjective, campaignDetails.budget))
-        } else {
-            CampaignPropertyGroupItem(items = listOf(campaignDetails.budget))
-        }
+        CampaignPropertyGroupItem(items = listOf(campaignDetails.selectedObjective, campaignDetails.budget))
         Spacer(modifier = Modifier.height(16.dp))
 
         // Ad Audience

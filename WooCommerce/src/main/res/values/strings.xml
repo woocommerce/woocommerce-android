@@ -811,10 +811,6 @@
     <string name="order_creation_recalculate_button">Recalculate</string>
     <string name="order_creation_expand_collapse_order_totals">Expand collapse order totals</string>
     <string name="order_creation_payment_shipping_tax_label">Shipping Tax</string>
-    <string name="order_creation_simple_payment_migration_title">Collect Payment \nhas moved</string>
-    <string name="order_creation_simple_payment_migration_message_one">We’ve combined payment collection with order creation, making it more accessible and more powerful.</string>
-    <string name="order_creation_simple_payment_migration_message_two">To set a payment amount, add a custom amount to your new order.</string>
-    <string name="order_creation_simple_payment_migration_button">Add a Custom Amount</string>
     <string name="customer_picker_guest_customer_not_allowed_message">This user is a guest, and guests can\'t be used for filtering orders.</string>
     <string name="customer_picker_guest">Guest</string>
 
@@ -1561,8 +1557,6 @@
             Card Reader Hub
         -->
     <string name="payments_hub_title">Payments</string>
-    <string name="card_reader_hub_collect_payment">Collect Payment</string>
-    <string name="card_reader_hub_actions_category_header">ACTIONS</string>
     <string name="card_reader_manage_card_reader">Manage Card Reader</string>
     <string name="card_reader_settings_header">SETTINGS</string>
     <string name="card_reader_enable_pay_in_person">Pay In Person</string>
@@ -4476,6 +4470,9 @@
     <string name="woo_shipping_labels_package_creation_package_name">Package Name</string>
     <string name="woo_shipping_labels_package_creation_save_package_option">Save this as a new package template</string>
     <string name="woo_shipping_labels_package_creation_add_package">Add Package</string>
+    <string name="woo_shipping_labels_package_creation_empty_button">Create a custom package</string>
+    <string name="woo_shipping_labels_package_creation_empty_carrier_message">No carrier information found</string>
+    <string name="woo_shipping_labels_package_creation_empty_saved_message">No saved packages yet</string>
     <string name="woo_shipping_labels_package_creation_error">Failed to load the package data</string>
     <string name="woo_shipping_labels_package_creation_carrier_loading_error">We are unable to load carrier packages.</string>
     <string name="woo_shipping_labels_package_creation_saved_loading_error">We are unable to load saved packages.</string>
@@ -4531,6 +4528,8 @@
     <string name="woo_shipping_labels_hazmat_info_tooltip_2">WooCommerce Shipping does not currently support HAZMAT shipments through &lt;a href=\'dhl-hazmat\'&gt;&lt;u&gt;DHL Express&lt;/u&gt;&lt;/a&gt;.</string>
     <string name="woo_shipping_labels_hazmat_info_select_category">Select Category</string>
     <string name="woo_shipping_labels_hazmat_search_hint">Search a Category</string>
+    <string name="woo_shipping_labels_hazmat_selection_set">Hazardous materials category set</string>
+    <string name="woo_shipping_labels_hazmat_selection_removed">Removed hazardous materials category</string>
 
 
     <string name="email_not_registered_wpcom">Hmm, we can\'t find a WordPress.com account connected to this email address.</string>

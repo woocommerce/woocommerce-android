@@ -6,8 +6,8 @@ import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
-import com.woocommerce.android.ui.woopos.home.items.PaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
+import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosVariationsViewState
 import com.woocommerce.android.ui.woopos.home.items.variations.FetchResult
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsDataSource
@@ -213,7 +213,7 @@ class WooPosVariationsViewModelTest {
         // THEN
         viewModel.viewState.test {
             val state = awaitItem() as WooPosVariationsViewState.Content
-            assertThat(state.paginationState).isEqualTo(PaginationState.None)
+            assertThat(state.paginationState).isEqualTo(WooPosPaginationState.None)
         }
     }
 
@@ -281,7 +281,7 @@ class WooPosVariationsViewModelTest {
         // THEN
         viewModel.viewState.test {
             val state = awaitItem() as WooPosVariationsViewState.Content
-            assertThat(state.paginationState).isEqualTo(PaginationState.Error)
+            assertThat(state.paginationState).isEqualTo(WooPosPaginationState.Error)
         }
     }
 
@@ -307,7 +307,7 @@ class WooPosVariationsViewModelTest {
             viewModel.viewState.test {
                 // THEN
                 val state = awaitItem() as WooPosVariationsViewState.Content
-                assertThat(state.paginationState).isEqualTo(PaginationState.Loading)
+                assertThat(state.paginationState).isEqualTo(WooPosPaginationState.Loading)
             }
         }
 
@@ -330,7 +330,7 @@ class WooPosVariationsViewModelTest {
             viewModel.viewState.test {
                 // THEN
                 val state = awaitItem() as WooPosVariationsViewState.Content
-                assertThat(state.paginationState).isEqualTo(PaginationState.None)
+                assertThat(state.paginationState).isEqualTo(WooPosPaginationState.None)
             }
         }
 

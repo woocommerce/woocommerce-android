@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.common.composeui.component
 
 import android.annotation.SuppressLint
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.Transition
@@ -8,7 +9,6 @@ import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -30,7 +29,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -57,7 +55,8 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import kotlinx.coroutines.delay
 
-private val BUTTON_SIZE = 48.dp
+private val BUTTON_SIZE = 40.dp
+private val INPUT_FIELD_HEIGHT = 56.dp
 private const val ANIMATION_TIME = 300L
 
 @Composable
@@ -66,11 +65,15 @@ fun WooPosSearchInput(
     state: WooPosSearchInputState = WooPosSearchInputState.Closed,
     onEvent: (WooPosSearchUIEvent) -> Unit = {},
 ) {
+    BackHandler(
+        enabled = state is WooPosSearchInputState.Open,
+        onBack = { onEvent(WooPosSearchUIEvent.Close) }
+    )
+
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = WooPosSpacing.XSmall.value)
-            .height(BUTTON_SIZE + WooPosSpacing.XSmall.value * 2),
+            .height(INPUT_FIELD_HEIGHT),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.End,
     ) {
@@ -91,11 +94,9 @@ fun WooPosSearchInput(
 
 @Composable
 fun SearchButton(onEvent: (WooPosSearchUIEvent) -> Unit) {
-    OutlinedIconButton(
-        onClick = { onEvent(WooPosSearchUIEvent.Search("")) },
-        border = BorderStroke(2.dp, MaterialTheme.colorScheme.onSurface),
+    IconButton(
         modifier = Modifier.size(BUTTON_SIZE),
-        shape = CircleShape,
+        onClick = { onEvent(WooPosSearchUIEvent.Search("")) },
         colors = IconButtonDefaults.outlinedIconButtonColors(
             containerColor = WooPosTheme.colors.transparent,
             contentColor = MaterialTheme.colorScheme.onSurface
@@ -106,7 +107,8 @@ fun SearchButton(onEvent: (WooPosSearchUIEvent) -> Unit) {
             contentDescription = stringResource(
                 R.string.woopos_search_products
             ),
-            modifier = Modifier.size(32.dp),
+            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.87f),
+            modifier = Modifier.size(32.dp)
         )
     }
 }
@@ -123,9 +125,9 @@ private fun AnimatedSearchInput(
     ) {
         val maxWidthPx = maxWidth
         val focusRequester = remember { FocusRequester() }
-        var isExpanded by remember { mutableStateOf(false) }
+
+        var isExpanded by remember { mutableStateOf(state.hasAnimationPlayed) }
         var isClosing by remember { mutableStateOf(false) }
-        var isAnimationComplete by remember { mutableStateOf(false) }
 
         val transition = updateTransition(
             targetState = if (isClosing) false else isExpanded,
@@ -144,9 +146,7 @@ private fun AnimatedSearchInput(
         OutlinedTextField(
             value = query,
             onValueChange = {
-                if (isAnimationComplete) {
-                    onEvent(WooPosSearchUIEvent.Search(it))
-                }
+                onEvent(WooPosSearchUIEvent.Search(it))
             },
             modifier = Modifier
                 .width(width)
@@ -164,9 +164,7 @@ private fun AnimatedSearchInput(
             shape = RoundedCornerShape(cornerRadius),
             keyboardActions = KeyboardActions(
                 onSearch = {
-                    if (isAnimationComplete) {
-                        onEvent(WooPosSearchUIEvent.Search(query))
-                    }
+                    onEvent(WooPosSearchUIEvent.Search(query))
                 }
             ),
             colors = OutlinedTextFieldDefaults.colors(
@@ -196,13 +194,10 @@ private fun AnimatedSearchInput(
                                 .alpha(iconAlpha)
                         )
                     }
+
                     query.isNotEmpty() -> {
                         IconButton(
-                            onClick = {
-                                if (isAnimationComplete) {
-                                    onEvent(WooPosSearchUIEvent.Clear)
-                                }
-                            },
+                            onClick = { onEvent(WooPosSearchUIEvent.Clear) },
                             modifier = Modifier.alpha(iconAlpha)
                         ) {
                             Icon(
@@ -218,15 +213,16 @@ private fun AnimatedSearchInput(
         )
 
         LaunchedEffect(Unit) {
-            isExpanded = true
-            delay(ANIMATION_TIME)
-            isAnimationComplete = true
-            focusRequester.requestFocus()
+            if (!state.hasAnimationPlayed) {
+                isExpanded = true
+                delay(ANIMATION_TIME)
+                focusRequester.requestFocus()
+                onEvent(WooPosSearchUIEvent.AnimationComplete)
+            }
         }
 
         LaunchedEffect(isClosing) {
             if (isClosing) {
-                isAnimationComplete = false
                 delay(ANIMATION_TIME)
                 onEvent(WooPosSearchUIEvent.Close)
             }
@@ -264,7 +260,7 @@ private fun animateSearchHeight(transition: Transition<Boolean>): Dp {
             )
         }
     ) { expanded ->
-        if (expanded) 56.dp else BUTTON_SIZE
+        if (expanded) INPUT_FIELD_HEIGHT else BUTTON_SIZE
     }
     return height
 }
@@ -308,13 +304,15 @@ private fun animateIconAlpha(
 sealed class WooPosSearchInputState {
     data class Open(
         val input: Input,
-        val isLoading: Boolean
+        val isLoading: Boolean,
+        val hasAnimationPlayed: Boolean = false,
     ) : WooPosSearchInputState() {
         sealed class Input(val text: String) {
             data class Query(val query: String) : Input(query)
             data class Hint(val hint: String) : Input(hint)
         }
     }
+
     object Closed : WooPosSearchInputState()
 }
 
@@ -322,6 +320,7 @@ sealed class WooPosSearchUIEvent {
     object Clear : WooPosSearchUIEvent()
     data class Search(val query: String) : WooPosSearchUIEvent()
     object Close : WooPosSearchUIEvent()
+    object AnimationComplete : WooPosSearchUIEvent()
 }
 
 @WooPosPreview

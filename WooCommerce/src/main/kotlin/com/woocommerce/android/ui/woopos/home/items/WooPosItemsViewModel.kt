@@ -114,6 +114,7 @@ class WooPosItemsViewModel @Inject constructor(
             WooPosItemsUIEvent.ClearSearchClicked -> searchHelper.onClearSearchClicked()
             WooPosItemsUIEvent.CloseSearchClicked -> searchHelper.onCloseSearchClicked()
             is WooPosItemsUIEvent.SearchChanged -> searchHelper.onSearchChanged(event.query)
+            WooPosItemsUIEvent.SearchAnimationComplete -> searchHelper.onAnimationComplete()
 
             WooPosItemsUIEvent.CouponsButtonClicked -> {
                 sendEventToParent(
@@ -210,18 +211,31 @@ class WooPosItemsViewModel @Inject constructor(
                             result.productsResult.isSuccess -> {
                                 val products = result.productsResult.getOrThrow()
                                 if (products.isNotEmpty()) {
-                                    products.toContentState(
-                                        paginationState = if (loadMoreProductsJob?.isActive == true) {
-                                            PaginationState.Loading
-                                        } else {
-                                            PaginationState.None
-                                        }
-                                    )
+                                    val currentState = _viewState.value
+                                    var paginationState = if (loadMoreProductsJob?.isActive == true) {
+                                        WooPosPaginationState.Loading
+                                    } else {
+                                        WooPosPaginationState.None
+                                    }
+                                    if (currentState is WooPosItemsViewState.Content) {
+                                        currentState.copy(
+                                            items = products.map { it.toItemSelectionViewState() },
+                                            paginationState = paginationState,
+                                            pullToRefreshState = if (searchHelper.isSearchOpen()) {
+                                                WooPosPullToRefreshState.Disabled
+                                            } else {
+                                                WooPosPullToRefreshState.Enabled
+                                            },
+                                        )
+                                    } else {
+                                        products.toContentState(
+                                            paginationState = paginationState
+                                        )
+                                    }
                                 } else {
                                     WooPosItemsViewState.Empty()
                                 }
                             }
-
                             else -> WooPosItemsViewState.Error()
                         }
                     }
@@ -232,36 +246,18 @@ class WooPosItemsViewModel @Inject constructor(
 
     private fun buildProductsReloadingState() =
         when (val state = viewState.value) {
-            is WooPosItemsViewState.Content -> state.copy(reloadingWithPullToRefresh = true)
-            is WooPosItemsViewState.Loading -> state.copy(reloadingWithPullToRefresh = true)
-            is WooPosItemsViewState.Error -> state.copy(reloadingWithPullToRefresh = true)
-            is WooPosItemsViewState.Empty -> state.copy(reloadingWithPullToRefresh = true)
+            is WooPosItemsViewState.Content -> state.copy(pullToRefreshState = WooPosPullToRefreshState.Refreshing)
+            is WooPosItemsViewState.Loading -> state.copy(pullToRefreshState = WooPosPullToRefreshState.Refreshing)
+            is WooPosItemsViewState.Error -> state.copy(pullToRefreshState = WooPosPullToRefreshState.Refreshing)
+            is WooPosItemsViewState.Empty -> state.copy(pullToRefreshState = WooPosPullToRefreshState.Refreshing)
         }
 
     private suspend fun List<Product>.toContentState(
-        paginationState: PaginationState = PaginationState.None
+        paginationState: WooPosPaginationState = WooPosPaginationState.None
     ) = WooPosItemsViewState.Content(
-        items = map { product ->
-            if (product.isVariable()) {
-                WooPosItemSelectionViewState.Product.Variable(
-                    id = product.remoteId,
-                    name = product.name,
-                    price = priceFormat(product.price),
-                    imageUrl = product.firstImageUrl,
-                    numOfVariations = product.numVariations,
-                    variationIds = product.variationIds
-                )
-            } else {
-                WooPosItemSelectionViewState.Product.Simple(
-                    id = product.remoteId,
-                    name = product.name,
-                    price = priceFormat(product.price),
-                    imageUrl = product.firstImageUrl,
-                )
-            }
-        },
+        items = map { it.toItemSelectionViewState() },
         paginationState = paginationState,
-        reloadingWithPullToRefresh = false,
+        pullToRefreshState = WooPosPullToRefreshState.Enabled,
         couponsEnabled = isCouponsEnabled.invoke(),
         bannerState = WooPosItemsViewState.Content.BannerState(
             isBannerHiddenByUser = isBannerHiddenByUser(),
@@ -271,6 +267,26 @@ class WooPosItemsViewModel @Inject constructor(
         ),
         search = searchHelper.getInitialSearchState(isProductsSearchEnabled())
     )
+
+    private suspend fun Product.toItemSelectionViewState(): WooPosItemSelectionViewState {
+        return if (this.isVariable()) {
+            WooPosItemSelectionViewState.Product.Variable(
+                id = this.remoteId,
+                name = this.name,
+                price = priceFormat(this.price),
+                imageUrl = this.firstImageUrl,
+                numOfVariations = this.numVariations,
+                variationIds = this.variationIds
+            )
+        } else {
+            WooPosItemSelectionViewState.Product.Simple(
+                id = this.remoteId,
+                name = this.name,
+                price = priceFormat(this.price),
+                imageUrl = this.firstImageUrl,
+            )
+        }
+    }
 
     private fun onEndOfProductsListReached() {
         val currentState = _viewState.value
@@ -282,7 +298,7 @@ class WooPosItemsViewModel @Inject constructor(
             return
         }
 
-        _viewState.value = currentState.copy(paginationState = PaginationState.Loading)
+        _viewState.value = currentState.copy(paginationState = WooPosPaginationState.Loading)
 
         loadMoreProductsJob?.cancel()
         loadMoreProductsJob = viewModelScope.launch {
@@ -290,7 +306,7 @@ class WooPosItemsViewModel @Inject constructor(
             _viewState.value = if (result.isSuccess) {
                 result.getOrThrow().toContentState()
             } else {
-                currentState.copy(paginationState = PaginationState.Error)
+                currentState.copy(paginationState = WooPosPaginationState.Error)
             }
         }
     }

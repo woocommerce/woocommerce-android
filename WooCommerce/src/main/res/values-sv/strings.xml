@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-03-11 11:54:03+0000
+Translation-Revision-Date: 2025-03-25 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_split_shipment">Dela upp försändelse</string>
+    <string name="woo_shipping_labels_purchase_error">Vi kunde inte köpa fraktetiketten. Försök igen.</string>
+    <string name="woo_shipping_address_notification_origin_verified">Verifierad ursprungsadress</string>
+    <string name="woo_shipping_address_notification_destination_verified">Verifierad destinationsadress</string>
+    <string name="woo_shipping_address_notification_destination_missing">Destinationsadressen saknas</string>
+    <string name="woo_shipping_address_notification_origin_unverified">Ursprungsadress overifierad</string>
+    <string name="woo_shipping_address_notification_destination_unverified">Destinationsadress overifierad</string>
+    <string name="woo_shipping_labels_customs_itn_required_message">För försändelser över 2 500 USD måste du hämta ett 14-siffrigt AES ITN för verifiering av amerikansk exportrapportering.</string>
+    <string name="woo_shipping_labels_customs_itn_required_error">ITN är obligatoriskt</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_weight_desc">Vi måste veta fraktvikten innan vi kan visa de tillgängliga fraktavgifterna.</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_weight">Lägg till fraktvikt för att få fraktavgifter</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_destination_desc">Vi måste veta vart det här paketet ska innan vi kan visa de tillgängliga fraktpriserna.</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_destination">Lägg till en destinationsadress för att få fraktpriser</string>
+    <string name="woopos_search_recent_searches_title">Senaste sökningar</string>
+    <string name="woopos_search_popular_items_title">Populära objekt</string>
+    <string name="woopos_search_products">Sök produkter …</string>
+    <string name="woopos_clear_back_content_description">Rensa</string>
+    <string name="woopos_search_back_content_description">Tillbaka</string>
+    <string name="card_reader_connect_failed_battery_low_hint">Läsarens batteri är lågt. Ladda läsaren och försök igen</string>
+    <string name="login_site_credentials_invalid_response">Inloggning misslyckades med ett oväntat svar från din webbplats.</string>
+    <string name="login_jetpack_user_already_connected_dialog_cancel_button">Avbryt</string>
+    <string name="login_jetpack_user_already_connected_dialog_proceed_button">Fortsätt</string>
+    <string name="login_jetpack_user_already_connected_dialog_message">Detta WordPress-administratörskonto är redan anslutet till ett annat WordPress.com-konto.\nOm du fortsätter med det kontot loggas du ut från ditt nuvarande konto.</string>
+    <string name="login_jetpack_user_already_connected_dialog_title">Konto redan anslutet</string>
+    <string name="yes">Ja</string>
     <string name="woo_shipping_address_update_message">Uppdaterar angiven adress</string>
     <string name="woo_shipping_address_update_title">Uppdaterar</string>
     <string name="woo_shipping_address_save_changes">Spara ändringar</string>
@@ -25,7 +50,6 @@ Language: sv_SE
     <string name="woo_shipping_labels_customs_product_details_description_missing">Saknar beskrivning</string>
     <string name="woo_shipping_labels_customs_product_details_description">Beskrivning</string>
     <string name="woo_shipping_labels_customs_product_details_title">Produktdetaljer</string>
-    <string name="woo_shipping_labels_customs_itn_required_message">ITN får inte vara tomt</string>
     <string name="woo_shipping_labels_customs_itn_error_message">Ogiltigt ITN-format</string>
     <string name="woo_shipping_labels_customs_other_error_message">Typ får inte vara tomt</string>
     <string name="woo_shipping_labels_package_creation_shipping_rates_loading_error">Vi kan inte ladda fraktavgifterna.</string>
@@ -1416,7 +1440,6 @@ Language: sv_SE
     <string name="login_site_credentials_http_error">Inloggning misslyckades med statuskod %1$s</string>
     <string name="login_site_credentials_custom_admin_url">Det gick inte att logga in, eftersom vi inte kan identifiera admin-URL:en för din butik</string>
     <string name="login_site_credentials_custom_login_url">Det gick inte att logga in, eftersom vi inte kan identifiera inloggnings-URL:en för din butik</string>
-    <string name="login_site_credentials_invalid_response">Inloggningen misslyckades med ett oväntat svar från din webbplats. Vi jobbar på att lösa det här problemet.</string>
     <string name="something_went_wrong_try_again">Något gick fel. Försök igen senare.</string>
     <string name="card_reader_onboarding_account_pending_requirements_without_date_hint">Det finns krav som inväntar granskning i ditt konto. Slutför dessa krav för att fortsätta ta emot personliga betalningar.</string>
     <string name="analytics_banner_message">Betygsätt gärna din analysupplevelse</string>
@@ -1582,7 +1605,7 @@ Language: sv_SE
     <string name="login_jetpack_installation_connection_dismissed_explanation">Försök att ansluta igen för att komma åt din butik.</string>
     <string name="login_jetpack_installation_connection_dismissed">Jetpack är installerat men inte anslutet.</string>
     <string name="login_jetpack_installation_error_connection_permission_message">Du har inte behörighet att ansluta Jetpack till den här butiken</string>
-    <string name="login_jetpack_installation_error_forbidden_suggestion">Kontakta din butikshanterare eller -administratör för att få hjälp.</string>
+    <string name="login_jetpack_installation_error_forbidden_suggestion">Kontakta din administratör för hjälp.</string>
     <string name="login_jetpack_installation_cancel">Avbryt installation</string>
     <string name="login_jetpack_installation_retry_authorizing">Försök auktorisera igen</string>
     <string name="login_jetpack_installation_retry_activating">Försök att aktivera igen</string>

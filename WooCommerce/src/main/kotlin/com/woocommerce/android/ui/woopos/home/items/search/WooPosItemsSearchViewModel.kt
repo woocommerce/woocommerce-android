@@ -8,10 +8,10 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
-import com.woocommerce.android.ui.woopos.home.items.PaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemNavigationData.VariableProductData
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
+import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateToVariationsScreen
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
@@ -29,9 +29,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WooPosItemsSearchViewModel @Inject constructor(
-    val emptyStateProvider: WooPosItemsSearchEmptyStateProvider,
+    private val emptyStateRepository: WooPosItemsSearchEmptyStateRepository,
     private val priceFormat: WooPosFormatPrice,
-    private val dataSource: WooPosSearchProductsMockedDataSource,
+    private val dataSource: WooPosSearchProductsDataSource,
     private val childToParentEventSender: WooPosChildrenToParentEventSender,
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
     private val navigator: WooPosItemsNavigator,
@@ -64,6 +64,16 @@ class WooPosItemsSearchViewModel @Inject constructor(
                     loadContent(currentState.searchQuery)
                 }
             }
+
+            is WooPosItemsSearchUiEvent.OnRecentSearchClicked -> {
+                viewModelScope.launch {
+                    childToParentEventSender.sendToParent(
+                        ChildToParentEvent.SearchEvent.RecentSearchSelected(
+                            event.recentSearch
+                        )
+                    )
+                }
+            }
         }
     }
 
@@ -79,6 +89,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
                     is ParentToChildrenEvent.ItemClickedInProductSelector -> Unit
                     is ParentToChildrenEvent.OrderSuccessfullyPaid -> Unit
                     is ParentToChildrenEvent.CheckoutClicked -> Unit
+                    is ParentToChildrenEvent.SearchEvent.RecentSearchSelected -> Unit
                 }
             }
         }
@@ -105,7 +116,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
 
         dataSource.searchProducts(searchQuery).collect { result ->
             when (result) {
-                is WooPosSearchProductsMockedDataSource.ProductsResult.Cached -> {
+                is WooPosSearchProductsDataSource.ProductsResult.Cached -> {
                     if (result.products.isEmpty()) {
                         _viewState.value = WooPosItemsSearchViewState.Loading
                     } else {
@@ -115,7 +126,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
                     }
                 }
 
-                is WooPosSearchProductsMockedDataSource.ProductsResult.Remote -> {
+                is WooPosSearchProductsDataSource.ProductsResult.Remote -> {
                     if (result.productsResult.isSuccess) {
                         val products = result.productsResult.getOrThrow()
                         if (products.isEmpty()) {
@@ -144,7 +155,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
             return
         }
 
-        _viewState.value = currentState.copy(paginationState = PaginationState.Loading)
+        _viewState.value = currentState.copy(paginationState = WooPosPaginationState.Loading)
 
         loadMoreJob?.cancel()
         loadMoreJob = viewModelScope.launch {
@@ -154,7 +165,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
                     searchQuery = currentState.searchQuery,
                 )
             } else {
-                currentState.copy(paginationState = PaginationState.Error)
+                currentState.copy(paginationState = WooPosPaginationState.Error)
             }
         }
     }
@@ -169,6 +180,8 @@ class WooPosItemsSearchViewModel @Inject constructor(
                         )
                     )
                 }
+
+                storeRecentSearch()
             }
 
             is WooPosItemSelectionViewState.Product.Variable -> {
@@ -191,39 +204,49 @@ class WooPosItemsSearchViewModel @Inject constructor(
         }
     }
 
+    private fun storeRecentSearch() {
+        (_viewState.value as? WooPosItemsSearchViewState.Content)?.let {
+            viewModelScope.launch {
+                emptyStateRepository.addRecentSearch(it.searchQuery)
+            }
+        }
+    }
+
     private suspend fun List<Product>.toContentState(
         searchQuery: String,
-        paginationState: PaginationState = PaginationState.None,
+        paginationState: WooPosPaginationState = WooPosPaginationState.None,
     ) = WooPosItemsSearchViewState.Content(
-        items = map { product ->
-            if (product.productType == ProductType.VARIABLE) {
-                WooPosItemSelectionViewState.Product.Variable(
-                    id = product.remoteId,
-                    name = product.name,
-                    price = priceFormat(product.price),
-                    imageUrl = product.firstImageUrl,
-                    numOfVariations = product.numVariations,
-                    variationIds = product.variationIds
-                )
-            } else {
-                WooPosItemSelectionViewState.Product.Simple(
-                    id = product.remoteId,
-                    name = product.name,
-                    price = priceFormat(product.price),
-                    imageUrl = product.firstImageUrl,
-                )
-            }
-        },
+        items = map { it.toViewModelProduct() },
         searchQuery = searchQuery,
         paginationState = paginationState,
     )
 
+    private suspend fun Product.toViewModelProduct(): WooPosItemSelectionViewState.Product =
+        if (productType == ProductType.VARIABLE) {
+            WooPosItemSelectionViewState.Product.Variable(
+                id = this.remoteId,
+                name = this.name,
+                price = priceFormat(this.price),
+                imageUrl = this.firstImageUrl,
+                numOfVariations = this.numVariations,
+                variationIds = this.variationIds
+            )
+        } else {
+            WooPosItemSelectionViewState.Product.Simple(
+                id = this.remoteId,
+                name = this.name,
+                price = priceFormat(this.price),
+                imageUrl = this.firstImageUrl,
+            )
+        }
+
     private suspend fun CoroutineScope.setEmptySearchQueryState() {
-        val lastSearchesDeferred = async { emptyStateProvider.getLastSearches() }
-        val popularItemsDeferred = async { emptyStateProvider.getPopularItems() }
+        val lastSearchesDeferred = async { emptyStateRepository.getLastSearches() }
+        val popularItemsDeferred = async { emptyStateRepository.getPopularItems() }
 
         _viewState.value = WooPosItemsSearchViewState.EmptySearchQuery(
-            popularItems = popularItemsDeferred.await().let { it.take(minOf(MAX_ITEMS_COUNT, it.size)) },
+            popularItems = popularItemsDeferred.await().let { it.take(minOf(MAX_ITEMS_COUNT, it.size)) }
+                .map { it.toViewModelProduct() },
             recentSearches = lastSearchesDeferred.await().let { it.take(minOf(MAX_ITEMS_COUNT, it.size)) },
         )
     }

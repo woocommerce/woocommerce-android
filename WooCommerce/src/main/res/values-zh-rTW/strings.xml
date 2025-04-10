@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-03-11 14:54:04+0000
+Translation-Revision-Date: 2025-03-25 11:54:06+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_split_shipment">分批出貨</string>
+    <string name="woo_shipping_labels_purchase_error">無法購買運送標籤。 請再試一次。</string>
+    <string name="woo_shipping_address_notification_origin_verified">寄件地址已通過驗證</string>
+    <string name="woo_shipping_address_notification_destination_verified">目的地地址已通過驗證</string>
+    <string name="woo_shipping_address_notification_destination_missing">目的地地址未填</string>
+    <string name="woo_shipping_address_notification_origin_unverified">寄件地址未通過驗證</string>
+    <string name="woo_shipping_address_notification_destination_unverified">目的地地址未通過驗證</string>
+    <string name="woo_shipping_labels_customs_itn_required_message">若貨件價值超過 2,500 美元，請先取得 14 位數的 AES 國際交易號碼，才可完成美國出口報告驗證。</string>
+    <string name="woo_shipping_labels_customs_itn_required_error">ITN 為必填欄位</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_weight_desc">請提供貨件重量資料，才能顯示適用的運費。</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_weight">新增貨件重量以計算運費</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_destination_desc">請提供包裹目的地資料，才能顯示相應貨運費率。</string>
+    <string name="woo_shipping_labels_shipping_rates_missing_destination">新增目的地地址，即可取得貨運費率</string>
+    <string name="woopos_search_recent_searches_title">最近搜尋的內容</string>
+    <string name="woopos_search_popular_items_title">熱門項目</string>
+    <string name="woopos_search_products">搜尋商品…</string>
+    <string name="woopos_clear_back_content_description">清除</string>
+    <string name="woopos_search_back_content_description">返回</string>
+    <string name="card_reader_connect_failed_battery_low_hint">讀卡機電量不足。 請替讀卡機充電，然後再試一次</string>
+    <string name="login_site_credentials_invalid_response">登入失敗，你的網站傳回了預期外的回應。</string>
+    <string name="login_jetpack_user_already_connected_dialog_cancel_button">取消</string>
+    <string name="login_jetpack_user_already_connected_dialog_proceed_button">繼續</string>
+    <string name="login_jetpack_user_already_connected_dialog_message">這個 WordPress 管理員帳號已與其他 WordPress.com 帳號建立連結。\n若你繼續使用此帳號，系統會將你登出目前的帳號。</string>
+    <string name="login_jetpack_user_already_connected_dialog_title">帳號已連結</string>
+    <string name="yes">好</string>
     <string name="woo_shipping_address_update_message">正在更新輸入的地址</string>
     <string name="woo_shipping_address_update_title">更新</string>
     <string name="woo_shipping_address_save_changes">儲存變更</string>
@@ -25,7 +50,6 @@ Language: zh_TW
     <string name="woo_shipping_labels_customs_product_details_description_missing">未填描述</string>
     <string name="woo_shipping_labels_customs_product_details_description">描述</string>
     <string name="woo_shipping_labels_customs_product_details_title">商品詳細資料</string>
-    <string name="woo_shipping_labels_customs_itn_required_message">國際交易號碼不可為空白</string>
     <string name="woo_shipping_labels_customs_itn_error_message">國際交易號碼格式無效</string>
     <string name="woo_shipping_labels_customs_other_error_message">類型不可為空白</string>
     <string name="woo_shipping_labels_package_creation_shipping_rates_loading_error">無法載入運費。</string>
@@ -1416,7 +1440,6 @@ Language: zh_TW
     <string name="login_site_credentials_http_error">登入失敗，狀態代碼為 %1$s</string>
     <string name="login_site_credentials_custom_admin_url">無法登入，因為我們無法識別你商店的管理 URL。</string>
     <string name="login_site_credentials_custom_login_url">無法登入，因為我們無法識別你商店的登入 URL。</string>
-    <string name="login_site_credentials_invalid_response">登入失敗，你的網站傳回了未預期的回應。 我們正在努力修復這個問題。</string>
     <string name="something_went_wrong_try_again">發生錯誤，請稍後再試一次。</string>
     <string name="card_reader_onboarding_account_pending_requirements_without_date_hint">你的帳號中有待確認的要求。 請完成這些要求，以便繼續使用親自收款功能。</string>
     <string name="analytics_banner_message">請為分析服務的使用體驗評分</string>
@@ -1582,7 +1605,7 @@ Language: zh_TW
     <string name="login_jetpack_installation_connection_dismissed_explanation">嘗試重新連結以存取商店。</string>
     <string name="login_jetpack_installation_connection_dismissed">已安裝 Jetpack，但未連結。</string>
     <string name="login_jetpack_installation_error_connection_permission_message">你無權連接到此商店中的 Jetpack</string>
-    <string name="login_jetpack_installation_error_forbidden_suggestion">請聯絡商店經理或管理員尋求協助。</string>
+    <string name="login_jetpack_installation_error_forbidden_suggestion">請聯絡管理員尋求協助。</string>
     <string name="login_jetpack_installation_cancel">取消安裝</string>
     <string name="login_jetpack_installation_retry_authorizing">嘗試重新授權</string>
     <string name="login_jetpack_installation_retry_activating">嘗試重新啟用</string>
