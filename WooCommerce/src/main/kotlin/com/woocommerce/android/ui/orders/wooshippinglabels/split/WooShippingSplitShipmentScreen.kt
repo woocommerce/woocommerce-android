@@ -131,78 +131,17 @@ fun WooShippingSplitShipmentScreen(
                 val shipments = viewState.selectableItems.keys.toList()
 
                 if (shipments.size > 1) {
+                    MultipleShipments(
+                        viewState,
+                        shipments,
+                        productsExtraPadding,
+                        onUpdateSelectedShipment,
+                        onUpdateSelection,
+                        modifier
+                    )
+
                     val pagerState = rememberPagerState { shipments.size }
                     val scope = rememberCoroutineScope()
-
-                    Column {
-                        LaunchedEffect(pagerState.currentPage) {
-                            onUpdateSelectedShipment(shipments[pagerState.currentPage])
-                        }
-
-                        Row(modifier = modifier.fillMaxWidth()) {
-                            ScrollableTabRow(
-                                selectedTabIndex = pagerState.currentPage,
-                                backgroundColor = MaterialTheme.colors.surface,
-                                contentColor = MaterialTheme.colors.primary,
-                                divider = {},
-                                edgePadding = 0.dp,
-                                modifier = modifier
-                                    .weight(1f)
-                                    .padding(top = 8.dp)
-                            ) {
-                                shipments.forEachIndexed { index, _ ->
-                                    val textColor = if (index == pagerState.currentPage) {
-                                        MaterialTheme.colors.primary
-                                    } else {
-                                        colorResource(id = R.color.color_on_surface_medium)
-                                    }
-                                    Tab(
-                                        text = {
-                                            Text(
-                                                text = stringResource(
-                                                    R.string.woo_shipping_split_shipment_shipment_name,
-                                                    index + 1 // Use 1-based indexing for the shipments
-                                                ),
-                                                color = textColor,
-                                                style = MaterialTheme.typography.subtitle1,
-                                                fontWeight = FontWeight.SemiBold
-                                            )
-                                        },
-                                        selected = pagerState.currentPage == index,
-                                        onClick = {
-                                            scope.launch {
-                                                pagerState.animateScrollToPage(index)
-                                            }
-                                        }
-                                    )
-                                }
-                            }
-                            IconButton(onClick = {}, modifier = modifier.align(Alignment.CenterVertically)) {
-                                Icon(
-                                    imageVector = Icons.Filled.MoreHoriz,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colors.primary
-                                )
-                            }
-                        }
-
-                        HorizontalPager(
-                            state = pagerState,
-                            modifier = modifier.fillMaxSize(),
-                            verticalAlignment = Alignment.Top,
-                            pageSpacing = 16.dp
-                        ) { page ->
-                            viewState.selectableItems.getValue(shipments[page]).let {
-                                SelectableProductsSection(
-                                    shipmentKey = shipments[page],
-                                    shipment = it,
-                                    onUpdateSelection = onUpdateSelection,
-                                    modifier = modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp),
-                                    extraBottomPadding = productsExtraPadding
-                                )
-                            }
-                        }
-                    }
 
                     val onUpdateShipmentAndChangeSelection: (splitMovement: SplitMovement) -> Unit = { splitMovement ->
                         if (splitMovement.isRemoveMovement) {
@@ -268,6 +207,89 @@ fun WooShippingSplitShipmentScreen(
             when (result) {
                 SnackbarResult.ActionPerformed -> snackbarData.action()
                 SnackbarResult.Dismissed -> snackbarData.dismissAction()
+            }
+        }
+    }
+}
+
+@Composable
+private fun MultipleShipments(
+    viewState: SplitShipmentViewState,
+    shipments: List<Int>,
+    productsExtraPadding: Dp,
+    onUpdateSelectedShipment: (shipmentKey: Int) -> Unit,
+    onUpdateSelection: (shipmentKey: Int, index: Int, selectedIndexes: Set<Int>?) -> Unit,
+    modifier: Modifier
+) {
+    val pagerState = rememberPagerState { shipments.size }
+    val scope = rememberCoroutineScope()
+
+    Column {
+        LaunchedEffect(pagerState.currentPage) {
+            onUpdateSelectedShipment(shipments[pagerState.currentPage])
+        }
+
+        Row(modifier = modifier.fillMaxWidth()) {
+            ScrollableTabRow(
+                selectedTabIndex = pagerState.currentPage,
+                backgroundColor = MaterialTheme.colors.surface,
+                contentColor = MaterialTheme.colors.primary,
+                divider = {},
+                edgePadding = 0.dp,
+                modifier = modifier
+                    .weight(1f)
+                    .padding(top = 8.dp)
+            ) {
+                shipments.forEachIndexed { index, _ ->
+                    val textColor = if (index == pagerState.currentPage) {
+                        MaterialTheme.colors.primary
+                    } else {
+                        colorResource(id = R.color.color_on_surface_medium)
+                    }
+                    Tab(
+                        text = {
+                            Text(
+                                text = stringResource(
+                                    R.string.woo_shipping_split_shipment_shipment_name,
+                                    index + 1 // Use 1-based indexing for the shipments
+                                ),
+                                color = textColor,
+                                style = MaterialTheme.typography.subtitle1,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        },
+                        selected = pagerState.currentPage == index,
+                        onClick = {
+                            scope.launch {
+                                pagerState.animateScrollToPage(index)
+                            }
+                        }
+                    )
+                }
+            }
+            IconButton(onClick = {}, modifier = modifier.align(Alignment.CenterVertically)) {
+                Icon(
+                    imageVector = Icons.Filled.MoreHoriz,
+                    contentDescription = null,
+                    tint = MaterialTheme.colors.primary
+                )
+            }
+        }
+
+        HorizontalPager(
+            state = pagerState,
+            modifier = modifier.fillMaxSize(),
+            verticalAlignment = Alignment.Top,
+            pageSpacing = 16.dp
+        ) { page ->
+            viewState.selectableItems.getValue(shipments[page]).let {
+                SelectableProductsSection(
+                    shipmentKey = shipments[page],
+                    shipment = it,
+                    onUpdateSelection = onUpdateSelection,
+                    modifier = modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp),
+                    extraBottomPadding = productsExtraPadding
+                )
             }
         }
     }
