@@ -30,6 +30,7 @@ import org.wordpress.android.fluxc.model.settings.WCSettingsMapper
 import org.wordpress.android.fluxc.model.taxes.TaxBasedOnSettingEntity
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.NETWORK_ERROR
 import org.wordpress.android.fluxc.network.discovery.RootWPAPIRestResponse
+import org.wordpress.android.fluxc.network.discovery.RootWPAPIRestResponse.Authentication
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooCommerceRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.INVALID_RESPONSE
@@ -310,6 +311,30 @@ class WooCommerceStoreTest {
     }
 
     @Test
+    fun `when fetching api version succeeds, then update application passwords authorization URL`() {
+        runBlocking {
+            // Sanity check
+            assertThat(site.applicationPasswordsAuthorizeUrl).isNull()
+
+            val authorizationUrl = "https://example.com/authorization-url"
+            TestSiteSqlUtils.siteSqlUtils.insertOrUpdateSite(site)
+
+            fetchSupportedWooApiVersion(
+                response = RootWPAPIRestResponse(
+                    authentication = Authentication(
+                        applicationPasswords = Authentication.ApplicationPasswords(
+                            endpoints = Authentication.ApplicationPasswords.Endpoints(authorizationUrl)
+                        )
+                    )
+                )
+            )
+
+            val updateSite = TestSiteSqlUtils.siteSqlUtils.getSiteWithLocalId(site.localId())
+            assertThat(updateSite!!.applicationPasswordsAuthorizeUrl).isEqualTo(authorizationUrl)
+        }
+    }
+
+    @Test
     fun `when fetching unsupported api version succeeds, then blank api version returned`() {
         runBlocking {
             val result: WooResult<WCApiVersionResponse> = fetchSupportedWooApiVersion(
@@ -420,6 +445,7 @@ class WooCommerceStoreTest {
             whenever(siteStore.sites).thenReturn(listOf(site))
             whenever(siteStore.getSiteByLocalId(any())).thenReturn(site)
             whenever(restClient.checkIfWooCommerceIsAvailable(site)).thenReturn(WooPayload(true))
+            fetchSupportedWooApiVersion(response = RootWPAPIRestResponse())
 
             wooCommerceStore.fetchWooCommerceSite(site)
 
@@ -437,6 +463,7 @@ class WooCommerceStoreTest {
             whenever(siteStore.sites).thenReturn(listOf(site))
             whenever(siteStore.getSiteByLocalId(any())).thenReturn(site)
             whenever(restClient.checkIfWooCommerceIsAvailable(site)).thenReturn(WooPayload(true))
+            fetchSupportedWooApiVersion(response = RootWPAPIRestResponse())
 
             wooCommerceStore.fetchWooCommerceSite(site)
 
@@ -489,9 +516,9 @@ class WooCommerceStoreTest {
     ): WooResult<WCApiVersionResponse> {
         val payload = WooPayload(response)
         if (isError) {
-            whenever(wcrestClient.fetchSupportedWooApiVersion(any(), any())).thenReturn(WooPayload(error))
+            whenever(wcrestClient.fetchSiteRootAPIEndpoint(any(), any())).thenReturn(WooPayload(error))
         } else {
-            whenever(wcrestClient.fetchSupportedWooApiVersion(any(), any())).thenReturn(payload)
+            whenever(wcrestClient.fetchSiteRootAPIEndpoint(any(), any())).thenReturn(payload)
         }
         return wooCommerceStore.fetchSupportedApiVersion(site)
     }
