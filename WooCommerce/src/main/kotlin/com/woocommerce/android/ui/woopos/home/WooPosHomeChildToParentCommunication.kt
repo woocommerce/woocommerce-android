@@ -67,7 +67,7 @@ sealed class ChildToParentEvent {
                 override val name: String,
                 override val price: BigDecimal,
                 override val quantity: Float,
-            ): ProductInfo(id, name, price, quantity)
+            ) : ProductInfo(id, name, price, quantity)
 
             data class Variation(
                 override val id: Long,
@@ -75,7 +75,7 @@ sealed class ChildToParentEvent {
                 override val price: BigDecimal,
                 override val quantity: Float,
                 val variationId: Long,
-            ): ProductInfo(id, name, price, quantity)
+            ) : ProductInfo(id, name, price, quantity)
         }
     }
 }

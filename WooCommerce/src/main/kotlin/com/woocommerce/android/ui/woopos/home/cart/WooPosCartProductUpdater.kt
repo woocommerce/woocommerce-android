@@ -45,8 +45,14 @@ class WooPosCartProductUpdater @Inject constructor(
                             changesDone = changesDone || itemChanged
                         }
                     } else {
-                        mutableCurrentBodyList[index] = markProductAsNotExisting(item)
-                        changesDone = true
+                        val updatedItem = markProductAsNotExisting(item)
+                        mutableCurrentBodyList[index] = updatedItem
+                        val itemChanged = (
+                            updatedItem.name != item.name ||
+                                updatedItem.price != item.price ||
+                                updatedItem.productDoesNotExist != item.productDoesNotExist
+                            )
+                        changesDone = changesDone || itemChanged
                     }
                 }
 
