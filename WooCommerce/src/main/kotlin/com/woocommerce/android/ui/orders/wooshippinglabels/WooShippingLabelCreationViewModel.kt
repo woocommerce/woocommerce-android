@@ -27,6 +27,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.address.ObserveShippi
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.destination.VerifyDestinationAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.origin.FetchOriginAddresses
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.origin.ObserveOriginAddresses
+import com.woocommerce.android.ui.orders.wooshippinglabels.components.ActionSnackbar
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeBannerUiState
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeType
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
@@ -532,8 +533,8 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             } else {
                 purchaseState.value = backupPurchaseState
                 actionSnackbar = ActionSnackbar(
-                    R.string.woo_shipping_labels_purchase_error,
-                    R.string.retry,
+                    message = R.string.woo_shipping_labels_purchase_error,
+                    actionLabel = R.string.retry,
                 ) { onPurchaseShippingLabel() }
             }
         }
@@ -658,7 +659,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         actionSnackbar = ActionSnackbar(
             message = snackbarMessage,
             actionLabel = R.string.undo,
-            onDismissed = { actionSnackbar = null }
+            dismissAction = { actionSnackbar = null }
         ) {
             hazmatState.value = previousState
         }
@@ -757,13 +758,6 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             val destinationStatus: AddressStatus
         ) : WooShippingViewState()
     }
-
-    data class ActionSnackbar(
-        val message: Int,
-        val actionLabel: Int,
-        val onDismissed: () -> Unit = {},
-        val action: () -> Unit
-    )
 
     sealed class ShippingRatesState {
         data object NoAvailable : ShippingRatesState()
