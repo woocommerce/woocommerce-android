@@ -450,6 +450,7 @@ private fun ProductItem(
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.clearAndSetSemantics { }
+                            .alpha(if (item.productDoesNotExist) 0.5f else 1f)
                     )
                     Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value.toAdaptivePadding()))
                 }
@@ -458,6 +459,7 @@ private fun ProductItem(
                     style = WooPosTypography.BodySmall,
                     color = WooPosTheme.colors.onSurfaceVariantHighest,
                     modifier = Modifier.clearAndSetSemantics { }
+                        .alpha(if (item.productDoesNotExist) 0.5f else 1f)
                 )
             }
 
@@ -601,6 +603,7 @@ fun WooPosCartScreenProductsPreview(modifier: Modifier = Modifier) {
                             description = "test description test description test description test description" +
                                 " test description test description test description test description test description",
                             price = "$150,000",
+                            productDoesNotExist = true,
                         ),
                         WooPosCartItemViewState.Product.Simple(
                             itemNumber = 4,
