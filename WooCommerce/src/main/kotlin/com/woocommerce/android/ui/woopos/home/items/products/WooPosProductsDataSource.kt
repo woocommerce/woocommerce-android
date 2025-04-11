@@ -30,10 +30,43 @@ class WooPosProductsDataSource @Inject constructor(
 ) {
     private val canLoadMore = AtomicBoolean(false)
     private val offset = AtomicInteger(0)
-    private val pageSize = 25
 
     val hasMorePages: Boolean
         get() = canLoadMore.get()
+
+    suspend fun prepopulateProductsCache(): Result<Unit> {
+        productsCache.clear()
+
+        var currentPage = 0
+        val productsToFetch = mutableListOf<Product>()
+        var hasMoreToFetch = true
+
+        while (hasMoreToFetch && currentPage < PRE_POPULATION_MAX_PAGES) {
+            val result = productStore.fetchProducts(
+                site = selectedSite.get(),
+                offset = currentPage * PRE_POPULATION_PAGE_SIZE,
+                pageSize = PRE_POPULATION_PAGE_SIZE,
+                filterOptions = createProductFilters(),
+                includeTypes = createIncludedTypes(),
+            )
+
+            if (!result.isError) {
+                val productsList = result.model ?: emptyList()
+                val products = productsList.map { it.toAppModel() }
+
+                productsToFetch.addAll(products)
+
+                hasMoreToFetch = products.size == PRE_POPULATION_PAGE_SIZE
+                currentPage++
+            } else {
+                result.logFailure()
+                return Result.failure(WooException(result.error))
+            }
+        }
+
+        productsCache.addAll(productsToFetch)
+        return Result.success(Unit)
+    }
 
     fun loadProducts(forceRefreshProducts: Boolean): Flow<ProductsResult> = flow {
         offset.set(0)
@@ -70,17 +103,17 @@ class WooPosProductsDataSource @Inject constructor(
         val result = productStore.fetchProducts(
             site = selectedSite.get(),
             offset = offset.get(),
-            pageSize = pageSize,
+            pageSize = NORMAL_PAGE_SIZE,
             filterOptions = createProductFilters(),
-            includeTypes = listOf(WCProductStore.IncludeType.Simple, WCProductStore.IncludeType.Variable),
+            includeTypes = createIncludedTypes(),
         )
 
         return if (!result.isError) {
             val productsList = result.model ?: emptyList()
             val products = productsList.map { it.toAppModel() }
 
-            canLoadMore.set(productsList.size == pageSize)
-            offset.addAndGet(pageSize)
+            canLoadMore.set(productsList.size == NORMAL_PAGE_SIZE)
+            offset.addAndGet(NORMAL_PAGE_SIZE)
 
             productsCache.addAll(products)
             Result.success(sortProductsByName(productsCache.getAll()))
@@ -97,6 +130,11 @@ class WooPosProductsDataSource @Inject constructor(
         )
     }
 
+    private fun createIncludedTypes() = listOf(
+        WCProductStore.IncludeType.Simple,
+        WCProductStore.IncludeType.Variable
+    )
+
     private fun sortProductsByName(products: List<Product>): List<Product> {
         return products.sortedBy { it.name }
     }
@@ -109,5 +147,11 @@ class WooPosProductsDataSource @Inject constructor(
     sealed class ProductsResult {
         data class Cached(val products: List<Product>) : ProductsResult()
         data class Remote(val productsResult: Result<List<Product>>) : ProductsResult()
+    }
+
+    companion object {
+        private const val NORMAL_PAGE_SIZE = 25
+        private const val PRE_POPULATION_PAGE_SIZE = 100
+        private const val PRE_POPULATION_MAX_PAGES = 25
     }
 }
