@@ -41,7 +41,7 @@ open class WellSqlConfig : DefaultWellConfig {
     annotation class AddOn
 
     override fun getDbVersion(): Int {
-        return 207
+        return 208
     }
 
     override fun getDbName(): String {
@@ -2121,6 +2121,41 @@ open class WellSqlConfig : DefaultWellConfig {
 
                 206 -> migrate(version) {
                     db.execSQL("ALTER TABLE SiteModel ADD JETPACK_MODULES TEXT")
+                }
+
+                207 -> migrate(version) {
+                    db.execSQL("DROP TABLE ActivityLog")
+                    db.execSQL("DROP TABLE BackupDownloadStatus")
+                    db.execSQL("DROP TABLE CommentModel")
+                    db.execSQL("DROP TABLE EditorTheme")
+                    db.execSQL("DROP TABLE EditorThemeElement")
+                    db.execSQL("DROP TABLE GutenbergLayoutCategoriesModel")
+                    db.execSQL("DROP TABLE GutenbergLayoutCategoryModel")
+                    db.execSQL("DROP TABLE GutenbergLayoutModel")
+                    db.execSQL("DROP TABLE InsightTypes")
+                    db.execSQL("DROP TABLE LikeModel")
+                    db.execSQL("DROP TABLE LocalDiffModel")
+                    db.execSQL("DROP TABLE LocalRevisionModel")
+                    db.execSQL("DROP TABLE PostFormatModel")
+                    db.execSQL("DROP TABLE PostModel")
+                    db.execSQL("DROP TABLE PostSchedulingReminder")
+                    db.execSQL("DROP TABLE PostUploadModel")
+                    db.execSQL("DROP TABLE QuickStartStatusModel")
+                    db.execSQL("DROP TABLE QuickStartTaskModel")
+                    db.execSQL("DROP TABLE RewindStatus")
+                    db.execSQL("DROP TABLE RewindStatusCredentials")
+                    db.execSQL("DROP TABLE RoleModel")
+                    db.execSQL("DROP TABLE ScanState")
+                    db.execSQL("DROP TABLE StatsBlock")
+                    db.execSQL("DROP TABLE StatsRequest")
+                    db.execSQL("DROP TABLE StockMedia")
+                    db.execSQL("DROP TABLE StockMediaPage")
+                    db.execSQL("DROP TABLE SubscriptionModel")
+                    db.execSQL("DROP TABLE TaxonomyModel")
+                    db.execSQL("DROP TABLE TermModel")
+                    db.execSQL("DROP TABLE ThreatModel")
+                    db.execSQL("DROP TABLE XPostSites")
+                    db.execSQL("DROP TABLE XPosts")
                 }
             }
         }

@@ -11,13 +11,9 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.wordpress.android.fluxc.model.MediaModel;
 import org.wordpress.android.fluxc.model.MediaUploadModel;
-import org.wordpress.android.fluxc.model.PostModel;
-import org.wordpress.android.fluxc.model.PostUploadModel;
 import org.wordpress.android.fluxc.persistence.MediaSqlUtils;
-import org.wordpress.android.fluxc.persistence.PostSqlUtils;
 import org.wordpress.android.fluxc.persistence.UploadSqlUtils;
 import org.wordpress.android.fluxc.persistence.WellSqlConfig;
-import org.wordpress.android.fluxc.post.PostTestUtils;
 
 import java.util.HashSet;
 import java.util.List;
@@ -26,14 +22,12 @@ import java.util.Set;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNotSame;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
 public class UploadSqlUtilsTest {
     private Random mRandom = new Random(System.currentTimeMillis());
-    private PostSqlUtils mPostSqlUtils = new PostSqlUtils();
 
     @Before
     public void setUp() {
@@ -162,132 +156,6 @@ public class UploadSqlUtilsTest {
         // The corresponding MediaModels should be untouched
         mediaModels = MediaSqlUtils.getAllSiteMedia(UploadTestUtils.getTestSite());
         assertEquals(2, mediaModels.size());
-    }
-
-    // Attempts to insert null then verifies there is no post
-    @Test
-    public void testInsertNullPost() {
-        assertEquals(0, UploadSqlUtils.insertOrUpdatePost(null));
-        assertEquals(0, WellSql.select(PostUploadModel.class).getAsCursor().getCount());
-    }
-
-    @Test
-    public void testInsertPost() {
-        PostModel testPost = UploadTestUtils.getTestPost();
-        assertEquals(1, mPostSqlUtils.insertOrUpdatePostOverwritingLocalChanges(testPost));
-        List<PostModel> postList = PostTestUtils.getPosts();
-        assertEquals(1, postList.size());
-        assertNotNull(postList.get(0));
-
-        // Store a PostUploadModel corresponding to this PostModel
-        testPost = postList.get(0);
-        PostUploadModel postUploadModel = new PostUploadModel(testPost.getId());
-        UploadSqlUtils.insertOrUpdatePost(postUploadModel);
-
-        postUploadModel = UploadSqlUtils.getPostUploadModelForLocalId(testPost.getId());
-        assertNotNull(postUploadModel);
-        assertEquals(testPost.getId(), postUploadModel.getId());
-        assertEquals(PostUploadModel.PENDING, postUploadModel.getUploadState());
-
-        // Deleting the PostModel should cause the corresponding PostUploadModel to be deleted also
-        mPostSqlUtils.deletePost(testPost);
-
-        postList = PostTestUtils.getPosts();
-        assertTrue(postList.isEmpty());
-
-        postUploadModel = UploadSqlUtils.getPostUploadModelForLocalId(testPost.getId());
-        assertNull(postUploadModel);
-    }
-
-    @Test
-    public void testGetPostModelsByState() {
-        PostModel testPost1 = UploadTestUtils.getTestPost();
-        testPost1.setIsLocalDraft(true);
-        assertEquals(1, mPostSqlUtils.insertOrUpdatePostOverwritingLocalChanges(testPost1));
-        PostModel testPost2 = UploadTestUtils.getTestPost();
-        testPost2.setIsLocalDraft(true);
-        assertEquals(1, mPostSqlUtils.insertOrUpdatePostOverwritingLocalChanges(testPost2));
-        List<PostModel> postList = PostTestUtils.getPosts();
-        assertEquals(2, postList.size());
-
-        // Store PostUploadModels corresponding to the PostModels
-        testPost1 = postList.get(0);
-        PostUploadModel postUploadModel1 = new PostUploadModel(testPost1.getId());
-        UploadSqlUtils.insertOrUpdatePost(postUploadModel1);
-        testPost2 = postList.get(1);
-        PostUploadModel postUploadModel2 = new PostUploadModel(testPost2.getId());
-        UploadSqlUtils.insertOrUpdatePost(postUploadModel2);
-
-        // Both PostUploadModels should be PENDING
-        List<PostUploadModel> pendingPostUploadModels =
-                UploadSqlUtils.getPostUploadModelsWithState(PostUploadModel.PENDING);
-        assertEquals(2, pendingPostUploadModels.size());
-        assertEquals(0, UploadSqlUtils.getPostUploadModelsWithState(PostUploadModel.FAILED).size());
-        assertEquals(0, UploadSqlUtils.getPostUploadModelsWithState(PostUploadModel.CANCELLED).size());
-        assertEquals(2, UploadSqlUtils.getAllPostUploadModels().size());
-
-        // Fetch the corresponding PostModels
-        List<PostModel> pendingPostModels = UploadSqlUtils.getPostModelsForPostUploadModels(pendingPostUploadModels);
-        assertEquals(2, pendingPostModels.size());
-        assertNotSame(pendingPostModels.get(0), pendingPostModels.get(1));
-
-        // Set one PostUploadModel to CANCELLED
-        postUploadModel1.setUploadState(PostUploadModel.CANCELLED);
-        UploadSqlUtils.insertOrUpdatePost(postUploadModel1);
-
-        pendingPostUploadModels = UploadSqlUtils.getPostUploadModelsWithState(PostUploadModel.PENDING);
-        List<PostUploadModel> cancelledPostUploadModels =
-                UploadSqlUtils.getPostUploadModelsWithState(PostUploadModel.CANCELLED);
-
-        assertEquals(1, pendingPostUploadModels.size());
-        assertEquals(1, cancelledPostUploadModels.size());
-        assertEquals(0, UploadSqlUtils.getPostUploadModelsWithState(PostUploadModel.FAILED).size());
-        assertEquals(2, UploadSqlUtils.getAllPostUploadModels().size());
-
-        // Fetch the corresponding PostModels
-        pendingPostModels = UploadSqlUtils.getPostModelsForPostUploadModels(pendingPostUploadModels);
-        assertEquals(1, pendingPostModels.size());
-        assertEquals(postUploadModel2.getId(), pendingPostModels.get(0).getId());
-    }
-
-    @Test
-    public void testDeletePostUploadModel() {
-        PostModel testPost1 = UploadTestUtils.getTestPost();
-        testPost1.setIsLocalDraft(true);
-        PostModel testPost2 = UploadTestUtils.getTestPost();
-        testPost2.setIsLocalDraft(true);
-        assertEquals(1, mPostSqlUtils.insertOrUpdatePostOverwritingLocalChanges(testPost1));
-        assertEquals(1, mPostSqlUtils.insertOrUpdatePostOverwritingLocalChanges(testPost2));
-        List<PostModel> postModels = PostTestUtils.getPosts();
-        assertEquals(2, postModels.size());
-
-        // Store PostUploadModels corresponding to the PostModels
-        testPost1 = postModels.get(0);
-        PostUploadModel postUploadModel1 = new PostUploadModel(testPost1.getId());
-        UploadSqlUtils.insertOrUpdatePost(postUploadModel1);
-
-        testPost2 = postModels.get(1);
-        PostUploadModel postUploadModel2 = new PostUploadModel(testPost2.getId());
-        UploadSqlUtils.insertOrUpdatePost(postUploadModel2);
-
-        // Delete one of the PostUploadModels
-        assertEquals(1, UploadSqlUtils.deletePostUploadModelWithLocalId(testPost2.getId()));
-
-        List<PostUploadModel> postUploadModels = WellSql.select(PostUploadModel.class).getAsModel();
-        assertEquals(1, postUploadModels.size());
-        assertEquals(testPost1.getId(), postUploadModels.get(0).getId());
-
-        // Delete the other PostUploadModel
-        Set<Integer> postIdSet = new HashSet<>();
-        postIdSet.add(testPost1.getId());
-        assertEquals(1, UploadSqlUtils.deletePostUploadModelsWithLocalIds(postIdSet));
-
-        postUploadModels = WellSql.select(PostUploadModel.class).getAsModel();
-        assertEquals(0, postUploadModels.size());
-
-        // The corresponding PostModels should be untouched
-        postModels = PostTestUtils.getPosts();
-        assertEquals(2, postModels.size());
     }
 
     @Test

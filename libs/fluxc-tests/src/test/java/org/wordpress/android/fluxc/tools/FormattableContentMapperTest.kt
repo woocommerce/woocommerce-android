@@ -65,25 +65,6 @@ class FormattableContentMapperTest {
     }
 
     @Test
-    fun mapsActivityLogContentToSimpleFormattableContent() {
-        val activityLogBodyResponse = UnitTestUtils
-                .getStringFromResourceFile(this.javaClass, "activitylog/body-response.json")
-        val formattableContent = formattableContentMapper.mapToFormattableContent(activityLogBodyResponse)
-        assertEquals("Comment text", formattableContent.text)
-        assertEquals(2, formattableContent.ranges!!.size)
-        with(formattableContent.ranges!![0]) {
-            assertEquals(FormattableRangeType.POST, this.rangeType())
-            assertEquals(123, this.siteId)
-            assertEquals(111, this.id)
-            assertEquals(url, this.url)
-            assertEquals("post", this.section)
-            assertEquals("edit", this.intent)
-            assertEquals("single", this.context)
-            assertEquals(listOf(27, 39), this.indices)
-        }
-    }
-
-    @Test
     fun createsUnknownStringFromNull() {
         val unknownType = FormattableRangeType.fromString(null)
 
@@ -115,33 +96,5 @@ class FormattableContentMapperTest {
         val formattableList = formattableContentMapper.mapToFormattableContentList(jsonContentArray)
         val formattableJson = formattableContentMapper.mapFormattableContentListToJson(formattableList)
         assertEquals(jsonContentArray, formattableJson)
-    }
-
-    @Test
-    fun mapsRewindDownloadReadyTypeToRewindDownloadReadyFormattableRangeType() {
-        val response = UnitTestUtils
-                .getStringFromResourceFile(this.javaClass, "notifications/rewind-download-ready.json")
-        val formattableContent = formattableContentMapper.mapToFormattableContent(response)
-        assertEquals(FormattableRangeType.REWIND_DOWNLOAD_READY, formattableContent.ranges!![0].rangeType())
-    }
-
-    @Test
-    fun `getting ID from FormattableRange returns correct value depending on value type `() {
-        val notificationCommentBodyResponse = UnitTestUtils
-                .getStringFromResourceFile(this.javaClass, "notifications/comment-response.json")
-        val formattableContent = formattableContentMapper.mapToFormattableContent(notificationCommentBodyResponse)
-        assertEquals(4, formattableContent.ranges!!.size)
-        // ID is missing
-        with(formattableContent.ranges!![0]) {
-            assertEquals(null, this.id)
-        }
-        // ID is numerical
-        with(formattableContent.ranges!![1]) {
-            assertEquals(16, this.id)
-        }
-        // ID is non-numerical
-        with(formattableContent.ranges!![2]) {
-            assertEquals(null, this.id)
-        }
     }
 }

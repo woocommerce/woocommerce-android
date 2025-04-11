@@ -13,7 +13,6 @@ import com.google.gson.stream.JsonToken.BEGIN_ARRAY
 import com.google.gson.stream.JsonToken.BEGIN_OBJECT
 import com.google.gson.stream.JsonWriter
 import org.wordpress.android.fluxc.network.rest.wpcom.post.PostWPComRestResponse.PostMeta.PostData.PostAutoSave
-import org.wordpress.android.fluxc.network.rest.wpcom.taxonomy.TermWPComRestResponse
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.AppLog.T.POSTS
 import java.io.IOException
@@ -33,14 +32,10 @@ data class PostWPComRestResponse(
     @SerializedName("status") val status: String? = null,
     @SerializedName("sticky") val sticky: Boolean = false,
     @SerializedName("password") val password: String? = null,
-    @SerializedName("parent") val parent: PostParent? = null,
     @SerializedName("type") val type: String,
     @SerializedName("featured_image") val featuredImage: String? = null,
     @SerializedName("post_thumbnail") val postThumbnail: PostThumbnail? = null,
     @SerializedName("format") val format: String? = null,
-    @SerializedName("geo") val geo: GeoLocation? = null,
-    @SerializedName("tags") val tags: Map<String, TermWPComRestResponse>? = null,
-    @SerializedName("categories") val categories: Map<String, TermWPComRestResponse>? = null,
     @SerializedName("capabilities") val capabilities: Capabilities? = null,
     @SerializedName("meta") val meta: PostMeta? = null,
     @SerializedName("metadata") @JsonAdapter(MetaDataAdapterFactory::class) val metadata: List<PostMetaData>? = null,
