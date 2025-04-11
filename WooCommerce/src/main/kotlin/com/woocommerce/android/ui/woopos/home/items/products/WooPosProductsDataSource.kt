@@ -152,6 +152,6 @@ class WooPosProductsDataSource @Inject constructor(
     companion object {
         private const val NORMAL_PAGE_SIZE = 25
         private const val PRE_POPULATION_PAGE_SIZE = 100
-        private const val PRE_POPULATION_MAX_PAGES = 25
+        private const val PRE_POPULATION_MAX_PAGES = 2
     }
 }
