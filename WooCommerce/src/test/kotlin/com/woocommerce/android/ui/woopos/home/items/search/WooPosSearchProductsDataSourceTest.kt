@@ -27,7 +27,7 @@ class WooPosSearchProductsDataSourceTest {
 
     private val productStore: WCProductStore = mock()
     private val wooPosProductsCache: WooPosProductsCache = mock()
-    private val searchResultsCache: WooPosSearchResultsCache = mock()
+    private val searchResults: WooPosSearchResultsIndex = mock()
     private val selectedSite: SelectedSite = mock()
     private val searchPredicate: ProductSearchPredicate = mock()
     private val siteModel: SiteModel = mock()
@@ -48,7 +48,7 @@ class WooPosSearchProductsDataSourceTest {
             productStore = productStore,
             selectedSite = selectedSite,
             productsCache = wooPosProductsCache,
-            searchResultsCache = searchResultsCache,
+            searchResults = searchResults,
             searchPredicate = searchPredicate
         )
     }
@@ -57,8 +57,8 @@ class WooPosSearchProductsDataSourceTest {
     fun `given cached search results, when search products called, then should emit cached results`() = runTest {
         // GIVEN
         val query = "test"
-        whenever(searchResultsCache.hasSearchResults(query)).thenReturn(true)
-        whenever(searchResultsCache.getSearchResults(query)).thenReturn(emptyList())
+        whenever(searchResults.hasSearchResults(query)).thenReturn(true)
+        whenever(searchResults.getSearchResults(query)).thenReturn(emptyList())
         whenever(wooPosProductsCache.getAll()).thenReturn(products)
         whenever(
             productStore.searchProducts(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull())
