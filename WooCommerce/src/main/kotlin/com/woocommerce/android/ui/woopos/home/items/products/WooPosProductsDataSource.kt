@@ -43,35 +43,12 @@ class WooPosProductsDataSource @Inject constructor(
         val cachedProducts = productsCache.getAll()
         emit(ProductsResult.Cached(sortProductsByName(cachedProducts)))
 
-        val filters = createProductFilters()
-        val includeTypes = listOf(WCProductStore.IncludeType.Simple, WCProductStore.IncludeType.Variable)
+        val fetchResult = fetchProducts()
 
-        val result = productStore.fetchProducts(
-            site = selectedSite.get(),
-            offset = offset.get(),
-            pageSize = pageSize,
-            filterOptions = filters,
-            includeTypes = includeTypes
-        )
-
-        if (!result.isError) {
-            val productsList = result.model ?: emptyList()
-            val remoteProducts = productsList.map { it.toAppModel() }
-
-            canLoadMore.set(productsList.size == pageSize)
-            offset.addAndGet(pageSize)
-
-            productsCache.addAll(remoteProducts)
+        if (fetchResult.isSuccess) {
             emit(ProductsResult.Remote(Result.success(sortProductsByName(productsCache.getAll()))))
         } else {
-            result.logFailure()
-            emit(
-                ProductsResult.Remote(
-                    Result.failure(
-                        WooException(result.error)
-                    )
-                )
-            )
+            emit(ProductsResult.Remote(Result.failure(fetchResult.exceptionOrNull() ?: Exception("Unknown error"))))
         }
     }.flowOn(Dispatchers.IO).take(2)
 
@@ -80,25 +57,32 @@ class WooPosProductsDataSource @Inject constructor(
             return@withContext Result.success(sortProductsByName(productsCache.getAll()))
         }
 
-        val filters = createProductFilters()
-        val includeTypes = listOf(WCProductStore.IncludeType.Simple, WCProductStore.IncludeType.Variable)
+        val fetchResult = fetchProducts()
 
+        if (fetchResult.isSuccess) {
+            Result.success(sortProductsByName(productsCache.getAll()))
+        } else {
+            fetchResult
+        }
+    }
+
+    private suspend fun fetchProducts(): Result<List<Product>> {
         val result = productStore.fetchProducts(
             site = selectedSite.get(),
             offset = offset.get(),
             pageSize = pageSize,
-            filterOptions = filters,
-            includeTypes = includeTypes
+            filterOptions = createProductFilters(),
+            includeTypes = listOf(WCProductStore.IncludeType.Simple, WCProductStore.IncludeType.Variable),
         )
 
-        if (!result.isError) {
+        return if (!result.isError) {
             val productsList = result.model ?: emptyList()
-            val moreProducts = productsList.map { it.toAppModel() }
+            val products = productsList.map { it.toAppModel() }
 
             canLoadMore.set(productsList.size == pageSize)
             offset.addAndGet(pageSize)
 
-            productsCache.addAll(moreProducts)
+            productsCache.addAll(products)
             Result.success(sortProductsByName(productsCache.getAll()))
         } else {
             result.logFailure()
