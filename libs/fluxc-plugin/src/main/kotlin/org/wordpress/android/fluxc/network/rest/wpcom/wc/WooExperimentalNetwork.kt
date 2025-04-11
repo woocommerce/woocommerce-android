@@ -1,5 +1,7 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.wc
 
+import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.generated.SiteActionBuilder
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetwork
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
@@ -20,6 +22,7 @@ import javax.inject.Singleton
 class WooExperimentalNetwork @Inject constructor(
     private val applicationPasswordsNetwork: ApplicationPasswordsNetwork,
     private val jetpackTunnelWPAPINetwork: JetpackTunnelWPAPINetwork,
+    private val dispatcher: Dispatcher
 ) : WPAPINetwork {
     override suspend fun <T : Any> executeGetGsonRequest(
         site: SiteModel,
@@ -137,7 +140,8 @@ class WooExperimentalNetwork @Inject constructor(
                 if (appPasswordsResponse.error.errorCode ==
                     ApplicationPasswordsNetwork.APPLICATION_PASSWORDS_NOT_SUPPORT_ERROR_CODE
                 ) {
-                    // TODO flag the site as not supported
+                    site.applicationPasswordsAuthorizeUrl = null
+                    dispatcher.dispatch(SiteActionBuilder.newUpdateSiteAction(site))
                 }
                 jetpackTunnelWPAPINetwork.request()
             }
