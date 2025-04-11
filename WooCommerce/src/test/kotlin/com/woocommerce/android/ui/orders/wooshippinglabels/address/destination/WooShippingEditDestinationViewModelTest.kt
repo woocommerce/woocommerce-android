@@ -237,7 +237,7 @@ class WooShippingEditDestinationViewModelTest : WooShippingEditAddressViewModelT
     }
 
     @Test
-    fun `when email is empty then address error is null`() = testBlocking {
+    fun `when email is empty then address error is not null`() = testBlocking {
         val address = Address.EMPTY
         whenever(addressValidator.validateAtLeastOneOf(eq(""), eq(""))).doReturn("error")
         whenever(addressValidator.validateFieldRequired("")).doReturn("error")
@@ -252,6 +252,6 @@ class WooShippingEditDestinationViewModelTest : WooShippingEditAddressViewModelT
 
         assertThat(result).isInstanceOf(WooShippingEditAddressViewModel.ViewState::class.java)
 
-        assertThat(result.editableAddress.email.error).isNull()
+        assertThat(result.editableAddress.email.error).isNotNull()
     }
 }
