@@ -27,6 +27,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderListPayload
 import org.wordpress.android.util.DateTimeUtils
 import java.util.Date
+import javax.inject.Inject
 
 /**
  * Works with a [androidx.paging.PagedList] by providing the logic needed to fetch the data used to populate
@@ -36,7 +37,7 @@ import java.util.Date
  * in FluxC to get a better understanding of how this works with the underlying internal list management code.
  */
 @Suppress("LongParameterList")
-class OrderListItemDataSource(
+class OrderListItemDataSource @Inject constructor(
     private val dispatcher: Dispatcher,
     private val orderStore: WCOrderStore,
     private val networkStatus: NetworkStatus,

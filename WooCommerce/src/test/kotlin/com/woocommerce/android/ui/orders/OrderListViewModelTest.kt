@@ -31,6 +31,7 @@ import com.woocommerce.android.ui.orders.list.BulkUpdateOrderResult
 import com.woocommerce.android.ui.orders.list.FetchOrdersRepository
 import com.woocommerce.android.ui.orders.list.ObserveOrdersListLastUpdate
 import com.woocommerce.android.ui.orders.list.OrderListFragmentArgs
+import com.woocommerce.android.ui.orders.list.OrderListItemDataSource
 import com.woocommerce.android.ui.orders.list.OrderListItemIdentifier
 import com.woocommerce.android.ui.orders.list.OrderListItemUIType
 import com.woocommerce.android.ui.orders.list.OrderListRepository
@@ -98,7 +99,6 @@ class OrderListViewModelTest : BaseUnitTest() {
     }
     private val orderDetailRepository: OrderDetailRepository = mock()
     private val dispatcher: Dispatcher = mock()
-    private val orderStore: WCOrderStore = mock()
     private val resourceProvider: ResourceProvider = mock {
         on { getString(any()) } doAnswer { it.arguments[0].toString() }
         on { getString(any(), any()) } doAnswer { it.arguments[0].toString() + it.arguments[1].toString() }
@@ -108,7 +108,6 @@ class OrderListViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: OrderListViewModel
     private val listStore: ListStore = mock()
     private val pagedListWrapper: PagedListWrapper<OrderListItemUIType> = mock()
-    private val orderFetcher: FetchOrdersRepository = mock()
     private val getWCOrderListDescriptorWithFilters: GetWCOrderListDescriptorWithFilters = mock()
     private val getWCOrderListDescriptorWithFiltersAndSearchQuery: GetWCOrderListDescriptorWithFiltersAndSearchQuery =
         mock()
@@ -121,6 +120,7 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val showTestNotification = mock<ShowTestNotification>()
     private val shouldUpdateOrdersList = mock<ShouldUpdateOrdersList>()
     private val observeOrdersListLastUpdate = mock<ObserveOrdersListLastUpdate>()
+    private val orderListItemDataSource = mock<OrderListItemDataSource>()
 
     @Before
     fun setup() = testBlocking {
@@ -155,12 +155,10 @@ class OrderListViewModelTest : BaseUnitTest() {
         dispatchers = coroutinesTestRule.testDispatchers,
         orderListRepository = orderListRepository,
         orderDetailRepository = orderDetailRepository,
-        orderStore = orderStore,
         listStore = listStore,
         networkStatus = networkStatus,
         dispatcher = dispatcher,
         selectedSite = selectedSite,
-        fetcher = orderFetcher,
         resourceProvider = resourceProvider,
         getWCOrderListDescriptorWithFilters = getWCOrderListDescriptorWithFilters,
         getWCOrderListDescriptorWithFiltersAndSearchQuery = getWCOrderListDescriptorWithFiltersAndSearchQuery,
@@ -174,7 +172,8 @@ class OrderListViewModelTest : BaseUnitTest() {
         showTestNotification = showTestNotification,
         dateUtils = mock(),
         shouldUpdateOrdersList = shouldUpdateOrdersList,
-        observeOrdersListLastUpdate = observeOrdersListLastUpdate
+        observeOrdersListLastUpdate = observeOrdersListLastUpdate,
+        dataSourceLazyProvider = { orderListItemDataSource }
     )
 
     @Test
