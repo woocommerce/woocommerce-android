@@ -20,6 +20,7 @@ import org.wordpress.android.fluxc.model.order.UpdateOrderRequest
 import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooExperimentalNetwork
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooNetwork
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderDto.Billing
@@ -61,6 +62,7 @@ class OrderRestClient @Inject constructor(
     private val dispatcher: Dispatcher,
     private val orderDtoMapper: OrderDtoMapper,
     private val wooNetwork: WooNetwork,
+    private val wooExperimentalNetwork: WooExperimentalNetwork,
     private val coroutineEngine: CoroutineEngine
 ) {
     /**
@@ -229,7 +231,8 @@ class OrderRestClient @Inject constructor(
      */
     fun fetchOrderListSummaries(
         listDescriptor: WCOrderListDescriptor,
-        offset: Long
+        offset: Long,
+        useAppPasswordsForJetpackSites: Boolean
     ) {
         coroutineEngine.launch(T.API, this, "fetchOrderListSummaries") {
             val startTime = System.currentTimeMillis()
@@ -249,7 +252,13 @@ class OrderRestClient @Inject constructor(
                 "status" to listDescriptor.statusFilter.takeUnless { it.isNullOrBlank() }
             )
 
-            val response = wooNetwork.executeGetGsonRequest(
+            val network = if (useAppPasswordsForJetpackSites) {
+                wooExperimentalNetwork
+            } else {
+                wooNetwork
+            }
+
+            val response = network.executeGetGsonRequest(
                 site = listDescriptor.site,
                 path = url,
                 clazz = Array<OrderSummaryApiResponse>::class.java,

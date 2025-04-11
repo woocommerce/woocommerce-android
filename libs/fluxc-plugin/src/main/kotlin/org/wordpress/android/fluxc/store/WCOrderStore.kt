@@ -76,7 +76,8 @@ class WCOrderStore @Inject constructor(
 
     class FetchOrderListPayload(
         val listDescriptor: WCOrderListDescriptor,
-        val offset: Long
+        val offset: Long,
+        val useAppPasswordsForJetpackSites: Boolean
     ) : Payload<BaseNetworkError>()
 
     class FetchOrdersByIdsPayload(
@@ -562,7 +563,8 @@ class WCOrderStore @Inject constructor(
     private fun fetchOrderList(payload: FetchOrderListPayload) {
         wcOrderRestClient.fetchOrderListSummaries(
             listDescriptor = payload.listDescriptor,
-            offset = payload.offset
+            offset = payload.offset,
+            useAppPasswordsForJetpackSites = payload.useAppPasswordsForJetpackSites
         )
     }
 
