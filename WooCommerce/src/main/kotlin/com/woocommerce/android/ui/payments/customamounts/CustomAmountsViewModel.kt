@@ -170,7 +170,7 @@ class CustomAmountsViewModel @Inject constructor(
     @Parcelize
     data class ViewState(
         val customAmountUIModel: CustomAmountUIState = CustomAmountUIState(),
-        val currencySymbol: @RawValue CurrencySymbol? = null,
+        val currencySymbol: CurrencySymbol? = null,
         val isDoneButtonEnabled: Boolean = false,
         val isProgressShowing: Boolean = false,
         val createdOrder: Order? = null,

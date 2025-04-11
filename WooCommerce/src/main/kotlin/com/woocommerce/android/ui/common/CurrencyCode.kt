@@ -1,4 +1,8 @@
 package com.woocommerce.android.ui.common
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
 @JvmInline
-value class CurrencyCode(val value: String)
+@Parcelize
+value class CurrencyCode(val value: String): Parcelable

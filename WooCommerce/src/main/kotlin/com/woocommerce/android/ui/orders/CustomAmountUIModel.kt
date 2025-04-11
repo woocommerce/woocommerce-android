@@ -12,7 +12,7 @@ import java.math.BigDecimal
 data class CustomAmountUIModel(
     val id: Long,
     val amount: BigDecimal,
-    val currencyCode: @RawValue CurrencyCode? = null,
+    val currencyCode: CurrencyCode? = null,
     val name: String,
     val taxStatus: TaxStatus = TaxStatus(),
     val type: CustomAmountType,
