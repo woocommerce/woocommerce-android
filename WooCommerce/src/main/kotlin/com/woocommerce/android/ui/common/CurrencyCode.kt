@@ -5,4 +5,4 @@ import kotlinx.parcelize.Parcelize
 
 @JvmInline
 @Parcelize
-value class CurrencyCode(val value: String): Parcelable
+value class CurrencyCode(val value: String) : Parcelable
