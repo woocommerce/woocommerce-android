@@ -21,7 +21,6 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-
 @ExperimentalCoroutinesApi
 class WooPosItemsSearchHelperTest {
     @Rule
@@ -78,10 +77,11 @@ class WooPosItemsSearchHelperTest {
     fun `given search input, when onSearchChanged called, then sends changed query event`() = runTest {
         // GIVEN
         val searchQuery = "test query"
+        val cursorPosition = searchQuery.length
         searchHelper.initialize(this, viewStateFlow)
 
         // WHEN
-        searchHelper.onSearchChanged(searchQuery)
+        searchHelper.onSearchChanged(searchQuery, cursorPosition)
         advanceUntilIdle()
 
         // THEN
@@ -94,10 +94,11 @@ class WooPosItemsSearchHelperTest {
     fun `given non-empty search input, when onSearchChanged called, then updates view state with query`() = runTest {
         // GIVEN
         val searchQuery = "test query"
+        val cursorPosition = searchQuery.length
         searchHelper.initialize(this, viewStateFlow)
 
         // WHEN
-        searchHelper.onSearchChanged(searchQuery)
+        searchHelper.onSearchChanged(searchQuery, cursorPosition)
 
         // THEN
         val currentState = viewStateFlow.value as WooPosItemsViewState.Content
@@ -106,16 +107,18 @@ class WooPosItemsSearchHelperTest {
         assertThat(openState.input).isInstanceOf(WooPosSearchInputState.Open.Input.Query::class.java)
         val queryInput = openState.input as WooPosSearchInputState.Open.Input.Query
         assertThat(queryInput.text).isEqualTo(searchQuery)
+        assertThat(queryInput.cursorPosition).isEqualTo(cursorPosition)
     }
 
     @Test
     fun `given empty search input, when onSearchChanged called, then resets to initial open state`() = runTest {
         // GIVEN
         val emptyQuery = ""
+        val cursorPosition = 0
         searchHelper.initialize(this, viewStateFlow)
 
         // WHEN
-        searchHelper.onSearchChanged(emptyQuery)
+        searchHelper.onSearchChanged(emptyQuery, cursorPosition)
 
         // THEN
         val currentState = viewStateFlow.value as WooPosItemsViewState.Content
@@ -128,7 +131,7 @@ class WooPosItemsSearchHelperTest {
     fun `given open search state, when onCloseSearchClicked called, then updates to closed state`() = runTest {
         // GIVEN
         searchHelper.initialize(this, viewStateFlow)
-        searchHelper.onSearchChanged("initial query")
+        searchHelper.onSearchChanged("initial query", "initial query".length)
 
         // WHEN
         searchHelper.onCloseSearchClicked()
@@ -144,7 +147,7 @@ class WooPosItemsSearchHelperTest {
         runTest {
             // GIVEN
             searchHelper.initialize(this, viewStateFlow)
-            searchHelper.onSearchChanged("initial query")
+            searchHelper.onSearchChanged("initial query", "initial query".length)
 
             // WHEN
             searchHelper.onClearSearchClicked()
@@ -231,7 +234,7 @@ class WooPosItemsSearchHelperTest {
         searchHelper.initialize(this, viewStateFlow)
 
         // WHEN
-        searchHelper.onSearchChanged("test query")
+        searchHelper.onSearchChanged("test query", "test query".length)
 
         // THEN
         val currentState = viewStateFlow.value as WooPosItemsViewState.Content
@@ -277,7 +280,7 @@ class WooPosItemsSearchHelperTest {
 
         // WHEN
 
-        searchHelper.onSearchChanged("test")
+        searchHelper.onSearchChanged("test", "test".length)
         advanceUntilIdle()
 
         // THEN
