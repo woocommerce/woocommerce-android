@@ -280,7 +280,7 @@ class WooPosItemsSearchHelperTest {
 
         // WHEN
 
-        searchHelper.onSearchChanged("test")
+        searchHelper.onSearchChanged("test", "test".length)
         advanceUntilIdle()
 
         // THEN
