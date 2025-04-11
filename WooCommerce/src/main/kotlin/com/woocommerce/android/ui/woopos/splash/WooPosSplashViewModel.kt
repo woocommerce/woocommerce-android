@@ -23,7 +23,7 @@ class WooPosSplashViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            productsDataSource.loadSimpleProducts(forceRefreshProducts = true)
+            productsDataSource.loadProducts(forceRefreshProducts = true)
                 .collect { result ->
                     when (result) {
                         is WooPosProductsDataSource.ProductsResult.Cached -> {}

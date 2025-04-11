@@ -44,7 +44,7 @@ class WooPosSplashViewModelTest {
     @Test
     fun `given products load successfully, when vm created, should update state to Loaded`() = runTest {
         // GIVEN
-        whenever(productsDataSource.loadSimpleProducts(forceRefreshProducts = true)).thenReturn(
+        whenever(productsDataSource.loadProducts(forceRefreshProducts = true)).thenReturn(
             flowOf(ProductsResult.Remote(Result.success(emptyList())))
         )
 
@@ -58,7 +58,7 @@ class WooPosSplashViewModelTest {
     @Test
     fun `given products load successfully, when vm created, should track event`() = runTest {
         // GIVEN
-        whenever(productsDataSource.loadSimpleProducts(forceRefreshProducts = true)).thenReturn(
+        whenever(productsDataSource.loadProducts(forceRefreshProducts = true)).thenReturn(
             flowOf(ProductsResult.Remote(Result.success(emptyList())))
         )
 
@@ -72,7 +72,7 @@ class WooPosSplashViewModelTest {
     @Test
     fun `given products are cached, when vm created, should remain in loading state`() = runTest {
         // GIVEN
-        whenever(productsDataSource.loadSimpleProducts(forceRefreshProducts = true)).thenReturn(
+        whenever(productsDataSource.loadProducts(forceRefreshProducts = true)).thenReturn(
             flowOf(ProductsResult.Cached(emptyList()))
         )
 

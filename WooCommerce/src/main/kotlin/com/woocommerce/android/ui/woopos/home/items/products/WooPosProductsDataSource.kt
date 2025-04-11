@@ -35,7 +35,7 @@ class WooPosProductsDataSource @Inject constructor(
     val hasMorePages: Boolean
         get() = canLoadMore.get()
 
-    fun loadSimpleProducts(forceRefreshProducts: Boolean): Flow<ProductsResult> = flow {
+    fun loadProducts(forceRefreshProducts: Boolean): Flow<ProductsResult> = flow {
         offset.set(0)
         if (forceRefreshProducts) {
             productsCache.clear()

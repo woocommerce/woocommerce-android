@@ -82,7 +82,7 @@ class WooPosProductsDataSourceTest {
         val sut = WooPosProductsDataSource(handler, productsCache)
 
         // WHEN
-        sut.loadSimpleProducts(forceRefreshProducts = true).first()
+        sut.loadProducts(forceRefreshProducts = true).first()
 
         // THEN
         verify(productsCache).clear()
@@ -100,7 +100,7 @@ class WooPosProductsDataSourceTest {
         val sut = WooPosProductsDataSource(handler, productsCache)
 
         // WHEN
-        val result = sut.loadSimpleProducts(forceRefreshProducts = false).first()
+        val result = sut.loadProducts(forceRefreshProducts = false).first()
 
         // THEN
         assertThat(result).isInstanceOf(WooPosProductsDataSource.ProductsResult.Cached::class.java)
@@ -123,7 +123,7 @@ class WooPosProductsDataSourceTest {
             val sut = WooPosProductsDataSource(handler, productsCache)
 
             // WHEN
-            val flow = sut.loadSimpleProducts(forceRefreshProducts = false).toList()
+            val flow = sut.loadProducts(forceRefreshProducts = false).toList()
 
             // THEN
             val cachedResult = flow[0] as WooPosProductsDataSource.ProductsResult.Cached
@@ -150,7 +150,7 @@ class WooPosProductsDataSourceTest {
             val sut = WooPosProductsDataSource(handler, productsCache)
 
             // WHEN
-            val flow = sut.loadSimpleProducts(forceRefreshProducts = false).toList()
+            val flow = sut.loadProducts(forceRefreshProducts = false).toList()
 
             // THEN
             assertThat(flow.size).isEqualTo(2)
@@ -219,7 +219,7 @@ class WooPosProductsDataSourceTest {
             val sut = WooPosProductsDataSource(handler, productsCache)
 
             // WHEN
-            val flow = sut.loadSimpleProducts(forceRefreshProducts = false).toList()
+            val flow = sut.loadProducts(forceRefreshProducts = false).toList()
 
             // THEN
             val cachedResult = flow[0] as WooPosProductsDataSource.ProductsResult.Cached
@@ -243,7 +243,7 @@ class WooPosProductsDataSourceTest {
             val sut = WooPosProductsDataSource(handler, productsCache)
 
             // WHEN
-            val flow = sut.loadSimpleProducts(forceRefreshProducts = false).toList()
+            val flow = sut.loadProducts(forceRefreshProducts = false).toList()
 
             // THEN
             val cachedResult = flow[0] as WooPosProductsDataSource.ProductsResult.Cached
@@ -284,7 +284,7 @@ class WooPosProductsDataSourceTest {
             val sut = WooPosProductsDataSource(handler, productsCache)
 
             // WHEN
-            val flow = sut.loadSimpleProducts(forceRefreshProducts = false).toList()
+            val flow = sut.loadProducts(forceRefreshProducts = false).toList()
 
             // THEN
             val cachedResult = flow[0] as WooPosProductsDataSource.ProductsResult.Cached
@@ -322,7 +322,7 @@ class WooPosProductsDataSourceTest {
             val sut = WooPosProductsDataSource(handler, productsCache)
 
             // WHEN
-            val flow = sut.loadSimpleProducts(forceRefreshProducts = false).toList()
+            val flow = sut.loadProducts(forceRefreshProducts = false).toList()
 
             // THEN
             val cachedResult = flow[0] as WooPosProductsDataSource.ProductsResult.Cached
@@ -359,7 +359,7 @@ class WooPosProductsDataSourceTest {
             val sut = WooPosProductsDataSource(handler, productsCache)
 
             // WHEN
-            val flow = sut.loadSimpleProducts(forceRefreshProducts = false).toList()
+            val flow = sut.loadProducts(forceRefreshProducts = false).toList()
 
             // THEN
             val remoteResult = flow[1] as WooPosProductsDataSource.ProductsResult.Remote
@@ -391,7 +391,7 @@ class WooPosProductsDataSourceTest {
         val sut = WooPosProductsDataSource(handler, productsCache)
 
         // WHEN
-        val result = sut.loadSimpleProducts(forceRefreshProducts = false).first()
+        val result = sut.loadProducts(forceRefreshProducts = false).first()
 
         // THEN
         assertThat(result).isInstanceOf(WooPosProductsDataSource.ProductsResult.Cached::class.java)
