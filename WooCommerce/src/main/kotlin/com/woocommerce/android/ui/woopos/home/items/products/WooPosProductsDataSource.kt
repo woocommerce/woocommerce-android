@@ -31,7 +31,6 @@ class WooPosProductsDataSource @Inject constructor(
             productList.clearCache()
         }
 
-        // Only get products explicitly loaded by the main list pagination
         val cachedProducts = productList.getProductList()
         emit(ProductsResult.Cached(sortProductsByName(cachedProducts)))
 
