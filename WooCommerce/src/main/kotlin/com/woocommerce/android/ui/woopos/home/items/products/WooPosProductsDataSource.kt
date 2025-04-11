@@ -19,7 +19,8 @@ import javax.inject.Singleton
 @Singleton
 class WooPosProductsDataSource @Inject constructor(
     private val handler: ProductListHandler,
-    private val productsCache: WooPosProductsCache
+    private val productsCache: WooPosProductsCache,
+    private val productList: WooPosProductsListIndex,
 ) {
     val hasMorePages: Boolean
         get() = handler.canLoadMore.get()
@@ -27,9 +28,11 @@ class WooPosProductsDataSource @Inject constructor(
     fun loadSimpleProducts(forceRefreshProducts: Boolean): Flow<ProductsResult> = flow {
         if (forceRefreshProducts) {
             productsCache.clear()
+            productList.clearCache()
         }
 
-        val cachedProducts = productsCache.getAll()
+        // Only get products explicitly loaded by the main list pagination
+        val cachedProducts = productList.getProductList()
         emit(ProductsResult.Cached(sortProductsByName(cachedProducts)))
 
         val result = handler.loadFromCacheAndFetch(
@@ -45,7 +48,8 @@ class WooPosProductsDataSource @Inject constructor(
         if (result.isSuccess) {
             val remoteProducts = handler.productsFlow.first()
             productsCache.addAll(remoteProducts)
-            emit(ProductsResult.Remote(Result.success(sortProductsByName(productsCache.getAll()))))
+            productList.storeProductList(remoteProducts.map { it.remoteId })
+            emit(ProductsResult.Remote(Result.success(sortProductsByName(productList.getProductList()))))
         } else {
             result.logFailure()
             emit(
@@ -65,7 +69,8 @@ class WooPosProductsDataSource @Inject constructor(
         if (result.isSuccess) {
             val moreProducts = handler.productsFlow.first()
             productsCache.addAll(moreProducts)
-            Result.success(sortProductsByName(productsCache.getAll()))
+            productList.storeProductList(moreProducts.map { it.remoteId })
+            Result.success(sortProductsByName(productList.getProductList()))
         } else {
             result.logFailure()
             Result.failure(result.exceptionOrNull() ?: Exception("Unknown error"))
