@@ -1,49 +1,66 @@
 package com.woocommerce.android.ui.woopos.home.items.products
 
+import com.woocommerce.android.WooException
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.toAppModel
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductStatus
-import com.woocommerce.android.ui.products.selector.ProductListHandler
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.withContext
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCProductStore
+import org.wordpress.android.fluxc.store.WCProductStore.DownloadableOptions
+import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
+import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class WooPosProductsDataSource @Inject constructor(
-    private val handler: ProductListHandler,
+    private val productStore: WCProductStore,
+    private val selectedSite: SelectedSite,
     private val productsCache: WooPosProductsCache
 ) {
+    private val canLoadMore = AtomicBoolean(false)
+    private val offset = AtomicInteger(0)
+    private val pageSize = 25
+
     val hasMorePages: Boolean
-        get() = handler.canLoadMore.get()
+        get() = canLoadMore.get()
 
     fun loadSimpleProducts(forceRefreshProducts: Boolean): Flow<ProductsResult> = flow {
+        offset.set(0)
         if (forceRefreshProducts) {
             productsCache.clear()
         }
-
         val cachedProducts = productsCache.getAll()
         emit(ProductsResult.Cached(sortProductsByName(cachedProducts)))
 
-        val result = handler.loadFromCacheAndFetch(
-            forceRefresh = forceRefreshProducts,
-            searchType = ProductListHandler.SearchType.DEFAULT,
-            includeType = listOf(WCProductStore.IncludeType.Simple, WCProductStore.IncludeType.Variable),
-            filters = mapOf(
-                WCProductStore.ProductFilterOption.STATUS to ProductStatus.PUBLISH.value,
-                WCProductStore.ProductFilterOption.DOWNLOADABLE to WCProductStore.DownloadableOptions.FALSE.toString(),
-            )
+        val filters = createProductFilters()
+        val includeTypes = listOf(WCProductStore.IncludeType.Simple, WCProductStore.IncludeType.Variable)
+
+        val result = productStore.fetchProducts(
+            site = selectedSite.get(),
+            offset = offset.get(),
+            pageSize = pageSize,
+            filterOptions = filters,
+            includeTypes = includeTypes
         )
 
-        if (result.isSuccess) {
-            val remoteProducts = handler.productsFlow.first()
+        if (!result.isError) {
+            val productsList = result.model ?: emptyList()
+            val remoteProducts = productsList.map { it.toAppModel() }
+
+            canLoadMore.set(productsList.size == pageSize)
+            offset.addAndGet(pageSize)
+
             productsCache.addAll(remoteProducts)
             emit(ProductsResult.Remote(Result.success(sortProductsByName(productsCache.getAll()))))
         } else {
@@ -51,7 +68,7 @@ class WooPosProductsDataSource @Inject constructor(
             emit(
                 ProductsResult.Remote(
                     Result.failure(
-                        result.exceptionOrNull() ?: Exception("Unknown error")
+                        WooException(result.error)
                     )
                 )
             )
@@ -59,27 +76,50 @@ class WooPosProductsDataSource @Inject constructor(
     }.flowOn(Dispatchers.IO).take(2)
 
     suspend fun loadMore(): Result<List<Product>> = withContext(Dispatchers.IO) {
-        val result = handler.loadMore(
-            includeTypes = listOf(WCProductStore.IncludeType.Simple, WCProductStore.IncludeType.Variable),
+        if (!canLoadMore.get()) {
+            return@withContext Result.success(sortProductsByName(productsCache.getAll()))
+        }
+
+        val filters = createProductFilters()
+        val includeTypes = listOf(WCProductStore.IncludeType.Simple, WCProductStore.IncludeType.Variable)
+
+        val result = productStore.fetchProducts(
+            site = selectedSite.get(),
+            offset = offset.get(),
+            pageSize = pageSize,
+            filterOptions = filters,
+            includeTypes = includeTypes
         )
-        if (result.isSuccess) {
-            val moreProducts = handler.productsFlow.first()
+
+        if (!result.isError) {
+            val productsList = result.model ?: emptyList()
+            val moreProducts = productsList.map { it.toAppModel() }
+
+            canLoadMore.set(productsList.size == pageSize)
+            offset.addAndGet(pageSize)
+
             productsCache.addAll(moreProducts)
             Result.success(sortProductsByName(productsCache.getAll()))
         } else {
             result.logFailure()
-            Result.failure(result.exceptionOrNull() ?: Exception("Unknown error"))
+            Result.failure(WooException(result.error))
         }
+    }
+
+    private fun createProductFilters(): Map<ProductFilterOption, String> {
+        return mapOf(
+            ProductFilterOption.STATUS to ProductStatus.PUBLISH.value,
+            ProductFilterOption.DOWNLOADABLE to DownloadableOptions.FALSE.toString()
+        )
     }
 
     private fun sortProductsByName(products: List<Product>): List<Product> {
         return products.sortedBy { it.name }
     }
 
-    private fun Result<Unit>.logFailure() {
-        val error = exceptionOrNull()
+    private fun WooResult<*>.logFailure() {
         val errorMessage = error?.message ?: "Unknown error"
-        WooLog.e(WooLog.T.POS, "Loading products failed - $errorMessage", error)
+        WooLog.e(WooLog.T.POS, "Loading products failed - $errorMessage")
     }
 
     sealed class ProductsResult {

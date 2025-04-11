@@ -1677,6 +1677,42 @@ class WCProductStore @Inject constructor(
         }
     }
 
+    /**
+     * Fetches products from the API and returns them directly as a list.
+     *
+     * @param site The site to fetch products for
+     * @param offset Pagination offset
+     * @param pageSize Number of products to fetch per page
+     * @param filterOptions Map of filter options to apply
+     * @param includeTypes List of product types to include
+     * @return A WooResult containing the list of products if successful, or an error
+     */
+    suspend fun fetchProducts(
+        site: SiteModel,
+        offset: Int = 0,
+        pageSize: Int = DEFAULT_PRODUCT_PAGE_SIZE,
+        filterOptions: Map<ProductFilterOption, String> = emptyMap(),
+        includeTypes: List<IncludeType> = emptyList(),
+    ): WooResult<List<WCProductModel>> {
+        return coroutineEngine.withDefaultContext(API, this, "fetchProductsList") {
+            val response = wcProductRestClient.fetchProductsWithSyncRequest(
+                site = site,
+                offset = offset,
+                pageSize = pageSize,
+                filterOptions = filterOptions,
+                includeTypes = includeTypes
+            )
+
+            when {
+                response.isError -> WooResult(response.error)
+                response.result != null -> {
+                    WooResult(response.result.map { it.product })
+                }
+                else -> WooResult(WooError(WooErrorType.GENERIC_ERROR, UNKNOWN))
+            }
+        }
+    }
+
     suspend fun searchProducts(
         site: SiteModel,
         searchString: String,
