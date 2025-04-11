@@ -16,6 +16,8 @@ import org.junit.Rule
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
@@ -546,4 +548,208 @@ class WooPosProductsDataSourceTest {
 
         verify(productsCache).addAll(any())
     }
+
+    @Test
+    fun `given successful fetch, when prepopulateProductsCache called, then should clear cache and add products`() =
+        runTest {
+            // GIVEN
+            whenever(selectedSite.get()).thenReturn(siteModel)
+            whenever(
+                productStore.fetchProducts(
+                    site = eq(siteModel),
+                    offset = eq(0),
+                    pageSize = eq(100),
+                    filterOptions = any(),
+                    includeTypes = any()
+                )
+            ).thenReturn(WooResult(emptyList()))
+            val sut = WooPosProductsDataSource(productStore, selectedSite, productsCache)
+
+            // WHEN
+            val result = sut.prepopulateProductsCache()
+
+            // THEN
+            verify(productsCache).clear()
+            verify(productsCache).addAll(any())
+            assertThat(result.isSuccess).isTrue()
+        }
+
+    @Test
+    fun `given multiple pages of products, when prepopulateProductsCache called, then should fetch all pages up to limit`() =
+        runTest {
+            // GIVEN
+            val firstPageWcProducts = List(100) {
+                WCProductModel().apply {
+                    attributes = "[]"
+                    status = "draft"
+                }
+            }
+            val secondPageWcProducts = List(50) {
+                WCProductModel().apply {
+                    attributes = "[]"
+                    status = "draft"
+                }
+            }
+
+            whenever(selectedSite.get()).thenReturn(siteModel)
+            whenever(
+                productStore.fetchProducts(
+                    site = eq(siteModel),
+                    offset = eq(0),
+                    pageSize = eq(100),
+                    filterOptions = any(),
+                    includeTypes = any()
+                )
+            ).thenReturn(WooResult(firstPageWcProducts))
+
+            whenever(
+                productStore.fetchProducts(
+                    site = eq(siteModel),
+                    offset = eq(100),
+                    pageSize = eq(100),
+                    filterOptions = any(),
+                    includeTypes = any()
+                )
+            ).thenReturn(WooResult(secondPageWcProducts))
+
+            val sut = WooPosProductsDataSource(productStore, selectedSite, productsCache)
+
+            // WHEN
+            val result = sut.prepopulateProductsCache()
+
+            // THEN
+            verify(productsCache).clear()
+            verify(productsCache).addAll(any())
+            assertThat(result.isSuccess).isTrue()
+            verify(productStore, times(2)).fetchProducts(
+                site = any(),
+                offset = any(),
+                pageSize = any(),
+                filterOptions = any(),
+                includeTypes = any()
+            )
+        }
+
+    @Test
+    fun `given error when fetching products, when prepopulateProductsCache called, then should return failure`() =
+        runTest {
+            // GIVEN
+            whenever(selectedSite.get()).thenReturn(siteModel)
+            val wooError = WooError(
+                WooErrorType.GENERIC_ERROR,
+                GenericErrorType.UNKNOWN,
+                "Failed to fetch products"
+            )
+            whenever(
+                productStore.fetchProducts(
+                    site = eq(siteModel),
+                    offset = any(),
+                    pageSize = any(),
+                    filterOptions = any(),
+                    includeTypes = any()
+                )
+            ).thenReturn(WooResult(wooError))
+
+            val sut = WooPosProductsDataSource(productStore, selectedSite, productsCache)
+
+            // WHEN
+            val result = sut.prepopulateProductsCache()
+
+            // THEN
+            verify(productsCache).clear()
+            verify(productsCache, never()).addAll(any())
+            assertThat(result.isFailure).isTrue()
+            assertThat(result.exceptionOrNull()).isInstanceOf(WooException::class.java)
+        }
+
+    @Test
+    fun `given full product list returned but under max pages, when prepopulateProductsCache called, then should stop fetching`() =
+        runTest {
+            // GIVEN
+            val firstPageProducts = List(100) {
+                WCProductModel().apply {
+                    attributes = "[]"
+                    status = "draft"
+                }
+            }
+            val emptySecondPage = emptyList<WCProductModel>()
+
+            whenever(selectedSite.get()).thenReturn(siteModel)
+            whenever(
+                productStore.fetchProducts(
+                    site = eq(siteModel),
+                    offset = eq(0),
+                    pageSize = eq(100),
+                    filterOptions = any(),
+                    includeTypes = any()
+                )
+            ).thenReturn(WooResult(firstPageProducts))
+
+            whenever(
+                productStore.fetchProducts(
+                    site = eq(siteModel),
+                    offset = eq(100),
+                    pageSize = eq(100),
+                    filterOptions = any(),
+                    includeTypes = any()
+                )
+            ).thenReturn(WooResult(emptySecondPage))
+
+            val sut = WooPosProductsDataSource(productStore, selectedSite, productsCache)
+
+            // WHEN
+            val result = sut.prepopulateProductsCache()
+
+            // THEN
+            verify(productsCache).clear()
+            verify(productsCache).addAll(any())
+            assertThat(result.isSuccess).isTrue()
+            verify(productStore, times(2)).fetchProducts(
+                site = any(),
+                offset = any(),
+                pageSize = any(),
+                filterOptions = any(),
+                includeTypes = any()
+            )
+        }
+
+    @Test
+    fun `given max pages reached, when prepopulateProductsCache called, then should stop fetching and return success`() =
+        runTest {
+            // GIVEN
+            val pageProducts = List(100) {
+                WCProductModel().apply {
+                    attributes = "[]"
+                    status = "draft"
+                }
+            }
+
+            whenever(selectedSite.get()).thenReturn(siteModel)
+            whenever(
+                productStore.fetchProducts(
+                    site = eq(siteModel),
+                    offset = any(),
+                    pageSize = eq(100),
+                    filterOptions = any(),
+                    includeTypes = any()
+                )
+            ).thenReturn(WooResult(pageProducts))
+
+            val sut = WooPosProductsDataSource(productStore, selectedSite, productsCache)
+
+            // WHEN
+            val result = sut.prepopulateProductsCache()
+
+            // THEN
+            verify(productsCache).clear()
+            verify(productsCache).addAll(any())
+            assertThat(result.isSuccess).isTrue()
+            verify(productStore, times(2)).fetchProducts(
+                site = any(),
+                offset = any(),
+                pageSize = any(),
+                filterOptions = any(),
+                includeTypes = any()
+            )
+        }
 }
