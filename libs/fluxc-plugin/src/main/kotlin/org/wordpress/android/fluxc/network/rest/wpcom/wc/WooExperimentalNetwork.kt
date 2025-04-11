@@ -4,6 +4,7 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.SiteActionBuilder
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetwork
+import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkingMode
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsNetwork
 import org.wordpress.android.fluxc.network.rest.wpcom.JetpackTunnelWPAPINetwork
@@ -96,7 +97,9 @@ class WooExperimentalNetwork @Inject constructor(
     ): WPAPIResponse<T> {
         return when (site.origin) {
             SiteModel.ORIGIN_WPAPI, SiteModel.ORIGIN_XMLRPC -> {
-                applicationPasswordsNetwork.request()
+                applicationPasswordsNetwork.request().copyWith(
+                    networkingMode = WPAPINetworkingMode.ApplicationPasswords
+                )
             }
 
             SiteModel.ORIGIN_WPCOM_REST -> {
@@ -120,7 +123,9 @@ class WooExperimentalNetwork @Inject constructor(
                 AppLog.T.API,
                 "Application Passwords not supported for site: ${site.url}, use Jetpack Tunnel"
             )
-            return jetpackTunnelWPAPINetwork.request()
+            return jetpackTunnelWPAPINetwork.request().copyWith(
+                networkingMode = WPAPINetworkingMode.JetpackTunnel()
+            )
         }
 
         return when (val appPasswordsResponse = applicationPasswordsNetwork.request()) {
@@ -129,7 +134,9 @@ class WooExperimentalNetwork @Inject constructor(
                     AppLog.T.API,
                     "Request successful for site: ${site.url}, using Application Passwords"
                 )
-                appPasswordsResponse
+                (appPasswordsResponse as WPAPIResponse<T>).copyWith(
+                    networkingMode = WPAPINetworkingMode.ApplicationPasswordsWithJetpack
+                )
             }
 
             is WPAPIResponse.Error<*> -> {
@@ -143,8 +150,22 @@ class WooExperimentalNetwork @Inject constructor(
                     site.applicationPasswordsAuthorizeUrl = null
                     dispatcher.dispatch(SiteActionBuilder.newUpdateSiteAction(site))
                 }
-                jetpackTunnelWPAPINetwork.request()
+                jetpackTunnelWPAPINetwork.request().copyWith(
+                    networkingMode = WPAPINetworkingMode.JetpackTunnel(
+                        isFallback = true,
+                        applicationPasswordsError = appPasswordsResponse.error
+                    )
+                )
             }
+        }
+    }
+
+    private fun <T : Any> WPAPIResponse<T>.copyWith(
+        networkingMode: WPAPINetworkingMode
+    ): WPAPIResponse<T> {
+        return when (this) {
+            is WPAPIResponse.Success -> this.copy(networkingMode = networkingMode)
+            else -> this
         }
     }
 }
