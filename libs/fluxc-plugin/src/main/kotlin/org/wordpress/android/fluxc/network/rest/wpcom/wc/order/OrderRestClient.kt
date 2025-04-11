@@ -8,15 +8,14 @@ import org.wordpress.android.fluxc.action.WCOrderAction
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.generated.endpoint.WOOCOMMERCE
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
-import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.metadata.WCMetaData
-import org.wordpress.android.fluxc.model.metadata.WCMetaData.OrderAttributionInfoKeys
 import org.wordpress.android.fluxc.model.WCOrderListDescriptor
 import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.WCOrderSummaryModel
+import org.wordpress.android.fluxc.model.metadata.WCMetaData
+import org.wordpress.android.fluxc.model.metadata.WCMetaData.OrderAttributionInfoKeys
 import org.wordpress.android.fluxc.model.order.UpdateOrderRequest
 import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
@@ -27,6 +26,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderDto.Billing
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderDto.Shipping
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderDtoMapper.Companion.toDto
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.toWooError
+import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.fluxc.persistence.entity.OrderNoteEntity
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.AddOrderShipmentTrackingResponsePayload
@@ -53,7 +53,6 @@ import org.wordpress.android.fluxc.utils.putIfNotEmpty
 import org.wordpress.android.fluxc.utils.toWooPayload
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.AppLog.T
-import java.util.Calendar
 import javax.inject.Inject
 import kotlin.collections.MutableMap.MutableEntry
 
@@ -230,10 +229,10 @@ class OrderRestClient @Inject constructor(
      */
     fun fetchOrderListSummaries(
         listDescriptor: WCOrderListDescriptor,
-        offset: Long,
-        requestStartTime: Calendar
+        offset: Long
     ) {
         coroutineEngine.launch(T.API, this, "fetchOrderListSummaries") {
+            val startTime = System.currentTimeMillis()
             val url = WOOCOMMERCE.orders.pathV3
             val networkPageSize = listDescriptor.config.networkPageSize
             val params = mutableMapOf(
@@ -272,7 +271,7 @@ class OrderRestClient @Inject constructor(
                         orderSummaries = orderSummaries,
                         loadedMore = offset > 0,
                         canLoadMore = canLoadMore,
-                        requestStartTime = requestStartTime
+                        requestDurationMs = System.currentTimeMillis() - startTime
                     )
                     dispatcher.dispatch(WCOrderActionBuilder.newFetchedOrderListAction(payload))
                 }
@@ -280,8 +279,7 @@ class OrderRestClient @Inject constructor(
                     val orderError = wpAPINetworkErrorToOrderError(response.error)
                     val payload = FetchOrderListResponsePayload(
                         error = orderError,
-                        listDescriptor = listDescriptor,
-                        requestStartTime = requestStartTime
+                        listDescriptor = listDescriptor
                     )
                     dispatcher.dispatch(WCOrderActionBuilder.newFetchedOrderListAction(payload))
                 }
