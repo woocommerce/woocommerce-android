@@ -116,6 +116,9 @@ private fun WooPosItemsScreen(
                         cursorPosition = it.cursorPosition,
                     )
                 )
+                is WooPosSearchUIEvent.AnimationComplete -> {
+                    onUIEvent(WooPosItemsUIEvent.SearchAnimationComplete)
+                }
             }
         },
         onCouponsButtonClicked = { onUIEvent(WooPosItemsUIEvent.CouponsButtonClicked) },

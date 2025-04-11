@@ -117,6 +117,7 @@ class WooPosItemsViewModel @Inject constructor(
                 event.query,
                 event.cursorPosition
             )
+            WooPosItemsUIEvent.SearchAnimationComplete -> searchHelper.onAnimationComplete()
 
             WooPosItemsUIEvent.CouponsButtonClicked -> {
                 sendEventToParent(

@@ -17,4 +17,5 @@ sealed class WooPosItemsUIEvent {
         val cursorPosition: Int,
     ) : WooPosItemsUIEvent()
     data object CloseSearchClicked : WooPosItemsUIEvent()
+    object SearchAnimationComplete : WooPosItemsUIEvent()
 }
