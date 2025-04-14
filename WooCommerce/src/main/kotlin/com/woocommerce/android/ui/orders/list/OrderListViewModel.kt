@@ -79,6 +79,7 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.WCOrderListDescriptor
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.list.PagedListWrapper
+import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkingMode
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.ListStore
 import org.wordpress.android.fluxc.store.ListStore.ListErrorType.PARSE_ERROR
@@ -614,7 +615,14 @@ class OrderListViewModel @Inject constructor(
                     mapOf(
                         AnalyticsTracker.KEY_TOTAL_DURATION to totalDurationInSeconds,
                         AnalyticsTracker.KEY_STATUS to event.listDescriptor.statusFilter,
-                        AnalyticsTracker.KEY_TOTAL_COMPLETED_ORDERS to totalCompletedOrders
+                        AnalyticsTracker.KEY_TOTAL_COMPLETED_ORDERS to totalCompletedOrders,
+                        "request_type" to event.networkingMode?.let {
+                            when (it) {
+                                is WPAPINetworkingMode.ApplicationPasswords -> "app_passwords"
+                                is WPAPINetworkingMode.ApplicationPasswordsWithJetpack -> "app_passwords_with_jetpack"
+                                is WPAPINetworkingMode.JetpackTunnel -> "jetpack_tunnel"
+                            }
+                        }
                     )
                 )
             }
