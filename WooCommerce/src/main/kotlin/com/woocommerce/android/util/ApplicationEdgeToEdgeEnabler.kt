@@ -11,14 +11,6 @@ import javax.inject.Inject
 class ApplicationEdgeToEdgeEnabler @Inject constructor(
     private val crashLogger: CrashLogging
 ) : Application.ActivityLifecycleCallbacks {
-
-    /**
-     * Set of activity class names that should not be edge-to-edge.
-     */
-    private val unsupportedEdgeToEdgeActivities = setOf(
-        "leakcanary.internal.RequestPermissionActivity"
-    )
-
     /**
      * Called when an activity has been created.
      *
@@ -61,9 +53,7 @@ class ApplicationEdgeToEdgeEnabler @Inject constructor(
         }
     }
 
-    private fun isEdgeToEdgeSupported(activity: Activity): Boolean {
-        return (activity::class.java.name in unsupportedEdgeToEdgeActivities).not()
-    }
+    private fun isEdgeToEdgeSupported(activity: Activity) = !activity::class.java.name.startsWith("leakcanary")
 
     override fun onActivityStarted(activity: Activity) {
         // no-op
