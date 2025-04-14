@@ -8,7 +8,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class WooPosProductsListIndex @Inject constructor(
+class WooPosProductsPaginationHelper @Inject constructor(
     private val productsCache: WooPosProductsCache
 ) {
     private val mutex = Mutex()

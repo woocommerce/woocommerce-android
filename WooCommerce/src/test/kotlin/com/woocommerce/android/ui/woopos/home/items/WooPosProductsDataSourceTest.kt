@@ -5,7 +5,7 @@ import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.selector.ProductListHandler
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
-import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsListIndex
+import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsPaginationHelper
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -73,7 +73,7 @@ class WooPosProductsDataSourceTest {
 
     private val handler: ProductListHandler = mock()
     private val productsCache: WooPosProductsCache = mock()
-    private val productList: WooPosProductsListIndex = mock()
+    private val productList: WooPosProductsPaginationHelper = mock()
 
     @Test
     fun `given force refresh, when loadSimpleProducts called, then should clear cache`() = runTest {

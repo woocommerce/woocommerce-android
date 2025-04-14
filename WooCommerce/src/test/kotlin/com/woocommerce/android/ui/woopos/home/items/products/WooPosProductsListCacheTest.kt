@@ -15,12 +15,12 @@ import org.mockito.kotlin.whenever
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooPosProductsListCacheTest {
     private lateinit var productsCache: WooPosProductsCache
-    private lateinit var productsListCache: WooPosProductsListIndex
+    private lateinit var productsListCache: WooPosProductsPaginationHelper
 
     @Before
     fun setup() {
         productsCache = mock()
-        productsListCache = WooPosProductsListIndex(productsCache)
+        productsListCache = WooPosProductsPaginationHelper(productsCache)
     }
 
     @Test
