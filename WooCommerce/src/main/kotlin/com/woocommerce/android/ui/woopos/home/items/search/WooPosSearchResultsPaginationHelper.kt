@@ -6,7 +6,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
 
-class WooPosSearchResultsIndex @Inject constructor(
+class WooPosSearchResultsPaginationHelper @Inject constructor(
     private val productsCache: WooPosProductsCache
 ) {
     private val mutex = Mutex()

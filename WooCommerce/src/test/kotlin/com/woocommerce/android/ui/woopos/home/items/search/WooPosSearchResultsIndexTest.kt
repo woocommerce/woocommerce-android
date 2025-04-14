@@ -15,13 +15,13 @@ import kotlin.test.assertTrue
 @ExperimentalCoroutinesApi
 class WooPosSearchResultsIndexTest {
 
-    private lateinit var searchResultsCache: WooPosSearchResultsIndex
+    private lateinit var searchResultsCache: WooPosSearchResultsPaginationHelper
     private val productsCache: WooPosProductsCache = mock()
     private val mockProducts = listOf<Product>(mock(), mock(), mock())
 
     @Before
     fun setUp() = runTest {
-        searchResultsCache = WooPosSearchResultsIndex(productsCache)
+        searchResultsCache = WooPosSearchResultsPaginationHelper(productsCache)
 
         // Setup mock products
         mockProducts.forEachIndexed { index, product ->
