@@ -635,6 +635,18 @@ class OrderListViewModel @Inject constructor(
                         "request_type" to event.networkingMode?.toTrackingValue()
                     )
                 )
+
+                if (event.networkingMode is WPAPINetworkingMode.JetpackTunnel &&
+                    (event.networkingMode as WPAPINetworkingMode.JetpackTunnel).isFallback) {
+                    val error = (event.networkingMode as WPAPINetworkingMode.JetpackTunnel).applicationPasswordsError
+                    AnalyticsTracker.track(
+                        AnalyticsEvent.ORDERS_LIST_APP_PASSWORDS_FAILURE,
+                        properties = mapOf(
+                            "network_error_code" to error?.volleyError?.networkResponse?.statusCode,
+                            "error_api_code" to error?.errorCode,
+                        )
+                    )
+                }
             }
         }
     }
