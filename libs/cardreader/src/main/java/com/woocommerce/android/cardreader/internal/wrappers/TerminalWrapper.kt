@@ -124,7 +124,7 @@ internal class TerminalWrapper {
         val uxConfig = LocalMobileUxConfiguration.Builder()
             .tapZone(
                 LocalMobileUxConfiguration.TapZone.Manual.Builder()
-                    .indicator(LocalMobileUxConfiguration.TapZoneIndicator.ABOVE)
+                    .indicator(LocalMobileUxConfiguration.TapZoneIndicator.DEFAULT)
                     .position(LocalMobileUxConfiguration.TapZonePosition.Default)
                     .build()
             )
