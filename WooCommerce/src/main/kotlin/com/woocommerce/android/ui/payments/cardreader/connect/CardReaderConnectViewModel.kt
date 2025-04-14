@@ -73,6 +73,7 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
 import com.woocommerce.android.viewmodel.navArgs
@@ -96,6 +97,7 @@ class CardReaderConnectViewModel @Inject constructor(
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper,
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker,
     private val learnMoreUrlProvider: LearnMoreUrlProvider,
+    private val resourceProvider: ResourceProvider,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderConnectDialogFragmentArgs by savedState.navArgs()
     private val tracker: PaymentsFlowTracker = when (arguments.cardReaderFlowParam) {
@@ -367,7 +369,17 @@ class CardReaderConnectViewModel @Inject constructor(
             viewState.value = provideScanningState()
         } else {
             when (arguments.cardReaderType) {
-                BUILT_IN -> connectToReader(availableReaders[0])
+                BUILT_IN -> {
+                    cardReaderManager.setupTapToPayUx(
+                        CardReaderManager.TapToPayUxConfig(
+                            primaryColor = R.color.color_primary,
+                            successColor = R.color.woo_green_50,
+                            errorColor = R.color.color_error,
+                            isDarkMode = resourceProvider.isDarkMode(),
+                        )
+                    )
+                    connectToReader(availableReaders[0])
+                }
                 EXTERNAL -> viewState.value = when (availableReaders.size) {
                     1 -> buildSingleExternalReaderFoundState(availableReaders[0])
                     else -> buildMultipleExternalReadersFoundState(availableReaders)

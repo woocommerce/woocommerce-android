@@ -14,6 +14,8 @@ import com.stripe.stripeterminal.external.callable.RefundCallback
 import com.stripe.stripeterminal.external.callable.TerminalListener
 import com.stripe.stripeterminal.external.models.ConnectionConfiguration
 import com.stripe.stripeterminal.external.models.DiscoveryConfiguration
+import com.stripe.stripeterminal.external.models.LocalMobileUxConfiguration
+import com.stripe.stripeterminal.external.models.LocalMobileUxConfiguration.Color
 import com.stripe.stripeterminal.external.models.PaymentIntent
 import com.stripe.stripeterminal.external.models.PaymentIntentParameters
 import com.stripe.stripeterminal.external.models.Reader
@@ -113,7 +115,35 @@ internal class TerminalWrapper {
             CardReaderManager.SimulatorUpdateFrequency.LOW_BATTERY_SUCCEED_CONNECT -> {
                 SimulateReaderUpdate.LOW_BATTERY_SUCCEED_CONNECT
             }
+
             CardReaderManager.SimulatorUpdateFrequency.RANDOM -> SimulateReaderUpdate.RANDOM
         }
+    }
+
+    fun setupTapToPayUx(config: CardReaderManager.TapToPayUxConfig) {
+        val uxConfig = LocalMobileUxConfiguration.Builder()
+            .tapZone(
+                LocalMobileUxConfiguration.TapZone.Manual.Builder()
+                    .indicator(LocalMobileUxConfiguration.TapZoneIndicator.ABOVE)
+                    .position(LocalMobileUxConfiguration.TapZonePosition.Default)
+                    .build()
+            )
+            .colors(
+                LocalMobileUxConfiguration.ColorScheme.Builder()
+                    .primary(Color.Resource(config.primaryColor))
+                    .success(Color.Resource(config.successColor))
+                    .error(Color.Resource(config.errorColor))
+                    .build()
+            )
+            .darkMode(
+                if (config.isDarkMode) {
+                    LocalMobileUxConfiguration.DarkMode.DARK
+                } else {
+                    LocalMobileUxConfiguration.DarkMode.LIGHT
+                }
+            )
+            .build()
+
+        Terminal.getInstance().setLocalMobileUxConfiguration(uxConfig)
     }
 }

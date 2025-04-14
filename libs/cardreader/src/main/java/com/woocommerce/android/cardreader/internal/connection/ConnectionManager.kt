@@ -11,6 +11,7 @@ import com.stripe.stripeterminal.external.models.ConnectionConfiguration.LocalMo
 import com.stripe.stripeterminal.external.models.DeviceType
 import com.stripe.stripeterminal.external.models.Reader
 import com.stripe.stripeterminal.external.models.TerminalException
+import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.connection.CardReaderImpl
@@ -190,6 +191,10 @@ internal class ConnectionManager(
     private fun updateReaderStatus(status: CardReaderStatus) {
         terminalListenerImpl.updateReaderStatus(status)
         startStateResettingJobIfNeeded(status)
+    }
+
+    fun setupTapToPayUx(config: CardReaderManager.TapToPayUxConfig) {
+        terminal.setupTapToPayUx(config)
     }
 
     private fun connectToExternalReader(

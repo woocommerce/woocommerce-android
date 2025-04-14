@@ -1,14 +1,13 @@
 package com.woocommerce.android.viewmodel
 
 import android.content.Context
+import android.content.res.Configuration
 import androidx.annotation.ArrayRes
 import androidx.annotation.ColorRes
 import androidx.annotation.DimenRes
-import androidx.annotation.RawRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import com.woocommerce.android.util.StringUtils
-import java.io.InputStream
 import javax.inject.Inject
 
 class ResourceProvider @Inject constructor(private val context: Context) {
@@ -33,11 +32,6 @@ class ResourceProvider @Inject constructor(private val context: Context) {
         return resources.getDimensionPixelSize(dimen)
     }
 
-    fun openRawResource(@RawRes rawId: Int): InputStream {
-        val resources = context.resources
-        return resources.openRawResource(rawId)
-    }
-
     fun getQuantityString(
         quantity: Int,
         @StringRes default: Int,
@@ -51,12 +45,6 @@ class ResourceProvider @Inject constructor(private val context: Context) {
         one,
     )
 
-    @StringRes
-    fun getStringResFromStringName(stringName: String): Int? {
-        val stringRes = context.resources.getIdentifier(stringName, "string", context.packageName)
-        return when (stringRes) {
-            0 -> null // String not found for given key, return null so it can be handled from calling function
-            else -> stringRes
-        }
-    }
+    fun isDarkMode() = context.resources.configuration.uiMode and
+        Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
 }
