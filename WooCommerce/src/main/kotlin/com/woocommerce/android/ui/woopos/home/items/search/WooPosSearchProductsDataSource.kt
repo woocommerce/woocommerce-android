@@ -51,9 +51,8 @@ class WooPosSearchProductsDataSource @Inject constructor(
                 onSuccess = { result ->
                     canLoadMore.set(result.canLoadMore)
                     productsCache.addAll(result.products)
-                    val mergedResults = mergeSearchResults(localResults, result.products)
-                    searchResultsPaginationHelper.storeSearchResults(query, mergedResults.map { it.remoteId })
-                    emit(ProductsResult.Remote(Result.success(mergedResults)))
+                    searchResultsPaginationHelper.storeSearchResults(query, result.products.map { it.remoteId })
+                    emit(ProductsResult.Remote(Result.success(result.products)))
                 },
                 onFailure = { error ->
                     if (localResults.isNotEmpty()) {
@@ -64,10 +63,6 @@ class WooPosSearchProductsDataSource @Inject constructor(
             )
         }
     }.flowOn(Dispatchers.IO)
-
-    private fun mergeSearchResults(localResults: List<Product>, remoteResults: List<Product>): List<Product> {
-        return (localResults + remoteResults).distinctBy { it.remoteId }
-    }
 
     suspend fun loadMore(query: String): Result<List<Product>> {
         if (!canLoadMore.get()) {
