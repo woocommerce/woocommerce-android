@@ -110,8 +110,9 @@ class WCOrderStore @Inject constructor(
     ) : Payload<OrderError>() {
         constructor(
             error: OrderError,
-            listDescriptor: WCOrderListDescriptor
-        ) : this(listDescriptor) {
+            listDescriptor: WCOrderListDescriptor,
+            networkingMode: WPAPINetworkingMode? = null,
+        ) : this(listDescriptor, networkingMode = networkingMode) {
             this.error = error
         }
     }

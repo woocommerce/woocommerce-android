@@ -598,13 +598,29 @@ class OrderListViewModel @Inject constructor(
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
     fun onOrderSummariesFetched(event: OnOrderSummariesFetched) {
+        fun WPAPINetworkingMode.toTrackingValue(): String {
+            return when (this) {
+                is WPAPINetworkingMode.ApplicationPasswords -> "app_passwords"
+                is WPAPINetworkingMode.ApplicationPasswordsWithJetpack -> "app_passwords_with_jetpack"
+                is WPAPINetworkingMode.JetpackTunnel -> "jetpack_tunnel"
+            }
+        }
+
         // Only track if this is not from a search query
         if (!event.listDescriptor.searchQuery.isNullOrEmpty()) {
             return
         }
 
         if (event.isError) {
-            AnalyticsTracker.track(AnalyticsEvent.ORDER_LIST_LOAD_ERROR)
+            AnalyticsTracker.track(
+                AnalyticsEvent.ORDER_LIST_LOAD_ERROR,
+                properties = mapOf(
+                    "request_type" to event.networkingMode?.toTrackingValue()
+                ).filterNotNull(),
+                errorType = event.error.type.name,
+                errorContext = this::class.simpleName,
+                errorDescription = event.error.message,
+            )
         } else {
             launch {
                 val totalDurationInSeconds = event.duration.toDouble() / 1_000
@@ -616,13 +632,7 @@ class OrderListViewModel @Inject constructor(
                         AnalyticsTracker.KEY_TOTAL_DURATION to totalDurationInSeconds,
                         AnalyticsTracker.KEY_STATUS to event.listDescriptor.statusFilter,
                         AnalyticsTracker.KEY_TOTAL_COMPLETED_ORDERS to totalCompletedOrders,
-                        "request_type" to event.networkingMode?.let {
-                            when (it) {
-                                is WPAPINetworkingMode.ApplicationPasswords -> "app_passwords"
-                                is WPAPINetworkingMode.ApplicationPasswordsWithJetpack -> "app_passwords_with_jetpack"
-                                is WPAPINetworkingMode.JetpackTunnel -> "jetpack_tunnel"
-                            }
-                        }
+                        "request_type" to event.networkingMode?.toTrackingValue()
                     )
                 )
             }

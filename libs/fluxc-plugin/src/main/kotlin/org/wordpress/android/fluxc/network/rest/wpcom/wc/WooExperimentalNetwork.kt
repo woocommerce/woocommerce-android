@@ -172,7 +172,7 @@ class WooExperimentalNetwork @Inject constructor(
     ): WPAPIResponse<T> {
         return when (this) {
             is WPAPIResponse.Success -> this.copy(networkingMode = networkingMode)
-            else -> this
+            is WPAPIResponse.Error -> this.copy(networkingMode = networkingMode)
         }
     }
 }

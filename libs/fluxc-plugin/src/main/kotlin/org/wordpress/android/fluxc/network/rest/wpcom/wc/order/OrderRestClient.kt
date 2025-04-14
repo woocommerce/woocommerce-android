@@ -289,7 +289,8 @@ class OrderRestClient @Inject constructor(
                     val orderError = wpAPINetworkErrorToOrderError(response.error)
                     val payload = FetchOrderListResponsePayload(
                         error = orderError,
-                        listDescriptor = listDescriptor
+                        listDescriptor = listDescriptor,
+                        networkingMode = response.networkingMode
                     )
                     dispatcher.dispatch(WCOrderActionBuilder.newFetchedOrderListAction(payload))
                 }
