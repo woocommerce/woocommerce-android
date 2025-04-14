@@ -12,7 +12,10 @@ sealed class WooPosItemsUIEvent {
     data object BackButtonClicked : WooPosItemsUIEvent()
 
     data object ClearSearchClicked : WooPosItemsUIEvent()
-    data class SearchChanged(val query: String) : WooPosItemsUIEvent()
+    data class SearchChanged(
+        val query: String,
+        val cursorPosition: Int,
+    ) : WooPosItemsUIEvent()
     data object CloseSearchClicked : WooPosItemsUIEvent()
     object SearchAnimationComplete : WooPosItemsUIEvent()
 }

@@ -8,6 +8,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.kotlin.any
 import org.mockito.kotlin.argWhere
 import org.mockito.kotlin.inOrder
 import org.mockito.kotlin.never
@@ -518,5 +519,26 @@ class SiteStoreTest {
 
         val expectedErrorType = AllDomainsError(AllDomainsErrorType.GENERIC_ERROR, null).type
         assertThat(onAllDomainsFetched.error.type).isEqualTo(expectedErrorType)
+    }
+
+    @Test
+    fun `when updating site from WPCom REST API, then preserve existing app passwords authorize URL`() = test {
+        val siteId = 1234L
+        val authorizationUrl = "https://example.com/authorize"
+        whenever(siteSqlUtils.getSitesWithRemoteId(siteId)).thenReturn(listOf(SiteModel().apply {
+            this.siteId = siteId
+            applicationPasswordsAuthorizeUrl = authorizationUrl
+        }))
+        val fetchedSite = SiteModel().apply {
+            this.origin = SiteModel.ORIGIN_WPCOM_REST
+            this.siteId = siteId
+        }
+        whenever(siteRestClient.fetchSite(any())).thenReturn(fetchedSite)
+
+        siteStore.fetchSite(fetchedSite)
+
+        verify(siteSqlUtils).insertOrUpdateSite(argWhere { site ->
+            site.applicationPasswordsAuthorizeUrl == authorizationUrl
+        })
     }
 }
