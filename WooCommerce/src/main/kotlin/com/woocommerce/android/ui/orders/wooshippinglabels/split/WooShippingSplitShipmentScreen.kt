@@ -31,7 +31,6 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -47,12 +46,16 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.annotatedStringRes
+import com.woocommerce.android.ui.compose.component.WCOverflowMenu
 import com.woocommerce.android.ui.compose.component.WCTextButton
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.ExpandableSelectableShippingProduct
 import com.woocommerce.android.ui.orders.wooshippinglabels.ProductsSummary
 import com.woocommerce.android.ui.orders.wooshippinglabels.SelectableShippingProduct
@@ -72,6 +75,7 @@ fun WooShippingSplitShipmentScreen(
             onUpdateSelection = viewModel::onUpdateSelection,
             onUpdateShipment = viewModel::onUpdateShipment,
             onUpdateSelectedShipment = viewModel::onUpdateSelectedShipment,
+            onRemoveShipment = viewModel::onRemoveShipment,
             modifier = modifier
         )
     }
@@ -85,6 +89,7 @@ fun WooShippingSplitShipmentScreen(
     onUpdateSelection: (shipmentKey: Int, index: Int, selectedIndexes: Set<Int>?) -> Unit,
     onUpdateShipment: (splitMovement: SplitMovement) -> Unit,
     onUpdateSelectedShipment: (shipmentKey: Int) -> Unit,
+    onRemoveShipment: (shipmentKey: Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -171,13 +176,21 @@ fun WooShippingSplitShipmentScreen(
                                     )
                                 }
                             }
-                            IconButton(onClick = {}, modifier = modifier.align(Alignment.CenterVertically)) {
-                                Icon(
-                                    imageVector = Icons.Filled.MoreHoriz,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colors.primary
-                                )
-                            }
+                            WCOverflowMenu(
+                                items = shipments.mapIndexed { index, _ -> index },
+                                mapper = { shipmentIndex ->
+                                    // Example: "Remove shipment 1"
+                                    stringResource(
+                                        R.string.woo_shipping_split_shipment_shipment_remove,
+                                        stringResource(
+                                            R.string.woo_shipping_split_shipment_shipment_name,
+                                            shipmentIndex + 1
+                                        ).toLowerCase(Locale.current)
+                                    )
+                                },
+                                onSelected = onRemoveShipment,
+                                modifier = modifier.align(Alignment.CenterVertically)
+                            )
                         }
 
                         HorizontalPager(
