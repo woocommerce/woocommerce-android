@@ -49,18 +49,14 @@ class ApplicationEdgeToEdgeEnabler @Inject constructor(
      *  - In debug builds, the code will attempt to cast the activity to a `ComponentActivity`. If the cast fails, then a `ClassCastException` will be thrown by the application.
      */
     override fun onActivityCreated(activity: Activity, bundle: Bundle?) {
-        val isEdgeToEdgeSupported = isEdgeToEdgeSupported(activity)
-        if (PackageUtils.isDebugBuild() && isEdgeToEdgeSupported) {
+        if (!isEdgeToEdgeSupported(activity)) return
+
+        if (PackageUtils.isDebugBuild()) {
             (activity as ComponentActivity).enableEdgeToEdge()
         } else {
             (activity as? ComponentActivity)?.enableEdgeToEdge() ?: run {
-                if (isEdgeToEdgeSupported) {
-                    val message = "Activity $activity is not a ComponentActivity"
-                    crashLogger.sendReport(
-                        exception = ClassCastException(message),
-                        message = message
-                    )
-                }
+                val message = "Activity $activity is not a ComponentActivity"
+                crashLogger.sendReport(exception = ClassCastException(message), message = message)
             }
         }
     }
