@@ -7,6 +7,7 @@ import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetwork
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkingMode
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsNetwork
+import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsStore
 import org.wordpress.android.fluxc.network.rest.wpcom.JetpackTunnelWPAPINetwork
 import org.wordpress.android.util.AppLog
 import javax.inject.Inject
@@ -23,6 +24,7 @@ import javax.inject.Singleton
 class WooExperimentalNetwork @Inject constructor(
     private val applicationPasswordsNetwork: ApplicationPasswordsNetwork,
     private val jetpackTunnelWPAPINetwork: JetpackTunnelWPAPINetwork,
+    private val applicationPasswordsStore: ApplicationPasswordsStore,
     private val dispatcher: Dispatcher
 ) : WPAPINetwork {
     override suspend fun <T : Any> executeGetGsonRequest(
@@ -128,6 +130,8 @@ class WooExperimentalNetwork @Inject constructor(
             )
         }
 
+        val hasAppPassword = applicationPasswordsStore.hasCredentials(site)
+
         return when (val appPasswordsResponse = applicationPasswordsNetwork.request()) {
             is WPAPIResponse.Success<*> -> {
                 AppLog.v(
@@ -135,7 +139,10 @@ class WooExperimentalNetwork @Inject constructor(
                     "Request successful for site: ${site.url}, using Application Passwords"
                 )
                 (appPasswordsResponse as WPAPIResponse<T>).copyWith(
-                    networkingMode = WPAPINetworkingMode.ApplicationPasswordsWithJetpack
+                    // When creating a new Application Password, we don't want to track this request, as its duration
+                    // is not relevant to our experiment.
+                    // So we track only requests where we already have a password saved.
+                    networkingMode = if (hasAppPassword) WPAPINetworkingMode.ApplicationPasswordsWithJetpack else null
                 )
             }
 
@@ -161,7 +168,7 @@ class WooExperimentalNetwork @Inject constructor(
     }
 
     private fun <T : Any> WPAPIResponse<T>.copyWith(
-        networkingMode: WPAPINetworkingMode
+        networkingMode: WPAPINetworkingMode?
     ): WPAPIResponse<T> {
         return when (this) {
             is WPAPIResponse.Success -> this.copy(networkingMode = networkingMode)
