@@ -20,7 +20,7 @@ import javax.inject.Singleton
 class WooPosProductsDataSource @Inject constructor(
     private val handler: ProductListHandler,
     private val productsCache: WooPosProductsCache,
-    private val productsPaginationHelper: WooPosProductsPaginationHelper,
+    private val productsIndex: WooPosProductsIndex,
 ) {
     val hasMorePages: Boolean
         get() = handler.canLoadMore.get()
@@ -29,10 +29,9 @@ class WooPosProductsDataSource @Inject constructor(
         if (forceRefreshProducts) {
             productsCache.clear()
         }
-        // Always clear pagination helper on first page load
-        productsPaginationHelper.clearCache()
+        productsIndex.clearCache()
 
-        val cachedProducts = productsPaginationHelper.getProductList()
+        val cachedProducts = productsIndex.getProductList()
         emit(ProductsResult.Cached(sortProductsByName(cachedProducts)))
 
         val result = handler.loadFromCacheAndFetch(
@@ -48,8 +47,8 @@ class WooPosProductsDataSource @Inject constructor(
         if (result.isSuccess) {
             val remoteProducts = handler.productsFlow.first()
             productsCache.addAll(remoteProducts)
-            productsPaginationHelper.storeProductList(remoteProducts.map { it.remoteId })
-            emit(ProductsResult.Remote(Result.success(sortProductsByName(productsPaginationHelper.getProductList()))))
+            productsIndex.storeProductList(remoteProducts.map { it.remoteId })
+            emit(ProductsResult.Remote(Result.success(sortProductsByName(productsIndex.getProductList()))))
         } else {
             result.logFailure()
             emit(
@@ -69,8 +68,8 @@ class WooPosProductsDataSource @Inject constructor(
         if (result.isSuccess) {
             val moreProducts = handler.productsFlow.first()
             productsCache.addAll(moreProducts)
-            productsPaginationHelper.storeProductList(moreProducts.map { it.remoteId })
-            Result.success(sortProductsByName(productsPaginationHelper.getProductList()))
+            productsIndex.storeProductList(moreProducts.map { it.remoteId })
+            Result.success(sortProductsByName(productsIndex.getProductList()))
         } else {
             result.logFailure()
             Result.failure(result.exceptionOrNull() ?: Exception("Unknown error"))

@@ -15,23 +15,23 @@ import org.mockito.kotlin.whenever
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooPosProductsListCacheTest {
     private lateinit var productsCache: WooPosProductsCache
-    private lateinit var productsListCache: WooPosProductsPaginationHelper
+    private lateinit var productListIndex: WooPosProductsIndex
 
     @Before
     fun setup() {
         productsCache = mock()
-        productsListCache = WooPosProductsPaginationHelper(productsCache)
+        productListIndex = WooPosProductsIndex(productsCache)
     }
 
     @Test
     fun `when cache is empty, hasProducts returns false`() = runTest {
-        assertFalse(productsListCache.hasProducts())
+        assertFalse(productListIndex.hasProducts())
     }
 
     @Test
     fun `when products are stored, hasProducts returns true`() = runTest {
-        productsListCache.storeProductList(listOf(1L, 2L))
-        assertTrue(productsListCache.hasProducts())
+        productListIndex.storeProductList(listOf(1L, 2L))
+        assertTrue(productListIndex.hasProducts())
     }
 
     @Test
@@ -42,9 +42,9 @@ class WooPosProductsListCacheTest {
         whenever(productsCache.getProductById(1L)).thenReturn(product1)
         whenever(productsCache.getProductById(2L)).thenReturn(product2)
 
-        productsListCache.storeProductList(listOf(1L, 2L))
+        productListIndex.storeProductList(listOf(1L, 2L))
 
-        val result = productsListCache.getProductList()
+        val result = productListIndex.getProductList()
         assertEquals(listOf(product1, product2), result)
     }
 
@@ -58,18 +58,18 @@ class WooPosProductsListCacheTest {
         whenever(productsCache.getProductById(2L)).thenReturn(product2)
         whenever(productsCache.getProductById(3L)).thenReturn(product3)
 
-        productsListCache.storeProductList(listOf(1L, 2L))
-        productsListCache.storeProductList(listOf(2L, 3L))
+        productListIndex.storeProductList(listOf(1L, 2L))
+        productListIndex.storeProductList(listOf(2L, 3L))
 
-        val result = productsListCache.getProductList()
+        val result = productListIndex.getProductList()
         assertEquals(listOf(product1, product2, product3), result)
     }
 
     @Test
     fun `when cache is cleared, hasProducts returns false`() = runTest {
-        productsListCache.storeProductList(listOf(1L, 2L))
-        productsListCache.clearCache()
-        assertFalse(productsListCache.hasProducts())
+        productListIndex.storeProductList(listOf(1L, 2L))
+        productListIndex.clearCache()
+        assertFalse(productListIndex.hasProducts())
     }
 
     @Test
@@ -77,10 +77,10 @@ class WooPosProductsListCacheTest {
         val product1 = mock<Product>()
         whenever(productsCache.getProductById(1L)).thenReturn(product1)
 
-        productsListCache.storeProductList(listOf(1L))
-        productsListCache.clearCache()
+        productListIndex.storeProductList(listOf(1L))
+        productListIndex.clearCache()
 
-        val result = productsListCache.getProductList()
+        val result = productListIndex.getProductList()
         assertTrue(result.isEmpty())
     }
 }
