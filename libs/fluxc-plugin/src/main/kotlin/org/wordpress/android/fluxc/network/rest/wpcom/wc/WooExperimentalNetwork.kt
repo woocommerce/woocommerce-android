@@ -1,7 +1,7 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.wc
 
-import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.generated.SiteActionBuilder
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetwork
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkingMode
@@ -9,6 +9,7 @@ import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsNetwork
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsStore
 import org.wordpress.android.fluxc.network.rest.wpcom.JetpackTunnelWPAPINetwork
+import org.wordpress.android.fluxc.persistence.SiteSqlUtils
 import org.wordpress.android.util.AppLog
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -25,7 +26,7 @@ class WooExperimentalNetwork @Inject constructor(
     private val applicationPasswordsNetwork: ApplicationPasswordsNetwork,
     private val jetpackTunnelWPAPINetwork: JetpackTunnelWPAPINetwork,
     private val applicationPasswordsStore: ApplicationPasswordsStore,
-    private val dispatcher: Dispatcher
+    private val siteSqlUtils: SiteSqlUtils
 ) : WPAPINetwork {
     override suspend fun <T : Any> executeGetGsonRequest(
         site: SiteModel,
@@ -154,8 +155,10 @@ class WooExperimentalNetwork @Inject constructor(
                 if (appPasswordsResponse.error.errorCode ==
                     ApplicationPasswordsNetwork.APPLICATION_PASSWORDS_NOT_SUPPORT_ERROR_CODE
                 ) {
-                    site.applicationPasswordsAuthorizeUrl = null
-                    dispatcher.dispatch(SiteActionBuilder.newUpdateSiteAction(site))
+                    withContext(Dispatchers.IO) {
+                        site.applicationPasswordsAuthorizeUrl = null
+                        siteSqlUtils.insertOrUpdateSite(site)
+                    }
                 }
                 jetpackTunnelWPAPINetwork.request().copyWith(
                     networkingMode = WPAPINetworkingMode.JetpackTunnel(
