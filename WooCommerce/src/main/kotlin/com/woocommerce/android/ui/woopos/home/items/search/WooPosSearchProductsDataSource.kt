@@ -22,7 +22,7 @@ class WooPosSearchProductsDataSource @Inject constructor(
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite,
     private val productsCache: WooPosProductsCache,
-    private val searchResultsPaginationHelper: WooPosSearchResultsPaginationHelper,
+    private val searchResultsIndex: WooPosSearchResultsIndex,
     private val searchPredicate: ProductSearchPredicate,
 ) {
     companion object {
@@ -36,7 +36,7 @@ class WooPosSearchProductsDataSource @Inject constructor(
 
     fun searchProducts(query: String): Flow<ProductsResult> = flow {
         coroutineScope {
-            searchResultsPaginationHelper.clearCache()
+            searchResultsIndex.clearCache()
 
             val localSearchDeferred = async { productsCache.getAll().filter(searchPredicate(query)) }
             val remoteSearchDeferred = async { remoteSearch(query) }
@@ -51,12 +51,12 @@ class WooPosSearchProductsDataSource @Inject constructor(
                 onSuccess = { result ->
                     canLoadMore.set(result.canLoadMore)
                     productsCache.addAll(result.products)
-                    searchResultsPaginationHelper.storeSearchResults(query, result.products.map { it.remoteId })
+                    searchResultsIndex.storeSearchResults(query, result.products.map { it.remoteId })
                     emit(ProductsResult.Remote(Result.success(result.products)))
                 },
                 onFailure = { error ->
                     if (localResults.isNotEmpty()) {
-                        searchResultsPaginationHelper.storeSearchResults(query, localResults.map { it.remoteId })
+                        searchResultsIndex.storeSearchResults(query, localResults.map { it.remoteId })
                     }
                     emit(ProductsResult.Remote(Result.failure(error)))
                 }
@@ -66,18 +66,18 @@ class WooPosSearchProductsDataSource @Inject constructor(
 
     suspend fun loadMore(query: String): Result<List<Product>> {
         if (!canLoadMore.get()) {
-            return Result.success(searchResultsPaginationHelper.getSearchResults(query))
+            return Result.success(searchResultsIndex.getSearchResults(query))
         }
 
-        val currentResults = searchResultsPaginationHelper.getSearchResults(query)
+        val currentResults = searchResultsIndex.getSearchResults(query)
         val offset = currentResults.size
 
         return remoteSearch(query, offset).fold(
             onSuccess = { result ->
                 canLoadMore.set(result.canLoadMore)
                 productsCache.addAll(result.products)
-                searchResultsPaginationHelper.storeSearchResults(query, result.products.map { it.remoteId })
-                Result.success(searchResultsPaginationHelper.getSearchResults(query))
+                searchResultsIndex.storeSearchResults(query, result.products.map { it.remoteId })
+                Result.success(searchResultsIndex.getSearchResults(query))
             },
             onFailure = { error ->
                 Result.failure(error)

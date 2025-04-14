@@ -27,7 +27,7 @@ class WooPosSearchProductsDataSourceTest {
 
     private val productStore: WCProductStore = mock()
     private val wooPosProductsCache: WooPosProductsCache = mock()
-    private val searchResults: WooPosSearchResultsPaginationHelper = mock()
+    private val searchResults: WooPosSearchResultsIndex = mock()
     private val selectedSite: SelectedSite = mock()
     private val searchPredicate: ProductSearchPredicate = mock()
     private val siteModel: SiteModel = mock()
@@ -48,7 +48,7 @@ class WooPosSearchProductsDataSourceTest {
             productStore = productStore,
             selectedSite = selectedSite,
             productsCache = wooPosProductsCache,
-            searchResultsPaginationHelper = searchResults,
+            searchResultsIndex = searchResults,
             searchPredicate = searchPredicate
         )
     }
