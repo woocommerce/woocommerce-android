@@ -57,12 +57,7 @@ class WooShippingEditAddressViewModel @Inject constructor(
     private var address by mutableStateOf(InputValue(value = "", isRequired = true))
     private var city by mutableStateOf(InputValue(value = "", isRequired = true))
     private var postalCode by mutableStateOf(InputValue(value = "", isRequired = true))
-    private var email by mutableStateOf(
-        InputValue(
-            value = "",
-            isRequired = navArgs.flow is EditAddressFlow.EditOriginAddress
-        )
-    )
+    private var email by mutableStateOf(InputValue(value = "", isRequired = true))
     private var phone by mutableStateOf(
         InputValue(
             value = "",
@@ -286,9 +281,11 @@ class WooShippingEditAddressViewModel @Inject constructor(
                             .takeIf { it != Location.EMPTY } ?: states.first()
                         rawState = ""
                     }
+
                     states.isNotEmpty() -> {
                         selectedState.value = states.first()
                     }
+
                     else -> {
                         rawState = stateCode
                         selectedState.value = Location.EMPTY

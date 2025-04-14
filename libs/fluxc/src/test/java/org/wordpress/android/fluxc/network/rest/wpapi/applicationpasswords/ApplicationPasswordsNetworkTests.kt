@@ -18,7 +18,6 @@ import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
-import org.wordpress.android.fluxc.network.HttpMethod
 import org.wordpress.android.fluxc.network.UserAgent
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIGsonRequest
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
@@ -61,7 +60,7 @@ class ApplicationPasswordsNetworkTests {
         whenever(mApplicationPasswordsManager.getApplicationCredentials(testSite))
             .thenReturn(ApplicationPasswordCreationResult.Created(testCredentials))
 
-        network.executeGsonRequest(testSite, HttpMethod.GET, "path", TestResponse::class.java)
+        network.executeGetGsonRequest(testSite, "path", TestResponse::class.java)
 
         verify(mApplicationPasswordsManager).getApplicationCredentials(testSite)
     }
@@ -74,7 +73,7 @@ class ApplicationPasswordsNetworkTests {
         val networkError = VolleyError(NetworkResponse(401, byteArrayOf(), true, 0, emptyList()))
         givenErrorResponse(networkError)
 
-        network.executeGsonRequest(testSite, HttpMethod.GET, "path", TestResponse::class.java)
+        network.executeGetGsonRequest(testSite, "path", TestResponse::class.java)
 
         verify(mApplicationPasswordsManager).deleteLocalApplicationPassword(testSite)
         verify(mApplicationPasswordsManager, times(2)).getApplicationCredentials(testSite)
@@ -87,7 +86,7 @@ class ApplicationPasswordsNetworkTests {
         whenever(mApplicationPasswordsManager.getApplicationCredentials(testSite))
             .thenReturn(ApplicationPasswordCreationResult.Existing(testCredentials))
 
-        val response = network.executeGsonRequest(testSite, HttpMethod.GET, "path", TestResponse::class.java)
+        val response = network.executeGetGsonRequest(testSite, "path", TestResponse::class.java)
 
         assertIs<WPAPIResponse.Success<TestResponse>>(response)
         assertEquals(expectedResponse, response.data)
@@ -100,7 +99,7 @@ class ApplicationPasswordsNetworkTests {
         whenever(mApplicationPasswordsManager.getApplicationCredentials(testSite))
             .thenReturn(ApplicationPasswordCreationResult.Existing(testCredentials))
 
-        val response = network.executeGsonRequest(testSite, HttpMethod.GET, "path", TestResponse::class.java)
+        val response = network.executeGetGsonRequest(testSite, "path", TestResponse::class.java)
 
         assertIs<WPAPIResponse.Error<TestResponse>>(response)
         assertEquals(networkError, response.error.volleyError)
@@ -113,7 +112,7 @@ class ApplicationPasswordsNetworkTests {
             whenever(mApplicationPasswordsManager.getApplicationCredentials(testSite))
                 .thenReturn(ApplicationPasswordCreationResult.NotSupported(BaseNetworkError(networkError)))
 
-            network.executeGsonRequest(testSite, HttpMethod.GET, "path", TestResponse::class.java)
+            network.executeGetGsonRequest(testSite, "path", TestResponse::class.java)
 
             verify(listener).onFeatureUnavailable(eq(testSite), any())
         }
@@ -125,7 +124,7 @@ class ApplicationPasswordsNetworkTests {
             whenever(mApplicationPasswordsManager.getApplicationCredentials(testSite))
                 .thenReturn(ApplicationPasswordCreationResult.Created(testCredentials))
 
-            network.executeGsonRequest(testSite, HttpMethod.GET, "path", TestResponse::class.java)
+            network.executeGetGsonRequest(testSite, "path", TestResponse::class.java)
 
             verify(listener).onNewPasswordCreated(isPasswordRegenerated = false)
         }
@@ -139,7 +138,7 @@ class ApplicationPasswordsNetworkTests {
             val networkError = VolleyError(NetworkResponse(401, byteArrayOf(), true, 0, emptyList()))
             givenErrorResponse(networkError)
 
-            network.executeGsonRequest(testSite, HttpMethod.GET, "path", TestResponse::class.java)
+            network.executeGetGsonRequest(testSite, "path", TestResponse::class.java)
 
             verify(listener).onNewPasswordCreated(isPasswordRegenerated = true)
         }
