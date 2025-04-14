@@ -28,8 +28,9 @@ class WooPosProductsDataSource @Inject constructor(
     fun loadSimpleProducts(forceRefreshProducts: Boolean): Flow<ProductsResult> = flow {
         if (forceRefreshProducts) {
             productsCache.clear()
-            productsPaginationHelper.clearCache()
         }
+        // Always clear pagination helper on first page load
+        productsPaginationHelper.clearCache()
 
         val cachedProducts = productsPaginationHelper.getProductList()
         emit(ProductsResult.Cached(sortProductsByName(cachedProducts)))
