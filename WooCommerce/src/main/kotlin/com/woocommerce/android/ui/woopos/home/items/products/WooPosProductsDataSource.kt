@@ -33,8 +33,8 @@ class WooPosProductsDataSource @Inject constructor(
         }
         productsIndex.clearCache()
 
-        val cachedProducts = productsIndex.getProductList().take(PAGE_SIZE)
-        emit(ProductsResult.Cached(sortProductsByName(cachedProducts)))
+        val cachedProducts = productsCache.getAll().run { sortProductsByName(this) }.take(PAGE_SIZE)
+        emit(ProductsResult.Cached(cachedProducts))
 
         val result = handler.loadFromCacheAndFetch(
             forceRefresh = forceRefreshProducts,
