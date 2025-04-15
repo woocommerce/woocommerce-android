@@ -856,3 +856,5 @@ data class WooShippingAddresses(
         )
     }
 }
+
+fun ShippableItemsUI.totalItemQuantity() = shippableItems.sumByFloat { it.quantity }.toInt()
