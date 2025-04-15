@@ -156,19 +156,6 @@ data class WCProductModel(@PrimaryKey @Column private var id: Int = 0) : Identif
     ) {
         val options: MutableList<String> = options.toMutableList()
 
-        fun getCommaSeparatedOptions(): String {
-            if (options.isEmpty()) return ""
-            var commaSeparatedOptions = ""
-            options.forEach { option ->
-                if (commaSeparatedOptions.isEmpty()) {
-                    commaSeparatedOptions = option
-                } else {
-                    commaSeparatedOptions += ", $option"
-                }
-            }
-            return commaSeparatedOptions
-        }
-
         fun isSameAttribute(other: ProductAttribute): Boolean {
             return id == other.id &&
                     name == other.name &&
@@ -176,18 +163,6 @@ data class WCProductModel(@PrimaryKey @Column private var id: Int = 0) : Identif
                     visible == other.visible &&
                     options == other.options
         }
-
-        fun asGlobalAttribute(siteID: Int) =
-                WCGlobalAttributeSqlUtils.fetchSingleStoredAttribute(id.toInt(), siteID)
-
-        fun generateProductVariantOption(selectedOption: String) =
-                takeIf { options.contains(selectedOption) }?.let {
-                    ProductVariantOption(
-                            id = id,
-                            name = name,
-                            option = selectedOption
-                    )
-                }
 
         fun toJson(): JsonObject {
             val jsonOptions = JsonArray().also {
@@ -209,40 +184,6 @@ data class WCProductModel(@PrimaryKey @Column private var id: Int = 0) : Identif
 
     override fun setId(id: Int) {
         this.id = id
-    }
-
-    fun addAttribute(newAttribute: ProductAttribute) {
-        mutableListOf<ProductAttribute>()
-                .apply {
-                    attributeList
-                            .takeIf {
-                                it.find { currentAttribute ->
-                                    currentAttribute.id == newAttribute.id
-                                } == null
-                            }?.let { currentAttributes ->
-                                add(newAttribute)
-                                currentAttributes
-                                        .takeIf { it.isNotEmpty() }
-                                        ?.let { addAll(it) }
-                            }
-                }.also { attributes = Gson().toJson(it) }
-    }
-
-    fun removeAttribute(attributeID: Int) =
-            mutableListOf<ProductAttribute>().apply {
-                attributeList
-                        .takeIf { it.isNotEmpty() }
-                        ?.filter { attributeID != it.id.toInt() }
-                        ?.let { addAll(it) }
-            }.also { attributes = Gson().toJson(it) }
-
-    fun getAttribute(attributeID: Int) =
-        attributeList.find { it.id == attributeID.toLong() }
-
-    fun updateAttribute(updatedAttribute: ProductAttribute) = apply {
-        getAttribute(updatedAttribute.id.toInt())
-                ?.let { removeAttribute(it.id.toInt()) }
-        addAttribute(updatedAttribute)
     }
 
     /**
@@ -448,24 +389,7 @@ data class WCProductModel(@PrimaryKey @Column private var id: Int = 0) : Identif
 
     fun getCategoryList() = getTripletsOrEmpty(categories)
 
-    fun getCommaSeparatedCategoryNames() = getCommaSeparatedTripletNames(getCategoryList())
-
     fun getTagList() = getTripletsOrEmpty(tags)
-
-    fun getCommaSeparatedTagNames() = getCommaSeparatedTripletNames(getTagList())
-
-    private fun getCommaSeparatedTripletNames(triplets: List<ProductTriplet>): String {
-        if (triplets.isEmpty()) return ""
-        var commaSeparatedNames = ""
-        triplets.forEach {
-            if (commaSeparatedNames.isEmpty()) {
-                commaSeparatedNames = it.name
-            } else {
-                commaSeparatedNames += ", ${it.name}"
-            }
-        }
-        return commaSeparatedNames
-    }
 
     private fun getTripletsOrEmpty(jsonStr: String): List<ProductTriplet> {
         return if (jsonStr.isNotEmpty()) {
