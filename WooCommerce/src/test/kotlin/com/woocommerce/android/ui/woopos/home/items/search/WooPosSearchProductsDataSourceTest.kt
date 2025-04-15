@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.woopos.home.items.search
 
 import app.cash.turbine.test
-import com.woocommerce.android.WooException
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
@@ -46,10 +45,6 @@ class WooPosSearchProductsDataSourceTest {
     private val product2 = ProductTestUtils.generateProduct(productId = 2)
     private val product3 = ProductTestUtils.generateProduct(productId = 3)
     private val products = listOf(product1, product2, product3)
-
-    private val additionalProduct1 = ProductTestUtils.generateProduct(productId = 4)
-    private val additionalProduct2 = ProductTestUtils.generateProduct(productId = 5)
-    private val additionalProducts = listOf(additionalProduct1, additionalProduct2)
 
     @Before
     fun setup() {
@@ -209,7 +204,12 @@ class WooPosSearchProductsDataSourceTest {
         assertThat(result.isSuccess).isTrue()
         assertThat(result.getOrNull()).isEqualTo(products)
         verify(productStore, never()).searchProducts(
-            anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull()
+            anyOrNull(),
+            anyOrNull(),
+            anyOrNull(),
+            anyOrNull(),
+            anyOrNull(),
+            anyOrNull()
         )
     }
 
