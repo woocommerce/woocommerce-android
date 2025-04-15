@@ -116,7 +116,7 @@ class WooPosProductsInMemoryCacheTest {
         // The first products should have been removed to maintain the cache size limit
         assertThat(firstProduct).isNull()
         assertThat(lastProduct).isNotNull
-        assertThat(cache.getAll()).hasSize(10000) // MAX_CACHE_SIZE from the implementation
+        assertThat(cache.getAll()).hasSize(2_000) // MAX_CACHE_SIZE from the implementation
     }
 
     @Test

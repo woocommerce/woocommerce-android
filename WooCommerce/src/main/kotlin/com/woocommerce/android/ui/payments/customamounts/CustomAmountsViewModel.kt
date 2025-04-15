@@ -19,7 +19,6 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import kotlinx.parcelize.RawValue
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -170,7 +169,7 @@ class CustomAmountsViewModel @Inject constructor(
     @Parcelize
     data class ViewState(
         val customAmountUIModel: CustomAmountUIState = CustomAmountUIState(),
-        val currencySymbol: @RawValue CurrencySymbol? = null,
+        val currencySymbol: CurrencySymbol? = null,
         val isDoneButtonEnabled: Boolean = false,
         val isProgressShowing: Boolean = false,
         val createdOrder: Order? = null,

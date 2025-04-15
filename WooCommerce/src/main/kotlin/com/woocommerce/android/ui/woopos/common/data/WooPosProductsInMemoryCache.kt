@@ -11,7 +11,7 @@ class WooPosProductsInMemoryCache @Inject constructor() : WooPosProductsCache {
     private val mutex = Mutex()
 
     companion object {
-        private const val MAX_CACHE_SIZE = 10_000
+        private const val MAX_CACHE_SIZE = 2_000
         private const val INITIAL_CAPACITY = 200
         private const val LOAD_FACTOR = 0.75f
     }

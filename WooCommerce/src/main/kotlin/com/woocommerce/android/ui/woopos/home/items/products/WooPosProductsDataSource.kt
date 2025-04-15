@@ -22,11 +22,14 @@ import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 import javax.inject.Singleton
 
+private const val PAGE_SIZE = 25 // Matches [ProductListHandler]'s PAGE_SIZE
+
 @Singleton
 class WooPosProductsDataSource @Inject constructor(
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite,
-    private val productsCache: WooPosProductsCache
+    private val productsCache: WooPosProductsCache,
+    private val productsIndex: WooPosProductsIndex,
 ) {
     private val canLoadMore = AtomicBoolean(false)
     private val offset = AtomicInteger(0)
@@ -73,13 +76,16 @@ class WooPosProductsDataSource @Inject constructor(
         if (forceRefreshProducts) {
             productsCache.clear()
         }
-        val cachedProducts = productsCache.getAll()
+productsIndex.clearCache()
+
+        val cachedProducts = productsIndex.getProductList().take(PAGE_SIZE)
         emit(ProductsResult.Cached(sortProductsByName(cachedProducts)))
 
         val fetchResult = fetchProducts()
 
         if (fetchResult.isSuccess) {
-            emit(ProductsResult.Remote(Result.success(sortProductsByName(productsCache.getAll()))))
+            productsIndex.storeProductList(remoteProducts.map { it.remoteId })
+            emit(ProductsResult.Remote(Result.success(sortProductsByName(productsIndex.getProductList()))))
         } else {
             emit(ProductsResult.Remote(Result.failure(fetchResult.exceptionOrNull() ?: Exception("Unknown error"))))
         }
@@ -116,7 +122,8 @@ class WooPosProductsDataSource @Inject constructor(
             offset.addAndGet(NORMAL_PAGE_SIZE)
 
             productsCache.addAll(products)
-            Result.success(sortProductsByName(productsCache.getAll()))
+            productsIndex.storeProductList(moreProducts.map { it.remoteId })
+            Result.success(sortProductsByName(productsIndex.getProductList()))
         } else {
             result.logFailure()
             Result.failure(WooException(result.error))

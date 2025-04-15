@@ -14,6 +14,7 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
@@ -27,7 +28,7 @@ class WooPosSearchProductsDataSourceTest {
 
     private val productStore: WCProductStore = mock()
     private val wooPosProductsCache: WooPosProductsCache = mock()
-    private val searchResultsCache: WooPosSearchResultsCache = mock()
+    private val searchResults: WooPosSearchResultsIndex = mock()
     private val selectedSite: SelectedSite = mock()
     private val searchPredicate: ProductSearchPredicate = mock()
     private val siteModel: SiteModel = mock()
@@ -48,7 +49,7 @@ class WooPosSearchProductsDataSourceTest {
             productStore = productStore,
             selectedSite = selectedSite,
             productsCache = wooPosProductsCache,
-            searchResultsCache = searchResultsCache,
+            searchResultsIndex = searchResults,
             searchPredicate = searchPredicate
         )
     }
@@ -57,8 +58,8 @@ class WooPosSearchProductsDataSourceTest {
     fun `given cached search results, when search products called, then should emit cached results`() = runTest {
         // GIVEN
         val query = "test"
-        whenever(searchResultsCache.hasSearchResults(query)).thenReturn(true)
-        whenever(searchResultsCache.getSearchResults(query)).thenReturn(emptyList())
+        whenever(searchResults.hasSearchResults(query)).thenReturn(true)
+        whenever(searchResults.getSearchResults(query)).thenReturn(emptyList())
         whenever(wooPosProductsCache.getAll()).thenReturn(products)
         whenever(
             productStore.searchProducts(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull())
@@ -71,6 +72,28 @@ class WooPosSearchProductsDataSourceTest {
             val result = awaitItem()
             assertThat(result).isInstanceOf(WooPosSearchProductsDataSource.ProductsResult.Cached::class.java)
             assertThat((result as WooPosSearchProductsDataSource.ProductsResult.Cached).products).isEqualTo(products)
+            verify(searchResults).storeSearchResults(query, products.map { it.remoteId })
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `given more products than page size, when search products called, then should limit local results to page size`() = runTest {
+        // GIVEN
+        val query = "test"
+        val manyProducts = (1..20).map { ProductTestUtils.generateProduct(productId = it.toLong()) }
+        whenever(wooPosProductsCache.getAll()).thenReturn(manyProducts)
+        whenever(
+            productStore.searchProducts(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull())
+        )
+            .thenReturn(WooResult(ProductSearchResult(emptyList(), false)))
+
+        // WHEN
+        sut.searchProducts(query).test {
+            // THEN
+            val result = awaitItem()
+            assertThat(result).isInstanceOf(WooPosSearchProductsDataSource.ProductsResult.Cached::class.java)
+            assertThat((result as WooPosSearchProductsDataSource.ProductsResult.Cached).products.size).isEqualTo(15)
             cancelAndIgnoreRemainingEvents()
         }
     }

@@ -5,11 +5,15 @@ import com.android.volley.DefaultRetryPolicy
 import com.android.volley.RequestQueue
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.UserAgent
+import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetwork
+import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
+import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.auth.AccessToken
 import org.wordpress.android.fluxc.network.rest.wpcom.jetpacktunnel.JetpackTunnelGsonRequestBuilder
 import org.wordpress.android.fluxc.network.rest.wpcom.jetpacktunnel.JetpackTunnelGsonRequestBuilder.JetpackResponse
+import org.wordpress.android.fluxc.network.rest.wpcom.jetpacktunnel.JetpackTunnelGsonRequestBuilder.JetpackResponse.JetpackError
+import org.wordpress.android.fluxc.network.rest.wpcom.jetpacktunnel.JetpackTunnelGsonRequestBuilder.JetpackResponse.JetpackSuccess
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
@@ -28,18 +32,18 @@ class JetpackTunnelWPAPINetwork @Inject constructor(
     accessToken: AccessToken,
     userAgent: UserAgent,
     private val jetpackTunnelGsonRequestBuilder: JetpackTunnelGsonRequestBuilder
-) : BaseWPComRestClient(appContext, dispatcher, requestQueue, accessToken, userAgent) {
-    suspend fun <T : Any> executeGetGsonRequest(
+) : BaseWPComRestClient(appContext, dispatcher, requestQueue, accessToken, userAgent), WPAPINetwork {
+    override suspend fun <T : Any> executeGetGsonRequest(
         site: SiteModel,
         path: String,
         clazz: Class<T>,
-        params: Map<String, String> = emptyMap(),
-        enableCaching: Boolean = false,
-        cacheTimeToLive: Int = BaseRequest.DEFAULT_CACHE_LIFETIME,
-        forced: Boolean = false,
-        requestTimeout: Int = BaseRequest.DEFAULT_REQUEST_TIMEOUT,
-        retries: Int = BaseRequest.DEFAULT_MAX_RETRIES
-    ): JetpackResponse<T> {
+        params: Map<String, String>,
+        enableCaching: Boolean,
+        cacheTimeToLive: Int,
+        forced: Boolean,
+        requestTimeout: Int,
+        retries: Int
+    ): WPAPIResponse<T> {
         return jetpackTunnelGsonRequestBuilder.syncGetRequest(
             restClient = this,
             site = site,
@@ -54,51 +58,58 @@ class JetpackTunnelWPAPINetwork @Inject constructor(
                 retries,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
             )
-        )
+        ).toWPAPIResponse()
     }
 
-    suspend fun <T : Any> executePostGsonRequest(
+    override suspend fun <T : Any> executePostGsonRequest(
         site: SiteModel,
         path: String,
         clazz: Class<T>,
-        body: Map<String, Any> = emptyMap(),
-    ): JetpackResponse<T> {
+        body: Map<String, Any>
+    ): WPAPIResponse<T> {
         return jetpackTunnelGsonRequestBuilder.syncPostRequest(
             restClient = this,
             site = site,
             url = path,
             clazz = clazz,
             body = body
-        )
+        ).toWPAPIResponse()
     }
 
-    suspend fun <T : Any> executePutGsonRequest(
+    override suspend fun <T : Any> executePutGsonRequest(
         site: SiteModel,
         path: String,
         clazz: Class<T>,
-        body: Map<String, Any> = emptyMap()
-    ): JetpackResponse<T> {
+        body: Map<String, Any>
+    ): WPAPIResponse<T> {
         return jetpackTunnelGsonRequestBuilder.syncPutRequest(
             restClient = this,
             site = site,
             url = path,
             clazz = clazz,
             body = body
-        )
+        ).toWPAPIResponse()
     }
 
-    suspend fun <T : Any> executeDeleteGsonRequest(
+    override suspend fun <T : Any> executeDeleteGsonRequest(
         site: SiteModel,
         path: String,
         clazz: Class<T>,
-        params: Map<String, String> = emptyMap()
-    ): JetpackResponse<T> {
+        params: Map<String, String>
+    ): WPAPIResponse<T> {
         return jetpackTunnelGsonRequestBuilder.syncDeleteRequest(
             restClient = this,
             site = site,
             url = path,
             clazz = clazz,
             params = params
-        )
+        ).toWPAPIResponse()
+    }
+
+    private fun <T> JetpackResponse<T>.toWPAPIResponse(): WPAPIResponse<T> {
+        return when (this) {
+            is JetpackSuccess -> WPAPIResponse.Success(data)
+            is JetpackError -> WPAPIResponse.Error(WPAPINetworkError(error, errorCode = error.apiError))
+        }
     }
 }

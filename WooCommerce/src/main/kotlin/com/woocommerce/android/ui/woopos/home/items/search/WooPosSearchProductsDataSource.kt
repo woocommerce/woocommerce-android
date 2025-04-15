@@ -22,11 +22,11 @@ class WooPosSearchProductsDataSource @Inject constructor(
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite,
     private val productsCache: WooPosProductsCache,
-    private val searchResultsCache: WooPosSearchResultsCache,
+    private val searchResultsIndex: WooPosSearchResultsIndex,
     private val searchPredicate: ProductSearchPredicate,
 ) {
     companion object {
-        private const val PAGE_SIZE = 100
+        private const val PAGE_SIZE = 15
     }
 
     private val canLoadMore = AtomicBoolean(false)
@@ -36,7 +36,11 @@ class WooPosSearchProductsDataSource @Inject constructor(
 
     fun searchProducts(query: String): Flow<ProductsResult> = flow {
         coroutineScope {
-            val localSearchDeferred = async { productsCache.getAll().filter(searchPredicate(query)) }
+            searchResultsIndex.clearCache()
+
+            val localSearchDeferred = async {
+                productsCache.getAll().filter(searchPredicate(query)).take(PAGE_SIZE)
+            }
             val remoteSearchDeferred = async { remoteSearch(query) }
 
             val localResults = localSearchDeferred.await()
@@ -49,38 +53,30 @@ class WooPosSearchProductsDataSource @Inject constructor(
                 onSuccess = { result ->
                     canLoadMore.set(result.canLoadMore)
                     productsCache.addAll(result.products)
-                    val mergedResults = mergeSearchResults(localResults, result.products)
-                    searchResultsCache.storeSearchResults(query, mergedResults.map { it.remoteId })
-                    emit(ProductsResult.Remote(Result.success(mergedResults)))
+                    searchResultsIndex.storeSearchResults(query, result.products.map { it.remoteId })
+                    emit(ProductsResult.Remote(Result.success(result.products)))
                 },
                 onFailure = { error ->
-                    if (localResults.isNotEmpty()) {
-                        searchResultsCache.storeSearchResults(query, localResults.map { it.remoteId })
-                    }
                     emit(ProductsResult.Remote(Result.failure(error)))
                 }
             )
         }
     }.flowOn(Dispatchers.IO)
 
-    private fun mergeSearchResults(localResults: List<Product>, remoteResults: List<Product>): List<Product> {
-        return (localResults + remoteResults).distinctBy { it.remoteId }
-    }
-
     suspend fun loadMore(query: String): Result<List<Product>> {
         if (!canLoadMore.get()) {
-            return Result.success(searchResultsCache.getSearchResults(query))
+            return Result.success(searchResultsIndex.getSearchResults(query))
         }
 
-        val currentResults = searchResultsCache.getSearchResults(query)
+        val currentResults = searchResultsIndex.getSearchResults(query)
         val offset = currentResults.size
 
         return remoteSearch(query, offset).fold(
             onSuccess = { result ->
                 canLoadMore.set(result.canLoadMore)
                 productsCache.addAll(result.products)
-                searchResultsCache.storeSearchResults(query, result.products.map { it.remoteId })
-                Result.success(searchResultsCache.getSearchResults(query))
+                searchResultsIndex.storeSearchResults(query, result.products.map { it.remoteId })
+                Result.success(searchResultsIndex.getSearchResults(query))
             },
             onFailure = { error ->
                 Result.failure(error)

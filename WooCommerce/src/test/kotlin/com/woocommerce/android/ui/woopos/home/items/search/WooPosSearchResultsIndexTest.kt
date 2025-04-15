@@ -13,15 +13,15 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
-class WooPosSearchResultsCacheTest {
+class WooPosSearchResultsIndexTest {
 
-    private lateinit var searchResultsCache: WooPosSearchResultsCache
+    private lateinit var searchResultsIndex: WooPosSearchResultsIndex
     private val productsCache: WooPosProductsCache = mock()
     private val mockProducts = listOf<Product>(mock(), mock(), mock())
 
     @Before
     fun setUp() = runTest {
-        searchResultsCache = WooPosSearchResultsCache(productsCache)
+        searchResultsIndex = WooPosSearchResultsIndex(productsCache)
 
         // Setup mock products
         mockProducts.forEachIndexed { index, product ->
@@ -37,8 +37,8 @@ class WooPosSearchResultsCacheTest {
         val productIds = listOf(1L, 3L)
 
         // When
-        searchResultsCache.storeSearchResults(query, productIds)
-        val searchResults = searchResultsCache.getSearchResults(query)
+        searchResultsIndex.storeSearchResults(query, productIds)
+        val searchResults = searchResultsIndex.getSearchResults(query)
 
         // Then
         assertEquals(2, searchResults.size)
@@ -51,11 +51,11 @@ class WooPosSearchResultsCacheTest {
         // Given
         val query = "test query"
         val productIds = listOf(1L, 2L)
-        searchResultsCache.storeSearchResults(query, productIds)
+        searchResultsIndex.storeSearchResults(query, productIds)
 
         // When & Then
-        assertTrue(searchResultsCache.hasSearchResults(query))
-        assertFalse(searchResultsCache.hasSearchResults("other query"))
+        assertTrue(searchResultsIndex.hasSearchResults(query))
+        assertFalse(searchResultsIndex.hasSearchResults("other query"))
     }
 
     @Test
@@ -63,14 +63,14 @@ class WooPosSearchResultsCacheTest {
         // Given
         val query = "test query"
         val productIds = listOf(1L, 2L)
-        searchResultsCache.storeSearchResults(query, productIds)
-        assertTrue(searchResultsCache.hasSearchResults(query))
+        searchResultsIndex.storeSearchResults(query, productIds)
+        assertTrue(searchResultsIndex.hasSearchResults(query))
 
         // When
-        searchResultsCache.clearCache()
+        searchResultsIndex.clearCache()
 
         // Then
-        assertFalse(searchResultsCache.hasSearchResults(query))
+        assertFalse(searchResultsIndex.hasSearchResults(query))
     }
 
     @Test
@@ -81,9 +81,9 @@ class WooPosSearchResultsCacheTest {
         val secondPage = listOf(2L, 3L)
 
         // When
-        searchResultsCache.storeSearchResults(query, firstPage)
-        searchResultsCache.storeSearchResults(query, secondPage)
-        val searchResults = searchResultsCache.getSearchResults(query)
+        searchResultsIndex.storeSearchResults(query, firstPage)
+        searchResultsIndex.storeSearchResults(query, secondPage)
+        val searchResults = searchResultsIndex.getSearchResults(query)
 
         // Then
         assertEquals(3, searchResults.size)
@@ -100,12 +100,12 @@ class WooPosSearchResultsCacheTest {
         val firstQueryIds = listOf(1L, 2L)
 
         // When
-        searchResultsCache.storeSearchResults(firstQuery, firstQueryIds)
-        assertTrue(searchResultsCache.hasSearchResults(firstQuery))
+        searchResultsIndex.storeSearchResults(firstQuery, firstQueryIds)
+        assertTrue(searchResultsIndex.hasSearchResults(firstQuery))
 
         // Then
-        searchResultsCache.storeSearchResults(secondQuery, listOf(3L))
-        assertTrue(searchResultsCache.hasSearchResults(secondQuery))
-        assertFalse(searchResultsCache.hasSearchResults(firstQuery))
+        searchResultsIndex.storeSearchResults(secondQuery, listOf(3L))
+        assertTrue(searchResultsIndex.hasSearchResults(secondQuery))
+        assertFalse(searchResultsIndex.hasSearchResults(firstQuery))
     }
 }

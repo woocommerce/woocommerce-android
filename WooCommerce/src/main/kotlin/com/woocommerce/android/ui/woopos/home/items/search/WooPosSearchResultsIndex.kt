@@ -6,23 +6,19 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
 
-class WooPosSearchResultsCache @Inject constructor(
+class WooPosSearchResultsIndex @Inject constructor(
     private val productsCache: WooPosProductsCache
 ) {
     private val mutex = Mutex()
 
-    // Store product IDs for the current search query's pages
     private var currentSearchQuery: String = ""
     private var paginatedResults: List<Long> = emptyList()
 
     suspend fun storeSearchResults(query: String, productIds: List<Long>) = mutex.withLock {
-        // If the query changes, clear previous pagination results
         if (currentSearchQuery != query.lowercase()) {
             paginatedResults = emptyList()
             currentSearchQuery = query.lowercase()
         }
-
-        // Add potential next page of search results to the list
         paginatedResults = (paginatedResults + productIds).distinct()
     }
 
