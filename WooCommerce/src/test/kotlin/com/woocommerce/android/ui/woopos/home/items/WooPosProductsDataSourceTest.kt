@@ -428,7 +428,6 @@ class WooPosProductsDataSourceTest {
                 includeTypes = any()
             )
         ).thenReturn(WooResult(listOf<WCProductModel>()))
-        whenever(productsCache.getAll()).thenReturn(sampleProducts)
 
         val sut = WooPosProductsDataSource(productStore, selectedSite, productsCache, productsIndex)
 
