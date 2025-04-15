@@ -31,9 +31,9 @@ fun List<ShippableItemModel>.toUIModel(
     dimensionUnit: String,
     weightUnit: String
 ): ShippableItemsUI {
-    val shippableItemsUI = this.map { item -> item.toUIModel(currencyFormatter, dimensionUnit, weightUnit) }
-    val formattedTotalPrice = this.getFormattedTotalPrice(currencyFormatter)
-    val formattedTotalWeight = this.getFormattedTotalWeight(weightUnit)
+    val shippableItemsUI = map { item -> item.toUIModel(currencyFormatter, dimensionUnit, weightUnit) }
+    val formattedTotalPrice = getFormattedTotalPrice(currencyFormatter)
+    val formattedTotalWeight = getFormattedTotalWeight(weightUnit)
 
     return ShippableItemsUI(
         shippableItems = shippableItemsUI,
@@ -79,9 +79,9 @@ fun List<ShippableItemModel>.toSelectableUIModel(
     dimensionUnit: String,
     weightUnit: String
 ): SelectableShippableItemsUI {
-    val shippableItemsUI = this.map { item -> item.toSelectableUIModel(currencyFormatter, dimensionUnit, weightUnit) }
-    val formattedTotalPrice = this.getFormattedTotalPrice(currencyFormatter)
-    val formattedTotalWeight = this.getFormattedTotalWeight(weightUnit)
+    val shippableItemsUI = map { item -> item.toSelectableUIModel(currencyFormatter, dimensionUnit, weightUnit) }
+    val formattedTotalPrice = getFormattedTotalPrice(currencyFormatter)
+    val formattedTotalWeight = getFormattedTotalWeight(weightUnit)
 
     return SelectableShippableItemsUI(
         shippableItems = shippableItemsUI,
@@ -92,25 +92,25 @@ fun List<ShippableItemModel>.toSelectableUIModel(
 }
 
 fun List<ShippableItemModel>.getFormattedTotalPrice(currencyFormatter: CurrencyFormatter): String {
-    val totalPrice = this.sumOf { it.price }
-    val formattedTotalPrice = this.firstOrNull()?.currency?.let {
+    val totalPrice = sumOf { it.price }
+    val formattedTotalPrice = firstOrNull()?.currency?.let {
         currencyFormatter.formatCurrency(totalPrice, it)
     } ?: currencyFormatter.formatCurrency(totalPrice)
     return formattedTotalPrice
 }
 
 fun List<ShippableItemModel>.getFormattedTotalWeight(weightUnit: String): String {
-    val totalWeight = this.sumByFloat { it.weight * it.quantity }
+    val totalWeight = sumByFloat { it.weight * it.quantity }
     return "${totalWeight.formatToString()} $weightUnit"
 }
 
 fun Order.getShippingLinesSummary(
     currencyFormatter: CurrencyFormatter
 ): List<ShippingLineSummaryUI> {
-    return this.shippingLines.map {
+    return shippingLines.map {
         ShippingLineSummaryUI(
             title = it.methodTitle,
-            amount = currencyFormatter.formatCurrency(it.total, this.currency)
+            amount = currencyFormatter.formatCurrency(it.total, currency)
         )
     }
 }
