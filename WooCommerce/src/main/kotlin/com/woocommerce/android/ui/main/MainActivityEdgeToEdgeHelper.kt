@@ -26,6 +26,7 @@ class MainActivityEdgeToEdgeHelper @Inject constructor() {
                 binding.root.updatePadding(bottom = 0)
             } else {
                 binding.root.updatePadding(bottom = insets.bottom)
+                binding.bottomNav.updatePadding(bottom = 0)
             }
         }
     }
