@@ -38,7 +38,9 @@ class WooPosSearchProductsDataSource @Inject constructor(
         coroutineScope {
             searchResultsIndex.clearCache()
 
-            val localSearchDeferred = async { productsCache.getAll().filter(searchPredicate(query)) }
+            val localSearchDeferred = async {
+                productsCache.getAll().filter(searchPredicate(query)).take(PAGE_SIZE)
+            }
             val remoteSearchDeferred = async { remoteSearch(query) }
 
             val localResults = localSearchDeferred.await()
