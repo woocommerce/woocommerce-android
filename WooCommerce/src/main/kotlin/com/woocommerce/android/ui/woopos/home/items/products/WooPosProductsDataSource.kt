@@ -92,13 +92,13 @@ class WooPosProductsDataSource @Inject constructor(
 
     suspend fun loadMore(): Result<List<Product>> = withContext(Dispatchers.IO) {
         if (!canLoadMore.get()) {
-            return@withContext Result.success(sortProductsByName(productsCache.getAll()))
+            return@withContext Result.success(sortProductsByName(productsIndex.getProductList()))
         }
 
         val fetchResult = fetchProducts()
 
         if (fetchResult.isSuccess) {
-            Result.success(sortProductsByName(productsCache.getAll()))
+            Result.success(sortProductsByName(productsIndex.getProductList()))
         } else {
             fetchResult
         }
