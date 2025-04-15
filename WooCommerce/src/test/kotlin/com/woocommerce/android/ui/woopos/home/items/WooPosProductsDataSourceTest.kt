@@ -260,14 +260,14 @@ class WooPosProductsDataSourceTest {
                 )
             ).thenReturn(
                 WooResult(
-                List(25) {
-                    WCProductModel().apply {
-                        remoteProductId = it.toLong()
-                        attributes = "[]"
-                        status = "draft"
+                    List(25) {
+                        WCProductModel().apply {
+                            remoteProductId = it.toLong()
+                            attributes = "[]"
+                            status = "draft"
+                        }
                     }
-                }
-            )
+                )
             )
             whenever(productsIndex.getProductList()).thenReturn(sampleProducts + additionalProducts)
             val sut = WooPosProductsDataSource(productStore, selectedSite, productsCache, productsIndex)
@@ -541,7 +541,6 @@ class WooPosProductsDataSourceTest {
 
         val customUnsortedProducts = listOf(mockProductC, mockProductA, mockProductB)
 
-
         whenever(productsIndex.getProductList()).thenReturn(customUnsortedProducts)
         whenever(
             productStore.fetchProducts(
@@ -678,7 +677,6 @@ class WooPosProductsDataSourceTest {
                 }
             }
 
-
             whenever(
                 productStore.fetchProducts(
                     site = eq(siteModel),
@@ -761,7 +759,6 @@ class WooPosProductsDataSourceTest {
             }
             val emptySecondPage = emptyList<WCProductModel>()
 
-
             whenever(
                 productStore.fetchProducts(
                     site = eq(siteModel),
@@ -810,7 +807,6 @@ class WooPosProductsDataSourceTest {
                     status = "draft"
                 }
             }
-
 
             whenever(
                 productStore.fetchProducts(
