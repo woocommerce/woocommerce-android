@@ -76,7 +76,7 @@ class WooPosProductsDataSource @Inject constructor(
         if (forceRefreshProducts) {
             productsCache.clear()
         }
-productsIndex.clearCache()
+        productsIndex.clearCache()
 
         val cachedProducts = productsIndex.getProductList().take(PAGE_SIZE)
         emit(ProductsResult.Cached(sortProductsByName(cachedProducts)))
@@ -84,7 +84,6 @@ productsIndex.clearCache()
         val fetchResult = fetchProducts()
 
         if (fetchResult.isSuccess) {
-            productsIndex.storeProductList(remoteProducts.map { it.remoteId })
             emit(ProductsResult.Remote(Result.success(sortProductsByName(productsIndex.getProductList()))))
         } else {
             emit(ProductsResult.Remote(Result.failure(fetchResult.exceptionOrNull() ?: Exception("Unknown error"))))
@@ -122,7 +121,7 @@ productsIndex.clearCache()
             offset.addAndGet(NORMAL_PAGE_SIZE)
 
             productsCache.addAll(products)
-            productsIndex.storeProductList(moreProducts.map { it.remoteId })
+            productsIndex.storeProductList(products.map { it.remoteId })
             Result.success(sortProductsByName(productsIndex.getProductList()))
         } else {
             result.logFailure()
