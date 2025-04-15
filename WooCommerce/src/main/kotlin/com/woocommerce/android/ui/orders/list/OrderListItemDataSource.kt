@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.list
 
 import com.woocommerce.android.R
+import com.woocommerce.android.config.RemoteConfigRepository
 import com.woocommerce.android.extensions.getBillingName
 import com.woocommerce.android.model.TimeGroup
 import com.woocommerce.android.model.TimeGroup.GROUP_FUTURE
@@ -27,6 +28,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderListPayload
 import org.wordpress.android.util.DateTimeUtils
 import java.util.Date
+import javax.inject.Inject
 
 /**
  * Works with a [androidx.paging.PagedList] by providing the logic needed to fetch the data used to populate
@@ -36,13 +38,14 @@ import java.util.Date
  * in FluxC to get a better understanding of how this works with the underlying internal list management code.
  */
 @Suppress("LongParameterList")
-class OrderListItemDataSource(
+class OrderListItemDataSource @Inject constructor(
     private val dispatcher: Dispatcher,
     private val orderStore: WCOrderStore,
     private val networkStatus: NetworkStatus,
     private val fetcher: FetchOrdersRepository,
     private val resourceProvider: ResourceProvider,
-    private val dateUtils: DateUtils
+    private val dateUtils: DateUtils,
+    private val remoteConfigRepository: RemoteConfigRepository
 ) : ListItemDataSourceInterface<WCOrderListDescriptor, OrderListItemIdentifier, OrderListItemUIType> {
     override fun getItemsAndFetchIfNecessary(
         listDescriptor: WCOrderListDescriptor,
@@ -182,7 +185,11 @@ class OrderListItemDataSource(
     }
 
     override fun fetchList(listDescriptor: WCOrderListDescriptor, offset: Long) {
-        val fetchOrderListPayload = FetchOrderListPayload(listDescriptor, offset)
+        val fetchOrderListPayload = FetchOrderListPayload(
+            listDescriptor = listDescriptor,
+            offset = offset,
+            useAppPasswordsForJetpackSites = remoteConfigRepository.isJetpackAppPasswordsExperimentEnabled()
+        )
         dispatcher.dispatch(WCOrderActionBuilder.newFetchOrderListAction(fetchOrderListPayload))
     }
 

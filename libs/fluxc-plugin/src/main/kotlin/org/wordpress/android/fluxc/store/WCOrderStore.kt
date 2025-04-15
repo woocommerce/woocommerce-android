@@ -13,7 +13,6 @@ import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.generated.ListActionBuilder
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
-import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderListDescriptor
 import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
@@ -34,6 +33,7 @@ import org.wordpress.android.fluxc.persistence.OrderSqlUtils
 import org.wordpress.android.fluxc.persistence.dao.MetaDataDao
 import org.wordpress.android.fluxc.persistence.dao.OrderNotesDao
 import org.wordpress.android.fluxc.persistence.dao.OrdersDaoDecorator
+import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.fluxc.persistence.entity.OrderNoteEntity
 import org.wordpress.android.fluxc.store.ListStore.FetchedListItemsPayload
 import org.wordpress.android.fluxc.store.ListStore.ListError
@@ -48,7 +48,6 @@ import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrdersStatusResult.F
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.AppLog.T.API
-import java.util.Calendar
 import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -78,7 +77,7 @@ class WCOrderStore @Inject constructor(
     class FetchOrderListPayload(
         val listDescriptor: WCOrderListDescriptor,
         val offset: Long,
-        val requestStartTime: Calendar = Calendar.getInstance()
+        val useAppPasswordsForJetpackSites: Boolean
     ) : Payload<BaseNetworkError>()
 
     class FetchOrdersByIdsPayload(
@@ -105,13 +104,12 @@ class WCOrderStore @Inject constructor(
         var orderSummaries: List<WCOrderSummaryModel> = emptyList(),
         var loadedMore: Boolean = false,
         var canLoadMore: Boolean = false,
-        val requestStartTime: Calendar
+        val requestDurationMs: Long = 0,
     ) : Payload<OrderError>() {
         constructor(
             error: OrderError,
-            listDescriptor: WCOrderListDescriptor,
-            requestStartTime: Calendar
-        ) : this(listDescriptor, requestStartTime = requestStartTime) {
+            listDescriptor: WCOrderListDescriptor
+        ) : this(listDescriptor, requestDurationMs = 0) {
             this.error = error
         }
     }
@@ -566,7 +564,7 @@ class WCOrderStore @Inject constructor(
         wcOrderRestClient.fetchOrderListSummaries(
             listDescriptor = payload.listDescriptor,
             offset = payload.offset,
-            requestStartTime = payload.requestStartTime
+            useAppPasswordsForJetpackSites = payload.useAppPasswordsForJetpackSites
         )
     }
 
@@ -944,11 +942,10 @@ class WCOrderStore @Inject constructor(
             fetchOutdatedOrMissingOrders(payload.listDescriptor.site, payload.orderSummaries)
         }
 
-        val duration = Calendar.getInstance().timeInMillis - payload.requestStartTime.timeInMillis
         emitChange(
             OnOrderSummariesFetched(
                 listDescriptor = payload.listDescriptor,
-                duration = duration,
+                duration = payload.requestDurationMs,
                 error = payload.error
             )
         )

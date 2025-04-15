@@ -30,7 +30,6 @@ import org.wordpress.android.fluxc.UnitTestUtils
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder.newFetchedOrderListAction
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
-import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderListDescriptor
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
@@ -46,6 +45,7 @@ import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.fluxc.persistence.dao.MetaDataDao
 import org.wordpress.android.fluxc.persistence.dao.OrderNotesDao
 import org.wordpress.android.fluxc.persistence.dao.OrdersDaoDecorator
+import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.fluxc.store.InsertOrder
 import org.wordpress.android.fluxc.store.WCOrderFetcher
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -58,7 +58,6 @@ import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderErrorType
 import org.wordpress.android.fluxc.store.WCOrderStore.RemoteOrderPayload
 import org.wordpress.android.fluxc.tools.initCoroutineEngine
-import java.util.Calendar
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -314,7 +313,6 @@ class WCOrderStoreTest {
                 newFetchedOrderListAction(
                     FetchOrderListResponsePayload(
                         WCOrderListDescriptor(site = site),
-                        requestStartTime = Calendar.getInstance(),
                         orderSummaries = upToDate.summaries + outdated.summaries + missing.summaries
                     )
                 )

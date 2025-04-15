@@ -65,6 +65,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
+import dagger.Lazy
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
@@ -99,12 +100,10 @@ class OrderListViewModel @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
     private val orderListRepository: OrderListRepository,
     private val orderDetailRepository: OrderDetailRepository,
-    private val orderStore: WCOrderStore,
     private val listStore: ListStore,
     private val networkStatus: NetworkStatus,
     private val dispatcher: Dispatcher,
     private val selectedSite: SelectedSite,
-    private val fetcher: FetchOrdersRepository,
     private val resourceProvider: ResourceProvider,
     private val getWCOrderListDescriptorWithFilters: GetWCOrderListDescriptorWithFilters,
     private val getWCOrderListDescriptorWithFiltersAndSearchQuery: GetWCOrderListDescriptorWithFiltersAndSearchQuery,
@@ -118,7 +117,8 @@ class OrderListViewModel @Inject constructor(
     private val showTestNotification: ShowTestNotification,
     private val dateUtils: DateUtils,
     private val shouldUpdateOrdersList: ShouldUpdateOrdersList,
-    private val observeOrdersListLastUpdate: ObserveOrdersListLastUpdate
+    private val observeOrdersListLastUpdate: ObserveOrdersListLastUpdate,
+    private val dataSourceLazyProvider: Lazy<OrderListItemDataSource>,
 ) : ScopedViewModel(savedState), LifecycleOwner {
     companion object {
         const val BULK_UPDATE_COUNT_LIMIT = 100
@@ -136,16 +136,8 @@ class OrderListViewModel @Inject constructor(
     internal var ordersPagedListWrapper: PagedListWrapper<OrderListItemUIType>? = null
     internal var activePagedListWrapper: PagedListWrapper<OrderListItemUIType>? = null
 
-    private val dataSource by lazy {
-        OrderListItemDataSource(
-            dispatcher,
-            orderStore,
-            networkStatus,
-            fetcher,
-            resourceProvider,
-            dateUtils
-        )
-    }
+    private val dataSource
+        get() = dataSourceLazyProvider.get()
 
     /**
      * Saving more data than necessary into the SavedState has associated risks which were not known at the time this
