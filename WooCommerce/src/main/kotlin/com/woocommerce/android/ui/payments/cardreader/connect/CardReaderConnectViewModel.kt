@@ -256,6 +256,14 @@ class CardReaderConnectViewModel @Inject constructor(
                 BuildConfig.DEBUG,
             )
         }
+        cardReaderManager.setupTapToPayUx(
+            CardReaderManager.TapToPayUxConfig(
+                primaryColor = R.color.color_primary,
+                successColor = R.color.woo_green_50,
+                errorColor = R.color.color_error,
+                isDarkMode = resourceProvider.isDarkMode(),
+            )
+        )
         launch {
             startScanningIfNotStarted()
         }
@@ -370,14 +378,6 @@ class CardReaderConnectViewModel @Inject constructor(
         } else {
             when (arguments.cardReaderType) {
                 BUILT_IN -> {
-                    cardReaderManager.setupTapToPayUx(
-                        CardReaderManager.TapToPayUxConfig(
-                            primaryColor = R.color.color_primary,
-                            successColor = R.color.woo_green_50,
-                            errorColor = R.color.color_error,
-                            isDarkMode = resourceProvider.isDarkMode(),
-                        )
-                    )
                     connectToReader(availableReaders[0])
                 }
                 EXTERNAL -> viewState.value = when (availableReaders.size) {
