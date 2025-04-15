@@ -4,8 +4,11 @@ import com.woocommerce.android.WooException
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
@@ -17,59 +20,63 @@ import javax.inject.Singleton
 @Singleton
 class WooPosSearchProductsDataSource @Inject constructor(
     private val productStore: WCProductStore,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val productsCache: WooPosProductsCache,
+    private val searchResultsIndex: WooPosSearchResultsIndex,
+    private val searchPredicate: ProductSearchPredicate,
 ) {
     companion object {
-        private const val PAGE_SIZE = 25
-        private const val MAX_CACHE_SIZE = 1000
+        private const val PAGE_SIZE = 15
     }
 
-    private val canLoadMore = AtomicBoolean(true)
-    private val searchResultsCache =
-        object : LinkedHashMap<String, List<Product>>(16, 0.75f, true) {
-            override fun removeEldestEntry(eldest: Map.Entry<String, List<Product>>): Boolean {
-                return size > MAX_CACHE_SIZE
-            }
-        }
+    private val canLoadMore = AtomicBoolean(false)
 
     val hasMorePages: Boolean
         get() = canLoadMore.get()
 
     fun searchProducts(query: String): Flow<ProductsResult> = flow {
-        val cachedResults = getCachedSearchResults(query)
-        emit(ProductsResult.Cached(cachedResults))
+        coroutineScope {
+            searchResultsIndex.clearCache()
 
-        val remoteResults = remoteSearch(query)
-        remoteResults.fold(
-            onSuccess = { result ->
-                canLoadMore.set(result.canLoadMore)
-                updateSearchResultsCache(query, result.products)
-                emit(ProductsResult.Remote(Result.success(result.products)))
-            },
-            onFailure = { error ->
-                emit(ProductsResult.Remote(Result.failure(error)))
+            val localSearchDeferred = async {
+                productsCache.getAll().filter(searchPredicate(query)).take(PAGE_SIZE)
             }
-        )
-    }.flowOn(Dispatchers.IO)
+            val remoteSearchDeferred = async { remoteSearch(query) }
 
-    private fun getCachedSearchResults(query: String): List<Product> {
-        return searchResultsCache[query.lowercase()] ?: emptyList()
-    }
+            val localResults = localSearchDeferred.await()
+            if (localResults.isNotEmpty()) {
+                emit(ProductsResult.Cached(localResults))
+            }
+
+            val remoteResults = remoteSearchDeferred.await()
+            remoteResults.fold(
+                onSuccess = { result ->
+                    canLoadMore.set(result.canLoadMore)
+                    productsCache.addAll(result.products)
+                    searchResultsIndex.storeSearchResults(query, result.products.map { it.remoteId })
+                    emit(ProductsResult.Remote(Result.success(result.products)))
+                },
+                onFailure = { error ->
+                    emit(ProductsResult.Remote(Result.failure(error)))
+                }
+            )
+        }
+    }.flowOn(Dispatchers.IO)
 
     suspend fun loadMore(query: String): Result<List<Product>> {
         if (!canLoadMore.get()) {
-            return Result.success(getCachedSearchResults(query))
+            return Result.success(searchResultsIndex.getSearchResults(query))
         }
 
-        val currentResults = searchResultsCache[query.lowercase()] ?: emptyList()
+        val currentResults = searchResultsIndex.getSearchResults(query)
         val offset = currentResults.size
 
         return remoteSearch(query, offset).fold(
             onSuccess = { result ->
                 canLoadMore.set(result.canLoadMore)
-                val combinedResults = currentResults + result.products
-                updateSearchResultsCache(query, combinedResults)
-                Result.success(combinedResults)
+                productsCache.addAll(result.products)
+                searchResultsIndex.storeSearchResults(query, result.products.map { it.remoteId })
+                Result.success(searchResultsIndex.getSearchResults(query))
             },
             onFailure = { error ->
                 Result.failure(error)
@@ -77,8 +84,7 @@ class WooPosSearchProductsDataSource @Inject constructor(
         )
     }
 
-    fun getProductById(productId: Long): Product? =
-        searchResultsCache.values.flatten().find { it.remoteId == productId }
+    suspend fun getProductById(productId: Long): Product? = productsCache.getProductById(productId)
 
     private suspend fun remoteSearch(
         searchQuery: String,
@@ -106,14 +112,6 @@ class WooPosSearchProductsDataSource @Inject constructor(
                 )
             }
         }
-    }
-
-    private fun updateSearchResultsCache(query: String, results: List<Product>) {
-        searchResultsCache[query.lowercase()] = results
-    }
-
-    fun getPopularProducts(): List<Product> {
-        return searchResultsCache.entries.firstOrNull()?.value?.shuffled() ?: emptyList()
     }
 
     sealed class ProductsResult {
