@@ -39,7 +39,7 @@ class WooPosSearchProductsDataSource @Inject constructor(
             searchResultsIndex.clearCache()
 
             val localSearchDeferred = async {
-                productsCache.getAll().filter(searchPredicate(query)).take(PAGE_SIZE)
+                productsCache.getAll().filter(searchPredicate(query)).sortedBy { it.name }.take(PAGE_SIZE)
             }
             val remoteSearchDeferred = async { remoteSearch(query) }
 
@@ -76,15 +76,13 @@ class WooPosSearchProductsDataSource @Inject constructor(
                 canLoadMore.set(result.canLoadMore)
                 productsCache.addAll(result.products)
                 searchResultsIndex.storeSearchResults(query, result.products.map { it.remoteId })
-                Result.success(searchResultsIndex.getSearchResults(query))
+                Result.success(searchResultsIndex.getSearchResults(query).sortedBy { it.name })
             },
             onFailure = { error ->
                 Result.failure(error)
             }
         )
     }
-
-    suspend fun getProductById(productId: Long): Product? = productsCache.getProductById(productId)
 
     private suspend fun remoteSearch(
         searchQuery: String,
