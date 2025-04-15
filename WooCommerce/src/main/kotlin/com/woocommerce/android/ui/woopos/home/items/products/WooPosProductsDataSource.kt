@@ -16,6 +16,8 @@ import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
 import javax.inject.Singleton
 
+private const val PAGE_SIZE = 25 // Matches [ProductListHandler]'s PAGE_SIZE
+
 @Singleton
 class WooPosProductsDataSource @Inject constructor(
     private val handler: ProductListHandler,
@@ -31,7 +33,7 @@ class WooPosProductsDataSource @Inject constructor(
         }
         productsIndex.clearCache()
 
-        val cachedProducts = productsIndex.getProductList()
+        val cachedProducts = productsIndex.getProductList().take(PAGE_SIZE)
         emit(ProductsResult.Cached(sortProductsByName(cachedProducts)))
 
         val result = handler.loadFromCacheAndFetch(
