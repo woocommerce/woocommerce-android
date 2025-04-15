@@ -18,8 +18,6 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.collections.mapValues
-import kotlin.getValue
 
 @HiltViewModel
 class WooShippingSplitShipmentViewModel @Inject constructor(
@@ -34,6 +32,7 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
     val selectableItems: MutableStateFlow<Map<Int, SelectableShippableItemsUI>?> = MutableStateFlow(null)
 
     private val shipmentSelected = MutableStateFlow(navArgs.shipmentArgs.shipments.keys.first())
+    private val removeShipmentSheet: MutableStateFlow<Int?> = MutableStateFlow(null)
     private val splitMessage: MutableStateFlow<SplitShipmentMessage?> = MutableStateFlow(null)
 
     init {
@@ -57,8 +56,9 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
     val viewState = combine(
         shipmentSelected,
         selectableItems.filterNotNull(),
+        removeShipmentSheet,
         splitMessage
-    ) { shipmentSelected, selectableItems, message ->
+    ) { shipmentSelected, selectableItems, sheet, message ->
         SplitShipmentViewState(
             shipmentSelected = shipmentSelected,
             selectableItems = selectableItems,
@@ -67,6 +67,7 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
                 shipments = currentShipments.value,
                 selection = selectableItems
             ),
+            removeShipmentSheet = sheet,
             splitMessage = message
         )
     }.asLiveData()
@@ -81,6 +82,10 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
 
     fun onUpdateSelectedShipment(shipmentKey: Int) {
         shipmentSelected.value = shipmentKey
+    }
+
+    fun onRemoveShipment(shipmentKey: Int) {
+        removeShipmentSheet.value = shipmentKey
     }
 
     fun onUpdateSelection(
@@ -131,6 +136,7 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
         val shipmentSelected: Int,
         val selectableItems: Map<Int, SelectableShippableItemsUI>,
         val splitMovements: List<SplitMovement> = emptyList(),
+        val removeShipmentSheet: Int? = null,
         val splitMessage: SplitShipmentMessage? = null
     )
 
