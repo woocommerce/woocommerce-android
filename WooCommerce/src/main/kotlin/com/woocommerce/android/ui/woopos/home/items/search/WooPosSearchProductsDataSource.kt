@@ -26,7 +26,7 @@ class WooPosSearchProductsDataSource @Inject constructor(
     private val searchPredicate: ProductSearchPredicate,
 ) {
     companion object {
-        private const val PAGE_SIZE = 100
+        private const val PAGE_SIZE = 15
     }
 
     private val canLoadMore = AtomicBoolean(false)
@@ -55,9 +55,6 @@ class WooPosSearchProductsDataSource @Inject constructor(
                     emit(ProductsResult.Remote(Result.success(result.products)))
                 },
                 onFailure = { error ->
-                    if (localResults.isNotEmpty()) {
-                        searchResultsIndex.storeSearchResults(query, localResults.map { it.remoteId })
-                    }
                     emit(ProductsResult.Remote(Result.failure(error)))
                 }
             )

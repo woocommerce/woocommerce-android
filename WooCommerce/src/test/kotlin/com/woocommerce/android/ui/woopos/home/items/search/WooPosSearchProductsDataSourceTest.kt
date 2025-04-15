@@ -14,6 +14,7 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
@@ -71,6 +72,28 @@ class WooPosSearchProductsDataSourceTest {
             val result = awaitItem()
             assertThat(result).isInstanceOf(WooPosSearchProductsDataSource.ProductsResult.Cached::class.java)
             assertThat((result as WooPosSearchProductsDataSource.ProductsResult.Cached).products).isEqualTo(products)
+            verify(searchResults).storeSearchResults(query, products.map { it.remoteId })
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `given more products than page size, when search products called, then should limit local results to page size`() = runTest {
+        // GIVEN
+        val query = "test"
+        val manyProducts = (1..20).map { ProductTestUtils.generateProduct(productId = it.toLong()) }
+        whenever(wooPosProductsCache.getAll()).thenReturn(manyProducts)
+        whenever(
+            productStore.searchProducts(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull())
+        )
+            .thenReturn(WooResult(ProductSearchResult(emptyList(), false)))
+
+        // WHEN
+        sut.searchProducts(query).test {
+            // THEN
+            val result = awaitItem()
+            assertThat(result).isInstanceOf(WooPosSearchProductsDataSource.ProductsResult.Cached::class.java)
+            assertThat((result as WooPosSearchProductsDataSource.ProductsResult.Cached).products.size).isEqualTo(15)
             cancelAndIgnoreRemainingEvents()
         }
     }
