@@ -3,6 +3,7 @@ package org.wordpress.android.fluxc.store
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
+import com.wellsql.generated.WCProductModelTable
 import kotlinx.coroutines.flow.Flow
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -47,6 +48,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductVariatio
 import org.wordpress.android.fluxc.persistence.ProductSqlUtils
 import org.wordpress.android.fluxc.persistence.ProductStorageHelper
 import org.wordpress.android.fluxc.persistence.dao.AddonsDao
+import org.wordpress.android.fluxc.persistence.dao.ProductsDao
 import org.wordpress.android.fluxc.store.WCProductStore.ProductCategorySorting.NAME_ASC
 import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_ASC
@@ -67,7 +69,8 @@ class WCProductStore @Inject constructor(
     private val coroutineEngine: CoroutineEngine,
     private val addonsDao: AddonsDao,
     private val productStorageHelper: ProductStorageHelper,
-    private val logger: AppLogWrapper
+    private val logger: AppLogWrapper,
+    private val productsDao: ProductsDao,
 ) : Store(dispatcher) {
     companion object {
         const val NUM_REVIEWS_PER_FETCH = 25
@@ -1044,11 +1047,20 @@ class WCProductStore @Inject constructor(
         site: SiteModel,
         filterOptions: Map<ProductFilterOption, String> = emptyMap(),
         excludeSampleProducts: Boolean = false
-    ): Flow<Long> = ProductSqlUtils.observeProductsCount(
-        site = site,
-        filterOptions = filterOptions,
+    ): Flow<Long> = productsDao.observeProductsCount(
+        localSiteId = site.id,
+        status = filterOptions[ProductFilterOption.STATUS],
+        stockStatus = filterOptions[ProductFilterOption.STOCK_STATUS],
+        type = filterOptions[ProductFilterOption.TYPE],
+        category = filterOptions[ProductFilterOption.CATEGORY]?.let { categoryFilter(it) },
         excludeSampleProducts = excludeSampleProducts
     )
+
+    private fun categoryFilter(jsonCategory: String): String {
+        // Building a custom filter, because in the table a product's categories are saved as JSON string, e.g:
+        // [{"id":1377,"name":"Decor","slug":"decor"},{"id":1374,"name":"Hoodies","slug":"hoodies"}]
+        return "\"id\":${jsonCategory},"
+    }
 
     fun observeVariations(site: SiteModel, productId: Long): Flow<List<WCProductVariationModel>> =
         ProductSqlUtils.observeVariations(site, productId)

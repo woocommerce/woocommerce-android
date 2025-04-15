@@ -54,21 +54,6 @@ object ProductSqlUtils {
 
     private val gson by lazy { Gson() }
 
-    fun observeProductsCount(
-        site: SiteModel,
-        filterOptions: Map<ProductFilterOption, String> = emptyMap(),
-        excludeSampleProducts: Boolean = false
-    ): Flow<Long> {
-        return productsUpdatesTrigger
-            .onStart { emit(Unit) }
-            .debounce(DEBOUNCE_DELAY_FOR_OBSERVERS)
-            .mapLatest {
-                getProductCountForSite(site, filterOptions, excludeSampleProducts)
-            }
-            .distinctUntilChanged()
-            .flowOn(Dispatchers.IO)
-    }
-
     fun observeProducts(
         site: SiteModel,
         sortType: ProductSorting = DEFAULT_PRODUCT_SORTING,
@@ -460,26 +445,6 @@ object ProductSqlUtils {
                 .also(::triggerVariationsUpdateIfNeeded)
     }
 
-    fun getProductCountForSite(
-        site: SiteModel,
-        filterOptions: Map<ProductFilterOption, String> = emptyMap(),
-        excludeSampleProducts: Boolean = false
-    ): Long {
-        return WellSql.select(WCProductModel::class.java)
-            .where()
-            .beginGroup()
-            .equals(WCProductModelTable.LOCAL_SITE_ID, site.id)
-            .applyProductFilterOptions(filterOptions)
-            .apply {
-                if (excludeSampleProducts) {
-                    equals(WCProductModelTable.IS_SAMPLE_PRODUCT, false)
-                }
-            }
-            .endGroup()
-            .endWhere()
-            .count()
-    }
-
     fun insertOrUpdateProductReviews(productReviews: List<WCProductReviewModel>): Int {
         var rowsAffected = 0
         executeInTransaction {
@@ -851,18 +816,6 @@ object ProductSqlUtils {
                 .where().beginGroup()
                 .equals(WCProductTagModelTable.LOCAL_SITE_ID, localSiteId)
                 .equals(WCProductTagModelTable.NAME, tagName)
-                .endGroup().endWhere()
-                .asModel.firstOrNull()
-    }
-
-    fun getProductTagByRemoteId(
-        remoteTagId: Long,
-        localSiteId: Int
-    ): WCProductTagModel? {
-        return WellSql.select(WCProductTagModel::class.java)
-                .where().beginGroup()
-                .equals(WCProductTagModelTable.REMOTE_TAG_ID, remoteTagId)
-                .equals(WCProductTagModelTable.LOCAL_SITE_ID, localSiteId)
                 .endGroup().endWhere()
                 .asModel.firstOrNull()
     }
