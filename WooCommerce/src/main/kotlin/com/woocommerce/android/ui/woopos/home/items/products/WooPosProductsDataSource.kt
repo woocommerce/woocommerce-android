@@ -57,6 +57,7 @@ class WooPosProductsDataSource @Inject constructor(
                 val productsList = result.model ?: emptyList()
                 val products = productsList.map { it.toAppModel() }
 
+                productsIndex.storeProductList(products.map { it.remoteId })
                 productsToFetch.addAll(products)
 
                 hasMoreToFetch = products.size == PRE_POPULATION_PAGE_SIZE
