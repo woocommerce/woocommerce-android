@@ -78,13 +78,13 @@ class WooPosProductsDataSource @Inject constructor(
         }
         productsIndex.clearCache()
 
-        val cachedProducts = sortProductsByName(productsCache.getAll()).take(PAGE_SIZE)
+        val cachedProducts = productsCache.getAll().sortedBy { it.name }.take(PAGE_SIZE)
         emit(ProductsResult.Cached(cachedProducts))
 
         val fetchResult = fetchProducts()
 
         if (fetchResult.isSuccess) {
-            emit(ProductsResult.Remote(Result.success(sortProductsByName(productsIndex.getProductList()))))
+            emit(ProductsResult.Remote(Result.success(fetchResult.getOrThrow())))
         } else {
             emit(ProductsResult.Remote(Result.failure(fetchResult.exceptionOrNull() ?: Exception("Unknown error"))))
         }
@@ -92,13 +92,13 @@ class WooPosProductsDataSource @Inject constructor(
 
     suspend fun loadMore(): Result<List<Product>> = withContext(Dispatchers.IO) {
         if (!canLoadMore.get()) {
-            return@withContext Result.success(sortProductsByName(productsIndex.getProductList()))
+            return@withContext Result.success(productsIndex.getProductList().sortedBy { it.name })
         }
 
         val fetchResult = fetchProducts()
 
         if (fetchResult.isSuccess) {
-            Result.success(sortProductsByName(productsIndex.getProductList()))
+            Result.success(fetchResult.getOrThrow())
         } else {
             fetchResult
         }
@@ -122,7 +122,7 @@ class WooPosProductsDataSource @Inject constructor(
 
             productsCache.addAll(products)
             productsIndex.storeProductList(products.map { it.remoteId })
-            Result.success(sortProductsByName(productsIndex.getProductList()))
+            Result.success(productsIndex.getProductList().sortedBy { it.name })
         } else {
             result.logFailure()
             Result.failure(WooException(result.error))
@@ -140,10 +140,6 @@ class WooPosProductsDataSource @Inject constructor(
         WCProductStore.IncludeType.Simple,
         WCProductStore.IncludeType.Variable
     )
-
-    private fun sortProductsByName(products: List<Product>): List<Product> {
-        return products.sortedBy { it.name }
-    }
 
     private fun WooResult<*>.logFailure() {
         val errorMessage = error?.message ?: "Unknown error"
