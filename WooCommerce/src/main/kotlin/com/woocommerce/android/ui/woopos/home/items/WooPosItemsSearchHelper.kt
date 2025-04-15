@@ -45,19 +45,20 @@ class WooPosItemsSearchHelper @Inject constructor(
                     }
 
                     is ParentToChildrenEvent.SearchEvent.RecentSearchSelected -> {
-                        onSearchChanged(event.query)
+                        onSearchChanged(event.query, event.query.length)
                     }
 
                     is ParentToChildrenEvent.BackFromCheckoutToCartClicked -> Unit
                     is ParentToChildrenEvent.ItemClickedInProductSelector -> Unit
                     is ParentToChildrenEvent.CheckoutClicked -> Unit
                     is ParentToChildrenEvent.SearchEvent.ChangedQuery -> Unit
+                    is ParentToChildrenEvent.OrderCreated -> Unit
                 }
             }
         }
     }
 
-    fun onSearchChanged(newQuery: String) {
+    fun onSearchChanged(newQuery: String, cursorPosition: Int) {
         coroutineScope.launch {
             childToParentEventSender.sendToParent(
                 ChildToParentEvent.SearchEvent.QueryChanged(query = newQuery)
@@ -74,7 +75,7 @@ class WooPosItemsSearchHelper @Inject constructor(
                 currentState.copy(
                     search = WooPosItemsViewState.Content.SearchState.Visible(
                         state = WooPosSearchInputState.Open(
-                            input = WooPosSearchInputState.Open.Input.Query(newQuery),
+                            input = WooPosSearchInputState.Open.Input.Query(newQuery, cursorPosition),
                             isLoading = false,
                             hasAnimationPlayed = currentOpenState.hasAnimationPlayed
                         )

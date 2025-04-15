@@ -1,14 +1,10 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.wc
 
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.network.BaseRequest
-import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
+import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetwork
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsNetwork
 import org.wordpress.android.fluxc.network.rest.wpcom.JetpackTunnelWPAPINetwork
-import org.wordpress.android.fluxc.network.rest.wpcom.jetpacktunnel.JetpackTunnelGsonRequestBuilder.JetpackResponse
-import org.wordpress.android.fluxc.network.rest.wpcom.jetpacktunnel.JetpackTunnelGsonRequestBuilder.JetpackResponse.JetpackError
-import org.wordpress.android.fluxc.network.rest.wpcom.jetpacktunnel.JetpackTunnelGsonRequestBuilder.JetpackResponse.JetpackSuccess
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -24,81 +20,72 @@ import javax.inject.Singleton
 class WooNetwork @Inject constructor(
     private val jetpackTunnelWPAPINetwork: JetpackTunnelWPAPINetwork,
     private val applicationPasswordsNetwork: ApplicationPasswordsNetwork
-) {
-    suspend fun <T : Any> executeGetGsonRequest(
+) : WPAPINetwork {
+    override suspend fun <T : Any> executeGetGsonRequest(
         site: SiteModel,
         path: String,
         clazz: Class<T>,
-        params: Map<String, String> = emptyMap(),
-        enableCaching: Boolean = false,
-        cacheTimeToLive: Int = BaseRequest.DEFAULT_CACHE_LIFETIME,
-        forced: Boolean = false,
-        requestTimeout: Int = BaseRequest.DEFAULT_REQUEST_TIMEOUT,
-        retries: Int = BaseRequest.DEFAULT_MAX_RETRIES
-    ): WPAPIResponse<T> {
-        return when (site.origin) {
-            SiteModel.ORIGIN_WPCOM_REST -> jetpackTunnelWPAPINetwork.executeGetGsonRequest(
-                site, path, clazz, params, enableCaching, cacheTimeToLive, forced, requestTimeout, retries
-            ).toWPAPIResponse()
-            SiteModel.ORIGIN_XMLRPC, SiteModel.ORIGIN_WPAPI -> applicationPasswordsNetwork.executeGetGsonRequest(
-                site, path, clazz, params, enableCaching, cacheTimeToLive, forced, requestTimeout, retries
-            )
-            else -> error("Site with unsupported origin")
-        }
-    }
+        params: Map<String, String>,
+        enableCaching: Boolean,
+        cacheTimeToLive: Int,
+        forced: Boolean,
+        requestTimeout: Int,
+        retries: Int
+    ): WPAPIResponse<T> = site.getDelegate()
+        .executeGetGsonRequest(
+            site = site,
+            path = path,
+            clazz = clazz,
+            params = params,
+            enableCaching = enableCaching,
+            cacheTimeToLive = cacheTimeToLive,
+            forced = forced,
+            requestTimeout = requestTimeout,
+            retries = retries
+        )
 
-    suspend fun <T : Any> executePostGsonRequest(
+    override suspend fun <T : Any> executePostGsonRequest(
         site: SiteModel,
         path: String,
         clazz: Class<T>,
-        body: Map<String, Any> = emptyMap()
-    ): WPAPIResponse<T> {
-        return when (site.origin) {
-            SiteModel.ORIGIN_WPCOM_REST -> jetpackTunnelWPAPINetwork.executePostGsonRequest(site, path, clazz, body)
-                .toWPAPIResponse()
-            SiteModel.ORIGIN_XMLRPC, SiteModel.ORIGIN_WPAPI -> applicationPasswordsNetwork.executePostGsonRequest(
-                site, path, clazz, body
-            )
-            else -> error("Site with unsupported origin")
-        }
-    }
+        body: Map<String, Any>
+    ): WPAPIResponse<T> = site.getDelegate()
+        .executePostGsonRequest(
+            site = site,
+            path = path,
+            clazz = clazz,
+            body = body
+        )
 
-    suspend fun <T : Any> executePutGsonRequest(
+    override suspend fun <T : Any> executePutGsonRequest(
         site: SiteModel,
         path: String,
         clazz: Class<T>,
-        body: Map<String, Any> = emptyMap()
-    ): WPAPIResponse<T> {
-        return when (site.origin) {
-            SiteModel.ORIGIN_WPCOM_REST -> jetpackTunnelWPAPINetwork.executePutGsonRequest(site, path, clazz, body)
-                .toWPAPIResponse()
-            SiteModel.ORIGIN_XMLRPC, SiteModel.ORIGIN_WPAPI -> applicationPasswordsNetwork.executePutGsonRequest(
-                site, path, clazz, body
-            )
-            else -> error("Site with unsupported origin")
-        }
-    }
+        body: Map<String, Any>
+    ): WPAPIResponse<T> = site.getDelegate()
+        .executePutGsonRequest(
+            site = site,
+            path = path,
+            clazz = clazz,
+            body = body
+        )
 
-    suspend fun <T : Any> executeDeleteGsonRequest(
+    override suspend fun <T : Any> executeDeleteGsonRequest(
         site: SiteModel,
         path: String,
         clazz: Class<T>,
-        params: Map<String, String> = emptyMap()
-    ): WPAPIResponse<T> {
-        return when (site.origin) {
-            SiteModel.ORIGIN_WPCOM_REST -> jetpackTunnelWPAPINetwork.executeDeleteGsonRequest(site, path, clazz, params)
-                .toWPAPIResponse()
-            SiteModel.ORIGIN_XMLRPC, SiteModel.ORIGIN_WPAPI -> applicationPasswordsNetwork.executeDeleteGsonRequest(
-                site, path, clazz, params
-            )
-            else -> error("Site with unsupported origin")
-        }
-    }
-}
+        params: Map<String, String>
+    ): WPAPIResponse<T> = site.getDelegate()
+        .executeDeleteGsonRequest(
+            site = site,
+            path = path,
+            clazz = clazz,
+            params = params
+        )
 
-private fun <T> JetpackResponse<T>.toWPAPIResponse(): WPAPIResponse<T> {
-    return when (this) {
-        is JetpackSuccess -> WPAPIResponse.Success(data)
-        is JetpackError -> WPAPIResponse.Error(WPAPINetworkError(error, errorCode = error.apiError))
+    private fun SiteModel.getDelegate() = when (origin) {
+        SiteModel.ORIGIN_WPCOM_REST -> jetpackTunnelWPAPINetwork
+        SiteModel.ORIGIN_XMLRPC, SiteModel.ORIGIN_WPAPI -> applicationPasswordsNetwork
+        else -> error("Site with unsupported origin")
     }
 }

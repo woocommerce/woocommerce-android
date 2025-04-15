@@ -746,9 +746,9 @@ class WooPosItemsViewModelTestSelectionViewState {
         val query = "test query"
         val viewModel = createViewModel()
 
-        viewModel.onUIEvent(WooPosItemsUIEvent.SearchChanged(query))
+        viewModel.onUIEvent(WooPosItemsUIEvent.SearchChanged(query, 0))
 
-        verify(searchHelper).onSearchChanged(query)
+        verify(searchHelper).onSearchChanged(query, 0)
     }
 
     @Test

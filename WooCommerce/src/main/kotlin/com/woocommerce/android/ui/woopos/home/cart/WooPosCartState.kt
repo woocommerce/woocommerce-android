@@ -43,6 +43,7 @@ enum class WooPosCartStatus {
 @Parcelize
 sealed class WooPosCartItemViewState(open val itemNumber: Int, open val name: String) : Parcelable {
     @Parcelize
+    @Suppress("LongParameterList")
     sealed class Product(
         override val itemNumber: Int,
         open val id: Long,
@@ -50,6 +51,7 @@ sealed class WooPosCartItemViewState(open val itemNumber: Int, open val name: St
         open val price: String,
         open val description: String?,
         open val imageUrl: String?,
+        open val productDoesNotExist: Boolean,
     ) : WooPosCartItemViewState(itemNumber, name), Parcelable {
         @Parcelize
         data class Simple(
@@ -59,7 +61,8 @@ sealed class WooPosCartItemViewState(open val itemNumber: Int, open val name: St
             override val price: String,
             override val description: String?,
             override val imageUrl: String?,
-        ) : Product(itemNumber, id, name, price, description, imageUrl), Parcelable
+            override val productDoesNotExist: Boolean = false,
+        ) : Product(itemNumber, id, name, price, description, imageUrl, productDoesNotExist), Parcelable
 
         @Parcelize
         data class Variation(
@@ -70,7 +73,8 @@ sealed class WooPosCartItemViewState(open val itemNumber: Int, open val name: St
             override val price: String,
             override val description: String?,
             override val imageUrl: String?,
-        ) : Product(itemNumber, id, name, price, description, imageUrl), Parcelable
+            override val productDoesNotExist: Boolean = false,
+        ) : Product(itemNumber, id, name, price, description, imageUrl, productDoesNotExist), Parcelable
     }
 
     @Parcelize
