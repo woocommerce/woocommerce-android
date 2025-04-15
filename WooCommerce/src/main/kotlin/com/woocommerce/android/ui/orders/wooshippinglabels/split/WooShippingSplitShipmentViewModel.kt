@@ -2,7 +2,9 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.split
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.orders.wooshippinglabels.ShippableItemUI
+import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShippingLabelsSnackbarData
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.toSelectableUIModel
 import com.woocommerce.android.util.CurrencyFormatter
@@ -18,8 +20,6 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.collections.mapValues
-import kotlin.getValue
 
 @HiltViewModel
 class WooShippingSplitShipmentViewModel @Inject constructor(
@@ -34,11 +34,12 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
     val selectableItems: MutableStateFlow<Map<Int, SelectableShippableItemsUI>?> = MutableStateFlow(null)
 
     private val shipmentSelected = MutableStateFlow(navArgs.shipmentArgs.shipments.keys.first())
+    private val removeShipmentSheet: MutableStateFlow<Int?> = MutableStateFlow(null)
     private val splitMessage: MutableStateFlow<SplitShipmentMessage?> = MutableStateFlow(null)
 
     init {
         launch {
-            delay(NOTIFICATIONS_DELAY)
+            delay(TOOLTIP_DELAY)
             splitMessage.value = SplitShipmentMessage.Instructions
         }
         launch {
@@ -57,8 +58,9 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
     val viewState = combine(
         shipmentSelected,
         selectableItems.filterNotNull(),
+        removeShipmentSheet,
         splitMessage
-    ) { shipmentSelected, selectableItems, message ->
+    ) { shipmentSelected, selectableItems, sheet, message ->
         SplitShipmentViewState(
             shipmentSelected = shipmentSelected,
             selectableItems = selectableItems,
@@ -67,6 +69,7 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
                 shipments = currentShipments.value,
                 selection = selectableItems
             ),
+            removeShipmentSheet = sheet,
             splitMessage = message
         )
     }.asLiveData()
@@ -80,7 +83,11 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
     }
 
     fun onUpdateSelectedShipment(shipmentKey: Int) {
-        shipmentSelected.value = shipmentKey
+        shipmentSelected.update { shipmentKey }
+    }
+
+    fun onRemoveShipment(shipmentKey: Int) {
+        removeShipmentSheet.value = shipmentKey
     }
 
     fun onUpdateSelection(
@@ -112,6 +119,7 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
     }
 
     fun onUpdateShipment(splitMovement: SplitMovement) {
+        val currentShipmentBackup = currentShipments.value
         currentShipments.update {
             val shipments = it.toMutableMap()
             if (splitMovement.updatedCurrentShipmentItems.isEmpty()) {
@@ -125,17 +133,47 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
                 ?: splitMovement.updatedShipmentItems
             shipments
         }
+
+        val undoAction = {
+            currentShipments.update {
+                if (!currentShipmentBackup.keys.contains(shipmentSelected.value)) {
+                    onUpdateSelectedShipment(currentShipmentBackup.keys.first())
+                }
+                currentShipmentBackup
+            }
+        }
+
+        showUndoSnackbar(splitMovement, undoAction)
+    }
+
+    private fun showUndoSnackbar(splitMovement: SplitMovement, undoAction: () -> Unit) {
+        val snackbarMessage = if (splitMovement.totalItemsToMove > 1) {
+            R.string.woo_shipping_split_shipment_moved_notice_plural
+        } else {
+            R.string.woo_shipping_split_shipment_moved_notice_one
+        }
+
+        splitMessage.value = SplitShipmentMessage.Success(
+            ShippingLabelsSnackbarData(
+                message = snackbarMessage,
+                messageParameters = listOf(splitMovement.totalItemsToMove, splitMovement.updatedShipment + 1),
+                actionLabel = R.string.undo,
+                dismissAction = { splitMessage.value = null },
+                action = undoAction
+            )
+        )
     }
 
     data class SplitShipmentViewState(
         val shipmentSelected: Int,
         val selectableItems: Map<Int, SelectableShippableItemsUI>,
         val splitMovements: List<SplitMovement> = emptyList(),
+        val removeShipmentSheet: Int? = null,
         val splitMessage: SplitShipmentMessage? = null
     )
 
     companion object {
-        const val NOTIFICATIONS_DELAY = 500L
+        private const val TOOLTIP_DELAY = 800L
     }
 }
 
@@ -164,10 +202,7 @@ sealed class SelectableShippableItemUI {
 
 sealed class SplitShipmentMessage {
     data object Instructions : SplitShipmentMessage()
-    data class Success(
-        val message: String,
-        val action: () -> Unit
-    ) : SplitShipmentMessage()
+    data class Success(val snackbarData: ShippingLabelsSnackbarData) : SplitShipmentMessage()
 }
 
 fun List<ShippableItemModel>.combine(other: List<ShippableItemModel>): List<ShippableItemModel> {

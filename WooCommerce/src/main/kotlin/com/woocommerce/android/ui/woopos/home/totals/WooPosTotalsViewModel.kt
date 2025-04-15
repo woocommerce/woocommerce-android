@@ -284,6 +284,7 @@ class WooPosTotalsViewModel @Inject constructor(
                     is ParentToChildrenEvent.ItemClickedInProductSelector,
                     is ParentToChildrenEvent.SearchEvent.ChangedQuery,
                     ParentToChildrenEvent.SearchEvent.Finished,
+                    is ParentToChildrenEvent.OrderCreated,
                     ParentToChildrenEvent.SearchEvent.Started -> Unit
                 }
             }
@@ -417,15 +418,7 @@ class WooPosTotalsViewModel @Inject constructor(
 
             totalsRepository.createOrderFromCartItems(itemClickedDataList = itemClickedDataList)
                 .fold(
-                    onSuccess = { order ->
-                        dataState.value = dataState.value.copy(
-                            orderId = order.id,
-                            orderTotal = order.total
-                        )
-                        uiState.value = buildWooPosTotalsViewState(order)
-                        totalsAnalyticsTracker.trackOrderCreationSuccess()
-                        collectPayment()
-                    },
+                    onSuccess = { order -> handleCreatedOrder(order) },
                     onFailure = { error ->
                         WooLog.e(T.POS, "Order creation failed - $error")
                         uiState.value = WooPosTotalsViewState.Error(
@@ -434,6 +427,48 @@ class WooPosTotalsViewModel @Inject constructor(
                         totalsAnalyticsTracker.trackOrderCreationFailed(error)
                     }
                 )
+        }
+    }
+
+    private suspend fun handleCreatedOrder(order: Order) {
+        notifyCartAboutOrderCreation(order)
+        dataState.value = dataState.value.copy(
+            orderId = order.id,
+            orderTotal = order.total
+        )
+        uiState.value = buildWooPosTotalsViewState(order)
+        totalsAnalyticsTracker.trackOrderCreationSuccess()
+        collectPayment()
+    }
+
+    private fun notifyCartAboutOrderCreation(order: Order) {
+        viewModelScope.launch {
+            childrenToParentEventSender.sendToParent(
+                ChildToParentEvent.OrderCreated(
+                    updatedProducts = order.items.map {
+                        when {
+                            (it.variationId == 0L) -> {
+                                ChildToParentEvent.OrderCreated.ProductInfo.Simple(
+                                    id = it.productId,
+                                    name = it.name,
+                                    price = it.price,
+                                    quantity = it.quantity
+                                )
+                            }
+
+                            else -> {
+                                ChildToParentEvent.OrderCreated.ProductInfo.Variation(
+                                    id = it.productId,
+                                    name = it.name,
+                                    price = it.price,
+                                    quantity = it.quantity,
+                                    variationId = it.variationId
+                                )
+                            }
+                        }
+                    }
+                )
+            )
         }
     }
 

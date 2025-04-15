@@ -31,8 +31,9 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -43,18 +44,25 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.text.toLowerCase
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.annotatedStringRes
+import com.woocommerce.android.ui.compose.component.WCOverflowMenu
 import com.woocommerce.android.ui.compose.component.WCTextButton
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.ExpandableSelectableShippingProduct
 import com.woocommerce.android.ui.orders.wooshippinglabels.ProductsSummary
 import com.woocommerce.android.ui.orders.wooshippinglabels.SelectableShippingProduct
+import com.woocommerce.android.ui.orders.wooshippinglabels.components.SuccessSnackbarHost
 import com.woocommerce.android.ui.orders.wooshippinglabels.split.WooShippingSplitShipmentViewModel.SplitShipmentViewState
 import kotlinx.coroutines.launch
 
@@ -71,6 +79,7 @@ fun WooShippingSplitShipmentScreen(
             onUpdateSelection = viewModel::onUpdateSelection,
             onUpdateShipment = viewModel::onUpdateShipment,
             onUpdateSelectedShipment = viewModel::onUpdateSelectedShipment,
+            onRemoveShipment = viewModel::onRemoveShipment,
             modifier = modifier
         )
     }
@@ -84,8 +93,11 @@ fun WooShippingSplitShipmentScreen(
     onUpdateSelection: (shipmentKey: Int, index: Int, selectedIndexes: Set<Int>?) -> Unit,
     onUpdateShipment: (splitMovement: SplitMovement) -> Unit,
     onUpdateSelectedShipment: (shipmentKey: Int) -> Unit,
+    onRemoveShipment: (shipmentKey: Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val snackbarHostState = remember { SnackbarHostState() }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -106,7 +118,8 @@ fun WooShippingSplitShipmentScreen(
                     )
                 }
             )
-        }
+        },
+        snackbarHost = { SuccessSnackbarHost(snackbarHostState) }
     ) { padding ->
         Surface(
             modifier = modifier
@@ -124,88 +137,23 @@ fun WooShippingSplitShipmentScreen(
                 val shipments = viewState.selectableItems.keys.toList()
 
                 if (shipments.size > 1) {
-                    val pagerState = rememberPagerState { shipments.size }
-                    val scope = rememberCoroutineScope()
-
-                    Column {
-                        LaunchedEffect(pagerState.currentPage) {
-                            onUpdateSelectedShipment(shipments[pagerState.currentPage])
-                        }
-
-                        Row(modifier = modifier.fillMaxWidth()) {
-                            ScrollableTabRow(
-                                selectedTabIndex = pagerState.currentPage,
-                                backgroundColor = MaterialTheme.colors.surface,
-                                contentColor = MaterialTheme.colors.primary,
-                                divider = {},
-                                edgePadding = 0.dp,
-                                modifier = modifier
-                                    .weight(1f)
-                                    .padding(top = 8.dp)
-                            ) {
-                                shipments.forEachIndexed { index, _ ->
-                                    val textColor = if (index == pagerState.currentPage) {
-                                        MaterialTheme.colors.primary
-                                    } else {
-                                        colorResource(id = R.color.color_on_surface_medium)
-                                    }
-                                    Tab(
-                                        text = {
-                                            Text(
-                                                text = stringResource(
-                                                    R.string.woo_shipping_split_shipment_shipment_name,
-                                                    index + 1 // Use 1-based indexing for the shipments
-                                                ),
-                                                color = textColor,
-                                                style = MaterialTheme.typography.subtitle1,
-                                                fontWeight = FontWeight.SemiBold
-                                            )
-                                        },
-                                        selected = pagerState.currentPage == index,
-                                        onClick = {
-                                            scope.launch {
-                                                pagerState.animateScrollToPage(index)
-                                            }
-                                        }
-                                    )
-                                }
-                            }
-                            IconButton(onClick = {}, modifier = modifier.align(Alignment.CenterVertically)) {
-                                Icon(
-                                    imageVector = Icons.Filled.MoreHoriz,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colors.primary
-                                )
-                            }
-                        }
-
-                        HorizontalPager(
-                            state = pagerState,
-                            modifier = modifier.fillMaxSize(),
-                            verticalAlignment = Alignment.Top,
-                            pageSpacing = 16.dp
-                        ) { page ->
-                            viewState.selectableItems.getValue(shipments[page]).let {
-                                SelectableProductsSection(
-                                    shipmentKey = shipments[page],
-                                    shipment = it,
-                                    onUpdateSelection = onUpdateSelection,
-                                    modifier = modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp),
-                                    extraBottomPadding = productsExtraPadding
-                                )
-                            }
-                        }
-                    }
+                    MultipleShipments(
+                        viewState,
+                        shipments,
+                        productsExtraPadding,
+                        onUpdateSelectedShipment,
+                        onUpdateSelection,
+                        onRemoveShipment,
+                        modifier
+                    )
 
                     val onUpdateShipmentAndChangeSelection: (splitMovement: SplitMovement) -> Unit = { splitMovement ->
                         if (splitMovement.isRemoveMovement) {
-                            scope.launch {
-                                val nextPage = shipments.indexOfFirst { it == splitMovement.updatedShipment }
-                                    .takeIf { it != -1 && it < shipments.lastIndex }
-                                    ?: shipments.first { it != splitMovement.currentShipment }
-                                pagerState.animateScrollToPage(nextPage)
-                                onUpdateShipment(splitMovement)
-                            }
+                            val nextPage = shipments.indexOfFirst { it == splitMovement.updatedShipment }
+                                .takeIf { it != -1 && it < shipments.lastIndex }
+                                ?: shipments.first { it != splitMovement.currentShipment }
+                            onUpdateSelectedShipment(shipments[nextPage])
+                            onUpdateShipment(splitMovement)
                         } else {
                             onUpdateShipment(splitMovement)
                         }
@@ -243,6 +191,126 @@ fun WooShippingSplitShipmentScreen(
             }
         }
     }
+
+    val context = LocalContext.current
+    LaunchedEffect(viewState.splitMessage) {
+        if (viewState.splitMessage is SplitShipmentMessage.Success) {
+            val snackbarData = viewState.splitMessage.snackbarData
+
+            @Suppress("SpreadOperator")
+            val result = snackbarHostState.showSnackbar(
+                message = context.getString(
+                    snackbarData.message,
+                    *snackbarData.messageParameters.toTypedArray()
+                ),
+                actionLabel = context.getString(R.string.undo),
+                duration = snackbarData.duration
+            )
+            when (result) {
+                SnackbarResult.ActionPerformed -> snackbarData.action()
+                SnackbarResult.Dismissed -> snackbarData.dismissAction()
+            }
+        }
+    }
+}
+
+@Composable
+private fun MultipleShipments(
+    viewState: SplitShipmentViewState,
+    shipments: List<Int>,
+    productsExtraPadding: Dp,
+    onUpdateSelectedShipment: (shipmentKey: Int) -> Unit,
+    onUpdateSelection: (shipmentKey: Int, index: Int, selectedIndexes: Set<Int>?) -> Unit,
+    onRemoveShipment: (shipmentKey: Int) -> Unit,
+    modifier: Modifier
+) {
+    val pagerState = rememberPagerState { shipments.size }
+    val scope = rememberCoroutineScope()
+
+    Column {
+        LaunchedEffect(pagerState.targetPage) {
+            onUpdateSelectedShipment(shipments[pagerState.targetPage])
+        }
+
+        LaunchedEffect(viewState.shipmentSelected) {
+            val viewStateCurrentPage = shipments.indexOf(viewState.shipmentSelected)
+            if (pagerState.currentPage != viewStateCurrentPage) {
+                pagerState.animateScrollToPage(viewStateCurrentPage)
+            }
+        }
+
+        Row(modifier = modifier.fillMaxWidth()) {
+            ScrollableTabRow(
+                selectedTabIndex = if (pagerState.currentPage < pagerState.pageCount) pagerState.currentPage else 0,
+                backgroundColor = MaterialTheme.colors.surface,
+                contentColor = MaterialTheme.colors.primary,
+                divider = {},
+                edgePadding = 0.dp,
+                modifier = modifier
+                    .weight(1f)
+                    .padding(top = 8.dp)
+            ) {
+                shipments.forEachIndexed { index, _ ->
+                    val textColor = if (index == pagerState.currentPage) {
+                        MaterialTheme.colors.primary
+                    } else {
+                        colorResource(id = R.color.color_on_surface_medium)
+                    }
+                    Tab(
+                        text = {
+                            Text(
+                                text = stringResource(
+                                    R.string.woo_shipping_split_shipment_shipment_name,
+                                    index + 1 // Use 1-based indexing for the shipments
+                                ),
+                                color = textColor,
+                                style = MaterialTheme.typography.subtitle1,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        },
+                        selected = pagerState.currentPage == index,
+                        onClick = {
+                            scope.launch {
+                                pagerState.animateScrollToPage(index)
+                            }
+                        }
+                    )
+                }
+            }
+            WCOverflowMenu(
+                items = shipments.mapIndexed { index, _ -> index },
+                mapper = { shipmentIndex ->
+                    // Example: "Remove shipment 1"
+                    stringResource(
+                        R.string.woo_shipping_split_shipment_shipment_remove,
+                        stringResource(
+                            R.string.woo_shipping_split_shipment_shipment_name,
+                            shipmentIndex + 1
+                        ).toLowerCase(Locale.current)
+                    )
+                },
+                onSelected = onRemoveShipment,
+                modifier = modifier.align(Alignment.CenterVertically)
+            )
+        }
+
+        HorizontalPager(
+            state = pagerState,
+            modifier = modifier.fillMaxSize(),
+            verticalAlignment = Alignment.Top,
+            pageSpacing = 16.dp
+        ) { page ->
+            viewState.selectableItems.getValue(shipments[page]).let {
+                SelectableProductsSection(
+                    shipmentKey = shipments[page],
+                    shipment = it,
+                    onUpdateSelection = onUpdateSelection,
+                    modifier = modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp),
+                    extraBottomPadding = productsExtraPadding
+                )
+            }
+        }
+    }
 }
 
 @Composable
@@ -260,16 +328,11 @@ private fun SplitMessagesSection(
             label = "message_transition",
             enter = slideInVertically(initialOffsetY = { it })
         ) {
-            when (splitMessage) {
-                is SplitShipmentMessage.Instructions -> {
-                    InstructionsMessage(
-                        message = annotatedStringRes(R.string.woo_shipping_split_shipment_instructions),
-                        onClose = onDismissInstructions
-                    )
-                }
-
-                is SplitShipmentMessage.Success -> TODO()
-                null -> {}
+            if (splitMessage is SplitShipmentMessage.Instructions) {
+                InstructionsMessage(
+                    message = annotatedStringRes(R.string.woo_shipping_split_shipment_instructions),
+                    onClose = onDismissInstructions
+                )
             }
         }
         AnimatedVisibility(
@@ -485,4 +548,32 @@ fun SelectableProductsSection(
             }
         }
     }
+}
+
+@Preview
+@Composable
+private fun WooShippingSplitShipmentScreenPreview() = WooThemeWithBackground {
+    WooShippingSplitShipmentScreen(
+        viewState = SplitShipmentViewState(
+            shipmentSelected = 0,
+            selectableItems = mapOf(
+                0 to SelectableShippableItemsUI(
+                    shippableItems = emptyList(),
+                    formattedTotalWeight = "",
+                    formattedTotalPrice = ""
+                ),
+                1 to SelectableShippableItemsUI(
+                    shippableItems = emptyList(),
+                    formattedTotalWeight = "",
+                    formattedTotalPrice = ""
+                )
+            )
+        ),
+        onBack = {},
+        onDismissInstructions = {},
+        onUpdateSelection = { _, _, _ -> },
+        onUpdateShipment = {},
+        onUpdateSelectedShipment = {},
+        onRemoveShipment = {}
+    )
 }
