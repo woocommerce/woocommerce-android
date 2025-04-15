@@ -124,7 +124,7 @@ class WooPosProductsDataSourceTest {
             handler.loadFromCacheAndFetch(any(), any(), any(), any(), any(), any())
         ).thenReturn(Result.success(Unit))
         whenever(productListIndex.getProductList()).thenReturn(emptyList())
-        whenever(productsCache.getAll()).thenReturn(sampleProducts)
+        whenever(productsCache.getAll()).thenReturn(emptyList())
 
         val sut = WooPosProductsDataSource(handler, productsCache, productListIndex)
 
@@ -249,7 +249,7 @@ class WooPosProductsDataSourceTest {
             whenever(
                 handler.loadFromCacheAndFetch(any(), any(), any(), any(), any(), eq(null))
             ).thenReturn(Result.failure(exception))
-            whenever(productsCache.getAll()).thenReturn(sampleProducts)
+            whenever(productsCache.getAll()).thenReturn(emptyList())
 
             val sut = WooPosProductsDataSource(handler, productsCache, productListIndex)
 
@@ -275,7 +275,7 @@ class WooPosProductsDataSourceTest {
             whenever(
                 handler.loadFromCacheAndFetch(any(), any(), any(), any(), any(), any())
             ).thenReturn(Result.success(Unit))
-            whenever(productsCache.getAll()).thenReturn(sampleProducts)
+            whenever(productsCache.getAll()).thenReturn(emptyList())
 
             val sut = WooPosProductsDataSource(handler, productsCache, productListIndex)
 
@@ -358,7 +358,7 @@ class WooPosProductsDataSourceTest {
             whenever(
                 handler.loadFromCacheAndFetch(any(), any(), any(), any(), any(), any())
             ).thenReturn(Result.success(Unit))
-            whenever(productsCache.getAll()).thenReturn(mixedProducts)
+            whenever(productsCache.getAll()).thenReturn(emptyList())
 
             val sut = WooPosProductsDataSource(handler, productsCache, productListIndex)
 
@@ -379,7 +379,7 @@ class WooPosProductsDataSourceTest {
                 ProductTestUtils.generateProduct(
                     productId = 1,
                     productName = "Product 1",
-                    amount = "",
+                    amount = "10.0",
                     productType = "variable",
                 ),
                 ProductTestUtils.generateProduct(
@@ -397,6 +397,7 @@ class WooPosProductsDataSourceTest {
             whenever(
                 handler.loadFromCacheAndFetch(any(), any(), any(), any(), any(), any())
             ).thenReturn(Result.success(Unit))
+            whenever(productsCache.getAll()).thenReturn(emptyList())
             val sut = WooPosProductsDataSource(handler, productsCache, productListIndex)
 
             // WHEN
@@ -413,22 +414,26 @@ class WooPosProductsDataSourceTest {
         // GIVEN
         val mockProductC = mock<Product>()
         whenever(mockProductC.name).thenReturn("C Product")
+        whenever(mockProductC.remoteId).thenReturn(3L)
 
         val mockProductA = mock<Product>()
         whenever(mockProductA.name).thenReturn("A Product")
+        whenever(mockProductA.remoteId).thenReturn(1L)
 
         val mockProductB = mock<Product>()
         whenever(mockProductB.name).thenReturn("B Product")
+        whenever(mockProductB.remoteId).thenReturn(2L)
 
         val customUnsortedProducts = listOf(mockProductC, mockProductA, mockProductB)
+        val sortedProducts = listOf(mockProductA, mockProductB, mockProductC)
 
         whenever(handler.canLoadMore).thenReturn(AtomicBoolean(true))
         whenever(handler.productsFlow).thenReturn(flowOf(customUnsortedProducts))
-        whenever(productListIndex.getProductList()).thenReturn(customUnsortedProducts)
+        whenever(productListIndex.getProductList()).thenReturn(sortedProducts)
         whenever(
             handler.loadFromCacheAndFetch(any(), any(), any(), any(), any(), any())
         ).thenReturn(Result.success(Unit))
-        whenever(productsCache.getAll()).thenReturn(sampleProducts)
+        whenever(productsCache.getAll()).thenReturn(sortedProducts)
 
         val sut = WooPosProductsDataSource(handler, productsCache, productListIndex)
 
