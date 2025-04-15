@@ -83,7 +83,7 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
     }
 
     fun onUpdateSelectedShipment(shipmentKey: Int) {
-        shipmentSelected.value = shipmentKey
+        shipmentSelected.update { shipmentKey }
     }
 
     fun onRemoveShipment(shipmentKey: Int) {
@@ -134,7 +134,14 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
             shipments
         }
 
-        val undoAction = { currentShipments.update { currentShipmentBackup } }
+        val undoAction = {
+            currentShipments.update {
+                if (!currentShipmentBackup.keys.contains(shipmentSelected.value)) {
+                    onUpdateSelectedShipment(currentShipmentBackup.keys.first())
+                }
+                currentShipmentBackup
+            }
+        }
 
         showUndoSnackbar(splitMovement, undoAction)
     }

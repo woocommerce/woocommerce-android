@@ -147,18 +147,13 @@ fun WooShippingSplitShipmentScreen(
                         modifier
                     )
 
-                    val pagerState = rememberPagerState { shipments.size }
-                    val scope = rememberCoroutineScope()
-
                     val onUpdateShipmentAndChangeSelection: (splitMovement: SplitMovement) -> Unit = { splitMovement ->
                         if (splitMovement.isRemoveMovement) {
-                            scope.launch {
-                                val nextPage = shipments.indexOfFirst { it == splitMovement.updatedShipment }
-                                    .takeIf { it != -1 && it < shipments.lastIndex }
-                                    ?: shipments.first { it != splitMovement.currentShipment }
-                                pagerState.animateScrollToPage(nextPage)
-                                onUpdateShipment(splitMovement)
-                            }
+                            val nextPage = shipments.indexOfFirst { it == splitMovement.updatedShipment }
+                                .takeIf { it != -1 && it < shipments.lastIndex }
+                                ?: shipments.first { it != splitMovement.currentShipment }
+                            onUpdateSelectedShipment(shipments[nextPage])
+                            onUpdateShipment(splitMovement)
                         } else {
                             onUpdateShipment(splitMovement)
                         }
@@ -233,13 +228,20 @@ private fun MultipleShipments(
     val scope = rememberCoroutineScope()
 
     Column {
-        LaunchedEffect(pagerState.currentPage) {
-            onUpdateSelectedShipment(shipments[pagerState.currentPage])
+        LaunchedEffect(pagerState.targetPage) {
+            onUpdateSelectedShipment(shipments[pagerState.targetPage])
+        }
+
+        LaunchedEffect(viewState.shipmentSelected) {
+            val viewStateCurrentPage = shipments.indexOf(viewState.shipmentSelected)
+            if (pagerState.currentPage != viewStateCurrentPage) {
+                pagerState.animateScrollToPage(viewStateCurrentPage)
+            }
         }
 
         Row(modifier = modifier.fillMaxWidth()) {
             ScrollableTabRow(
-                selectedTabIndex = pagerState.currentPage,
+                selectedTabIndex = if (pagerState.currentPage < pagerState.pageCount) pagerState.currentPage else 0,
                 backgroundColor = MaterialTheme.colors.surface,
                 contentColor = MaterialTheme.colors.primary,
                 divider = {},
