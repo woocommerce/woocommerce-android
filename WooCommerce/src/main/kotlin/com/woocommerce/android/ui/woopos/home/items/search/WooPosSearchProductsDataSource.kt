@@ -51,9 +51,6 @@ class WooPosSearchProductsDataSource @Inject constructor(
             val remoteResults = remoteSearchDeferred.await()
             remoteResults.fold(
                 onSuccess = { result ->
-                    canLoadMore.set(result.canLoadMore)
-                    productsCache.addAll(result.products)
-                    searchResultsIndex.storeSearchResults(query, result.products.map { it.remoteId })
                     emit(ProductsResult.Remote(Result.success(result.products)))
                 },
                 onFailure = { error ->
@@ -73,9 +70,6 @@ class WooPosSearchProductsDataSource @Inject constructor(
 
         return remoteSearch(query, offset).fold(
             onSuccess = { result ->
-                canLoadMore.set(result.canLoadMore)
-                productsCache.addAll(result.products)
-                searchResultsIndex.storeSearchResults(query, result.products.map { it.remoteId })
                 Result.success(searchResultsIndex.getSearchResults(query).sortedBy { it.name })
             },
             onFailure = { error ->
@@ -102,12 +96,17 @@ class WooPosSearchProductsDataSource @Inject constructor(
                 Result.failure(WooException(result.error))
             } else {
                 val searchResult = result.model!!
-                Result.success(
-                    SearchResult(
-                        products = searchResult.products.map { product -> product.toAppModel() },
-                        canLoadMore = searchResult.canLoadMore
-                    )
+                val products = searchResult.products.map { product -> product.toAppModel() }
+                val searchResults = SearchResult(
+                    products = products,
+                    canLoadMore = searchResult.canLoadMore
                 )
+
+                canLoadMore.set(searchResults.canLoadMore)
+                productsCache.addAll(searchResults.products)
+                searchResultsIndex.storeSearchResults(searchQuery, searchResults.products.map { it.remoteId })
+
+                Result.success(searchResults)
             }
         }
     }
