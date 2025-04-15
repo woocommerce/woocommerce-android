@@ -5,11 +5,16 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.ItemClickedInProductSelector
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemNavigationData.VariableProductData
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState.Coupon
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState.Product.Simple
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState.Product.Variable
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState.Variation
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
@@ -172,10 +177,10 @@ class WooPosItemsSearchViewModel @Inject constructor(
 
     private fun handleItemClicked(item: WooPosItemSelectionViewState) {
         when (item) {
-            is WooPosItemSelectionViewState.Product.Simple -> {
+            is Simple -> {
                 viewModelScope.launch {
                     childToParentEventSender.sendToParent(
-                        ChildToParentEvent.ItemClickedInProductSelector(
+                        ItemClickedInProductSelector(
                             ItemClickedData.Product.Simple(id = item.id)
                         )
                     )
@@ -184,7 +189,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
                 storeRecentSearch()
             }
 
-            is WooPosItemSelectionViewState.Product.Variable -> {
+            is Variable -> {
                 viewModelScope.launch {
                     navigator.sendNavigationEvent(
                         NavigateToVariationsScreen(
@@ -198,7 +203,11 @@ class WooPosItemsSearchViewModel @Inject constructor(
                 }
             }
 
-            is WooPosItemSelectionViewState.Variation -> {
+            is Variation -> {
+                error("Variation item click is not supported")
+            }
+
+            is Coupon -> {
                 error("Variation item click is not supported")
             }
         }

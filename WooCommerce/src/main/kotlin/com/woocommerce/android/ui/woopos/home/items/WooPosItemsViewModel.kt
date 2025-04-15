@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.woopos.featureflags.WooPosIsCouponsEnabled
@@ -11,6 +12,8 @@ import com.woocommerce.android.ui.woopos.featureflags.WooPosIsProductsSearchEnab
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemNavigationData.VariableProductData
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState.Content
+import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsDataSource
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateToVariationsScreen
@@ -25,6 +28,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -42,6 +46,7 @@ class WooPosItemsViewModel @Inject constructor(
     private val searchHelper: WooPosItemsSearchHelper,
     private val isProductsSearchEnabled: WooPosIsProductsSearchEnabled,
     private val isCouponsEnabled: WooPosIsCouponsEnabled,
+    private val couponsDataSource: WooPosCouponsDataSource,
 ) : ViewModel() {
     private var loadMoreProductsJob: Job? = null
 
@@ -55,17 +60,49 @@ class WooPosItemsViewModel @Inject constructor(
             initialValue = _viewState.value,
         )
 
+    private val couponsList = couponsDataSource.couponsFlow
+
     init {
+        viewModelScope.launch {
+            couponsList
+                .map { coupons ->
+                    if (coupons.isNullOrEmpty()) {
+                        WooPosItemsViewState.Empty()
+                    } else {
+                        WooPosItemsViewState.Content(
+                            items = coupons.map { it.toItemSelectionViewState() },
+                            paginationState = WooPosPaginationState.None,
+                            pullToRefreshState = WooPosPullToRefreshState.Enabled,
+                            couponsEnabled = isCouponsEnabled.invoke(),
+                            bannerState = WooPosItemsViewState.Content.BannerState(
+                                isBannerHiddenByUser = isBannerHiddenByUser(),
+                                title = R.string.woopos_banner_simple_products_only_title,
+                                message = R.string.woopos_banner_simple_products_only_message,
+                                icon = R.drawable.info,
+                            ),
+                            search = searchHelper.getInitialSearchState(isProductsSearchEnabled())
+                        )
+                    }
+                }
+                // Collect each new view state emitted from the flow.
+                .collect { newState ->
+                    // Update your internal view state.
+                    _viewState.value = newState
+                }
+        }
+
         searchHelper.initialize(
             coroutineScope = viewModelScope,
             viewStateFlow = _viewState
         )
 
-        loadProducts(
-            forceRefreshProducts = false,
-            withPullToRefresh = false,
-            withCart = true,
-        )
+        // TODO: If Coupons load coupons otherwise load products
+//        loadProducts(
+//            forceRefreshProducts = false,
+//            withPullToRefresh = false,
+//            withCart = true,
+//        )
+        fetchCoupons(withPullToRefresh = false, withCart = true)
     }
 
     fun onUIEvent(event: WooPosItemsUIEvent) {
@@ -79,8 +116,13 @@ class WooPosItemsViewModel @Inject constructor(
             }
 
             WooPosItemsUIEvent.PullToRefreshTriggered -> {
+                // TODO: If Coupons load coupons otherwise load products
                 loadProducts(
                     forceRefreshProducts = true,
+                    withPullToRefresh = true,
+                    withCart = true,
+                )
+                fetchCoupons(
                     withPullToRefresh = true,
                     withCart = true,
                 )
@@ -88,8 +130,13 @@ class WooPosItemsViewModel @Inject constructor(
             }
 
             WooPosItemsUIEvent.ProductsLoadingErrorRetryButtonClicked -> {
+                // TODO: If Coupons load coupons otherwise load products
                 loadProducts(
                     forceRefreshProducts = false,
+                    withPullToRefresh = false,
+                    withCart = false,
+                )
+                fetchCoupons(
                     withPullToRefresh = false,
                     withCart = false,
                 )
@@ -160,6 +207,14 @@ class WooPosItemsViewModel @Inject constructor(
                         )
                     )
                 }
+            }
+
+            is WooPosItemSelectionViewState.Coupon -> {
+                sendEventToParent(
+                    ChildToParentEvent.ItemClickedInProductSelector(
+                        ItemClickedData.Coupon(id = event.item.id, couponCode = event.item.name)
+                    )
+                )
             }
 
             is WooPosItemSelectionViewState.Variation -> {
@@ -247,6 +302,24 @@ class WooPosItemsViewModel @Inject constructor(
         }
     }
 
+    private fun fetchCoupons(
+        withPullToRefresh: Boolean,
+        withCart: Boolean
+    ) {
+        viewModelScope.launch {
+            _viewState.value = if (withPullToRefresh) {
+                buildProductsReloadingState()
+            } else {
+                WooPosItemsViewState.Loading(withCart = withCart)
+            }
+            val result = couponsDataSource.clearCacheAndFetchFirstPage()
+
+            if (!result.isSuccess) {
+                _viewState.value = WooPosItemsViewState.Error()
+            }
+        }
+    }
+
     private fun buildProductsReloadingState() =
         when (val state = viewState.value) {
             is WooPosItemsViewState.Content -> state.copy(pullToRefreshState = WooPosPullToRefreshState.Refreshing)
@@ -291,27 +364,44 @@ class WooPosItemsViewModel @Inject constructor(
         }
     }
 
+    private fun Coupon.toItemSelectionViewState(): WooPosItemSelectionViewState {
+        return WooPosItemSelectionViewState.Coupon(
+                id = this.id,
+                name = this.code ?: "", // TODO handle null case properly
+            )
+    }
+
     private fun onEndOfProductsListReached() {
         val currentState = _viewState.value
-        if (currentState !is WooPosItemsViewState.Content) {
+        if (currentState !is Content) {
             return
         }
-
-        if (!productsDataSource.hasMorePages) {
-            return
-        }
-
-        _viewState.value = currentState.copy(paginationState = WooPosPaginationState.Loading)
-
-        loadMoreProductsJob?.cancel()
-        loadMoreProductsJob = viewModelScope.launch {
-            val result = productsDataSource.loadMore()
-            _viewState.value = if (result.isSuccess) {
-                result.getOrThrow().toContentState()
-            } else {
-                currentState.copy(paginationState = WooPosPaginationState.Error)
+        viewModelScope.launch {
+            val result = couponsDataSource.loadMore()
+            if (!result.isSuccess) {
+                _viewState.value = currentState.copy(paginationState = WooPosPaginationState.Error)
             }
         }
+//        val currentState = _viewState.value
+//        if (currentState !is WooPosItemsViewState.Content) {
+//            return
+//        }
+//
+//        if (!productsDataSource.hasMorePages) {
+//            return
+//        }
+//
+//        _viewState.value = currentState.copy(paginationState = WooPosPaginationState.Loading)
+//
+//        loadMoreProductsJob?.cancel()
+//        loadMoreProductsJob = viewModelScope.launch {
+//            val result = productsDataSource.loadMore()
+//            _viewState.value = if (result.isSuccess) {
+//                result.getOrThrow().toContentState()
+//            } else {
+//                currentState.copy(paginationState = WooPosPaginationState.Error)
+//            }
+//        }
     }
 
     private fun notifyParentAboutStatusChange(newState: WooPosItemsViewState) {

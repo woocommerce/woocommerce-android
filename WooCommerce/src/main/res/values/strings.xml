@@ -4273,6 +4273,7 @@
     <string name="woopos_variable_product_item_content_description">Variable Product %s, Price %s</string>
     <string name="woopos_variation_item_content_description">Variation %s, Price %s</string>
     <string name="woopos_cart_item_product_content_description">Product in cart %s, Price %s</string>
+    <string name="woopos_coupon_item_content_description">Coupon %s</string>
     <string name="woopos_cart_item_coupon_content_description">Coupon in cart %s</string>
     <string name="woopos_cart_title">Cart</string>
     <string name="woopos_clear_cart_button">Clear</string>
