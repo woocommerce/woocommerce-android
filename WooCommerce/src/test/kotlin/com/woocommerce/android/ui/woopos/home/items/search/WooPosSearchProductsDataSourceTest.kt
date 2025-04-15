@@ -116,7 +116,6 @@ class WooPosSearchProductsDataSourceTest {
             }
         }
 
-
     @Test
     fun `given remote search products success, when search products called, then should emit cached and remote results`() = runTest {
         // GIVEN
