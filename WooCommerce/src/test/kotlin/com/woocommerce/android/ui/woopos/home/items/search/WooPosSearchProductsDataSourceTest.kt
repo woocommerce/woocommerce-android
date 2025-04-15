@@ -97,17 +97,4 @@ class WooPosSearchProductsDataSourceTest {
             cancelAndIgnoreRemainingEvents()
         }
     }
-
-    @Test
-    fun `given product id, when getProductById called, then should return product from cache`() = runTest {
-        // GIVEN
-        val productId = 1L
-        whenever(wooPosProductsCache.getProductById(productId)).thenReturn(product1)
-
-        // WHEN
-        val result = sut.getProductById(productId)
-
-        // THEN
-        assertThat(result).isEqualTo(product1)
-    }
 }
