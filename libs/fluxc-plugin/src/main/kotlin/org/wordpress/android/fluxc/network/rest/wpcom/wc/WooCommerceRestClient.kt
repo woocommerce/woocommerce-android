@@ -22,11 +22,10 @@ class WooCommerceRestClient @Inject constructor(private val wooNetwork: WooNetwo
 
     /**
      * Makes a GET call to the root wp-json endpoint (`/`) via the Jetpack tunnel (see [JetpackTunnelGsonRequest])
-     * for the given [SiteModel], and parses through the `namespaces` field in the result for supported versions
-     * of the Woo API.
+     * for the given [SiteModel]
      *
      */
-    suspend fun fetchSupportedWooApiVersion(
+    suspend fun fetchSiteRootAPIEndpoint(
         site: SiteModel,
         overrideRetryPolicy: Boolean = false
     ): WooPayload<RootWPAPIRestResponse> {

@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.payments.cardreader
 
+import com.woocommerce.android.cardreader.LogWrapper
 import com.woocommerce.android.cardreader.internal.payments.PaymentUtils
 import dagger.Module
 import dagger.Provides
@@ -10,5 +11,5 @@ import dagger.hilt.components.SingletonComponent
 @Module
 class CardReaderPaymentsUtilsModule {
     @Provides
-    fun providePaymentsUtils() = PaymentUtils
+    fun providePaymentsUtils(logWrapper: LogWrapper) = PaymentUtils(logWrapper)
 }

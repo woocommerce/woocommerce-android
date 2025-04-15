@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.window.Dialog
+import androidx.core.view.WindowCompat
 import androidx.fragment.app.DialogFragment
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
@@ -46,7 +47,10 @@ abstract class LoginBaseErrorDialogFragment : DialogFragment() {
 
     override fun onStart() {
         super.onStart()
-        dialog?.window?.setWindowAnimations(R.style.Woo_Animations_Dialog)
+        dialog?.window?.let {
+            it.setWindowAnimations(R.style.Woo_Animations_Dialog)
+            WindowCompat.setDecorFitsSystemWindows(it, false)
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

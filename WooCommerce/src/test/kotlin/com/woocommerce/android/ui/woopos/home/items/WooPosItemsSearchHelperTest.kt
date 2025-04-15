@@ -21,7 +21,6 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-
 @ExperimentalCoroutinesApi
 class WooPosItemsSearchHelperTest {
     @Rule
@@ -78,10 +77,11 @@ class WooPosItemsSearchHelperTest {
     fun `given search input, when onSearchChanged called, then sends changed query event`() = runTest {
         // GIVEN
         val searchQuery = "test query"
+        val cursorPosition = searchQuery.length
         searchHelper.initialize(this, viewStateFlow)
 
         // WHEN
-        searchHelper.onSearchChanged(searchQuery)
+        searchHelper.onSearchChanged(searchQuery, cursorPosition)
         advanceUntilIdle()
 
         // THEN
@@ -94,10 +94,11 @@ class WooPosItemsSearchHelperTest {
     fun `given non-empty search input, when onSearchChanged called, then updates view state with query`() = runTest {
         // GIVEN
         val searchQuery = "test query"
+        val cursorPosition = searchQuery.length
         searchHelper.initialize(this, viewStateFlow)
 
         // WHEN
-        searchHelper.onSearchChanged(searchQuery)
+        searchHelper.onSearchChanged(searchQuery, cursorPosition)
 
         // THEN
         val currentState = viewStateFlow.value as WooPosItemsViewState.Content
@@ -106,16 +107,18 @@ class WooPosItemsSearchHelperTest {
         assertThat(openState.input).isInstanceOf(WooPosSearchInputState.Open.Input.Query::class.java)
         val queryInput = openState.input as WooPosSearchInputState.Open.Input.Query
         assertThat(queryInput.text).isEqualTo(searchQuery)
+        assertThat(queryInput.cursorPosition).isEqualTo(cursorPosition)
     }
 
     @Test
     fun `given empty search input, when onSearchChanged called, then resets to initial open state`() = runTest {
         // GIVEN
         val emptyQuery = ""
+        val cursorPosition = 0
         searchHelper.initialize(this, viewStateFlow)
 
         // WHEN
-        searchHelper.onSearchChanged(emptyQuery)
+        searchHelper.onSearchChanged(emptyQuery, cursorPosition)
 
         // THEN
         val currentState = viewStateFlow.value as WooPosItemsViewState.Content
@@ -128,7 +131,7 @@ class WooPosItemsSearchHelperTest {
     fun `given open search state, when onCloseSearchClicked called, then updates to closed state`() = runTest {
         // GIVEN
         searchHelper.initialize(this, viewStateFlow)
-        searchHelper.onSearchChanged("initial query")
+        searchHelper.onSearchChanged("initial query", "initial query".length)
 
         // WHEN
         searchHelper.onCloseSearchClicked()
@@ -140,20 +143,21 @@ class WooPosItemsSearchHelperTest {
     }
 
     @Test
-    fun `given search with query, when onClearSearchClicked called, then resets to initial open state with hint`() = runTest {
-        // GIVEN
-        searchHelper.initialize(this, viewStateFlow)
-        searchHelper.onSearchChanged("initial query")
+    fun `given search with query, when onClearSearchClicked called, then resets to initial open state with hint`() =
+        runTest {
+            // GIVEN
+            searchHelper.initialize(this, viewStateFlow)
+            searchHelper.onSearchChanged("initial query", "initial query".length)
 
-        // WHEN
-        searchHelper.onClearSearchClicked()
+            // WHEN
+            searchHelper.onClearSearchClicked()
 
-        // THEN
-        val currentState = viewStateFlow.value as WooPosItemsViewState.Content
-        val searchState = currentState.search as WooPosItemsViewState.Content.SearchState.Visible
-        val openState = searchState.state as WooPosSearchInputState.Open
-        assertThat(openState.input).isInstanceOf(WooPosSearchInputState.Open.Input.Hint::class.java)
-    }
+            // THEN
+            val currentState = viewStateFlow.value as WooPosItemsViewState.Content
+            val searchState = currentState.search as WooPosItemsViewState.Content.SearchState.Visible
+            val openState = searchState.state as WooPosSearchInputState.Open
+            assertThat(openState.input).isInstanceOf(WooPosSearchInputState.Open.Input.Hint::class.java)
+        }
 
     @Test
     fun `given search event started, when received, then updates loading state to true`() = runTest {
@@ -230,7 +234,7 @@ class WooPosItemsSearchHelperTest {
         searchHelper.initialize(this, viewStateFlow)
 
         // WHEN
-        searchHelper.onSearchChanged("test query")
+        searchHelper.onSearchChanged("test query", "test query".length)
 
         // THEN
         val currentState = viewStateFlow.value as WooPosItemsViewState.Content
@@ -251,5 +255,80 @@ class WooPosItemsSearchHelperTest {
         // THEN
         val currentState = viewStateFlow.value as WooPosItemsViewState.Content
         assertThat(currentState.pullToRefreshState).isEqualTo(WooPosPullToRefreshState.Enabled)
+    }
+
+    @Test
+    fun `when animation completes, then hasAnimationPlayed flag is set to true`() = runTest {
+        // GIVEN
+        searchHelper.initialize(this, viewStateFlow)
+
+        // WHEN
+        searchHelper.onAnimationComplete()
+
+        // THEN
+        val currentState = viewStateFlow.value as WooPosItemsViewState.Content
+        val searchState = currentState.search as WooPosItemsViewState.Content.SearchState.Visible
+        val openState = searchState.state as WooPosSearchInputState.Open
+        assertThat(openState.hasAnimationPlayed).isTrue
+    }
+
+    @Test
+    fun `given animation completed, when search changed, then hasAnimationPlayed is preserved`() = runTest {
+        // GIVEN
+        searchHelper.initialize(this, viewStateFlow)
+        searchHelper.onAnimationComplete()
+
+        // WHEN
+
+        searchHelper.onSearchChanged("test", "test".length)
+        advanceUntilIdle()
+
+        // THEN
+        val afterReopenState = viewStateFlow.value as WooPosItemsViewState.Content
+        val afterReopenSearchState = afterReopenState.search as WooPosItemsViewState.Content.SearchState.Visible
+        assertThat(afterReopenSearchState.state).isInstanceOf(WooPosSearchInputState.Open::class.java)
+
+        val openState = afterReopenSearchState.state as WooPosSearchInputState.Open
+        assertThat(openState.hasAnimationPlayed).isTrue
+    }
+
+    @Test
+    fun `given animation has played, when onClearSearchClicked, then hasAnimationPlayed is false`() = runTest {
+        // GIVEN
+        searchHelper.initialize(this, viewStateFlow)
+
+        searchHelper.onAnimationComplete()
+
+        // WHEN
+        searchHelper.onClearSearchClicked()
+
+        // THEN
+        val currentState = viewStateFlow.value as WooPosItemsViewState.Content
+        val searchState = currentState.search as WooPosItemsViewState.Content.SearchState.Visible
+        val openState = searchState.state as WooPosSearchInputState.Open
+        assertThat(openState.hasAnimationPlayed).isFalse
+    }
+
+    @Test
+    fun `given animation complete, when order successful paid, then state is closed`() = runTest {
+        // GIVEN
+        searchHelper.initialize(this, viewStateFlow)
+        searchHelper.onAnimationComplete()
+
+        // WHEN
+        whenever(mockParentToChildrenEventReceiver.events).thenReturn(
+            flowOf(
+                ParentToChildrenEvent.OrderSuccessfullyPaid(
+                    ParentToChildrenEvent.OrderSuccessfullyPaid.PaymentMethod.CARD
+                )
+            )
+        )
+        searchHelper.initialize(this, viewStateFlow)
+        advanceUntilIdle()
+
+        // THEN
+        val currentState = viewStateFlow.value as WooPosItemsViewState.Content
+        val searchState = currentState.search as WooPosItemsViewState.Content.SearchState.Visible
+        assertThat(searchState.state).isInstanceOf(WooPosSearchInputState.Closed::class.java)
     }
 }

@@ -110,7 +110,15 @@ private fun WooPosItemsScreen(
             when (it) {
                 WooPosSearchUIEvent.Clear -> onUIEvent(WooPosItemsUIEvent.ClearSearchClicked)
                 WooPosSearchUIEvent.Close -> onUIEvent(WooPosItemsUIEvent.CloseSearchClicked)
-                is WooPosSearchUIEvent.Search -> onUIEvent(SearchChanged(it.query))
+                is WooPosSearchUIEvent.Search -> onUIEvent(
+                    SearchChanged(
+                        query = it.query,
+                        cursorPosition = it.cursorPosition,
+                    )
+                )
+                is WooPosSearchUIEvent.AnimationComplete -> {
+                    onUIEvent(WooPosItemsUIEvent.SearchAnimationComplete)
+                }
             }
         },
         onCouponsButtonClicked = { onUIEvent(WooPosItemsUIEvent.CouponsButtonClicked) },
@@ -451,7 +459,7 @@ fun WooPosItemsScreenPreview(modifier: Modifier = Modifier) {
             ),
             search = WooPosItemsViewState.Content.SearchState.Visible(
                 state = WooPosSearchInputState.Open(
-                    input = WooPosSearchInputState.Open.Input.Query(""),
+                    input = WooPosSearchInputState.Open.Input.Query("", 0),
                     isLoading = false,
                 )
             )
@@ -606,7 +614,7 @@ fun WooPosHomeScreenItemsWithSimpleProductsOnlyBannerPreview() {
             ),
             search = WooPosItemsViewState.Content.SearchState.Visible(
                 state = WooPosSearchInputState.Open(
-                    input = WooPosSearchInputState.Open.Input.Query(""),
+                    input = WooPosSearchInputState.Open.Input.Query("", 0),
                     isLoading = false,
                 )
             )
@@ -658,7 +666,7 @@ fun WooPosHomeScreenItemsWithInfoIconInToolbarPreview() {
             ),
             search = WooPosItemsViewState.Content.SearchState.Visible(
                 state = WooPosSearchInputState.Open(
-                    input = WooPosSearchInputState.Open.Input.Query(""),
+                    input = WooPosSearchInputState.Open.Input.Query("", 0),
                     isLoading = false,
                 )
             )
