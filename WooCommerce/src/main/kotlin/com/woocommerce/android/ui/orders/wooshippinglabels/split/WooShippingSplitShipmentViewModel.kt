@@ -179,6 +179,7 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
 
 data class SelectableShippableItemsUI(
     val shippableItems: List<SelectableShippableItemUI>,
+    val totalItemQuantity: Int,
     val formattedTotalWeight: String,
     val formattedTotalPrice: String
 )
