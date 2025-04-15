@@ -63,8 +63,7 @@ class WooPosSearchProductsDataSourceTest {
         whenever(wooPosProductsCache.getAll()).thenReturn(products)
         whenever(
             productStore.searchProducts(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull())
-        )
-            .thenReturn(WooResult(ProductSearchResult(emptyList(), false)))
+        ).thenReturn(WooResult(ProductSearchResult(emptyList(), false)))
 
         // WHEN
         sut.searchProducts(query).test {
@@ -72,29 +71,37 @@ class WooPosSearchProductsDataSourceTest {
             val result = awaitItem()
             assertThat(result).isInstanceOf(WooPosSearchProductsDataSource.ProductsResult.Cached::class.java)
             assertThat((result as WooPosSearchProductsDataSource.ProductsResult.Cached).products).isEqualTo(products)
-            verify(searchResults).storeSearchResults(query, products.map { it.remoteId })
+            verify(searchResults).storeSearchResults(query, emptyList())
             cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
-    fun `given more products than page size, when search products called, then should limit local results to page size`() = runTest {
-        // GIVEN
-        val query = "test"
-        val manyProducts = (1..20).map { ProductTestUtils.generateProduct(productId = it.toLong()) }
-        whenever(wooPosProductsCache.getAll()).thenReturn(manyProducts)
-        whenever(
-            productStore.searchProducts(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull())
-        )
-            .thenReturn(WooResult(ProductSearchResult(emptyList(), false)))
+    fun `given more products than page size, when search products called, then should limit local results to page size`() =
+        runTest {
+            // GIVEN
+            val query = "test"
+            val manyProducts = (1..20).map { ProductTestUtils.generateProduct(productId = it.toLong()) }
+            whenever(wooPosProductsCache.getAll()).thenReturn(manyProducts)
+            whenever(
+                productStore.searchProducts(
+                    anyOrNull(),
+                    anyOrNull(),
+                    anyOrNull(),
+                    anyOrNull(),
+                    anyOrNull(),
+                    anyOrNull()
+                )
+            )
+                .thenReturn(WooResult(ProductSearchResult(emptyList(), false)))
 
-        // WHEN
-        sut.searchProducts(query).test {
-            // THEN
-            val result = awaitItem()
-            assertThat(result).isInstanceOf(WooPosSearchProductsDataSource.ProductsResult.Cached::class.java)
-            assertThat((result as WooPosSearchProductsDataSource.ProductsResult.Cached).products.size).isEqualTo(15)
-            cancelAndIgnoreRemainingEvents()
+            // WHEN
+            sut.searchProducts(query).test {
+                // THEN
+                val result = awaitItem()
+                assertThat(result).isInstanceOf(WooPosSearchProductsDataSource.ProductsResult.Cached::class.java)
+                assertThat((result as WooPosSearchProductsDataSource.ProductsResult.Cached).products.size).isEqualTo(15)
+                cancelAndIgnoreRemainingEvents()
+            }
         }
-    }
 }

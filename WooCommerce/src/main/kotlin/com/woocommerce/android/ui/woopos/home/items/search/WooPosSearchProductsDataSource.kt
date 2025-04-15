@@ -43,10 +43,7 @@ class WooPosSearchProductsDataSource @Inject constructor(
             }
             val remoteSearchDeferred = async { remoteSearch(query) }
 
-            val localResults = localSearchDeferred.await()
-            if (localResults.isNotEmpty()) {
-                emit(ProductsResult.Cached(localResults))
-            }
+            emit(ProductsResult.Cached(localSearchDeferred.await()))
 
             val remoteResults = remoteSearchDeferred.await()
             remoteResults.fold(
