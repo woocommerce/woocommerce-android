@@ -27,7 +27,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.address.ObserveShippi
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.destination.VerifyDestinationAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.origin.FetchOriginAddresses
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.origin.ObserveOriginAddresses
-import com.woocommerce.android.ui.orders.wooshippinglabels.components.ActionSnackbar
+import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShippingLabelsSnackbarData
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeBannerUiState
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeType
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
@@ -88,7 +88,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     private val navArgs: WooShippingLabelCreationFragmentArgs by savedState.navArgs()
 
-    var actionSnackbar by mutableStateOf<ActionSnackbar?>(null)
+    var snackbarData by mutableStateOf<ShippingLabelsSnackbarData?>(null)
 
     private val emptyOrder = Order.getEmptyOrder(Date(), Date())
     private val order = MutableStateFlow<Order>(emptyOrder)
@@ -528,7 +528,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                 handlePurchaseSuccess(result)
             } else {
                 purchaseState.value = backupPurchaseState
-                actionSnackbar = ActionSnackbar(
+                snackbarData = ShippingLabelsSnackbarData(
                     message = R.string.woo_shipping_labels_purchase_error,
                     actionLabel = R.string.retry,
                 ) { onPurchaseShippingLabel() }
@@ -632,7 +632,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
         // Disables the current Snackbar before navigation
         // to avoid presentation conflict with the Hazmat selection result
-        actionSnackbar = null
+        snackbarData = null
         triggerEvent(StartHazmatFormEdit(selectedCategory))
     }
 
@@ -652,10 +652,10 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             R.string.woo_shipping_labels_hazmat_selection_removed
         }
 
-        actionSnackbar = ActionSnackbar(
+        snackbarData = ShippingLabelsSnackbarData(
             message = snackbarMessage,
             actionLabel = R.string.undo,
-            dismissAction = { actionSnackbar = null }
+            dismissAction = { snackbarData = null }
         ) {
             hazmatState.value = previousState
         }

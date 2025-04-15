@@ -4,7 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.orders.wooshippinglabels.ShippableItemUI
-import com.woocommerce.android.ui.orders.wooshippinglabels.components.ActionSnackbar
+import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShippingLabelsSnackbarData
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.toSelectableUIModel
 import com.woocommerce.android.util.CurrencyFormatter
@@ -154,7 +154,7 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
         }
 
         splitMessage.value = SplitShipmentMessage.Success(
-            ActionSnackbar(
+            ShippingLabelsSnackbarData(
                 message = snackbarMessage,
                 messageParameters = listOf(splitMovement.totalItemsToMove, splitMovement.updatedShipment + 1),
                 actionLabel = R.string.undo,
@@ -202,7 +202,7 @@ sealed class SelectableShippableItemUI {
 
 sealed class SplitShipmentMessage {
     data object Instructions : SplitShipmentMessage()
-    data class Success(val actionSnackbar: ActionSnackbar) : SplitShipmentMessage()
+    data class Success(val snackbarData: ShippingLabelsSnackbarData) : SplitShipmentMessage()
 }
 
 fun List<ShippableItemModel>.combine(other: List<ShippableItemModel>): List<ShippableItemModel> {

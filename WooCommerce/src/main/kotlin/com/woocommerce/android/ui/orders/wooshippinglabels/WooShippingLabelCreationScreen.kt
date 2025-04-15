@@ -79,7 +79,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.address.AddressSelect
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.AddressStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.getShipFrom
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.getShipTo
-import com.woocommerce.android.ui.orders.wooshippinglabels.components.ActionSnackbar
+import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShippingLabelsSnackbarData
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.SuccessSnackbarHost
 import com.woocommerce.android.ui.orders.wooshippinglabels.hazmat.HazmatCard
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShippingAddress
@@ -125,7 +125,7 @@ fun WooShippingLabelCreationScreen(viewModel: WooShippingLabelCreationViewModel)
                 onEditCustomsClick = viewModel::onEditCustomsClick,
                 onEditDestinationAddress = viewModel::onEditDestinationAddress,
                 destinationStatus = viewState.destinationStatus,
-                actionSnackbar = viewModel.actionSnackbar,
+                snackbarData = viewModel.snackbarData,
                 onSplitShipment = viewModel::onSplitShipment,
                 onHazmatNoticeClick = viewModel::onHazmatNoticeClick,
             )
@@ -170,7 +170,7 @@ fun WooShippingLabelCreationScreen(
     onEditDestinationAddress: (DestinationShippingAddress) -> Unit,
     destinationStatus: AddressStatus,
     modifier: Modifier = Modifier,
-    actionSnackbar: ActionSnackbar? = null,
+    snackbarData: ShippingLabelsSnackbarData? = null,
     onSplitShipment: () -> Unit = {},
     onHazmatNoticeClick: () -> Unit = {}
 ) {
@@ -236,7 +236,7 @@ fun WooShippingLabelCreationScreen(
             onEditCustomsClick = onEditCustomsClick,
             onEditDestinationAddress = onEditDestinationAddress,
             destinationStatus = destinationStatus,
-            actionSnackbar = actionSnackbar,
+            snackbarData = snackbarData,
             onSplitShipment = onSplitShipment,
             onHazmatNoticeClick = onHazmatNoticeClick
         )
@@ -317,7 +317,7 @@ private fun LabelCreationScreenWithBottomSheet(
     onEditDestinationAddress: (DestinationShippingAddress) -> Unit,
     destinationStatus: AddressStatus,
     modifier: Modifier = Modifier,
-    actionSnackbar: ActionSnackbar? = null,
+    snackbarData: ShippingLabelsSnackbarData? = null,
     onSplitShipment: () -> Unit = {},
     onHazmatNoticeClick: () -> Unit = {}
 ) {
@@ -456,19 +456,19 @@ private fun LabelCreationScreenWithBottomSheet(
                 )
             }
 
-            val actionSnackbarMessage = actionSnackbar?.let { stringResource(it.message) }
-            val actionSnackbarActionLabel = actionSnackbar?.let { stringResource(it.actionLabel) }
+            val actionSnackbarMessage = snackbarData?.let { stringResource(it.message) }
+            val actionSnackbarActionLabel = snackbarData?.let { stringResource(it.actionLabel) }
 
-            LaunchedEffect(actionSnackbar) {
-                actionSnackbar?.let {
+            LaunchedEffect(snackbarData) {
+                snackbarData?.let {
                     val result = snackbarHostState.showSnackbar(
                         message = actionSnackbarMessage ?: "",
                         actionLabel = actionSnackbarActionLabel,
-                        duration = actionSnackbar.duration,
+                        duration = snackbarData.duration,
                     )
                     when (result) {
-                        SnackbarResult.ActionPerformed -> actionSnackbar.action()
-                        SnackbarResult.Dismissed -> actionSnackbar.dismissAction()
+                        SnackbarResult.ActionPerformed -> snackbarData.action()
+                        SnackbarResult.Dismissed -> snackbarData.dismissAction()
                     }
                 } ?: snackbarHostState.currentSnackbarData?.dismiss()
             }

@@ -195,7 +195,7 @@ fun WooShippingSplitShipmentScreen(
     val context = LocalContext.current
     LaunchedEffect(viewState.splitMessage) {
         if (viewState.splitMessage is SplitShipmentMessage.Success) {
-            val snackbarData = viewState.splitMessage.actionSnackbar
+            val snackbarData = viewState.splitMessage.snackbarData
 
             @Suppress("SpreadOperator")
             val result = snackbarHostState.showSnackbar(

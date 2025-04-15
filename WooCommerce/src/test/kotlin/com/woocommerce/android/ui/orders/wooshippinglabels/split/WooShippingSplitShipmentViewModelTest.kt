@@ -260,7 +260,7 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
 
         val splitMessage = state.splitMessage
         assertThat(splitMessage).isInstanceOf(SplitShipmentMessage.Success::class.java)
-        val snackbarData = (splitMessage as SplitShipmentMessage.Success).actionSnackbar
+        val snackbarData = (splitMessage as SplitShipmentMessage.Success).snackbarData
         assertThat(snackbarData.message).isEqualTo(R.string.woo_shipping_split_shipment_moved_notice_one)
         assertThat(snackbarData.messageParameters).isEqualTo(listOf(1, 2))
     }
@@ -292,7 +292,7 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
 
         val splitMessage = state.splitMessage
         assertThat(splitMessage).isInstanceOf(SplitShipmentMessage.Success::class.java)
-        val snackbarData = (splitMessage as SplitShipmentMessage.Success).actionSnackbar
+        val snackbarData = (splitMessage as SplitShipmentMessage.Success).snackbarData
         assertThat(snackbarData.message).isEqualTo(R.string.woo_shipping_split_shipment_moved_notice_plural)
         assertThat(snackbarData.messageParameters).isEqualTo(listOf(5, 2))
     }
