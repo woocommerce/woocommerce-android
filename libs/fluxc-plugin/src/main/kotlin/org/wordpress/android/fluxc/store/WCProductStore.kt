@@ -49,7 +49,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductVariatio
 import org.wordpress.android.fluxc.persistence.ProductSqlUtils
 import org.wordpress.android.fluxc.persistence.ProductSqlUtils.getCompositeProducts
 import org.wordpress.android.fluxc.persistence.ProductSqlUtils.getProducts
-import org.wordpress.android.fluxc.persistence.ProductSqlUtils.getProducts2
 import org.wordpress.android.fluxc.persistence.ProductSqlUtils.observeBundledProducts
 import org.wordpress.android.fluxc.persistence.ProductStorageHelper
 import org.wordpress.android.fluxc.persistence.dao.AddonsDao
@@ -875,7 +874,7 @@ class WCProductStore @Inject constructor(
         searchQuery: String? = null,
         skuSearchOptions: SkuSearchOptions = SkuSearchOptions.Disabled,
     ): List<WCProductModel> =
-        productsDao.getProducts2(
+        productsDao.getProducts(
             site = site,
             filterOptions = filterOptions,
             sortType = sortType,

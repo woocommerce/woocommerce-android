@@ -112,15 +112,15 @@ object ProductSqlUtils {
         remoteVariationId: Long
     ): WCProductVariationModel? {
         return WellSql.select(WCProductVariationModel::class.java)
-                .where().beginGroup()
-                .equals(WCProductVariationModelTable.REMOTE_PRODUCT_ID, remoteProductId)
-                .equals(WCProductVariationModelTable.REMOTE_VARIATION_ID, remoteVariationId)
-                .equals(WCProductVariationModelTable.LOCAL_SITE_ID, site.id)
-                .endGroup().endWhere()
-                .asModel.firstOrNull()
+            .where().beginGroup()
+            .equals(WCProductVariationModelTable.REMOTE_PRODUCT_ID, remoteProductId)
+            .equals(WCProductVariationModelTable.REMOTE_VARIATION_ID, remoteVariationId)
+            .equals(WCProductVariationModelTable.LOCAL_SITE_ID, site.id)
+            .endGroup().endWhere()
+            .asModel.firstOrNull()
     }
 
-    suspend fun ProductsDao.getProducts2(
+    suspend fun ProductsDao.getProducts(
         site: SiteModel,
         filterOptions: Map<ProductFilterOption, String>,
         sortType: ProductSorting = DEFAULT_PRODUCT_SORTING,
@@ -142,32 +142,22 @@ object ProductSqlUtils {
             sortOrder = getRoomSortOrder(sortType),
             limit = limit,
             excludedProductIds = excludedProductIds
-        ).firstOrNull().orEmpty()
-
-        if (searchQuery?.isNotEmpty() == true) {
-            when(skuSearchOptions) {
+        ).firstOrNull().orEmpty().filter { product ->
+            when (skuSearchOptions) {
                 SkuSearchOptions.Disabled -> {
-                    queryBuilder
-                        .beginGroup()
-                        .contains(WCProductModelTable.NAME, searchQuery)
-                        .or()
-                        .contains(WCProductModelTable.DESCRIPTION, searchQuery)
-                        .or()
-                        .contains(WCProductModelTable.SHORT_DESCRIPTION, searchQuery)
-                        .endGroup()
+                    searchQuery?.let { query ->
+                        listOf(product.name, product.description, product.shortDescription).any { it.contains(query) }
+                    } == true
                 }
 
                 SkuSearchOptions.ExactSearch -> {
-                    queryBuilder.beginGroup()
-                        // The search is case sensitive
-                        .equals(WCProductModelTable.SKU, searchQuery)
-                        .endGroup()
+                    product.sku == searchQuery
                 }
 
                 SkuSearchOptions.PartialMatch -> {
-                    queryBuilder.beginGroup()
-                        .contains(WCProductModelTable.SKU, searchQuery)
-                        .endGroup()
+                    searchQuery?.let { query ->
+                        product.sku.contains(query)
+                    } == true
                 }
             }
         }
@@ -188,20 +178,20 @@ object ProductSqlUtils {
 
     fun getProductExistsByRemoteId(site: SiteModel, remoteProductId: Long): Boolean {
         return WellSql.select(WCProductModel::class.java)
-                .where().beginGroup()
-                .equals(WCProductModelTable.REMOTE_PRODUCT_ID, remoteProductId)
-                .equals(WCProductModelTable.LOCAL_SITE_ID, site.id)
-                .endGroup().endWhere()
-                .exists()
+            .where().beginGroup()
+            .equals(WCProductModelTable.REMOTE_PRODUCT_ID, remoteProductId)
+            .equals(WCProductModelTable.LOCAL_SITE_ID, site.id)
+            .endGroup().endWhere()
+            .exists()
     }
 
     fun getProductExistsBySku(site: SiteModel, sku: String): Boolean {
         return WellSql.select(WCProductModel::class.java)
-                .where().beginGroup()
-                .equals(WCProductModelTable.SKU, sku)
-                .equals(WCProductModelTable.LOCAL_SITE_ID, site.id)
-                .endGroup().endWhere()
-                .exists()
+            .where().beginGroup()
+            .equals(WCProductModelTable.SKU, sku)
+            .equals(WCProductModelTable.LOCAL_SITE_ID, site.id)
+            .endGroup().endWhere()
+            .exists()
     }
 
     private fun getSortField(sortType: ProductSorting) =
@@ -230,26 +220,26 @@ object ProductSqlUtils {
 
     fun deleteProductsForSite(site: SiteModel): Int {
         return WellSql.delete(WCProductModel::class.java)
-                .where().beginGroup()
-                .equals(WCProductModelTable.LOCAL_SITE_ID, site.id)
-                .endGroup()
-                .endWhere()
-                .execute()
-                .also(::triggerProductsUpdateIfNeeded)
+            .where().beginGroup()
+            .equals(WCProductModelTable.LOCAL_SITE_ID, site.id)
+            .endGroup()
+            .endWhere()
+            .execute()
+            .also(::triggerProductsUpdateIfNeeded)
     }
 
     fun insertOrUpdateProductVariation(variation: WCProductVariationModel): Int {
         val result = WellSql.select(WCProductVariationModel::class.java)
-                .where().beginGroup()
-                .equals(WCProductVariationModelTable.ID, variation.id)
-                .or()
-                .beginGroup()
-                .equals(WCProductVariationModelTable.REMOTE_PRODUCT_ID, variation.remoteProductId)
-                .equals(WCProductVariationModelTable.REMOTE_VARIATION_ID, variation.remoteVariationId)
-                .equals(WCProductVariationModelTable.LOCAL_SITE_ID, variation.localSiteId)
-                .endGroup()
-                .endGroup().endWhere()
-                .asModel.firstOrNull()
+            .where().beginGroup()
+            .equals(WCProductVariationModelTable.ID, variation.id)
+            .or()
+            .beginGroup()
+            .equals(WCProductVariationModelTable.REMOTE_PRODUCT_ID, variation.remoteProductId)
+            .equals(WCProductVariationModelTable.REMOTE_VARIATION_ID, variation.remoteVariationId)
+            .equals(WCProductVariationModelTable.LOCAL_SITE_ID, variation.localSiteId)
+            .endGroup()
+            .endGroup().endWhere()
+            .asModel.firstOrNull()
 
         return if (result == null) {
             // Insert
@@ -260,9 +250,9 @@ object ProductSqlUtils {
             // Update
             val oldId = result.id
             WellSql.update(WCProductVariationModel::class.java).whereId(oldId)
-                    .put(variation, UpdateAllExceptId(WCProductVariationModel::class.java))
-                    .execute()
-                    .also(::triggerVariationsUpdateIfNeeded)
+                .put(variation, UpdateAllExceptId(WCProductVariationModel::class.java))
+                .execute()
+                .also(::triggerVariationsUpdateIfNeeded)
         }
     }
 
@@ -278,24 +268,24 @@ object ProductSqlUtils {
 
     fun getVariationsForProduct(site: SiteModel, remoteProductId: Long): List<WCProductVariationModel> {
         return WellSql.select(WCProductVariationModel::class.java)
-                .where()
-                .beginGroup()
-                .equals(WCProductVariationModelTable.REMOTE_PRODUCT_ID, remoteProductId)
-                .equals(WCProductVariationModelTable.LOCAL_SITE_ID, site.id)
-                .endGroup().endWhere()
-                .orderBy(WCProductVariationModelTable.MENU_ORDER, SelectQuery.ORDER_ASCENDING)
-                .asModel
+            .where()
+            .beginGroup()
+            .equals(WCProductVariationModelTable.REMOTE_PRODUCT_ID, remoteProductId)
+            .equals(WCProductVariationModelTable.LOCAL_SITE_ID, site.id)
+            .endGroup().endWhere()
+            .orderBy(WCProductVariationModelTable.MENU_ORDER, SelectQuery.ORDER_ASCENDING)
+            .asModel
     }
 
     fun deleteVariationsForProduct(site: SiteModel, remoteProductId: Long): Int {
         return WellSql.delete(WCProductVariationModel::class.java)
-                .where().beginGroup()
-                .equals(WCProductVariationModelTable.LOCAL_SITE_ID, site.id)
-                .equals(WCProductVariationModelTable.REMOTE_PRODUCT_ID, remoteProductId)
-                .endGroup()
-                .endWhere()
-                .execute()
-                .also(::triggerVariationsUpdateIfNeeded)
+            .where().beginGroup()
+            .equals(WCProductVariationModelTable.LOCAL_SITE_ID, site.id)
+            .equals(WCProductVariationModelTable.REMOTE_PRODUCT_ID, remoteProductId)
+            .endGroup()
+            .endWhere()
+            .execute()
+            .also(::triggerVariationsUpdateIfNeeded)
     }
 
     fun insertOrUpdateProductReviews(productReviews: List<WCProductReviewModel>): Int {
@@ -310,15 +300,15 @@ object ProductSqlUtils {
 
     fun insertOrUpdateProductReview(productReview: WCProductReviewModel): Int {
         val result = WellSql.select(WCProductReviewModel::class.java)
-                .where().beginGroup()
-                .equals(WCProductReviewModelTable.ID, productReview.id)
-                .or()
-                .beginGroup()
-                .equals(WCProductReviewModelTable.REMOTE_PRODUCT_REVIEW_ID, productReview.remoteProductReviewId)
-                .equals(WCProductReviewModelTable.LOCAL_SITE_ID, productReview.localSiteId)
-                .endGroup()
-                .endGroup().endWhere()
-                .asModel.firstOrNull()
+            .where().beginGroup()
+            .equals(WCProductReviewModelTable.ID, productReview.id)
+            .or()
+            .beginGroup()
+            .equals(WCProductReviewModelTable.REMOTE_PRODUCT_REVIEW_ID, productReview.remoteProductReviewId)
+            .equals(WCProductReviewModelTable.LOCAL_SITE_ID, productReview.localSiteId)
+            .endGroup()
+            .endGroup().endWhere()
+            .asModel.firstOrNull()
 
         return if (result == null) {
             // Insert
@@ -328,46 +318,46 @@ object ProductSqlUtils {
             // Update
             val oldId = result.id
             WellSql.update(WCProductReviewModel::class.java).whereId(oldId)
-                    .put(productReview, UpdateAllExceptId(WCProductReviewModel::class.java)).execute()
+                .put(productReview, UpdateAllExceptId(WCProductReviewModel::class.java)).execute()
         }
     }
 
     fun deleteProductReview(productReview: WCProductReviewModel) =
-            WellSql.delete(WCProductReviewModel::class.java)
-                    .where()
-                    .equals(WCProductReviewModelTable.REMOTE_PRODUCT_REVIEW_ID, productReview.remoteProductReviewId)
-                    .endWhere().execute()
+        WellSql.delete(WCProductReviewModel::class.java)
+            .where()
+            .equals(WCProductReviewModelTable.REMOTE_PRODUCT_REVIEW_ID, productReview.remoteProductReviewId)
+            .endWhere().execute()
 
     fun getProductReviewByRemoteId(
         localSiteId: Int,
         remoteReviewId: Long
     ): WCProductReviewModel? {
         return WellSql.select(WCProductReviewModel::class.java)
-                .where()
-                .beginGroup()
-                .equals(WCProductReviewModelTable.LOCAL_SITE_ID, localSiteId)
-                .equals(WCProductReviewModelTable.REMOTE_PRODUCT_REVIEW_ID, remoteReviewId)
-                .endGroup()
-                .endWhere()
-                .asModel.firstOrNull()
+            .where()
+            .beginGroup()
+            .equals(WCProductReviewModelTable.LOCAL_SITE_ID, localSiteId)
+            .equals(WCProductReviewModelTable.REMOTE_PRODUCT_REVIEW_ID, remoteReviewId)
+            .endGroup()
+            .endWhere()
+            .asModel.firstOrNull()
     }
 
     fun getProductReviewsForSite(site: SiteModel): List<WCProductReviewModel> {
         return WellSql.select(WCProductReviewModel::class.java)
-                .where()
-                .equals(WCProductReviewModelTable.LOCAL_SITE_ID, site.id)
-                .endWhere()
-                .orderBy(WCProductReviewModelTable.DATE_CREATED, SelectQuery.ORDER_DESCENDING)
-                .asModel
+            .where()
+            .equals(WCProductReviewModelTable.LOCAL_SITE_ID, site.id)
+            .endWhere()
+            .orderBy(WCProductReviewModelTable.DATE_CREATED, SelectQuery.ORDER_DESCENDING)
+            .asModel
     }
 
     fun getProductReviewsByReviewIds(reviewIds: List<Long>): List<WCProductReviewModel> {
         return WellSql.select(WCProductReviewModel::class.java)
-                .where()
-                .isIn(WCProductReviewModelTable.REMOTE_PRODUCT_REVIEW_ID, reviewIds)
-                .endWhere()
-                .orderBy(WCProductReviewModelTable.DATE_CREATED, SelectQuery.ORDER_DESCENDING)
-                .asModel
+            .where()
+            .isIn(WCProductReviewModelTable.REMOTE_PRODUCT_REVIEW_ID, reviewIds)
+            .endWhere()
+            .orderBy(WCProductReviewModelTable.DATE_CREATED, SelectQuery.ORDER_DESCENDING)
+            .asModel
     }
 
     fun getProductReviewsForProductAndSiteId(
@@ -375,43 +365,43 @@ object ProductSqlUtils {
         remoteProductId: Long
     ): List<WCProductReviewModel> {
         return WellSql.select(WCProductReviewModel::class.java)
-                .where().beginGroup()
-                .equals(WCProductReviewModelTable.REMOTE_PRODUCT_ID, remoteProductId)
-                .equals(WCProductReviewModelTable.LOCAL_SITE_ID, localSiteId)
-                .endGroup().endWhere()
-                .orderBy(WCProductReviewModelTable.DATE_CREATED, SelectQuery.ORDER_DESCENDING)
-                .asModel
+            .where().beginGroup()
+            .equals(WCProductReviewModelTable.REMOTE_PRODUCT_ID, remoteProductId)
+            .equals(WCProductReviewModelTable.LOCAL_SITE_ID, localSiteId)
+            .endGroup().endWhere()
+            .orderBy(WCProductReviewModelTable.DATE_CREATED, SelectQuery.ORDER_DESCENDING)
+            .asModel
     }
 
     fun deleteAllProductReviewsForSite(site: SiteModel): Int {
         return WellSql.delete(WCProductReviewModel::class.java)
-                .where()
-                .equals(WCProductReviewModelTable.LOCAL_SITE_ID, site.id)
-                .or()
-                .equals(WCProductReviewModelTable.LOCAL_SITE_ID, 0) // Should never happen, but sanity cleanup
-                .endWhere().execute()
+            .where()
+            .equals(WCProductReviewModelTable.LOCAL_SITE_ID, site.id)
+            .or()
+            .equals(WCProductReviewModelTable.LOCAL_SITE_ID, 0) // Should never happen, but sanity cleanup
+            .endWhere().execute()
     }
 
     fun deleteAllProductReviews() = WellSql.delete(WCProductReviewModel::class.java).execute()
 
     fun deleteProduct(site: SiteModel, remoteProductId: Long): Int {
         return WellSql.delete(WCProductModel::class.java)
-                .where()
-                .equals(WCProductModelTable.LOCAL_SITE_ID, site.id)
-                .equals(WCProductModelTable.REMOTE_PRODUCT_ID, remoteProductId)
-                .endWhere()
-                .execute()
-                .also(::triggerProductsUpdateIfNeeded)
+            .where()
+            .equals(WCProductModelTable.LOCAL_SITE_ID, site.id)
+            .equals(WCProductModelTable.REMOTE_PRODUCT_ID, remoteProductId)
+            .endWhere()
+            .execute()
+            .also(::triggerProductsUpdateIfNeeded)
     }
 
     fun getProductShippingClassListForSite(
         localSiteId: Int
     ): List<WCProductShippingClassModel> {
         return WellSql.select(WCProductShippingClassModel::class.java)
-                .where().beginGroup()
-                .equals(WCProductShippingClassModelTable.LOCAL_SITE_ID, localSiteId)
-                .endGroup().endWhere()
-                .asModel
+            .where().beginGroup()
+            .equals(WCProductShippingClassModelTable.LOCAL_SITE_ID, localSiteId)
+            .endGroup().endWhere()
+            .asModel
     }
 
     fun getProductShippingClassByRemoteId(
@@ -419,20 +409,20 @@ object ProductSqlUtils {
         localSiteId: Int
     ): WCProductShippingClassModel? {
         return WellSql.select(WCProductShippingClassModel::class.java)
-                .where().beginGroup()
-                .equals(WCProductShippingClassModelTable.REMOTE_SHIPPING_CLASS_ID, remoteShippingClassId)
-                .equals(WCProductShippingClassModelTable.LOCAL_SITE_ID, localSiteId)
-                .endGroup().endWhere()
-                .asModel.firstOrNull()
+            .where().beginGroup()
+            .equals(WCProductShippingClassModelTable.REMOTE_SHIPPING_CLASS_ID, remoteShippingClassId)
+            .equals(WCProductShippingClassModelTable.LOCAL_SITE_ID, localSiteId)
+            .endGroup().endWhere()
+            .asModel.firstOrNull()
     }
 
     fun deleteProductShippingClassListForSite(site: SiteModel): Int {
         return WellSql.delete(WCProductShippingClassModel::class.java)
-                .where()
-                .equals(WCProductShippingClassModelTable.LOCAL_SITE_ID, site.id)
-                .or()
-                .equals(WCProductShippingClassModelTable.LOCAL_SITE_ID, 0) // Should never happen, but sanity cleanup
-                .endWhere().execute()
+            .where()
+            .equals(WCProductShippingClassModelTable.LOCAL_SITE_ID, site.id)
+            .or()
+            .equals(WCProductShippingClassModelTable.LOCAL_SITE_ID, 0) // Should never happen, but sanity cleanup
+            .endWhere().execute()
     }
 
     fun insertOrUpdateProductShippingClassList(shippingClassList: List<WCProductShippingClassModel>): Int {
@@ -447,15 +437,15 @@ object ProductSqlUtils {
 
     fun insertOrUpdateProductShippingClass(shippingClass: WCProductShippingClassModel): Int {
         val result = WellSql.select(WCProductShippingClassModel::class.java)
-                .where().beginGroup()
-                .equals(WCProductShippingClassModelTable.ID, shippingClass.id)
-                .or()
-                .beginGroup()
-                .equals(WCProductShippingClassModelTable.LOCAL_SITE_ID, shippingClass.localSiteId)
-                .equals(WCProductShippingClassModelTable.REMOTE_SHIPPING_CLASS_ID, shippingClass.remoteShippingClassId)
-                .endGroup()
-                .endGroup().endWhere()
-                .asModel.firstOrNull()
+            .where().beginGroup()
+            .equals(WCProductShippingClassModelTable.ID, shippingClass.id)
+            .or()
+            .beginGroup()
+            .equals(WCProductShippingClassModelTable.LOCAL_SITE_ID, shippingClass.localSiteId)
+            .equals(WCProductShippingClassModelTable.REMOTE_SHIPPING_CLASS_ID, shippingClass.remoteShippingClassId)
+            .endGroup()
+            .endGroup().endWhere()
+            .asModel.firstOrNull()
 
         return if (result == null) {
             // Insert
@@ -465,7 +455,7 @@ object ProductSqlUtils {
             // Update
             val oldId = result.id
             WellSql.update(WCProductShippingClassModel::class.java).whereId(oldId)
-                    .put(shippingClass, UpdateAllExceptId(WCProductShippingClassModel::class.java)).execute()
+                .put(shippingClass, UpdateAllExceptId(WCProductShippingClassModel::class.java)).execute()
         }
     }
 
@@ -492,11 +482,11 @@ object ProductSqlUtils {
             NAME_ASC, NAME_DESC -> WCProductCategoryModelTable.NAME
         }
         val categories = WellSql.select(WCProductCategoryModel::class.java)
-                .where()
-                .equals(WCProductModelTable.LOCAL_SITE_ID, site.id)
-                .endWhere()
-                .orderBy(sortField, sortOrder)
-                .asModel
+            .where()
+            .equals(WCProductModelTable.LOCAL_SITE_ID, site.id)
+            .endWhere()
+            .orderBy(sortField, sortOrder)
+            .asModel
 
         return if (sortType == NAME_ASC || sortType == NAME_DESC) {
             sortCategoriesByName(categories, descending = sortType == NAME_DESC)
@@ -510,13 +500,13 @@ object ProductSqlUtils {
         categoryId: Long
     ): WCProductCategoryModel? {
         return WellSql.select(WCProductCategoryModel::class.java)
-                .where()
-                .beginGroup()
-                .equals(WCProductCategoryModelTable.LOCAL_SITE_ID, localSiteId)
-                .equals(WCProductCategoryModelTable.REMOTE_CATEGORY_ID, categoryId)
-                .endGroup()
-                .endWhere()
-                .asModel.firstOrNull()
+            .where()
+            .beginGroup()
+            .equals(WCProductCategoryModelTable.LOCAL_SITE_ID, localSiteId)
+            .equals(WCProductCategoryModelTable.REMOTE_CATEGORY_ID, categoryId)
+            .endGroup()
+            .endWhere()
+            .asModel.firstOrNull()
     }
 
     fun getProductCategoriesByRemoteIds(
@@ -538,14 +528,14 @@ object ProductSqlUtils {
         parentId: Long
     ): WCProductCategoryModel? {
         return WellSql.select(WCProductCategoryModel::class.java)
-                .where()
-                .beginGroup()
-                .equals(WCProductCategoryModelTable.LOCAL_SITE_ID, localSiteId)
-                .equals(WCProductCategoryModelTable.NAME, categoryName)
-                .equals(WCProductCategoryModelTable.PARENT, parentId)
-                .endGroup()
-                .endWhere()
-                .asModel.firstOrNull()
+            .where()
+            .beginGroup()
+            .equals(WCProductCategoryModelTable.LOCAL_SITE_ID, localSiteId)
+            .equals(WCProductCategoryModelTable.NAME, categoryName)
+            .equals(WCProductCategoryModelTable.PARENT, parentId)
+            .endGroup()
+            .endWhere()
+            .asModel.firstOrNull()
     }
 
     fun insertOrUpdateProductCategories(productCategories: List<WCProductCategoryModel>): Int {
@@ -560,15 +550,15 @@ object ProductSqlUtils {
 
     fun insertOrUpdateProductCategory(productCategory: WCProductCategoryModel): Int {
         val result = WellSql.select(WCProductCategoryModel::class.java)
-                .where().beginGroup()
-                .equals(WCProductCategoryModelTable.ID, productCategory.id)
-                .or()
-                .beginGroup()
-                .equals(WCProductCategoryModelTable.REMOTE_CATEGORY_ID, productCategory.remoteCategoryId)
-                .equals(WCProductCategoryModelTable.LOCAL_SITE_ID, productCategory.localSiteId)
-                .endGroup()
-                .endGroup().endWhere()
-                .asModel.firstOrNull()
+            .where().beginGroup()
+            .equals(WCProductCategoryModelTable.ID, productCategory.id)
+            .or()
+            .beginGroup()
+            .equals(WCProductCategoryModelTable.REMOTE_CATEGORY_ID, productCategory.remoteCategoryId)
+            .equals(WCProductCategoryModelTable.LOCAL_SITE_ID, productCategory.localSiteId)
+            .endGroup()
+            .endGroup().endWhere()
+            .asModel.firstOrNull()
 
         return if (result == null) {
             // Insert
@@ -579,27 +569,27 @@ object ProductSqlUtils {
             // Update
             val oldId = result.id
             WellSql.update(WCProductCategoryModel::class.java).whereId(oldId)
-                    .put(productCategory, UpdateAllExceptId(WCProductCategoryModel::class.java))
-                    .execute()
-                    .also(::triggerCategoriesUpdateIfNeeded)
+                .put(productCategory, UpdateAllExceptId(WCProductCategoryModel::class.java))
+                .execute()
+                .also(::triggerCategoriesUpdateIfNeeded)
         }
     }
 
     fun deleteProductCategory(productCategory: WCProductCategoryModel) =
-            WellSql.delete(WCProductCategoryModel::class.java)
-                .where()
-                .equals(WCProductCategoryModelTable.REMOTE_CATEGORY_ID, productCategory.remoteCategoryId)
-                .endWhere().execute()
+        WellSql.delete(WCProductCategoryModel::class.java)
+            .where()
+            .equals(WCProductCategoryModelTable.REMOTE_CATEGORY_ID, productCategory.remoteCategoryId)
+            .endWhere().execute()
 
     fun deleteAllProductCategoriesForSite(site: SiteModel): Int {
         return WellSql.delete(WCProductCategoryModel::class.java)
-                .where()
-                .equals(WCProductCategoryModelTable.LOCAL_SITE_ID, site.id)
-                .or()
-                .equals(WCProductCategoryModelTable.LOCAL_SITE_ID, 0) // Should never happen, but sanity cleanup
-                .endWhere()
-                .execute()
-                .also(::triggerCategoriesUpdateIfNeeded)
+            .where()
+            .equals(WCProductCategoryModelTable.LOCAL_SITE_ID, site.id)
+            .or()
+            .equals(WCProductCategoryModelTable.LOCAL_SITE_ID, 0) // Should never happen, but sanity cleanup
+            .endWhere()
+            .execute()
+            .also(::triggerCategoriesUpdateIfNeeded)
     }
 
     fun deleteAllProductCategories() = WellSql.delete(WCProductCategoryModel::class.java)
@@ -610,10 +600,10 @@ object ProductSqlUtils {
         localSiteId: Int
     ): List<WCProductTagModel> {
         return WellSql.select(WCProductTagModel::class.java)
-                .where().beginGroup()
-                .equals(WCProductTagModelTable.LOCAL_SITE_ID, localSiteId)
-                .endGroup().endWhere()
-                .asModel
+            .where().beginGroup()
+            .equals(WCProductTagModelTable.LOCAL_SITE_ID, localSiteId)
+            .endGroup().endWhere()
+            .asModel
     }
 
     fun getProductTagsByNames(
@@ -621,11 +611,11 @@ object ProductSqlUtils {
         tags: List<String>
     ): List<WCProductTagModel> {
         return WellSql.select(WCProductTagModel::class.java)
-                .where().beginGroup()
-                .equals(WCProductTagModelTable.LOCAL_SITE_ID, localSiteId)
-                .isIn(WCProductModelTable.NAME, tags)
-                .endGroup().endWhere()
-                .asModel
+            .where().beginGroup()
+            .equals(WCProductTagModelTable.LOCAL_SITE_ID, localSiteId)
+            .isIn(WCProductModelTable.NAME, tags)
+            .endGroup().endWhere()
+            .asModel
     }
 
     fun getProductTagByName(
@@ -633,20 +623,20 @@ object ProductSqlUtils {
         tagName: String
     ): WCProductTagModel? {
         return WellSql.select(WCProductTagModel::class.java)
-                .where().beginGroup()
-                .equals(WCProductTagModelTable.LOCAL_SITE_ID, localSiteId)
-                .equals(WCProductTagModelTable.NAME, tagName)
-                .endGroup().endWhere()
-                .asModel.firstOrNull()
+            .where().beginGroup()
+            .equals(WCProductTagModelTable.LOCAL_SITE_ID, localSiteId)
+            .equals(WCProductTagModelTable.NAME, tagName)
+            .endGroup().endWhere()
+            .asModel.firstOrNull()
     }
 
     fun deleteProductTagsForSite(site: SiteModel): Int {
         return WellSql.delete(WCProductTagModel::class.java)
-                .where()
-                .equals(WCProductTagModelTable.LOCAL_SITE_ID, site.id)
-                .or()
-                .equals(WCProductTagModelTable.LOCAL_SITE_ID, 0) // Should never happen, but sanity cleanup
-                .endWhere().execute()
+            .where()
+            .equals(WCProductTagModelTable.LOCAL_SITE_ID, site.id)
+            .or()
+            .equals(WCProductTagModelTable.LOCAL_SITE_ID, 0) // Should never happen, but sanity cleanup
+            .endWhere().execute()
     }
 
     fun insertOrUpdateProductTags(tags: List<WCProductTagModel>): Int {
@@ -659,15 +649,15 @@ object ProductSqlUtils {
 
     fun insertOrUpdateProductTag(tag: WCProductTagModel): Int {
         val result = WellSql.select(WCProductTagModel::class.java)
-                .where().beginGroup()
-                .equals(WCProductTagModelTable.ID, tag.id)
-                .or()
-                .beginGroup()
-                .equals(WCProductTagModelTable.LOCAL_SITE_ID, tag.localSiteId)
-                .equals(WCProductTagModelTable.REMOTE_TAG_ID, tag.remoteTagId)
-                .endGroup()
-                .endGroup().endWhere()
-                .asModel.firstOrNull()
+            .where().beginGroup()
+            .equals(WCProductTagModelTable.ID, tag.id)
+            .or()
+            .beginGroup()
+            .equals(WCProductTagModelTable.LOCAL_SITE_ID, tag.localSiteId)
+            .equals(WCProductTagModelTable.REMOTE_TAG_ID, tag.remoteTagId)
+            .endGroup()
+            .endGroup().endWhere()
+            .asModel.firstOrNull()
 
         return if (result == null) {
             // Insert
@@ -677,7 +667,7 @@ object ProductSqlUtils {
             // Update
             val oldId = result.id
             WellSql.update(WCProductTagModel::class.java).whereId(oldId)
-                    .put(tag, UpdateAllExceptId(WCProductTagModel::class.java)).execute()
+                .put(tag, UpdateAllExceptId(WCProductTagModel::class.java)).execute()
         }
     }
 
