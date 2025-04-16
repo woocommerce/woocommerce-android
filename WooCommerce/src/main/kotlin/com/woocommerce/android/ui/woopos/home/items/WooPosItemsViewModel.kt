@@ -4,54 +4,50 @@ import android.os.Parcelable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
-import com.woocommerce.android.model.Coupon
-import com.woocommerce.android.model.Product
-import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.woopos.featureflags.WooPosIsCouponsEnabled
 import com.woocommerce.android.ui.woopos.featureflags.WooPosIsProductsSearchEnabled
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemNavigationData.VariableProductData
-import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState.Content
-import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsDataSource
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateToVariationsScreen
-import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
+import com.woocommerce.android.ui.woopos.home.items.providers.WooPosItemDataProvider
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ProductsPullToRefreshTriggered
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
-import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
+import javax.inject.Named
 
 @HiltViewModel
 class WooPosItemsViewModel @Inject constructor(
-    private val productsDataSource: WooPosProductsDataSource,
+    @Named("ProductProvider") private val productDataProvider: WooPosItemDataProvider,
+    @Named("CouponsProvider") private val couponDataProvider: WooPosItemDataProvider,
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender,
-    private val priceFormat: WooPosFormatPrice,
     private val preferencesRepository: WooPosPreferencesRepository,
     private val navigator: WooPosItemsNavigator,
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val searchHelper: WooPosItemsSearchHelper,
     private val isProductsSearchEnabled: WooPosIsProductsSearchEnabled,
     private val isCouponsEnabled: WooPosIsCouponsEnabled,
-    private val couponsDataSource: WooPosCouponsDataSource,
 ) : ViewModel() {
-    private var loadMoreProductsJob: Job? = null
-
     private val _viewState =
         MutableStateFlow<WooPosItemsViewState>(WooPosItemsViewState.Loading(withCart = true))
+
+    var currentDataProvider = productDataProvider
+
+    private var collectDataJob: Job? = null
+
     val viewState: StateFlow<WooPosItemsViewState> = _viewState
         .onEach { notifyParentAboutStatusChange(it) }
         .stateIn(
@@ -60,49 +56,66 @@ class WooPosItemsViewModel @Inject constructor(
             initialValue = _viewState.value,
         )
 
-    private val couponsList = couponsDataSource.couponsFlow
-
     init {
-        viewModelScope.launch {
-            couponsList
-                .map { coupons ->
-                    if (coupons.isNullOrEmpty()) {
-                        WooPosItemsViewState.Empty()
-                    } else {
-                        WooPosItemsViewState.Content(
-                            items = coupons.map { it.toItemSelectionViewState() },
-                            paginationState = WooPosPaginationState.None,
-                            pullToRefreshState = WooPosPullToRefreshState.Enabled,
-                            couponsEnabled = isCouponsEnabled.invoke(),
-                            bannerState = WooPosItemsViewState.Content.BannerState(
-                                isBannerHiddenByUser = isBannerHiddenByUser(),
-                                title = R.string.woopos_banner_simple_products_only_title,
-                                message = R.string.woopos_banner_simple_products_only_message,
-                                icon = R.drawable.info,
-                            ),
-                            search = searchHelper.getInitialSearchState(isProductsSearchEnabled())
-                        )
-                    }
-                }
-                // Collect each new view state emitted from the flow.
-                .collect { newState ->
-                    // Update your internal view state.
-                    _viewState.value = newState
-                }
-        }
 
         searchHelper.initialize(
             coroutineScope = viewModelScope,
             viewStateFlow = _viewState
         )
+        viewModelScope.launch {
+            productDataProvider.init()
+        }
+        viewModelScope.launch {
+            couponDataProvider.init()
+        }
 
-        // TODO: If Coupons load coupons otherwise load products
-//        loadProducts(
-//            forceRefreshProducts = false,
-//            withPullToRefresh = false,
-//            withCart = true,
-//        )
-        fetchCoupons(withPullToRefresh = false, withCart = true)
+        updateDataProvider(productDataProvider)
+
+    }
+
+    private fun updateDataProvider(dataProvider: WooPosItemDataProvider) {
+        currentDataProvider = dataProvider
+
+        collectDataJob?.cancel()
+        collectDataJob = viewModelScope.launch {
+            currentDataProvider.data.collect { data ->
+                _viewState.value =
+                    when {
+                        data.error != null && data.paginationState != WooPosPaginationState.Error -> {
+                            WooPosItemsViewState.Error(
+                                pullToRefreshState = data.pullToRefreshState,
+                            )
+                        }
+
+                        data.items.isEmpty() && data.pullToRefreshState == WooPosPullToRefreshState.Disabled && data.paginationState == WooPosPaginationState.None -> {
+                            WooPosItemsViewState.Loading(
+                                pullToRefreshState = data.pullToRefreshState,
+                                withCart = true
+                            )
+                        }
+
+                        data.items.isEmpty() && data.pullToRefreshState != WooPosPullToRefreshState.Refreshing && data.paginationState != WooPosPaginationState.Loading -> {
+                            WooPosItemsViewState.Empty(pullToRefreshState = data.pullToRefreshState)
+                        }
+
+                        else -> {
+                            WooPosItemsViewState.Content(
+                                items = data.items,
+                                paginationState = data.paginationState,
+                                pullToRefreshState = data.pullToRefreshState,
+                                couponsEnabled = isCouponsEnabled.invoke(),
+                                bannerState = WooPosItemsViewState.Content.BannerState(
+                                    isBannerHiddenByUser = isBannerHiddenByUser(),
+                                    title = R.string.woopos_banner_simple_products_only_title,
+                                    message = R.string.woopos_banner_simple_products_only_message,
+                                    icon = R.drawable.info,
+                                ),
+                                search = searchHelper.getInitialSearchState(isProductsSearchEnabled())
+                            )
+                        }
+                    }
+            }
+        }
     }
 
     fun onUIEvent(event: WooPosItemsUIEvent) {
@@ -116,30 +129,16 @@ class WooPosItemsViewModel @Inject constructor(
             }
 
             WooPosItemsUIEvent.PullToRefreshTriggered -> {
-                // TODO: If Coupons load coupons otherwise load products
-                loadProducts(
-                    forceRefreshProducts = true,
-                    withPullToRefresh = true,
-                    withCart = true,
-                )
-                fetchCoupons(
-                    withPullToRefresh = true,
-                    withCart = true,
-                )
-                viewModelScope.launch { analyticsTracker.track(ProductsPullToRefreshTriggered) }
+                viewModelScope.launch {
+                    currentDataProvider.fetchItems(forceRefresh = true)
+                    analyticsTracker.track(ProductsPullToRefreshTriggered)
+                }
             }
 
             WooPosItemsUIEvent.ProductsLoadingErrorRetryButtonClicked -> {
-                // TODO: If Coupons load coupons otherwise load products
-                loadProducts(
-                    forceRefreshProducts = false,
-                    withPullToRefresh = false,
-                    withCart = false,
-                )
-                fetchCoupons(
-                    withPullToRefresh = false,
-                    withCart = false,
-                )
+                viewModelScope.launch {
+                    currentDataProvider.fetchItems(forceRefresh = false)
+                }
             }
 
             WooPosItemsUIEvent.SimpleProductsBannerClosed -> {
@@ -164,15 +163,14 @@ class WooPosItemsViewModel @Inject constructor(
                 event.query,
                 event.cursorPosition
             )
+
             WooPosItemsUIEvent.SearchAnimationComplete -> searchHelper.onAnimationComplete()
 
             WooPosItemsUIEvent.CouponsButtonClicked -> {
-                sendEventToParent(
-                    ChildToParentEvent.ItemClickedInProductSelector(
-                        // CouponsProject: Show available coupons instead
-                        ItemClickedData.Coupon(id = 0, couponCode = "DummyCoupon")
-                    )
-                )
+                if (currentDataProvider == productDataProvider)
+                    updateDataProvider(couponDataProvider)
+                else
+                    updateDataProvider(productDataProvider)
             }
         }
     }
@@ -244,164 +242,9 @@ class WooPosItemsViewModel @Inject constructor(
         }
     }
 
-    private fun loadProducts(
-        forceRefreshProducts: Boolean,
-        withPullToRefresh: Boolean,
-        withCart: Boolean
-    ) {
-        viewModelScope.launch {
-            _viewState.value = if (withPullToRefresh) {
-                buildProductsReloadingState()
-            } else {
-                WooPosItemsViewState.Loading(withCart = withCart)
-            }
-
-            productsDataSource.loadSimpleProducts(forceRefreshProducts = forceRefreshProducts).collect { result ->
-                when (result) {
-                    is WooPosProductsDataSource.ProductsResult.Cached -> {
-                        if (result.products.isNotEmpty()) {
-                            _viewState.value = result.products.toContentState()
-                        }
-                    }
-
-                    is WooPosProductsDataSource.ProductsResult.Remote -> {
-                        _viewState.value = when {
-                            result.productsResult.isSuccess -> {
-                                val products = result.productsResult.getOrThrow()
-                                if (products.isNotEmpty()) {
-                                    val currentState = _viewState.value
-                                    var paginationState = if (loadMoreProductsJob?.isActive == true) {
-                                        WooPosPaginationState.Loading
-                                    } else {
-                                        WooPosPaginationState.None
-                                    }
-                                    if (currentState is WooPosItemsViewState.Content) {
-                                        currentState.copy(
-                                            items = products.map { it.toItemSelectionViewState() },
-                                            paginationState = paginationState,
-                                            pullToRefreshState = if (searchHelper.isSearchOpen()) {
-                                                WooPosPullToRefreshState.Disabled
-                                            } else {
-                                                WooPosPullToRefreshState.Enabled
-                                            },
-                                        )
-                                    } else {
-                                        products.toContentState(
-                                            paginationState = paginationState
-                                        )
-                                    }
-                                } else {
-                                    WooPosItemsViewState.Empty()
-                                }
-                            }
-                            else -> WooPosItemsViewState.Error()
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private fun fetchCoupons(
-        withPullToRefresh: Boolean,
-        withCart: Boolean
-    ) {
-        viewModelScope.launch {
-            _viewState.value = if (withPullToRefresh) {
-                buildProductsReloadingState()
-            } else {
-                WooPosItemsViewState.Loading(withCart = withCart)
-            }
-            val result = couponsDataSource.clearCacheAndFetchFirstPage()
-
-            if (!result.isSuccess) {
-                _viewState.value = WooPosItemsViewState.Error()
-            }
-        }
-    }
-
-    private fun buildProductsReloadingState() =
-        when (val state = viewState.value) {
-            is WooPosItemsViewState.Content -> state.copy(pullToRefreshState = WooPosPullToRefreshState.Refreshing)
-            is WooPosItemsViewState.Loading -> state.copy(pullToRefreshState = WooPosPullToRefreshState.Refreshing)
-            is WooPosItemsViewState.Error -> state.copy(pullToRefreshState = WooPosPullToRefreshState.Refreshing)
-            is WooPosItemsViewState.Empty -> state.copy(pullToRefreshState = WooPosPullToRefreshState.Refreshing)
-        }
-
-    private suspend fun List<Product>.toContentState(
-        paginationState: WooPosPaginationState = WooPosPaginationState.None
-    ) = WooPosItemsViewState.Content(
-        items = map { it.toItemSelectionViewState() },
-        paginationState = paginationState,
-        pullToRefreshState = WooPosPullToRefreshState.Enabled,
-        couponsEnabled = isCouponsEnabled.invoke(),
-        bannerState = WooPosItemsViewState.Content.BannerState(
-            isBannerHiddenByUser = isBannerHiddenByUser(),
-            title = R.string.woopos_banner_simple_products_only_title,
-            message = R.string.woopos_banner_simple_products_only_message,
-            icon = R.drawable.info,
-        ),
-        search = searchHelper.getInitialSearchState(isProductsSearchEnabled())
-    )
-
-    private suspend fun Product.toItemSelectionViewState(): WooPosItemSelectionViewState {
-        return if (this.isVariable()) {
-            WooPosItemSelectionViewState.Product.Variable(
-                id = this.remoteId,
-                name = this.name,
-                price = priceFormat(this.price),
-                imageUrl = this.firstImageUrl,
-                numOfVariations = this.numVariations,
-                variationIds = this.variationIds
-            )
-        } else {
-            WooPosItemSelectionViewState.Product.Simple(
-                id = this.remoteId,
-                name = this.name,
-                price = priceFormat(this.price),
-                imageUrl = this.firstImageUrl,
-            )
-        }
-    }
-
-    private fun Coupon.toItemSelectionViewState(): WooPosItemSelectionViewState {
-        return WooPosItemSelectionViewState.Coupon(
-                id = this.id,
-                name = this.code ?: "", // TODO handle null case properly
-            )
-    }
-
     private fun onEndOfProductsListReached() {
-        val currentState = _viewState.value
-        if (currentState !is Content) {
-            return
-        }
-        viewModelScope.launch {
-            val result = couponsDataSource.loadMore()
-            if (!result.isSuccess) {
-                _viewState.value = currentState.copy(paginationState = WooPosPaginationState.Error)
-            }
-        }
-//        val currentState = _viewState.value
-//        if (currentState !is WooPosItemsViewState.Content) {
-//            return
-//        }
-//
-//        if (!productsDataSource.hasMorePages) {
-//            return
-//        }
-//
-//        _viewState.value = currentState.copy(paginationState = WooPosPaginationState.Loading)
-//
-//        loadMoreProductsJob?.cancel()
-//        loadMoreProductsJob = viewModelScope.launch {
-//            val result = productsDataSource.loadMore()
-//            _viewState.value = if (result.isSuccess) {
-//                result.getOrThrow().toContentState()
-//            } else {
-//                currentState.copy(paginationState = WooPosPaginationState.Error)
-//            }
-//        }
+        // todo if no more pages or not content, don't start.
+        viewModelScope.launch { currentDataProvider.loadMore() }
     }
 
     private fun notifyParentAboutStatusChange(newState: WooPosItemsViewState) {
@@ -434,10 +277,6 @@ class WooPosItemsViewModel @Inject constructor(
     private suspend fun isBannerHiddenByUser(): Boolean {
         return preferencesRepository.isSimpleProductsOnlyBannerWasHiddenByUser.first()
     }
-
-    private fun Product.isVariable() =
-        productType == ProductType.VARIABLE ||
-            productType == ProductType.VARIATION
 
     @Parcelize
     sealed class ItemClickedData(open val id: Long) : Parcelable {
