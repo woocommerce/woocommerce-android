@@ -34,7 +34,7 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
     val selectableItems: MutableStateFlow<Map<Int, SelectableShippableItemsUI>?> = MutableStateFlow(null)
 
     private val shipmentSelected = MutableStateFlow(navArgs.shipmentArgs.shipments.keys.first())
-    private val removeShipmentSheet: MutableStateFlow<Int?> = MutableStateFlow(null)
+    private val removeShipmentSheet: MutableStateFlow<RemoveShipmentSheet?> = MutableStateFlow(null)
     private val splitMessage: MutableStateFlow<SplitShipmentMessage?> = MutableStateFlow(null)
 
     init {
@@ -87,6 +87,17 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
     }
 
     fun onRemoveShipmentMenuTapped(shipmentKey: Int) {
+        val shipmentsMap = shipmentsUIMap.value?.toMutableMap() ?: return
+        removeShipmentSheet.value = RemoveShipmentSheet(
+            removingShipmentKey = shipmentKey,
+            removingShipment = shipmentsMap.getValue(shipmentKey),
+            otherShipments = shipmentsMap.minus(shipmentKey),
+        )
+    }
+
+    @Suppress("UnusedParameter")
+    fun onRemoveShipment(removingShipmentKey: Int, movingToShipmentKey: Int) {
+        // TODO handle removing shipment
     }
 
     fun onUpdateSelection(
@@ -167,7 +178,7 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
         val shipmentSelected: Int,
         val selectableItems: Map<Int, SelectableShippableItemsUI>,
         val splitMovements: List<SplitMovement> = emptyList(),
-        val removeShipmentSheet: Int? = null,
+        val removeShipmentSheet: RemoveShipmentSheet? = null,
         val splitMessage: SplitShipmentMessage? = null
     )
 
@@ -204,6 +215,12 @@ sealed class SplitShipmentMessage {
     data object Instructions : SplitShipmentMessage()
     data class Success(val snackbarData: ShippingLabelsSnackbarData) : SplitShipmentMessage()
 }
+
+data class RemoveShipmentSheet(
+    val removingShipmentKey: Int,
+    val removingShipment: SelectableShippableItemsUI,
+    val otherShipments: Map<Int, SelectableShippableItemsUI>
+)
 
 fun List<ShippableItemModel>.combine(other: List<ShippableItemModel>): List<ShippableItemModel> {
     val combinedMap = this.associateBy { it.productId }.toMutableMap()
