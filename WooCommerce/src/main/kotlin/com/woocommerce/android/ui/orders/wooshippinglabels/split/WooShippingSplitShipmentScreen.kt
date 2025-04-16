@@ -78,9 +78,10 @@ fun WooShippingSplitShipmentScreen(
             onDismissInstructions = viewModel::onDismissInstructions,
             onUpdateSelection = viewModel::onUpdateSelection,
             onUpdateShipment = viewModel::onUpdateShipment,
-            onUpdateSelectedShipment = viewModel::onUpdateSelectedShipment,
             onRemoveShipment = viewModel::onRemoveShipment,
+            onUpdateSelectedShipment = viewModel::onUpdateSelectedShipment,
             onRemoveShipmentMenuTapped = viewModel::onRemoveShipmentMenuTapped,
+            onDismissRemoveSheet = viewModel::onDismissRemoveSheet,
             modifier = modifier
         )
     }
@@ -93,8 +94,10 @@ fun WooShippingSplitShipmentScreen(
     onDismissInstructions: () -> Unit,
     onUpdateSelection: (shipmentKey: Int, index: Int, selectedIndexes: Set<Int>?) -> Unit,
     onUpdateShipment: (splitMovement: SplitMovement) -> Unit,
+    onRemoveShipment: (removingShipmentKey: Int, movingToShipmentKey: Int) -> Unit,
     onUpdateSelectedShipment: (shipmentKey: Int) -> Unit,
     onRemoveShipmentMenuTapped: (shipmentKey: Int) -> Unit,
+    onDismissRemoveSheet: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -190,6 +193,10 @@ fun WooShippingSplitShipmentScreen(
                     )
                 }
             }
+        }
+
+        viewState.removeShipmentSheet?.let { removeShipmentSheet ->
+            RemoveShipmentBottomSheet(removeShipmentSheet, onDismissRemoveSheet, onRemoveShipment)
         }
     }
 
@@ -576,7 +583,9 @@ private fun WooShippingSplitShipmentScreenPreview() = WooThemeWithBackground {
         onDismissInstructions = {},
         onUpdateSelection = { _, _, _ -> },
         onUpdateShipment = {},
+        onRemoveShipment = { _, _ -> },
         onUpdateSelectedShipment = {},
         onRemoveShipmentMenuTapped = { _ -> },
+        onDismissRemoveSheet = {}
     )
 }

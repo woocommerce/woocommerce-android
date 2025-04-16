@@ -100,6 +100,10 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
         // TODO handle removing shipment
     }
 
+    fun onDismissRemoveSheet() {
+        removeShipmentSheet.value = null
+    }
+
     fun onUpdateSelection(
         shipmentKey: Int,
         shippableItemIndex: Int,
