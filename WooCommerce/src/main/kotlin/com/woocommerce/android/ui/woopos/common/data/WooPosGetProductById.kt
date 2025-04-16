@@ -14,12 +14,18 @@ class WooPosGetProductById @Inject constructor(
     private val productsStore: WCProductStore,
 ) {
     suspend operator fun invoke(productId: Long): Product? = withContext(IO) {
-        cache.getProductById(productId) ?: productsStore.getProductByRemoteId(
-            site = selectedSite.get(),
-            remoteProductId = productId,
-        )?.toAppModel()?.let {
-            cache.addAll(listOf(it))
-            it
-        }
+        val cachedProduct = cache.getProductById(productId)
+        cachedProduct
+            ?: if (cache.getAll().size >= WooPosProductsCache.MAX_CACHE_SIZE) {
+                cache.getProductById(productId) ?: productsStore.getProductByRemoteId(
+                    site = selectedSite.get(),
+                    remoteProductId = productId,
+                )?.toAppModel()?.let {
+                    cache.addAll(listOf(it))
+                    it
+                }
+            } else {
+                null
+            }
     }
 }
