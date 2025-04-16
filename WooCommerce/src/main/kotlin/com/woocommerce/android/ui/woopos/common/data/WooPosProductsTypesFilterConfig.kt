@@ -6,7 +6,7 @@ import org.wordpress.android.fluxc.store.WCProductStore.DownloadableOptions
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 import javax.inject.Inject
 
-class WooPosProductsTypesFilter @Inject constructor() {
+class WooPosProductsTypesFilterConfig @Inject constructor() {
     val filters: Map<ProductFilterOption, String> =
         mapOf(
             ProductFilterOption.STATUS to ProductStatus.PUBLISH.value,
