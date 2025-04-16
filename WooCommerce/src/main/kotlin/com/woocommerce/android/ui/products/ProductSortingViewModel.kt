@@ -23,10 +23,22 @@ class ProductSortingViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     companion object {
         val SORTING_OPTIONS = listOf(
-            SortingListItemUIModel(R.string.product_list_sorting_newest_to_oldest, SortingListItemUIModel.Sorting.DATE_DESC),
-            SortingListItemUIModel(R.string.product_list_sorting_oldest_to_newest, SortingListItemUIModel.Sorting.DATE_ASC),
-            SortingListItemUIModel(R.string.product_list_sorting_a_to_z, SortingListItemUIModel.Sorting.TITLE_ASC),
-            SortingListItemUIModel(R.string.product_list_sorting_z_to_a, SortingListItemUIModel.Sorting.TITLE_DESC)
+            SortingListItemUIModel(
+                R.string.product_list_sorting_newest_to_oldest,
+                SortingListItemUIModel.Sorting.DATE_DESC
+            ),
+            SortingListItemUIModel(
+                R.string.product_list_sorting_oldest_to_newest,
+                SortingListItemUIModel.Sorting.DATE_ASC
+            ),
+            SortingListItemUIModel(
+                R.string.product_list_sorting_a_to_z,
+                SortingListItemUIModel.Sorting.TITLE_ASC
+            ),
+            SortingListItemUIModel(
+                R.string.product_list_sorting_z_to_a,
+                SortingListItemUIModel.Sorting.TITLE_DESC
+            )
         )
     }
 
