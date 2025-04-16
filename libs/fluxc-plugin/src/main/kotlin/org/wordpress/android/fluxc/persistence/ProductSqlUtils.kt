@@ -309,10 +309,22 @@ object ProductSqlUtils {
             DATE_ASC, DATE_DESC -> WCProductModelTable.DATE_CREATED
         }
 
+    fun getRoomSortField(sortType: ProductSorting) =
+        when (sortType) {
+            TITLE_ASC, TITLE_DESC -> "name"
+            DATE_ASC, DATE_DESC -> "date_created"
+        }
+
     private fun getSortOrder(sortType: ProductSorting) =
         when (sortType) {
             TITLE_ASC, DATE_ASC -> SelectQuery.ORDER_ASCENDING
             TITLE_DESC, DATE_DESC -> SelectQuery.ORDER_DESCENDING
+        }
+
+    fun getRoomSortOrder(sortType: ProductSorting) =
+        when (sortType) {
+            TITLE_ASC, DATE_ASC -> "ASC"
+            TITLE_DESC, DATE_DESC -> "DESC"
         }
 
     fun deleteProductsForSite(site: SiteModel): Int {

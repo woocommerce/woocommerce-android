@@ -37,6 +37,7 @@ abstract class ProductsDao {
             AND (:type IS NULL OR type = :type)
             AND (:category IS NULL OR categories LIKE '%' || :category || '%')
             AND (:excludeSampleProducts IS NULL OR isSampleProduct = :excludeSampleProducts)
+            ORDER BY :sortField :sortOrder COLLATE NOCASE
             LIMIT CASE WHEN :limit IS NULL THEN -1 ELSE :limit END
         """
     )
@@ -47,6 +48,8 @@ abstract class ProductsDao {
         type: String?,
         category: String?,
         excludeSampleProducts: Boolean,
+        sortField: String,
+        sortOrder: String,
         limit: Int?,
     ): Flow<List<WCProductModel>>
 
