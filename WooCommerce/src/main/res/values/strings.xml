@@ -4600,4 +4600,9 @@
     <string name="woo_shipping_split_shipment_shipment_name">Shipment %s</string>
     <string name="woo_shipping_split_shipment_shipment_new">New shipment</string>
     <string name="woo_shipping_split_shipment_shipment_remove">Remove %s</string>
+    <string name="woo_shipping_split_shipment_bottom_sheet_title">Remove shipment</string>
+    <string name="woo_shipping_split_shipment_bottom_sheet_desc">All items will be merged with %s.</string>
+    <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_one">Choose where to move the %d item in this shipment to.</string>
+    <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_plural">Choose where to move the %d items in this shipment to.</string>
+    <string name="woo_shipping_split_shipment_bottom_sheet_remove_button">Remove Shipment</string>
 </resources>
