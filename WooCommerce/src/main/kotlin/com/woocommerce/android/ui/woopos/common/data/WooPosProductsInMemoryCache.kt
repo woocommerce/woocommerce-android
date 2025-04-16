@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.common.data
 
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache.Companion.MAX_CACHE_SIZE
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
@@ -11,7 +12,6 @@ class WooPosProductsInMemoryCache @Inject constructor() : WooPosProductsCache {
     private val mutex = Mutex()
 
     companion object {
-        private const val MAX_CACHE_SIZE = 2_000
         private const val INITIAL_CAPACITY = 200
         private const val LOAD_FACTOR = 0.75f
     }

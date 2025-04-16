@@ -9,6 +9,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @HiltViewModel
@@ -19,27 +20,20 @@ class WooPosSplashViewModel @Inject constructor(
     private val _state = MutableStateFlow<WooPosSplashState>(WooPosSplashState.Loading)
     val state: StateFlow<WooPosSplashState> = _state
 
-    private val splashScreenStartTime = System.currentTimeMillis()
-
     init {
+        val splashScreenStartTime = System.currentTimeMillis()
         viewModelScope.launch {
-            productsDataSource.loadSimpleProducts(forceRefreshProducts = true)
-                .collect { result ->
-                    when (result) {
-                        is WooPosProductsDataSource.ProductsResult.Cached -> {}
-                        is WooPosProductsDataSource.ProductsResult.Remote -> {
-                            _state.value = WooPosSplashState.Loaded
-                            trackPosLoaded()
-                        }
-                    }
-                }
+            productsDataSource.prepopulateProductsCache()
+            _state.value = WooPosSplashState.Loaded
+            trackPosLoaded(splashScreenStartTime)
         }
     }
 
-    private suspend fun trackPosLoaded() {
+    private suspend fun trackPosLoaded(splashScreenStartTime: Long) {
         val event = Loaded.apply {
-            @Suppress("MagicNumber")
-            val waitingTimeSeconds = (System.currentTimeMillis() - splashScreenStartTime) / 1000f
+            val waitingTimeSeconds = TimeUnit.MILLISECONDS.toSeconds(
+                System.currentTimeMillis() - splashScreenStartTime
+            ).toFloat()
             addProperties(mapOf("waiting_time" to waitingTimeSeconds.toString()))
         }
         analyticsTracker.track(event)

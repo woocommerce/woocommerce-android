@@ -39,21 +39,15 @@ class WooPosSearchProductsDataSource @Inject constructor(
             searchResultsIndex.clearCache()
 
             val localSearchDeferred = async {
-                productsCache.getAll().filter(searchPredicate(query)).take(PAGE_SIZE)
+                productsCache.getAll().filter(searchPredicate(query)).sortedBy { it.name }.take(PAGE_SIZE)
             }
             val remoteSearchDeferred = async { remoteSearch(query) }
 
-            val localResults = localSearchDeferred.await()
-            if (localResults.isNotEmpty()) {
-                emit(ProductsResult.Cached(localResults))
-            }
+            emit(ProductsResult.Cached(localSearchDeferred.await()))
 
             val remoteResults = remoteSearchDeferred.await()
             remoteResults.fold(
                 onSuccess = { result ->
-                    canLoadMore.set(result.canLoadMore)
-                    productsCache.addAll(result.products)
-                    searchResultsIndex.storeSearchResults(query, result.products.map { it.remoteId })
                     emit(ProductsResult.Remote(Result.success(result.products)))
                 },
                 onFailure = { error ->
@@ -73,18 +67,13 @@ class WooPosSearchProductsDataSource @Inject constructor(
 
         return remoteSearch(query, offset).fold(
             onSuccess = { result ->
-                canLoadMore.set(result.canLoadMore)
-                productsCache.addAll(result.products)
-                searchResultsIndex.storeSearchResults(query, result.products.map { it.remoteId })
-                Result.success(searchResultsIndex.getSearchResults(query))
+                Result.success(result.products)
             },
             onFailure = { error ->
                 Result.failure(error)
             }
         )
     }
-
-    suspend fun getProductById(productId: Long): Product? = productsCache.getProductById(productId)
 
     private suspend fun remoteSearch(
         searchQuery: String,
@@ -104,12 +93,22 @@ class WooPosSearchProductsDataSource @Inject constructor(
                 Result.failure(WooException(result.error))
             } else {
                 val searchResult = result.model!!
-                Result.success(
-                    SearchResult(
-                        products = searchResult.products.map { product -> product.toAppModel() },
-                        canLoadMore = searchResult.canLoadMore
-                    )
+                val products = searchResult.products.map { product -> product.toAppModel() }
+
+                canLoadMore.set(searchResult.canLoadMore)
+                productsCache.addAll(products)
+                searchResultsIndex.storeSearchResults(
+                    searchQuery,
+                    products.map { it.remoteId }
                 )
+
+                val searchResults = SearchResult(
+                    products = searchResultsIndex.getSearchResults(searchQuery)
+                        .sortedBy { it.name },
+                    canLoadMore = searchResult.canLoadMore
+                )
+
+                Result.success(searchResults)
             }
         }
     }
