@@ -29,9 +29,7 @@ class ProductStorageHelper @Inject constructor(
 
     suspend fun upsertProduct(productWithMetaData: ProductWithMetaData): Int {
         val (product, metadata) = productWithMetaData
-        val rowsAffected = withContext(Dispatchers.IO) {
-            productSqlUtils.insertOrUpdateProduct(product)
-        }
+        val rowsAffected = productsDao.upsertProduct(product)
 
         metaDataDao.updateMetaData(
             parentItemId = product.remoteProductId,
@@ -48,11 +46,10 @@ class ProductStorageHelper @Inject constructor(
         return rowsAffected
     }
 
-    suspend fun upsertProducts(productsWithMetaData: List<ProductWithMetaData>): Int {
+    suspend fun upsertProducts(productsWithMetaData: List<ProductWithMetaData>) {
         val products = productsWithMetaData.map { it.product }
-        val rowsAffected = withContext(Dispatchers.IO) {
-            productSqlUtils.insertOrUpdateProducts(products)
-        }
+
+        productsDao.upsertProducts(products)
 
         productsWithMetaData.forEach { productWithMetaData ->
             val (product, metadata) = productWithMetaData
@@ -69,8 +66,6 @@ class ProductStorageHelper @Inject constructor(
                 }
             )
         }
-
-        return rowsAffected
     }
 
     suspend fun deleteProduct(site: SiteModel, remoteProductId: Long): Int {

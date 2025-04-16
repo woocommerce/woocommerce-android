@@ -2,6 +2,7 @@ package org.wordpress.android.fluxc.persistence.dao
 
 import androidx.room.Dao
 import androidx.room.Query
+import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 import org.wordpress.android.fluxc.model.WCProductModel
 
@@ -78,5 +79,11 @@ abstract class ProductsDao {
         remoteProductId: Long
     ): WCProductModel?
 
+    //TODO: Validate "rowsAffected" case: its not "affected rows" but rather affected sqlite row id
+    @Upsert
+    abstract fun upsertProduct(product: WCProductModel): Int
+
+    @Upsert
+    abstract fun upsertProducts(products: List<WCProductModel>)
 
 }

@@ -108,55 +108,6 @@ object ProductSqlUtils {
         }
     }
 
-    fun insertOrUpdateProduct(product: WCProductModel): Int {
-        val productResult = WellSql.select(WCProductModel::class.java)
-                .where().beginGroup()
-                .equals(WCProductModelTable.ID, product.id)
-                .or()
-                .beginGroup()
-                .equals(WCProductModelTable.REMOTE_PRODUCT_ID, product.remoteProductId)
-                .equals(WCProductModelTable.LOCAL_SITE_ID, product.localSiteId)
-                .endGroup()
-                .endGroup().endWhere()
-                .asModel.firstOrNull()
-
-        return if (productResult == null) {
-            // Insert
-            WellSql.insert(product).execute()
-            productsUpdatesTrigger.tryEmit(Unit)
-            1
-        } else {
-            // Update
-            WellSql.update(WCProductModel::class.java)
-                    .where().beginGroup()
-                    .equals(WCProductModelTable.REMOTE_PRODUCT_ID, productResult.remoteProductId)
-                    .equals(WCProductModelTable.LOCAL_SITE_ID, productResult.localSiteId)
-                    .endGroup().endWhere()
-                    .put(product, UpdateAllExceptId(WCProductModel::class.java))
-                    .execute()
-                    .also(::triggerProductsUpdateIfNeeded)
-        }
-    }
-
-    fun insertOrUpdateProducts(products: List<WCProductModel>): Int {
-        var rowsAffected = 0
-        executeInTransaction {
-            products.forEach {
-                rowsAffected += insertOrUpdateProduct(it)
-            }
-        }
-        return rowsAffected
-    }
-
-    fun getProductByRemoteId(site: SiteModel, remoteProductId: Long): WCProductModel? {
-        return WellSql.select(WCProductModel::class.java)
-                .where().beginGroup()
-                .equals(WCProductModelTable.REMOTE_PRODUCT_ID, remoteProductId)
-                .equals(WCProductModelTable.LOCAL_SITE_ID, site.id)
-                .endGroup().endWhere()
-                .asModel.firstOrNull()
-    }
-
     fun getVariationByRemoteId(
         site: SiteModel,
         remoteProductId: Long,
@@ -486,22 +437,6 @@ object ProductSqlUtils {
     }
 
     fun deleteAllProductReviews() = WellSql.delete(WCProductReviewModel::class.java).execute()
-
-    fun updateProductImages(product: WCProductModel, imageList: List<WCProductImageModel>): Int {
-        val jsonImageList = JsonArray()
-        imageList.forEach { image ->
-            JsonObject().also { jsonImage ->
-                jsonImage.addProperty("id", image.id)
-                jsonImage.addProperty("name", image.name)
-                jsonImage.addProperty("src", image.src)
-                jsonImage.addProperty("alt", image.alt)
-                jsonImageList.add(jsonImage)
-            }
-        }
-
-        product.images = jsonImageList.toString()
-        return insertOrUpdateProduct(product)
-    }
 
     fun deleteProductImage(site: SiteModel, remoteProductId: Long, remoteMediaId: Long): Boolean {
         val product = getProductByRemoteId(site, remoteProductId) ?: return false
