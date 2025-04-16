@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.split
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.sumByFloat
 import com.woocommerce.android.ui.orders.wooshippinglabels.ShippableItemUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShippingLabelsSnackbarData
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
@@ -181,20 +182,25 @@ data class SelectableShippableItemsUI(
     val shippableItems: List<SelectableShippableItemUI>,
     val formattedTotalWeight: String,
     val formattedTotalPrice: String
-)
+) {
+    val totalItemQuantity: Int
+        get() = shippableItems.sumByFloat { it.shippableItem.quantity }.toInt()
+}
 
-sealed class SelectableShippableItemUI {
+sealed interface SelectableShippableItemUI {
+    val shippableItem: ShippableItemUI
+
     data class SingleSelectableShippableItemUI(
-        val shippableItem: ShippableItemUI,
+        override val shippableItem: ShippableItemUI,
         val isSelected: Boolean = false
-    ) : SelectableShippableItemUI()
+    ) : SelectableShippableItemUI
 
     data class ExpandableSelectableShippableItemUI(
-        val shippableItem: ShippableItemUI,
+        override val shippableItem: ShippableItemUI,
         val innerShippableItem: ShippableItemUI,
         val isExpanded: Boolean = false,
         val selectedIndexes: Set<Int> = emptySet(),
-    ) : SelectableShippableItemUI() {
+    ) : SelectableShippableItemUI {
         val isSelected: Boolean
             get() = selectedIndexes.size == shippableItem.quantity.toInt()
     }

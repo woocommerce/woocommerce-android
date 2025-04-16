@@ -297,6 +297,26 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
         assertThat(snackbarData.messageParameters).isEqualTo(listOf(5, 2))
     }
 
+    @Test
+    fun `when initialized, then display the correct item quantity`() = testBlocking {
+        val shipmentArgs = SplitShipmentArgs(
+            orderId = 1L,
+            storeOptions = StoreOptionsModel.EMPTY,
+            shipments = twoShipment
+        )
+
+        val expectedQuantity = 6 // Total single items in the Shipment 1 from `twoShipment`
+
+        createViewModel(shipmentArgs)
+
+        sut.viewState.observeForTesting { }
+
+        val state = sut.viewState.value!!
+
+        val selectableItems = state.selectableItems.getValue(1)
+        assertThat(selectableItems.totalItemQuantity).isEqualTo(expectedQuantity)
+    }
+
     private val defaultShipment = mapOf(
         1 to listOf(
             ShippableItemModel(

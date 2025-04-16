@@ -473,7 +473,7 @@ fun SelectableProductsSection(
 ) {
     Column(modifier = modifier) {
         ProductsSummary(
-            totalItems = shipment.shippableItems.size,
+            totalItems = shipment.totalItemQuantity,
             totalWeight = shipment.formattedTotalWeight,
             totalPrice = shipment.formattedTotalPrice,
             modifier = Modifier.padding(top = 8.dp, bottom = 8.dp)
