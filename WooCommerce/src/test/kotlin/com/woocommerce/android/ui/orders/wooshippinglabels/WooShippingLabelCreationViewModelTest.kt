@@ -1102,21 +1102,22 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when StartHazmatFormEdit is triggered with a selected category, the event contains the expected category value`() = testBlocking {
-        var event: MultiLiveEvent.Event? = null
-        whenever(orderDetailRepository.getOrderById(any())) doReturn null
-        whenever(observeOriginAddresses()) doReturn flowOf(defaultOriginAddresses)
-        whenever(observeStoreOptions()) doReturn flowOf(defaultStoreOptions)
+    fun `when StartHazmatFormEdit is triggered with a selected category, the event contains the expected category value`() =
+        testBlocking {
+            var event: MultiLiveEvent.Event? = null
+            whenever(orderDetailRepository.getOrderById(any())) doReturn null
+            whenever(observeOriginAddresses()) doReturn flowOf(defaultOriginAddresses)
+            whenever(observeStoreOptions()) doReturn flowOf(defaultStoreOptions)
 
-        createViewModel()
+            createViewModel()
 
-        sut.onHazmatCategorySelected(ShippingLabelHazmatCategory.CLASS_1)
-        sut.onHazmatNoticeClick()
+            sut.onHazmatCategorySelected(ShippingLabelHazmatCategory.CLASS_1)
+            sut.onHazmatNoticeClick()
 
-        sut.event.observeForever { event = it }
+            sut.event.observeForever { event = it }
 
-        assertThat(event).isEqualTo(StartHazmatFormEdit(ShippingLabelHazmatCategory.CLASS_1))
-    }
+            assertThat(event).isEqualTo(StartHazmatFormEdit(ShippingLabelHazmatCategory.CLASS_1))
+        }
 
     @Test
     fun `when initialized, show expected item quantity`() = testBlocking {
@@ -1136,6 +1137,6 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         val currentViewState = sut.viewState.value
         assert(currentViewState is DataState)
         val dataState = currentViewState as DataState
-        assertThat(dataState.shippableItems.totalItemQuantity()).isEqualTo(expectedItemQuantity)
+        assertThat(dataState.shippableItems.totalItemQuantity).isEqualTo(expectedItemQuantity)
     }
 }

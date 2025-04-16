@@ -138,7 +138,7 @@ private fun ShippingProductsCardHeader(
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             ProductsSummary(
-                totalItems = shippableItems.totalItemQuantity(),
+                totalItems = shippableItems.totalItemQuantity,
                 totalWeight = shippableItems.formattedTotalWeight,
                 totalPrice = shippableItems.formattedTotalPrice,
                 modifier = Modifier
