@@ -31,7 +31,7 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
     private val storeOptions = navArgs.shipmentArgs.storeOptions
 
     private val currentShipments = MutableStateFlow(navArgs.shipmentArgs.shipments)
-    val selectableItems: MutableStateFlow<Map<Int, SelectableShippableItemsUI>?> = MutableStateFlow(null)
+    private val shipmentsUIMap: MutableStateFlow<Map<Int, SelectableShippableItemsUI>?> = MutableStateFlow(null)
 
     private val shipmentSelected = MutableStateFlow(navArgs.shipmentArgs.shipments.keys.first())
     private val removeShipmentSheet: MutableStateFlow<RemoveShipmentSheet?> = MutableStateFlow(null)
@@ -44,7 +44,7 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
         }
         launch {
             currentShipments.collectLatest { shipments ->
-                selectableItems.value = shipments.mapValues {
+                shipmentsUIMap.value = shipments.mapValues {
                     it.value.toSelectableUIModel(
                         currencyFormatter = currencyFormatter,
                         dimensionUnit = storeOptions.dimensionUnit,
@@ -57,7 +57,7 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
 
     val viewState = combine(
         shipmentSelected,
-        selectableItems.filterNotNull(),
+        shipmentsUIMap.filterNotNull(),
         removeShipmentSheet,
         splitMessage
     ) { shipmentSelected, selectableItems, sheet, message ->
@@ -109,7 +109,7 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
         shippableItemIndex: Int,
         selectedIndexes: Set<Int>? = null
     ) {
-        val shipmentsMap = selectableItems.value?.toMutableMap() ?: return
+        val shipmentsMap = shipmentsUIMap.value?.toMutableMap() ?: return
         val items = shipmentsMap.getValue(shipmentKey)
         val item = items.shippableItems[shippableItemIndex]
         val updatedItem = when (item) {
@@ -129,7 +129,7 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
         val updatedList = items.shippableItems.toMutableList()
         updatedList[shippableItemIndex] = updatedItem
         shipmentsMap[shipmentKey] = items.copy(shippableItems = updatedList)
-        selectableItems.value = shipmentsMap
+        shipmentsUIMap.value = shipmentsMap
     }
 
     fun onUpdateShipment(splitMovement: SplitMovement) {
