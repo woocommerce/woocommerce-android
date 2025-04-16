@@ -36,8 +36,8 @@ class WooPosPopularProductsProvider @Inject constructor(
             sortType = ProductSorting.POPULARITY_DESC,
         )
 
-        if (result.isError) {
-            return Result.failure(Exception(result.error.message))
+        return  if (result.isError) {
+            Result.failure(Exception(result.error.message))
         } else {
             val products = result.model ?: emptyList()
             var productsAppModel = products.map { it.toAppModel() }
@@ -45,7 +45,7 @@ class WooPosPopularProductsProvider @Inject constructor(
             popularProductsCache.clear()
             popularProductsCache.addAll(productsAppModel)
             productsCache.addAll(productsAppModel)
-            return Result.success(Unit)
+            Result.success(Unit)
         }
     }
 }
