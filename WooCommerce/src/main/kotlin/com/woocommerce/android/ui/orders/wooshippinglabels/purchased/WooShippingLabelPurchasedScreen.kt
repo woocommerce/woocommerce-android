@@ -65,7 +65,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun WooShippingLabelPurchasedScreen(viewModel: WooShippingLabelPurchasedViewModel) {
     val viewState = viewModel.viewState.observeAsState()
-    WooShippingLabelPurchasedWithBottomSheetScreen(
+    WooShippingLabelPurchasedScreen(
         isLoading = viewState.value?.isLoadingData == true,
         isPurchaseFinished = viewState.value?.isPurchaseFinished,
         shippingData = viewState.value?.shippingLabelData,
@@ -80,7 +80,7 @@ fun WooShippingLabelPurchasedScreen(viewModel: WooShippingLabelPurchasedViewMode
 }
 
 @Composable
-internal fun WooShippingLabelPurchasedWithBottomSheetScreen(
+internal fun WooShippingLabelPurchasedScreen(
     isLoading: Boolean,
     isPurchaseFinished: Boolean?,
     shippingData: PurchasedShippingLabelData?,
@@ -386,7 +386,7 @@ internal fun WooShippingLabelPurchasedScreenPreview() {
     WooThemeWithBackground {
         Surface {
             val selectedLabelPaperSizeOption = remember { mutableStateOf(WooShippingLabelPaperSize.LEGAL) }
-            WooShippingLabelPurchasedWithBottomSheetScreen(
+            WooShippingLabelPurchasedScreen(
                 isLoading = false,
                 isPurchaseFinished = true,
                 shippingData = PurchasedShippingLabelData(
