@@ -46,10 +46,10 @@ class ProductStorageHelper @Inject constructor(
         return rowsAffected
     }
 
-    suspend fun upsertProducts(productsWithMetaData: List<ProductWithMetaData>) {
+    suspend fun upsertProducts(productsWithMetaData: List<ProductWithMetaData>): Int {
         val products = productsWithMetaData.map { it.product }
 
-        productsDao.upsertProducts(products)
+        val rowsAffected = productsDao.upsertProducts(products)
 
         productsWithMetaData.forEach { productWithMetaData ->
             val (product, metadata) = productWithMetaData
@@ -66,6 +66,7 @@ class ProductStorageHelper @Inject constructor(
                 }
             )
         }
+        return rowsAffected
     }
 
     suspend fun deleteProduct(site: SiteModel, remoteProductId: Long): Int {

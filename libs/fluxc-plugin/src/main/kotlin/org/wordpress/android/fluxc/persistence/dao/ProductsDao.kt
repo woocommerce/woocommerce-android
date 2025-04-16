@@ -84,6 +84,6 @@ abstract class ProductsDao {
     abstract fun upsertProduct(product: WCProductModel): Int
 
     @Upsert
-    abstract fun upsertProducts(products: List<WCProductModel>)
+    abstract fun upsertProducts(products: List<WCProductModel>): Int
 
 }
