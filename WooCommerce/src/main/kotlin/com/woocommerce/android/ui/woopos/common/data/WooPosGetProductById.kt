@@ -25,11 +25,11 @@ class WooPosGetProductById @Inject constructor(
                 remoteProductId = productId,
             )
 
-            if (!remoteProductResult.isError) {
+            return@withContext if (!remoteProductResult.isError) {
                 val remoteProduct = remoteProductResult.productWithMetaData.product
                 val product = remoteProduct.toAppModel()
                 cache.addAll(listOf(product))
-                return@withContext product
+                product
             } else {
                 null
             }
