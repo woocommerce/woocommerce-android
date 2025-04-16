@@ -208,14 +208,11 @@ sealed class SplitShipmentMessage {
 }
 
 fun List<ShippableItemModel>.combine(other: List<ShippableItemModel>): List<ShippableItemModel> {
-    val combinedMap = this.associateBy { it.productId }.toMutableMap()
+    val combinedMap = associateBy { it.itemId }.toMutableMap()
     other.forEach { otherItem ->
-        val existingItem = combinedMap[otherItem.productId]
-        if (existingItem != null) {
-            combinedMap[otherItem.productId] = existingItem.copy(quantity = existingItem.quantity + otherItem.quantity)
-        } else {
-            combinedMap[otherItem.productId] = otherItem
-        }
+        val existingItem = combinedMap[otherItem.itemId]
+        combinedMap[otherItem.itemId] = existingItem?.copy(quantity = existingItem.quantity + otherItem.quantity)
+            ?: otherItem
     }
     return combinedMap.values.toList()
 }
