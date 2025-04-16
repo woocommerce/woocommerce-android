@@ -119,16 +119,6 @@ object ProductSqlUtils {
                 .asModel.firstOrNull()
     }
 
-    fun getVirtualProductCountByRemoteIds(site: SiteModel, remoteProductIds: List<Long>): Int {
-        return WellSql.select(WCProductModel::class.java)
-                .where().beginGroup()
-                .isIn(WCProductModelTable.REMOTE_PRODUCT_ID, remoteProductIds)
-                .equals(WCProductModelTable.LOCAL_SITE_ID, site.id)
-                .equals(WCProductModelTable.VIRTUAL, true)
-                .endGroup().endWhere()
-                .count().toInt()
-    }
-
     fun getProducts(
         site: SiteModel,
         filterOptions: Map<ProductFilterOption, String>,

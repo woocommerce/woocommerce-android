@@ -84,11 +84,13 @@ abstract class ProductsDao {
             SELECT * FROM WCProductModel
             WHERE localSiteId = :localSiteId
             AND remoteProductId IN (:remoteProductIds)
+            AND (:virtual IS NULL OR virtual = :virtual)
         """
     )
     abstract suspend fun getProducts(
         localSiteId: Int,
-        remoteProductIds: List<Long>
+        remoteProductIds: List<Long>,
+        virtual: Boolean? = null
     ): List<WCProductModel>
 
     //TODO: Validate "rowsAffected" case: its not "affected rows" but rather affected sqlite row id
