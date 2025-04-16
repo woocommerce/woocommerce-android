@@ -103,7 +103,8 @@ class WooPosSearchProductsDataSource @Inject constructor(
                 )
 
                 val searchResults = SearchResult(
-                    products = searchResultsIndex.getSearchResults(searchQuery),
+                    products = searchResultsIndex.getSearchResults(searchQuery)
+                        .sortedBy { it.name },
                     canLoadMore = searchResult.canLoadMore
                 )
 
