@@ -48,6 +48,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStoc
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductVariationMapper
 import org.wordpress.android.fluxc.persistence.ProductSqlUtils
+import org.wordpress.android.fluxc.persistence.ProductSqlUtils.getCompositeProducts
 import org.wordpress.android.fluxc.persistence.ProductSqlUtils.observeBundledProducts
 import org.wordpress.android.fluxc.persistence.ProductStorageHelper
 import org.wordpress.android.fluxc.persistence.dao.AddonsDao
@@ -811,7 +812,7 @@ class WCProductStore @Inject constructor(
      * returns the corresponding product from the database as a [WCProductModel].
      */
     fun getProductByRemoteId(site: SiteModel, remoteProductId: Long): WCProductModel? =
-        ProductSqlUtils.getProductByRemoteId(site, remoteProductId)
+        runBlocking { productsDao.getProduct(site.id, remoteProductId) }
 
     /**
      * returns the corresponding variation from the database as a [WCProductVariationModel].
@@ -1085,7 +1086,7 @@ class WCProductStore @Inject constructor(
     }
 
     fun getCompositeProducts(site: SiteModel, remoteProductId: Long): List<WCProductComponent> {
-        return ProductSqlUtils.getCompositeProducts(site, remoteProductId)
+        return productsDao.getCompositeProducts(site, remoteProductId)
     }
 
     suspend fun submitProductAttributeChanges(

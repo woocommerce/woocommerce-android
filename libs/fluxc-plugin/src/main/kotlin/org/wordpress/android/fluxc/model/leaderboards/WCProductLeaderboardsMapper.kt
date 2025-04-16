@@ -8,11 +8,14 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.leaderboards.Leaderboar
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.reports.ReportsProductApiResponse
 import org.wordpress.android.fluxc.persistence.ProductSqlUtils
 import org.wordpress.android.fluxc.persistence.ProductSqlUtils.getProductExistsByRemoteId
+import org.wordpress.android.fluxc.persistence.dao.ProductsDao
 import org.wordpress.android.fluxc.persistence.entity.TopPerformerProductEntity
 import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
 
-class WCProductLeaderboardsMapper @Inject constructor() {
+class WCProductLeaderboardsMapper @Inject constructor(
+    private val productsDao: ProductsDao
+) {
     suspend fun mapTopPerformerProductsEntity(
         response: LeaderboardsApiResponse,
         site: SiteModel,
@@ -44,8 +47,9 @@ class WCProductLeaderboardsMapper @Inject constructor() {
         productStore: WCProductStore
     ): List<WCProductModel> {
         val locallyFetchedProducts = this
+            //This logic is repeated in ProductsMapper
                 .filter { getProductExistsByRemoteId(site, it) }
-                .mapNotNull { ProductSqlUtils.getProductByRemoteId(site, it) }
+                .mapNotNull { productsDao.getProduct(site.id, it) }
 
         val remotelyFetchedProducts = this
                 .filter { getProductExistsByRemoteId(site, it).not() }

@@ -78,8 +78,8 @@ object ProductSqlUtils {
             .flowOn(Dispatchers.IO)
     }
 
-    fun getCompositeProducts(site: SiteModel, remoteProductId: Long): List<WCProductComponent> {
-        val productModel = getProductByRemoteId(site, remoteProductId)
+    fun ProductsDao.getCompositeProducts(site: SiteModel, remoteProductId: Long): List<WCProductComponent> {
+        val productModel = getProduct(site.id, remoteProductId)
 
         return productModel?.let {
             val responseType = object : TypeToken<List<WCProductComponent>>() {}.type

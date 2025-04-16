@@ -8,17 +8,17 @@ import org.wordpress.android.fluxc.model.ProductWithMetaData
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.metadata.WCMetaData
 import org.wordpress.android.fluxc.persistence.dao.MetaDataDao
+import org.wordpress.android.fluxc.persistence.dao.ProductsDao
 import org.wordpress.android.fluxc.persistence.entity.MetaDataEntity
 import javax.inject.Inject
 
 class ProductStorageHelper @Inject constructor(
     private val productSqlUtils: ProductSqlUtils,
+    private val productsDao: ProductsDao,
     private val metaDataDao: MetaDataDao
 ) {
     suspend fun getProduct(site: SiteModel, remoteProductId: Long): ProductWithMetaData? {
-        val product = withContext(Dispatchers.IO) {
-            productSqlUtils.getProductByRemoteId(site, remoteProductId)
-        } ?: return null
+        val product = productsDao.getProduct(site.id, remoteProductId) ?: return null
         val metadata = getProductMetadata(site, remoteProductId)
         return ProductWithMetaData(product, metadata)
     }

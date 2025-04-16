@@ -6,9 +6,13 @@ import com.woocommerce.android.tools.SelectedSite
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.persistence.ProductSqlUtils
+import org.wordpress.android.fluxc.persistence.dao.ProductsDao
 import javax.inject.Inject
 
-class ProductsMapper @Inject constructor(private val site: SelectedSite) {
+class ProductsMapper @Inject constructor(
+    private val site: SelectedSite,
+    private val productsDao: ProductsDao
+) {
     fun mapProductIdsToProduct(productIds: List<Long>): List<Product> {
         return productIds.asProductList(site.get()).map { product ->
             product.toAppModel()
@@ -24,6 +28,6 @@ class ProductsMapper @Inject constructor(private val site: SelectedSite) {
     ): List<WCProductModel> {
         return this
             .filter { ProductSqlUtils.getProductExistsByRemoteId(site, it) }
-            .mapNotNull { ProductSqlUtils.getProductByRemoteId(site, it) }
+            .mapNotNull { productsDao.getProduct(site.id, it) }
     }
 }
