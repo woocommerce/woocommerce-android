@@ -7,12 +7,15 @@ import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.core.widget.doOnTextChanged
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.ActivitySupportRequestFormBinding
 import com.woocommerce.android.extensions.adjustActivityTransition
+import com.woocommerce.android.extensions.doOnApplyWindowInsets
 import com.woocommerce.android.extensions.edgeToEdgeHandlingForNavigationAndStatusBar
 import com.woocommerce.android.extensions.serializable
 import com.woocommerce.android.support.SupportHelper
@@ -52,6 +55,12 @@ class SupportRequestFormActivity : AppCompatActivity() {
 
         ActivitySupportRequestFormBinding.inflate(layoutInflater).apply {
             this.root.edgeToEdgeHandlingForNavigationAndStatusBar(appBarLayout)
+            this.root.doOnApplyWindowInsets(
+                insetsMask = WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout() or WindowInsetsCompat.Type.ime(),
+                consumeInsets = true
+            ) { insets ->
+                this.root.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
+            }
             setContentView(root)
             setupActionBar()
             observeViewEvents(this)
