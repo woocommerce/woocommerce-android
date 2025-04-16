@@ -8,7 +8,6 @@ import org.wordpress.android.fluxc.model.WCProductModel
 @Dao
 abstract class ProductsDao {
 
-
     @Query(
         """
             SELECT COUNT(*) FROM WCProductModel
@@ -28,5 +27,27 @@ abstract class ProductsDao {
         category: String?,
         excludeSampleProducts: Boolean
     ): Flow<Long>
+
+    @Query(
+        """
+            SELECT * FROM WCProductModel
+            WHERE localSiteId = :localSiteId
+            AND (:status IS NULL OR status = :status)
+            AND (:stockStatus IS NULL OR stockStatus = :stockStatus)
+            AND (:type IS NULL OR type = :type)
+            AND (:category IS NULL OR categories LIKE '%' || :category || '%')
+            AND (:excludeSampleProducts IS NULL OR isSampleProduct = :excludeSampleProducts)
+            LIMIT CASE WHEN :limit IS NULL THEN -1 ELSE :limit END
+        """
+    )
+    abstract fun observeProducts(
+        localSiteId: Int,
+        status: String?,
+        stockStatus: String?,
+        type: String?,
+        category: String?,
+        excludeSampleProducts: Boolean,
+        limit: Int?,
+    ): Flow<List<WCProductModel>>
 
 }

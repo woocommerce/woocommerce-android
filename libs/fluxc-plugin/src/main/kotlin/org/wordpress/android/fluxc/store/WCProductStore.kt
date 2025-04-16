@@ -865,11 +865,6 @@ class WCProductStore @Inject constructor(
     ): List<WCProductModel> =
         ProductSqlUtils.getProducts(site, filterOptions, sortType, excludedProductIds, searchQuery, skuSearchOptions)
 
-    fun getProductsForSite(site: SiteModel, sortType: ProductSorting = DEFAULT_PRODUCT_SORTING) =
-        ProductSqlUtils.getProductsForSite(site, sortType)
-
-    fun deleteProductsForSite(site: SiteModel) = ProductSqlUtils.deleteProductsForSite(site)
-
     fun getProductReviewsForSite(site: SiteModel): List<WCProductReviewModel> =
         ProductSqlUtils.getProductReviewsForSite(site)
 
@@ -1035,13 +1030,19 @@ class WCProductStore @Inject constructor(
         filterOptions: Map<ProductFilterOption, String> = emptyMap(),
         excludeSampleProducts: Boolean = false,
         limit: Int? = null
-    ): Flow<List<WCProductModel>> = ProductSqlUtils.observeProducts(
-        site = site,
-        sortType = sortType,
-        filterOptions = filterOptions,
-        excludeSampleProducts = excludeSampleProducts,
-        limit = limit
-    )
+    ): Flow<List<WCProductModel>> {
+        return productsDao.observeProducts(
+            localSiteId = site.id,
+            status = filterOptions[ProductFilterOption.STATUS],
+            stockStatus = filterOptions[ProductFilterOption.STOCK_STATUS],
+            type = filterOptions[ProductFilterOption.TYPE],
+            category = filterOptions[ProductFilterOption.CATEGORY]?.let { categoryFilter(it) },
+            excludeSampleProducts = excludeSampleProducts,
+            limit = limit,
+            //TODO apply sort type
+//            sortType = sortType
+        )
+    }
 
     fun observeProductsCount(
         site: SiteModel,

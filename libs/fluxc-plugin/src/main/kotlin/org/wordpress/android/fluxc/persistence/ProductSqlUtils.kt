@@ -17,7 +17,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onStart
@@ -53,37 +52,6 @@ object ProductSqlUtils {
     private val categoriesUpdatesTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
     private val gson by lazy { Gson() }
-
-    fun observeProducts(
-        site: SiteModel,
-        sortType: ProductSorting = DEFAULT_PRODUCT_SORTING,
-        filterOptions: Map<ProductFilterOption, String> = emptyMap(),
-        excludeSampleProducts: Boolean = false,
-        limit: Int? = null
-    ): Flow<List<WCProductModel>> {
-        return productsUpdatesTrigger
-            .onStart { emit(Unit) }
-            .debounce(DEBOUNCE_DELAY_FOR_OBSERVERS)
-            .mapLatest {
-                if (filterOptions.isEmpty()) {
-                    getProductsForSite(
-                        site = site,
-                        sortType = sortType,
-                        excludeSampleProducts = excludeSampleProducts,
-                        limit = limit
-                    )
-                } else {
-                    getProducts(
-                        site = site,
-                        filterOptions = filterOptions,
-                        sortType = sortType,
-                        excludeSampleProducts = excludeSampleProducts,
-                        limit = limit
-                    )
-                }
-            }
-            .flowOn(Dispatchers.IO)
-    }
 
     fun observeVariations(site: SiteModel, productId: Long): Flow<List<WCProductVariationModel>> {
         return variationsUpdatesTrigger
@@ -333,34 +301,6 @@ object ProductSqlUtils {
                 .equals(WCProductModelTable.LOCAL_SITE_ID, site.id)
                 .endGroup().endWhere()
                 .exists()
-    }
-
-    fun getProductsForSite(
-        site: SiteModel,
-        sortType: ProductSorting = DEFAULT_PRODUCT_SORTING,
-        excludeSampleProducts: Boolean = false,
-        limit: Int? = null
-    ): List<WCProductModel> {
-        val sortOrder = getSortOrder(sortType)
-        val sortField = getSortField(sortType)
-        val products = WellSql.select(WCProductModel::class.java)
-                .where().beginGroup()
-                .equals(WCProductModelTable.LOCAL_SITE_ID, site.id)
-                .apply {
-                    if (excludeSampleProducts) {
-                        equals(WCProductModelTable.IS_SAMPLE_PRODUCT, false)
-                    }
-                }
-                .endGroup().endWhere()
-                .orderBy(sortField, sortOrder)
-                .apply { limit?.let { limit(it) } }
-                .asModel
-
-        return if (sortType == TITLE_ASC || sortType == TITLE_DESC) {
-            sortProductsByName(products, descending = sortType == TITLE_DESC)
-        } else {
-            products
-        }
     }
 
     private fun getSortField(sortType: ProductSorting) =
