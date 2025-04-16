@@ -9,7 +9,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class WooPosMockedPopularProductsProvider @Inject constructor(
+class WooPosPopularProductsProvider @Inject constructor(
     private val selectedSite: SelectedSite,
     private val productStore: WCProductStore,
     private val productsTypesFilterConfig: WooPosProductsTypesFilterConfig,
