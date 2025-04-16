@@ -1,6 +1,7 @@
 package org.wordpress.android.fluxc.persistence.dao
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
@@ -114,5 +115,13 @@ abstract class ProductsDao {
 
     @Upsert
     abstract fun upsertProducts(products: List<WCProductModel>): Int
+
+    @Query(
+        """
+            DELETE FROM WCProductModel
+            WHERE localSiteId = :localSiteId
+    """
+    )
+    abstract suspend fun deleteProducts(localSiteId: Int): Int
 
 }

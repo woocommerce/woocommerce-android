@@ -184,16 +184,6 @@ object ProductSqlUtils {
             TITLE_DESC, DATE_DESC -> "DESC"
         }
 
-    fun deleteProductsForSite(site: SiteModel): Int {
-        return WellSql.delete(WCProductModel::class.java)
-            .where().beginGroup()
-            .equals(WCProductModelTable.LOCAL_SITE_ID, site.id)
-            .endGroup()
-            .endWhere()
-            .execute()
-            .also(::triggerProductsUpdateIfNeeded)
-    }
-
     fun insertOrUpdateProductVariation(variation: WCProductVariationModel): Int {
         val result = WellSql.select(WCProductVariationModel::class.java)
             .where().beginGroup()

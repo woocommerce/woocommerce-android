@@ -11,6 +11,7 @@ import org.wordpress.android.fluxc.persistence.dao.MetaDataDao
 import org.wordpress.android.fluxc.persistence.dao.ProductsDao
 import org.wordpress.android.fluxc.persistence.entity.MetaDataEntity
 import javax.inject.Inject
+import kotlin.system.exitProcess
 
 class ProductStorageHelper @Inject constructor(
     private val productSqlUtils: ProductSqlUtils,
@@ -78,9 +79,7 @@ class ProductStorageHelper @Inject constructor(
     }
 
     suspend fun deleteProductsForSite(site: SiteModel) {
-        withContext(Dispatchers.IO) {
-            productSqlUtils.deleteProductsForSite(site)
-        }
+        productsDao.deleteProducts(site.id)
         metaDataDao.deleteMetaDataForSite(site.localId(), MetaDataParentItemType.PRODUCT)
     }
 }
