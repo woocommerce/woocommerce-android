@@ -1,6 +1,7 @@
 package org.wordpress.android.fluxc.model
 
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.Index
 import com.google.gson.Gson
 import com.google.gson.JsonArray
@@ -26,16 +27,16 @@ import org.wordpress.android.util.AppLog.T
  * Note that products have more properties than we support below
  */
 @Entity(
-    tableName = "ProductEntity",
+    tableName = "WCProductModel",
     indices = [Index(
-        value = ["localSiteId", "remoteProductId"],
+        value = ["localSiteId", "remoteId"],
     )],
-    primaryKeys = ["localSiteId", "remoteProductId"],
+    primaryKeys = ["localSiteId", "remoteId"],
 )
 data class WCProductModel(
-    val localSiteId: LocalId,
-    val remoteId: RemoteId,
-    val name: String,
+    val localSiteId: LocalId = LocalId(0),
+    val remoteId: RemoteId = RemoteId(0),
+    val name: String = "",
     val slug: String = "",
     val permalink: String = "",
 
@@ -125,6 +126,9 @@ data class WCProductModel(
 
     val isSampleProduct: Boolean = false
 ) {
+
+    @Ignore
+    val remoteProductId: Long = remoteId.value
 
     val attributeList: Array<ProductAttribute>
         get() = Gson().fromJson(attributes, Array<ProductAttribute>::class.java) ?: emptyArray()

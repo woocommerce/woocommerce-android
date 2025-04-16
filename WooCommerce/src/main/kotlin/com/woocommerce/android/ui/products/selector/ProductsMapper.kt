@@ -3,10 +3,8 @@ package com.woocommerce.android.ui.products.selector
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
-import kotlinx.coroutines.runBlocking
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCProductModel
-import org.wordpress.android.fluxc.persistence.ProductSqlUtils
 import org.wordpress.android.fluxc.persistence.ProductSqlUtils.getProductExistsByRemoteId
 import org.wordpress.android.fluxc.persistence.dao.ProductsDao
 import javax.inject.Inject

@@ -39,8 +39,14 @@ abstract class ProductsDao {
             AND (:type IS NULL OR type = :type)
             AND (:category IS NULL OR categories LIKE '%' || :category || '%')
             AND (:excludeSampleProducts IS NULL OR isSampleProduct = :excludeSampleProducts)
-            AND (:excludedProductIds IS NULL OR remoteProductId NOT IN (:excludedProductIds))
-            ORDER BY :sortField :sortOrder COLLATE NOCASE
+            AND (:excludedProductIds IS NULL OR remoteId NOT IN (:excludedProductIds))
+            ORDER BY
+                CASE
+                    WHEN :sortOrder = 'ASC' THEN :sortField
+                END ASC,
+                CASE
+                    WHEN :sortOrder = 'DESC' THEN :sortField
+                END DESC
             LIMIT CASE WHEN :limit IS NULL THEN -1 ELSE :limit END
         """
     )
@@ -61,7 +67,7 @@ abstract class ProductsDao {
         """
             SELECT * FROM WCProductModel
             WHERE localSiteId = :localSiteId
-            AND remoteProductId = :remoteProductId
+            AND remoteId = :remoteProductId
         """
     )
     abstract fun observeProducts(
@@ -73,7 +79,7 @@ abstract class ProductsDao {
         """
             SELECT * FROM WCProductModel
             WHERE localSiteId = :localSiteId
-            AND remoteProductId = :remoteProductId
+            AND remoteId = :remoteProductId
             LIMIT 1
         """
     )
@@ -99,7 +105,7 @@ abstract class ProductsDao {
         """
             SELECT * FROM WCProductModel
             WHERE localSiteId = :localSiteId
-            AND remoteProductId IN (:remoteProductIds)
+            AND remoteId IN (:remoteProductIds)
             AND (:virtual IS NULL OR virtual = :virtual)
         """
     )
@@ -109,12 +115,11 @@ abstract class ProductsDao {
         virtual: Boolean? = null
     ): List<WCProductModel>
 
-    //TODO: Validate "rowsAffected" case: its not "affected rows" but rather affected sqlite row id
     @Upsert
-    abstract fun upsertProduct(product: WCProductModel): Int
+    abstract fun upsertProduct(product: WCProductModel)
 
     @Upsert
-    abstract fun upsertProducts(products: List<WCProductModel>): Int
+    abstract fun upsertProducts(products: List<WCProductModel>)
 
     @Query(
         """
@@ -128,7 +133,7 @@ abstract class ProductsDao {
         """
             DELETE FROM WCProductModel
             WHERE localSiteId = :localSiteId
-            AND remoteProductId = :remoteProductId
+            AND remoteId = :remoteProductId
     """
     )
     abstract suspend fun deleteProduct(

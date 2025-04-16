@@ -16,6 +16,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
@@ -86,10 +87,12 @@ class GroupedProductListViewModel @Inject constructor(
     }
 
     private fun updateProductList() {
-        _productList.value = if (selectedProductIds.isNotEmpty()) {
-            groupedProductListRepository.getProductList(selectedProductIds)
-        } else {
-            emptyList()
+        runBlocking {
+            _productList.value = if (selectedProductIds.isNotEmpty()) {
+                groupedProductListRepository.getProductList(selectedProductIds)
+            } else {
+                emptyList()
+            }
         }
 
         productListViewState = productListViewState.copy(
@@ -121,17 +124,19 @@ class GroupedProductListViewModel @Inject constructor(
             _productList.value = emptyList()
             productListViewState = productListViewState.copy(isSkeletonShown = false)
         } else {
-            val productsInDb = groupedProductListRepository.getProductList(
-                selectedProductIds
-            )
-            if (productsInDb.isNotEmpty()) {
-                _productList.value = productsInDb
-                productListViewState = productListViewState.copy(isSkeletonShown = false)
-            } else {
-                productListViewState = productListViewState.copy(isSkeletonShown = true)
-            }
+            launch {
+                val productsInDb = groupedProductListRepository.getProductList(
+                    selectedProductIds
+                )
+                if (productsInDb.isNotEmpty()) {
+                    _productList.value = productsInDb
+                    productListViewState = productListViewState.copy(isSkeletonShown = false)
+                } else {
+                    productListViewState = productListViewState.copy(isSkeletonShown = true)
+                }
 
-            launch { fetchProducts(selectedProductIds, loadMore = loadMore) }
+                fetchProducts(selectedProductIds, loadMore = loadMore)
+            }
         }
     }
 

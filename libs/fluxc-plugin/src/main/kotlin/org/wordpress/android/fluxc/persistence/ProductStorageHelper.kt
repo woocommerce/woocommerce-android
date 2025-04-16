@@ -2,7 +2,6 @@ package org.wordpress.android.fluxc.persistence
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.metadata.MetaDataParentItemType
 import org.wordpress.android.fluxc.model.ProductWithMetaData
 import org.wordpress.android.fluxc.model.SiteModel
@@ -11,7 +10,6 @@ import org.wordpress.android.fluxc.persistence.dao.MetaDataDao
 import org.wordpress.android.fluxc.persistence.dao.ProductsDao
 import org.wordpress.android.fluxc.persistence.entity.MetaDataEntity
 import javax.inject.Inject
-import kotlin.system.exitProcess
 
 class ProductStorageHelper @Inject constructor(
     private val productSqlUtils: ProductSqlUtils,
@@ -30,44 +28,44 @@ class ProductStorageHelper @Inject constructor(
 
     suspend fun upsertProduct(productWithMetaData: ProductWithMetaData): Int {
         val (product, metadata) = productWithMetaData
-        val rowsAffected = productsDao.upsertProduct(product)
+        productsDao.upsertProduct(product)
 
         metaDataDao.updateMetaData(
             parentItemId = product.remoteProductId,
-            localSiteId = LocalId(product.localSiteId),
+            localSiteId = product.localSiteId,
             metaData = metadata.map {
                 MetaDataEntity.fromDomainModel(
                     metaData = it,
-                    localSiteId = LocalId(product.localSiteId),
+                    localSiteId = product.localSiteId,
                     parentItemId = product.remoteProductId,
                     parentItemType = MetaDataParentItemType.PRODUCT
                 )
             }
         )
-        return rowsAffected
+        return 0 //TODO: check the consequences: Room doesn't offer "rowsAffected" value for @Upsert
     }
 
     suspend fun upsertProducts(productsWithMetaData: List<ProductWithMetaData>): Int {
         val products = productsWithMetaData.map { it.product }
 
-        val rowsAffected = productsDao.upsertProducts(products)
+        productsDao.upsertProducts(products)
 
         productsWithMetaData.forEach { productWithMetaData ->
             val (product, metadata) = productWithMetaData
             metaDataDao.updateMetaData(
                 parentItemId = product.remoteProductId,
-                localSiteId = LocalId(product.localSiteId),
+                localSiteId = product.localSiteId,
                 metaData = metadata.map {
                     MetaDataEntity.fromDomainModel(
                         metaData = it,
-                        localSiteId = LocalId(product.localSiteId),
+                        localSiteId = product.localSiteId,
                         parentItemId = product.remoteProductId,
                         parentItemType = MetaDataParentItemType.PRODUCT
                     )
                 }
             )
         }
-        return rowsAffected
+        return 0 //TODO: check the consequences: Room doesn't offer "rowsAffected" value for @Upsert
     }
 
     suspend fun deleteProduct(site: SiteModel, remoteProductId: Long): Int {

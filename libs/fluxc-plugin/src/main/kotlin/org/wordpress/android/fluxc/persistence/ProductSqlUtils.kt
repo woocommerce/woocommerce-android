@@ -5,7 +5,6 @@ package org.wordpress.android.fluxc.persistence
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.wellsql.generated.WCProductCategoryModelTable
-import com.wellsql.generated.WCProductModelTable
 import com.wellsql.generated.WCProductReviewModelTable
 import com.wellsql.generated.WCProductShippingClassModelTable
 import com.wellsql.generated.WCProductTagModelTable
@@ -429,7 +428,7 @@ object ProductSqlUtils {
         }
         val categories = WellSql.select(WCProductCategoryModel::class.java)
             .where()
-            .equals(WCProductModelTable.LOCAL_SITE_ID, site.id)
+            .equals(WCProductCategoryModelTable.LOCAL_SITE_ID, site.id)
             .endWhere()
             .orderBy(sortField, sortOrder)
             .asModel
@@ -559,7 +558,7 @@ object ProductSqlUtils {
         return WellSql.select(WCProductTagModel::class.java)
             .where().beginGroup()
             .equals(WCProductTagModelTable.LOCAL_SITE_ID, localSiteId)
-            .isIn(WCProductModelTable.NAME, tags)
+            .isIn(WCProductTagModelTable.NAME, tags)
             .endGroup().endWhere()
             .asModel
     }

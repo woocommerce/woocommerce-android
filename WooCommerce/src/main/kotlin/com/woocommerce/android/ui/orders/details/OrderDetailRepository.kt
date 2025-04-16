@@ -223,7 +223,7 @@ class OrderDetailRepository @Inject constructor(
         }
     }
 
-    fun hasSubscriptionProducts(remoteProductIds: List<Long>): Boolean {
+    suspend fun hasSubscriptionProducts(remoteProductIds: List<Long>): Boolean {
         return if (remoteProductIds.isNotEmpty()) {
             productStore.getProductsByRemoteIds(selectedSite.get(), remoteProductIds)
                 .any { it.type == PRODUCT_SUBSCRIPTION_TYPE }

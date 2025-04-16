@@ -338,7 +338,7 @@ class ProductRestClient @Inject constructor(
                     RemoteProductPayload(newModel, site)
                 } ?: RemoteProductPayload(
                     ProductError(GENERIC_ERROR, "Success response with empty data"),
-                    ProductWithMetaData(WCProductModel().apply { this.remoteProductId = remoteProductId }),
+                    ProductWithMetaData(WCProductModel(remoteId = RemoteId(remoteProductId))),
                     site
                 )
             }
@@ -347,7 +347,7 @@ class ProductRestClient @Inject constructor(
                 val productError = wpAPINetworkErrorToProductError(response.error)
                 RemoteProductPayload(
                     productError,
-                    ProductWithMetaData(WCProductModel().apply { this.remoteProductId = remoteProductId }),
+                    ProductWithMetaData(WCProductModel(remoteId = RemoteId(remoteProductId))),
                     site
                 )
             }
@@ -614,7 +614,7 @@ class ProductRestClient @Inject constructor(
 
         return response.toWooPayload { it.toList() }
     }
-    
+
     private fun buildProductParametersMap(
         pageSize: Int,
         sortType: ProductSorting,
@@ -1049,7 +1049,7 @@ class ProductRestClient @Inject constructor(
                     val payload = RemoteUpdateProductPayload(
                         productError,
                         site,
-                        ProductWithMetaData(WCProductModel().apply { this.remoteProductId = remoteProductId })
+                        ProductWithMetaData(WCProductModel(remoteId = RemoteId(remoteProductId)))
                     )
                     dispatcher.dispatch(WCProductActionBuilder.newUpdatedProductAction(payload))
                 }
@@ -1377,7 +1377,7 @@ class ProductRestClient @Inject constructor(
                     val payload = RemoteUpdateProductImagesPayload(
                         productError,
                         site,
-                        ProductWithMetaData(WCProductModel().apply { this.remoteProductId = remoteProductId })
+                        ProductWithMetaData(WCProductModel(remoteId = RemoteId(remoteProductId))),
                     )
                     dispatcher.dispatch(WCProductActionBuilder.newUpdatedProductImagesAction(payload))
                 }
@@ -1907,9 +1907,9 @@ class ProductRestClient @Inject constructor(
     ): HashMap<String, Any> {
         val body = HashMap<String, Any>()
 
-        val storedWCProductModel = productModel ?: WCProductModel().apply {
-            remoteProductId = updatedProductModel.remoteProductId
-        }
+        val storedWCProductModel = productModel ?: WCProductModel(
+            remoteId = updatedProductModel.remoteId
+        )
         if (storedWCProductModel.description != updatedProductModel.description) {
             body["description"] = updatedProductModel.description
         }

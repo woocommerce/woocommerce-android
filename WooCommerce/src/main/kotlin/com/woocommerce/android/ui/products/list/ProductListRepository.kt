@@ -28,7 +28,6 @@ import org.wordpress.android.fluxc.action.WCProductAction
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.store.WCProductStore
-import org.wordpress.android.fluxc.store.WCProductStore.SkuSearchOptions
 import javax.inject.Inject
 
 class ProductListRepository @Inject constructor(
@@ -292,9 +291,7 @@ class ProductListRepository @Inject constructor(
             site = selectedSite.get(),
             remoteProductIds = productsIds.toList()
         ).map {
-            it.apply {
-                status = newStatus.toString()
-            }
+            it.copy(status = newStatus.toString())
         }
 
         bulkUpdateProducts(updatedProducts)
@@ -308,9 +305,7 @@ class ProductListRepository @Inject constructor(
             site = selectedSite.get(),
             remoteProductIds = productsIds
         ).map {
-            it.apply {
-                regularPrice = newRegularPrice
-            }
+            it.copy(regularPrice = newRegularPrice)
         }
 
         bulkUpdateProducts(updatedProducts)
@@ -355,7 +350,7 @@ class ProductListRepository @Inject constructor(
 
             val productsToUpdate =
                 allProducts.filterNot { it.manageStock || ProductType.fromString(it.type).isVariableProduct() }.map {
-                    it.apply { stockStatus = ProductStockStatus.fromStockStatus(newStatus) }
+                    it.copy(stockStatus = ProductStockStatus.fromStockStatus(newStatus))
                 }
 
             if (productsToUpdate.isEmpty() && allProducts.isNotEmpty()) {

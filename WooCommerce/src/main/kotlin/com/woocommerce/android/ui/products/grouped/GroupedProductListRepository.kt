@@ -62,7 +62,7 @@ class GroupedProductListRepository @Inject constructor(
     /**
      * Returns all products for the [productIds] that are in the database
      */
-    fun getProductList(productIds: List<Long>): List<Product> {
+    suspend fun getProductList(productIds: List<Long>): List<Product> {
         return if (selectedSite.exists()) {
             val wcProducts = productStore.getProductsByRemoteIds(
                 selectedSite.get(),
