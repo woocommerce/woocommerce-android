@@ -56,7 +56,9 @@ class SupportRequestFormActivity : AppCompatActivity() {
         ActivitySupportRequestFormBinding.inflate(layoutInflater).apply {
             this.root.edgeToEdgeHandlingForNavigationAndStatusBar(appBarLayout)
             this.root.doOnApplyWindowInsets(
-                insetsMask = WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout() or WindowInsetsCompat.Type.ime(),
+                insetsMask = WindowInsetsCompat.Type.systemBars()
+                    or WindowInsetsCompat.Type.displayCutout()
+                    or WindowInsetsCompat.Type.ime(),
                 consumeInsets = true
             ) { insets ->
                 this.root.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
