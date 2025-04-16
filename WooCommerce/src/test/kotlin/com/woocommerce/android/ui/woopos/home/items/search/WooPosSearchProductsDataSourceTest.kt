@@ -77,10 +77,8 @@ class WooPosSearchProductsDataSourceTest {
             assertThat(result).isInstanceOf(WooPosSearchProductsDataSource.ProductsResult.Cached::class.java)
             assertThat((result as WooPosSearchProductsDataSource.ProductsResult.Cached).products).isEqualTo(products)
 
-            // First verify clearCache is called
             verify(searchResultsIndex).clearCache()
 
-            // Then verify storeSearchResults is called with empty list (as observed in the test failure)
             verify(searchResultsIndex).storeSearchResults(query, emptyList())
             cancelAndIgnoreRemainingEvents()
         }
@@ -93,6 +91,7 @@ class WooPosSearchProductsDataSourceTest {
             val query = "test"
             val manyProducts = (1..20).map { ProductTestUtils.generateProduct(productId = it.toLong()) }
             whenever(wooPosProductsCache.getAll()).thenReturn(manyProducts)
+            whenever(searchResultsIndex.getSearchResults(query)).thenReturn(manyProducts)
             whenever(
                 productStore.searchProducts(
                     anyOrNull(),
@@ -208,32 +207,5 @@ class WooPosSearchProductsDataSourceTest {
                 anyOrNull(),
                 anyOrNull()
             )
-        }
-
-    @Test
-    fun `given clearCache called in searchResultsIndex, when searchProducts called, then should emit results`() =
-        runTest {
-            // GIVEN
-            val query = "test"
-            whenever(wooPosProductsCache.getAll()).thenReturn(products)
-            whenever(
-                productStore.searchProducts(
-                    anyOrNull(),
-                    anyOrNull(),
-                    anyOrNull(),
-                    anyOrNull(),
-                    anyOrNull(),
-                    anyOrNull()
-                )
-            ).thenReturn(WooResult(ProductSearchResult(emptyList(), false)))
-
-            // WHEN
-            val result = sut.searchProducts(query)
-
-            // THEN
-            result.test {
-                verify(searchResultsIndex).clearCache()
-                cancelAndIgnoreRemainingEvents()
-            }
         }
 }
