@@ -161,10 +161,10 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
         val updatedShipmentItems = defaultShipment.getValue(1).subList(fromIndex = 0, toIndex = 1)
 
         val movement = SplitMovement(
-            currentShipment = 1,
-            updatedCurrentShipmentItems = updatedCurrentShipmentItems,
-            updatedShipment = 2,
-            updatedShipmentItems = updatedShipmentItems
+            sourceShipmentKey = 1,
+            updatedSourceShipmentItems = updatedCurrentShipmentItems,
+            destinationShipmentKey = 2,
+            movingShipmentItems = updatedShipmentItems
         )
 
         createViewModel(shipmentArgs)
@@ -207,10 +207,10 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
             )
 
             val movement = SplitMovement(
-                currentShipment = 1,
-                updatedCurrentShipmentItems = updatedCurrentShipmentItems,
-                updatedShipment = 2,
-                updatedShipmentItems = updatedShipmentItems
+                sourceShipmentKey = 1,
+                updatedSourceShipmentItems = updatedCurrentShipmentItems,
+                destinationShipmentKey = 2,
+                movingShipmentItems = updatedShipmentItems
             )
 
             createViewModel(shipmentArgs)
@@ -243,10 +243,10 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
         val updatedShipmentItems = defaultShipment.getValue(1).subList(fromIndex = 0, toIndex = 1)
 
         val movement = SplitMovement(
-            currentShipment = 0,
-            updatedCurrentShipmentItems = updatedCurrentShipmentItems,
-            updatedShipment = 1,
-            updatedShipmentItems = updatedShipmentItems
+            sourceShipmentKey = 0,
+            updatedSourceShipmentItems = updatedCurrentShipmentItems,
+            destinationShipmentKey = 1,
+            movingShipmentItems = updatedShipmentItems
         )
 
         createViewModel(shipmentArgs)
@@ -275,10 +275,10 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
         val updatedShipmentItems = defaultShipment.getValue(1).subList(fromIndex = 1, toIndex = 2)
 
         val movement = SplitMovement(
-            currentShipment = 0,
-            updatedCurrentShipmentItems = updatedCurrentShipmentItems,
-            updatedShipment = 1,
-            updatedShipmentItems = updatedShipmentItems
+            sourceShipmentKey = 0,
+            updatedSourceShipmentItems = updatedCurrentShipmentItems,
+            destinationShipmentKey = 1,
+            movingShipmentItems = updatedShipmentItems
         )
 
         createViewModel(shipmentArgs)

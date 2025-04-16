@@ -66,7 +66,7 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
             shipmentSelected = shipmentSelected,
             selectableItems = selectableItems,
             splitMovements = getSplitMovements(
-                currentShipment = shipmentSelected,
+                sourceShipmentKey = shipmentSelected,
                 shipments = currentShipments.value,
                 selection = selectableItems
             ),
@@ -133,15 +133,15 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
         val currentShipmentBackup = currentShipments.value
         currentShipments.update {
             val shipments = it.toMutableMap()
-            if (splitMovement.updatedCurrentShipmentItems.isEmpty()) {
-                shipments.remove(splitMovement.currentShipment)
+            if (splitMovement.updatedSourceShipmentItems.isEmpty()) {
+                shipments.remove(splitMovement.sourceShipmentKey)
             } else {
-                shipments[splitMovement.currentShipment] = splitMovement.updatedCurrentShipmentItems
+                shipments[splitMovement.sourceShipmentKey] = splitMovement.updatedSourceShipmentItems
             }
-            shipments[splitMovement.updatedShipment] = shipments[splitMovement.updatedShipment]
+            shipments[splitMovement.destinationShipmentKey] = shipments[splitMovement.destinationShipmentKey]
                 ?.takeIf { it.isNotEmpty() }
-                ?.combine(splitMovement.updatedShipmentItems)
-                ?: splitMovement.updatedShipmentItems
+                ?.combine(splitMovement.movingShipmentItems)
+                ?: splitMovement.movingShipmentItems
             shipments
         }
 
@@ -167,7 +167,7 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
         splitMessage.value = SplitShipmentMessage.Success(
             ShippingLabelsSnackbarData(
                 message = snackbarMessage,
-                messageParameters = listOf(splitMovement.totalItemsToMove, splitMovement.updatedShipment + 1),
+                messageParameters = listOf(splitMovement.totalItemsToMove, splitMovement.destinationShipmentKey + 1),
                 actionLabel = R.string.undo,
                 dismissAction = { splitMessage.value = null },
                 action = undoAction
