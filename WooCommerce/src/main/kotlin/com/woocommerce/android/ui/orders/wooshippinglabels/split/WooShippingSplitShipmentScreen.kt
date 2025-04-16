@@ -559,13 +559,11 @@ private fun WooShippingSplitShipmentScreenPreview() = WooThemeWithBackground {
             selectableItems = mapOf(
                 0 to SelectableShippableItemsUI(
                     shippableItems = emptyList(),
-                    totalItemQuantity = 1,
                     formattedTotalWeight = "",
                     formattedTotalPrice = ""
                 ),
                 1 to SelectableShippableItemsUI(
                     shippableItems = emptyList(),
-                    totalItemQuantity = 1,
                     formattedTotalWeight = "",
                     formattedTotalPrice = ""
                 )
