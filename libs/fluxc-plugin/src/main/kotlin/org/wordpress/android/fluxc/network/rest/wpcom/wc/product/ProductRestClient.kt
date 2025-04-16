@@ -56,6 +56,8 @@ import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.DATE_ASC
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.DATE_DESC
+import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.POPULARITY_ASC
+import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.POPULARITY_DESC
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_ASC
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_DESC
 import org.wordpress.android.fluxc.store.WCProductStore.RemoteAddProductPayload
@@ -614,7 +616,7 @@ class ProductRestClient @Inject constructor(
 
         return response.toWooPayload { it.toList() }
     }
-    
+
     private fun buildProductParametersMap(
         pageSize: Int,
         sortType: ProductSorting,
@@ -689,11 +691,13 @@ class ProductRestClient @Inject constructor(
     private fun ProductSorting.asOrderByParameter(): String = when (this) {
         TITLE_ASC, TITLE_DESC -> "title"
         DATE_ASC, DATE_DESC -> "date"
+        POPULARITY_ASC, POPULARITY_DESC -> "popularity"
     }
 
     private fun ProductSorting.asSortOrderParameter(): String = when (this) {
-        TITLE_ASC, DATE_ASC -> "asc"
+        TITLE_ASC, DATE_ASC, POPULARITY_ASC -> "asc"
         TITLE_DESC, DATE_DESC -> "desc"
+        POPULARITY_DESC -> "desc"
     }
 
 

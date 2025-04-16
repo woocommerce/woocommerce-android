@@ -6,6 +6,7 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
+import com.woocommerce.android.ui.woopos.common.data.WooPosProductsTypesFilter
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -28,6 +29,7 @@ class WooPosProductsDataSource @Inject constructor(
     private val selectedSite: SelectedSite,
     private val productsCache: WooPosProductsCache,
     private val productsIndex: WooPosProductsIndex,
+    private val productsTypesFilter: WooPosProductsTypesFilter
 ) {
     private val canLoadMore = AtomicBoolean(false)
     private val offset = AtomicInteger(0)
@@ -126,18 +128,6 @@ class WooPosProductsDataSource @Inject constructor(
             Result.failure(WooException(result.error))
         }
     }
-
-    private fun createProductFilters(): Map<ProductFilterOption, String> {
-        return mapOf(
-            ProductFilterOption.STATUS to ProductStatus.PUBLISH.value,
-            ProductFilterOption.DOWNLOADABLE to DownloadableOptions.FALSE.toString()
-        )
-    }
-
-    private fun createIncludedTypes() = listOf(
-        WCProductStore.IncludeType.Simple,
-        WCProductStore.IncludeType.Variable
-    )
 
     private fun WooResult<*>.logFailure() {
         val errorMessage = error?.message ?: "Unknown error"
