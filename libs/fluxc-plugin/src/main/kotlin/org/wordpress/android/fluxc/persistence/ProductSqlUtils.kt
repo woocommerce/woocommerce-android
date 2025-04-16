@@ -75,7 +75,7 @@ object ProductSqlUtils {
             .flowOn(Dispatchers.IO)
     }
 
-    fun ProductsDao.getCompositeProducts(site: SiteModel, remoteProductId: Long): List<WCProductComponent> {
+    suspend fun ProductsDao.getCompositeProducts(site: SiteModel, remoteProductId: Long): List<WCProductComponent> {
         val productModel = getProduct(site.id, remoteProductId)
 
         return productModel?.let {

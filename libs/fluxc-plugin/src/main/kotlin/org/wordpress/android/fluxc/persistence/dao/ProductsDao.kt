@@ -74,7 +74,7 @@ abstract class ProductsDao {
             LIMIT 1
         """
     )
-    abstract fun getProduct(
+    abstract suspend fun getProduct(
         localSiteId: Int,
         remoteProductId: Long
     ): WCProductModel?

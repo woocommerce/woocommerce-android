@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products.selector
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
+import kotlinx.coroutines.runBlocking
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.persistence.ProductSqlUtils
@@ -28,6 +29,6 @@ class ProductsMapper @Inject constructor(
     ): List<WCProductModel> {
         return this
             .filter { ProductSqlUtils.getProductExistsByRemoteId(site, it) }
-            .mapNotNull { productsDao.getProduct(site.id, it) }
+            .mapNotNull { runBlocking { productsDao.getProduct(site.id, it) } }
     }
 }

@@ -1077,7 +1077,7 @@ class WCProductStore @Inject constructor(
         return productsDao.observeBundledProducts(site, remoteProductId).firstOrNull()?.size ?: 0
     }
 
-    fun getCompositeProducts(site: SiteModel, remoteProductId: Long): List<WCProductComponent> {
+    suspend fun getCompositeProducts(site: SiteModel, remoteProductId: Long): List<WCProductComponent> {
         return productsDao.getCompositeProducts(site, remoteProductId)
     }
 
