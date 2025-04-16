@@ -575,6 +575,8 @@ class ProductListViewModel @Inject constructor(
             WCProductStore.ProductSorting.DATE_DESC -> R.string.product_list_sorting_newest_to_oldest_short
             WCProductStore.ProductSorting.TITLE_DESC -> R.string.product_list_sorting_z_to_a_short
             WCProductStore.ProductSorting.TITLE_ASC -> R.string.product_list_sorting_a_to_z_short
+            WCProductStore.ProductSorting.POPULARITY_ASC, WCProductStore.ProductSorting.POPULARITY_DESC ->
+                error("Invalid sorting choice ${productRepository.productSortingChoice}")
         }
     }
 

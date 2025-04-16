@@ -14,10 +14,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.parcelize.Parcelize
 import org.greenrobot.eventbus.EventBus
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
-import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.DATE_ASC
-import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.DATE_DESC
-import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_ASC
-import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_DESC
 import javax.inject.Inject
 
 @HiltViewModel
@@ -27,33 +23,45 @@ class ProductSortingViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     companion object {
         val SORTING_OPTIONS = listOf(
-            SortingListItemUIModel(R.string.product_list_sorting_newest_to_oldest, DATE_DESC),
-            SortingListItemUIModel(R.string.product_list_sorting_oldest_to_newest, DATE_ASC),
-            SortingListItemUIModel(R.string.product_list_sorting_a_to_z, TITLE_ASC),
-            SortingListItemUIModel(R.string.product_list_sorting_z_to_a, TITLE_DESC)
+            SortingListItemUIModel(R.string.product_list_sorting_newest_to_oldest, SortingListItemUIModel.Sorting.DATE_DESC),
+            SortingListItemUIModel(R.string.product_list_sorting_oldest_to_newest, SortingListItemUIModel.Sorting.DATE_ASC),
+            SortingListItemUIModel(R.string.product_list_sorting_a_to_z, SortingListItemUIModel.Sorting.TITLE_ASC),
+            SortingListItemUIModel(R.string.product_list_sorting_z_to_a, SortingListItemUIModel.Sorting.TITLE_DESC)
         )
     }
 
-    var sortingChoice: ProductSorting
+    var sortingChoice: SortingListItemUIModel.Sorting
         private set
 
     init {
-        sortingChoice = productListRepository.productSortingChoice
+        sortingChoice = when (productListRepository.productSortingChoice) {
+            ProductSorting.TITLE_ASC -> SortingListItemUIModel.Sorting.TITLE_ASC
+            ProductSorting.TITLE_DESC -> SortingListItemUIModel.Sorting.TITLE_DESC
+            ProductSorting.DATE_ASC -> SortingListItemUIModel.Sorting.DATE_ASC
+            ProductSorting.DATE_DESC -> SortingListItemUIModel.Sorting.DATE_DESC
+            ProductSorting.POPULARITY_ASC, ProductSorting.POPULARITY_DESC ->
+                error("Invalid sorting choice $productListRepository.productSortingChoice")
+        }
     }
 
-    fun onSortingOptionChanged(option: ProductSorting) {
+    fun onSortingOptionChanged(option: SortingListItemUIModel.Sorting) {
         // order="name/date,ascending,descending"
         val order = when (option) {
-            TITLE_ASC -> AnalyticsTracker.VALUE_SORT_NAME_ASC
-            TITLE_DESC -> AnalyticsTracker.VALUE_SORT_NAME_DESC
-            DATE_ASC -> AnalyticsTracker.VALUE_SORT_DATE_ASC
-            DATE_DESC -> AnalyticsTracker.VALUE_SORT_DATE_DESC
+            SortingListItemUIModel.Sorting.TITLE_ASC -> AnalyticsTracker.VALUE_SORT_NAME_ASC
+            SortingListItemUIModel.Sorting.TITLE_DESC -> AnalyticsTracker.VALUE_SORT_NAME_DESC
+            SortingListItemUIModel.Sorting.DATE_ASC -> AnalyticsTracker.VALUE_SORT_DATE_ASC
+            SortingListItemUIModel.Sorting.DATE_DESC -> AnalyticsTracker.VALUE_SORT_DATE_DESC
         }
         AnalyticsTracker.track(
             AnalyticsEvent.PRODUCT_LIST_SORTING_OPTION_SELECTED,
             mapOf(AnalyticsTracker.KEY_SORT_ORDER to order)
         )
-        productListRepository.productSortingChoice = option
+        productListRepository.productSortingChoice = when (option) {
+            SortingListItemUIModel.Sorting.TITLE_ASC -> ProductSorting.TITLE_ASC
+            SortingListItemUIModel.Sorting.TITLE_DESC -> ProductSorting.TITLE_DESC
+            SortingListItemUIModel.Sorting.DATE_ASC -> ProductSorting.DATE_ASC
+            SortingListItemUIModel.Sorting.DATE_DESC -> ProductSorting.DATE_DESC
+        }
         EventBus.getDefault().post(OnProductSortingChanged)
         triggerEvent(Exit)
     }
@@ -61,6 +69,13 @@ class ProductSortingViewModel @Inject constructor(
     @Parcelize
     data class SortingListItemUIModel(
         @StringRes val stringResource: Int,
-        val value: ProductSorting
-    ) : Parcelable
+        val value: Sorting,
+    ) : Parcelable {
+        enum class Sorting {
+            TITLE_ASC,
+            TITLE_DESC,
+            DATE_ASC,
+            DATE_DESC,
+        }
+    }
 }
