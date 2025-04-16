@@ -5,27 +5,36 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.withContext
-import org.wordpress.android.fluxc.store.WCProductStore
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductRestClient
 import javax.inject.Inject
 
 class WooPosGetProductById @Inject constructor(
     private val selectedSite: SelectedSite,
     private val cache: WooPosProductsCache,
-    private val productsStore: WCProductStore,
+    private val productRestClient: ProductRestClient,
 ) {
     suspend operator fun invoke(productId: Long): Product? = withContext(IO) {
         val cachedProduct = cache.getProductById(productId)
-        cachedProduct
-            ?: if (cache.getAll().size >= WooPosProductsCache.MAX_CACHE_SIZE) {
-                cache.getProductById(productId) ?: productsStore.getProductByRemoteId(
-                    site = selectedSite.get(),
-                    remoteProductId = productId,
-                )?.toAppModel()?.let {
-                    cache.addAll(listOf(it))
-                    it
-                }
+        if (cachedProduct != null) {
+            return@withContext cachedProduct
+        }
+
+        if (cache.getAll().size >= WooPosProductsCache.MAX_CACHE_SIZE) {
+            val remoteProductResult = productRestClient.fetchSingleProduct(
+                site = selectedSite.get(),
+                remoteProductId = productId,
+            )
+
+            if (!remoteProductResult.isError) {
+                val remoteProduct = remoteProductResult.productWithMetaData.product
+                val product = remoteProduct.toAppModel()
+                cache.addAll(listOf(product))
+                return@withContext product
             } else {
                 null
             }
+        } else {
+            null
+        }
     }
 }
