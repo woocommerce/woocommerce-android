@@ -85,6 +85,19 @@ abstract class ProductsDao {
         """
             SELECT * FROM WCProductModel
             WHERE localSiteId = :localSiteId
+            AND sku = :sku
+            LIMIT 1
+        """
+    )
+    abstract suspend fun getProduct(
+        localSiteId: Int,
+        sku: String
+    ): WCProductModel?
+
+    @Query(
+        """
+            SELECT * FROM WCProductModel
+            WHERE localSiteId = :localSiteId
             AND remoteProductId IN (:remoteProductIds)
             AND (:virtual IS NULL OR virtual = :virtual)
         """

@@ -168,13 +168,8 @@ object ProductSqlUtils {
         return getProduct(site.id, remoteProductId) != null
     }
 
-    fun getProductExistsBySku(site: SiteModel, sku: String): Boolean {
-        return WellSql.select(WCProductModel::class.java)
-            .where().beginGroup()
-            .equals(WCProductModelTable.SKU, sku)
-            .equals(WCProductModelTable.LOCAL_SITE_ID, site.id)
-            .endGroup().endWhere()
-            .exists()
+    suspend fun ProductsDao.getProductExistsBySku(site: SiteModel, sku: String): Boolean {
+        return getProduct(site.id, sku = sku) != null
     }
 
     fun getSortField(sortType: ProductSorting) =

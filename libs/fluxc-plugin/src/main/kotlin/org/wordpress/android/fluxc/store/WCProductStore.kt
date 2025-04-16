@@ -48,6 +48,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductRestClie
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductVariationMapper
 import org.wordpress.android.fluxc.persistence.ProductSqlUtils
 import org.wordpress.android.fluxc.persistence.ProductSqlUtils.getCompositeProducts
+import org.wordpress.android.fluxc.persistence.ProductSqlUtils.getProductExistsBySku
 import org.wordpress.android.fluxc.persistence.ProductSqlUtils.getProducts
 import org.wordpress.android.fluxc.persistence.ProductSqlUtils.observeBundledProducts
 import org.wordpress.android.fluxc.persistence.ProductStorageHelper
@@ -834,8 +835,7 @@ class WCProductStore @Inject constructor(
     /**
      * @return true if the product exists with this [sku] in the database.
      */
-    fun isProductExists(site: SiteModel, sku: String) =
-        ProductSqlUtils.getProductExistsBySku(site, sku)
+    suspend fun isProductExists(site: SiteModel, sku: String) = productsDao.getProductExistsBySku(site, sku)
 
     /**
      * returns a list of variations for a specific product in the database
