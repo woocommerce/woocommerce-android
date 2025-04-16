@@ -11,7 +11,7 @@ class WooPosItemsSearchEmptyStateRepository @Inject constructor(
     private val preferencesRepository: WooPosPreferencesRepository,
     private val popularProductsProvider: WooPosPopularProductsProvider,
 ) {
-    fun getPopularItems(): List<Product> = popularProductsProvider.getPopularProducts()
+    suspend fun getPopularItems(): List<Product> = popularProductsProvider.getPopularProducts()
 
     suspend fun getLastSearches(): List<String> = preferencesRepository.recentProductSearches.first()
 

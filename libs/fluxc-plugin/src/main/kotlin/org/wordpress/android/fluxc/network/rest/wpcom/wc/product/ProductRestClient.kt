@@ -696,8 +696,7 @@ class ProductRestClient @Inject constructor(
 
     private fun ProductSorting.asSortOrderParameter(): String = when (this) {
         TITLE_ASC, DATE_ASC, POPULARITY_ASC -> "asc"
-        TITLE_DESC, DATE_DESC -> "desc"
-        POPULARITY_DESC -> "desc"
+        POPULARITY_DESC, TITLE_DESC, DATE_DESC -> "desc"
     }
 
 

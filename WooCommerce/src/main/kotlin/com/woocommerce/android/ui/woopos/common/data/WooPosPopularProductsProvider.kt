@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.woopos.common.data
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
 import javax.inject.Inject
@@ -12,17 +14,19 @@ import javax.inject.Singleton
 class WooPosPopularProductsProvider @Inject constructor(
     private val selectedSite: SelectedSite,
     private val productStore: WCProductStore,
+    private val productsCache: WooPosProductsCache,
     private val productsTypesFilterConfig: WooPosProductsTypesFilterConfig,
 ) {
     companion object {
         private const val MAX_POPULAR_PRODUCTS = 3
     }
 
+    private val mutex = Mutex()
     private val popularProductsCache = mutableListOf<Product>()
 
-    fun getPopularProducts(): List<Product> = popularProductsCache
+    suspend fun getPopularProducts(): List<Product> = mutex.withLock { popularProductsCache }
 
-    suspend fun fetchPopularProducts(): Result<Unit> {
+    suspend fun fetchPopularProducts(): Result<Unit> = mutex.withLock {
         val result = productStore.fetchProducts(
             site = selectedSite.get(),
             offset = 0,
@@ -36,8 +40,11 @@ class WooPosPopularProductsProvider @Inject constructor(
             return Result.failure(Exception(result.error.message))
         } else {
             val products = result.model ?: emptyList()
+            var productsAppModel = products.map { it.toAppModel() }
+
             popularProductsCache.clear()
-            popularProductsCache.addAll(products.map { it.toAppModel() })
+            popularProductsCache.addAll(productsAppModel)
+            productsCache.addAll(productsAppModel)
             return Result.success(Unit)
         }
     }
