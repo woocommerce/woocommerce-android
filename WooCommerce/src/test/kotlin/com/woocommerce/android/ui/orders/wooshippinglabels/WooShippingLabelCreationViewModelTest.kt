@@ -822,7 +822,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
         sut.onPurchaseShippingLabel()
 
-        assertThat(sut.actionSnackbar).matches { it?.message == R.string.woo_shipping_labels_purchase_error }
+        assertThat(sut.snackbarData).matches { it?.message == R.string.woo_shipping_labels_purchase_error }
     }
 
     @Test

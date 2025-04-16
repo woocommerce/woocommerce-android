@@ -408,17 +408,21 @@ class WooPosProductsDataSourceTest {
         // GIVEN
         val mockProductC = mock<Product>()
         whenever(mockProductC.name).thenReturn("C Product")
+        whenever(mockProductC.remoteId).thenReturn(3L)
 
         val mockProductA = mock<Product>()
         whenever(mockProductA.name).thenReturn("A Product")
+        whenever(mockProductA.remoteId).thenReturn(1L)
 
         val mockProductB = mock<Product>()
         whenever(mockProductB.name).thenReturn("B Product")
+        whenever(mockProductB.remoteId).thenReturn(2L)
 
         val customUnsortedProducts = listOf(mockProductC, mockProductA, mockProductB)
+        val sortedProducts = listOf(mockProductA, mockProductB, mockProductC)
 
         whenever(productsCache.getAll()).thenReturn(customUnsortedProducts)
-        whenever(productsIndex.getProductList()).thenReturn(customUnsortedProducts)
+        whenever(productsIndex.getProductList()).thenReturn(sortedProducts)
         whenever(
             productStore.fetchProducts(
                 site = eq(siteModel),
