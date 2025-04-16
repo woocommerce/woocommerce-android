@@ -1049,8 +1049,8 @@ class WCProductStore @Inject constructor(
             type = filterOptions[ProductFilterOption.TYPE],
             category = filterOptions[ProductFilterOption.CATEGORY]?.let { categoryFilter(it) },
             excludeSampleProducts = excludeSampleProducts,
-            sortField = ProductSqlUtils.getRoomSortField(sortType),
-            sortOrder = ProductSqlUtils.getRoomSortOrder(sortType),
+            sortField = ProductSqlUtils.getSortField(sortType),
+            sortOrder = ProductSqlUtils.getSortOrder(sortType),
             limit = limit,
         )
     }

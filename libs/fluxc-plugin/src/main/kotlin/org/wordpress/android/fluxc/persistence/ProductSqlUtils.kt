@@ -10,7 +10,6 @@ import com.wellsql.generated.WCProductReviewModelTable
 import com.wellsql.generated.WCProductShippingClassModelTable
 import com.wellsql.generated.WCProductTagModelTable
 import com.wellsql.generated.WCProductVariationModelTable
-import com.yarolegovich.wellsql.ConditionClauseBuilder
 import com.yarolegovich.wellsql.SelectQuery
 import com.yarolegovich.wellsql.WellSql
 import kotlinx.coroutines.Dispatchers
@@ -138,8 +137,8 @@ object ProductSqlUtils {
             type = filterOptions[ProductFilterOption.TYPE],
             category = filterOptions[ProductFilterOption.CATEGORY]?.let { categoryFilter(it) },
             excludeSampleProducts = excludeSampleProducts,
-            sortField = getRoomSortField(sortType),
-            sortOrder = getRoomSortOrder(sortType),
+            sortField = getSortField(sortType),
+            sortOrder = getSortOrder(sortType),
             limit = limit,
             excludedProductIds = excludedProductIds
         ).firstOrNull().orEmpty().filter { product ->
@@ -165,17 +164,6 @@ object ProductSqlUtils {
         return products
     }
 
-    /**
-     * WellSQL doesn't support "COLLATE NOCASE" so we have to manually provide case-insensitive sorting
-     */
-    private fun sortProductsByName(products: List<WCProductModel>, descending: Boolean): List<WCProductModel> {
-        return if (descending) {
-            products.sortedByDescending { it.name.lowercase(Locale.getDefault()) }
-        } else {
-            products.sortedBy { it.name.lowercase(Locale.getDefault()) }
-        }
-    }
-
     fun getProductExistsByRemoteId(site: SiteModel, remoteProductId: Long): Boolean {
         return WellSql.select(WCProductModel::class.java)
             .where().beginGroup()
@@ -194,25 +182,13 @@ object ProductSqlUtils {
             .exists()
     }
 
-    private fun getSortField(sortType: ProductSorting) =
-        when (sortType) {
-            TITLE_ASC, TITLE_DESC -> WCProductModelTable.NAME
-            DATE_ASC, DATE_DESC -> WCProductModelTable.DATE_CREATED
-        }
-
-    fun getRoomSortField(sortType: ProductSorting) =
+    fun getSortField(sortType: ProductSorting) =
         when (sortType) {
             TITLE_ASC, TITLE_DESC -> "name"
             DATE_ASC, DATE_DESC -> "date_created"
         }
 
-    private fun getSortOrder(sortType: ProductSorting) =
-        when (sortType) {
-            TITLE_ASC, DATE_ASC -> SelectQuery.ORDER_ASCENDING
-            TITLE_DESC, DATE_DESC -> SelectQuery.ORDER_DESCENDING
-        }
-
-    fun getRoomSortOrder(sortType: ProductSorting) =
+    fun getSortOrder(sortType: ProductSorting) =
         when (sortType) {
             TITLE_ASC, DATE_ASC -> "ASC"
             TITLE_DESC, DATE_DESC -> "DESC"
@@ -695,24 +671,4 @@ object ProductSqlUtils {
         if (affectedRows != 0) categoriesUpdatesTrigger.tryEmit(Unit)
     }
 
-    private fun ConditionClauseBuilder<SelectQuery<WCProductModel>>.applyProductFilterOptions(
-        filterOptions: Map<ProductFilterOption, String>
-    ): ConditionClauseBuilder<SelectQuery<WCProductModel>> {
-        if (filterOptions.containsKey(ProductFilterOption.STATUS)) {
-            equals(WCProductModelTable.STATUS, filterOptions[ProductFilterOption.STATUS])
-        }
-        if (filterOptions.containsKey(ProductFilterOption.STOCK_STATUS)) {
-            equals(WCProductModelTable.STOCK_STATUS, filterOptions[ProductFilterOption.STOCK_STATUS])
-        }
-        if (filterOptions.containsKey(ProductFilterOption.TYPE)) {
-            equals(WCProductModelTable.TYPE, filterOptions[ProductFilterOption.TYPE])
-        }
-        if (filterOptions.containsKey(ProductFilterOption.CATEGORY)) {
-            // Building a custom filter, because in the table a product's categories are saved as JSON string, e.g:
-            // [{"id":1377,"name":"Decor","slug":"decor"},{"id":1374,"name":"Hoodies","slug":"hoodies"}]
-            val categoryFilter = "\"id\":${filterOptions[ProductFilterOption.CATEGORY]},"
-            contains(WCProductModelTable.CATEGORIES, categoryFilter)
-        }
-        return this
-    }
 }
