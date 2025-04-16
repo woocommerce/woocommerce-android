@@ -207,12 +207,6 @@ sealed class SplitShipmentMessage {
     data class Success(val snackbarData: ShippingLabelsSnackbarData) : SplitShipmentMessage()
 }
 
-fun List<ShippableItemModel>.combine(other: List<ShippableItemModel>): List<ShippableItemModel> {
-    val combinedMap = associateBy { it.itemId }.toMutableMap()
-    other.forEach { otherItem ->
-        val existingItem = combinedMap[otherItem.itemId]
-        combinedMap[otherItem.itemId] = existingItem?.copy(quantity = existingItem.quantity + otherItem.quantity)
-            ?: otherItem
-    }
-    return combinedMap.values.toList()
-}
+private fun List<ShippableItemModel>.combine(other: List<ShippableItemModel>) = (this + other)
+    .groupBy { it.itemId }
+    .map { (_, itemsWithSameId) -> itemsWithSameId.first().copy(quantity = itemsWithSameId.sumByFloat { it.quantity }) }
