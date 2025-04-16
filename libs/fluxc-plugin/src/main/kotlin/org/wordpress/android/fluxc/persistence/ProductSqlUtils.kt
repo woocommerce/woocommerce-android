@@ -3,8 +3,6 @@
 package org.wordpress.android.fluxc.persistence
 
 import com.google.gson.Gson
-import com.google.gson.JsonArray
-import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
 import com.wellsql.generated.WCProductCategoryModelTable
 import com.wellsql.generated.WCProductModelTable
@@ -28,7 +26,6 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCBundledProduct
 import org.wordpress.android.fluxc.model.WCProductCategoryModel
 import org.wordpress.android.fluxc.model.WCProductComponent
-import org.wordpress.android.fluxc.model.WCProductImageModel
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.WCProductReviewModel
 import org.wordpress.android.fluxc.model.WCProductShippingClassModel
@@ -437,23 +434,6 @@ object ProductSqlUtils {
     }
 
     fun deleteAllProductReviews() = WellSql.delete(WCProductReviewModel::class.java).execute()
-
-    fun deleteProductImage(site: SiteModel, remoteProductId: Long, remoteMediaId: Long): Boolean {
-        val product = getProductByRemoteId(site, remoteProductId) ?: return false
-
-        // build a new image list containing all the product images except the passed one
-        val imageList = ArrayList<WCProductImageModel>()
-        product.getImageListOrEmpty().forEach { image ->
-            if (image.id != remoteMediaId) {
-                imageList.add(image)
-            }
-        }
-        return if (imageList.size == product.getImageListOrEmpty().size) {
-            false
-        } else {
-            updateProductImages(product, imageList) > 0
-        }
-    }
 
     fun deleteProduct(site: SiteModel, remoteProductId: Long): Int {
         return WellSql.delete(WCProductModel::class.java)

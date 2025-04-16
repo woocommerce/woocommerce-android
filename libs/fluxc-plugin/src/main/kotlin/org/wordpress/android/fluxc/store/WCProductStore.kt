@@ -3,7 +3,6 @@ package org.wordpress.android.fluxc.store
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
-import com.wellsql.generated.WCProductModelTable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking
@@ -909,13 +908,6 @@ class WCProductStore @Inject constructor(
         remoteReviewId: Long
     ): WCProductReviewModel? = ProductSqlUtils
         .getProductReviewByRemoteId(localSiteId, remoteReviewId)
-
-    fun deleteProductReviewsForSite(site: SiteModel) = ProductSqlUtils.deleteAllProductReviewsForSite(site)
-
-    fun deleteAllProductReviews() = ProductSqlUtils.deleteAllProductReviews()
-
-    fun deleteProductImage(site: SiteModel, remoteProductId: Long, remoteMediaId: Long) =
-        ProductSqlUtils.deleteProductImage(site, remoteProductId, remoteMediaId)
 
     fun getProductCategoriesForSite(site: SiteModel, sortType: ProductCategorySorting = DEFAULT_CATEGORY_SORTING) =
         ProductSqlUtils.getProductCategoriesForSite(site, sortType)
