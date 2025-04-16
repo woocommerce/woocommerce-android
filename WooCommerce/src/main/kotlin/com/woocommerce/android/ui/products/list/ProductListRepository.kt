@@ -205,7 +205,7 @@ class ProductListRepository @Inject constructor(
     /**
      * Returns all products for the current site that are in the database
      */
-    fun getProductList(
+    suspend fun getProductList(
         productFilterOptions: Map<WCProductStore.ProductFilterOption, String> = emptyMap(),
         excludedProductIds: List<Long>? = null,
         sortType: WCProductStore.ProductSorting? = null

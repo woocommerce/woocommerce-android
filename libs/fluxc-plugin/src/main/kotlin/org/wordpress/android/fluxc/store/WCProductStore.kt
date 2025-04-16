@@ -48,6 +48,8 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductRestClie
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductVariationMapper
 import org.wordpress.android.fluxc.persistence.ProductSqlUtils
 import org.wordpress.android.fluxc.persistence.ProductSqlUtils.getCompositeProducts
+import org.wordpress.android.fluxc.persistence.ProductSqlUtils.getProducts
+import org.wordpress.android.fluxc.persistence.ProductSqlUtils.getProducts2
 import org.wordpress.android.fluxc.persistence.ProductSqlUtils.observeBundledProducts
 import org.wordpress.android.fluxc.persistence.ProductStorageHelper
 import org.wordpress.android.fluxc.persistence.dao.AddonsDao
@@ -85,6 +87,13 @@ class WCProductStore @Inject constructor(
         val DEFAULT_PRODUCT_SORTING = TITLE_ASC
         val DEFAULT_CATEGORY_SORTING = NAME_ASC
         const val VARIATIONS_CREATION_LIMIT = 100
+
+        fun categoryFilter(jsonCategory: String): String {
+            // Building a custom filter, because in the table a product's categories are saved as JSON string, e.g:
+            // [{"id":1377,"name":"Decor","slug":"decor"},{"id":1374,"name":"Hoodies","slug":"hoodies"}]
+            return "\"id\":${jsonCategory},"
+        }
+
     }
 
     sealed class IncludeType(val value: String) {
@@ -858,7 +867,7 @@ class WCProductStore @Inject constructor(
      * Returns a list of [WCProductModel] for the given [SiteModel], [filterOptions] and [searchQuery].
      * To filter by category, make sure the [filterOptions] value is the category ID in String.
      */
-    fun getProducts(
+    suspend fun getProducts(
         site: SiteModel,
         filterOptions: Map<ProductFilterOption, String>,
         sortType: ProductSorting = DEFAULT_PRODUCT_SORTING,
@@ -866,7 +875,14 @@ class WCProductStore @Inject constructor(
         searchQuery: String? = null,
         skuSearchOptions: SkuSearchOptions = SkuSearchOptions.Disabled,
     ): List<WCProductModel> =
-        ProductSqlUtils.getProducts(site, filterOptions, sortType, excludedProductIds, searchQuery, skuSearchOptions)
+        productsDao.getProducts2(
+            site = site,
+            filterOptions = filterOptions,
+            sortType = sortType,
+            excludedProductIds = excludedProductIds,
+            searchQuery = searchQuery,
+            skuSearchOptions = skuSearchOptions
+        )
 
     fun getProductReviewsForSite(site: SiteModel): List<WCProductReviewModel> =
         ProductSqlUtils.getProductReviewsForSite(site)
@@ -1052,12 +1068,6 @@ class WCProductStore @Inject constructor(
         category = filterOptions[ProductFilterOption.CATEGORY]?.let { categoryFilter(it) },
         excludeSampleProducts = excludeSampleProducts
     )
-
-    private fun categoryFilter(jsonCategory: String): String {
-        // Building a custom filter, because in the table a product's categories are saved as JSON string, e.g:
-        // [{"id":1377,"name":"Decor","slug":"decor"},{"id":1374,"name":"Hoodies","slug":"hoodies"}]
-        return "\"id\":${jsonCategory},"
-    }
 
     fun observeVariations(site: SiteModel, productId: Long): Flow<List<WCProductVariationModel>> =
         ProductSqlUtils.observeVariations(site, productId)

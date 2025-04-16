@@ -111,7 +111,7 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
         }.map { }
     }
 
-    private fun searchInCache() {
+    private suspend fun searchInCache() {
         val searchOptions = if (searchType.value == SearchType.SKU) {
             SkuSearchOptions.PartialMatch
         } else {

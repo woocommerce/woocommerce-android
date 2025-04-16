@@ -34,6 +34,7 @@ import org.wordpress.android.fluxc.model.WCProductVariationModel
 import org.wordpress.android.fluxc.persistence.dao.ProductsDao
 import org.wordpress.android.fluxc.store.WCProductStore.Companion.DEFAULT_CATEGORY_SORTING
 import org.wordpress.android.fluxc.store.WCProductStore.Companion.DEFAULT_PRODUCT_SORTING
+import org.wordpress.android.fluxc.store.WCProductStore.Companion.categoryFilter
 import org.wordpress.android.fluxc.store.WCProductStore.ProductCategorySorting
 import org.wordpress.android.fluxc.store.WCProductStore.ProductCategorySorting.NAME_ASC
 import org.wordpress.android.fluxc.store.WCProductStore.ProductCategorySorting.NAME_DESC
@@ -119,7 +120,7 @@ object ProductSqlUtils {
                 .asModel.firstOrNull()
     }
 
-    fun getProducts(
+    suspend fun ProductsDao.getProducts2(
         site: SiteModel,
         filterOptions: Map<ProductFilterOption, String>,
         sortType: ProductSorting = DEFAULT_PRODUCT_SORTING,
@@ -129,10 +130,19 @@ object ProductSqlUtils {
         excludeSampleProducts: Boolean = false,
         limit: Int? = null
     ): List<WCProductModel> {
-        val queryBuilder = WellSql.select(WCProductModel::class.java)
-                .where().beginGroup()
-                .equals(WCProductModelTable.LOCAL_SITE_ID, site.id)
-                .applyProductFilterOptions(filterOptions)
+
+        val products = observeProducts(
+            localSiteId = site.id,
+            status = filterOptions[ProductFilterOption.STATUS],
+            stockStatus = filterOptions[ProductFilterOption.STOCK_STATUS],
+            type = filterOptions[ProductFilterOption.TYPE],
+            category = filterOptions[ProductFilterOption.CATEGORY]?.let { categoryFilter(it) },
+            excludeSampleProducts = excludeSampleProducts,
+            sortField = getRoomSortField(sortType),
+            sortOrder = getRoomSortOrder(sortType),
+            limit = limit,
+            excludedProductIds = excludedProductIds
+        ).firstOrNull().orEmpty()
 
         if (searchQuery?.isNotEmpty() == true) {
             when(skuSearchOptions) {
@@ -162,30 +172,7 @@ object ProductSqlUtils {
             }
         }
 
-        excludedProductIds?.let {
-            if (it.isNotEmpty()) {
-                queryBuilder.isNotIn(WCProductModelTable.REMOTE_PRODUCT_ID, it)
-            }
-        }
-
-        if (excludeSampleProducts) {
-            queryBuilder.equals(WCProductModelTable.IS_SAMPLE_PRODUCT, false)
-        }
-
-        val sortOrder = getSortOrder(sortType)
-        val sortField = getSortField(sortType)
-
-        val products = queryBuilder
-                .endGroup().endWhere()
-                .orderBy(sortField, sortOrder)
-                .apply { limit?.let { limit(it) } }
-                .asModel
-
-        return if (sortType == TITLE_ASC || sortType == TITLE_DESC) {
-            sortProductsByName(products, descending = sortType == TITLE_DESC)
-        } else {
-            products
-        }
+        return products
     }
 
     /**
