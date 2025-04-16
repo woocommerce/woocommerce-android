@@ -4,6 +4,9 @@ import com.android.volley.VolleyError
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.junit.runners.Parameterized
+import org.junit.runners.Parameterized.Parameters
 import org.mockito.kotlin.KArgumentCaptor
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
@@ -17,28 +20,38 @@ import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.NETWORK_
 import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceWPAPINetwork
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
+import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsNetwork
+import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsStore
 import org.wordpress.android.fluxc.network.rest.wpapi.plugin.PluginResponseModel.Description
 import org.wordpress.android.fluxc.test
 
-class PluginWPApiRestClientTest {
+@RunWith(Parameterized::class)
+class PluginWPApiRestClientTest(private val site: SiteModel) {
     private val cookieNonceWPAPINetwork: CookieNonceWPAPINetwork = mock()
+    private val applicationPasswordsNetwork: ApplicationPasswordsNetwork = mock()
+    private val applicationPasswordsStore: ApplicationPasswordsStore = mock()
+    private val expectedNetwork
+        get() = if (site.username.isNullOrEmpty() || site.password.isNullOrEmpty()) {
+            applicationPasswordsNetwork
+        } else {
+            cookieNonceWPAPINetwork
+        }
+
     private lateinit var urlCaptor: KArgumentCaptor<String>
     private lateinit var paramsCaptor: KArgumentCaptor<Map<String, String>>
     private lateinit var bodyCaptor: KArgumentCaptor<Map<String, String>>
     private lateinit var restClient: PluginWPAPIRestClient
-
-    private val siteUrl = "http://site.com"
-    val site = SiteModel().apply {
-        url = siteUrl
-        username = "username"
-    }
 
     @Before
     fun setUp() {
         urlCaptor = argumentCaptor()
         paramsCaptor = argumentCaptor()
         bodyCaptor = argumentCaptor()
-        restClient = PluginWPAPIRestClient(cookieNonceWPAPINetwork)
+        restClient = PluginWPAPIRestClient(
+            cookieNonceWPAPINetwork = cookieNonceWPAPINetwork,
+            applicationPasswordsNetwork = applicationPasswordsNetwork,
+            applicationPasswordsStore = applicationPasswordsStore
+        )
     }
 
     @Test
@@ -115,6 +128,32 @@ class PluginWPApiRestClientTest {
         assertThat(bodyCaptor.lastValue).isEqualTo(emptyMap<String, String>())
     }
 
+    @Test
+    fun `given we already have an app password, when fetching plugins, then use app passwords network`() = test {
+        whenever(applicationPasswordsStore.hasCredentials(site)).thenReturn(true)
+        val testPlugin: PluginResponseModel = testPlugin.copy(
+            plugin = "test-plugin/2",
+        )
+        whenever(
+            applicationPasswordsNetwork.executeGetGsonRequest<Array<PluginResponseModel>>(
+                site = any(),
+                path = any(),
+                clazz = any(),
+                params = any(),
+                enableCaching = any(),
+                cacheTimeToLive = any(),
+                forced = any(),
+                requestTimeout = any(),
+                retries = any()
+            )
+        ).thenReturn(WPAPIResponse.Success(arrayOf(testPlugin)))
+
+        val responseModel = restClient.fetchPlugins(site, false)
+
+        assertThat(responseModel.data).isNotNull()
+        assertMappedPlugin(responseModel.data!![0], testPlugin)
+    }
+
     private fun assertMappedPlugin(
         responseModel: SitePluginModel,
         plugin: PluginResponseModel
@@ -145,7 +184,7 @@ class PluginWPApiRestClientTest {
     ): WPAPIResponse<T> {
         val response = if (error != null) WPAPIResponse.Error(error) else WPAPIResponse.Success(data)
         whenever(
-            cookieNonceWPAPINetwork.executeGetGsonRequest(
+            expectedNetwork.executeGetGsonRequest(
                 site = eq(site),
                 path = urlCaptor.capture(),
                 clazz = eq(clazz),
@@ -166,7 +205,7 @@ class PluginWPApiRestClientTest {
     ): WPAPIResponse<PluginResponseModel> {
         val response = if (error != null) WPAPIResponse.Error(error) else WPAPIResponse.Success(data ?: mock())
         whenever(
-            cookieNonceWPAPINetwork.executePostGsonRequest(
+            expectedNetwork.executePostGsonRequest(
                 eq(site),
                 urlCaptor.capture(),
                 eq(PluginResponseModel::class.java),
@@ -182,7 +221,7 @@ class PluginWPApiRestClientTest {
     ): WPAPIResponse<PluginResponseModel> {
         val response = if (error != null) WPAPIResponse.Error(error) else WPAPIResponse.Success(data ?: mock())
         whenever(
-            cookieNonceWPAPINetwork.executePutGsonRequest(
+            expectedNetwork.executePutGsonRequest(
                 eq(site),
                 urlCaptor.capture(),
                 eq(PluginResponseModel::class.java),
@@ -198,7 +237,7 @@ class PluginWPApiRestClientTest {
     ): WPAPIResponse<PluginResponseModel> {
         val response = if (error != null) WPAPIResponse.Error(error) else WPAPIResponse.Success(data ?: mock())
         whenever(
-            cookieNonceWPAPINetwork.executeDeleteGsonRequest(
+            expectedNetwork.executeDeleteGsonRequest(
                 eq(site),
                 urlCaptor.capture(),
                 eq(PluginResponseModel::class.java),
@@ -223,5 +262,22 @@ class PluginWPApiRestClientTest {
             "",
             "plugin"
         )
+
+        private const val SITE_URL = "http://site.com"
+
+        @Parameters(name = "{index}: {0}")
+        @JvmStatic
+        fun data(): List<Any> {
+            return listOf(
+                SiteModel().apply {
+                    url = SITE_URL
+                    username = "username"
+                    password = "password"
+                },
+                SiteModel().apply {
+                    url = SITE_URL
+                }
+            )
+        }
     }
 }

@@ -4,22 +4,38 @@ import org.wordpress.android.fluxc.generated.endpoint.WPAPI
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.plugin.SitePluginModel
 import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceWPAPINetwork
+import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetwork
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse.Error
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse.Success
+import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsNetwork
+import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsStore
 import org.wordpress.android.fluxc.store.PluginCoroutineStore.WPApiPluginsPayload
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class PluginWPAPIRestClient @Inject constructor(
-    private val cookieNonceWPAPINetwork: CookieNonceWPAPINetwork
+    private val cookieNonceWPAPINetwork: CookieNonceWPAPINetwork,
+    private val applicationPasswordsNetwork: ApplicationPasswordsNetwork,
+    private val applicationPasswordsStore: ApplicationPasswordsStore
 ) {
+    private fun getNetwork(
+        site: SiteModel
+    ): WPAPINetwork {
+        return when {
+            applicationPasswordsStore.hasCredentials(site)
+                || site.username.isNullOrEmpty() || site.password.isNullOrEmpty() -> applicationPasswordsNetwork
+
+            else -> cookieNonceWPAPINetwork
+        }
+    }
+
     suspend fun fetchPlugins(
         site: SiteModel,
         enableCaching: Boolean = false
     ): WPApiPluginsPayload<List<SitePluginModel>> {
-        val response = cookieNonceWPAPINetwork.executeGetGsonRequest(
+        val response = getNetwork(site).executeGetGsonRequest(
             site = site,
             path = WPAPI.plugins.urlV2,
             clazz = Array<PluginResponseModel>::class.java,
@@ -30,6 +46,7 @@ class PluginWPAPIRestClient @Inject constructor(
             requestTimeout = 0,
             retries = 0
         )
+
         return when (response) {
             is Success -> {
                 val plugins = response.data?.map {
@@ -48,7 +65,7 @@ class PluginWPAPIRestClient @Inject constructor(
         site: SiteModel,
         pluginName: String
     ): WPApiPluginsPayload<SitePluginModel> {
-        val response = cookieNonceWPAPINetwork.executeGetGsonRequest(
+        val response = getNetwork(site).executeGetGsonRequest(
             site = site,
             path = WPAPI.plugins.name(pluginName).urlV2,
             clazz = PluginResponseModel::class.java
@@ -60,7 +77,7 @@ class PluginWPAPIRestClient @Inject constructor(
         site: SiteModel,
         installedPluginSlug: String
     ): WPApiPluginsPayload<SitePluginModel> {
-        val response = cookieNonceWPAPINetwork.executePostGsonRequest(
+        val response = getNetwork(site).executePostGsonRequest(
             site = site,
             path = WPAPI.plugins.urlV2,
             clazz = PluginResponseModel::class.java,
@@ -74,7 +91,7 @@ class PluginWPAPIRestClient @Inject constructor(
         updatedPlugin: String,
         active: Boolean
     ): WPApiPluginsPayload<SitePluginModel> {
-        val response = cookieNonceWPAPINetwork.executePutGsonRequest(
+        val response = getNetwork(site).executePutGsonRequest(
             site = site,
             path = WPAPI.plugins.name(updatedPlugin).urlV2,
             clazz = PluginResponseModel::class.java,
@@ -87,7 +104,7 @@ class PluginWPAPIRestClient @Inject constructor(
         site: SiteModel,
         deletedPlugin: String
     ): WPApiPluginsPayload<SitePluginModel> {
-        val response = cookieNonceWPAPINetwork.executeDeleteGsonRequest(
+        val response = getNetwork(site).executeDeleteGsonRequest(
             site = site,
             path = WPAPI.plugins.name(deletedPlugin).urlV2,
             clazz = PluginResponseModel::class.java
