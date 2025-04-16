@@ -38,6 +38,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toLowerCase
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCModalBottomSheet
@@ -204,3 +205,32 @@ private fun ShipmentCard(
         }
     }
 }
+
+@Preview
+@Composable
+private fun ShipmentCardPreview() = ShipmentCard(
+    modifier = Modifier.fillMaxWidth(),
+    shipment = mapOf(
+        3 to SelectableShippableItemsUI(
+            shippableItems = emptyList(),
+            2,
+            "550g",
+            "$50.00"
+        )
+    ).entries.first()
+)
+
+@Preview
+@Composable
+private fun ShipmentCardSelectedPreview() = ShipmentCard(
+    modifier = Modifier.fillMaxWidth(),
+    shipment = mapOf(
+        2 to SelectableShippableItemsUI(
+            shippableItems = emptyList(),
+            3,
+            "825g",
+            "$75.00"
+        )
+    ).entries.first(),
+    isSelected = true
+)
