@@ -80,6 +80,7 @@ fun WooShippingSplitShipmentScreen(
             onUpdateShipment = viewModel::onUpdateShipment,
             onUpdateSelectedShipment = viewModel::onUpdateSelectedShipment,
             onRemoveShipment = viewModel::onRemoveShipment,
+            onRemoveShipmentMenuTapped = viewModel::onRemoveShipmentMenuTapped,
             modifier = modifier
         )
     }
@@ -93,7 +94,7 @@ fun WooShippingSplitShipmentScreen(
     onUpdateSelection: (shipmentKey: Int, index: Int, selectedIndexes: Set<Int>?) -> Unit,
     onUpdateShipment: (splitMovement: SplitMovement) -> Unit,
     onUpdateSelectedShipment: (shipmentKey: Int) -> Unit,
-    onRemoveShipment: (shipmentKey: Int) -> Unit,
+    onRemoveShipmentMenuTapped: (shipmentKey: Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -143,7 +144,7 @@ fun WooShippingSplitShipmentScreen(
                         productsExtraPadding,
                         onUpdateSelectedShipment,
                         onUpdateSelection,
-                        onRemoveShipment,
+                        onRemoveShipmentMenuTapped,
                         modifier
                     )
 
@@ -221,7 +222,7 @@ private fun MultipleShipments(
     productsExtraPadding: Dp,
     onUpdateSelectedShipment: (shipmentKey: Int) -> Unit,
     onUpdateSelection: (shipmentKey: Int, index: Int, selectedIndexes: Set<Int>?) -> Unit,
-    onRemoveShipment: (shipmentKey: Int) -> Unit,
+    onRemoveShipmentMenuTapped: (shipmentKey: Int) -> Unit,
     modifier: Modifier
 ) {
     val pagerState = rememberPagerState { shipments.size }
@@ -289,7 +290,7 @@ private fun MultipleShipments(
                         ).toLowerCase(Locale.current)
                     )
                 },
-                onSelected = onRemoveShipment,
+                onSelected = onRemoveShipmentMenuTapped,
                 modifier = modifier.align(Alignment.CenterVertically)
             )
         }
@@ -576,6 +577,6 @@ private fun WooShippingSplitShipmentScreenPreview() = WooThemeWithBackground {
         onUpdateSelection = { _, _, _ -> },
         onUpdateShipment = {},
         onUpdateSelectedShipment = {},
-        onRemoveShipment = {}
+        onRemoveShipmentMenuTapped = { _ -> },
     )
 }

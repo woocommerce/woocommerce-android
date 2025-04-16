@@ -86,8 +86,7 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
         shipmentSelected.update { shipmentKey }
     }
 
-    fun onRemoveShipment(shipmentKey: Int) {
-        removeShipmentSheet.value = shipmentKey
+    fun onRemoveShipmentMenuTapped(shipmentKey: Int) {
     }
 
     fun onUpdateSelection(
