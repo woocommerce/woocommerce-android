@@ -91,13 +91,9 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
         removeShipmentSheet.value = shipmentKey
     }
 
-    fun onUpdateSelection(
-        shipmentKey: Int,
-        shippableItemIndex: Int,
-        selectedIndexes: Set<Int>? = null
-    ) {
+    fun onUpdateSelection(shippableItemIndex: Int, selectedIndexes: Set<Int>? = null) {
         val shipmentsMap = selectableItems.value?.toMutableMap() ?: return
-        val items = shipmentsMap.getValue(shipmentKey)
+        val items = shipmentsMap.getValue(shipmentSelected.value)
         val item = items.shippableItems[shippableItemIndex]
         val updatedItem = when (item) {
             is SelectableShippableItemUI.SingleSelectableShippableItemUI -> {
@@ -115,7 +111,7 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
         }
         val updatedList = items.shippableItems.toMutableList()
         updatedList[shippableItemIndex] = updatedItem
-        shipmentsMap[shipmentKey] = items.copy(shippableItems = updatedList)
+        shipmentsMap[shipmentSelected.value] = items.copy(shippableItems = updatedList)
         selectableItems.value = shipmentsMap
     }
 
