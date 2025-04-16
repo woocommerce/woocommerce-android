@@ -7,6 +7,7 @@ import kotlinx.coroutines.runBlocking
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.persistence.ProductSqlUtils
+import org.wordpress.android.fluxc.persistence.ProductSqlUtils.getProductExistsByRemoteId
 import org.wordpress.android.fluxc.persistence.dao.ProductsDao
 import javax.inject.Inject
 
@@ -14,7 +15,7 @@ class ProductsMapper @Inject constructor(
     private val site: SelectedSite,
     private val productsDao: ProductsDao
 ) {
-    fun mapProductIdsToProduct(productIds: List<Long>): List<Product> {
+    suspend fun mapProductIdsToProduct(productIds: List<Long>): List<Product> {
         return productIds.asProductList(site.get()).map { product ->
             product.toAppModel()
         }
@@ -24,11 +25,11 @@ class ProductsMapper @Inject constructor(
      * This method gets all Products from the IDs described by the
      * List<Long>, but it only gets the product that are already available in the database.
      */
-    private fun List<Long>.asProductList(
+    private suspend fun List<Long>.asProductList(
         site: SiteModel,
     ): List<WCProductModel> {
         return this
-            .filter { ProductSqlUtils.getProductExistsByRemoteId(site, it) }
-            .mapNotNull { runBlocking { productsDao.getProduct(site.id, it) } }
+            .filter { productsDao.getProductExistsByRemoteId(site, it) }
+            .mapNotNull { productsDao.getProduct(site.id, it) }
     }
 }

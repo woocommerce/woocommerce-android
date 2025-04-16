@@ -164,13 +164,8 @@ object ProductSqlUtils {
         return products
     }
 
-    fun getProductExistsByRemoteId(site: SiteModel, remoteProductId: Long): Boolean {
-        return WellSql.select(WCProductModel::class.java)
-            .where().beginGroup()
-            .equals(WCProductModelTable.REMOTE_PRODUCT_ID, remoteProductId)
-            .equals(WCProductModelTable.LOCAL_SITE_ID, site.id)
-            .endGroup().endWhere()
-            .exists()
+    suspend fun ProductsDao.getProductExistsByRemoteId(site: SiteModel, remoteProductId: Long): Boolean {
+        return getProduct(site.id, remoteProductId) != null
     }
 
     fun getProductExistsBySku(site: SiteModel, sku: String): Boolean {
