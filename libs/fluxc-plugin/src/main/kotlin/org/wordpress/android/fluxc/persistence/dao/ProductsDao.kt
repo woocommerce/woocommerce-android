@@ -53,4 +53,16 @@ abstract class ProductsDao {
         limit: Int?,
     ): Flow<List<WCProductModel>>
 
+    @Query(
+        """
+            SELECT * FROM WCProductModel
+            WHERE localSiteId = :localSiteId
+            AND remoteProductId = :remoteProductId
+        """
+    )
+    abstract fun observeProducts(
+        localSiteId: Int,
+        remoteProductId: Long
+    ): Flow<List<WCProductModel>>
+
 }

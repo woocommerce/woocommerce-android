@@ -5,6 +5,8 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
 import com.wellsql.generated.WCProductModelTable
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.runBlocking
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
@@ -46,6 +48,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStoc
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductVariationMapper
 import org.wordpress.android.fluxc.persistence.ProductSqlUtils
+import org.wordpress.android.fluxc.persistence.ProductSqlUtils.observeBundledProducts
 import org.wordpress.android.fluxc.persistence.ProductStorageHelper
 import org.wordpress.android.fluxc.persistence.dao.AddonsDao
 import org.wordpress.android.fluxc.persistence.dao.ProductsDao
@@ -1075,13 +1078,13 @@ class WCProductStore @Inject constructor(
     fun observeBundledProducts(
         site: SiteModel,
         remoteProductId: Long
-    ) = ProductSqlUtils.observeBundledProducts(site, remoteProductId)
+    ) = productsDao.observeBundledProducts(site, remoteProductId)
 
     suspend fun getBundledProductsCount(site: SiteModel, remoteProductId: Long): Int {
-        return ProductSqlUtils.getBundledProductsCount(site, remoteProductId)
+        return productsDao.observeBundledProducts(site, remoteProductId).firstOrNull()?.size ?: 0
     }
 
-    suspend fun getCompositeProducts(site: SiteModel, remoteProductId: Long): List<WCProductComponent> {
+    fun getCompositeProducts(site: SiteModel, remoteProductId: Long): List<WCProductComponent> {
         return ProductSqlUtils.getCompositeProducts(site, remoteProductId)
     }
 

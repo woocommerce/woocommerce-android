@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalCoroutinesApi::class)
+
 package org.wordpress.android.fluxc.persistence
 
 import com.google.gson.Gson
@@ -14,9 +16,11 @@ import com.yarolegovich.wellsql.ConditionClauseBuilder
 import com.yarolegovich.wellsql.SelectQuery
 import com.yarolegovich.wellsql.WellSql
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onStart
@@ -30,6 +34,7 @@ import org.wordpress.android.fluxc.model.WCProductReviewModel
 import org.wordpress.android.fluxc.model.WCProductShippingClassModel
 import org.wordpress.android.fluxc.model.WCProductTagModel
 import org.wordpress.android.fluxc.model.WCProductVariationModel
+import org.wordpress.android.fluxc.persistence.dao.ProductsDao
 import org.wordpress.android.fluxc.store.WCProductStore.Companion.DEFAULT_CATEGORY_SORTING
 import org.wordpress.android.fluxc.store.WCProductStore.Companion.DEFAULT_PRODUCT_SORTING
 import org.wordpress.android.fluxc.store.WCProductStore.ProductCategorySorting
@@ -82,36 +87,25 @@ object ProductSqlUtils {
         } ?: emptyList()
     }
 
-    private fun getBundledProducts(site: SiteModel, remoteProductId: Long): List<WCBundledProduct> {
-        val productModel = WellSql.select(WCProductModel::class.java)
-            .where().beginGroup()
-            .equals(WCProductModelTable.REMOTE_PRODUCT_ID, remoteProductId)
-            .equals(WCProductModelTable.LOCAL_SITE_ID, site.id)
-            .endGroup().endWhere()
-            .asModel.firstOrNull()
-
+    private fun getBundledProducts(
+        productModel: WCProductModel?,
+    ): List<WCBundledProduct> {
         return productModel?.let {
             val responseType = object : TypeToken<List<WCBundledProduct>>() {}.type
             gson.fromJson(it.bundledItems, responseType) as? List<WCBundledProduct>
         } ?: emptyList()
     }
 
-    fun getBundledProductsCount(site: SiteModel, remoteProductId: Long): Int {
-        val bundledItems = getBundledProducts(site, remoteProductId)
-        return bundledItems.size
-    }
-
-    fun observeBundledProducts(
+    fun ProductsDao.observeBundledProducts(
         site: SiteModel,
         remoteProductId: Long
     ): Flow<List<WCBundledProduct>> {
-        return productsUpdatesTrigger
-            .onStart { emit(Unit) }
-            .debounce(DEBOUNCE_DELAY_FOR_OBSERVERS)
-            .mapLatest {
-                getBundledProducts(site, remoteProductId)
-            }
-            .flowOn(Dispatchers.IO)
+        return observeProducts(
+            localSiteId = site.id,
+            remoteProductId = remoteProductId
+        ).mapLatest { product ->
+            getBundledProducts(product.firstOrNull())
+        }
     }
 
     fun insertOrUpdateProduct(product: WCProductModel): Int {
