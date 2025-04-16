@@ -22,8 +22,6 @@ import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 import javax.inject.Singleton
 
-private const val PAGE_SIZE = 25 // Matches [ProductListHandler]'s PAGE_SIZE
-
 @Singleton
 class WooPosProductsDataSource @Inject constructor(
     private val productStore: WCProductStore,
@@ -78,7 +76,7 @@ class WooPosProductsDataSource @Inject constructor(
         }
         productsIndex.clearCache()
 
-        val cachedProducts = productsCache.getAll().sortedBy { it.name }.take(PAGE_SIZE)
+        val cachedProducts = productsCache.getAll().sortedBy { it.name }.take(NORMAL_PAGE_SIZE)
         emit(ProductsResult.Cached(cachedProducts))
 
         val fetchResult = fetchProducts()
