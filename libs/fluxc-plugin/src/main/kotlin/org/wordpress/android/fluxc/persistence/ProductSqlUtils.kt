@@ -141,21 +141,29 @@ object ProductSqlUtils {
             limit = limit,
             excludedProductIds = excludedProductIds
         ).firstOrNull().orEmpty().filter { product ->
-            when (skuSearchOptions) {
-                SkuSearchOptions.Disabled -> {
-                    searchQuery?.let { query ->
-                        listOf(product.name, product.description, product.shortDescription).any { it.contains(query) }
-                    } == true
-                }
+            if (searchQuery.isNullOrBlank()) {
+                true
+            } else {
+                when (skuSearchOptions) {
+                    SkuSearchOptions.Disabled -> {
+                        searchQuery.let { query ->
+                            listOf(
+                                product.name,
+                                product.description,
+                                product.shortDescription
+                            ).any { it.contains(query) }
+                        }
+                    }
 
-                SkuSearchOptions.ExactSearch -> {
-                    product.sku == searchQuery
-                }
+                    SkuSearchOptions.ExactSearch -> {
+                        product.sku == searchQuery
+                    }
 
-                SkuSearchOptions.PartialMatch -> {
-                    searchQuery?.let { query ->
-                        product.sku.contains(query)
-                    } == true
+                    SkuSearchOptions.PartialMatch -> {
+                        searchQuery.let { query ->
+                            product.sku.contains(query)
+                        }
+                    }
                 }
             }
         }
