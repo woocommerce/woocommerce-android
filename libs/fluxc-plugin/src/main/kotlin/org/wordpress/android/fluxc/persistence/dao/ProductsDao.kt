@@ -79,6 +79,18 @@ abstract class ProductsDao {
         remoteProductId: Long
     ): WCProductModel?
 
+    @Query(
+        """
+            SELECT * FROM WCProductModel
+            WHERE localSiteId = :localSiteId
+            AND remoteProductId IN (:remoteProductIds)
+        """
+    )
+    abstract suspend fun getProducts(
+        localSiteId: Int,
+        remoteProductIds: List<Long>
+    ): List<WCProductModel>
+
     //TODO: Validate "rowsAffected" case: its not "affected rows" but rather affected sqlite row id
     @Upsert
     abstract fun upsertProduct(product: WCProductModel): Int

@@ -851,8 +851,8 @@ class WCProductStore @Inject constructor(
      * returns a list of [WCProductModel] for the give [SiteModel] and [remoteProductIds]
      * if it exists in the database
      */
-    fun getProductsByRemoteIds(site: SiteModel, remoteProductIds: List<Long>): List<WCProductModel> =
-        ProductSqlUtils.getProductsByRemoteIds(site, remoteProductIds)
+    suspend fun getProductsByRemoteIds(site: SiteModel, remoteProductIds: List<Long>): List<WCProductModel> =
+        productsDao.getProducts(localSiteId = site.id, remoteProductIds = remoteProductIds)
 
     /**
      * Returns a list of [WCProductModel] for the given [SiteModel], [filterOptions] and [searchQuery].
@@ -1505,8 +1505,8 @@ class WCProductStore @Inject constructor(
 
     suspend fun batchUpdateProducts(payload: BatchUpdateProductsPayload): WooResult<List<WCProductModel>> =
         coroutineEngine.withDefaultContext(API, this, "batchUpdateProducts") {
-            val existingProducts = ProductSqlUtils.getProductsByRemoteIds(
-                site = payload.site,
+            val existingProducts = productsDao.getProducts(
+                localSiteId = payload.site.id,
                 remoteProductIds = payload.updatedProducts.map(WCProductModel::remoteProductId)
             )
 
@@ -1709,7 +1709,7 @@ class WCProductStore @Inject constructor(
                     productStorageHelper.upsertProducts(response.result)
                     val productIds = response.result.map { it.product.remoteProductId }
                     val products = if (productIds.isNotEmpty()) {
-                        ProductSqlUtils.getProductsByRemoteIds(site, productIds)
+                        productsDao.getProducts(localSiteId = site.id, remoteProductIds = productIds)
                     } else {
                         emptyList()
                     }
