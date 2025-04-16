@@ -72,7 +72,7 @@ class ProductStorageHelper @Inject constructor(
 
     suspend fun deleteProduct(site: SiteModel, remoteProductId: Long): Int {
         val rowsAffected = withContext(Dispatchers.IO) {
-            productSqlUtils.deleteProduct(site, remoteProductId)
+            productsDao.deleteProduct(site.id, remoteProductId)
         }
         metaDataDao.deleteMetaData(site.localId(), remoteProductId)
         return rowsAffected

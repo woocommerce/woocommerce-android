@@ -122,6 +122,17 @@ abstract class ProductsDao {
             WHERE localSiteId = :localSiteId
     """
     )
-    abstract suspend fun deleteProducts(localSiteId: Int): Int
+    abstract suspend fun deleteProducts(localSiteId: Int)
 
+    @Query(
+        """
+            DELETE FROM WCProductModel
+            WHERE localSiteId = :localSiteId
+            AND remoteProductId = :remoteProductId
+    """
+    )
+    abstract suspend fun deleteProduct(
+        localSiteId: Int,
+        remoteProductId: Long
+    ): Int
 }
