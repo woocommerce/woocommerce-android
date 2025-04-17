@@ -48,6 +48,7 @@ class WooPosProductsDataSource @Inject constructor(
                 pageSize = PRE_POPULATION_PAGE_SIZE,
                 filterOptions = productsTypesFilterConfig.filters,
                 includeTypes = productsTypesFilterConfig.includeTypes,
+                sortType = WCProductStore.DEFAULT_PRODUCT_SORTING,
             )
 
             if (!result.isError) {
@@ -75,7 +76,7 @@ class WooPosProductsDataSource @Inject constructor(
         }
         productsIndex.clearCache()
 
-        val cachedProducts = productsCache.getAll().sortedBy { it.name }.take(NORMAL_PAGE_SIZE)
+        val cachedProducts = sortProducts(productsCache.getAll()).take(NORMAL_PAGE_SIZE)
         emit(ProductsResult.Cached(cachedProducts))
 
         val fetchResult = fetchProducts()
@@ -89,7 +90,7 @@ class WooPosProductsDataSource @Inject constructor(
 
     suspend fun loadMore(): Result<List<Product>> = withContext(Dispatchers.IO) {
         if (!canLoadMore.get()) {
-            return@withContext Result.success(productsIndex.getProductList().sortedBy { it.name })
+            return@withContext Result.success(productsIndex.getProductList())
         }
 
         val fetchResult = fetchProducts()
@@ -101,6 +102,10 @@ class WooPosProductsDataSource @Inject constructor(
         }
     }
 
+    private fun sortProducts(products: List<Product>): List<Product> {
+        return products.sortedBy { it.name.lowercase() }
+    }
+
     private suspend fun fetchProducts(): Result<List<Product>> {
         val result = productStore.fetchProducts(
             site = selectedSite.get(),
@@ -108,6 +113,7 @@ class WooPosProductsDataSource @Inject constructor(
             pageSize = NORMAL_PAGE_SIZE,
             filterOptions = productsTypesFilterConfig.filters,
             includeTypes = productsTypesFilterConfig.includeTypes,
+            sortType = WCProductStore.DEFAULT_PRODUCT_SORTING,
         )
 
         return if (!result.isError) {
@@ -119,7 +125,7 @@ class WooPosProductsDataSource @Inject constructor(
 
             productsCache.addAll(products)
             productsIndex.storeProductList(products.map { it.remoteId })
-            Result.success(productsIndex.getProductList().sortedBy { it.name })
+            Result.success(productsIndex.getProductList())
         } else {
             result.logFailure()
             Result.failure(WooException(result.error))
