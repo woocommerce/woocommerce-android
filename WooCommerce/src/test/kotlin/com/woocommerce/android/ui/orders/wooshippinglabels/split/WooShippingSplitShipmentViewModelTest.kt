@@ -48,7 +48,7 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
 
         val state = sut.viewState.value!!
 
-        val selectableItems = state.selectableItems.getValue(1)
+        val selectableItems = state.selectableItems.getValue(0)
         val expandableProducts = selectableItems.shippableItems
             .filterIsInstance<SelectableShippableItemUI.ExpandableSelectableShippableItemUI>()
         assertThat(expandableProducts.size).isEqualTo(2)
@@ -69,7 +69,7 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
 
             val state = sut.viewState.value!!
 
-            val selectableItems = state.selectableItems.getValue(1)
+            val selectableItems = state.selectableItems.getValue(0)
             val expandableProducts = selectableItems.shippableItems
                 .filterIsInstance<SelectableShippableItemUI.SingleSelectableShippableItemUI>()
             assertThat(expandableProducts.size).isEqualTo(1)
@@ -92,7 +92,7 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
 
         val state = sut.viewState.value!!
 
-        val selectableItems = state.selectableItems.getValue(1)
+        val selectableItems = state.selectableItems.getValue(0)
         val expandableProducts = selectableItems.shippableItems.filter {
             it is SelectableShippableItemUI.ExpandableSelectableShippableItemUI &&
                 it.isSelected
@@ -117,7 +117,7 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
 
         val state = sut.viewState.value!!
 
-        val selectableItems = state.selectableItems.getValue(1)
+        val selectableItems = state.selectableItems.getValue(0)
         val expandableProducts = selectableItems.shippableItems.filter {
             it is SelectableShippableItemUI.ExpandableSelectableShippableItemUI &&
                 it.isSelected
@@ -142,7 +142,7 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
 
         val state = sut.viewState.value!!
 
-        val selectableItems = state.selectableItems.getValue(1)
+        val selectableItems = state.selectableItems.getValue(0)
         val expandableProducts = selectableItems.shippableItems.filter {
             it is SelectableShippableItemUI.SingleSelectableShippableItemUI &&
                 it.isSelected
@@ -157,13 +157,13 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
             storeOptions = StoreOptionsModel.EMPTY,
             shipments = defaultShipment
         )
-        val updatedCurrentShipmentItems = defaultShipment.getValue(1).subList(fromIndex = 1, toIndex = 3)
-        val updatedShipmentItems = defaultShipment.getValue(1).subList(fromIndex = 0, toIndex = 1)
+        val updatedCurrentShipmentItems = defaultShipment.getValue(0).subList(fromIndex = 1, toIndex = 3)
+        val updatedShipmentItems = defaultShipment.getValue(0).subList(fromIndex = 0, toIndex = 1)
 
         val movement = SplitMovement(
-            sourceShipmentKey = 1,
+            sourceShipmentKey = 0,
             updatedSourceShipmentItems = updatedCurrentShipmentItems,
-            destinationShipmentKey = 2,
+            destinationShipmentKey = 1,
             movingShipmentItems = updatedShipmentItems
         )
 
@@ -177,8 +177,8 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
 
         val selectableItems = state.selectableItems
         assertThat(selectableItems.size).isEqualTo(2)
-        assertThat(selectableItems.getValue(1).shippableItems.size).isEqualTo(updatedCurrentShipmentItems.size)
-        assertThat(selectableItems.getValue(2).shippableItems.size).isEqualTo(updatedShipmentItems.size)
+        assertThat(selectableItems.getValue(0).shippableItems.size).isEqualTo(updatedCurrentShipmentItems.size)
+        assertThat(selectableItems.getValue(1).shippableItems.size).isEqualTo(updatedShipmentItems.size)
     }
 
     @Test
@@ -189,7 +189,7 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
                 storeOptions = StoreOptionsModel.EMPTY,
                 shipments = twoShipment
             )
-            val updatedCurrentShipmentItems = defaultShipment.getValue(1)
+            val updatedCurrentShipmentItems = defaultShipment.getValue(0)
             val updatedShipmentItems = listOf(
                 ShippableItemModel(
                     itemId = 3L,
@@ -207,9 +207,9 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
             )
 
             val movement = SplitMovement(
-                sourceShipmentKey = 1,
+                sourceShipmentKey = 0,
                 updatedSourceShipmentItems = updatedCurrentShipmentItems,
-                destinationShipmentKey = 2,
+                destinationShipmentKey = 1,
                 movingShipmentItems = updatedShipmentItems
             )
 
@@ -223,9 +223,9 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
 
             val selectableItems = state.selectableItems
             assertThat(selectableItems.size).isEqualTo(2)
-            assertThat(selectableItems.getValue(2).shippableItems.size).isEqualTo(1)
+            assertThat(selectableItems.getValue(1).shippableItems.size).isEqualTo(1)
             val item = selectableItems
-                .getValue(2)
+                .getValue(1)
                 .shippableItems
                 .first() as SelectableShippableItemUI.ExpandableSelectableShippableItemUI
             // Assert that quantity is combined 3f + 3f
@@ -239,8 +239,8 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
             storeOptions = StoreOptionsModel.EMPTY,
             shipments = defaultShipment
         )
-        val updatedCurrentShipmentItems = defaultShipment.getValue(1).subList(fromIndex = 1, toIndex = 3)
-        val updatedShipmentItems = defaultShipment.getValue(1).subList(fromIndex = 0, toIndex = 1)
+        val updatedCurrentShipmentItems = defaultShipment.getValue(0).subList(fromIndex = 1, toIndex = 3)
+        val updatedShipmentItems = defaultShipment.getValue(0).subList(fromIndex = 0, toIndex = 1)
 
         val movement = SplitMovement(
             sourceShipmentKey = 0,
@@ -271,8 +271,8 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
             storeOptions = StoreOptionsModel.EMPTY,
             shipments = defaultShipment
         )
-        val updatedCurrentShipmentItems = defaultShipment.getValue(1).subList(fromIndex = 0, toIndex = 1)
-        val updatedShipmentItems = defaultShipment.getValue(1).subList(fromIndex = 1, toIndex = 2)
+        val updatedCurrentShipmentItems = defaultShipment.getValue(0).subList(fromIndex = 0, toIndex = 1)
+        val updatedShipmentItems = defaultShipment.getValue(0).subList(fromIndex = 1, toIndex = 2)
 
         val movement = SplitMovement(
             sourceShipmentKey = 0,
@@ -312,7 +312,7 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
 
         val state = sut.viewState.value!!
 
-        val selectableItems = state.selectableItems.getValue(1)
+        val selectableItems = state.selectableItems.getValue(0)
         assertThat(selectableItems.totalItemQuantity).isEqualTo(expectedQuantity)
     }
 
@@ -323,13 +323,13 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
             storeOptions = StoreOptionsModel.EMPTY,
             shipments = twoShipment
         )
-        val movingItems = twoShipment.getValue(2)
+        val movingItems = twoShipment.getValue(1)
 
         // Removing "Shipment 2"
         val movement = SplitMovement(
-            sourceShipmentKey = 2,
+            sourceShipmentKey = 1,
             updatedSourceShipmentItems = emptyList(),
-            destinationShipmentKey = 1,
+            destinationShipmentKey = 0,
             movingShipmentItems = movingItems
         )
 
@@ -351,16 +351,16 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
             storeOptions = StoreOptionsModel.EMPTY,
             shipments = twoShipment
         )
-        val movingItems = twoShipment.getValue(2)
+        val movingItems = twoShipment.getValue(1)
 
         // Removing "Shipment 2"
         val movement = SplitMovement(
-            sourceShipmentKey = 2,
+            sourceShipmentKey = 1,
             updatedSourceShipmentItems = emptyList(),
-            destinationShipmentKey = 1,
+            destinationShipmentKey = 0,
             movingShipmentItems = movingItems
         )
-        val expectedItemCount = twoShipment.getValue(1).size + twoShipment.getValue(2).size
+        val expectedItemCount = twoShipment.getValue(0).size + twoShipment.getValue(1).size
 
         createViewModel(shipmentArgs)
 
@@ -375,7 +375,7 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
     }
 
     private val defaultShipment = mapOf(
-        1 to listOf(
+        0 to listOf(
             ShippableItemModel(
                 itemId = 1L,
                 productId = 1L,
@@ -418,7 +418,7 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
         )
     )
     private val twoShipment = mapOf(
-        1 to listOf(
+        0 to listOf(
             ShippableItemModel(
                 itemId = 1L,
                 productId = 1L,
@@ -446,7 +446,7 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
                 weight = 8f
             )
         ),
-        2 to listOf(
+        1 to listOf(
             ShippableItemModel(
                 itemId = 3L,
                 productId = 3L,
