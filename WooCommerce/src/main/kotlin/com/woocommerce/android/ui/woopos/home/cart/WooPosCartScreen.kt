@@ -592,6 +592,7 @@ fun WooPosCartScreenProductsPreview(modifier: Modifier = Modifier) {
                         WooPosCartItemViewState.Coupon(
                             itemNumber = 1,
                             name = "Test Coupon",
+                            summary = "50% Off · All Products",
                             id = 1L
                         ),
                         WooPosCartItemViewState.Product.Simple(
@@ -647,6 +648,7 @@ fun WooPosCartScreenCheckoutPreview(modifier: Modifier = Modifier) {
                         WooPosCartItemViewState.Coupon(
                             itemNumber = 1,
                             name = "Test Coupon",
+                            summary = "50% Off · 1 Product",
                             id = 1L
                         ),
                         WooPosCartItemViewState.Product.Simple(
