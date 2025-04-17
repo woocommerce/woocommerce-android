@@ -40,6 +40,8 @@ import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.DATE_ASC
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.DATE_DESC
+import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.POPULARITY_ASC
+import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.POPULARITY_DESC
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_ASC
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_DESC
 import org.wordpress.android.fluxc.store.WCProductStore.SkuSearchOptions
@@ -183,12 +185,13 @@ object ProductSqlUtils {
         when (sortType) {
             TITLE_ASC, TITLE_DESC -> "name"
             DATE_ASC, DATE_DESC -> "date_created"
+            POPULARITY_ASC, POPULARITY_DESC -> "popularity"
         }
 
     fun getSortOrder(sortType: ProductSorting) =
         when (sortType) {
-            TITLE_ASC, DATE_ASC -> "ASC"
-            TITLE_DESC, DATE_DESC -> "DESC"
+            TITLE_ASC, DATE_ASC, POPULARITY_ASC -> "ASC"
+            TITLE_DESC, DATE_DESC, POPULARITY_DESC -> "DESC"
         }
 
     fun insertOrUpdateProductVariation(variation: WCProductVariationModel): Int {
