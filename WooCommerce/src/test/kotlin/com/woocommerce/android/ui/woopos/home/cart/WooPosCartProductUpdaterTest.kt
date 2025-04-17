@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.woopos.home.cart
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.woocommerce.android.R
+import com.woocommerce.android.model.Product
+import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
@@ -15,7 +17,9 @@ import org.junit.Rule
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import java.math.BigDecimal
 import kotlin.test.Test
 
@@ -36,11 +40,13 @@ class WooPosCartProductUpdaterTest {
     private val formatPrice: WooPosFormatPrice = mock {
         onBlocking { invoke(any()) }.thenReturn("10.0$")
     }
+    private val productsCache: WooPosProductsCache = mock()
 
     private val updater = WooPosCartProductUpdater(
         childrenToParentEventSender = childrenToParentEventSender,
         resourceProvider = resourceProvider,
-        formatPrice = formatPrice
+        formatPrice = formatPrice,
+        productsCache = productsCache
     )
 
     @Test
@@ -54,28 +60,29 @@ class WooPosCartProductUpdaterTest {
             imageUrl = "url",
             description = null
         )
-        val cartState = WooPosCartState(
-            body = WooPosCartState.Body.WithItems(
-                itemsInCart = listOf(simpleProduct)
-            )
-        )
+        val itemsInCart = listOf(simpleProduct)
         val updatedInfo = ParentToChildrenEvent.OrderCreated.ProductInfo.Simple(
             id = 1L,
             name = "Updated Name",
             price = BigDecimal("10.0"),
             quantity = 1f
         )
+        val cachedProduct = mock<Product>()
+        whenever(productsCache.getProductById(1L)).thenReturn(cachedProduct)
 
         // WHEN
-        val result = updater.invoke(cartState, listOf(updatedInfo))
+        val result = updater.invoke(itemsInCart, listOf(updatedInfo))
 
         // THEN
-        val resultingCartItems = (result.body as WooPosCartState.Body.WithItems).itemsInCart
-        assertThat(resultingCartItems).hasSize(1)
-        val updatedItem = resultingCartItems[0] as WooPosCartItemViewState.Product.Simple
+        assertThat(result).hasSize(1)
+        val updatedItem = result[0] as WooPosCartItemViewState.Product.Simple
         assertThat(updatedItem.name).isEqualTo("Updated Name")
         assertThat(updatedItem.price).isEqualTo("10.0$")
         verify(childrenToParentEventSender).sendToParent(any<ChildToParentEvent.ToastMessageDisplayed>())
+        verify(productsCache).updateProduct(cachedProduct.copy(
+            name = "Updated Name",
+            price = BigDecimal("10.0")
+        ))
     }
 
     @Test
@@ -90,11 +97,7 @@ class WooPosCartProductUpdaterTest {
             imageUrl = "url",
             description = null
         )
-        val cartState = WooPosCartState(
-            body = WooPosCartState.Body.WithItems(
-                itemsInCart = listOf(variationProduct)
-            )
-        )
+        val itemsInCart = listOf(variationProduct)
         val updatedInfo = ParentToChildrenEvent.OrderCreated.ProductInfo.Variation(
             id = 1L,
             variationId = 2L,
@@ -102,17 +105,22 @@ class WooPosCartProductUpdaterTest {
             price = BigDecimal("10.0"),
             quantity = 1f
         )
+        val cachedProduct = mock<Product>()
+        whenever(productsCache.getProductById(1L)).thenReturn(cachedProduct)
 
         // WHEN
-        val result = updater.invoke(cartState, listOf(updatedInfo))
+        val result = updater.invoke(itemsInCart, listOf(updatedInfo))
 
         // THEN
-        val resultingCartItems = (result.body as WooPosCartState.Body.WithItems).itemsInCart
-        assertThat(resultingCartItems).hasSize(1)
-        val updatedItem = resultingCartItems[0] as WooPosCartItemViewState.Product.Variation
+        assertThat(result).hasSize(1)
+        val updatedItem = result[0] as WooPosCartItemViewState.Product.Variation
         assertThat(updatedItem.name).isEqualTo("Updated Variation")
         assertThat(updatedItem.price).isEqualTo("10.0$")
         verify(childrenToParentEventSender).sendToParent(any<ChildToParentEvent.ToastMessageDisplayed>())
+        verify(productsCache).updateProduct(cachedProduct.copy(
+            name = "Updated Variation",
+            price = BigDecimal("10.0")
+        ))
     }
 
     @Test
@@ -126,21 +134,17 @@ class WooPosCartProductUpdaterTest {
             imageUrl = "url",
             description = null
         )
-        val cartState = WooPosCartState(
-            body = WooPosCartState.Body.WithItems(
-                itemsInCart = listOf(simpleProduct)
-            )
-        )
+        val itemsInCart = listOf(simpleProduct)
 
         // WHEN
-        val result = updater.invoke(cartState, emptyList())
+        val result = updater.invoke(itemsInCart, emptyList())
 
         // THEN
-        val resultingCartItems = (result.body as WooPosCartState.Body.WithItems).itemsInCart
-        assertThat(resultingCartItems).hasSize(1)
-        val updatedItem = resultingCartItems[0] as WooPosCartItemViewState.Product.Simple
+        assertThat(result).hasSize(1)
+        val updatedItem = result[0] as WooPosCartItemViewState.Product.Simple
         assertThat(updatedItem.productDoesNotExist).isTrue()
         verify(childrenToParentEventSender).sendToParent(any<ChildToParentEvent.ToastMessageDisplayed>())
+        verify(productsCache).deleteProduct(1L)
     }
 
     @Test
@@ -162,33 +166,35 @@ class WooPosCartProductUpdaterTest {
             imageUrl = "url2",
             description = null
         )
-        val cartState = WooPosCartState(
-            body = WooPosCartState.Body.WithItems(
-                itemsInCart = listOf(simpleProduct1, simpleProduct2)
-            )
-        )
+        val itemsInCart = listOf(simpleProduct1, simpleProduct2)
         val updatedInfo = ParentToChildrenEvent.OrderCreated.ProductInfo.Simple(
             id = 1L,
             name = "Updated Product 1",
             price = BigDecimal("10.0"),
             quantity = 1f
         )
+        val cachedProduct = mock<Product>()
+        whenever(productsCache.getProductById(1L)).thenReturn(cachedProduct)
 
         // WHEN
-        val result = updater.invoke(cartState, listOf(updatedInfo))
+        val result = updater.invoke(itemsInCart, listOf(updatedInfo))
 
         // THEN
-        val resultingCartItems = (result.body as WooPosCartState.Body.WithItems).itemsInCart
-        assertThat(resultingCartItems).hasSize(2)
+        assertThat(result).hasSize(2)
 
-        val updatedItem1 = resultingCartItems[0] as WooPosCartItemViewState.Product.Simple
+        val updatedItem1 = result[0] as WooPosCartItemViewState.Product.Simple
         assertThat(updatedItem1.name).isEqualTo("Updated Product 1")
         assertThat(updatedItem1.price).isEqualTo("10.0$")
 
-        val updatedItem2 = resultingCartItems[1] as WooPosCartItemViewState.Product.Simple
+        val updatedItem2 = result[1] as WooPosCartItemViewState.Product.Simple
         assertThat(updatedItem2.productDoesNotExist).isTrue()
 
         verify(childrenToParentEventSender).sendToParent(any<ChildToParentEvent.ToastMessageDisplayed>())
+        verify(productsCache).updateProduct(cachedProduct.copy(
+            name = "Updated Product 1",
+            price = BigDecimal("10.0")
+        ))
+        verify(productsCache).deleteProduct(2L)
     }
 
     @Test
@@ -202,53 +208,114 @@ class WooPosCartProductUpdaterTest {
             imageUrl = "url",
             description = null
         )
-        val cartState = WooPosCartState(
-            body = WooPosCartState.Body.WithItems(
-                itemsInCart = listOf(simpleProduct, simpleProduct)
-            )
-        )
+        val itemsInCart = listOf(simpleProduct, simpleProduct)
         val updatedInfo = ParentToChildrenEvent.OrderCreated.ProductInfo.Simple(
             id = 1L,
             name = "Updated Product",
             price = BigDecimal("10.0"),
             quantity = 1f
         )
+        val cachedProduct = mock<Product>()
+        whenever(productsCache.getProductById(1L)).thenReturn(cachedProduct)
 
         // WHEN
-        val result = updater.invoke(cartState, listOf(updatedInfo))
+        val result = updater.invoke(itemsInCart, listOf(updatedInfo))
 
         // THEN
-        val resultingCartItems = (result.body as WooPosCartState.Body.WithItems).itemsInCart
-        assertThat(resultingCartItems).hasSize(2)
+        assertThat(result).hasSize(2)
 
-        val firstItem = resultingCartItems[0] as WooPosCartItemViewState.Product.Simple
+        val firstItem = result[0] as WooPosCartItemViewState.Product.Simple
         assertThat(firstItem.name).isEqualTo("Updated Product")
         assertThat(firstItem.price).isEqualTo("10.0$")
         assertThat(firstItem.productDoesNotExist).isFalse()
 
-        val secondItem = resultingCartItems[1] as WooPosCartItemViewState.Product.Simple
+        val secondItem = result[1] as WooPosCartItemViewState.Product.Simple
         assertThat(secondItem.productDoesNotExist).isTrue()
 
         verify(childrenToParentEventSender).sendToParent(any<ChildToParentEvent.ToastMessageDisplayed>())
+        verify(productsCache).updateProduct(cachedProduct.copy(
+            name = "Updated Product",
+            price = BigDecimal("10.0")
+        ))
+        verify(productsCache).deleteProduct(1L)
     }
 
     @Test
-    fun `given cart with body not as WithItems, when updating products, then original state is returned`() = runTest {
+    fun `given no changes in product info, then cache is not updated and parent is not notified`() = runTest {
         // GIVEN
-        val cartState = WooPosCartState(
-            body = WooPosCartState.Body.Empty
+        val simpleProduct = WooPosCartItemViewState.Product.Simple(
+            itemNumber = 1,
+            id = 1L,
+            name = "Product",
+            price = "10.0$",
+            imageUrl = "url",
+            description = null
         )
+        val itemsInCart = listOf(simpleProduct)
         val updatedInfo = ParentToChildrenEvent.OrderCreated.ProductInfo.Simple(
             id = 1L,
-            name = "Updated Product",
+            name = "Product",
             price = BigDecimal("10.0"),
             quantity = 1f
         )
 
         // WHEN
-        val result = updater.invoke(cartState, listOf(updatedInfo))
+        val result = updater.invoke(itemsInCart, listOf(updatedInfo))
 
         // THEN
-        assertThat(result).isEqualTo(cartState)
+        assertThat(result).hasSize(1)
+        verify(productsCache, never()).updateProduct(any())
+        verify(childrenToParentEventSender, never()).sendToParent(any<ChildToParentEvent.ToastMessageDisplayed>())
+    }
+
+    @Test
+    fun `given product deleted, then cache is updated correctly`() = runTest {
+        // GIVEN
+        val simpleProduct = WooPosCartItemViewState.Product.Simple(
+            itemNumber = 1,
+            id = 1L,
+            name = "Product Name",
+            price = "9.0$",
+            imageUrl = "url",
+            description = null
+        )
+        val itemsInCart = listOf(simpleProduct)
+
+        // WHEN
+        updater.invoke(itemsInCart, emptyList())
+
+        // THEN
+        verify(productsCache).deleteProduct(1L)
+    }
+
+    @Test
+    fun `given product updated, then cache is updated correctly`() = runTest {
+        // GIVEN
+        val simpleProduct = WooPosCartItemViewState.Product.Simple(
+            itemNumber = 1,
+            id = 1L,
+            name = "Old Name",
+            price = "9.0$",
+            imageUrl = "url",
+            description = null
+        )
+        val itemsInCart = listOf(simpleProduct)
+        val updatedInfo = ParentToChildrenEvent.OrderCreated.ProductInfo.Simple(
+            id = 1L,
+            name = "Updated Name",
+            price = BigDecimal("10.0"),
+            quantity = 1f
+        )
+        val cachedProduct = mock<Product>()
+        whenever(productsCache.getProductById(1L)).thenReturn(cachedProduct)
+
+        // WHEN
+        updater.invoke(itemsInCart, listOf(updatedInfo))
+
+        // THEN
+        verify(productsCache).updateProduct(cachedProduct.copy(
+            name = "Updated Name",
+            price = BigDecimal("10.0")
+        ))
     }
 }
