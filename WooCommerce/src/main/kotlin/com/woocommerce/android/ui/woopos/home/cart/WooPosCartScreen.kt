@@ -73,6 +73,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
+import com.woocommerce.android.ui.woopos.home.cart.WooPosCartUIEvent.ItemRemovedFromCart
 
 @Composable
 fun WooPosCartScreen(modifier: Modifier = Modifier) {
@@ -464,26 +465,11 @@ private fun ProductItem(
             }
 
             if (canRemoveItems) {
-                Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value.toAdaptivePadding()))
+                Spacer(modifier = Modifier.width(WooPosSpacing.Large.value.toAdaptivePadding()))
 
-                val removeButtonContentDescription = stringResource(
-                    id = R.string.woopos_remove_item_button_from_cart_content_description,
-                    item.name
-                )
-                IconButton(
-                    onClick = { onUIEvent(WooPosCartUIEvent.ItemRemovedFromCart(item)) },
-                    modifier = Modifier
-                        .size(32.dp)
-                        .semantics { contentDescription = removeButtonContentDescription }
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_pos_remove_cart_item),
-                        tint = WooPosTheme.colors.onSurfaceVariantLowest,
-                        contentDescription = null,
-                    )
-                }
+                RemoveItemFromCartButton(item, onUIEvent)
             }
-            Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value.toAdaptivePadding()))
+            Spacer(modifier = Modifier.width(WooPosSpacing.Large.value.toAdaptivePadding()))
         }
     }
 }
@@ -553,25 +539,33 @@ private fun CouponItem(
             if (canRemoveItems) {
                 Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value.toAdaptivePadding()))
 
-                val removeButtonContentDescription = stringResource(
-                    id = R.string.woopos_remove_item_button_from_cart_content_description,
-                    item.name
-                )
-                IconButton(
-                    onClick = { onUIEvent(WooPosCartUIEvent.ItemRemovedFromCart(item)) },
-                    modifier = Modifier
-                        .size(32.dp)
-                        .semantics { contentDescription = removeButtonContentDescription }
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_pos_remove_cart_item),
-                        tint = WooPosTheme.colors.onSurfaceVariantLowest,
-                        contentDescription = null,
-                    )
-                }
+                RemoveItemFromCartButton(item, onUIEvent)
             }
             Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value.toAdaptivePadding()))
         }
+    }
+}
+
+@Composable
+private fun RemoveItemFromCartButton(
+    item: WooPosCartItemViewState,
+    onUIEvent: (WooPosCartUIEvent) -> Unit
+) {
+    val removeButtonContentDescription = stringResource(
+        id = R.string.woopos_remove_item_button_from_cart_content_description,
+        item.name
+    )
+    IconButton(
+        onClick = { onUIEvent(ItemRemovedFromCart(item)) },
+        modifier = Modifier
+            .size(26.dp)
+            .semantics { contentDescription = removeButtonContentDescription }
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_pos_remove_cart_item),
+            tint = WooPosTheme.colors.onSurfaceVariantHighest,
+            contentDescription = null,
+        )
     }
 }
 
