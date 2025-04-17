@@ -430,7 +430,9 @@ private fun ProductItem(
             Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value.toAdaptivePadding()))
 
             Column(
-                modifier = Modifier.weight(1f)
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = WooPosSpacing.Medium.value.toAdaptivePadding())
             ) {
                 WooPosText(
                     text = item.name,
@@ -465,8 +467,6 @@ private fun ProductItem(
             }
 
             if (canRemoveItems) {
-                Spacer(modifier = Modifier.width(WooPosSpacing.Large.value.toAdaptivePadding()))
-
                 RemoveItemFromCartButton(item, onUIEvent)
             }
             Spacer(modifier = Modifier.width(WooPosSpacing.Large.value.toAdaptivePadding()))
@@ -516,7 +516,9 @@ private fun CouponItem(
             Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value.toAdaptivePadding()))
 
             Column(
-                modifier = Modifier.weight(1f)
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = WooPosSpacing.Medium.value.toAdaptivePadding())
             ) {
                 WooPosText(
                     text = item.name,
@@ -537,8 +539,6 @@ private fun CouponItem(
             }
 
             if (canRemoveItems) {
-                Spacer(modifier = Modifier.width(WooPosSpacing.Large.value.toAdaptivePadding()))
-
                 RemoveItemFromCartButton(item, onUIEvent)
             }
             Spacer(modifier = Modifier.width(WooPosSpacing.Large.value.toAdaptivePadding()))
@@ -558,7 +558,7 @@ private fun RemoveItemFromCartButton(
     IconButton(
         onClick = { onUIEvent(ItemRemovedFromCart(item)) },
         modifier = Modifier
-            .size(26.dp)
+            .size(48.dp)
             .semantics { contentDescription = removeButtonContentDescription }
     ) {
         Icon(
