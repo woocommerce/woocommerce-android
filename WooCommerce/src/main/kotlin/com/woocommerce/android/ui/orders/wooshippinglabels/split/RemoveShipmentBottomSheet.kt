@@ -168,7 +168,7 @@ private fun ShipmentCard(
     ) {
         Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
             Icon(
-                imageVector = ImageVector.vectorResource(id = R.drawable.ic_remove_shipment),
+                imageVector = ImageVector.vectorResource(id = R.drawable.ic_arrow_return),
                 contentDescription = null,
                 tint = if (isSelected) borderColor else Color.Unspecified
             )
