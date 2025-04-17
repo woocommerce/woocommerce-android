@@ -316,6 +316,64 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
         assertThat(selectableItems.totalItemQuantity).isEqualTo(expectedQuantity)
     }
 
+    @Test
+    fun `when removing a shipment, then the total shipment count is reduced by 1`() = testBlocking {
+        val shipmentArgs = SplitShipmentArgs(
+            orderId = 1L,
+            storeOptions = StoreOptionsModel.EMPTY,
+            shipments = twoShipment
+        )
+        val movingItems = twoShipment.getValue(2)
+
+        // Removing "Shipment 2"
+        val movement = SplitMovement(
+            sourceShipmentKey = 2,
+            updatedSourceShipmentItems = emptyList(),
+            destinationShipmentKey = 1,
+            movingShipmentItems = movingItems
+        )
+
+        createViewModel(shipmentArgs)
+
+        sut.onUpdateShipment(movement)
+
+        sut.viewState.observeForTesting { }
+
+        val state = sut.viewState.value!!
+
+        assertThat(state.selectableItems.size).isEqualTo(1)
+    }
+
+    @Test
+    fun `when removing a shipment, then all items are moved to destination shipment`() = testBlocking {
+        val shipmentArgs = SplitShipmentArgs(
+            orderId = 1L,
+            storeOptions = StoreOptionsModel.EMPTY,
+            shipments = twoShipment
+        )
+        val movingItems = twoShipment.getValue(2)
+
+        // Removing "Shipment 2"
+        val movement = SplitMovement(
+            sourceShipmentKey = 2,
+            updatedSourceShipmentItems = emptyList(),
+            destinationShipmentKey = 1,
+            movingShipmentItems = movingItems
+        )
+        val expectedItemCount = twoShipment.getValue(1).size + twoShipment.getValue(2).size
+
+        createViewModel(shipmentArgs)
+
+        sut.onUpdateShipment(movement)
+
+        sut.viewState.observeForTesting { }
+
+        val state = sut.viewState.value!!
+
+        val modifiedShipment = state.selectableItems.values.first()
+        assertThat(modifiedShipment.shippableItems.size).isEqualTo(expectedItemCount)
+    }
+
     private val defaultShipment = mapOf(
         1 to listOf(
             ShippableItemModel(
