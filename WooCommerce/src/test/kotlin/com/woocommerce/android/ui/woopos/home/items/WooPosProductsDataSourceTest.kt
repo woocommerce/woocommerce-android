@@ -29,6 +29,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCProductStore
+import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
 import kotlin.test.Test
 
 @ExperimentalCoroutinesApi
@@ -99,6 +100,7 @@ class WooPosProductsDataSourceTest {
                 site = eq(siteModel),
                 offset = any<Int>(),
                 pageSize = any<Int>(),
+                sortType = any(),
                 filterOptions = any<Map<WCProductStore.ProductFilterOption, String>>(),
                 includeTypes = eq(productsTypesFilterConfig.includeTypes),
             )
@@ -129,6 +131,7 @@ class WooPosProductsDataSourceTest {
                 site = eq(siteModel),
                 offset = any(),
                 pageSize = any(),
+                sortType = any(),
                 filterOptions = any(),
                 includeTypes = any()
             )
@@ -160,6 +163,7 @@ class WooPosProductsDataSourceTest {
                 site = eq(siteModel),
                 offset = any(),
                 pageSize = any(),
+                sortType = any(),
                 filterOptions = any(),
                 includeTypes = any()
             )
@@ -194,6 +198,7 @@ class WooPosProductsDataSourceTest {
                     site = eq(siteModel),
                     offset = any(),
                     pageSize = any(),
+                    sortType = any(),
                     filterOptions = any(),
                     includeTypes = any()
                 )
@@ -255,6 +260,7 @@ class WooPosProductsDataSourceTest {
                     site = eq(siteModel),
                     offset = any<Int>(),
                     pageSize = any<Int>(),
+                    sortType = any(),
                     filterOptions = any<Map<WCProductStore.ProductFilterOption, String>>(),
                     includeTypes = eq(productsTypesFilterConfig.includeTypes),
                 )
@@ -289,6 +295,7 @@ class WooPosProductsDataSourceTest {
                     site = eq(siteModel),
                     offset = any(),
                     pageSize = any(),
+                    sortType = any(),
                     filterOptions = any(),
                     includeTypes = any()
                 )
@@ -346,6 +353,7 @@ class WooPosProductsDataSourceTest {
                     site = eq(siteModel),
                     offset = any(),
                     pageSize = any(),
+                    sortType = any(),
                     filterOptions = any(),
                     includeTypes = any()
                 )
@@ -390,6 +398,7 @@ class WooPosProductsDataSourceTest {
                     site = eq(siteModel),
                     offset = any(),
                     pageSize = any(),
+                    sortType = any(),
                     filterOptions = any(),
                     includeTypes = any()
                 )
@@ -432,6 +441,7 @@ class WooPosProductsDataSourceTest {
                     site = eq(siteModel),
                     offset = any(),
                     pageSize = any(),
+                    sortType = any(),
                     filterOptions = any(),
                     includeTypes = any(),
                 )
@@ -483,6 +493,7 @@ class WooPosProductsDataSourceTest {
                 site = eq(siteModel),
                 offset = any(),
                 pageSize = any(),
+                sortType = any(),
                 filterOptions = any(),
                 includeTypes = any()
             )
@@ -536,6 +547,7 @@ class WooPosProductsDataSourceTest {
                 site = eq(siteModel),
                 offset = any(),
                 pageSize = any(),
+                sortType = any(),
                 filterOptions = any(),
                 includeTypes = any()
             )
@@ -546,6 +558,7 @@ class WooPosProductsDataSourceTest {
                 site = eq(siteModel),
                 offset = any(),
                 pageSize = any(),
+                sortType = any(),
                 filterOptions = any(),
                 includeTypes = any()
             )
@@ -594,6 +607,7 @@ class WooPosProductsDataSourceTest {
                     site = eq(siteModel),
                     offset = eq(0),
                     pageSize = eq(100),
+                    sortType = eq(ProductSorting.TITLE_ASC),
                     filterOptions = any(),
                     includeTypes = any()
                 )
@@ -637,6 +651,7 @@ class WooPosProductsDataSourceTest {
                     site = eq(siteModel),
                     offset = eq(0),
                     pageSize = eq(100),
+                    sortType = eq(ProductSorting.TITLE_ASC),
                     filterOptions = any(),
                     includeTypes = any()
                 )
@@ -647,6 +662,7 @@ class WooPosProductsDataSourceTest {
                     site = eq(siteModel),
                     offset = eq(100),
                     pageSize = eq(100),
+                    sortType = eq(ProductSorting.TITLE_ASC),
                     filterOptions = any(),
                     includeTypes = any()
                 )
@@ -671,6 +687,7 @@ class WooPosProductsDataSourceTest {
                 site = any(),
                 offset = any(),
                 pageSize = any(),
+                sortType = any(),
                 filterOptions = any(),
                 includeTypes = any()
             )
@@ -691,6 +708,7 @@ class WooPosProductsDataSourceTest {
                     site = eq(siteModel),
                     offset = any(),
                     pageSize = any(),
+                    sortType = eq(ProductSorting.TITLE_ASC),
                     filterOptions = any(),
                     includeTypes = any()
                 )
@@ -731,6 +749,7 @@ class WooPosProductsDataSourceTest {
                     site = eq(siteModel),
                     offset = eq(0),
                     pageSize = eq(100),
+                    sortType = eq(ProductSorting.TITLE_ASC),
                     filterOptions = any(),
                     includeTypes = any()
                 )
@@ -741,6 +760,7 @@ class WooPosProductsDataSourceTest {
                     site = eq(siteModel),
                     offset = eq(100),
                     pageSize = eq(100),
+                    sortType = eq(ProductSorting.TITLE_ASC),
                     filterOptions = any(),
                     includeTypes = any()
                 )
@@ -765,6 +785,7 @@ class WooPosProductsDataSourceTest {
                 site = any(),
                 offset = any(),
                 pageSize = any(),
+                sortType = any(),
                 filterOptions = any(),
                 includeTypes = any()
             )
@@ -786,6 +807,7 @@ class WooPosProductsDataSourceTest {
                     site = eq(siteModel),
                     offset = any(),
                     pageSize = eq(100),
+                    sortType = eq(ProductSorting.TITLE_ASC),
                     filterOptions = any(),
                     includeTypes = any()
                 )
@@ -810,6 +832,7 @@ class WooPosProductsDataSourceTest {
                 site = any(),
                 offset = any(),
                 pageSize = any(),
+                sortType = any(),
                 filterOptions = any(),
                 includeTypes = any()
             )
