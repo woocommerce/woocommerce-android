@@ -7,6 +7,7 @@ import com.woocommerce.android.model.ProductTag
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.ui.products.ProductStatus.DRAFT
+import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.WCProductVariationModel
 import java.sql.Date
@@ -39,47 +40,46 @@ object ProductTestUtils {
                                 }
                             ]"""
     ): Product {
-        return WCProductModel(2).apply {
-            dateCreated = "2018-01-05T05:14:30Z"
-            localSiteId = 1
-            remoteProductId = productId
-            parentId = parentID
-            status = customStatus ?: "publish"
-            type = productType ?: if (isVariable) "variable" else "simple"
-            stockStatus = "instock"
-            price = amount
-            salePrice = "10.00"
-            regularPrice = "30.00"
-            averageRating = "3.0"
-            name = productName
-            description = "product 1 description"
-            images = if (imageUrl != null) """[{"src":"$imageUrl"}]""" else "[]"
-            downloadable = isDownloadable
-            downloads = """[
-                                {
-                                    "id": 1,
-                                    "name": "test",
-                                    "file": "https://testurl"
-                                }
-                            ]"""
-            weight = "10"
-            length = "1"
-            width = "2"
-            height = "3"
-            variations = variationIds
-            attributes = productAttributes
-            categories = ""
-            ratingCount = 4
-            groupedProductIds = "[10,11]"
-            ratingCount = 4
-            shortDescription = "short desc"
-            virtual = isVirtual
-            stockQuantity = 4.2
-            purchasable = isPurchasable
-            manageStock = isStockManaged
-            combineVariationQuantities = productCombinesVariationQuantities
-            permalink = "https://example.com/product/1"
-        }.toAppModel()
+        return WCProductModel(
+            dateCreated = "2018-01-05T05:14:30Z",
+            localSiteId = LocalOrRemoteId.LocalId(2),
+            remoteId = LocalOrRemoteId.RemoteId(productId),
+            parentId = parentID,
+            status = customStatus ?: "publish",
+            type = productType ?: if (isVariable) "variable" else "simple",
+            stockStatus = "instock",
+            price = amount,
+            salePrice = "10.00",
+            regularPrice = "30.00",
+            averageRating = "3.0",
+            name = productName,
+            description = "product 1 description",
+            images = if (imageUrl != null) """[{"src":"$imageUrl"}]""" else "[]",
+            downloadable = isDownloadable,
+            downloads = """[,
+                                {,
+                                    "id": 1,,
+                                    "name": "test",,
+                                    "file": "https://testurl",
+                                },
+                            ]""",
+            weight = "10",
+            length = "1",
+            width = "2",
+            height = "3",
+            variations = variationIds,
+            attributes = productAttributes,
+            categories = "",
+            ratingCount = 4,
+            groupedProductIds = "[10,11]",
+            shortDescription = "short desc",
+            virtual = isVirtual,
+            stockQuantity = 4.2,
+            purchasable = isPurchasable,
+            manageStock = isStockManaged,
+            combineVariationQuantities = productCombinesVariationQuantities,
+            permalink = "https://example.com/product/1",
+        ).toAppModel()
     }
 
     fun generateProductWithTagsAndCategories(productId: Long = 1L): Product {
