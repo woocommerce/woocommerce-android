@@ -469,7 +469,7 @@ private fun ProductItem(
             if (canRemoveItems) {
                 RemoveItemFromCartButton(item, onUIEvent)
             }
-            Spacer(modifier = Modifier.width(WooPosSpacing.Large.value.toAdaptivePadding()))
+            Spacer(modifier = Modifier.width(WooPosSpacing.Small.value.toAdaptivePadding()))
         }
     }
 }
@@ -541,7 +541,7 @@ private fun CouponItem(
             if (canRemoveItems) {
                 RemoveItemFromCartButton(item, onUIEvent)
             }
-            Spacer(modifier = Modifier.width(WooPosSpacing.Large.value.toAdaptivePadding()))
+            Spacer(modifier = Modifier.width(WooPosSpacing.Small.value.toAdaptivePadding()))
         }
     }
 }
