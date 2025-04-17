@@ -77,10 +77,10 @@ class WooPosCartViewModel @Inject constructor(
     private val itemNumberProvider = AtomicInteger(getInitialValueOrHighestUsedItemNumberAfterProcessDeath())
 
     private val siteSettings: Deferred<WCSettingsModel> = viewModelScope.async(Dispatchers.IO) {
-            requireNotNull(wooCommerceStore.getSiteSettings(selectedSite.get())) {
-                "Site settings not found"
-            }
+        requireNotNull(wooCommerceStore.getSiteSettings(selectedSite.get())) {
+            "Site settings not found"
         }
+    }
 
     init {
         listenEventsFromParent()

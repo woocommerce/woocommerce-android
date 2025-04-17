@@ -83,7 +83,8 @@ class WooPosTotalsRepository @Inject constructor(
             }
     }
 
-    private suspend fun createCouponLines(coupons: List<WooPosItemsViewModel.ItemClickedData.Coupon>): List<Order.CouponLine> {
+    private suspend fun createCouponLines(coupons: List<WooPosItemsViewModel.ItemClickedData.Coupon>):
+        List<Order.CouponLine> {
         return coupons.map { (id) ->
             createCouponOrderItem(id)
         }
