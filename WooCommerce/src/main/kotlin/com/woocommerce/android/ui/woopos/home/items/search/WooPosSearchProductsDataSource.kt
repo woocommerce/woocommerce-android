@@ -41,7 +41,7 @@ class WooPosSearchProductsDataSource @Inject constructor(
             val localSearchDeferred = async {
                 productsCache.getAll().filter(searchPredicate(query)).sortedBy { it.name }.take(PAGE_SIZE)
             }
-            val remoteSearchDeferred = async { remoteSearch(query) }
+            val remoteSearchDeferred = async { performRemoteSearch(query) }
 
             emit(ProductsResult.Cached(localSearchDeferred.await()))
 
@@ -65,7 +65,7 @@ class WooPosSearchProductsDataSource @Inject constructor(
         val currentResults = searchResultsIndex.getSearchResults(query)
         val offset = currentResults.size
 
-        return remoteSearch(query, offset).fold(
+        return performRemoteSearch(query, offset).fold(
             onSuccess = { result ->
                 Result.success(result.products)
             },
@@ -75,7 +75,7 @@ class WooPosSearchProductsDataSource @Inject constructor(
         )
     }
 
-    private suspend fun remoteSearch(
+    private suspend fun performRemoteSearch(
         searchQuery: String,
         offset: Int = 0
     ): Result<SearchResult> {
