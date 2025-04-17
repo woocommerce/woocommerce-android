@@ -11,19 +11,18 @@ import javax.inject.Inject
 class WooPosCartProductUpdater @Inject constructor(
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
     private val resourceProvider: ResourceProvider,
-    private val formatPrice: WooPosFormatPrice
+    private val formatPrice: WooPosFormatPrice,
 ) {
     suspend operator fun invoke(
-        currentState: WooPosCartState,
+        itemsInCart: List<WooPosCartItemViewState>,
         updatedProducts: List<ParentToChildrenEvent.OrderCreated.ProductInfo>,
-    ): WooPosCartState {
-        val currentBodyState = currentState.body as? WooPosCartState.Body.WithItems ?: return currentState
-        val mutableCurrentBodyList = currentBodyState.itemsInCart.toMutableList()
+    ): List<WooPosCartItemViewState> {
+        val mutableCurrentBodyList = itemsInCart.toMutableList()
         var changesDone = false
 
         val availableProductsMap = createAvailableProductsMap(updatedProducts)
 
-        currentBodyState.itemsInCart.forEachIndexed { index, item ->
+        itemsInCart.forEachIndexed { index, item ->
             when (item) {
                 is WooPosCartItemViewState.Product -> {
                     val productKey = getProductKey(item)
@@ -70,11 +69,7 @@ class WooPosCartProductUpdater @Inject constructor(
             )
         }
 
-        return currentState.copy(
-            body = currentBodyState.copy(
-                itemsInCart = mutableCurrentBodyList
-            )
-        )
+        return itemsInCart
     }
 
     private fun getProductKey(item: WooPosCartItemViewState.Product): String {
