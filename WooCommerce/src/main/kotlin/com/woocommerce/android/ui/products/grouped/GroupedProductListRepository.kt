@@ -6,6 +6,7 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.WooLog
+import kotlinx.coroutines.runBlocking
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
@@ -62,12 +63,14 @@ class GroupedProductListRepository @Inject constructor(
     /**
      * Returns all products for the [productIds] that are in the database
      */
-    suspend fun getProductList(productIds: List<Long>): List<Product> {
+    fun getProductList(productIds: List<Long>): List<Product> {
         return if (selectedSite.exists()) {
-            val wcProducts = productStore.getProductsByRemoteIds(
-                selectedSite.get(),
-                remoteProductIds = productIds
-            )
+            val wcProducts = runBlocking {
+                productStore.getProductsByRemoteIds(
+                    selectedSite.get(),
+                    remoteProductIds = productIds
+                )
+            }
             wcProducts.map { it.toAppModel() }
         } else {
             WooLog.w(WooLog.T.PRODUCTS, "No site selected - unable to load products")

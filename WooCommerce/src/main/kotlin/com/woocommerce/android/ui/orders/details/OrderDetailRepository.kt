@@ -24,6 +24,7 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.ORDERS
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import org.wordpress.android.fluxc.model.OrderAttributionInfo
@@ -196,21 +197,25 @@ class OrderDetailRepository @Inject constructor(
     suspend fun fetchProductsByRemoteIds(remoteIds: List<Long>) =
         productStore.fetchProductListSynced(selectedSite.get(), remoteIds)?.map { it.toAppModel() } ?: emptyList()
 
-    suspend fun hasVirtualProductsOnly(remoteProductIds: List<Long>): Boolean {
-        return if (remoteProductIds.isNotEmpty()) {
-            productStore.getVirtualProductCountByRemoteIds(
-                selectedSite.get(), remoteProductIds
-            ) == remoteProductIds.size
-        } else {
-            false
+    fun hasVirtualProductsOnly(remoteProductIds: List<Long>): Boolean {
+        return runBlocking {
+            if (remoteProductIds.isNotEmpty()) {
+                productStore.getVirtualProductCountByRemoteIds(
+                    selectedSite.get(), remoteProductIds
+                ) == remoteProductIds.size
+            } else {
+                false
+            }
         }
     }
 
-    suspend fun getProductCountForOrder(remoteProductIds: List<Long>): Int {
-        return if (remoteProductIds.isNotEmpty()) {
-            productStore.getProductCountByRemoteIds(selectedSite.get(), remoteProductIds)
-        } else {
-            0
+    fun getProductCountForOrder(remoteProductIds: List<Long>): Int {
+        return runBlocking {
+            if (remoteProductIds.isNotEmpty()) {
+                productStore.getProductCountByRemoteIds(selectedSite.get(), remoteProductIds)
+            } else {
+                0
+            }
         }
     }
 
@@ -223,12 +228,14 @@ class OrderDetailRepository @Inject constructor(
         }
     }
 
-    suspend fun hasSubscriptionProducts(remoteProductIds: List<Long>): Boolean {
-        return if (remoteProductIds.isNotEmpty()) {
-            productStore.getProductsByRemoteIds(selectedSite.get(), remoteProductIds)
-                .any { it.type == PRODUCT_SUBSCRIPTION_TYPE }
-        } else {
-            false
+    fun hasSubscriptionProducts(remoteProductIds: List<Long>): Boolean {
+        return runBlocking {
+            if (remoteProductIds.isNotEmpty()) {
+                productStore.getProductsByRemoteIds(selectedSite.get(), remoteProductIds)
+                    .any { it.type == PRODUCT_SUBSCRIPTION_TYPE }
+            } else {
+                false
+            }
         }
     }
 

@@ -87,12 +87,10 @@ class GroupedProductListViewModel @Inject constructor(
     }
 
     private fun updateProductList() {
-        runBlocking {
-            _productList.value = if (selectedProductIds.isNotEmpty()) {
-                groupedProductListRepository.getProductList(selectedProductIds)
-            } else {
-                emptyList()
-            }
+        _productList.value = if (selectedProductIds.isNotEmpty()) {
+            groupedProductListRepository.getProductList(selectedProductIds)
+        } else {
+            emptyList()
         }
 
         productListViewState = productListViewState.copy(
