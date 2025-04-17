@@ -103,7 +103,13 @@ class WooPosProductsDataSourceTest {
                 includeTypes = eq(productsTypesFilterConfig.includeTypes),
             )
         ).thenReturn(WooResult(listOf<WCProductModel>()))
-        val sut = WooPosProductsDataSource(productStore, selectedSite, productsCache, productsIndex, productsTypesFilterConfig)
+        val sut = WooPosProductsDataSource(
+            productStore,
+            selectedSite,
+            productsCache,
+            productsIndex,
+            productsTypesFilterConfig
+        )
 
         // WHEN
         sut.loadProducts(forceRefreshProducts = true).first()
@@ -128,7 +134,13 @@ class WooPosProductsDataSourceTest {
             )
         ).thenReturn(WooResult(listOf<WCProductModel>()))
         whenever(productsIndex.getProductList()).thenReturn(sampleProducts)
-        val sut = WooPosProductsDataSource(productStore, selectedSite, productsCache, productsIndex, productsTypesFilterConfig)
+        val sut = WooPosProductsDataSource(
+            productStore,
+            selectedSite,
+            productsCache,
+            productsIndex,
+            productsTypesFilterConfig
+        )
 
         // WHEN
         val result = sut.loadProducts(forceRefreshProducts = false).first()
@@ -153,7 +165,13 @@ class WooPosProductsDataSourceTest {
             )
         ).thenReturn(WooResult(listOf<WCProductModel>()))
         whenever(productsIndex.getProductList()).thenReturn(emptyList())
-        val sut = WooPosProductsDataSource(productStore, selectedSite, productsCache, productsIndex, productsTypesFilterConfig)
+        val sut = WooPosProductsDataSource(
+            productStore,
+            selectedSite,
+            productsCache,
+            productsIndex,
+            productsTypesFilterConfig
+        )
 
         // WHEN
         val result = sut.loadProducts(forceRefreshProducts = false).first()
@@ -200,7 +218,13 @@ class WooPosProductsDataSourceTest {
                     )
                 )
             )
-            val sut = WooPosProductsDataSource(productStore, selectedSite, productsCache, productsIndex, productsTypesFilterConfig)
+            val sut = WooPosProductsDataSource(
+                productStore,
+                selectedSite,
+                productsCache,
+                productsIndex,
+                productsTypesFilterConfig
+            )
 
             // WHEN
             val flow = sut.loadProducts(forceRefreshProducts = false).toList()
@@ -237,7 +261,13 @@ class WooPosProductsDataSourceTest {
             ).thenReturn(WooResult(wooError))
             whenever(productsCache.getAll()).thenReturn(sampleProducts)
 
-            val sut = WooPosProductsDataSource(productStore, selectedSite, productsCache, productsIndex, productsTypesFilterConfig)
+            val sut = WooPosProductsDataSource(
+                productStore,
+                selectedSite,
+                productsCache,
+                productsIndex,
+                productsTypesFilterConfig
+            )
 
             // WHEN
             val flow = sut.loadProducts(forceRefreshProducts = false).toList()
@@ -274,7 +304,13 @@ class WooPosProductsDataSourceTest {
                 )
             )
             whenever(productsIndex.getProductList()).thenReturn(sampleProducts + additionalProducts)
-            val sut = WooPosProductsDataSource(productStore, selectedSite, productsCache, productsIndex, productsTypesFilterConfig)
+            val sut = WooPosProductsDataSource(
+                productStore,
+                selectedSite,
+                productsCache,
+                productsIndex,
+                productsTypesFilterConfig
+            )
             sut.loadProducts(forceRefreshProducts = true).first()
 
             // WHEN
@@ -326,7 +362,13 @@ class WooPosProductsDataSourceTest {
                 WooResult(wooError)
             )
 
-            val sut = WooPosProductsDataSource(productStore, selectedSite, productsCache, productsIndex, productsTypesFilterConfig)
+            val sut = WooPosProductsDataSource(
+                productStore,
+                selectedSite,
+                productsCache,
+                productsIndex,
+                productsTypesFilterConfig
+            )
             sut.loadProducts(forceRefreshProducts = true).first()
 
             // WHEN
@@ -360,7 +402,13 @@ class WooPosProductsDataSourceTest {
                 )
             )
 
-            val sut = WooPosProductsDataSource(productStore, selectedSite, productsCache, productsIndex, productsTypesFilterConfig)
+            val sut = WooPosProductsDataSource(
+                productStore,
+                selectedSite,
+                productsCache,
+                productsIndex,
+                productsTypesFilterConfig
+            )
 
             // WHEN
             val flow = sut.loadProducts(forceRefreshProducts = false).toList()
@@ -388,7 +436,13 @@ class WooPosProductsDataSourceTest {
                     includeTypes = any(),
                 )
             ).thenReturn(WooResult(emptyList()))
-            val sut = WooPosProductsDataSource(productStore, selectedSite, productsCache, productsIndex, productsTypesFilterConfig)
+            val sut = WooPosProductsDataSource(
+                productStore,
+                selectedSite,
+                productsCache,
+                productsIndex,
+                productsTypesFilterConfig
+            )
 
             // WHEN
             val flow = sut.loadProducts(forceRefreshProducts = false).toList()
@@ -434,7 +488,13 @@ class WooPosProductsDataSourceTest {
             )
         ).thenReturn(WooResult(listOf<WCProductModel>()))
 
-        val sut = WooPosProductsDataSource(productStore, selectedSite, productsCache, productsIndex, productsTypesFilterConfig)
+        val sut = WooPosProductsDataSource(
+            productStore,
+            selectedSite,
+            productsCache,
+            productsIndex,
+            productsTypesFilterConfig
+        )
 
         // WHEN
         val result = sut.loadProducts(forceRefreshProducts = false).first()
@@ -449,6 +509,7 @@ class WooPosProductsDataSourceTest {
     }
 
     @Test
+    @Suppress("LongMethod")
     fun `when loading more products, they should be sorted by name in ascending order`() = runTest {
         // GIVEN
         val mockProductD = mock<Product>()
@@ -500,7 +561,13 @@ class WooPosProductsDataSourceTest {
             )
         )
 
-        val sut = WooPosProductsDataSource(productStore, selectedSite, productsCache, productsIndex, productsTypesFilterConfig)
+        val sut = WooPosProductsDataSource(
+            productStore,
+            selectedSite,
+            productsCache,
+            productsIndex,
+            productsTypesFilterConfig
+        )
         sut.loadProducts(forceRefreshProducts = true).first()
 
         // WHEN
@@ -531,7 +598,13 @@ class WooPosProductsDataSourceTest {
                     includeTypes = any()
                 )
             ).thenReturn(WooResult(emptyList()))
-            val sut = WooPosProductsDataSource(productStore, selectedSite, productsCache, productsIndex, productsTypesFilterConfig)
+            val sut = WooPosProductsDataSource(
+                productStore,
+                selectedSite,
+                productsCache,
+                productsIndex,
+                productsTypesFilterConfig
+            )
 
             // WHEN
             val result = sut.prepopulateProductsCache()
@@ -579,7 +652,13 @@ class WooPosProductsDataSourceTest {
                 )
             ).thenReturn(WooResult(secondPageWcProducts))
 
-            val sut = WooPosProductsDataSource(productStore, selectedSite, productsCache, productsIndex, productsTypesFilterConfig)
+            val sut = WooPosProductsDataSource(
+                productStore,
+                selectedSite,
+                productsCache,
+                productsIndex,
+                productsTypesFilterConfig
+            )
 
             // WHEN
             val result = sut.prepopulateProductsCache()
@@ -617,7 +696,13 @@ class WooPosProductsDataSourceTest {
                 )
             ).thenReturn(WooResult(wooError))
 
-            val sut = WooPosProductsDataSource(productStore, selectedSite, productsCache, productsIndex, productsTypesFilterConfig)
+            val sut = WooPosProductsDataSource(
+                productStore,
+                selectedSite,
+                productsCache,
+                productsIndex,
+                productsTypesFilterConfig
+            )
 
             // WHEN
             val result = sut.prepopulateProductsCache()
@@ -661,7 +746,13 @@ class WooPosProductsDataSourceTest {
                 )
             ).thenReturn(WooResult(emptySecondPage))
 
-            val sut = WooPosProductsDataSource(productStore, selectedSite, productsCache, productsIndex, productsTypesFilterConfig)
+            val sut = WooPosProductsDataSource(
+                productStore,
+                selectedSite,
+                productsCache,
+                productsIndex,
+                productsTypesFilterConfig
+            )
 
             // WHEN
             val result = sut.prepopulateProductsCache()
@@ -700,7 +791,13 @@ class WooPosProductsDataSourceTest {
                 )
             ).thenReturn(WooResult(pageProducts))
 
-            val sut = WooPosProductsDataSource(productStore, selectedSite, productsCache, productsIndex, productsTypesFilterConfig)
+            val sut = WooPosProductsDataSource(
+                productStore,
+                selectedSite,
+                productsCache,
+                productsIndex,
+                productsTypesFilterConfig
+            )
 
             // WHEN
             val result = sut.prepopulateProductsCache()

@@ -36,7 +36,7 @@ class WooPosPopularProductsProvider @Inject constructor(
             sortType = ProductSorting.POPULARITY_DESC,
         )
 
-        return  if (result.isError) {
+        return if (result.isError) {
             Result.failure(Exception(result.error.message))
         } else {
             val products = result.model ?: emptyList()
