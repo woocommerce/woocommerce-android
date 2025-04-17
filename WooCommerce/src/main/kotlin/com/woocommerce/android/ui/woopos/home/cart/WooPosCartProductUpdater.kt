@@ -32,25 +32,14 @@ class WooPosCartProductUpdater @Inject constructor(
 
                     if (availableQuantity > 0) {
                         availableProductsMap[productKey] = availableQuantity - 1
-
                         val updatedProduct = findMatchingProduct(item, updatedProducts)
 
-                        if (updatedProduct != null) {
-                            val updatedItem = updateProductWithNewInfo(
-                                item = item,
-                                updatedProduct = updatedProduct
-                            )
-                            val itemChanged = (updatedItem.name != item.name || updatedItem.price != item.price)
+                        updatedProduct?.let {
+                            val updatedItem = updateProductWithNewInfo(item, it)
+                            val itemChanged = updatedItem.name != item.name || updatedItem.price != item.price
 
                             if (itemChanged) {
-                                productsCache.getProductById(item.id)?.let { product ->
-                                    productsCache.updateProduct(
-                                        product.copy(
-                                            name = updatedItem.name,
-                                            price = updatedProduct.price,
-                                        )
-                                    )
-                                }
+                                updateProductInCache(updatedItem, updatedProduct)
                             }
 
                             mutableCurrentBodyList[index] = updatedItem
@@ -59,13 +48,12 @@ class WooPosCartProductUpdater @Inject constructor(
                     } else {
                         val updatedItem = markProductAsNotExisting(item)
                         mutableCurrentBodyList[index] = updatedItem
-                        val itemChanged = (
-                            updatedItem.name != item.name ||
-                                updatedItem.price != item.price ||
-                                updatedItem.productDoesNotExist != item.productDoesNotExist
-                            )
+                        val itemChanged = updatedItem.name != item.name ||
+                            updatedItem.price != item.price ||
+                            updatedItem.productDoesNotExist != item.productDoesNotExist
+
                         if (itemChanged) {
-                            productsCache.deleteProduct(updatedItem.id)
+                            deleteProductFromCache(updatedItem.id)
                         }
                         changesDone = changesDone || itemChanged
                     }
@@ -78,14 +66,36 @@ class WooPosCartProductUpdater @Inject constructor(
         }
 
         if (changesDone) {
-            childrenToParentEventSender.sendToParent(
-                ChildToParentEvent.ToastMessageDisplayed(
-                    message = resourceProvider.getString(R.string.woopos_cart_changes_in_the_cart)
+            notifyParentAboutChanges()
+        }
+
+        return mutableCurrentBodyList
+    }
+
+    private suspend fun notifyParentAboutChanges() {
+        childrenToParentEventSender.sendToParent(
+            ChildToParentEvent.ToastMessageDisplayed(
+                message = resourceProvider.getString(R.string.woopos_cart_changes_in_the_cart)
+            )
+        )
+    }
+
+    private suspend fun updateProductInCache(
+        updatedItem: WooPosCartItemViewState.Product,
+        updatedProduct: ParentToChildrenEvent.OrderCreated.ProductInfo
+    ) {
+        productsCache.getProductById(updatedItem.id)?.let { product ->
+            productsCache.updateProduct(
+                product.copy(
+                    name = updatedItem.name,
+                    price = updatedProduct.price,
                 )
             )
         }
+    }
 
-        return itemsInCart
+    private suspend fun deleteProductFromCache(productId: Long) {
+        productsCache.deleteProduct(productId)
     }
 
     private fun getProductKey(item: WooPosCartItemViewState.Product): String {
@@ -165,13 +175,8 @@ class WooPosCartProductUpdater @Inject constructor(
         item: WooPosCartItemViewState.Product
     ): WooPosCartItemViewState.Product {
         return when (item) {
-            is WooPosCartItemViewState.Product.Simple -> {
-                item.copy(productDoesNotExist = true)
-            }
-
-            is WooPosCartItemViewState.Product.Variation -> {
-                item.copy(productDoesNotExist = true)
-            }
+            is WooPosCartItemViewState.Product.Simple -> item.copy(productDoesNotExist = true)
+            is WooPosCartItemViewState.Product.Variation -> item.copy(productDoesNotExist = true)
         }
     }
 }
