@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.split
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.sumByFloat
 import com.woocommerce.android.ui.orders.wooshippinglabels.ShippableItemUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShippingLabelsSnackbarData
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
@@ -104,13 +105,9 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
         removeShipmentSheet.value = null
     }
 
-    fun onUpdateSelection(
-        shipmentKey: Int,
-        shippableItemIndex: Int,
-        selectedIndexes: Set<Int>? = null
-    ) {
+    fun onUpdateSelection(shippableItemIndex: Int, selectedIndexes: Set<Int>? = null) {
         val shipmentsMap = shipmentsUIMap.value?.toMutableMap() ?: return
-        val items = shipmentsMap.getValue(shipmentKey)
+        val items = shipmentsMap.getValue(shipmentSelected.value)
         val item = items.shippableItems[shippableItemIndex]
         val updatedItem = when (item) {
             is SelectableShippableItemUI.SingleSelectableShippableItemUI -> {
@@ -128,7 +125,7 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
         }
         val updatedList = items.shippableItems.toMutableList()
         updatedList[shippableItemIndex] = updatedItem
-        shipmentsMap[shipmentKey] = items.copy(shippableItems = updatedList)
+        shipmentsMap[shipmentSelected.value] = items.copy(shippableItems = updatedList)
         shipmentsUIMap.value = shipmentsMap
     }
 
@@ -193,23 +190,27 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
 
 data class SelectableShippableItemsUI(
     val shippableItems: List<SelectableShippableItemUI>,
-    val totalItemQuantity: Int,
     val formattedTotalWeight: String,
     val formattedTotalPrice: String
-)
+) {
+    val totalItemQuantity: Int
+        get() = shippableItems.sumByFloat { it.shippableItem.quantity }.toInt()
+}
 
-sealed class SelectableShippableItemUI {
+sealed interface SelectableShippableItemUI {
+    val shippableItem: ShippableItemUI
+
     data class SingleSelectableShippableItemUI(
-        val shippableItem: ShippableItemUI,
+        override val shippableItem: ShippableItemUI,
         val isSelected: Boolean = false
-    ) : SelectableShippableItemUI()
+    ) : SelectableShippableItemUI
 
     data class ExpandableSelectableShippableItemUI(
-        val shippableItem: ShippableItemUI,
+        override val shippableItem: ShippableItemUI,
         val innerShippableItem: ShippableItemUI,
         val isExpanded: Boolean = false,
         val selectedIndexes: Set<Int> = emptySet(),
-    ) : SelectableShippableItemUI() {
+    ) : SelectableShippableItemUI {
         val isSelected: Boolean
             get() = selectedIndexes.size == shippableItem.quantity.toInt()
     }
@@ -226,15 +227,6 @@ data class RemoveShipmentSheet(
     val otherShipments: Map<Int, SelectableShippableItemsUI>
 )
 
-fun List<ShippableItemModel>.combine(other: List<ShippableItemModel>): List<ShippableItemModel> {
-    val combinedMap = this.associateBy { it.productId }.toMutableMap()
-    other.forEach { otherItem ->
-        val existingItem = combinedMap[otherItem.productId]
-        if (existingItem != null) {
-            combinedMap[otherItem.productId] = existingItem.copy(quantity = existingItem.quantity + otherItem.quantity)
-        } else {
-            combinedMap[otherItem.productId] = otherItem
-        }
-    }
-    return combinedMap.values.toList()
-}
+private fun List<ShippableItemModel>.combine(other: List<ShippableItemModel>) = (this + other)
+    .groupBy { it.itemId }
+    .map { (_, itemsWithSameId) -> itemsWithSameId.first().copy(quantity = itemsWithSameId.sumByFloat { it.quantity }) }

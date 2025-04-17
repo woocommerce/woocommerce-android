@@ -213,7 +213,6 @@ private fun ShipmentCardPreview() = ShipmentCard(
     shipment = mapOf(
         3 to SelectableShippableItemsUI(
             shippableItems = emptyList(),
-            2,
             "550g",
             "$50.00"
         )
@@ -227,7 +226,6 @@ private fun ShipmentCardSelectedPreview() = ShipmentCard(
     shipment = mapOf(
         2 to SelectableShippableItemsUI(
             shippableItems = emptyList(),
-            3,
             "825g",
             "$75.00"
         )

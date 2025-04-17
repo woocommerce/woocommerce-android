@@ -92,7 +92,7 @@ fun WooShippingSplitShipmentScreen(
     viewState: SplitShipmentViewState,
     onBack: () -> Unit,
     onDismissInstructions: () -> Unit,
-    onUpdateSelection: (shipmentKey: Int, index: Int, selectedIndexes: Set<Int>?) -> Unit,
+    onUpdateSelection: (index: Int, selectedIndexes: Set<Int>?) -> Unit,
     onUpdateShipment: (splitMovement: SplitMovement) -> Unit,
     onRemoveShipment: (removingShipmentKey: Int, movingToShipmentKey: Int) -> Unit,
     onUpdateSelectedShipment: (shipmentKey: Int) -> Unit,
@@ -175,7 +175,6 @@ fun WooShippingSplitShipmentScreen(
                     )
                 } else {
                     SelectableProductsSection(
-                        shipmentKey = viewState.selectableItems.keys.first(),
                         shipment = viewState.selectableItems.values.first(),
                         onUpdateSelection = onUpdateSelection,
                         extraBottomPadding = productsExtraPadding,
@@ -228,7 +227,7 @@ private fun MultipleShipments(
     shipments: List<Int>,
     productsExtraPadding: Dp,
     onUpdateSelectedShipment: (shipmentKey: Int) -> Unit,
-    onUpdateSelection: (shipmentKey: Int, index: Int, selectedIndexes: Set<Int>?) -> Unit,
+    onUpdateSelection: (index: Int, selectedIndexes: Set<Int>?) -> Unit,
     onRemoveShipmentMenuTapped: (shipmentKey: Int) -> Unit,
     modifier: Modifier
 ) {
@@ -310,7 +309,6 @@ private fun MultipleShipments(
         ) { page ->
             viewState.selectableItems.getValue(shipments[page]).let {
                 SelectableProductsSection(
-                    shipmentKey = shipments[page],
                     shipment = it,
                     onUpdateSelection = onUpdateSelection,
                     modifier = modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp),
@@ -473,9 +471,8 @@ private fun SplitMovements(
 
 @Composable
 fun SelectableProductsSection(
-    shipmentKey: Int,
     shipment: SelectableShippableItemsUI,
-    onUpdateSelection: (shipmentKey: Int, index: Int, selectedIndexes: Set<Int>?) -> Unit,
+    onUpdateSelection: (index: Int, selectedIndexes: Set<Int>?) -> Unit,
     extraBottomPadding: Dp,
     modifier: Modifier = Modifier
 ) {
@@ -501,13 +498,7 @@ fun SelectableProductsSection(
                             quantity = shippableItem.shippableItem.quantity,
                             imageUrl = shippableItem.shippableItem.imageUrl,
                             isSelected = shippableItem.isSelected,
-                            onSelectionChange = {
-                                onUpdateSelection(
-                                    shipmentKey,
-                                    index,
-                                    null
-                                )
-                            },
+                            onSelectionChange = { onUpdateSelection(index, null) },
                             modifier = Modifier.padding(vertical = 8.dp)
                         )
                     }
@@ -522,13 +513,7 @@ fun SelectableProductsSection(
                             quantity = shippableItem.shippableItem.quantity,
                             imageUrl = shippableItem.shippableItem.imageUrl,
                             isSelected = shippableItem.isSelected,
-                            onSelectionChange = {
-                                onUpdateSelection(
-                                    shipmentKey,
-                                    index,
-                                    null
-                                )
-                            },
+                            onSelectionChange = { onUpdateSelection(index, null) },
                             isExpanded = expanded,
                             onExpand = { expanded = !expanded },
                             singleWeight = shippableItem.innerShippableItem.formattedWeight,
@@ -538,11 +523,7 @@ fun SelectableProductsSection(
                                 val indexes = shippableItem.selectedIndexes.toMutableSet()
                                 if (isSelected) indexes.remove(innerIndex) else indexes.add(innerIndex)
 
-                                onUpdateSelection(
-                                    shipmentKey,
-                                    index,
-                                    indexes
-                                )
+                                onUpdateSelection(index, indexes)
                             },
                             modifier = Modifier.padding(vertical = 8.dp)
                         )
@@ -567,13 +548,11 @@ private fun WooShippingSplitShipmentScreenPreview() = WooThemeWithBackground {
             selectableItems = mapOf(
                 0 to SelectableShippableItemsUI(
                     shippableItems = emptyList(),
-                    totalItemQuantity = 1,
                     formattedTotalWeight = "",
                     formattedTotalPrice = ""
                 ),
                 1 to SelectableShippableItemsUI(
                     shippableItems = emptyList(),
-                    totalItemQuantity = 1,
                     formattedTotalWeight = "",
                     formattedTotalPrice = ""
                 )
@@ -581,7 +560,7 @@ private fun WooShippingSplitShipmentScreenPreview() = WooThemeWithBackground {
         ),
         onBack = {},
         onDismissInstructions = {},
-        onUpdateSelection = { _, _, _ -> },
+        onUpdateSelection = { _, _ -> },
         onUpdateShipment = {},
         onRemoveShipment = { _, _ -> },
         onUpdateSelectedShipment = {},

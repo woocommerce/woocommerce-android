@@ -85,7 +85,6 @@ fun List<ShippableItemModel>.toSelectableUIModel(
 
     return SelectableShippableItemsUI(
         shippableItems = shippableItemsUI,
-        totalItemQuantity = sumByFloat { it.quantity }.toInt(),
         formattedTotalWeight = formattedTotalWeight,
         formattedTotalPrice = formattedTotalPrice
     )
