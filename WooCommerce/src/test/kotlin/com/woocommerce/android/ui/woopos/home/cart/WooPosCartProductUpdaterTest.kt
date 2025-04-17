@@ -50,7 +50,7 @@ class WooPosCartProductUpdaterTest {
     )
 
     @Test
-    fun `given cart with simple product, when updated product info available, then product is updated`() = runTest {
+    fun `given cart with simple product, when called, then product is updated`() = runTest {
         // GIVEN
         val simpleProduct = WooPosCartItemViewState.Product.Simple(
             itemNumber = 1,
@@ -79,14 +79,16 @@ class WooPosCartProductUpdaterTest {
         assertThat(updatedItem.name).isEqualTo("Updated Name")
         assertThat(updatedItem.price).isEqualTo("10.0$")
         verify(childrenToParentEventSender).sendToParent(any<ChildToParentEvent.ToastMessageDisplayed>())
-        verify(productsCache).updateProduct(cachedProduct.copy(
-            name = "Updated Name",
-            price = BigDecimal("10.0")
-        ))
+        verify(productsCache).updateProduct(
+            cachedProduct.copy(
+                name = "Updated Name",
+                price = BigDecimal("10.0")
+            )
+        )
     }
 
     @Test
-    fun `given cart with variation product, when updated product info available, then product is updated`() = runTest {
+    fun `given cart with variation product, when called, then product is updated`() = runTest {
         // GIVEN
         val variationProduct = WooPosCartItemViewState.Product.Variation(
             itemNumber = 1,
@@ -117,14 +119,16 @@ class WooPosCartProductUpdaterTest {
         assertThat(updatedItem.name).isEqualTo("Updated Variation")
         assertThat(updatedItem.price).isEqualTo("10.0$")
         verify(childrenToParentEventSender).sendToParent(any<ChildToParentEvent.ToastMessageDisplayed>())
-        verify(productsCache).updateProduct(cachedProduct.copy(
-            name = "Updated Variation",
-            price = BigDecimal("10.0")
-        ))
+        verify(productsCache).updateProduct(
+            cachedProduct.copy(
+                name = "Updated Variation",
+                price = BigDecimal("10.0")
+            )
+        )
     }
 
     @Test
-    fun `given cart with product, when product no longer available, then product is marked as not existing`() = runTest {
+    fun `given cart with product, when called, then product is marked as not existing`() = runTest {
         // GIVEN
         val simpleProduct = WooPosCartItemViewState.Product.Simple(
             itemNumber = 1,
@@ -148,7 +152,7 @@ class WooPosCartProductUpdaterTest {
     }
 
     @Test
-    fun `given cart with multiple items, when updating only some products, then only those are updated`() = runTest {
+    fun `given cart with multiple items, when called, then only those are updated`() = runTest {
         // GIVEN
         val simpleProduct1 = WooPosCartItemViewState.Product.Simple(
             itemNumber = 1,
@@ -190,15 +194,17 @@ class WooPosCartProductUpdaterTest {
         assertThat(updatedItem2.productDoesNotExist).isTrue()
 
         verify(childrenToParentEventSender).sendToParent(any<ChildToParentEvent.ToastMessageDisplayed>())
-        verify(productsCache).updateProduct(cachedProduct.copy(
-            name = "Updated Product 1",
-            price = BigDecimal("10.0")
-        ))
+        verify(productsCache).updateProduct(
+            cachedProduct.copy(
+                name = "Updated Product 1",
+                price = BigDecimal("10.0")
+            )
+        )
         verify(productsCache).deleteProduct(2L)
     }
 
     @Test
-    fun `given cart with multiple identical products, when updated product info available, then update respects quantities`() = runTest {
+    fun `given cart with multiple identical products, when called, then update respects quantities`() = runTest {
         // GIVEN
         val simpleProduct = WooPosCartItemViewState.Product.Simple(
             itemNumber = 1,
@@ -233,15 +239,17 @@ class WooPosCartProductUpdaterTest {
         assertThat(secondItem.productDoesNotExist).isTrue()
 
         verify(childrenToParentEventSender).sendToParent(any<ChildToParentEvent.ToastMessageDisplayed>())
-        verify(productsCache).updateProduct(cachedProduct.copy(
-            name = "Updated Product",
-            price = BigDecimal("10.0")
-        ))
+        verify(productsCache).updateProduct(
+            cachedProduct.copy(
+                name = "Updated Product",
+                price = BigDecimal("10.0")
+            )
+        )
         verify(productsCache).deleteProduct(1L)
     }
 
     @Test
-    fun `given no changes in product info, then cache is not updated and parent is not notified`() = runTest {
+    fun `given no changes in product info, when called, then cache is not updated and parent is not notified`() = runTest {
         // GIVEN
         val simpleProduct = WooPosCartItemViewState.Product.Simple(
             itemNumber = 1,
@@ -269,7 +277,7 @@ class WooPosCartProductUpdaterTest {
     }
 
     @Test
-    fun `given product deleted, then cache is updated correctly`() = runTest {
+    fun `given product deleted, when called, then cache is updated correctly`() = runTest {
         // GIVEN
         val simpleProduct = WooPosCartItemViewState.Product.Simple(
             itemNumber = 1,
@@ -289,7 +297,7 @@ class WooPosCartProductUpdaterTest {
     }
 
     @Test
-    fun `given product updated, then cache is updated correctly`() = runTest {
+    fun `given product updated, when called, then cache is updated correctly`() = runTest {
         // GIVEN
         val simpleProduct = WooPosCartItemViewState.Product.Simple(
             itemNumber = 1,
@@ -313,9 +321,11 @@ class WooPosCartProductUpdaterTest {
         updater.invoke(itemsInCart, listOf(updatedInfo))
 
         // THEN
-        verify(productsCache).updateProduct(cachedProduct.copy(
-            name = "Updated Name",
-            price = BigDecimal("10.0")
-        ))
+        verify(productsCache).updateProduct(
+            cachedProduct.copy(
+                name = "Updated Name",
+                price = BigDecimal("10.0")
+            )
+        )
     }
 }
