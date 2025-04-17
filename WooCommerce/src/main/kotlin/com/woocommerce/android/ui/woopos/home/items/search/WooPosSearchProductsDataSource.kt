@@ -5,6 +5,7 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
+import com.woocommerce.android.ui.woopos.common.data.WooPosProductsTypesFilterConfig
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -24,6 +25,7 @@ class WooPosSearchProductsDataSource @Inject constructor(
     private val productsCache: WooPosProductsCache,
     private val searchResultsIndex: WooPosSearchResultsIndex,
     private val searchPredicate: ProductSearchPredicate,
+    private val productsTypesFilterConfig: WooPosProductsTypesFilterConfig
 ) {
     companion object {
         private const val PAGE_SIZE = 15
@@ -84,6 +86,8 @@ class WooPosSearchProductsDataSource @Inject constructor(
             searchString = searchQuery,
             offset = offset,
             pageSize = PAGE_SIZE,
+            filterOptions = productsTypesFilterConfig.filters,
+            includeTypes = productsTypesFilterConfig.includeTypes,
         ).let { result ->
             if (result.isError) {
                 WooLog.w(
