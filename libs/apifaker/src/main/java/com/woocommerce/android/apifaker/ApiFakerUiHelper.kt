@@ -76,7 +76,7 @@ class ApiFakerUiHelper @Inject constructor() : ActivityLifecycleCallbacks {
         // This works only for activities that has the content view as a direct child of the FrameLayout, which is true
         // for all AppCompat activities, so it should work for all the cases we need.
         val contentLayout = findViewById<View>(android.R.id.content) as? FrameLayout ?: return
-        val activityLayout = contentLayout.getChildAt(0)
+        val activityLayout = contentLayout.getChildAt(0) ?: return
 
         val apiFakerHint = FrameLayout(context).apply {
             id = apiFakerHintId
@@ -124,7 +124,7 @@ class ApiFakerUiHelper @Inject constructor() : ActivityLifecycleCallbacks {
 
     private fun View.hideApiFakerHint(animate: Boolean) {
         val contentLayout = findViewById<ViewGroup>(android.R.id.content)
-        val activityLayout = contentLayout.getChildAt(0)
+        val activityLayout = contentLayout.getChildAt(0) ?: return
 
         if (animate) {
             TransitionManager.beginDelayedTransition(contentLayout)
