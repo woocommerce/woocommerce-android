@@ -13,6 +13,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCBundledProduct
 import org.wordpress.android.fluxc.model.WCProductModel
@@ -98,9 +99,9 @@ class GetBundledProductsTest : BaseUnitTest() {
         }
 
     private val products = listOf(
-        WCProductModel().apply {
-            remoteProductId = 25
-            sku = "bundled_product_with_image"
+        WCProductModel().copy (
+            remoteId = RemoteId(25),
+            sku = "bundled_product_with_image",
             images = "[{\n" +
                 "  \"id\": 60,\n" +
                 "  \"date_created\": \"2023-03-30T07:29:35\",\n" +
@@ -111,11 +112,11 @@ class GetBundledProductsTest : BaseUnitTest() {
                 "  \"name\": \"Placeholder Image\",\n" +
                 "  \"alt\": \"\"\n" +
                 "}]"
-        },
-        WCProductModel().apply {
-            remoteProductId = 26
+        ),
+        WCProductModel().copy(
+            remoteId = RemoteId(26),
             sku = "bundled_product_no_image"
-        }
+        )
     )
 
     private val bundledProducts = listOf(
