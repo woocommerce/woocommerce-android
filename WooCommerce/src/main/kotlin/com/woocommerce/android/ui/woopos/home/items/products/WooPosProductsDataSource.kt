@@ -48,7 +48,6 @@ class WooPosProductsDataSource @Inject constructor(
                 pageSize = PRE_POPULATION_PAGE_SIZE,
                 filterOptions = productsTypesFilterConfig.filters,
                 includeTypes = productsTypesFilterConfig.includeTypes,
-                sortType = WCProductStore.DEFAULT_PRODUCT_SORTING,
             )
 
             if (!result.isError) {
@@ -113,7 +112,6 @@ class WooPosProductsDataSource @Inject constructor(
             pageSize = NORMAL_PAGE_SIZE,
             filterOptions = productsTypesFilterConfig.filters,
             includeTypes = productsTypesFilterConfig.includeTypes,
-            sortType = WCProductStore.DEFAULT_PRODUCT_SORTING,
         )
 
         return if (!result.isError) {
