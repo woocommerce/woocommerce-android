@@ -123,7 +123,7 @@ class WooPosCartViewModel @Inject constructor(
                     id = it.variationId
                 )
 
-                is WooPosCartItemViewState.Coupon -> WooPosItemsViewModel.ItemClickedData.Coupon(it.id, it.name)
+                is WooPosCartItemViewState.Coupon -> WooPosItemsViewModel.ItemClickedData.Coupon(it.id)
             }
         }
         sendEventToParent(ChildToParentEvent.CheckoutClicked(itemClickedDataList))
@@ -179,7 +179,7 @@ class WooPosCartViewModel @Inject constructor(
                         handleVariationClicked(event.itemData.productId, event.itemData.id)
 
                     is WooPosItemsViewModel.ItemClickedData.Coupon ->
-                        handleCouponClicked(event.itemData.id, event.itemData.couponCode)
+                        handleCouponClicked(event.itemData.id)
                 }
             }
 
@@ -209,7 +209,8 @@ class WooPosCartViewModel @Inject constructor(
         return productVariation.toCartListItem(itemNumber, product)
     }
 
-    private fun handleCouponClicked(couponId: Long, couponCode: String): WooPosCartItemViewState {
+    private suspend fun handleCouponClicked(couponId: Long): WooPosCartItemViewState {
+        val coupon = getCouponById(couponId)!!
         return WooPosCartItemViewState.Coupon(
             itemNumber = getItemNumber(),
             id = couponId,
