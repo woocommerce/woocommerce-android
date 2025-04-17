@@ -72,7 +72,7 @@ class WooPosPopularProductsProviderTest {
         val sut = createSut()
 
         // WHEN
-        val result = sut.fetchPopularProducts()
+        val result = sut.fetchAndCachePopularProducts()
 
         // THEN
         assertThat(result.isSuccess).isTrue()
@@ -97,7 +97,7 @@ class WooPosPopularProductsProviderTest {
         val sut = createSut()
 
         // WHEN
-        sut.fetchPopularProducts()
+        sut.fetchAndCachePopularProducts()
         val popularProducts = sut.getPopularProducts()
 
         // THEN
@@ -131,7 +131,7 @@ class WooPosPopularProductsProviderTest {
         val sut = createSut()
 
         // WHEN
-        val result = sut.fetchPopularProducts()
+        val result = sut.fetchAndCachePopularProducts()
 
         // THEN
         assertThat(result.isFailure).isTrue()
@@ -158,7 +158,7 @@ class WooPosPopularProductsProviderTest {
             val sut = createSut()
 
             // WHEN
-            sut.fetchPopularProducts()
+            sut.fetchAndCachePopularProducts()
 
             // THEN
             verify(productsCache).addAll(any())
@@ -184,7 +184,7 @@ class WooPosPopularProductsProviderTest {
             val sut = createSut()
 
             // WHEN
-            sut.fetchPopularProducts()
+            sut.fetchAndCachePopularProducts()
             val popularProducts = sut.getPopularProducts()
 
             // THEN
