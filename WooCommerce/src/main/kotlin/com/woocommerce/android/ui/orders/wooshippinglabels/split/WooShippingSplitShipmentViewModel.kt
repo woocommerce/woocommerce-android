@@ -96,9 +96,17 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
         )
     }
 
-    @Suppress("UnusedParameter")
-    fun onRemoveShipment(removingShipmentKey: Int, movingToShipmentKey: Int) {
-        // TODO handle removing shipment
+    fun onRemoveShipment(removingShipmentKey: Int, destinationShipmentKey: Int) {
+        val movingShipmentItems = currentShipments.value[removingShipmentKey] ?: return
+        onUpdateShipment(
+            SplitMovement(
+                sourceShipmentKey = removingShipmentKey,
+                updatedSourceShipmentItems = emptyList(),
+                destinationShipmentKey = destinationShipmentKey,
+                movingShipmentItems = movingShipmentItems
+            )
+        )
+        removeShipmentSheet.value = null
     }
 
     fun onDismissRemoveSheet() {
@@ -142,7 +150,13 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
                 ?.takeIf { it.isNotEmpty() }
                 ?.combine(splitMovement.movingShipmentItems)
                 ?: splitMovement.movingShipmentItems
-            shipments
+            reindexShipments(shipments)
+        }
+
+        if (currentShipments.value.size == 1) {
+            // The shipments row was removed. Since the pager can no longer manage the selected shipment, update it
+            // manually.
+            shipmentSelected.update { currentShipments.value.keys.first() }
         }
 
         val undoAction = {
@@ -156,6 +170,15 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
 
         showUndoSnackbar(splitMovement, undoAction)
     }
+
+    /**
+     * Reindexes the keys of the given shipments so that they form a consecutive sequence starting from 0. For example,
+     * if "Shipment 1" was removed from "Shipment 0, Shipment 1, Shipment 2", the remaining shipments will be reindexed
+     * as "Shipment 0, Shipment 1".
+     */
+    private fun reindexShipments(
+        shipments: Map<Int, List<ShippableItemModel>>
+    ) = shipments.values.mapIndexed { index, items -> index to items }.toMap()
 
     private fun showUndoSnackbar(splitMovement: SplitMovement, undoAction: () -> Unit) {
         val snackbarMessage = if (splitMovement.totalItemsToMove > 1) {
