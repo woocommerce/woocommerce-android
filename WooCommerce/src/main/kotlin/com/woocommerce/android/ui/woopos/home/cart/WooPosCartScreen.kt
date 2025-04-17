@@ -515,14 +515,15 @@ private fun CouponItem(
         ) {
             Box(
                 modifier = Modifier
-                    .background(MaterialTheme.colorScheme.surfaceDim),
+                    .background(MaterialTheme.colorScheme.surfaceDim)
+                    .size(96.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Image(
-                    painter = painterResource(R.drawable.ic_more_menu_coupons),
+                    painter = painterResource(R.drawable.ic_shopping_mode),
                     contentDescription = null,
                     colorFilter = ColorFilter.tint(WooPosTheme.colors.onSurfaceVariantLowest),
-                    modifier = Modifier.size(38.dp, 32.dp)
+                    modifier = Modifier.size(36.dp, 36.dp)
                 )
             }
 
@@ -537,9 +538,16 @@ private fun CouponItem(
                     style = WooPosTypography.BodyLarge,
                     fontWeight = FontWeight.Bold,
                     overflow = TextOverflow.Ellipsis,
+                    color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.clearAndSetSemantics { }
                 )
                 Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value.toAdaptivePadding()))
+                WooPosText(
+                    text = item.summary,
+                    style = WooPosTypography.BodySmall,
+                    color = WooPosTheme.colors.onSurfaceVariantHighest,
+                    modifier = Modifier.clearAndSetSemantics { }
+                )
             }
 
             if (canRemoveItems) {
