@@ -148,7 +148,7 @@ class WooPosCartViewModel @Inject constructor(
                     is ParentToChildrenEvent.OrderSuccessfullyPaid -> clearCart()
 
                     is ParentToChildrenEvent.OrderCreated -> {
-                        val body = _state.value.body as WooPosCartState.Body.WithItems
+                        val body = _state.value.body as? WooPosCartState.Body.WithItems ?: return@collect
                         val updateCartItems = updateCartItemsWithChanges(
                             itemsInCart = body.itemsInCart,
                             updatedProducts = event.updatedProducts
