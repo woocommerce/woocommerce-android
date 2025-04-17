@@ -537,11 +537,11 @@ private fun CouponItem(
             }
 
             if (canRemoveItems) {
-                Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value.toAdaptivePadding()))
+                Spacer(modifier = Modifier.width(WooPosSpacing.Large.value.toAdaptivePadding()))
 
                 RemoveItemFromCartButton(item, onUIEvent)
             }
-            Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value.toAdaptivePadding()))
+            Spacer(modifier = Modifier.width(WooPosSpacing.Large.value.toAdaptivePadding()))
         }
     }
 }
