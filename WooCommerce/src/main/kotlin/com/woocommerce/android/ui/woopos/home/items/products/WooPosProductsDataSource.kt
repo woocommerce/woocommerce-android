@@ -4,8 +4,8 @@ import com.woocommerce.android.WooException
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
+import com.woocommerce.android.ui.woopos.common.data.WooPosProductsTypesFilterConfig
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -15,8 +15,6 @@ import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCProductStore
-import org.wordpress.android.fluxc.store.WCProductStore.DownloadableOptions
-import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
@@ -28,6 +26,7 @@ class WooPosProductsDataSource @Inject constructor(
     private val selectedSite: SelectedSite,
     private val productsCache: WooPosProductsCache,
     private val productsIndex: WooPosProductsIndex,
+    private val productsTypesFilterConfig: WooPosProductsTypesFilterConfig
 ) {
     private val canLoadMore = AtomicBoolean(false)
     private val offset = AtomicInteger(0)
@@ -47,8 +46,8 @@ class WooPosProductsDataSource @Inject constructor(
                 site = selectedSite.get(),
                 offset = currentPage * PRE_POPULATION_PAGE_SIZE,
                 pageSize = PRE_POPULATION_PAGE_SIZE,
-                filterOptions = createProductFilters(),
-                includeTypes = createIncludedTypes(),
+                filterOptions = productsTypesFilterConfig.filters,
+                includeTypes = productsTypesFilterConfig.includeTypes,
             )
 
             if (!result.isError) {
@@ -107,8 +106,8 @@ class WooPosProductsDataSource @Inject constructor(
             site = selectedSite.get(),
             offset = offset.get(),
             pageSize = NORMAL_PAGE_SIZE,
-            filterOptions = createProductFilters(),
-            includeTypes = createIncludedTypes(),
+            filterOptions = productsTypesFilterConfig.filters,
+            includeTypes = productsTypesFilterConfig.includeTypes,
         )
 
         return if (!result.isError) {
@@ -126,18 +125,6 @@ class WooPosProductsDataSource @Inject constructor(
             Result.failure(WooException(result.error))
         }
     }
-
-    private fun createProductFilters(): Map<ProductFilterOption, String> {
-        return mapOf(
-            ProductFilterOption.STATUS to ProductStatus.PUBLISH.value,
-            ProductFilterOption.DOWNLOADABLE to DownloadableOptions.FALSE.toString()
-        )
-    }
-
-    private fun createIncludedTypes() = listOf(
-        WCProductStore.IncludeType.Simple,
-        WCProductStore.IncludeType.Variable
-    )
 
     private fun WooResult<*>.logFailure() {
         val errorMessage = error?.message ?: "Unknown error"
