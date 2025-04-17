@@ -1102,7 +1102,7 @@ class ProductDetailViewModel @Inject constructor(
      * 2. they arrive from other sources while the store's product list is empty.
      */
     private fun isPublishingFirstProduct(): Boolean =
-        runBlocking { navArgs.source == STORE_ONBOARDING || productListRepository.getProductList().isEmpty() }
+        navArgs.source == STORE_ONBOARDING || productListRepository.getProductList().isEmpty()
 
     /**
      * during a product creation flow flagged by [isAddNewProductFlow],

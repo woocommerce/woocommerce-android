@@ -5,6 +5,7 @@ import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.FeatureFlag
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 class ShippingLabelOnboardingRepository @Inject constructor(
@@ -22,7 +23,7 @@ class ShippingLabelOnboardingRepository @Inject constructor(
 
     val shippingPluginSupport: ShippingLabelSupport by lazy { getShippingLabelSupport() }
 
-    suspend fun shouldShowWcShippingBanner(order: Order, eligibleForIpp: Boolean): Boolean =
+    fun shouldShowWcShippingBanner(order: Order, eligibleForIpp: Boolean): Boolean =
         !shippingPluginSupport.isSupported() &&
             orderDetailRepository.getStoreCountryCode() == SUPPORTED_WCS_COUNTRY &&
             order.currency == SUPPORTED_WCS_CURRENCY &&
@@ -35,7 +36,7 @@ class ShippingLabelOnboardingRepository @Inject constructor(
         appSharedPrefs.setWcShippingBannerDismissed(dismissed = true, selectedSite.getSelectedSiteId())
     }
 
-    private suspend fun hasVirtualProductsOnly(order: Order): Boolean {
+    private fun hasVirtualProductsOnly(order: Order): Boolean {
         return if (order.items.isNotEmpty()) {
             val remoteProductIds = order.getProductIds()
             orderDetailRepository.hasVirtualProductsOnly(remoteProductIds)
