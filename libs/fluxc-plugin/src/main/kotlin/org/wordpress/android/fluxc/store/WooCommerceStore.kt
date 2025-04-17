@@ -39,6 +39,7 @@ import org.wordpress.android.fluxc.persistence.dao.TaxBasedOnDao
 import org.wordpress.android.fluxc.store.SiteStore.FetchSitesPayload
 import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
 import org.wordpress.android.fluxc.tools.CoroutineEngine
+import org.wordpress.android.fluxc.utils.PreferenceUtils
 import org.wordpress.android.fluxc.utils.WCCurrencyUtils
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.AppLog.T
@@ -132,6 +133,23 @@ open class WooCommerceStore @Inject constructor(
 
     @Suppress("ReturnCount")
     suspend fun fetchWooCommerceSite(site: SiteModel): WooResult<SiteModel> {
+        // Check if the site supports application passwords or not
+        // TODO remove this check after finishing the application passwords experiment
+        suspend fun fetchAppPasswordsSupportIfNeeded(site: SiteModel) {
+            val sharedPrefs = PreferenceUtils.getFluxCPreferences(appContext)
+            val sharedPrefKey = "application_passwords_check_done"
+            val checkDone = sharedPrefs.getBoolean(sharedPrefKey, false)
+            if (site.applicationPasswordsAuthorizeUrl != null || checkDone) return
+
+            fetchSupportedApiVersion(site, false).let {
+                if (!it.isError) {
+                    sharedPrefs.edit()
+                        .putBoolean(sharedPrefKey, true)
+                        .apply()
+                }
+            }
+        }
+
         if (!site.isJetpackCPConnected) {
             // The endpoint used by siteStore to fetch a single site is broken for Jetpack CP sites, so skip it for them
             siteStore.fetchSite(site).let {
@@ -168,6 +186,8 @@ open class WooCommerceStore @Inject constructor(
         if (isSiteUpdated) {
             emitChange(OnSiteChanged(1, listOf(updatedSite)))
         }
+
+        fetchAppPasswordsSupportIfNeeded(updatedSite)
 
         return WooResult(updatedSite)
     }
@@ -362,7 +382,7 @@ open class WooCommerceStore @Inject constructor(
         overrideRetryPolicy: Boolean = false
     ): WooResult<WCApiVersionResponse> {
         return coroutineEngine.withDefaultContext(T.API, this, "fetchSupportedWooApiVersion") {
-            val response = wcCoreRestClient.fetchSupportedWooApiVersion(site, overrideRetryPolicy)
+            val response = wcCoreRestClient.fetchSiteRootAPIEndpoint(site, overrideRetryPolicy)
             return@withDefaultContext when {
                 response.isError -> {
                     AppLog.w(
@@ -373,6 +393,11 @@ open class WooCommerceStore @Inject constructor(
                 }
 
                 response.result != null -> {
+                    // Persist the Application Passwords auhtorization URL
+                    site.applicationPasswordsAuthorizeUrl = response.result.authentication
+                        ?.applicationPasswords?.endpoints?.authorization
+                    siteSqlUtils.insertOrUpdateSite(site)
+
                     val namespaces = response.result.namespaces
                     val maxWooApiVersion = namespaces?.run {
                         find { it == WOO_API_NAMESPACE_V3 }

@@ -48,6 +48,7 @@ class WooPosCartViewModel @Inject constructor(
     private val formatPrice: WooPosFormatPrice,
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val analyticsTrackingDataKeeper: WooPosAnalyticsTrackingDataKeeper,
+    private val cartProductUpdater: WooPosCartProductUpdater,
     savedState: SavedStateHandle,
 ) : ViewModel() {
     private val _state = savedState.getStateFlow(
@@ -121,6 +122,7 @@ class WooPosCartViewModel @Inject constructor(
                     productId = it.id,
                     id = it.variationId
                 )
+
                 is WooPosCartItemViewState.Coupon -> WooPosItemsViewModel.ItemClickedData.Coupon(it.id, it.name)
             }
         }
@@ -145,6 +147,13 @@ class WooPosCartViewModel @Inject constructor(
 
                     is ParentToChildrenEvent.OrderSuccessfullyPaid -> clearCart()
 
+                    is ParentToChildrenEvent.OrderCreated -> {
+                        _state.value = cartProductUpdater(
+                            currentState = _state.value,
+                            updatedProducts = event.updatedProducts
+                        )
+                    }
+
                     is ParentToChildrenEvent.SearchEvent.RecentSearchSelected,
                     is ParentToChildrenEvent.CheckoutClicked,
                     is ParentToChildrenEvent.SearchEvent.ChangedQuery,
@@ -165,8 +174,10 @@ class WooPosCartViewModel @Inject constructor(
                 when (event.itemData) {
                     is WooPosItemsViewModel.ItemClickedData.Product.Simple ->
                         handleSimpleProductClicked(event.itemData.id)
+
                     is WooPosItemsViewModel.ItemClickedData.Product.Variation ->
                         handleVariationClicked(event.itemData.productId, event.itemData.id)
+
                     is WooPosItemsViewModel.ItemClickedData.Coupon ->
                         handleCouponClicked(event.itemData.id, event.itemData.couponCode)
                 }

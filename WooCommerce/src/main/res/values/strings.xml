@@ -4275,6 +4275,7 @@
     <string name="woopos_cart_item_product_content_description">Product in cart %s, Price %s</string>
     <string name="woopos_cart_item_coupon_content_description">Coupon in cart %s</string>
     <string name="woopos_cart_title">Cart</string>
+    <string name="woopos_cart_changes_in_the_cart">There are changes in the cart</string>
     <string name="woopos_clear_cart_button">Clear</string>
 
     <string name="woopos_banner_simple_products_only_title">Showing simple, variable and virtual products only</string>
@@ -4472,6 +4473,7 @@
     <string name="woo_shipping_labels_package_creation_add_package">Add Package</string>
     <string name="woo_shipping_labels_package_creation_empty_button">Create a custom package</string>
     <string name="woo_shipping_labels_package_creation_empty_carrier_message">No carrier information found</string>
+    <string name="woo_shipping_labels_package_creation_empty_saved_message">No saved packages yet</string>
     <string name="woo_shipping_labels_package_creation_error">Failed to load the package data</string>
     <string name="woo_shipping_labels_package_creation_carrier_loading_error">We are unable to load carrier packages.</string>
     <string name="woo_shipping_labels_package_creation_saved_loading_error">We are unable to load saved packages.</string>
@@ -4591,8 +4593,11 @@
 
     <string name="woo_shipping_split_shipment">Split shipment</string>
     <string name="woo_shipping_split_shipment_instructions"><![CDATA[To split, select the items, and tap <b>move to new shipment</b> when the toolbar appears.]]></string>
+    <string name="woo_shipping_split_shipment_moved_notice_one">Moved %1$d item to Shipment %2$d</string>
+    <string name="woo_shipping_split_shipment_moved_notice_plural">Moved %1$d items to Shipment %2$d</string>
     <string name="woo_shipping_split_move_to_new">Move to new shipment</string>
     <string name="woo_shipping_split_move_to">Move to</string>
     <string name="woo_shipping_split_shipment_shipment_name">Shipment %s</string>
     <string name="woo_shipping_split_shipment_shipment_new">New shipment</string>
+    <string name="woo_shipping_split_shipment_shipment_remove">Remove %s</string>
 </resources>

@@ -3,7 +3,8 @@
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 22.2
 -----
-
+- [*] Fixed rear crash related to currency formatting [https://github.com/woocommerce/woocommerce-android/pull/13899]
+- [*] Fixed crash on "Add custom amount" screen [https://github.com/woocommerce/woocommerce-android/pull/13915]
 
 22.1
 -----

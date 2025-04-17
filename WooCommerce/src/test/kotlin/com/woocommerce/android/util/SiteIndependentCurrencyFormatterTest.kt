@@ -1,5 +1,6 @@
 package com.woocommerce.android.util
 
+import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.util.locale.LocaleProvider
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -12,9 +13,11 @@ import java.util.Locale
 @ExperimentalCoroutinesApi
 class SiteIndependentCurrencyFormatterTest : BaseUnitTest() {
     private val localeProvider: LocaleProvider = mock()
+    private val crashLogging: CrashLogging = mock()
 
     private val currencyFormatter: SiteIndependentCurrencyFormatter = SiteIndependentCurrencyFormatter(
-        localeProvider
+        localeProvider,
+        crashLogging
     )
 
     @Test

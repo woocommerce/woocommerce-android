@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.split
 
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.SplitShipmentArgs
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.StoreOptionsModel
@@ -231,6 +232,90 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
             // Assert that quantity is combined 3f + 3f
             assertThat(item.shippableItem.quantity).isEqualTo(6f)
         }
+
+    @Test
+    fun `when moving a shippable item to new shipment, then show singular snackbar`() = testBlocking {
+        val shipmentArgs = SplitShipmentArgs(
+            orderId = 1L,
+            storeOptions = StoreOptionsModel.EMPTY,
+            shipments = defaultShipment
+        )
+        val updatedCurrentShipmentItems = defaultShipment.getValue(1).subList(fromIndex = 1, toIndex = 3)
+        val updatedShipmentItems = defaultShipment.getValue(1).subList(fromIndex = 0, toIndex = 1)
+
+        val movement = SplitMovement(
+            currentShipment = 0,
+            updatedCurrentShipmentItems = updatedCurrentShipmentItems,
+            updatedShipment = 1,
+            updatedShipmentItems = updatedShipmentItems
+        )
+
+        createViewModel(shipmentArgs)
+
+        sut.onUpdateShipment(movement)
+
+        sut.viewState.observeForTesting { }
+
+        val state = sut.viewState.value!!
+
+        val splitMessage = state.splitMessage
+        assertThat(splitMessage).isInstanceOf(SplitShipmentMessage.Success::class.java)
+        val snackbarData = (splitMessage as SplitShipmentMessage.Success).snackbarData
+        assertThat(snackbarData.message).isEqualTo(R.string.woo_shipping_split_shipment_moved_notice_one)
+        assertThat(snackbarData.messageParameters).isEqualTo(listOf(1, 2))
+    }
+
+    @Test
+    fun `when moving shippable items to new shipment, then show plural snackbar`() = testBlocking {
+        val shipmentArgs = SplitShipmentArgs(
+            orderId = 1L,
+            storeOptions = StoreOptionsModel.EMPTY,
+            shipments = defaultShipment
+        )
+        val updatedCurrentShipmentItems = defaultShipment.getValue(1).subList(fromIndex = 0, toIndex = 1)
+        val updatedShipmentItems = defaultShipment.getValue(1).subList(fromIndex = 1, toIndex = 2)
+
+        val movement = SplitMovement(
+            currentShipment = 0,
+            updatedCurrentShipmentItems = updatedCurrentShipmentItems,
+            updatedShipment = 1,
+            updatedShipmentItems = updatedShipmentItems
+        )
+
+        createViewModel(shipmentArgs)
+
+        sut.onUpdateShipment(movement)
+
+        sut.viewState.observeForTesting { }
+
+        val state = sut.viewState.value!!
+
+        val splitMessage = state.splitMessage
+        assertThat(splitMessage).isInstanceOf(SplitShipmentMessage.Success::class.java)
+        val snackbarData = (splitMessage as SplitShipmentMessage.Success).snackbarData
+        assertThat(snackbarData.message).isEqualTo(R.string.woo_shipping_split_shipment_moved_notice_plural)
+        assertThat(snackbarData.messageParameters).isEqualTo(listOf(5, 2))
+    }
+
+    @Test
+    fun `when initialized, then display the correct item quantity`() = testBlocking {
+        val shipmentArgs = SplitShipmentArgs(
+            orderId = 1L,
+            storeOptions = StoreOptionsModel.EMPTY,
+            shipments = twoShipment
+        )
+
+        val expectedQuantity = 6 // Total single items in the Shipment 1 from `twoShipment`
+
+        createViewModel(shipmentArgs)
+
+        sut.viewState.observeForTesting { }
+
+        val state = sut.viewState.value!!
+
+        val selectableItems = state.selectableItems.getValue(1)
+        assertThat(selectableItems.totalItemQuantity).isEqualTo(expectedQuantity)
+    }
 
     private val defaultShipment = mapOf(
         1 to listOf(

@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.CheckoutClicked
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.ItemClickedInProductSelector
+import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderCreated
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccessfullyPaid.PaymentMethod
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.SearchEvent.ChangedQuery
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.SearchEvent.RecentSearchSelected
@@ -192,9 +193,40 @@ class WooPosHomeViewModel @Inject constructor(
                     is ChildToParentEvent.SearchEvent.RecentSearchSelected -> {
                         sendEventToChildren(RecentSearchSelected(event.query))
                     }
+
+                    is ChildToParentEvent.OrderCreated -> handleOrderCreated(event)
                 }
             }
         }
+    }
+
+    private fun handleOrderCreated(event: ChildToParentEvent.OrderCreated) {
+        sendEventToChildren(
+            OrderCreated(
+                updatedProducts = event.updatedProducts.map {
+                    when (it) {
+                        is ChildToParentEvent.OrderCreated.ProductInfo.Simple -> {
+                            OrderCreated.ProductInfo.Simple(
+                                id = it.id,
+                                name = it.name,
+                                price = it.price,
+                                quantity = it.quantity
+                            )
+                        }
+
+                        is ChildToParentEvent.OrderCreated.ProductInfo.Variation -> {
+                            OrderCreated.ProductInfo.Variation(
+                                id = it.id,
+                                name = it.name,
+                                price = it.price,
+                                quantity = it.quantity,
+                                variationId = it.variationId
+                            )
+                        }
+                    }
+                }
+            )
+        )
     }
 
     private fun handleProductsStatusChanged(event: ChildToParentEvent.ProductsStatusChanged) {

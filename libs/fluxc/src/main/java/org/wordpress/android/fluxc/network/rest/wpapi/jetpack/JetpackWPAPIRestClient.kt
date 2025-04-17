@@ -104,7 +104,7 @@ class JetpackWPAPIRestClient @Inject constructor(
 
         return when (response) {
             is Success<JetpackConnectionDataResponse> -> JetpackWPAPIPayload(
-                    response.data?.toDomainModel()
+                response.data?.toDomainModel()
             )
 
             is Error -> JetpackWPAPIPayload(response.error)
@@ -193,7 +193,7 @@ class JetpackWPAPIRestClient @Inject constructor(
         }
     }
 
-    private suspend inline fun <reified T> makeGetWPAPIRequest(
+    private suspend inline fun <reified T : Any> makeGetWPAPIRequest(
         site: SiteModel,
         path: String,
         useApplicationPasswords: Boolean
@@ -217,7 +217,7 @@ class JetpackWPAPIRestClient @Inject constructor(
         }
     }
 
-    private suspend inline fun <reified T> makePostWPAPIRequest(
+    private suspend inline fun <reified T : Any> makePostWPAPIRequest(
         site: SiteModel,
         path: String,
         body: Map<String, String>,
