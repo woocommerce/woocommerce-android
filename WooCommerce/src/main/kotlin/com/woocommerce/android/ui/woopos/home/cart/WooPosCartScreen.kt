@@ -537,6 +537,8 @@ private fun CouponItem(
                     text = item.summary,
                     style = WooPosTypography.BodySmall,
                     color = WooPosTheme.colors.onSurfaceVariantHighest,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.clearAndSetSemantics { }
                 )
             }
@@ -645,7 +647,10 @@ fun WooPosCartScreenCheckoutPreview(modifier: Modifier = Modifier) {
                         WooPosCartItemViewState.Coupon(
                             itemNumber = 1,
                             name = "Test Coupon",
-                            summary = "50% Off · 1 Product",
+                            summary = "50% Off · 1 Product 50% Off · 1 Product 50% Off · 1 Product " +
+                                "50% Off · 1 Product 50% Off · 1 Product 50% Off · 1 Product 50% Off · 1 Product " +
+                                "50% Off · 1 Product 50% Off · 1 Product 50% Off · 1 Product 50% Off · 1 Product " +
+                                "50% Off · 1 Product 50% Off · 1 Product 50% Off · 1 Product 50% Off · 1 Product",
                             id = 1L
                         ),
                         WooPosCartItemViewState.Product.Simple(
