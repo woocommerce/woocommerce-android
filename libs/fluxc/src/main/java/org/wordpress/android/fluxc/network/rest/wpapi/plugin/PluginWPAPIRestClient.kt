@@ -1,45 +1,52 @@
 package org.wordpress.android.fluxc.network.rest.wpapi.plugin
 
-import com.android.volley.RequestQueue
-import com.google.gson.reflect.TypeToken
-import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.generated.endpoint.WPAPI
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.plugin.SitePluginModel
-import org.wordpress.android.fluxc.network.UserAgent
-import org.wordpress.android.fluxc.network.rest.wpapi.BaseWPAPIRestClient
-import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticator
-import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIGsonRequestBuilder
+import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceWPAPINetwork
+import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetwork
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse.Error
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse.Success
+import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsNetwork
+import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsStore
 import org.wordpress.android.fluxc.store.PluginCoroutineStore.WPApiPluginsPayload
 import javax.inject.Inject
-import javax.inject.Named
 import javax.inject.Singleton
 
 @Singleton
 class PluginWPAPIRestClient @Inject constructor(
-    private val wpApiGsonRequestBuilder: WPAPIGsonRequestBuilder,
-    private val cookieNonceAuthenticator: CookieNonceAuthenticator,
-    dispatcher: Dispatcher,
-    @Named("custom-ssl") requestQueue: RequestQueue,
-    userAgent: UserAgent
-) : BaseWPAPIRestClient(dispatcher, requestQueue, userAgent) {
+    private val cookieNonceWPAPINetwork: CookieNonceWPAPINetwork,
+    private val applicationPasswordsNetwork: ApplicationPasswordsNetwork,
+    private val applicationPasswordsStore: ApplicationPasswordsStore
+) {
+    private fun getNetwork(
+        site: SiteModel
+    ): WPAPINetwork {
+        return when {
+            applicationPasswordsStore.hasCredentials(site)
+                || site.username.isNullOrEmpty() || site.password.isNullOrEmpty() -> applicationPasswordsNetwork
+
+            else -> cookieNonceWPAPINetwork
+        }
+    }
+
     suspend fun fetchPlugins(
         site: SiteModel,
         enableCaching: Boolean = false
     ): WPApiPluginsPayload<List<SitePluginModel>> {
-        val url = buildUrl(site)
-        val type = object : TypeToken<List<PluginResponseModel>>() {}.type
-        val response = cookieNonceAuthenticator.makeAuthenticatedWPAPIRequest(site) { nonce ->
-            wpApiGsonRequestBuilder.syncGetRequest<List<PluginResponseModel>>(
-                restClient = this,
-                url = url,
-                type = type,
-                enableCaching = enableCaching,
-                nonce = nonce.value
-            )
-        }
+        val response = getNetwork(site).executeGetGsonRequest(
+            site = site,
+            path = WPAPI.plugins.urlV2,
+            clazz = Array<PluginResponseModel>::class.java,
+            params = emptyMap(),
+            enableCaching = enableCaching,
+            cacheTimeToLive = 0,
+            forced = false,
+            requestTimeout = 0,
+            retries = 0
+        )
+
         return when (response) {
             is Success -> {
                 val plugins = response.data?.map {
@@ -58,15 +65,11 @@ class PluginWPAPIRestClient @Inject constructor(
         site: SiteModel,
         pluginName: String
     ): WPApiPluginsPayload<SitePluginModel> {
-        val url = buildUrl(site, pluginName)
-        val response = cookieNonceAuthenticator.makeAuthenticatedWPAPIRequest(site) { nonce ->
-            wpApiGsonRequestBuilder.syncGetRequest(
-                restClient = this,
-                url = url,
-                clazz = PluginResponseModel::class.java,
-                nonce = nonce.value
-            )
-        }
+        val response = getNetwork(site).executeGetGsonRequest(
+            site = site,
+            path = WPAPI.plugins.name(pluginName).urlV2,
+            clazz = PluginResponseModel::class.java
+        )
         return handleResponse(response, site)
     }
 
@@ -74,16 +77,12 @@ class PluginWPAPIRestClient @Inject constructor(
         site: SiteModel,
         installedPluginSlug: String
     ): WPApiPluginsPayload<SitePluginModel> {
-        val url = buildUrl(site)
-        val response = cookieNonceAuthenticator.makeAuthenticatedWPAPIRequest(site) { nonce ->
-            wpApiGsonRequestBuilder.syncPostRequest(
-                restClient = this,
-                url = url,
-                body = mapOf("slug" to installedPluginSlug),
-                clazz = PluginResponseModel::class.java,
-                nonce = nonce.value
-            )
-        }
+        val response = getNetwork(site).executePostGsonRequest(
+            site = site,
+            path = WPAPI.plugins.urlV2,
+            clazz = PluginResponseModel::class.java,
+            body = mapOf("slug" to installedPluginSlug)
+        )
         return handleResponse(response, site)
     }
 
@@ -92,16 +91,12 @@ class PluginWPAPIRestClient @Inject constructor(
         updatedPlugin: String,
         active: Boolean
     ): WPApiPluginsPayload<SitePluginModel> {
-        val url = buildUrl(site, updatedPlugin)
-        val response = cookieNonceAuthenticator.makeAuthenticatedWPAPIRequest(site) { nonce ->
-            wpApiGsonRequestBuilder.syncPutRequest(
-                restClient = this,
-                url = url,
-                body = mapOf("status" to if (active) "active" else "inactive"),
-                clazz = PluginResponseModel::class.java,
-                nonce = nonce.value
-            )
-        }
+        val response = getNetwork(site).executePutGsonRequest(
+            site = site,
+            path = WPAPI.plugins.name(updatedPlugin).urlV2,
+            clazz = PluginResponseModel::class.java,
+            body = mapOf("status" to if (active) "active" else "inactive")
+        )
         return handleResponse(response, site)
     }
 
@@ -109,15 +104,11 @@ class PluginWPAPIRestClient @Inject constructor(
         site: SiteModel,
         deletedPlugin: String
     ): WPApiPluginsPayload<SitePluginModel> {
-        val url = buildUrl(site, deletedPlugin)
-        val response = cookieNonceAuthenticator.makeAuthenticatedWPAPIRequest(site) { nonce ->
-            wpApiGsonRequestBuilder.syncDeleteRequest(
-                restClient = this,
-                url = url,
-                clazz = PluginResponseModel::class.java,
-                nonce = nonce.value
-            )
-        }
+        val response = getNetwork(site).executeDeleteGsonRequest(
+            site = site,
+            path = WPAPI.plugins.name(deletedPlugin).urlV2,
+            clazz = PluginResponseModel::class.java
+        )
         return handleResponse(response, site)
     }
 
@@ -133,32 +124,5 @@ class PluginWPAPIRestClient @Inject constructor(
         is Error -> {
             WPApiPluginsPayload(response.error)
         }
-    }
-
-    /**
-     * - POST /wp/v2/plugins { slug: "akismet" } installs the plugin with the slug akismet from the WordPress.org plugin
-     * directory. The endpoint does not support uploading a plugin zip.
-     *
-     * - PUT /wp/v2/plugins/akismet/akismet { status: "active" } activates the selected plugin. The status can be set to
-     * network-active to network activate the plugin on Multisite. To deactivate the plugin set the status to inactive.
-     * There is not a separate network-inactive status, inactive will perform a network deactivation if the plugin was
-     * network activated.
-     *
-     * - DELETE /wp/v2/plugins/akismet/akismet uninstalls the selected plugin. The plugin must be inactive before
-     * deleting it.
-     */
-    private fun buildUrl(site: SiteModel, path: String? = null): String {
-        return buildString {
-            append(site.url)
-            append(WP_API_URL)
-            if (path != null) {
-                append("/")
-                append(path)
-            }
-        }
-    }
-
-    companion object {
-        private const val WP_API_URL = "/wp-json/wp/v2/plugins"
     }
 }

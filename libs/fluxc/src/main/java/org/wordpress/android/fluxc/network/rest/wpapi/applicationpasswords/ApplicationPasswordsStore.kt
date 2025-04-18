@@ -30,10 +30,7 @@ class ApplicationPasswordsStore @Inject constructor(
         initEncryptedPrefs()
     }
 
-    fun hasCredentials(site: SiteModel): Boolean {
-        return encryptedPreferences.contains(site.usernamePrefKey) &&
-            encryptedPreferences.contains(site.passwordPrefKey)
-    }
+    fun hasCredentials(site: SiteModel): Boolean = getCredentials(site) != null
 
     @Synchronized
     internal fun getCredentials(site: SiteModel): ApplicationPasswordCredentials? {
