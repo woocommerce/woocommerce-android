@@ -44,6 +44,7 @@ class WooPosItemsViewModel @Inject constructor(
     private val isCouponsEnabled: WooPosIsCouponsEnabled,
 ) : ViewModel() {
     private var loadMoreProductsJob: Job? = null
+    private var loadProductsJob: Job? = null
 
     private val _viewState =
         MutableStateFlow<WooPosItemsViewState>(WooPosItemsViewState.Loading(withCart = true))
@@ -194,7 +195,9 @@ class WooPosItemsViewModel @Inject constructor(
         withPullToRefresh: Boolean,
         withCart: Boolean
     ) {
-        viewModelScope.launch {
+        loadProductsJob?.cancel()
+        loadMoreProductsJob?.cancel()
+        loadProductsJob = viewModelScope.launch {
             _viewState.value = if (withPullToRefresh) {
                 buildProductsReloadingState()
             } else {
@@ -291,15 +294,13 @@ class WooPosItemsViewModel @Inject constructor(
         }
     }
 
+    @Suppress("ReturnCount")
     private fun onEndOfProductsListReached() {
         val currentState = _viewState.value
-        if (currentState !is WooPosItemsViewState.Content) {
-            return
-        }
 
-        if (!productsDataSource.hasMorePages) {
-            return
-        }
+        if (currentState !is WooPosItemsViewState.Content) return
+        if (loadMoreProductsJob?.isActive == true || loadProductsJob?.isActive == true) return
+        if (!productsDataSource.hasMorePages) return
 
         _viewState.value = currentState.copy(paginationState = WooPosPaginationState.Loading)
 
