@@ -5,6 +5,7 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
+import com.woocommerce.android.ui.woopos.common.data.WooPosProductsTypesFilterConfig
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -24,6 +25,7 @@ class WooPosSearchProductsDataSource @Inject constructor(
     private val productsCache: WooPosProductsCache,
     private val searchResultsIndex: WooPosSearchResultsIndex,
     private val searchPredicate: ProductSearchPredicate,
+    private val productsTypesFilterConfig: WooPosProductsTypesFilterConfig
 ) {
     companion object {
         private const val PAGE_SIZE = 15
@@ -41,7 +43,7 @@ class WooPosSearchProductsDataSource @Inject constructor(
             val localSearchDeferred = async {
                 sortProducts(productsCache.getAll().filter(searchPredicate(query))).take(PAGE_SIZE)
             }
-            val remoteSearchDeferred = async { remoteSearch(query) }
+            val remoteSearchDeferred = async { performRemoteSearch(query) }
 
             emit(ProductsResult.Cached(localSearchDeferred.await()))
 
@@ -69,7 +71,7 @@ class WooPosSearchProductsDataSource @Inject constructor(
         val currentResults = searchResultsIndex.getSearchResults(query)
         val offset = currentResults.size
 
-        return remoteSearch(query, offset).fold(
+        return performRemoteSearch(query, offset).fold(
             onSuccess = { result ->
                 Result.success(result.products)
             },
@@ -79,7 +81,7 @@ class WooPosSearchProductsDataSource @Inject constructor(
         )
     }
 
-    private suspend fun remoteSearch(
+    private suspend fun performRemoteSearch(
         searchQuery: String,
         offset: Int = 0
     ): Result<SearchResult> {
@@ -88,6 +90,8 @@ class WooPosSearchProductsDataSource @Inject constructor(
             searchString = searchQuery,
             offset = offset,
             pageSize = PAGE_SIZE,
+            filterOptions = productsTypesFilterConfig.filters,
+            includeTypes = productsTypesFilterConfig.includeTypes,
         ).let { result ->
             if (result.isError) {
                 WooLog.w(

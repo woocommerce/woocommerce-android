@@ -4,6 +4,7 @@ import app.cash.turbine.test
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
+import com.woocommerce.android.ui.woopos.common.data.WooPosProductsTypesFilterConfig
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -44,6 +45,7 @@ class WooPosSearchProductsDataSourceTest {
     private val product2 = ProductTestUtils.generateProduct(productId = 2)
     private val product3 = ProductTestUtils.generateProduct(productId = 3)
     private val products = listOf(product1, product2, product3)
+    private val productsTypesFilterConfig = WooPosProductsTypesFilterConfig()
 
     @Before
     fun setup() {
@@ -55,7 +57,8 @@ class WooPosSearchProductsDataSourceTest {
             selectedSite = selectedSite,
             productsCache = wooPosProductsCache,
             searchResultsIndex = searchResultsIndex,
-            searchPredicate = searchPredicate
+            searchPredicate = searchPredicate,
+            productsTypesFilterConfig = productsTypesFilterConfig,
         )
     }
 
@@ -67,7 +70,16 @@ class WooPosSearchProductsDataSourceTest {
         whenever(searchResultsIndex.getSearchResults(query)).thenReturn(emptyList())
         whenever(wooPosProductsCache.getAll()).thenReturn(products)
         whenever(
-            productStore.searchProducts(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull())
+            productStore.searchProducts(
+                anyOrNull(),
+                anyOrNull(),
+                anyOrNull(),
+                anyOrNull(),
+                anyOrNull(),
+                anyOrNull(),
+                anyOrNull(),
+                anyOrNull(),
+            )
         ).thenReturn(WooResult(ProductSearchResult(emptyList(), false)))
 
         // WHEN
@@ -99,7 +111,9 @@ class WooPosSearchProductsDataSourceTest {
                     anyOrNull(),
                     anyOrNull(),
                     anyOrNull(),
-                    anyOrNull()
+                    anyOrNull(),
+                    anyOrNull(),
+                    anyOrNull(),
                 )
             ).thenReturn(WooResult(ProductSearchResult(emptyList(), false)))
 
@@ -127,7 +141,9 @@ class WooPosSearchProductsDataSourceTest {
                     anyOrNull(),
                     anyOrNull(),
                     anyOrNull(),
-                    anyOrNull()
+                    anyOrNull(),
+                    anyOrNull(),
+                    anyOrNull(),
                 )
             ).thenReturn(WooResult(ProductSearchResult(emptyList(), true)))
 
@@ -162,7 +178,16 @@ class WooPosSearchProductsDataSourceTest {
         )
         whenever(wooPosProductsCache.getAll()).thenReturn(products)
         whenever(
-            productStore.searchProducts(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull())
+            productStore.searchProducts(
+                anyOrNull(),
+                anyOrNull(),
+                anyOrNull(),
+                anyOrNull(),
+                anyOrNull(),
+                anyOrNull(),
+                anyOrNull(),
+                anyOrNull(),
+            )
         ).thenReturn(WooResult(error))
 
         // WHEN
@@ -205,7 +230,9 @@ class WooPosSearchProductsDataSourceTest {
                 anyOrNull(),
                 anyOrNull(),
                 anyOrNull(),
-                anyOrNull()
+                anyOrNull(),
+                anyOrNull(),
+                anyOrNull(),
             )
         }
 }
