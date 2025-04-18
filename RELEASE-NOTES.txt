@@ -3,7 +3,7 @@
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 22.3
 -----
-
+- [Internal] Fixed a bug where site changes weren't reflected in the app until the next restart [https://github.com/woocommerce/woocommerce-android/pull/13949]
 
 22.2
 -----
