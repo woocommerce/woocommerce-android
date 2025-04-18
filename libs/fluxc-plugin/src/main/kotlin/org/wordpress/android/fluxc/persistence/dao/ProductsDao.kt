@@ -39,13 +39,6 @@ abstract class ProductsDao {
             AND (:category IS NULL OR categories LIKE '%' || :category || '%')
             AND (:excludeSampleProducts IS NULL OR isSampleProduct = :excludeSampleProducts)
             AND (:excludedProductIds IS NULL OR remoteId NOT IN (:excludedProductIds))
-            ORDER BY
-                CASE
-                    WHEN :sortOrder = 'ASC' THEN :sortField
-                END ASC,
-                CASE
-                    WHEN :sortOrder = 'DESC' THEN :sortField
-                END DESC
             LIMIT CASE WHEN :limit IS NULL THEN -1 ELSE :limit END
         """
     )
@@ -56,8 +49,6 @@ abstract class ProductsDao {
         type: String?,
         category: String?,
         excludeSampleProducts: Boolean,
-        sortField: String,
-        sortOrder: String,
         limit: Int?,
         excludedProductIds: List<Long>? = null
     ): Flow<List<WCProductModel>>

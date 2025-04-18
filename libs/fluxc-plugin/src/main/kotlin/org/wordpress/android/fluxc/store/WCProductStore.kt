@@ -5,6 +5,7 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -51,6 +52,7 @@ import org.wordpress.android.fluxc.persistence.ProductSqlUtils.getCompositeProdu
 import org.wordpress.android.fluxc.persistence.ProductSqlUtils.getProductExistsBySku
 import org.wordpress.android.fluxc.persistence.ProductSqlUtils.getProducts
 import org.wordpress.android.fluxc.persistence.ProductSqlUtils.observeBundledProducts
+import org.wordpress.android.fluxc.persistence.ProductSqlUtils.sort
 import org.wordpress.android.fluxc.persistence.ProductStorageHelper
 import org.wordpress.android.fluxc.persistence.dao.AddonsDao
 import org.wordpress.android.fluxc.persistence.dao.ProductsDao
@@ -1051,10 +1053,8 @@ class WCProductStore @Inject constructor(
             type = filterOptions[ProductFilterOption.TYPE],
             category = filterOptions[ProductFilterOption.CATEGORY]?.let { categoryFilter(it) },
             excludeSampleProducts = excludeSampleProducts,
-            sortField = ProductSqlUtils.getSortField(sortType),
-            sortOrder = ProductSqlUtils.getSortOrder(sortType),
             limit = limit,
-        )
+        ).map { it.sort(sortType) }
     }
 
     fun observeProductsCount(
