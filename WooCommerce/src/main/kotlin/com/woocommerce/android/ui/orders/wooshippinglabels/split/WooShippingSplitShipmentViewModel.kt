@@ -87,25 +87,29 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
         shipmentSelected.update { shipmentKey }
     }
 
-    fun onRemoveShipmentMenuTapped(shipmentKey: Int) {
-        val shipmentsMap = shipmentsUIMap.value?.toMutableMap() ?: return
+    fun onRemoveShipmentMenuTapped(shipmentKeys: List<Int>) {
+        val shipmentsMap = shipmentsUIMap.value ?: return
         removeShipmentSheet.value = RemoveShipmentSheet(
-            removingShipmentKey = shipmentKey,
-            removingShipment = shipmentsMap.getValue(shipmentKey),
-            otherShipments = shipmentsMap.minus(shipmentKey),
+            removingShipments = shipmentsMap.filter { it.key in shipmentKeys },
+            otherShipments = shipmentsMap.filter { it.key !in shipmentKeys },
         )
     }
 
-    fun onRemoveShipment(removingShipmentKey: Int, destinationShipmentKey: Int) {
-        val movingShipmentItems = currentShipments.value[removingShipmentKey] ?: return
-        onUpdateShipment(
-            SplitMovement(
-                sourceShipmentKey = removingShipmentKey,
-                updatedSourceShipmentItems = emptyList(),
-                destinationShipmentKey = destinationShipmentKey,
-                movingShipmentItems = movingShipmentItems
+    fun onRemoveShipments(removingShipmentKeys: List<Int>, destinationShipmentKey: Int?) {
+        if (destinationShipmentKey != null && removingShipmentKeys.size == 1) {
+            val removingShipmentKey = removingShipmentKeys.first()
+            val movingShipmentItems = currentShipments.value[removingShipmentKey] ?: return
+            onUpdateShipment(
+                SplitMovement(
+                    sourceShipmentKey = removingShipmentKey,
+                    updatedSourceShipmentItems = emptyList(),
+                    destinationShipmentKey = destinationShipmentKey,
+                    movingShipmentItems = movingShipmentItems
+                )
             )
-        )
+        } else {
+            // Merging all unfulfilled shipments
+        }
         removeShipmentSheet.value = null
     }
 
@@ -245,9 +249,8 @@ sealed class SplitShipmentMessage {
 }
 
 data class RemoveShipmentSheet(
-    val removingShipmentKey: Int,
-    val removingShipment: SelectableShippableItemsUI,
-    val otherShipments: Map<Int, SelectableShippableItemsUI>
+    val removingShipments: Map<Int, SelectableShippableItemsUI>,
+    val otherShipments: Map<Int, SelectableShippableItemsUI> = emptyMap()
 )
 
 private fun List<ShippableItemModel>.combine(other: List<ShippableItemModel>) = (this + other)

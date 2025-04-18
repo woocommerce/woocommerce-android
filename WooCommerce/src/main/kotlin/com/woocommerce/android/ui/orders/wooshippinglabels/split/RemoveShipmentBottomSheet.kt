@@ -25,7 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -41,8 +41,10 @@ import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCModalBottomSheet
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
+import com.woocommerce.android.ui.compose.component.WCRemoveButton
 import com.woocommerce.android.util.StringUtils
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -50,18 +52,23 @@ import com.woocommerce.android.util.StringUtils
 fun RemoveShipmentBottomSheet(
     removeShipmentSheet: RemoveShipmentSheet,
     onDismissRemoveSheet: () -> Unit,
-    onRemoveShipment: (Int, Int) -> Unit
+    onRemoveShipments: (List<Int>, Int?) -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var selectedShipmentKeyState by rememberSaveable {
-        mutableIntStateOf(removeShipmentSheet.otherShipments.keys.first())
+        mutableStateOf<Int?>(removeShipmentSheet.otherShipments.keys.firstOrNull())
     }
 
+    val removingSingleShipment = removeShipmentSheet.removingShipments.size == 1
     val multipleOtherShipments = removeShipmentSheet.otherShipments.size > 1
-    fun getDescription(context: Context) = if (multipleOtherShipments) {
+
+    fun getDescription(context: Context) = if (!removingSingleShipment) {
+        // Merging all shipments
+        context.getString(R.string.woo_shipping_split_shipment_merge_unfulfilled_desc)
+    } else if (multipleOtherShipments) {
         StringUtils.getQuantityString(
             context = context,
-            quantity = removeShipmentSheet.removingShipment.totalItemQuantity,
+            quantity = removeShipmentSheet.removingShipments.values.first().totalItemQuantity,
             default = R.string.woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_plural,
             one = R.string.woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_one,
         )
@@ -75,12 +82,14 @@ fun RemoveShipmentBottomSheet(
         )
     }
 
-    fun getRemoveButtonText(resources: Resources) = if (multipleOtherShipments) {
+    fun getRemoveButtonText(resources: Resources) = if (!removingSingleShipment) {
+        resources.getString(R.string.woo_shipping_split_shipment_merge_unfulfilled_button)
+    } else if (multipleOtherShipments) {
         resources.getString(
             R.string.woo_shipping_split_shipment_shipment_remove,
             resources.getString(
                 R.string.woo_shipping_split_shipment_shipment_name,
-                (removeShipmentSheet.removingShipmentKey + 1).toString()
+                (removeShipmentSheet.removingShipments.keys.first() + 1).toString()
             )
         )
     } else {
@@ -94,7 +103,13 @@ fun RemoveShipmentBottomSheet(
                 .verticalScroll(rememberScrollState())
         ) {
             Text(
-                text = stringResource(R.string.woo_shipping_split_shipment_bottom_sheet_title),
+                text = stringResource(
+                    if (removingSingleShipment) {
+                        R.string.woo_shipping_split_shipment_bottom_sheet_title
+                    } else {
+                        R.string.woo_shipping_split_shipment_merge_unfulfilled_title
+                    }
+                ),
                 style = MaterialTheme.typography.h6,
                 color = MaterialTheme.colors.onSurface
             )
@@ -117,16 +132,25 @@ fun RemoveShipmentBottomSheet(
                 }
                 Spacer(modifier = Modifier.height(16.dp))
             }
-            WCOutlinedButton(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp),
-                border = BorderStroke(1.dp, MaterialTheme.colors.error),
-                onClick = { onRemoveShipment(removeShipmentSheet.removingShipmentKey, selectedShipmentKeyState) }
-            ) {
-                Text(
+            if (removingSingleShipment) {
+                WCRemoveButton(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp),
                     text = getRemoveButtonText(LocalContext.current.resources),
-                    color = MaterialTheme.colors.error
+                    onClick = {
+                        onRemoveShipments(removeShipmentSheet.removingShipments.keys.toList(), selectedShipmentKeyState)
+                    }
+                )
+            } else {
+                WCColoredButton(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp),
+                    text = getRemoveButtonText(LocalContext.current.resources),
+                    onClick = {
+                        onRemoveShipments(removeShipmentSheet.removingShipments.keys.toList(), selectedShipmentKeyState)
+                    }
                 )
             }
             WCOutlinedButton(
