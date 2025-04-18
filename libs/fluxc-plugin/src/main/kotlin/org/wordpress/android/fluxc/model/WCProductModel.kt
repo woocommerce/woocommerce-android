@@ -27,7 +27,7 @@ import org.wordpress.android.util.AppLog.T
  * Note that products have more properties than we support below
  */
 @Entity(
-    tableName = "WCProductModel",
+    tableName = "ProductEntity",
     indices = [Index(
         value = ["localSiteId", "remoteId"],
     )],

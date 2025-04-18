@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 39,
-    "identityHash": "db84f2e5e349cea910bee108287b65dc",
+    "identityHash": "71b1246c73504aeb41cec6c45b0206e8",
     "entities": [
       {
         "tableName": "AddonEntity",
@@ -1790,7 +1790,7 @@
         "foreignKeys": []
       },
       {
-        "tableName": "WCProductModel",
+        "tableName": "ProductEntity",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`localSiteId` INTEGER NOT NULL, `remoteId` INTEGER NOT NULL, `name` TEXT NOT NULL, `slug` TEXT NOT NULL, `permalink` TEXT NOT NULL, `dateCreated` TEXT NOT NULL, `dateModified` TEXT NOT NULL, `type` TEXT NOT NULL, `status` TEXT NOT NULL, `featured` INTEGER NOT NULL, `catalogVisibility` TEXT NOT NULL, `description` TEXT NOT NULL, `shortDescription` TEXT NOT NULL, `sku` TEXT NOT NULL, `globalUniqueId` TEXT NOT NULL, `price` TEXT NOT NULL, `regularPrice` TEXT NOT NULL, `salePrice` TEXT NOT NULL, `onSale` INTEGER NOT NULL, `totalSales` INTEGER NOT NULL, `purchasable` INTEGER NOT NULL, `dateOnSaleFrom` TEXT NOT NULL, `dateOnSaleTo` TEXT NOT NULL, `dateOnSaleFromGmt` TEXT NOT NULL, `dateOnSaleToGmt` TEXT NOT NULL, `virtual` INTEGER NOT NULL, `downloadable` INTEGER NOT NULL, `downloadLimit` INTEGER NOT NULL, `downloadExpiry` INTEGER NOT NULL, `soldIndividually` INTEGER NOT NULL, `externalUrl` TEXT NOT NULL, `buttonText` TEXT NOT NULL, `taxStatus` TEXT NOT NULL, `taxClass` TEXT NOT NULL, `manageStock` INTEGER NOT NULL, `stockQuantity` REAL NOT NULL, `stockStatus` TEXT NOT NULL, `backorders` TEXT NOT NULL, `backordersAllowed` INTEGER NOT NULL, `backordered` INTEGER NOT NULL, `shippingRequired` INTEGER NOT NULL, `shippingTaxable` INTEGER NOT NULL, `shippingClass` TEXT NOT NULL, `shippingClassId` INTEGER NOT NULL, `reviewsAllowed` INTEGER NOT NULL, `averageRating` TEXT NOT NULL, `ratingCount` INTEGER NOT NULL, `parentId` INTEGER NOT NULL, `purchaseNote` TEXT NOT NULL, `menuOrder` INTEGER NOT NULL, `categories` TEXT NOT NULL, `tags` TEXT NOT NULL, `images` TEXT NOT NULL, `attributes` TEXT NOT NULL, `variations` TEXT NOT NULL, `downloads` TEXT NOT NULL, `relatedIds` TEXT NOT NULL, `crossSellIds` TEXT NOT NULL, `upsellIds` TEXT NOT NULL, `groupedProductIds` TEXT NOT NULL, `weight` TEXT NOT NULL, `length` TEXT NOT NULL, `width` TEXT NOT NULL, `height` TEXT NOT NULL, `bundledItems` TEXT NOT NULL, `compositeComponents` TEXT NOT NULL, `specialStockStatus` TEXT NOT NULL, `bundleMinSize` REAL, `bundleMaxSize` REAL, `minAllowedQuantity` INTEGER NOT NULL, `maxAllowedQuantity` INTEGER NOT NULL, `groupOfQuantity` INTEGER NOT NULL, `combineVariationQuantities` INTEGER NOT NULL, `password` TEXT, `isSampleProduct` INTEGER NOT NULL, PRIMARY KEY(`localSiteId`, `remoteId`))",
         "fields": [
           {
@@ -2253,14 +2253,14 @@
         },
         "indices": [
           {
-            "name": "index_WCProductModel_localSiteId_remoteId",
+            "name": "index_ProductEntity_localSiteId_remoteId",
             "unique": false,
             "columnNames": [
               "localSiteId",
               "remoteId"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_WCProductModel_localSiteId_remoteId` ON `${TABLE_NAME}` (`localSiteId`, `remoteId`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_ProductEntity_localSiteId_remoteId` ON `${TABLE_NAME}` (`localSiteId`, `remoteId`)"
           }
         ],
         "foreignKeys": []
@@ -2269,7 +2269,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'db84f2e5e349cea910bee108287b65dc')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '71b1246c73504aeb41cec6c45b0206e8')"
     ]
   }
 }

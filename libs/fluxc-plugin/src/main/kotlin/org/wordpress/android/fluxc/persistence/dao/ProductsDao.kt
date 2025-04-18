@@ -11,7 +11,7 @@ internal abstract class ProductsDao {
 
     @Query(
         """
-            SELECT * FROM WCProductModel
+            SELECT * FROM ProductEntity
             WHERE localSiteId = :localSiteId
             AND (:status IS NULL OR status = :status)
             AND (:stockStatus IS NULL OR stockStatus = :stockStatus)
@@ -36,7 +36,7 @@ internal abstract class ProductsDao {
 
     @Query(
         """
-            SELECT * FROM WCProductModel
+            SELECT * FROM ProductEntity
             WHERE localSiteId = :localSiteId
             AND remoteId = :remoteProductId
         """
@@ -48,7 +48,7 @@ internal abstract class ProductsDao {
 
     @Query(
         """
-            SELECT * FROM WCProductModel
+            SELECT * FROM ProductEntity
             WHERE localSiteId = :localSiteId
             AND remoteId = :remoteProductId
             LIMIT 1
@@ -61,7 +61,7 @@ internal abstract class ProductsDao {
 
     @Query(
         """
-            SELECT * FROM WCProductModel
+            SELECT * FROM ProductEntity
             WHERE localSiteId = :localSiteId
             AND sku = :sku
             LIMIT 1
@@ -74,7 +74,7 @@ internal abstract class ProductsDao {
 
     @Query(
         """
-            SELECT * FROM WCProductModel
+            SELECT * FROM ProductEntity
             WHERE localSiteId = :localSiteId
             AND remoteId IN (:remoteProductIds)
             AND (:virtual IS NULL OR virtual = :virtual)
@@ -94,7 +94,7 @@ internal abstract class ProductsDao {
 
     @Query(
         """
-            DELETE FROM WCProductModel
+            DELETE FROM ProductEntity
             WHERE localSiteId = :localSiteId
     """
     )
@@ -102,7 +102,7 @@ internal abstract class ProductsDao {
 
     @Query(
         """
-            DELETE FROM WCProductModel
+            DELETE FROM ProductEntity
             WHERE localSiteId = :localSiteId
             AND remoteId = :remoteProductId
     """
