@@ -65,6 +65,7 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
         SplitShipmentViewState(
             shipmentSelected = shipmentSelected,
             selectableItems = selectableItems,
+            overflowMenuItems = getOverflowMenuItems(selectableItems.keys.toList()),
             splitMovements = getSplitMovements(
                 sourceShipmentKey = shipmentSelected,
                 shipments = currentShipments.value,
@@ -74,6 +75,19 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
             splitMessage = message
         )
     }.asLiveData()
+
+    private fun getOverflowMenuItems(shipmentKeys: List<Int>) = buildList {
+        if (shipmentKeys.size >= 2) {
+            // Remove shipment 1, Remove shipment 2...
+            shipmentKeys.forEach { key -> add(listOf(key)) }
+            if (shipmentKeys.size > 2) {
+                // Adding "Merge all unfulfilled shipments" option if there are at least 3 shipments.
+                // For example, this will return {{1}, {2}, {3}, {1, 2, 3}}
+                add(shipmentKeys)
+            }
+        }
+        // Empty list if there is only one shipment
+    }
 
     fun onNavigateBack() {
         triggerEvent(MultiLiveEvent.Event.Exit)
@@ -194,7 +208,10 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
         splitMessage.value = SplitShipmentMessage.Success(
             ShippingLabelsSnackbarData(
                 message = snackbarMessage,
-                messageParameters = listOf(splitMovement.totalItemsToMove, splitMovement.destinationShipmentKey + 1),
+                messageParameters = listOf(
+                    splitMovement.totalItemsToMove,
+                    splitMovement.destinationShipmentKey + 1
+                ),
                 actionLabel = R.string.undo,
                 dismissAction = { splitMessage.value = null },
                 action = undoAction
@@ -205,6 +222,7 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
     data class SplitShipmentViewState(
         val shipmentSelected: Int,
         val selectableItems: Map<Int, SelectableShippableItemsUI>,
+        val overflowMenuItems: List<List<Int>> = emptyList(), // Each item represents shipments to be removed.
         val splitMovements: List<SplitMovement> = emptyList(),
         val removeShipmentSheet: RemoveShipmentSheet? = null,
         val splitMessage: SplitShipmentMessage? = null
@@ -255,4 +273,6 @@ data class RemoveShipmentSheet(
 
 private fun List<ShippableItemModel>.combine(other: List<ShippableItemModel>) = (this + other)
     .groupBy { it.itemId }
-    .map { (_, itemsWithSameId) -> itemsWithSameId.first().copy(quantity = itemsWithSameId.sumByFloat { it.quantity }) }
+    .map { (_, itemsWithSameId) ->
+        itemsWithSameId.first().copy(quantity = itemsWithSameId.sumByFloat { it.quantity })
+    }

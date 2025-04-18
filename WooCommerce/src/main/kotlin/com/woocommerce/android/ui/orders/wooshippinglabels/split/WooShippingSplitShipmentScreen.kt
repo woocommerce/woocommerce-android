@@ -285,9 +285,7 @@ private fun MultipleShipments(
                 }
             }
             WCOverflowMenu(
-                items = shipments
-                    .mapIndexed { index, _ -> listOf(index) } // Remove shipment 1, Remove shipment 2...
-                    .plus(listOf(shipments)), // Merge all unfulfilled shipments
+                items = viewState.overflowMenuItems,
                 mapper = { shipmentIndexList ->
                     if (shipmentIndexList.size == 1) {
                         // Example: "Remove shipment 1"
