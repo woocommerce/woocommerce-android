@@ -1,7 +1,5 @@
 package org.wordpress.android.fluxc.persistence
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.metadata.MetaDataParentItemType
 import org.wordpress.android.fluxc.model.ProductWithMetaData
 import org.wordpress.android.fluxc.model.SiteModel
@@ -11,8 +9,7 @@ import org.wordpress.android.fluxc.persistence.dao.ProductsDao
 import org.wordpress.android.fluxc.persistence.entity.MetaDataEntity
 import javax.inject.Inject
 
-class ProductStorageHelper @Inject constructor(
-    private val productSqlUtils: ProductSqlUtils,
+class ProductStorageHelper @Inject internal constructor(
     private val productsDao: ProductsDao,
     private val metaDataDao: MetaDataDao
 ) {
@@ -26,7 +23,7 @@ class ProductStorageHelper @Inject constructor(
         return metaDataDao.getMetaData(site.localId(), remoteProductId).map { it.toDomainModel() }
     }
 
-    suspend fun upsertProduct(productWithMetaData: ProductWithMetaData): Int {
+    suspend fun upsertProduct(productWithMetaData: ProductWithMetaData) {
         val (product, metadata) = productWithMetaData
         productsDao.upsertProduct(product)
 
@@ -42,10 +39,9 @@ class ProductStorageHelper @Inject constructor(
                 )
             }
         )
-        return 0 //TODO: check the consequences: Room doesn't offer "rowsAffected" value for @Upsert
     }
 
-    suspend fun upsertProducts(productsWithMetaData: List<ProductWithMetaData>): Int {
+    suspend fun upsertProducts(productsWithMetaData: List<ProductWithMetaData>) {
         val products = productsWithMetaData.map { it.product }
 
         productsDao.upsertProducts(products)
@@ -65,15 +61,11 @@ class ProductStorageHelper @Inject constructor(
                 }
             )
         }
-        return 0 //TODO: check the consequences: Room doesn't offer "rowsAffected" value for @Upsert
     }
 
-    suspend fun deleteProduct(site: SiteModel, remoteProductId: Long): Int {
-        val rowsAffected = withContext(Dispatchers.IO) {
-            productsDao.deleteProduct(site.id, remoteProductId)
-        }
+    suspend fun deleteProduct(site: SiteModel, remoteProductId: Long) {
+        productsDao.deleteProduct(site.id, remoteProductId)
         metaDataDao.deleteMetaData(site.localId(), remoteProductId)
-        return rowsAffected
     }
 
     suspend fun deleteProductsForSite(site: SiteModel) {

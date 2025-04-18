@@ -64,7 +64,7 @@ interface WCDatabaseModule {
         /**
          * ProductSqlUtils is a Kotlin object, we can't use [Inject] to inject it.
          */
-        @Provides fun provideProductSqlUtils() = ProductSqlUtils
+        @Provides internal fun provideProductSqlUtils() = ProductSqlUtils
 
         @Provides fun provideVisitorSummaryStatsDao(database: WCAndroidDatabase) = database.visitorSummaryStatsDao
 

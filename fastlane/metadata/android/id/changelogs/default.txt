@@ -1,0 +1,2 @@
+22.1:
+Pembaruan ini berisi sejumlah perbaikan pada aplikasi WooCommerce, termasuk penghapusan alur "Terima Pembayaran" untuk diganti dengan proses pembuatan pesanan khusus. Kami telah menyempurnakan tampilan produk nonaktif dalam pesanan yang telah diselesaikan, memperbaiki gangguan pada dialog POS dan dialog jumlah khusus, serta meningkatkan visibilitas lencana jumlah pesanan. Dialog upgrade Woo telah didesain ulang, dan kode mata uang kini ditampilkan di layar Jumlah Khusus.

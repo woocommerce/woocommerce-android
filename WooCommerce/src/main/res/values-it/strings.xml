@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-03-27 12:54:13+0000
+Translation-Revision-Date: 2025-04-11 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_split_shipment_shipment_new">Nuova spedizione</string>
+    <string name="woo_shipping_split_shipment_shipment_name">Spedizione %s</string>
+    <string name="woo_shipping_split_move_to">Sposta in</string>
+    <string name="woo_shipping_split_move_to_new">Sposta nella nuova spedizione</string>
+    <string name="woo_shipping_split_shipment_instructions">Per dividere una spedizione, seleziona gli articoli e tocca &lt;b&gt;Sposta nella nuova spedizione&lt;/b&gt; quando viene mostrata la barra degli strumenti.</string>
+    <string name="woo_shipping_labels_hazmat_selection_removed">Categoria di materiali pericolosi rimossa</string>
+    <string name="woo_shipping_labels_hazmat_selection_set">Categoria di materiali pericolosi impostata</string>
+    <string name="woo_shipping_labels_hazmat_search_hint">Cerca una categoria</string>
+    <string name="woo_shipping_labels_hazmat_info_select_category">Seleziona una categoria</string>
+    <string name="woo_shipping_labels_hazmat_info_tooltip_2">WooCommerce Shipping attualmente non supporta le spedizioni HAZMAT tramite &lt;a href=\'dhl-hazmat\'&gt;&lt;u&gt;DHL Express&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="woo_shipping_labels_hazmat_info_full_description">I materiali potenzialmente pericolosi includono articoli come batterie, ghiaccio secco, liquidi infiammabili, aerosol, munizioni, fuochi d\'artificio, smalto per unghie, profumi, vernici, solventi e altro ancora. I materiali pericolosi devono essere spediti in pacchi separati.</string>
+    <string name="woo_shipping_labels_hazmat_info_contains_hazmat">Contiene materiali pericolosi</string>
+    <string name="woo_shipping_labels_hazmat_info_title">Stai spedendo merci o materiali pericolosi?</string>
+    <string name="woopos_search_items_error_description">Vuoi fare un altro tentativo?</string>
+    <string name="woopos_search_items_error_title">Impossibile caricare i tuoi articoli</string>
+    <string name="woopos_search_empty_image_content_description">Nessun articolo trovato</string>
+    <string name="woopos_search_empty_description">Non abbiamo trovato nulla che corrisponda alla tua ricerca.</string>
+    <string name="woopos_search_items_empty_title">Nessun risultato</string>
+    <string name="woopos_payment_discount_label">Sconto</string>
+    <string name="woopos_cart_item_coupon_content_description">Codice promozionale nel carrello %s</string>
+    <string name="shipping_label_package_title">Seleziona un pacco</string>
+    <string name="receipt_preview_toolbar_title">Anteprima ricevuta</string>
     <string name="woo_shipping_split_shipment">Spedizione divisa</string>
     <string name="woo_shipping_labels_purchase_error">Impossibile acquistare l\'etichetta di spedizione. Riprova.</string>
     <string name="woo_shipping_address_notification_origin_verified">Indirizzo di origine verificato</string>
@@ -330,7 +352,7 @@ Language: it
     <string name="more_menu_button_payments_description">Ricevi pagamenti ovunque ti trovi</string>
     <string name="card_reader_payment_failed_incorrect_pin">È stato inserito un PIN errato. Riprova o usa altri mezzi di pagamento</string>
     <string name="woopos_menu_toolbar_content_description">Menu</string>
-    <string name="woopos_cart_item_content_description">Prodotto nel carrello %s, Prezzo %s</string>
+    <string name="woopos_cart_item_product_content_description">Prodotto nel carrello %s, Prezzo %s</string>
     <string name="woopos_product_item_content_description">Prodotto %s, Prezzo %s</string>
     <string name="blaze_campaign_status_suspended">Sospeso</string>
     <string name="woopos_new_order_button">Nuovo ordine</string>
@@ -564,10 +586,6 @@ Language: it
     <string name="login_app_password_title">Impossibile accedere al negozio</string>
     <string name="empty_order_detail_message">Una volta effettuato un ordine, i dettagli saranno mostrati qui.</string>
     <string name="empty_order_detail_title">Nessun dettaglio dell\'ordine per ora</string>
-    <string name="order_creation_simple_payment_migration_button">Aggiungi un importo personalizzato</string>
-    <string name="order_creation_simple_payment_migration_message_two">Per impostare l\'importo di un pagamento, aggiungi\nun importo personalizzato al tuo nuovo ordine.</string>
-    <string name="order_creation_simple_payment_migration_message_one">Abbiamo combinato la riscossione dei pagamenti con\nla creazione degli ordini, rendendola più accessibile\ne più potente.</string>
-    <string name="order_creation_simple_payment_migration_title">Ricevi pagamenti \nsi è spostato</string>
     <string name="analytics_bundles_card_title">Pacchetti</string>
     <string name="analytics_bundles_list_header_subtitle">Pacchetti venduti</string>
     <string name="analytics_bundles_list_header_title">Pacchetti</string>
@@ -1165,7 +1183,6 @@ Language: it
     <string name="last_update_with_frequency">Ultimo aggiornamento: %s (aggiornamenti ogni 30 minuti)</string>
     <string name="last_update">Ultimo aggiornamento: %s</string>
     <string name="card_reader_tap_to_pay_learn_more">&lt;a href=\'\'&gt;Scopri di più&lt;/a&gt; sull\'accettazione di pagamenti con Tocca per pagare su Android</string>
-    <string name="card_reader_hub_collect_payment">Ricevi pagamenti</string>
     <string name="order_creation_barcode_scanning_unable_to_add_product_with_invalid_price">Impossibile aggiungere prodotti senza un prezzo specificato</string>
     <string name="order_creation_barcode_scanning_unable_to_add_draft_product">Impossibile aggiungere i prodotti che non sono stati pubblicati</string>
     <string name="order_creation_add_customer_content_description">aggiungi il cliente</string>
@@ -1485,7 +1502,6 @@ Language: it
     <string name="card_reader_tap_to_pay_explanation_try_payment">Prova un pagamento</string>
     <string name="card_reader_tap_to_pay_explanation_title">Ricevi pagamenti con carta\ncon il tuo telefono</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tocca per pagare</string>
-    <string name="card_reader_hub_actions_category_header">AZIONI</string>
     <string name="domain_registration_generic_error">Si è verificato un errore durante la registrazione del dominio</string>
     <string name="domain_registration_state_picker_dialog_title">Seleziona uno stato</string>
     <string name="domain_registration_country_picker_dialog_title">Seleziona il Paese</string>

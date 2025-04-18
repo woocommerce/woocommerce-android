@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-03-25 09:54:05+0000
+Translation-Revision-Date: 2025-04-08 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_split_shipment_shipment_new">新包裹</string>
+    <string name="woo_shipping_split_shipment_shipment_name">包裹 %s</string>
+    <string name="woo_shipping_split_move_to">移至</string>
+    <string name="woo_shipping_split_move_to_new">移至新包裹</string>
+    <string name="woo_shipping_split_shipment_instructions">如需拆分包裹，请选择商品，然后在工具栏出现时点击“&lt;b&gt;移至新包裹&lt;/b&gt;”。</string>
+    <string name="woo_shipping_labels_hazmat_selection_removed">已移除危险物质类别</string>
+    <string name="woo_shipping_labels_hazmat_selection_set">危险物质类别已设定</string>
+    <string name="woo_shipping_labels_hazmat_search_hint">搜索类别</string>
+    <string name="woo_shipping_labels_hazmat_info_select_category">选择类别</string>
+    <string name="woo_shipping_labels_hazmat_info_tooltip_2">WooCommerce Shipping 目前不支持通过 &lt;a href=\'dhl-hazmat\'&gt;&lt;u&gt;DHL Express&lt;/u&gt;&lt;/a&gt; 运输危险品。</string>
+    <string name="woo_shipping_labels_hazmat_info_tooltip_1">访问 &lt;a href=\'usps-hazmat\'&gt;&lt;u&gt;www.usps.com/hazmat&lt;/u&gt;&lt;/a&gt;，了解如何通过 USPS® 安全包装、标记和运输危险品。 使用 &lt;a href=\'hazmat-tool\'&gt;&lt;u&gt;USPS 危险品搜索工具&lt;/u&gt;&lt;/a&gt;确定产品的可邮寄性。</string>
+    <string name="woo_shipping_labels_hazmat_info_full_description">潜在危险物质包括电池、干冰、易燃液体、气雾剂、弹药、烟花、指甲油、香水、油漆和溶剂等。 危险品必须单独装运。</string>
+    <string name="woo_shipping_labels_hazmat_info_contains_hazmat">含危险物质</string>
+    <string name="woo_shipping_labels_hazmat_info_title">您是否要运输危险品或危险物质？</string>
+    <string name="woopos_search_items_error_description">再试一次？</string>
+    <string name="woopos_search_items_error_title">我们无法加载您的商品</string>
+    <string name="woopos_search_empty_image_content_description">未找到商品</string>
+    <string name="woopos_search_empty_description">我们找不到符合您搜索条件的任何内容。</string>
+    <string name="woopos_search_items_empty_title">未找到任何内容</string>
+    <string name="woopos_payment_discount_label">折扣</string>
+    <string name="woopos_cart_item_coupon_content_description">购物车 %s 中的优惠券</string>
+    <string name="shipping_label_package_title">选择一个包裹</string>
+    <string name="receipt_preview_toolbar_title">收据预览</string>
     <string name="woo_shipping_split_shipment">分批发货</string>
     <string name="woo_shipping_labels_purchase_error">我们无法购买配送标签。 请重试。</string>
     <string name="woo_shipping_address_notification_origin_verified">始发地址已验证</string>
@@ -329,7 +352,7 @@ Language: zh_CN
     <string name="more_menu_button_payments_description">随时随地接受付款</string>
     <string name="card_reader_payment_failed_incorrect_pin">输入的 PIN 错误。 再次尝试，或使用另一种付款方式</string>
     <string name="woopos_menu_toolbar_content_description">菜单</string>
-    <string name="woopos_cart_item_content_description">购物车中的产品 %s，价格 %s</string>
+    <string name="woopos_cart_item_product_content_description">购物车 %s 中的产品，价格 %s</string>
     <string name="woopos_product_item_content_description">产品 %s，价格 %s</string>
     <string name="blaze_campaign_status_suspended">挂起</string>
     <string name="woopos_new_order_button">新订单</string>
@@ -563,10 +586,6 @@ Language: zh_CN
     <string name="login_app_password_title">我们无法登录您的商店</string>
     <string name="empty_order_detail_message">当您下单后，您的订单详情将显示在此处。</string>
     <string name="empty_order_detail_title">暂无订单详情</string>
-    <string name="order_creation_simple_payment_migration_button">添加自定义金额</string>
-    <string name="order_creation_simple_payment_migration_message_two">要设置付款金额，请\n在新订单中添加自定义金额。</string>
-    <string name="order_creation_simple_payment_migration_message_one">我们合并了收款和\n订单创建功能，以提高便捷性\n并增强功能性。</string>
-    <string name="order_creation_simple_payment_migration_title">收款 \n已移动</string>
     <string name="analytics_bundles_card_title">捆绑</string>
     <string name="analytics_bundles_list_header_subtitle">已售捆绑</string>
     <string name="analytics_bundles_list_header_title">捆绑</string>
@@ -1164,7 +1183,6 @@ Language: zh_CN
     <string name="last_update_with_frequency">上次更新时间 %s（每 30 分钟更新一次）</string>
     <string name="last_update">上次更新时间 %s</string>
     <string name="card_reader_tap_to_pay_learn_more">&lt;a href=\'\'&gt;详细了解&lt;/a&gt;如何在 Android 设备上使用点按付款功能接受付款</string>
-    <string name="card_reader_hub_collect_payment">收取付款</string>
     <string name="order_creation_barcode_scanning_unable_to_add_product_with_invalid_price">您无法添加未指定价格的产品</string>
     <string name="order_creation_barcode_scanning_unable_to_add_draft_product">您无法添加未发布的产品</string>
     <string name="order_creation_add_customer_content_description">添加客户</string>
@@ -1484,7 +1502,6 @@ Language: zh_CN
     <string name="card_reader_tap_to_pay_explanation_try_payment">尝试付款</string>
     <string name="card_reader_tap_to_pay_explanation_title">使用手机\n收取银行卡付款</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">点按付款</string>
-    <string name="card_reader_hub_actions_category_header">操作</string>
     <string name="domain_registration_generic_error">域名注册期间出错</string>
     <string name="domain_registration_state_picker_dialog_title">选择州/省/自治区/直辖市</string>
     <string name="domain_registration_country_picker_dialog_title">选择国家/地区</string>

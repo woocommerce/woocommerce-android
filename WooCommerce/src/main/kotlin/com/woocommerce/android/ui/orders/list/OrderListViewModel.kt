@@ -65,6 +65,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
+import dagger.Lazy
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
@@ -78,6 +79,7 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.WCOrderListDescriptor
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.list.PagedListWrapper
+import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkingMode
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.ListStore
 import org.wordpress.android.fluxc.store.ListStore.ListErrorType.PARSE_ERROR
@@ -99,12 +101,10 @@ class OrderListViewModel @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
     private val orderListRepository: OrderListRepository,
     private val orderDetailRepository: OrderDetailRepository,
-    private val orderStore: WCOrderStore,
     private val listStore: ListStore,
     private val networkStatus: NetworkStatus,
     private val dispatcher: Dispatcher,
     private val selectedSite: SelectedSite,
-    private val fetcher: FetchOrdersRepository,
     private val resourceProvider: ResourceProvider,
     private val getWCOrderListDescriptorWithFilters: GetWCOrderListDescriptorWithFilters,
     private val getWCOrderListDescriptorWithFiltersAndSearchQuery: GetWCOrderListDescriptorWithFiltersAndSearchQuery,
@@ -118,7 +118,8 @@ class OrderListViewModel @Inject constructor(
     private val showTestNotification: ShowTestNotification,
     private val dateUtils: DateUtils,
     private val shouldUpdateOrdersList: ShouldUpdateOrdersList,
-    private val observeOrdersListLastUpdate: ObserveOrdersListLastUpdate
+    private val observeOrdersListLastUpdate: ObserveOrdersListLastUpdate,
+    private val dataSourceLazyProvider: Lazy<OrderListItemDataSource>,
 ) : ScopedViewModel(savedState), LifecycleOwner {
     companion object {
         const val BULK_UPDATE_COUNT_LIMIT = 100
@@ -136,16 +137,8 @@ class OrderListViewModel @Inject constructor(
     internal var ordersPagedListWrapper: PagedListWrapper<OrderListItemUIType>? = null
     internal var activePagedListWrapper: PagedListWrapper<OrderListItemUIType>? = null
 
-    private val dataSource by lazy {
-        OrderListItemDataSource(
-            dispatcher,
-            orderStore,
-            networkStatus,
-            fetcher,
-            resourceProvider,
-            dateUtils
-        )
-    }
+    private val dataSource
+        get() = dataSourceLazyProvider.get()
 
     /**
      * Saving more data than necessary into the SavedState has associated risks which were not known at the time this
@@ -605,13 +598,29 @@ class OrderListViewModel @Inject constructor(
     @SuppressWarnings("unused")
     @Subscribe(threadMode = MAIN)
     fun onOrderSummariesFetched(event: OnOrderSummariesFetched) {
+        fun WPAPINetworkingMode.toTrackingValue(): String {
+            return when (this) {
+                is WPAPINetworkingMode.ApplicationPasswords -> "app_passwords"
+                is WPAPINetworkingMode.ApplicationPasswordsWithJetpack -> "app_passwords_with_jetpack"
+                is WPAPINetworkingMode.JetpackTunnel -> "jetpack_tunnel"
+            }
+        }
+
         // Only track if this is not from a search query
         if (!event.listDescriptor.searchQuery.isNullOrEmpty()) {
             return
         }
 
         if (event.isError) {
-            AnalyticsTracker.track(AnalyticsEvent.ORDER_LIST_LOAD_ERROR)
+            AnalyticsTracker.track(
+                AnalyticsEvent.ORDER_LIST_LOAD_ERROR,
+                properties = mapOf(
+                    "request_type" to event.networkingMode?.toTrackingValue()
+                ).filterNotNull(),
+                errorType = event.error.type.name,
+                errorContext = this::class.simpleName,
+                errorDescription = event.error.message,
+            )
         } else {
             launch {
                 val totalDurationInSeconds = event.duration.toDouble() / 1_000
@@ -622,9 +631,23 @@ class OrderListViewModel @Inject constructor(
                     mapOf(
                         AnalyticsTracker.KEY_TOTAL_DURATION to totalDurationInSeconds,
                         AnalyticsTracker.KEY_STATUS to event.listDescriptor.statusFilter,
-                        AnalyticsTracker.KEY_TOTAL_COMPLETED_ORDERS to totalCompletedOrders
+                        AnalyticsTracker.KEY_TOTAL_COMPLETED_ORDERS to totalCompletedOrders,
+                        "request_type" to event.networkingMode?.toTrackingValue()
                     )
                 )
+
+                if (event.networkingMode is WPAPINetworkingMode.JetpackTunnel &&
+                    (event.networkingMode as WPAPINetworkingMode.JetpackTunnel).isFallback
+                ) {
+                    val error = (event.networkingMode as WPAPINetworkingMode.JetpackTunnel).applicationPasswordsError
+                    AnalyticsTracker.track(
+                        AnalyticsEvent.ORDERS_LIST_APP_PASSWORDS_FAILURE,
+                        properties = mapOf(
+                            "network_error_code" to error?.volleyError?.networkResponse?.statusCode,
+                            "error_api_code" to error?.errorCode,
+                        )
+                    )
+                }
             }
         }
     }

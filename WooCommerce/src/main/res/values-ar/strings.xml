@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-03-24 23:54:06+0000
+Translation-Revision-Date: 2025-04-07 18:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_split_shipment_shipment_new">شحنة جديدة</string>
+    <string name="woo_shipping_split_shipment_shipment_name">الشحنة %s</string>
+    <string name="woo_shipping_split_move_to">انتقال إلى</string>
+    <string name="woo_shipping_split_move_to_new">انتقال إلى الشحنة الجديدة</string>
+    <string name="woo_shipping_split_shipment_instructions">للتقسيم، حدد العناصر، واضغط على &lt;b&gt;نقل إلى شحنة جديدة&lt;/b&gt; عندما يظهر شريط الأدوات.</string>
+    <string name="woo_shipping_labels_hazmat_selection_removed">تمت إزالة تصنيف المواد الخطرة</string>
+    <string name="woo_shipping_labels_hazmat_selection_set">تعيين تصنيف المواد الخطرة</string>
+    <string name="woo_shipping_labels_hazmat_search_hint">البحث عن تصنيف</string>
+    <string name="woo_shipping_labels_hazmat_info_select_category">تحديد تصنيف</string>
+    <string name="woo_shipping_labels_hazmat_info_tooltip_2">لا يدعم WooCommerce Shipping حاليًا عمليات شحن المواد الخطرة من خلال &lt;a href=\'dhl-hazmat\'&gt;&lt;u&gt;DHL Express&lt;/u&gt;&lt;/a&gt;. </string>
+    <string name="woo_shipping_labels_hazmat_info_tooltip_1">تعرَّف على كيفية تعبئة المواد الخطرة وتغليفها ووضع الملصقات عليها وشحنها من خلال USPS® في &lt;a href=\'usps-hazmat\'&gt;&lt;u&gt;www.usps.com/hazmat&lt;/u&gt;&lt;/a&gt;. حدد قابلية إرسال منتجاتك بالبريد باستخدام &lt;a href=\'hazmat-tool\'&gt;&lt;u&gt;أداة بحث المواد الخطرة&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="woo_shipping_labels_hazmat_info_full_description">تشمل المواد محتملة الخطورة عناصر، مثل: البطاريات والثلج الجاف والسوائل القابلة للاشتعال والأهباء الجوية والذخائر والألعاب النارية وطلاء الأظافر والعطور والدهانات والمذيبات والمزيد. يجب شحن العناصر الخطرة في طرود منفصلة.</string>
+    <string name="woo_shipping_labels_hazmat_info_contains_hazmat">يحتوي على مواد خطرة</string>
+    <string name="woo_shipping_labels_hazmat_info_title">هل تشحن بضائع خطيرة أو مواد خطرة؟</string>
+    <string name="woopos_search_items_error_description">هل تريد محاولة أخرى؟</string>
+    <string name="woopos_search_items_error_title">تعذر علينا تحميل عناصرك</string>
+    <string name="woopos_search_empty_image_content_description">لم يتم العثور على عناصر</string>
+    <string name="woopos_search_empty_description">لم نتمكن من العثور على أي شيء يطابق بحثك.</string>
+    <string name="woopos_search_items_empty_title">لم يتم العثور على نتائج</string>
+    <string name="woopos_payment_discount_label">الخصم</string>
+    <string name="woopos_cart_item_coupon_content_description">القسيمة في عربة التسوق %s</string>
+    <string name="shipping_label_package_title">تحديد طرد</string>
+    <string name="receipt_preview_toolbar_title">معاينة الإيصال</string>
     <string name="woo_shipping_split_shipment">تقسيم الشحنة</string>
     <string name="woo_shipping_labels_purchase_error">يتعذر علينا شراء ملصق الشحن. يرجى المحاولة مجددًا.</string>
     <string name="woo_shipping_address_notification_origin_verified">عنوان المنشأ المتحقق منه</string>
@@ -330,7 +353,7 @@ Language: ar
     <string name="more_menu_button_payments_description">تلقي المدفوعات في أثناء التنقل</string>
     <string name="card_reader_payment_failed_incorrect_pin">تم إدخال رمز PIN غير صحيح. المحاولة الآن، أو استخدام وسائل دفع أخرى</string>
     <string name="woopos_menu_toolbar_content_description">القائمة</string>
-    <string name="woopos_cart_item_content_description">المنتج في عربة التسوق %s، السعر %s</string>
+    <string name="woopos_cart_item_product_content_description">المنتج في عربة التسوق %s، السعر %s</string>
     <string name="woopos_product_item_content_description">المنتج %s، السعر %s</string>
     <string name="blaze_campaign_status_suspended">معلَّق</string>
     <string name="woopos_new_order_button">طلب جديد</string>
@@ -564,10 +587,6 @@ Language: ar
     <string name="login_app_password_title">تعذر علينا تسجيل الدخول إلى متجرك</string>
     <string name="empty_order_detail_message">ستظهر تفاصيل طلبك هنا عند تقديم طلب ما.</string>
     <string name="empty_order_detail_title">لا توجد تفاصيل طلبات حتى الآن</string>
-    <string name="order_creation_simple_payment_migration_button">إضافة مبلغ مخصص</string>
-    <string name="order_creation_simple_payment_migration_message_two">لتعيين مبلغ الدفع، أضف\nمبلغًا مخصصًا إلى طلبك الجديد.</string>
-    <string name="order_creation_simple_payment_migration_message_one">قمنا بتجميع تحصيل المدفوعات مع\nإنشاء الطلب، ما يجعله قابلاً للوصول بشكل أكبر\nوأكثر فاعلية.</string>
-    <string name="order_creation_simple_payment_migration_title">تحصيل المدفوعات \nانتقل إلى</string>
     <string name="analytics_bundles_card_title">الحزم</string>
     <string name="analytics_bundles_list_header_subtitle">الحزم المبيعة</string>
     <string name="analytics_bundles_list_header_title">الحزم</string>
@@ -1165,7 +1184,6 @@ Language: ar
     <string name="last_update_with_frequency">آخر تحديث %s (يتم التحديث كل 30 دقيقة)</string>
     <string name="last_update">آخر تحديث %s</string>
     <string name="card_reader_tap_to_pay_learn_more">&lt;a href=\'\'&gt;التعرّف على المزيد&lt;/a&gt; حول قبول المدفوعات باستخدام Tap To Pay على Android</string>
-    <string name="card_reader_hub_collect_payment">تحصيل المدفوعات</string>
     <string name="order_creation_barcode_scanning_unable_to_add_product_with_invalid_price">تتعذر عليك إضافة المنتجات من دون السعر المحدد</string>
     <string name="order_creation_barcode_scanning_unable_to_add_draft_product">تتعذر عليك إضافة المنتجات غير المنشورة</string>
     <string name="order_creation_add_customer_content_description">إضافة عميل</string>
@@ -1485,7 +1503,6 @@ Language: ar
     <string name="card_reader_tap_to_pay_explanation_try_payment">محاولة سداد دفعة</string>
     <string name="card_reader_tap_to_pay_explanation_title">تحصيل المدفوعات بالبطاقة\nباستخدام هاتفك</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">الضغط للدفع</string>
-    <string name="card_reader_hub_actions_category_header">الإجراءات</string>
     <string name="domain_registration_generic_error">حدث خطأ في أثناء تسجيل النطاق</string>
     <string name="domain_registration_state_picker_dialog_title">تحديد الولاية</string>
     <string name="domain_registration_country_picker_dialog_title">تحديد الدولة</string>

@@ -5,7 +5,6 @@ import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.FeatureFlag
-import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 class ShippingLabelOnboardingRepository @Inject constructor(

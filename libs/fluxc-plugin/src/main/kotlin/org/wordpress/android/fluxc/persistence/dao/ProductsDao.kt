@@ -7,31 +7,11 @@ import kotlinx.coroutines.flow.Flow
 import org.wordpress.android.fluxc.model.WCProductModel
 
 @Dao
-abstract class ProductsDao {
+internal abstract class ProductsDao {
 
     @Query(
         """
-            SELECT COUNT(*) FROM WCProductModel
-            WHERE localSiteId = :localSiteId
-            AND (:status IS NULL OR status = :status)
-            AND (:stockStatus IS NULL OR stockStatus = :stockStatus)
-            AND (:type IS NULL OR type = :type)
-            AND (:category IS NULL OR categories LIKE '%' || :category || '%')
-            AND (:excludeSampleProducts IS NULL OR isSampleProduct = :excludeSampleProducts)
-        """
-    )
-    abstract fun observeProductsCount(
-        localSiteId: Int,
-        status: String?,
-        stockStatus: String?,
-        type: String?,
-        category: String?,
-        excludeSampleProducts: Boolean
-    ): Flow<Long>
-
-    @Query(
-        """
-            SELECT * FROM WCProductModel
+            SELECT * FROM ProductEntity
             WHERE localSiteId = :localSiteId
             AND (:status IS NULL OR status = :status)
             AND (:stockStatus IS NULL OR stockStatus = :stockStatus)
@@ -39,16 +19,10 @@ abstract class ProductsDao {
             AND (:category IS NULL OR categories LIKE '%' || :category || '%')
             AND (:excludeSampleProducts IS NULL OR isSampleProduct = :excludeSampleProducts)
             AND (:excludedProductIds IS NULL OR remoteId NOT IN (:excludedProductIds))
-            ORDER BY
-                CASE
-                    WHEN :sortOrder = 'ASC' THEN :sortField
-                END ASC,
-                CASE
-                    WHEN :sortOrder = 'DESC' THEN :sortField
-                END DESC
             LIMIT CASE WHEN :limit IS NULL THEN -1 ELSE :limit END
         """
     )
+    @Suppress("LongParameterList")
     abstract fun observeProducts(
         localSiteId: Int,
         status: String?,
@@ -56,15 +30,13 @@ abstract class ProductsDao {
         type: String?,
         category: String?,
         excludeSampleProducts: Boolean,
-        sortField: String,
-        sortOrder: String,
         limit: Int?,
         excludedProductIds: List<Long>? = null
     ): Flow<List<WCProductModel>>
 
     @Query(
         """
-            SELECT * FROM WCProductModel
+            SELECT * FROM ProductEntity
             WHERE localSiteId = :localSiteId
             AND remoteId = :remoteProductId
         """
@@ -76,7 +48,7 @@ abstract class ProductsDao {
 
     @Query(
         """
-            SELECT * FROM WCProductModel
+            SELECT * FROM ProductEntity
             WHERE localSiteId = :localSiteId
             AND remoteId = :remoteProductId
             LIMIT 1
@@ -89,7 +61,7 @@ abstract class ProductsDao {
 
     @Query(
         """
-            SELECT * FROM WCProductModel
+            SELECT * FROM ProductEntity
             WHERE localSiteId = :localSiteId
             AND sku = :sku
             LIMIT 1
@@ -102,7 +74,7 @@ abstract class ProductsDao {
 
     @Query(
         """
-            SELECT * FROM WCProductModel
+            SELECT * FROM ProductEntity
             WHERE localSiteId = :localSiteId
             AND remoteId IN (:remoteProductIds)
             AND (:virtual IS NULL OR virtual = :virtual)
@@ -122,7 +94,7 @@ abstract class ProductsDao {
 
     @Query(
         """
-            DELETE FROM WCProductModel
+            DELETE FROM ProductEntity
             WHERE localSiteId = :localSiteId
     """
     )
@@ -130,7 +102,7 @@ abstract class ProductsDao {
 
     @Query(
         """
-            DELETE FROM WCProductModel
+            DELETE FROM ProductEntity
             WHERE localSiteId = :localSiteId
             AND remoteId = :remoteProductId
     """
@@ -138,5 +110,5 @@ abstract class ProductsDao {
     abstract suspend fun deleteProduct(
         localSiteId: Int,
         remoteProductId: Long
-    ): Int
+    )
 }

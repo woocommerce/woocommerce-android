@@ -21,6 +21,8 @@ class FirebaseRemoteConfigRepository @Inject constructor(
     companion object {
         private const val DEBUG_INTERVAL = 10L
         private const val RELEASE_INTERVAL = 31200L
+
+        const val KEY_ENABLE_JETPACK_APP_PASSWORDS_EXPERIMENT = "wcandroid_enable_jetpack_app_passwords_experiment"
     }
 
     private val minimumFetchIntervalInSeconds =
@@ -36,7 +38,9 @@ class FirebaseRemoteConfigRepository @Inject constructor(
     override val fetchStatus: Flow<RemoteConfigFetchStatus> = _fetchStatus.asStateFlow()
 
     private val defaultValues by lazy {
-        mapOf<String, String>()
+        mapOf(
+            KEY_ENABLE_JETPACK_APP_PASSWORDS_EXPERIMENT to false.toString()
+        )
     }
 
     init {
@@ -69,4 +73,8 @@ class FirebaseRemoteConfigRepository @Inject constructor(
     @VisibleForTesting
     fun observeStringRemoteValue(key: String) = changesTrigger
         .map { remoteConfig.getString(key) }
+
+    override fun isJetpackAppPasswordsExperimentEnabled(): Boolean {
+        return remoteConfig.getBoolean(KEY_ENABLE_JETPACK_APP_PASSWORDS_EXPERIMENT)
+    }
 }

@@ -6,13 +6,12 @@ import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.runBlocking
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCProductModel
-import org.wordpress.android.fluxc.persistence.ProductSqlUtils.getProductExistsByRemoteId
-import org.wordpress.android.fluxc.persistence.dao.ProductsDao
+import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
 
 class ProductsMapper @Inject constructor(
     private val site: SelectedSite,
-    private val productsDao: ProductsDao
+    private val productStore: WCProductStore
 ) {
     fun mapProductIdsToProduct(productIds: List<Long>): List<Product> {
         return productIds.asProductList(site.get()).map { product ->
@@ -28,8 +27,8 @@ class ProductsMapper @Inject constructor(
         site: SiteModel,
     ): List<WCProductModel> {
         return runBlocking {
-            filter { productsDao.getProductExistsByRemoteId(site, it) }
-            .mapNotNull { productsDao.getProduct(site.id, it) }
+            filter { productStore.getProductExistsByRemoteId(site, it) }
+                .mapNotNull { productStore.getProduct(site, it) }
         }
     }
 }

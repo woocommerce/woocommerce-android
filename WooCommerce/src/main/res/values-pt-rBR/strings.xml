@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-03-26 09:54:09+0000
+Translation-Revision-Date: 2025-04-08 17:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_split_shipment_shipment_new">Novo envio</string>
+    <string name="woo_shipping_split_shipment_shipment_name">Envio %s</string>
+    <string name="woo_shipping_split_move_to">Mover para</string>
+    <string name="woo_shipping_split_move_to_new">Mover para novo envio</string>
+    <string name="woo_shipping_split_shipment_instructions">Para dividir, selecione os itens e toque em &lt;b&gt;mover para novo envio&lt;/b&gt; quando a barra de ferramentas for exibida.</string>
+    <string name="woo_shipping_labels_hazmat_selection_removed">Categoria de materiais perigosos removida</string>
+    <string name="woo_shipping_labels_hazmat_selection_set">Categoria de materiais perigosos configurada</string>
+    <string name="woo_shipping_labels_hazmat_search_hint">Pesquise uma categoria</string>
+    <string name="woo_shipping_labels_hazmat_info_select_category">Selecionar categoria</string>
+    <string name="woo_shipping_labels_hazmat_info_tooltip_2">No momento, o WooCommerce Shipping não permite o envio de materiais perigosos (HAZMAT) por meio da &lt;a href=\'dhl-hazmat\'&gt;&lt;u&gt;DHL Express&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="woo_shipping_labels_hazmat_info_tooltip_1">Saiba como embalar, etiquetar e enviar produtos HAZMAT com segurança por meio da USPS® em &lt;a href=\'usps-hazmat\'&gt;&lt;u&gt;www.usps.com/hazmat&lt;/u&gt;&lt;/a&gt;. Determine a adequação do seu produto para envio usando a &lt;a href=\'hazmat-tool\'&gt;&lt;u&gt;ferramenta de pesquisa de HAZMAT da USPS&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="woo_shipping_labels_hazmat_info_full_description">Os materiais que podem ser perigosos incluem itens como baterias, gelo seco, líquidos inflamáveis, aerossol, munição, fogos de artifício, esmalte de unha, perfume, tinta, solventes, entre outros. Itens perigosos devem ser enviados em pacotes separados.</string>
+    <string name="woo_shipping_labels_hazmat_info_contains_hazmat">Contém materiais perigosos</string>
+    <string name="woo_shipping_labels_hazmat_info_title">Você está enviando mercadorias ou materiais perigosos?</string>
+    <string name="woopos_search_items_error_description">Tentar novamente?</string>
+    <string name="woopos_search_items_error_title">Não foi possível carregar seus itens</string>
+    <string name="woopos_search_empty_image_content_description">Nenhum item encontrado</string>
+    <string name="woopos_search_empty_description">Não encontramos nada que corresponda à sua pesquisa.</string>
+    <string name="woopos_search_items_empty_title">Nada encontrado</string>
+    <string name="woopos_payment_discount_label">Desconto</string>
+    <string name="woopos_cart_item_coupon_content_description">Cupom no carrinho %s</string>
+    <string name="shipping_label_package_title">Selecionar um pacote</string>
+    <string name="receipt_preview_toolbar_title">Visualização do recibo</string>
     <string name="woo_shipping_split_shipment">Envio fracionado</string>
     <string name="woo_shipping_labels_purchase_error">Não foi possível comprar a etiqueta de envio. Tente novamente.</string>
     <string name="woo_shipping_address_notification_origin_verified">Endereço de origem verificado</string>
@@ -330,7 +353,7 @@ Language: pt_BR
     <string name="more_menu_button_payments_description">Aceite pagamentos onde estiver</string>
     <string name="card_reader_payment_failed_incorrect_pin">Um PIN incorreto foi inserido. Tente novamente ou use outro meio de pagamento</string>
     <string name="woopos_menu_toolbar_content_description">Menu</string>
-    <string name="woopos_cart_item_content_description">Produto no carrinho %s. Preço: %s</string>
+    <string name="woopos_cart_item_product_content_description">Produto no carrinho %s. Preço: %s</string>
     <string name="woopos_product_item_content_description">Produto %s. Preço: %s</string>
     <string name="blaze_campaign_status_suspended">Suspensa</string>
     <string name="woopos_new_order_button">Novo pedido</string>
@@ -564,10 +587,6 @@ Language: pt_BR
     <string name="login_app_password_title">Não foi possível fazer login na sua loja</string>
     <string name="empty_order_detail_message">Quando você fizer um pedido, os detalhes da compra aparecerão aqui.</string>
     <string name="empty_order_detail_title">Nenhum detalhe do pedido</string>
-    <string name="order_creation_simple_payment_migration_button">Adicionar um valor personalizado</string>
-    <string name="order_creation_simple_payment_migration_message_two">Para configurar um valor de pagamento, adicione\num valor personalizado ao seu novo pedido.</string>
-    <string name="order_creation_simple_payment_migration_message_one">Nós unimos o recebimento de pagamentos com\na criação de pedidos, tornando o processo\nmais acessível e eficiente.</string>
-    <string name="order_creation_simple_payment_migration_title">O recebimento de pagamentos \nmudou de lugar</string>
     <string name="analytics_bundles_card_title">Pacotes</string>
     <string name="analytics_bundles_list_header_subtitle">Pacotes vendidos</string>
     <string name="analytics_bundles_list_header_title">Pacotes</string>
@@ -1165,7 +1184,6 @@ Language: pt_BR
     <string name="last_update_with_frequency">Última atualização: %s (atualiza a cada 30 minutos)</string>
     <string name="last_update">Última atualização: %s</string>
     <string name="card_reader_tap_to_pay_learn_more">&lt;a href=\'\'&gt;Saiba mais&lt;/a&gt; sobre como aceitar pagamentos com o Tap to Pay on Android</string>
-    <string name="card_reader_hub_collect_payment">Receber pagamento</string>
     <string name="order_creation_barcode_scanning_unable_to_add_product_with_invalid_price">Você não pode adicionar produtos sem preço específico</string>
     <string name="order_creation_barcode_scanning_unable_to_add_draft_product">Você não pode adicionar produtos que não estão publicados</string>
     <string name="order_creation_add_customer_content_description">adicionar cliente</string>
@@ -1485,7 +1503,6 @@ Language: pt_BR
     <string name="card_reader_tap_to_pay_explanation_try_payment">Experimente um pagamento</string>
     <string name="card_reader_tap_to_pay_explanation_title">Receba pagamentos com cartão\nusando seu telefone</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Toque para pagar</string>
-    <string name="card_reader_hub_actions_category_header">AÇÕES</string>
     <string name="domain_registration_generic_error">Ocorreu um erro durante o registro de domínio</string>
     <string name="domain_registration_state_picker_dialog_title">Selecionar o estado</string>
     <string name="domain_registration_country_picker_dialog_title">Selecionar país</string>

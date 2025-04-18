@@ -6,15 +6,11 @@ import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.leaderboards.LeaderboardProductItem
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.leaderboards.LeaderboardsApiResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.reports.ReportsProductApiResponse
-import org.wordpress.android.fluxc.persistence.ProductSqlUtils.getProductExistsByRemoteId
-import org.wordpress.android.fluxc.persistence.dao.ProductsDao
 import org.wordpress.android.fluxc.persistence.entity.TopPerformerProductEntity
 import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
 
-class WCProductLeaderboardsMapper @Inject constructor(
-    private val productsDao: ProductsDao
-) {
+class WCProductLeaderboardsMapper @Inject constructor() {
     suspend fun mapTopPerformerProductsEntity(
         response: LeaderboardsApiResponse,
         site: SiteModel,
@@ -47,11 +43,11 @@ class WCProductLeaderboardsMapper @Inject constructor(
     ): List<WCProductModel> {
         val locallyFetchedProducts = this
             //This logic is repeated in ProductsMapper
-                .filter { productsDao.getProductExistsByRemoteId(site, it) }
-                .mapNotNull { productsDao.getProduct(site.id, it) }
+                .filter { productStore.getProductExistsByRemoteId(site, it) }
+                .mapNotNull { productStore.getProduct(site, it) }
 
         val remotelyFetchedProducts = this
-                .filter { productsDao.getProductExistsByRemoteId(site, it).not() }
+                .filter { productStore.getProductExistsByRemoteId(site, it).not() }
                 .takeIf { it.isNotEmpty() }
                 ?.let { productStore.fetchProductListSynced(site, it) }
                 .orEmpty()

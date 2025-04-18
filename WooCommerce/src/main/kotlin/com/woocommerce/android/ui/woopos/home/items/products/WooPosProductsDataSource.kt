@@ -1,91 +1,148 @@
 package com.woocommerce.android.ui.woopos.home.items.products
 
+import com.woocommerce.android.WooException
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.ui.products.ProductStatus
-import com.woocommerce.android.ui.products.selector.ProductListHandler
+import com.woocommerce.android.model.toAppModel
+import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
+import com.woocommerce.android.ui.woopos.common.data.WooPosProductsTypesFilterConfig
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.take
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCProductStore
+import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class WooPosProductsDataSource @Inject constructor(
-    private val handler: ProductListHandler,
+    private val productStore: WCProductStore,
+    private val selectedSite: SelectedSite,
+    private val productsCache: WooPosProductsCache,
+    private val productsIndex: WooPosProductsIndex,
+    private val productsTypesFilterConfig: WooPosProductsTypesFilterConfig
 ) {
-    private var productCache: List<Product> = emptyList()
-    private val cacheMutex = Mutex()
+    private val canLoadMore = AtomicBoolean(false)
+    private val offset = AtomicInteger(0)
 
     val hasMorePages: Boolean
-        get() = handler.canLoadMore.get()
+        get() = canLoadMore.get()
 
-    fun loadSimpleProducts(forceRefreshProducts: Boolean): Flow<ProductsResult> = flow {
-        if (forceRefreshProducts) {
-            updateProductCache(emptyList())
+    suspend fun prepopulateProductsCache(): Result<Unit> {
+        productsCache.clear()
+
+        var currentPage = 0
+        val productsToFetch = mutableListOf<Product>()
+        var hasMoreToFetch = true
+
+        while (hasMoreToFetch && currentPage < PRE_POPULATION_MAX_PAGES) {
+            val result = productStore.fetchProducts(
+                site = selectedSite.get(),
+                offset = currentPage * PRE_POPULATION_PAGE_SIZE,
+                pageSize = PRE_POPULATION_PAGE_SIZE,
+                filterOptions = productsTypesFilterConfig.filters,
+                includeTypes = productsTypesFilterConfig.includeTypes,
+            )
+
+            if (!result.isError) {
+                val productsList = result.model ?: emptyList()
+                val products = productsList.map { it.toAppModel() }
+
+                productsToFetch.addAll(products)
+
+                hasMoreToFetch = products.size == PRE_POPULATION_PAGE_SIZE
+                currentPage++
+            } else {
+                result.logFailure()
+                return Result.failure(WooException(result.error))
+            }
         }
 
-        emit(ProductsResult.Cached(productCache))
+        productsCache.addAll(productsToFetch)
+        return Result.success(Unit)
+    }
 
-        val result = handler.loadFromCacheAndFetch(
-            forceRefresh = forceRefreshProducts,
-            searchType = ProductListHandler.SearchType.DEFAULT,
-            includeType = listOf(WCProductStore.IncludeType.Simple, WCProductStore.IncludeType.Variable),
-            filters = mapOf(
-                WCProductStore.ProductFilterOption.STATUS to ProductStatus.PUBLISH.value,
-                WCProductStore.ProductFilterOption.DOWNLOADABLE to WCProductStore.DownloadableOptions.FALSE.toString(),
-            )
-        )
+    fun loadProducts(forceRefreshProducts: Boolean): Flow<ProductsResult> = flow {
+        offset.set(0)
+        if (forceRefreshProducts) {
+            productsCache.clear()
+        }
+        productsIndex.clearCache()
 
-        if (result.isSuccess) {
-            val remoteProducts = handler.productsFlow.first()
-            updateProductCache(remoteProducts)
-            emit(ProductsResult.Remote(Result.success(productCache)))
+        val cachedProducts = sortProducts(productsCache.getAll()).take(NORMAL_PAGE_SIZE)
+        emit(ProductsResult.Cached(cachedProducts))
+
+        val fetchResult = fetchProducts()
+
+        if (fetchResult.isSuccess) {
+            emit(ProductsResult.Remote(Result.success(fetchResult.getOrThrow())))
         } else {
-            result.logFailure()
-            emit(
-                ProductsResult.Remote(
-                    Result.failure(
-                        result.exceptionOrNull() ?: Exception("Unknown error")
-                    )
-                )
-            )
+            emit(ProductsResult.Remote(Result.failure(fetchResult.exceptionOrNull() ?: Exception("Unknown error"))))
         }
     }.flowOn(Dispatchers.IO).take(2)
 
     suspend fun loadMore(): Result<List<Product>> = withContext(Dispatchers.IO) {
-        val result = handler.loadMore(
-            includeTypes = listOf(WCProductStore.IncludeType.Simple, WCProductStore.IncludeType.Variable),
-        )
-        if (result.isSuccess) {
-            val moreProducts = handler.productsFlow.first()
-            updateProductCache(moreProducts)
-            Result.success(productCache)
+        if (!canLoadMore.get()) {
+            return@withContext Result.success(productsIndex.getProductList())
+        }
+
+        val fetchResult = fetchProducts()
+
+        if (fetchResult.isSuccess) {
+            Result.success(fetchResult.getOrThrow())
         } else {
-            result.logFailure()
-            Result.failure(result.exceptionOrNull() ?: Exception("Unknown error"))
+            fetchResult
         }
     }
 
-    private suspend fun updateProductCache(newList: List<Product>) {
-        cacheMutex.withLock { productCache = newList }
+    private fun sortProducts(products: List<Product>): List<Product> {
+        return products.sortedBy { it.name.lowercase() }
     }
 
-    private fun Result<Unit>.logFailure() {
-        val error = exceptionOrNull()
+    private suspend fun fetchProducts(): Result<List<Product>> {
+        val result = productStore.fetchProducts(
+            site = selectedSite.get(),
+            offset = offset.get(),
+            pageSize = NORMAL_PAGE_SIZE,
+            filterOptions = productsTypesFilterConfig.filters,
+            includeTypes = productsTypesFilterConfig.includeTypes,
+        )
+
+        return if (!result.isError) {
+            val productsList = result.model ?: emptyList()
+            val products = productsList.map { it.toAppModel() }
+
+            canLoadMore.set(productsList.size == NORMAL_PAGE_SIZE)
+            offset.addAndGet(NORMAL_PAGE_SIZE)
+
+            productsCache.addAll(products)
+            productsIndex.storeProductList(products.map { it.remoteId })
+            Result.success(productsIndex.getProductList())
+        } else {
+            result.logFailure()
+            Result.failure(WooException(result.error))
+        }
+    }
+
+    private fun WooResult<*>.logFailure() {
         val errorMessage = error?.message ?: "Unknown error"
-        WooLog.e(WooLog.T.POS, "Loading products failed - $errorMessage", error)
+        WooLog.e(WooLog.T.POS, "Loading products failed - $errorMessage")
     }
 
     sealed class ProductsResult {
         data class Cached(val products: List<Product>) : ProductsResult()
         data class Remote(val productsResult: Result<List<Product>>) : ProductsResult()
+    }
+
+    companion object {
+        private const val NORMAL_PAGE_SIZE = 25
+        private const val PRE_POPULATION_PAGE_SIZE = 100
+        private const val PRE_POPULATION_MAX_PAGES = 2
     }
 }

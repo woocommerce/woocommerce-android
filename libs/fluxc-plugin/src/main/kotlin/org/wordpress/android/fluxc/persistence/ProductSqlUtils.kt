@@ -40,15 +40,16 @@ import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.DATE_ASC
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.DATE_DESC
+import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.POPULARITY_ASC
+import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.POPULARITY_DESC
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_ASC
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_DESC
 import org.wordpress.android.fluxc.store.WCProductStore.SkuSearchOptions
 import java.util.Locale
 
 @Suppress("LargeClass")
-object ProductSqlUtils {
+internal object ProductSqlUtils {
     private const val DEBOUNCE_DELAY_FOR_OBSERVERS = 50L
-    private val productsUpdatesTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
     private val variationsUpdatesTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
     private val categoriesUpdatesTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
@@ -136,11 +137,11 @@ object ProductSqlUtils {
             type = filterOptions[ProductFilterOption.TYPE],
             category = filterOptions[ProductFilterOption.CATEGORY]?.let { categoryFilter(it) },
             excludeSampleProducts = excludeSampleProducts,
-            sortField = getSortField(sortType),
-            sortOrder = getSortOrder(sortType),
             limit = limit,
             excludedProductIds = excludedProductIds
-        ).firstOrNull().orEmpty().filter { product ->
+        ).firstOrNull().orEmpty()
+            .sort(sortType)
+            .filter { product ->
             if (searchQuery.isNullOrBlank()) {
                 true
             } else {
@@ -171,24 +172,14 @@ object ProductSqlUtils {
         return products
     }
 
-    suspend fun ProductsDao.getProductExistsByRemoteId(site: SiteModel, remoteProductId: Long): Boolean {
-        return getProduct(site.id, remoteProductId) != null
-    }
-
-    suspend fun ProductsDao.getProductExistsBySku(site: SiteModel, sku: String): Boolean {
-        return getProduct(site.id, sku = sku) != null
-    }
-
-    fun getSortField(sortType: ProductSorting) =
+    internal fun List<WCProductModel>.sort(sortType: ProductSorting): List<WCProductModel> =
         when (sortType) {
-            TITLE_ASC, TITLE_DESC -> "name"
-            DATE_ASC, DATE_DESC -> "date_created"
-        }
-
-    fun getSortOrder(sortType: ProductSorting) =
-        when (sortType) {
-            TITLE_ASC, DATE_ASC -> "ASC"
-            TITLE_DESC, DATE_DESC -> "DESC"
+            TITLE_ASC -> sortedBy { it.name }
+            TITLE_DESC -> sortedByDescending { it.name }
+            DATE_ASC -> sortedBy { it.dateCreated }
+            DATE_DESC -> sortedByDescending { it.dateCreated }
+            POPULARITY_ASC -> sortedBy { it.totalSales }
+            POPULARITY_DESC -> sortedByDescending { it.totalSales }
         }
 
     fun insertOrUpdateProductVariation(variation: WCProductVariationModel): Int {
@@ -634,10 +625,6 @@ object ProductSqlUtils {
         } finally {
             db.endTransaction()
         }
-    }
-
-    private fun triggerProductsUpdateIfNeeded(affectedRows: Int) {
-        if (affectedRows != 0) productsUpdatesTrigger.tryEmit(Unit)
     }
 
     private fun triggerVariationsUpdateIfNeeded(affectedRows: Int) {
