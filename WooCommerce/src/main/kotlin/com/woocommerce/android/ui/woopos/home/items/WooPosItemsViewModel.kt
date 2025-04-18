@@ -201,7 +201,7 @@ class WooPosItemsViewModel @Inject constructor(
                 WooPosItemsViewState.Loading(withCart = withCart)
             }
 
-            productsDataSource.loadSimpleProducts(forceRefreshProducts = forceRefreshProducts).collect { result ->
+            productsDataSource.loadProducts(forceRefreshProducts = forceRefreshProducts).collect { result ->
                 when (result) {
                     is WooPosProductsDataSource.ProductsResult.Cached -> {
                         if (result.products.isNotEmpty()) {

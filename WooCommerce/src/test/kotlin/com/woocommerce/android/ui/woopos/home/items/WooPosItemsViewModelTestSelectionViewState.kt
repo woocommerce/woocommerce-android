@@ -65,7 +65,7 @@ class WooPosItemsViewModelTestSelectionViewState {
             ),
         )
 
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+        whenever(productsDataSource.loadProducts(any())).thenReturn(
             flowOf(
                 WooPosProductsDataSource.ProductsResult.Remote(
                     Result.success(products)
@@ -100,7 +100,7 @@ class WooPosItemsViewModelTestSelectionViewState {
             ).copy(firstImageUrl = "https://test.com")
         )
 
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+        whenever(productsDataSource.loadProducts(any())).thenReturn(
             flowOf(
                 WooPosProductsDataSource.ProductsResult.Remote(
                     Result.success(products)
@@ -129,7 +129,7 @@ class WooPosItemsViewModelTestSelectionViewState {
     @Test
     fun `given empty products list returned, when view model created, then view state is empty`() = runTest {
         // GIVEN
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+        whenever(productsDataSource.loadProducts(any())).thenReturn(
             flowOf(
                 WooPosProductsDataSource.ProductsResult.Remote(
                     Result.success(emptyList())
@@ -150,7 +150,7 @@ class WooPosItemsViewModelTestSelectionViewState {
     @Test
     fun `given loading products fails, when view model created, then view state is error`() = runTest {
         // GIVEN
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+        whenever(productsDataSource.loadProducts(any())).thenReturn(
             flowOf(
                 WooPosProductsDataSource.ProductsResult.Remote(
                     Result.failure(Exception())
@@ -177,7 +177,7 @@ class WooPosItemsViewModelTestSelectionViewState {
 
             // THEN
             viewModel.viewState.test {
-                verify(productsDataSource).loadSimpleProducts(forceRefreshProducts = true)
+                verify(productsDataSource).loadProducts(forceRefreshProducts = true)
                 cancelAndConsumeRemainingEvents()
             }
         }
@@ -243,7 +243,7 @@ class WooPosItemsViewModelTestSelectionViewState {
 
         // THEN
         viewModel.viewState.test {
-            verify(productsDataSource).loadSimpleProducts(forceRefreshProducts = false)
+            verify(productsDataSource).loadProducts(forceRefreshProducts = false)
             cancelAndConsumeRemainingEvents()
         }
     }
@@ -278,7 +278,7 @@ class WooPosItemsViewModelTestSelectionViewState {
     fun `given no products, when pull to refresh, then state is Empty`() = runTest {
         // GIVEN
         val viewModel = createViewModel()
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+        whenever(productsDataSource.loadProducts(any())).thenReturn(
             flowOf(
                 WooPosProductsDataSource.ProductsResult.Remote(
                     Result.success(emptyList())
@@ -300,7 +300,7 @@ class WooPosItemsViewModelTestSelectionViewState {
     fun `given empty list, when pull to refresh, then parent notified correctly`() = runTest {
         // GIVEN
         val viewModel = createViewModel()
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+        whenever(productsDataSource.loadProducts(any())).thenReturn(
             flowOf(
                 WooPosProductsDataSource.ProductsResult.Remote(
                     Result.success(emptyList())
@@ -508,7 +508,7 @@ class WooPosItemsViewModelTestSelectionViewState {
                 isVariable = true
             )
         )
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+        whenever(productsDataSource.loadProducts(any())).thenReturn(
             flowOf(
                 WooPosProductsDataSource.ProductsResult.Remote(
                     Result.success(products)
@@ -555,7 +555,7 @@ class WooPosItemsViewModelTestSelectionViewState {
                 isVariable = true
             )
         )
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+        whenever(productsDataSource.loadProducts(any())).thenReturn(
             flowOf(
                 WooPosProductsDataSource.ProductsResult.Remote(
                     Result.success(products)
@@ -592,7 +592,7 @@ class WooPosItemsViewModelTestSelectionViewState {
                 ).copy(firstImageUrl = "https://test.com")
             )
 
-            whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+            whenever(productsDataSource.loadProducts(any())).thenReturn(
                 flowOf(
                     WooPosProductsDataSource.ProductsResult.Remote(
                         Result.success(products)
@@ -652,7 +652,7 @@ class WooPosItemsViewModelTestSelectionViewState {
             )
         )
 
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+        whenever(productsDataSource.loadProducts(any())).thenReturn(
             flowOf(
                 WooPosProductsDataSource.ProductsResult.Remote(
                     Result.success(products)
@@ -690,7 +690,7 @@ class WooPosItemsViewModelTestSelectionViewState {
             )
         )
 
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+        whenever(productsDataSource.loadProducts(any())).thenReturn(
             flowOf(
                 WooPosProductsDataSource.ProductsResult.Remote(
                     Result.success(products)
@@ -724,7 +724,7 @@ class WooPosItemsViewModelTestSelectionViewState {
             )
         )
 
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+        whenever(productsDataSource.loadProducts(any())).thenReturn(
             flowOf(
                 WooPosProductsDataSource.ProductsResult.Remote(
                     Result.success(products)
@@ -771,7 +771,7 @@ class WooPosItemsViewModelTestSelectionViewState {
             )
         )
 
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+        whenever(productsDataSource.loadProducts(any())).thenReturn(
             flowOf(
                 WooPosProductsDataSource.ProductsResult.Remote(
                     Result.success(products)

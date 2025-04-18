@@ -1,19 +1,18 @@
 package com.woocommerce.android.ui.woopos.splash
 
+import com.woocommerce.android.ui.woopos.common.data.WooPosPopularProductsProvider
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
-import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource.ProductsResult
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -23,6 +22,7 @@ import kotlin.test.Test
 class WooPosSplashViewModelTest {
     private val productsDataSource: WooPosProductsDataSource = mock()
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
+    private val popularProductsProvider: WooPosPopularProductsProvider = mock()
 
     @Rule
     @JvmField
@@ -42,10 +42,49 @@ class WooPosSplashViewModelTest {
     }
 
     @Test
-    fun `given products load successfully, when vm created, should update state to Loaded`() = runTest {
+    fun `when products are prepopulated, should update state to Loaded`() = runTest {
+        // WHEN
+        val sut = createSut()
+
+        // THEN
+        assertThat(sut.state.value).isEqualTo(WooPosSplashState.Loaded)
+    }
+
+    @Test
+    fun `when products are prepopulated, should track event`() = runTest {
+        // WHEN
+        createSut()
+
+        // THEN
+        verify(analyticsTracker).track(any())
+    }
+
+    @Test
+    fun `when products are prepopulated, should track event with timing properties`() = runTest {
+        // WHEN
+        createSut()
+
+        // THEN
+        verify(analyticsTracker).track(any())
+    }
+
+    @Test
+    fun `when products are prepopulated, should call both product sources`() = runTest {
+        // WHEN
+        createSut()
+
+        // THEN
+        verify(productsDataSource).prepopulateProductsCache()
+        verify(popularProductsProvider).fetchAndCachePopularProducts()
+    }
+
+    @Test
+    fun `given product population fails, should still update state to Loaded`() = runTest {
         // GIVEN
-        whenever(productsDataSource.loadSimpleProducts(forceRefreshProducts = true)).thenReturn(
-            flowOf(ProductsResult.Remote(Result.success(emptyList())))
+        whenever(productsDataSource.prepopulateProductsCache()).thenReturn(
+            Result.failure<Unit>(
+                Exception("Test exception")
+            )
         )
 
         // WHEN
@@ -56,32 +95,20 @@ class WooPosSplashViewModelTest {
     }
 
     @Test
-    fun `given products load successfully, when vm created, should track event`() = runTest {
+    fun `given popular products fetch fails, should still update state to Loaded`() = runTest {
         // GIVEN
-        whenever(productsDataSource.loadSimpleProducts(forceRefreshProducts = true)).thenReturn(
-            flowOf(ProductsResult.Remote(Result.success(emptyList())))
+        whenever(popularProductsProvider.fetchAndCachePopularProducts()).thenReturn(
+            Result.failure<Unit>(
+                Exception("Test exception")
+            )
         )
 
         // WHEN
         val sut = createSut()
 
         // THEN
-        verify(analyticsTracker).track(Event.Loaded)
+        assertThat(sut.state.value).isEqualTo(WooPosSplashState.Loaded)
     }
 
-    @Test
-    fun `given products are cached, when vm created, should remain in loading state`() = runTest {
-        // GIVEN
-        whenever(productsDataSource.loadSimpleProducts(forceRefreshProducts = true)).thenReturn(
-            flowOf(ProductsResult.Cached(emptyList()))
-        )
-
-        // WHEN
-        val sut = createSut()
-
-        // THEN
-        assertThat(sut.state.value).isEqualTo(WooPosSplashState.Loading)
-    }
-
-    private fun createSut() = WooPosSplashViewModel(productsDataSource, analyticsTracker)
+    private fun createSut() = WooPosSplashViewModel(productsDataSource, popularProductsProvider, analyticsTracker)
 }

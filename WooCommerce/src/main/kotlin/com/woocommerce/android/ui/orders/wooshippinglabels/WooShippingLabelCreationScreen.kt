@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels
 
 import android.content.res.Configuration
-import android.os.Parcelable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -41,7 +40,6 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.rememberBottomSheetScaffoldState
-import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
@@ -67,7 +65,6 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.modifiers.dashedBorder
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
-import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.ActionSnackbar
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.CustomsState
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.CustomsState.ItnMissing
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.CustomsState.NotRequired
@@ -81,6 +78,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.address.AddressSelect
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.AddressStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.getShipFrom
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.getShipTo
+import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShippingLabelsSnackbarData
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.SuccessSnackbarHost
 import com.woocommerce.android.ui.orders.wooshippinglabels.hazmat.HazmatCard
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShippingAddress
@@ -90,7 +88,6 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageDa
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRateUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRatesSection
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingSortOption
-import kotlinx.parcelize.Parcelize
 
 @Composable
 fun WooShippingLabelCreationScreen(viewModel: WooShippingLabelCreationViewModel) {
@@ -126,7 +123,7 @@ fun WooShippingLabelCreationScreen(viewModel: WooShippingLabelCreationViewModel)
                 onEditCustomsClick = viewModel::onEditCustomsClick,
                 onEditDestinationAddress = viewModel::onEditDestinationAddress,
                 destinationStatus = viewState.destinationStatus,
-                actionSnackbar = viewModel.actionSnackbar,
+                snackbarData = viewModel.snackbarData,
                 onSplitShipment = viewModel::onSplitShipment,
                 onHazmatNoticeClick = viewModel::onHazmatNoticeClick,
             )
@@ -171,7 +168,7 @@ fun WooShippingLabelCreationScreen(
     onEditDestinationAddress: (DestinationShippingAddress) -> Unit,
     destinationStatus: AddressStatus,
     modifier: Modifier = Modifier,
-    actionSnackbar: ActionSnackbar? = null,
+    snackbarData: ShippingLabelsSnackbarData? = null,
     onSplitShipment: () -> Unit = {},
     onHazmatNoticeClick: () -> Unit = {}
 ) {
@@ -237,7 +234,7 @@ fun WooShippingLabelCreationScreen(
             onEditCustomsClick = onEditCustomsClick,
             onEditDestinationAddress = onEditDestinationAddress,
             destinationStatus = destinationStatus,
-            actionSnackbar = actionSnackbar,
+            snackbarData = snackbarData,
             onSplitShipment = onSplitShipment,
             onHazmatNoticeClick = onHazmatNoticeClick
         )
@@ -318,7 +315,7 @@ private fun LabelCreationScreenWithBottomSheet(
     onEditDestinationAddress: (DestinationShippingAddress) -> Unit,
     destinationStatus: AddressStatus,
     modifier: Modifier = Modifier,
-    actionSnackbar: ActionSnackbar? = null,
+    snackbarData: ShippingLabelsSnackbarData? = null,
     onSplitShipment: () -> Unit = {},
     onHazmatNoticeClick: () -> Unit = {}
 ) {
@@ -457,19 +454,19 @@ private fun LabelCreationScreenWithBottomSheet(
                 )
             }
 
-            val actionSnackbarMessage = actionSnackbar?.let { stringResource(it.message) }
-            val actionSnackbarActionLabel = actionSnackbar?.let { stringResource(it.actionLabel) }
+            val actionSnackbarMessage = snackbarData?.let { stringResource(it.message) }
+            val actionSnackbarActionLabel = snackbarData?.let { stringResource(it.actionLabel) }
 
-            LaunchedEffect(actionSnackbar) {
-                actionSnackbar?.let {
+            LaunchedEffect(snackbarData) {
+                snackbarData?.let {
                     val result = snackbarHostState.showSnackbar(
                         message = actionSnackbarMessage ?: "",
                         actionLabel = actionSnackbarActionLabel,
-                        duration = SnackbarDuration.Short,
+                        duration = snackbarData.duration,
                     )
                     when (result) {
-                        SnackbarResult.ActionPerformed -> actionSnackbar.action()
-                        SnackbarResult.Dismissed -> actionSnackbar.onDismissed()
+                        SnackbarResult.ActionPerformed -> snackbarData.action()
+                        SnackbarResult.Dismissed -> snackbarData.dismissAction()
                     }
                 } ?: snackbarHostState.currentSnackbarData?.dismiss()
             }
@@ -792,25 +789,6 @@ internal fun ErrorScreen(
 ) = Scaffold(topBar = { TopBar(onNavigateBack) }) { padding ->
     ErrorMessageWithButton(modifier = modifier.padding(padding), onRetryClick = onRetryClick)
 }
-
-@Parcelize
-data class ShippableItemUI(
-    val itemId: Long,
-    val productId: Long,
-    val title: String,
-    val formattedSize: String,
-    val formattedWeight: String,
-    val formattedPrice: String,
-    val quantity: Float,
-    val imageUrl: String? = null
-) : Parcelable
-
-@Parcelize
-data class ShippableItemsUI(
-    val shippableItems: List<ShippableItemUI>,
-    val formattedTotalWeight: String,
-    val formattedTotalPrice: String
-) : Parcelable
 
 @Preview(name = "dark", uiMode = Configuration.UI_MODE_NIGHT_YES, device = Devices.PIXEL)
 @Preview(name = "light", uiMode = Configuration.UI_MODE_NIGHT_NO, device = Devices.PIXEL)
