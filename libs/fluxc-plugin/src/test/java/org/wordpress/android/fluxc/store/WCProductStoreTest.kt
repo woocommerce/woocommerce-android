@@ -1,7 +1,10 @@
 package org.wordpress.android.fluxc.store
 
+import androidx.core.util.Consumer
 import androidx.room.Room
 import com.yarolegovich.wellsql.WellSql
+import kotlinx.coroutines.test.runTest
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -16,6 +19,7 @@ import org.wordpress.android.fluxc.UnitTestUtils
 import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCProductCategoryModel
+import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.WCProductReviewModel
 import org.wordpress.android.fluxc.model.WCProductVariationModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductRestClient
@@ -86,42 +90,41 @@ class WCProductStoreTest {
         assertEquals(productModel, storedProduct)
     }
 
-//    @Test
-//    fun testGetProductsBySiteAndProductIds() {
-//        val productIds = listOf<Long>(30, 31, 2)
-//
-//        val product1 = ProductTestUtils.generateSampleProduct(30)
-//        val product2 = ProductTestUtils.generateSampleProduct(31)
-//        val product3 = ProductTestUtils.generateSampleProduct(42)
-//
-//        ProductSqlUtils.insertOrUpdateProduct(product1)
-//        ProductSqlUtils.insertOrUpdateProduct(product2)
-//        ProductSqlUtils.insertOrUpdateProduct(product3)
-//
-//        val site = SiteModel().apply { id = product1.localSiteId }
-//        val products = productStore.getProductsByRemoteIds(site, productIds)
-//        assertEquals(2, products.size)
-//
-//        // insert products with the same productId but for a different site
-//        val differentSiteProduct1 = ProductTestUtils.generateSampleProduct(10, siteId = 10)
-//        val differentSiteProduct2 = ProductTestUtils.generateSampleProduct(11, siteId = 10)
-//        val differentSiteProduct3 = ProductTestUtils.generateSampleProduct(2, siteId = 10)
-//
-//        ProductSqlUtils.insertOrUpdateProduct(differentSiteProduct1)
-//        ProductSqlUtils.insertOrUpdateProduct(differentSiteProduct2)
-//        ProductSqlUtils.insertOrUpdateProduct(differentSiteProduct3)
-//
-//        // verify that the products for the first site is still 2
-//        assertEquals(2, productStore.getProductsByRemoteIds(site, productIds).size)
-//
-//        // verify that the products for the second site is 3
-//        val site2 = SiteModel().apply { id = differentSiteProduct1.localSiteId }
-//        val differentSiteProducts = productStore.getProductsByRemoteIds(site2, listOf(10, 11, 2))
-//        assertEquals(3, differentSiteProducts.size)
-//        assertEquals(differentSiteProduct1.remoteProductId, differentSiteProducts[0].remoteProductId)
-//        assertEquals(differentSiteProduct2.remoteProductId, differentSiteProducts[1].remoteProductId)
-//        assertEquals(differentSiteProduct3.remoteProductId, differentSiteProducts[2].remoteProductId)
-//    }
+    @Test
+    fun testGetProductsBySiteAndProductIds() = runTest {
+        val productIds = listOf<Long>(30, 31, 2)
+
+        val product1 = ProductTestUtils.generateSampleProduct(30)
+        val product2 = ProductTestUtils.generateSampleProduct(31)
+        val product3 = ProductTestUtils.generateSampleProduct(42)
+
+        productsDao.upsertProducts(listOf(product1, product2, product3))
+
+        val site = SiteModel().apply { id = product1.localSiteId.value }
+        val products = productStore.getProductsByRemoteIds(site, productIds)
+        assertEquals(2, products.size)
+
+        // insert products with the same productId but for a different site
+        val differentSiteProduct1 = ProductTestUtils.generateSampleProduct(10, siteId = 10)
+        val differentSiteProduct2 = ProductTestUtils.generateSampleProduct(11, siteId = 10)
+        val differentSiteProduct3 = ProductTestUtils.generateSampleProduct(2, siteId = 10)
+
+        productsDao.upsertProducts(listOf(differentSiteProduct1, differentSiteProduct2, differentSiteProduct3))
+
+        // verify that the products for the first site is still 2
+        assertEquals(2, productStore.getProductsByRemoteIds(site, productIds).size)
+
+        // verify that the products for the second site is 3
+        val site2 = SiteModel().apply { id = differentSiteProduct1.localSiteId.value }
+        val differentSiteProducts = productStore.getProductsByRemoteIds(site2, listOf(10, 11, 2))
+
+        assertThat(differentSiteProducts.map { it.remoteProductId })
+            .containsExactlyInAnyOrder(
+                differentSiteProduct1.remoteProductId,
+                differentSiteProduct2.remoteProductId,
+                differentSiteProduct3.remoteProductId
+            )
+    }
 //
 //    @Test
 //    fun testUpdateProduct() {

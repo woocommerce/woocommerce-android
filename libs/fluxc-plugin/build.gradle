@@ -54,6 +54,7 @@ dependencies {
     testFixturesCompileOnly "org.jetbrains.kotlin:kotlin-stdlib:${libs.versions.kotlin.get()}"
     testFixturesCompileOnly libs.google.gson
     testFixturesCompileOnly libs.wordpress.utils
+    testFixturesCompileOnly libs.assertj.core
 
     testImplementation testFixtures(project(":libs:fluxc-plugin"))
 
