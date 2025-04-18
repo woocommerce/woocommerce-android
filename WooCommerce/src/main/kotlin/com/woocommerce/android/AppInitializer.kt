@@ -171,13 +171,15 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         override fun run(): Boolean {
             selectedSite.getIfExists()?.let {
                 appCoroutineScope.launch {
-                    wooCommerceStore.fetchWooCommerceSite(it).let {
-                        if (it.model?.hasWooCommerce == false && it.model?.connectionType == ApplicationPasswords) {
+                    wooCommerceStore.fetchWooCommerceSite(it).model?.let {
+                        if (!it.hasWooCommerce && it.connectionType == ApplicationPasswords) {
                             // The previously selected site doesn't have Woo anymore, take the user to the login screen
                             WooLog.w(T.LOGIN, "Selected site no longer has WooCommerce")
 
                             selectedSite.reset()
                             restartMainActivity()
+                        } else {
+                            selectedSite.set(it)
                         }
                     }
                     wooCommerceStore.fetchSiteGeneralSettings(it)
