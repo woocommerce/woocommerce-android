@@ -36,6 +36,7 @@ android {
     testOptions {
         unitTests.includeAndroidResources = true
     }
+    testFixtures.enable = true
 }
 
 tasks.withType(KotlinCompile).configureEach {
@@ -46,6 +47,15 @@ tasks.withType(KotlinCompile).configureEach {
 
 dependencies {
     implementation project(":libs:fluxc")
+
+    testFixturesCompileOnly project(":libs:fluxc")
+    testFixturesCompileOnly libs.mockito.kotlin
+    // Remove with AGP 8.9.0 https://issuetracker.google.com/issues/340315591?pli=1
+    testFixturesCompileOnly "org.jetbrains.kotlin:kotlin-stdlib:${libs.versions.kotlin.get()}"
+    testFixturesCompileOnly libs.google.gson
+    testFixturesCompileOnly libs.wordpress.utils
+
+    testImplementation testFixtures(project(":libs:fluxc-plugin"))
 
     // WordPress libs
     implementation(libs.wordpress.utils) {
