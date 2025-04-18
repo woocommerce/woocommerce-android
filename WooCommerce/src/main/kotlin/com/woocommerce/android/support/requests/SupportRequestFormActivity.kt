@@ -16,7 +16,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.ActivitySupportRequestFormBinding
 import com.woocommerce.android.extensions.adjustActivityTransition
 import com.woocommerce.android.extensions.doOnApplyWindowInsets
-import com.woocommerce.android.extensions.edgeToEdgeHandlingForNavigationAndStatusBar
 import com.woocommerce.android.extensions.serializable
 import com.woocommerce.android.support.SupportHelper
 import com.woocommerce.android.support.help.HelpOrigin
@@ -54,14 +53,20 @@ class SupportRequestFormActivity : AppCompatActivity() {
         zendeskSettings.setup(context = this)
 
         ActivitySupportRequestFormBinding.inflate(layoutInflater).apply {
-            this.root.edgeToEdgeHandlingForNavigationAndStatusBar(appBarLayout)
             this.root.doOnApplyWindowInsets(
                 insetsMask = WindowInsetsCompat.Type.systemBars()
                     or WindowInsetsCompat.Type.displayCutout()
                     or WindowInsetsCompat.Type.ime(),
                 consumeInsets = true
             ) { insets ->
-                this.root.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
+                this.root.updatePadding(
+                    left = insets.left,
+                    right = insets.right,
+                    bottom = insets.bottom
+                )
+                this.appBarLayout.updatePadding(
+                    top = insets.top
+                )
             }
             setContentView(root)
             setupActionBar()
