@@ -14,6 +14,8 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductType
 import org.wordpress.android.fluxc.network.utils.getBoolean
 import org.wordpress.android.fluxc.network.utils.getLong
 import org.wordpress.android.fluxc.network.utils.getString
+import org.wordpress.android.util.AppLog
+import org.wordpress.android.util.AppLog.T
 
 /**
  * Single Woo product - see http://woocommerce.github.io/woocommerce-rest-api-docs/#product-properties
@@ -215,10 +217,10 @@ data class WCProductModel(
                 val jsonElement = Gson().fromJson(images, JsonElement::class.java)
                 getImageList(jsonElement.asJsonArray)
             } catch (e: JsonParseException) {
-//                AppLog.e(T.API, e)
+                AppLog.e(T.API, e)
                 emptyList()
             } catch (e: IllegalStateException) {
-//                AppLog.e(T.API, e)
+                AppLog.e(T.API, e)
                 emptyList()
             }
         } else {
@@ -252,7 +254,7 @@ data class WCProductModel(
                 }
             }
         } catch (e: JsonParseException) {
-//            AppLog.e(T.API, e)
+            AppLog.e(T.API, e)
         }
         return null
     }
@@ -269,9 +271,9 @@ data class WCProductModel(
                     options.add(it.asString)
                 }
             } catch (e: ClassCastException) {
-//                AppLog.e(T.API, e)
+                AppLog.e(T.API, e)
             } catch (e: IllegalStateException) {
-//                AppLog.e(T.API, e)
+                AppLog.e(T.API, e)
             }
             return options
         }
@@ -292,7 +294,7 @@ data class WCProductModel(
         }.fold(
             onSuccess = { it },
             onFailure = { e ->
-//                AppLog.e(T.API, e)
+                AppLog.e(T.API, e)
                 emptyList()
             }
         )
@@ -314,7 +316,7 @@ data class WCProductModel(
                 }
             }
         } catch (e: JsonParseException) {
-//            AppLog.e(T.API, e)
+            AppLog.e(T.API, e)
         }
         return fileList
     }
@@ -341,7 +343,7 @@ data class WCProductModel(
                 val jsonElement = Gson().fromJson(jsonString, JsonElement::class.java)
                 parseJsonIfNotEmpty(jsonElement)
             } catch (e: JsonParseException) {
-//                AppLog.e(T.API, e)
+                AppLog.e(T.API, e)
                 emptyList()
             }
         } else {
@@ -392,7 +394,7 @@ data class WCProductModel(
                 val jsonElement = Gson().fromJson(jsonStr, JsonElement::class.java)
                 getTriplets(jsonElement)
             } catch (e: JsonParseException) {
-//                AppLog.e(T.API, e)
+                AppLog.e(T.API, e)
                 emptyList()
             }
         } else {

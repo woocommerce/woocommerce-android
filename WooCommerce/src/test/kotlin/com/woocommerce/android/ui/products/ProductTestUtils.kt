@@ -56,13 +56,15 @@ object ProductTestUtils {
             description = "product 1 description",
             images = if (imageUrl != null) """[{"src":"$imageUrl"}]""" else "[]",
             downloadable = isDownloadable,
-            downloads = """[,
-                                {,
-                                    "id": 1,,
-                                    "name": "test",,
-                                    "file": "https://testurl",
-                                },
-                            ]""",
+            downloads = """
+                [
+                  {
+                      "id": 1,
+                      "name": "test",
+                      "file": "https://testurl"
+                  }
+                ]
+            """.trimIndent(),
             weight = "10",
             length = "1",
             width = "2",
