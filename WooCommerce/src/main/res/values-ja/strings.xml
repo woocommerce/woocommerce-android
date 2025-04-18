@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-03-25 09:54:14+0000
+Translation-Revision-Date: 2025-04-08 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_split_shipment_shipment_new">新規配送</string>
+    <string name="woo_shipping_split_shipment_shipment_name">配送 %s</string>
+    <string name="woo_shipping_split_move_to">移動先</string>
+    <string name="woo_shipping_split_move_to_new">新規配送に移動</string>
+    <string name="woo_shipping_split_shipment_instructions">分割するには項目を選択し、ツールバーが表示されたら&lt;b&gt;「新規配送に移動」&lt;/b&gt;をタップします。</string>
+    <string name="woo_shipping_labels_hazmat_selection_removed">削除済み有害物質カテゴリー</string>
+    <string name="woo_shipping_labels_hazmat_selection_set">有害物質カテゴリーセット</string>
+    <string name="woo_shipping_labels_hazmat_search_hint">カテゴリーを検索</string>
+    <string name="woo_shipping_labels_hazmat_info_select_category">カテゴリーを選択</string>
+    <string name="woo_shipping_labels_hazmat_info_tooltip_2">WooCommerce Shipping は現在、&lt;a href=\'dhl-hazmat\'&gt;&lt;u&gt;DHL Express&lt;/u&gt;&lt;/a&gt; による危険物の配送には対応していません。</string>
+    <string name="woo_shipping_labels_hazmat_info_tooltip_1">危険物を安全に梱包、ラベル付け、発送する方法については、USPS® (&lt;a href=\'usps-hazmat\'&gt;&lt;u&gt;www.usps.com/hazmat&lt;/u&gt;&lt;/a&gt;) を参照してください。 &lt;a href=\'hazmat-tool\'&gt;&lt;u&gt;USPS の危険物検索ツール&lt;/u&gt;&lt;/a&gt;を使用して商品が郵送可能かわかります。</string>
+    <string name="woo_shipping_labels_hazmat_info_full_description">危険性が高いと考えられる品目には、電池、ドライアイス、可燃性液体、エアロゾル、弾薬、花火、マニキュア、香水、塗料、溶剤などがあります。 危険物は個別に梱包して発送する必要があります。</string>
+    <string name="woo_shipping_labels_hazmat_info_contains_hazmat">有害物質を含む</string>
+    <string name="woo_shipping_labels_hazmat_info_title">危険物または有害物質を発送しようとしていますか ?</string>
+    <string name="woopos_search_items_error_description">もう一度試しますか ?</string>
+    <string name="woopos_search_items_error_title">項目を読み込めませんでした</string>
+    <string name="woopos_search_empty_image_content_description">項目が見つかりませんでした</string>
+    <string name="woopos_search_empty_description">検索に一致するものが見つかりませんでした。</string>
+    <string name="woopos_search_items_empty_title">見つかりません</string>
+    <string name="woopos_payment_discount_label">割引</string>
+    <string name="woopos_cart_item_coupon_content_description">お買い物カゴ %s のクーポン </string>
+    <string name="shipping_label_package_title">荷物を選択</string>
+    <string name="receipt_preview_toolbar_title">領収書のプレビュー</string>
     <string name="woo_shipping_split_shipment">分割配送</string>
     <string name="woo_shipping_labels_purchase_error">配送ラベルを購入できません。 もう一度お試しください。</string>
     <string name="woo_shipping_address_notification_origin_verified">確認済みの配送元住所</string>
@@ -330,7 +353,7 @@ Language: ja_JP
     <string name="more_menu_button_payments_description">外出先で支払いを受け取る</string>
     <string name="card_reader_payment_failed_incorrect_pin">誤った PIN が入力されました。 再度お試しいただくか、別の支払い方法をお使いください</string>
     <string name="woopos_menu_toolbar_content_description">メニュー</string>
-    <string name="woopos_cart_item_content_description">お買い物カゴ %s の商品、価格%s</string>
+    <string name="woopos_cart_item_product_content_description">お買い物カゴ %s の商品、価格%s</string>
     <string name="woopos_product_item_content_description">商品 %s、価格%s</string>
     <string name="blaze_campaign_status_suspended">一時停止中</string>
     <string name="woopos_new_order_button">新しい注文</string>
@@ -564,10 +587,6 @@ Language: ja_JP
     <string name="login_app_password_title">ストアにログインできませんでした</string>
     <string name="empty_order_detail_message">注文が完了すると、ここに注文の詳細が表示されます。</string>
     <string name="empty_order_detail_title">注文の詳細はまだありません</string>
-    <string name="order_creation_simple_payment_migration_button">カスタム金額を追加</string>
-    <string name="order_creation_simple_payment_migration_message_two">支払額を設定するには\n新規注文にカスタム金額を追加してください。</string>
-    <string name="order_creation_simple_payment_migration_message_one">支払いの受け取りと\n注文の作成を統合したことでアクセスしやすくなり、\nさらに高機能になりました。</string>
-    <string name="order_creation_simple_payment_migration_title">支払いを受け取る \nは移動しました</string>
     <string name="analytics_bundles_card_title">パッケージ</string>
     <string name="analytics_bundles_list_header_subtitle">販売済みパッケージ</string>
     <string name="analytics_bundles_list_header_title">パッケージ</string>
@@ -1165,7 +1184,6 @@ Language: ja_JP
     <string name="last_update_with_frequency">最終更新 %s (30分ごとに更新)</string>
     <string name="last_update">最終更新 %s</string>
     <string name="card_reader_tap_to_pay_learn_more">Android の Tap To Pay による支払いの受け取りについて&lt;a href=\'\'&gt;詳しくはこちら&lt;/a&gt;をご覧ください</string>
-    <string name="card_reader_hub_collect_payment">支払いを受け取る</string>
     <string name="order_creation_barcode_scanning_unable_to_add_product_with_invalid_price">価格が指定されていない商品は追加できません</string>
     <string name="order_creation_barcode_scanning_unable_to_add_draft_product">公開されていない商品は追加できません</string>
     <string name="order_creation_add_customer_content_description">顧客を追加</string>
@@ -1485,7 +1503,6 @@ Language: ja_JP
     <string name="card_reader_tap_to_pay_explanation_try_payment">支払いを試す</string>
     <string name="card_reader_tap_to_pay_explanation_title">スマートフォンでカードでの\n支払いを受け取る</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tap To Pay</string>
-    <string name="card_reader_hub_actions_category_header">アクション</string>
     <string name="domain_registration_generic_error">ドメイン登録中にエラーが発生しました</string>
     <string name="domain_registration_state_picker_dialog_title">都道府県を選択</string>
     <string name="domain_registration_country_picker_dialog_title">国を選択</string>
