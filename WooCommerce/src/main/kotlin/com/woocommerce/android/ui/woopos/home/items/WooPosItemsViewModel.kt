@@ -294,19 +294,14 @@ class WooPosItemsViewModel @Inject constructor(
         }
     }
 
+    @Suppress("ReturnCount")
     private fun onEndOfProductsListReached() {
         val currentState = _viewState.value
-        if (currentState !is WooPosItemsViewState.Content) {
-            return
-        }
+        if (currentState !is WooPosItemsViewState.Content) return
 
-        if (loadMoreProductsJob?.isActive == true || loadProductsJob?.isActive == true) {
-            return
-        }
+        if (loadMoreProductsJob?.isActive == true || loadProductsJob?.isActive == true) return
 
-        if (!productsDataSource.hasMorePages) {
-            return
-        }
+        if (!productsDataSource.hasMorePages) return
 
         _viewState.value = currentState.copy(paginationState = WooPosPaginationState.Loading)
 
