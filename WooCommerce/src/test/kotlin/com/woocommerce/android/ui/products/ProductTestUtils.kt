@@ -7,6 +7,7 @@ import com.woocommerce.android.model.ProductTag
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.ui.products.ProductStatus.DRAFT
+import org.intellij.lang.annotations.Language
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.WCProductVariationModel
@@ -14,6 +15,34 @@ import java.sql.Date
 import java.time.Instant
 
 object ProductTestUtils {
+
+    @Language("JSON")
+    private val DEFAULT_PRODUCT_ATTRIBUTES =
+        """
+            [
+              {
+                "id": 1,
+                "name":"Color",
+                "position":"0",
+                "visible":"true",
+                "variation":"true",
+                "options": ["Blue","Green","Red"]
+              }
+            ]
+        """.trimIndent()
+
+    @Language("JSON")
+    private val DOWNLOADS =
+        """
+            [
+              {
+                "id": 1,
+                "name": "test",
+                "file": "https://testurl"
+              }
+            ]
+        """.trimIndent()
+
     fun generateProduct(
         productId: Long = 1L,
         parentID: Long = 0L,
@@ -29,16 +58,7 @@ object ProductTestUtils {
         imageUrl: String? = null,
         isStockManaged: Boolean = false,
         productCombinesVariationQuantities: Boolean = false,
-        productAttributes: String = """[
-                                {
-                                    "id": 1,
-                                    "name":"Color",
-                                    "position":0",
-                                    "visible":"true",
-                                    "variation":"true",
-                                    "options": ["Blue","Green","Red"]
-                                }
-                            ]"""
+        productAttributes: String = DEFAULT_PRODUCT_ATTRIBUTES
     ): Product {
         return WCProductModel(
             dateCreated = "2018-01-05T05:14:30Z",
@@ -56,15 +76,7 @@ object ProductTestUtils {
             description = "product 1 description",
             images = if (imageUrl != null) """[{"src":"$imageUrl"}]""" else "[]",
             downloadable = isDownloadable,
-            downloads = """
-                [
-                  {
-                      "id": 1,
-                      "name": "test",
-                      "file": "https://testurl"
-                  }
-                ]
-            """.trimIndent(),
+            downloads = DOWNLOADS,
             weight = "10",
             length = "1",
             width = "2",
