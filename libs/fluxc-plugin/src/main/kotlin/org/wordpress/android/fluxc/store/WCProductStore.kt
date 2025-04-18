@@ -1061,14 +1061,16 @@ class WCProductStore @Inject constructor(
         site: SiteModel,
         filterOptions: Map<ProductFilterOption, String> = emptyMap(),
         excludeSampleProducts: Boolean = false
-    ): Flow<Long> = productsDao.observeProductsCount(
+    ): Flow<Long> = productsDao.observeProducts(
         localSiteId = site.id,
         status = filterOptions[ProductFilterOption.STATUS],
         stockStatus = filterOptions[ProductFilterOption.STOCK_STATUS],
         type = filterOptions[ProductFilterOption.TYPE],
         category = filterOptions[ProductFilterOption.CATEGORY]?.let { categoryFilter(it) },
-        excludeSampleProducts = excludeSampleProducts
-    )
+        excludeSampleProducts = excludeSampleProducts,
+        limit = null,
+        excludedProductIds = null
+    ).map { it.size.toLong() }
 
     fun observeVariations(site: SiteModel, productId: Long): Flow<List<WCProductVariationModel>> =
         ProductSqlUtils.observeVariations(site, productId)
