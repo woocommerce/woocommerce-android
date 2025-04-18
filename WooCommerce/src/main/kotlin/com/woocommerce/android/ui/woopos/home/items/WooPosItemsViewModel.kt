@@ -123,7 +123,7 @@ class WooPosItemsViewModel @Inject constructor(
                 sendEventToParent(
                     ChildToParentEvent.ItemClickedInProductSelector(
                         // CouponsProject: Show available coupons instead
-                        ItemClickedData.Coupon(id = 0, couponCode = "DummyCoupon")
+                        ItemClickedData.Coupon(id = 5013)
                     )
                 )
             }
@@ -361,6 +361,6 @@ class WooPosItemsViewModel @Inject constructor(
         }
 
         @Parcelize
-        data class Coupon(override val id: Long, val couponCode: String) : ItemClickedData(id), Parcelable
+        data class Coupon(override val id: Long) : ItemClickedData(id), Parcelable
     }
 }
