@@ -110,5 +110,5 @@ abstract class ProductsDao {
     abstract suspend fun deleteProduct(
         localSiteId: Int,
         remoteProductId: Long
-    ): Int
+    )
 }

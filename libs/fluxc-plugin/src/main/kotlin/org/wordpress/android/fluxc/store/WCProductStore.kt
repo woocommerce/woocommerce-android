@@ -729,7 +729,6 @@ class WCProductStore @Inject constructor(
 
     // OnChanged events
     class OnProductChanged(
-        var rowsAffected: Int,
         var remoteProductId: Long = 0L, // only set for fetching or deleting a single product
         var canLoadMore: Boolean = false
     ) : OnChanged<ProductError>() {
@@ -1166,12 +1165,12 @@ class WCProductStore @Inject constructor(
             val result = with(payload) { wcProductRestClient.fetchSingleProduct(site, remoteProductId) }
 
             return@withDefaultContext if (result.isError) {
-                OnProductChanged(0).also {
+                OnProductChanged().also {
                     it.error = result.error
                     it.remoteProductId = result.productWithMetaData.product.remoteProductId
                 }
             } else {
-                val rowsAffected = productStorageHelper.upsertProduct(result.productWithMetaData)
+                productStorageHelper.upsertProduct(result.productWithMetaData)
 
                 // TODO: 18/08/2021 @wzieba add tests
                 coroutineEngine.launch(T.DB, this, "cacheProductAddons") {
@@ -1184,7 +1183,7 @@ class WCProductStore @Inject constructor(
                     )
                 }
 
-                OnProductChanged(rowsAffected).also {
+                OnProductChanged().also {
                     it.remoteProductId = result.productWithMetaData.product.remoteProductId
                 }
             }
@@ -1293,7 +1292,7 @@ class WCProductStore @Inject constructor(
                 wcProductRestClient.fetchProductVariations(site, remoteProductId, pageSize, offset)
             }
             return@withDefaultContext if (result.isError) {
-                OnProductChanged(0, payload.remoteProductId).also { it.error = result.error }
+                OnProductChanged(payload.remoteProductId).also { it.error = result.error }
             } else {
                 // delete product variations for site if this is the first page of results, otherwise
                 // product variations deleted outside of the app will persist
@@ -1301,10 +1300,8 @@ class WCProductStore @Inject constructor(
                     ProductSqlUtils.deleteVariationsForProduct(result.site, result.remoteProductId)
                 }
 
-                val rowsAffected = ProductSqlUtils.insertOrUpdateProductVariations(
-                    result.variations
-                )
-                OnProductChanged(rowsAffected, payload.remoteProductId, canLoadMore = result.canLoadMore)
+                ProductSqlUtils.insertOrUpdateProductVariations(result.variations)
+                OnProductChanged(payload.remoteProductId, canLoadMore = result.canLoadMore)
             }
         }
     }
@@ -1974,7 +1971,7 @@ class WCProductStore @Inject constructor(
             val onProductChanged: OnProductChanged
 
             if (payload.isError) {
-                onProductChanged = OnProductChanged(0).also { it.error = payload.error }
+                onProductChanged = OnProductChanged().also { it.error = payload.error }
             } else {
                 // remove the existing products for this site if this is the first page of results
                 // or if the remoteProductIds or excludedProductIds are null, otherwise
@@ -1983,8 +1980,8 @@ class WCProductStore @Inject constructor(
                     productStorageHelper.deleteProductsForSite(payload.site)
                 }
 
-                val rowsAffected = productStorageHelper.upsertProducts(payload.productsWithMetaData)
-                onProductChanged = OnProductChanged(rowsAffected, canLoadMore = payload.canLoadMore)
+                productStorageHelper.upsertProducts(payload.productsWithMetaData)
+                onProductChanged = OnProductChanged(canLoadMore = payload.canLoadMore)
 
                 // TODO: 18/08/2021 @wzieba add tests
                 coroutineEngine.launch(T.DB, this, "cacheProductsAddons") {
@@ -2218,13 +2215,13 @@ class WCProductStore @Inject constructor(
             val onProductChanged: OnProductChanged
 
             if (payload.isError) {
-                onProductChanged = OnProductChanged(0).also { it.error = payload.error }
+                onProductChanged = OnProductChanged().also { it.error = payload.error }
             } else {
-                val rowsAffected = productStorageHelper.deleteProduct(
+                productStorageHelper.deleteProduct(
                     payload.site,
                     payload.remoteProductId
                 )
-                onProductChanged = OnProductChanged(rowsAffected, payload.remoteProductId)
+                onProductChanged = OnProductChanged(payload.remoteProductId)
             }
 
             onProductChanged.causeOfChange = WCProductAction.DELETED_PRODUCT
