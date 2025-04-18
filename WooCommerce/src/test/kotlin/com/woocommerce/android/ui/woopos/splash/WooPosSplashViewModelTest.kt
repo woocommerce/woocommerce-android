@@ -75,7 +75,7 @@ class WooPosSplashViewModelTest {
 
         // THEN
         verify(productsDataSource).prepopulateProductsCache()
-        verify(popularProductsProvider).fetchPopularProducts()
+        verify(popularProductsProvider).fetchAndCachePopularProducts()
     }
 
     @Test
@@ -97,7 +97,7 @@ class WooPosSplashViewModelTest {
     @Test
     fun `given popular products fetch fails, should still update state to Loaded`() = runTest {
         // GIVEN
-        whenever(popularProductsProvider.fetchPopularProducts()).thenReturn(
+        whenever(popularProductsProvider.fetchAndCachePopularProducts()).thenReturn(
             Result.failure<Unit>(
                 Exception("Test exception")
             )

@@ -3,19 +3,18 @@ package org.wordpress.android.fluxc.network.rest.wpcom.wc
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.kotlin.argThat
 import org.mockito.kotlin.given
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.robolectric.RobolectricTestRunner
-import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.action.SiteAction
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsNetwork
+import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsStore
 import org.wordpress.android.fluxc.network.rest.wpcom.JetpackTunnelWPAPINetwork
+import org.wordpress.android.fluxc.persistence.SiteSqlUtils
 import org.wordpress.android.fluxc.test
 
 @RunWith(RobolectricTestRunner::class)
@@ -24,12 +23,14 @@ class WooExperimentalNetworkTest {
     private val testPath = "path"
     private val applicationPasswordsNetwork: ApplicationPasswordsNetwork = mock()
     private val jetpackTunnelWPAPINetwork: JetpackTunnelWPAPINetwork = mock()
-    private val dispatcher: Dispatcher = mock()
+    private val applicationPasswordsStore: ApplicationPasswordsStore = mock()
+    private val siteSqlUtils: SiteSqlUtils = mock()
 
     private val sut = WooExperimentalNetwork(
         applicationPasswordsNetwork = applicationPasswordsNetwork,
         jetpackTunnelWPAPINetwork = jetpackTunnelWPAPINetwork,
-        dispatcher = dispatcher
+        applicationPasswordsStore = applicationPasswordsStore,
+        siteSqlUtils = siteSqlUtils
     )
 
     @Test
@@ -101,6 +102,9 @@ class WooExperimentalNetworkTest {
                     )
                 )
             )
+            givenJetpackTunnelResponse(
+                WPAPIResponse.Success(SampleResponse("value"))
+            )
 
             sut.executeGetGsonRequest(
                 site = testSite,
@@ -111,10 +115,7 @@ class WooExperimentalNetworkTest {
             val expectedSite = testSite.apply {
                 applicationPasswordsAuthorizeUrl = null
             }
-            verify(dispatcher).dispatch(argThat {
-                this.type == SiteAction.UPDATE_SITE &&
-                    this.payload == expectedSite
-            })
+            verify(siteSqlUtils).insertOrUpdateSite(expectedSite)
         }
 
     private suspend fun givenAppPasswordsResponse(response: WPAPIResponse<SampleResponse>) {

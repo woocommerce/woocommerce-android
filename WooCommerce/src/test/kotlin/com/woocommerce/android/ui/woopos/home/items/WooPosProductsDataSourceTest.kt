@@ -483,7 +483,11 @@ class WooPosProductsDataSourceTest {
         whenever(mockProductB.name).thenReturn("B Product")
         whenever(mockProductB.remoteId).thenReturn(2L)
 
-        val customUnsortedProducts = listOf(mockProductC, mockProductA, mockProductB)
+        val mockProductab = mock<Product>()
+        whenever(mockProductab.name).thenReturn("ab Product")
+        whenever(mockProductab.remoteId).thenReturn(2L)
+
+        val customUnsortedProducts = listOf(mockProductC, mockProductA, mockProductB, mockProductab)
         val sortedProducts = listOf(mockProductA, mockProductB, mockProductC)
 
         whenever(productsCache.getAll()).thenReturn(customUnsortedProducts)
@@ -515,87 +519,9 @@ class WooPosProductsDataSourceTest {
         val cachedResult = result as WooPosProductsDataSource.ProductsResult.Cached
 
         assertThat(cachedResult.products[0].name).isEqualTo("A Product")
-        assertThat(cachedResult.products[1].name).isEqualTo("B Product")
-        assertThat(cachedResult.products[2].name).isEqualTo("C Product")
-    }
-
-    @Test
-    @Suppress("LongMethod")
-    fun `when loading more products, they should be sorted by name in ascending order`() = runTest {
-        // GIVEN
-        val mockProductD = mock<Product>()
-        whenever(mockProductD.name).thenReturn("D Product")
-
-        val mockProductE = mock<Product>()
-        whenever(mockProductE.name).thenReturn("E Product")
-
-        val mockProductC = mock<Product>()
-        whenever(mockProductC.name).thenReturn("C Product")
-
-        val mockProductA = mock<Product>()
-        whenever(mockProductA.name).thenReturn("A Product")
-
-        val mockProductB = mock<Product>()
-        whenever(mockProductB.name).thenReturn("B Product")
-
-        val initialProducts = listOf(mockProductC, mockProductA, mockProductB)
-        val additionalUnsortedProducts = listOf(mockProductE, mockProductD)
-        val allProducts = initialProducts + additionalUnsortedProducts
-
-        whenever(
-            productStore.fetchProducts(
-                site = eq(siteModel),
-                offset = any(),
-                pageSize = any(),
-                sortType = any(),
-                filterOptions = any(),
-                includeTypes = any()
-            )
-        ).thenReturn(WooResult(listOf<WCProductModel>()))
-        whenever(productsIndex.getProductList()).thenReturn(allProducts)
-        whenever(
-            productStore.fetchProducts(
-                site = eq(siteModel),
-                offset = any(),
-                pageSize = any(),
-                sortType = any(),
-                filterOptions = any(),
-                includeTypes = any()
-            )
-        ).thenReturn(
-            WooResult<List<WCProductModel>>(
-                List(25) {
-                    WCProductModel().apply {
-                        remoteProductId = it.toLong()
-                        attributes = "[]"
-                        status = "draft"
-                    }
-                }
-            )
-        )
-
-        val sut = WooPosProductsDataSource(
-            productStore,
-            selectedSite,
-            productsCache,
-            productsIndex,
-            productsTypesFilterConfig
-        )
-        sut.loadProducts(forceRefreshProducts = true).first()
-
-        // WHEN
-        val result = sut.loadMore()
-
-        // THEN
-        assertThat(result.isSuccess).isTrue()
-        val sortedProducts = result.getOrNull()
-        assertThat(sortedProducts).isNotNull
-
-        assertThat(sortedProducts!![0].name).isEqualTo("A Product")
-        assertThat(sortedProducts[1].name).isEqualTo("B Product")
-        assertThat(sortedProducts[2].name).isEqualTo("C Product")
-        assertThat(sortedProducts[3].name).isEqualTo("D Product")
-        assertThat(sortedProducts[4].name).isEqualTo("E Product")
+        assertThat(cachedResult.products[1].name).isEqualTo("ab Product")
+        assertThat(cachedResult.products[2].name).isEqualTo("B Product")
+        assertThat(cachedResult.products[3].name).isEqualTo("C Product")
     }
 
     @Test

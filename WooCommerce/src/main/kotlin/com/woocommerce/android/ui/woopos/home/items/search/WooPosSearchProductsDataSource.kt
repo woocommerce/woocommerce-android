@@ -41,7 +41,7 @@ class WooPosSearchProductsDataSource @Inject constructor(
             searchResultsIndex.clearCache()
 
             val localSearchDeferred = async {
-                productsCache.getAll().filter(searchPredicate(query)).sortedBy { it.name }.take(PAGE_SIZE)
+                sortProducts(productsCache.getAll().filter(searchPredicate(query))).take(PAGE_SIZE)
             }
             val remoteSearchDeferred = async { performRemoteSearch(query) }
 
@@ -58,6 +58,10 @@ class WooPosSearchProductsDataSource @Inject constructor(
             )
         }
     }.flowOn(Dispatchers.IO)
+
+    private fun sortProducts(products: List<Product>): List<Product> {
+        return products.sortedBy { it.name.lowercase() }
+    }
 
     suspend fun loadMore(query: String): Result<List<Product>> {
         if (!canLoadMore.get()) {

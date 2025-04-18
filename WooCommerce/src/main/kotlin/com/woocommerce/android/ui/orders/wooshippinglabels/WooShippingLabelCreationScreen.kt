@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels
 
 import android.content.res.Configuration
-import android.os.Parcelable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -89,7 +88,6 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageDa
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRateUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRatesSection
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingSortOption
-import kotlinx.parcelize.Parcelize
 
 @Composable
 fun WooShippingLabelCreationScreen(viewModel: WooShippingLabelCreationViewModel) {
@@ -791,25 +789,6 @@ internal fun ErrorScreen(
 ) = Scaffold(topBar = { TopBar(onNavigateBack) }) { padding ->
     ErrorMessageWithButton(modifier = modifier.padding(padding), onRetryClick = onRetryClick)
 }
-
-@Parcelize
-data class ShippableItemUI(
-    val itemId: Long,
-    val productId: Long,
-    val title: String,
-    val formattedSize: String,
-    val formattedWeight: String,
-    val formattedPrice: String,
-    val quantity: Float,
-    val imageUrl: String? = null
-) : Parcelable
-
-@Parcelize
-data class ShippableItemsUI(
-    val shippableItems: List<ShippableItemUI>,
-    val formattedTotalWeight: String,
-    val formattedTotalPrice: String
-) : Parcelable
 
 @Preview(name = "dark", uiMode = Configuration.UI_MODE_NIGHT_YES, device = Devices.PIXEL)
 @Preview(name = "light", uiMode = Configuration.UI_MODE_NIGHT_NO, device = Devices.PIXEL)
