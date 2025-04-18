@@ -17,7 +17,6 @@ import kotlin.test.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
-
     private val currencyFormatter: CurrencyFormatter = org.mockito.kotlin.mock {
         on { formatCurrency(amount = any(), any(), any()) }.doAnswer { it.getArgument<BigDecimal>(0).toString() }
     }
@@ -87,7 +86,7 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
 
         createViewModel(shipmentArgs)
 
-        sut.onUpdateSelection(1, shippableItemIndex, List(3) { it }.toSet())
+        sut.onUpdateSelection(shippableItemIndex, List(3) { it }.toSet())
 
         sut.viewState.observeForTesting { }
 
@@ -112,7 +111,7 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
 
         createViewModel(shipmentArgs)
 
-        sut.onUpdateSelection(1, shippableItemIndex, null)
+        sut.onUpdateSelection(shippableItemIndex, null)
 
         sut.viewState.observeForTesting { }
 
@@ -137,7 +136,7 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
 
         createViewModel(shipmentArgs)
 
-        sut.onUpdateSelection(1, shippableItemIndex, null)
+        sut.onUpdateSelection(shippableItemIndex, null)
 
         sut.viewState.observeForTesting { }
 
@@ -295,6 +294,26 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
         val snackbarData = (splitMessage as SplitShipmentMessage.Success).snackbarData
         assertThat(snackbarData.message).isEqualTo(R.string.woo_shipping_split_shipment_moved_notice_plural)
         assertThat(snackbarData.messageParameters).isEqualTo(listOf(5, 2))
+    }
+
+    @Test
+    fun `when initialized, then display the correct item quantity`() = testBlocking {
+        val shipmentArgs = SplitShipmentArgs(
+            orderId = 1L,
+            storeOptions = StoreOptionsModel.EMPTY,
+            shipments = twoShipment
+        )
+
+        val expectedQuantity = 6 // Total single items in the Shipment 1 from `twoShipment`
+
+        createViewModel(shipmentArgs)
+
+        sut.viewState.observeForTesting { }
+
+        val state = sut.viewState.value!!
+
+        val selectableItems = state.selectableItems.getValue(1)
+        assertThat(selectableItems.totalItemQuantity).isEqualTo(expectedQuantity)
     }
 
     private val defaultShipment = mapOf(

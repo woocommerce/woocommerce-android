@@ -385,7 +385,9 @@ class WCProductStore @Inject constructor(
         TITLE_ASC,
         TITLE_DESC,
         DATE_ASC,
-        DATE_DESC
+        DATE_DESC,
+        POPULARITY_ASC,
+        POPULARITY_DESC
     }
 
     enum class ProductCategorySorting {
@@ -1691,6 +1693,7 @@ class WCProductStore @Inject constructor(
         site: SiteModel,
         offset: Int = 0,
         pageSize: Int = DEFAULT_PRODUCT_PAGE_SIZE,
+        sortType: ProductSorting = DEFAULT_PRODUCT_SORTING,
         filterOptions: Map<ProductFilterOption, String> = emptyMap(),
         includeTypes: List<IncludeType> = emptyList(),
     ): WooResult<List<WCProductModel>> {
@@ -1700,7 +1703,8 @@ class WCProductStore @Inject constructor(
                 offset = offset,
                 pageSize = pageSize,
                 filterOptions = filterOptions,
-                includeTypes = includeTypes
+                includeTypes = includeTypes,
+                sortType = sortType,
             )
 
             when {

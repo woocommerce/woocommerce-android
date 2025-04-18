@@ -856,3 +856,25 @@ data class WooShippingAddresses(
         )
     }
 }
+
+@Parcelize
+data class ShippableItemUI(
+    val itemId: Long,
+    val productId: Long,
+    val title: String,
+    val formattedSize: String,
+    val formattedWeight: String,
+    val formattedPrice: String,
+    val quantity: Float,
+    val imageUrl: String? = null
+) : Parcelable
+
+@Parcelize
+data class ShippableItemsUI(
+    val shippableItems: List<ShippableItemUI>,
+    val formattedTotalWeight: String,
+    val formattedTotalPrice: String
+) : Parcelable {
+    val totalItemQuantity
+        get() = shippableItems.sumByFloat { it.quantity }.toInt()
+}
