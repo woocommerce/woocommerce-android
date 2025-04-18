@@ -770,7 +770,6 @@ class WCProductStore @Inject constructor(
     }
 
     class OnProductImagesChanged(
-        var rowsAffected: Int,
         var remoteProductId: Long
     ) : OnChanged<ProductError>() {
         var causeOfChange: WCProductAction? = null
@@ -784,7 +783,6 @@ class WCProductStore @Inject constructor(
     }
 
     class OnProductUpdated(
-        var rowsAffected: Int,
         var remoteProductId: Long
     ) : OnChanged<ProductError>() {
         var causeOfChange: WCProductAction? = null
@@ -813,7 +811,6 @@ class WCProductStore @Inject constructor(
     }
 
     class OnProductCreated(
-        var rowsAffected: Int,
         var remoteProductId: Long = 0L
     ) : OnChanged<ProductError>() {
         var causeOfChange: WCProductAction? = null
@@ -2081,15 +2078,13 @@ class WCProductStore @Inject constructor(
 
             if (payload.isError) {
                 onProductImagesChanged = OnProductImagesChanged(
-                    0,
                     payload.productWithMetaData.product.remoteProductId
                 ).also {
                     it.error = payload.error
                 }
             } else {
-                val rowsAffected = productStorageHelper.upsertProduct(payload.productWithMetaData)
+                productStorageHelper.upsertProduct(payload.productWithMetaData)
                 onProductImagesChanged = OnProductImagesChanged(
-                    rowsAffected,
                     payload.productWithMetaData.product.remoteProductId
                 )
             }
@@ -2104,11 +2099,11 @@ class WCProductStore @Inject constructor(
             val onProductUpdated: OnProductUpdated
 
             if (payload.isError) {
-                onProductUpdated = OnProductUpdated(0, payload.productWithMetaData.product.remoteProductId)
+                onProductUpdated = OnProductUpdated(payload.productWithMetaData.product.remoteProductId)
                     .also { it.error = payload.error }
             } else {
-                val rowsAffected = productStorageHelper.upsertProduct(payload.productWithMetaData)
-                onProductUpdated = OnProductUpdated(rowsAffected, payload.productWithMetaData.product.remoteProductId)
+                productStorageHelper.upsertProduct(payload.productWithMetaData)
+                onProductUpdated = OnProductUpdated(payload.productWithMetaData.product.remoteProductId)
             }
 
             onProductUpdated.causeOfChange = WCProductAction.UPDATED_PRODUCT
@@ -2197,12 +2192,11 @@ class WCProductStore @Inject constructor(
 
             if (payload.isError) {
                 onProductCreated = OnProductCreated(
-                    0,
                     payload.productWithMetaData.product.remoteProductId
                 ).also { it.error = payload.error }
             } else {
-                val rowsAffected = productStorageHelper.upsertProduct(payload.productWithMetaData)
-                onProductCreated = OnProductCreated(rowsAffected, payload.productWithMetaData.product.remoteProductId)
+                productStorageHelper.upsertProduct(payload.productWithMetaData)
+                onProductCreated = OnProductCreated(payload.productWithMetaData.product.remoteProductId)
             }
 
             onProductCreated.causeOfChange = WCProductAction.ADDED_PRODUCT
