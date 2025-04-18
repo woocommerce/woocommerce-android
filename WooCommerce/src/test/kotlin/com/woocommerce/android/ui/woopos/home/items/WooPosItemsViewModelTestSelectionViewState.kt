@@ -17,7 +17,9 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -25,6 +27,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
@@ -784,6 +787,26 @@ class WooPosItemsViewModelTestSelectionViewState {
         viewModel.onUIEvent(WooPosItemsUIEvent.CloseSearchClicked)
 
         verify(searchHelper).onCloseSearchClicked()
+    }
+
+    @Test
+    fun `when initial products load is active and load more is triggered, then do not start load more job`() = runTest {
+        // GIVEN
+        whenever(productsDataSource.hasMorePages).thenReturn(true)
+
+        // Use a controlled flow that won't complete immediately
+        val productsFlow = MutableSharedFlow<WooPosProductsDataSource.ProductsResult>()
+        whenever(productsDataSource.loadProducts(any())).thenReturn(productsFlow)
+
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosItemsUIEvent.EndOfItemsListReached)
+
+        advanceUntilIdle()
+
+        // THEN
+        verify(productsDataSource, never()).loadMore()
     }
 
     private fun createViewModel() =
