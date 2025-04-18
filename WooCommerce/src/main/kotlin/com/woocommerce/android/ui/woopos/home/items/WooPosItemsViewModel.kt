@@ -196,6 +196,7 @@ class WooPosItemsViewModel @Inject constructor(
         withCart: Boolean
     ) {
         loadProductsJob?.cancel()
+        loadMoreProductsJob?.cancel()
         loadProductsJob = viewModelScope.launch {
             _viewState.value = if (withPullToRefresh) {
                 buildProductsReloadingState()
