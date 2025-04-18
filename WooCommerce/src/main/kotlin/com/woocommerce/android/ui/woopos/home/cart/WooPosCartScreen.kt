@@ -26,6 +26,8 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -562,7 +564,7 @@ private fun RemoveItemFromCartButton(
             .semantics { contentDescription = removeButtonContentDescription }
     ) {
         Icon(
-            painter = painterResource(id = R.drawable.ic_pos_remove_cart_item),
+            imageVector = Icons.Outlined.Delete,
             tint = WooPosTheme.colors.onSurfaceVariantHighest,
             contentDescription = null,
         )
