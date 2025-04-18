@@ -96,7 +96,7 @@ fun WooShippingSplitShipmentScreen(
     onUpdateShipment: (splitMovement: SplitMovement) -> Unit,
     onRemoveShipment: (removingShipmentKey: Int, movingToShipmentKey: Int) -> Unit,
     onUpdateSelectedShipment: (shipmentKey: Int) -> Unit,
-    onRemoveShipmentMenuTapped: (shipmentKey: Int) -> Unit,
+    onRemoveShipmentMenuTapped: (shipmentKeys: List<Int>) -> Unit,
     onDismissRemoveSheet: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -228,7 +228,7 @@ private fun MultipleShipments(
     productsExtraPadding: Dp,
     onUpdateSelectedShipment: (shipmentKey: Int) -> Unit,
     onUpdateSelection: (index: Int, selectedIndexes: Set<Int>?) -> Unit,
-    onRemoveShipmentMenuTapped: (shipmentKey: Int) -> Unit,
+    onRemoveShipmentMenuTapped: (shipmentKeys: List<Int>) -> Unit,
     modifier: Modifier
 ) {
     val pagerState = rememberPagerState { shipments.size }
@@ -285,16 +285,22 @@ private fun MultipleShipments(
                 }
             }
             WCOverflowMenu(
-                items = shipments.mapIndexed { index, _ -> index },
-                mapper = { shipmentIndex ->
-                    // Example: "Remove shipment 1"
-                    stringResource(
-                        R.string.woo_shipping_split_shipment_shipment_remove,
+                items = shipments
+                    .mapIndexed { index, _ -> listOf(index) } // Remove shipment 1, Remove shipment 2...
+                    .plus(listOf(shipments)), // Merge all unfulfilled shipments
+                mapper = { shipmentIndexList ->
+                    if (shipmentIndexList.size == 1) {
+                        // Example: "Remove shipment 1"
                         stringResource(
-                            R.string.woo_shipping_split_shipment_shipment_name,
-                            shipmentIndex + 1
-                        ).toLowerCase(Locale.current)
-                    )
+                            R.string.woo_shipping_split_shipment_shipment_remove,
+                            stringResource(
+                                R.string.woo_shipping_split_shipment_shipment_name,
+                                shipmentIndexList.first() + 1
+                            ).toLowerCase(Locale.current)
+                        )
+                    } else {
+                        stringResource(R.string.woo_shipping_split_shipment_merge_unfulfilled_menu)
+                    }
                 },
                 onSelected = onRemoveShipmentMenuTapped,
                 modifier = modifier.align(Alignment.CenterVertically)
