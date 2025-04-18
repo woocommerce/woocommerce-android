@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 import org.wordpress.android.fluxc.model.WCProductModel
 
 @Dao
-abstract class ProductsDao {
+internal abstract class ProductsDao {
 
     @Query(
         """

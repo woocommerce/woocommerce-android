@@ -48,7 +48,7 @@ import org.wordpress.android.fluxc.store.WCProductStore.SkuSearchOptions
 import java.util.Locale
 
 @Suppress("LargeClass")
-object ProductSqlUtils {
+internal object ProductSqlUtils {
     private const val DEBOUNCE_DELAY_FOR_OBSERVERS = 50L
     private val variationsUpdatesTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
     private val categoriesUpdatesTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
@@ -181,14 +181,6 @@ object ProductSqlUtils {
             POPULARITY_ASC -> sortedBy { it.totalSales }
             POPULARITY_DESC -> sortedByDescending { it.totalSales }
         }
-
-    suspend fun ProductsDao.getProductExistsByRemoteId(site: SiteModel, remoteProductId: Long): Boolean {
-        return getProduct(site.id, remoteProductId) != null
-    }
-
-    suspend fun ProductsDao.getProductExistsBySku(site: SiteModel, sku: String): Boolean {
-        return getProduct(site.id, sku = sku) != null
-    }
 
     fun insertOrUpdateProductVariation(variation: WCProductVariationModel): Int {
         val result = WellSql.select(WCProductVariationModel::class.java)

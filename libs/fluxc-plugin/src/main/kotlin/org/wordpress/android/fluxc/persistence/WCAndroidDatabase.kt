@@ -147,7 +147,7 @@ abstract class WCAndroidDatabase : RoomDatabase(), TransactionExecutor {
     abstract val visitorSummaryStatsDao: VisitorSummaryStatsDao
     abstract val shippingMethodDao: ShippingMethodDao
     abstract val customerFromAnalyticsDao: CustomerFromAnalyticsDao
-    abstract val productsDao: ProductsDao
+    internal abstract val productsDao: ProductsDao
 
     companion object {
         fun buildDb(applicationContext: Context) = Room.databaseBuilder(

@@ -49,7 +49,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductRestClie
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductVariationMapper
 import org.wordpress.android.fluxc.persistence.ProductSqlUtils
 import org.wordpress.android.fluxc.persistence.ProductSqlUtils.getCompositeProducts
-import org.wordpress.android.fluxc.persistence.ProductSqlUtils.getProductExistsBySku
 import org.wordpress.android.fluxc.persistence.ProductSqlUtils.getProducts
 import org.wordpress.android.fluxc.persistence.ProductSqlUtils.observeBundledProducts
 import org.wordpress.android.fluxc.persistence.ProductSqlUtils.sort
@@ -70,7 +69,7 @@ import javax.inject.Singleton
 
 @Suppress("LargeClass")
 @Singleton
-class WCProductStore @Inject constructor(
+class WCProductStore @Inject internal constructor(
     dispatcher: Dispatcher,
     private val wcProductRestClient: ProductRestClient,
     private val coroutineEngine: CoroutineEngine,
@@ -832,10 +831,9 @@ class WCProductStore @Inject constructor(
     ): WCProductVariationModel? =
         ProductSqlUtils.getVariationByRemoteId(site, remoteProductId, remoteVariationId)
 
-    /**
-     * @return true if the product exists with this [sku] in the database.
-     */
-    suspend fun isProductExists(site: SiteModel, sku: String) = productsDao.getProductExistsBySku(site, sku)
+    suspend fun isProductExists(site: SiteModel, sku: String): Boolean {
+        return productsDao.getProduct(site.id, sku = sku) != null
+    }
 
     /**
      * returns a list of variations for a specific product in the database
@@ -882,6 +880,14 @@ class WCProductStore @Inject constructor(
             searchQuery = searchQuery,
             skuSearchOptions = skuSearchOptions
         )
+
+    suspend fun getProduct(site: SiteModel, remoteProductId: Long): WCProductModel? {
+        return productsDao.getProduct(site.id, remoteProductId)
+    }
+
+    suspend fun getProductExistsByRemoteId(site: SiteModel, remoteProductId: Long): Boolean {
+        return productsDao.getProduct(site.id, remoteProductId) != null
+    }
 
     fun getProductReviewsForSite(site: SiteModel): List<WCProductReviewModel> =
         ProductSqlUtils.getProductReviewsForSite(site)
