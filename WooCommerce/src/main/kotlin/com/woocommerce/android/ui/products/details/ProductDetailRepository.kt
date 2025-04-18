@@ -329,7 +329,6 @@ class ProductDetailRepository @Inject constructor(
         return ProductAggregate(product, subscriptionDetails)
     }
 
-    // TODO: fix main thread call
     fun isSkuAvailableLocally(sku: String) = runBlocking { !productStore.isProductExists(selectedSite.get(), sku) }
 
     fun getCachedVariationCount(remoteProductId: Long) =

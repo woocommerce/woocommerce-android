@@ -50,7 +50,6 @@ import java.util.Locale
 @Suppress("LargeClass")
 object ProductSqlUtils {
     private const val DEBOUNCE_DELAY_FOR_OBSERVERS = 50L
-    private val productsUpdatesTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
     private val variationsUpdatesTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
     private val categoriesUpdatesTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
@@ -634,10 +633,6 @@ object ProductSqlUtils {
         } finally {
             db.endTransaction()
         }
-    }
-
-    private fun triggerProductsUpdateIfNeeded(affectedRows: Int) {
-        if (affectedRows != 0) productsUpdatesTrigger.tryEmit(Unit)
     }
 
     private fun triggerVariationsUpdateIfNeeded(affectedRows: Int) {

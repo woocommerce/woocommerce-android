@@ -29,7 +29,7 @@ class ProductsMapper @Inject constructor(
     ): List<WCProductModel> {
         return runBlocking {
             filter { productsDao.getProductExistsByRemoteId(site, it) }
-            .mapNotNull { productsDao.getProduct(site.id, it) }
+                .mapNotNull { productsDao.getProduct(site.id, it) }
         }
     }
 }

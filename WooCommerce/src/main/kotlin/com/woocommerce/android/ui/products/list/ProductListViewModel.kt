@@ -47,6 +47,7 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 @HiltViewModel
+@Suppress("LargeClass")
 class ProductListViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val productRepository: ProductListRepository,

@@ -12,7 +12,6 @@ import org.wordpress.android.fluxc.persistence.entity.MetaDataEntity
 import javax.inject.Inject
 
 class ProductStorageHelper @Inject constructor(
-    private val productSqlUtils: ProductSqlUtils,
     private val productsDao: ProductsDao,
     private val metaDataDao: MetaDataDao
 ) {

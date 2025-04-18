@@ -22,6 +22,7 @@ abstract class ProductsDao {
             LIMIT CASE WHEN :limit IS NULL THEN -1 ELSE :limit END
         """
     )
+    @Suppress("LongParameterList")
     abstract fun observeProducts(
         localSiteId: Int,
         status: String?,
