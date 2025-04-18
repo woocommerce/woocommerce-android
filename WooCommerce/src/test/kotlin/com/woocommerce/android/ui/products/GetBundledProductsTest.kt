@@ -99,7 +99,7 @@ class GetBundledProductsTest : BaseUnitTest() {
         }
 
     private val products = listOf(
-        WCProductModel().copy (
+        WCProductModel().copy(
             remoteId = RemoteId(25),
             sku = "bundled_product_with_image",
             images = "[{\n" +

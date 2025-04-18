@@ -56,7 +56,7 @@ class GetProductsByIdsTest : BaseUnitTest() {
     }
 
     private val databaseProducts = List(3) { n ->
-        WCProductModel().copy (
+        WCProductModel().copy(
             localSiteId = LocalId(3),
             remoteId = RemoteId(n.toLong()),
             name = "product $n",
