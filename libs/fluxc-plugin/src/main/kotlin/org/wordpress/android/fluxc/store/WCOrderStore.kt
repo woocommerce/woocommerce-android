@@ -22,6 +22,7 @@ import org.wordpress.android.fluxc.model.WCOrderSummaryModel
 import org.wordpress.android.fluxc.model.metadata.WCMetaData
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.SERVER_ERROR
+import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkingMode
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.API_ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
@@ -105,11 +106,13 @@ class WCOrderStore @Inject constructor(
         var loadedMore: Boolean = false,
         var canLoadMore: Boolean = false,
         val requestDurationMs: Long = 0,
+        val networkingMode: WPAPINetworkingMode? = null,
     ) : Payload<OrderError>() {
         constructor(
             error: OrderError,
-            listDescriptor: WCOrderListDescriptor
-        ) : this(listDescriptor, requestDurationMs = 0) {
+            listDescriptor: WCOrderListDescriptor,
+            networkingMode: WPAPINetworkingMode? = null,
+        ) : this(listDescriptor, networkingMode = networkingMode) {
             this.error = error
         }
     }
@@ -365,6 +368,7 @@ class WCOrderStore @Inject constructor(
     class OnOrderSummariesFetched(
         val listDescriptor: WCOrderListDescriptor,
         val duration: Long,
+        val networkingMode: WPAPINetworkingMode?,
         error: OrderError? = null
     ) : OnChanged<OrderError>() {
         init {
@@ -946,6 +950,7 @@ class WCOrderStore @Inject constructor(
             OnOrderSummariesFetched(
                 listDescriptor = payload.listDescriptor,
                 duration = payload.requestDurationMs,
+                networkingMode = payload.networkingMode,
                 error = payload.error
             )
         )

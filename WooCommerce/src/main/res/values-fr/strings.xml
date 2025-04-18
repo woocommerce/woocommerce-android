@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-03-25 13:54:03+0000
+Translation-Revision-Date: 2025-04-09 09:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_split_shipment_shipment_new">Nouvelle expédition</string>
+    <string name="woo_shipping_split_shipment_shipment_name">Envoi %s</string>
+    <string name="woo_shipping_split_move_to">Déplacer vers</string>
+    <string name="woo_shipping_split_move_to_new">Déplacer vers une nouvelle expédition</string>
+    <string name="woo_shipping_split_shipment_instructions">Pour scinder, sélectionnez les articles et appuyez sur &lt;b&gt;Déplacer vers une nouvelle expédition&lt;/b&gt; lorsque la barre d’outils s’affiche.</string>
+    <string name="woo_shipping_labels_hazmat_selection_removed">Catégorie des matières dangereuses supprimée</string>
+    <string name="woo_shipping_labels_hazmat_selection_set">Catégorie des matières dangereuses définie</string>
+    <string name="woo_shipping_labels_hazmat_search_hint">Rechercher une catégorie</string>
+    <string name="woo_shipping_labels_hazmat_info_select_category">Sélectionner une catégorie</string>
+    <string name="woo_shipping_labels_hazmat_info_tooltip_2">WooCommerce Shipping ne prend pas actuellement en charge les expéditions de matières dangereuses par le biais de &lt;a href=\'dhl-hazmat\'&gt;&lt;u&gt;DHL Express&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="woo_shipping_labels_hazmat_info_tooltip_1">Apprenez à emballer, étiqueter et expédier des matières dangereuses en toute sécurité par l’intermédiaire d’USPS® à l’adresse suivante : &lt;a href=\'usps-hazmat\'&gt;&lt;u&gt;www.usps.com/hazmat&lt;/u&gt;&lt;/a&gt;. Déterminez l’aptitude de votre produit à être expédié par courrier via &lt;a href=\'hazmat-tool\'&gt;&lt;u&gt;l’outil de recherche USPS HAZMAT&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="woo_shipping_labels_hazmat_info_full_description">Parmi les produits potentiellement dangereux figurent notamment les batteries, la neige carbonique, les liquides inflammables, les aérosols, les munitions, les feux d’artifice, le vernis à ongles, le parfum, la peinture et les solvants. Les articles dangereux doivent être expédiés séparément.</string>
+    <string name="woo_shipping_labels_hazmat_info_contains_hazmat">Contient des matières dangereuses</string>
+    <string name="woo_shipping_labels_hazmat_info_title">Expédiez-vous des marchandises ou matières dangereuses ?</string>
+    <string name="woopos_search_items_error_description">On réessaie ?</string>
+    <string name="woopos_search_items_error_title">Nous n’avons pas pu charger vos articles</string>
+    <string name="woopos_search_empty_image_content_description">Aucun élément trouvé</string>
+    <string name="woopos_search_empty_description">Nous n’avons rien trouvé qui corresponde à votre recherche.</string>
+    <string name="woopos_search_items_empty_title">Aucun résultat</string>
+    <string name="woopos_payment_discount_label">Remise</string>
+    <string name="woopos_cart_item_coupon_content_description">Code promo dans le panier %s</string>
+    <string name="shipping_label_package_title">Sélectionner un colis</string>
+    <string name="receipt_preview_toolbar_title">Aperçu du reçu</string>
     <string name="woo_shipping_split_shipment">Scinder l’envoi</string>
     <string name="woo_shipping_labels_purchase_error">Nous ne sommes pas en mesure d’acheter l’étiquette d’expédition. Veuillez réessayer.</string>
     <string name="woo_shipping_address_notification_origin_verified">Adresse d’origine vérifiée</string>
@@ -330,7 +353,7 @@ Language: fr
     <string name="more_menu_button_payments_description">Accepter les paiements en mode nomade</string>
     <string name="card_reader_payment_failed_incorrect_pin">Un code PIN incorrect a été saisi. Réessayer ou utiliser un autre moyen de paiement</string>
     <string name="woopos_menu_toolbar_content_description">Menu</string>
-    <string name="woopos_cart_item_content_description">Produit dans le panier %s, Prix %s</string>
+    <string name="woopos_cart_item_product_content_description">Produit dans le panier %s, Prix %s</string>
     <string name="woopos_product_item_content_description">Produit %s, Prix %s</string>
     <string name="blaze_campaign_status_suspended">En suspens</string>
     <string name="woopos_new_order_button">Nouvelle commande</string>
@@ -564,10 +587,6 @@ Language: fr
     <string name="login_app_password_title">Nous n’avons pas pu nous connecter à votre boutique</string>
     <string name="empty_order_detail_message">Les détails de votre commande s’affichent ici lorsque vous avez passé une commande.</string>
     <string name="empty_order_detail_title">Pas encore de détails de commande</string>
-    <string name="order_creation_simple_payment_migration_button">Ajouter un montant personnalisé</string>
-    <string name="order_creation_simple_payment_migration_message_two">Pour définir un montant de paiement, ajoutez\nun montant personnalisé à votre nouvelle commande.</string>
-    <string name="order_creation_simple_payment_migration_message_one">Nous avons combiné la collecte des paiements avec\nla création des commandes, pour un processus plus accessible\net plus puissant.</string>
-    <string name="order_creation_simple_payment_migration_title">Percevoir le paiement \na changé d’emplacement</string>
     <string name="analytics_bundles_card_title">Formules</string>
     <string name="analytics_bundles_list_header_subtitle">Formules vendues</string>
     <string name="analytics_bundles_list_header_title">Formules</string>
@@ -1165,7 +1184,6 @@ Language: fr
     <string name="last_update_with_frequency">Dernière mise à jour %s (Mises à jour toutes les 30 minutes)</string>
     <string name="last_update">Dernière mise à jour %s</string>
     <string name="card_reader_tap_to_pay_learn_more">&lt;a href=\'\'&gt;En savoir plus&lt;/a&gt; sur l’acceptation des paiements avec la fonctionnalité Appuyer pour payer sur Android</string>
-    <string name="card_reader_hub_collect_payment">Percevoir le paiement</string>
     <string name="order_creation_barcode_scanning_unable_to_add_product_with_invalid_price">Vous ne pouvez pas ajouter de produits sans spécification de prix</string>
     <string name="order_creation_barcode_scanning_unable_to_add_draft_product">Vous ne pouvez pas ajouter de produits non publiés</string>
     <string name="order_creation_add_customer_content_description">ajouter un client</string>
@@ -1485,7 +1503,6 @@ Language: fr
     <string name="card_reader_tap_to_pay_explanation_try_payment">Essayer d’effectuer un paiement</string>
     <string name="card_reader_tap_to_pay_explanation_title">Percevoir des paiements par carte\navec votre téléphone</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Appuyer pour payer</string>
-    <string name="card_reader_hub_actions_category_header">ACTIONS</string>
     <string name="domain_registration_generic_error">Une erreur s’est produite lors de l’enregistrement du domaine</string>
     <string name="domain_registration_state_picker_dialog_title">Sélectionner un État</string>
     <string name="domain_registration_country_picker_dialog_title">Choisir le pays</string>

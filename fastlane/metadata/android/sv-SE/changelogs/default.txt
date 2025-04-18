@@ -1,0 +1,2 @@
+22.1:
+Den här uppdateringen medför flera förbättringar av WooCommerce-appen, inklusive borttagning av flödet "Ta emot betalning", vilket har ersatts av en anpassad process för beställningsskapande. Vi har förbättrat visningen av inaktiverade produkter i slutförda beställningar, åtgärdat krascher i POS och anpassade beloppsdialogrutor och förbättrat synligheten för beställningsräkningsmärken. Woo-uppgraderingsdialogrutan har designats om och valutakoder visas nu på skärmen Anpassade belopp.

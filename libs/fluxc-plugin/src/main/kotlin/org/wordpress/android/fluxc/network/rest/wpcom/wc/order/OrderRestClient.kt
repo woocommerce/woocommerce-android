@@ -280,7 +280,8 @@ class OrderRestClient @Inject constructor(
                         orderSummaries = orderSummaries,
                         loadedMore = offset > 0,
                         canLoadMore = canLoadMore,
-                        requestDurationMs = System.currentTimeMillis() - startTime
+                        requestDurationMs = System.currentTimeMillis() - startTime,
+                        networkingMode = response.networkingMode
                     )
                     dispatcher.dispatch(WCOrderActionBuilder.newFetchedOrderListAction(payload))
                 }
@@ -288,7 +289,8 @@ class OrderRestClient @Inject constructor(
                     val orderError = wpAPINetworkErrorToOrderError(response.error)
                     val payload = FetchOrderListResponsePayload(
                         error = orderError,
-                        listDescriptor = listDescriptor
+                        listDescriptor = listDescriptor,
+                        networkingMode = response.networkingMode
                     )
                     dispatcher.dispatch(WCOrderActionBuilder.newFetchedOrderListAction(payload))
                 }
