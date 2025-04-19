@@ -52,6 +52,12 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
                         weightUnit = storeOptions.weightUnit
                     )
                 }
+
+                if (shipments.size == 1) {
+                    // The shipments row was removed. Since the pager can no longer manage the selected shipment,
+                    // update it manually.
+                    shipmentSelected.update { shipments.keys.first() }
+                }
             }
         }
     }
@@ -177,12 +183,6 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
                 ?.combine(splitMovement.movingShipmentItems)
                 ?: splitMovement.movingShipmentItems
             reindexShipments(shipments)
-        }
-
-        if (currentShipments.value.size == 1) {
-            // The shipments row was removed. Since the pager can no longer manage the selected shipment, update it
-            // manually.
-            shipmentSelected.update { currentShipments.value.keys.first() }
         }
 
         val undoAction = {
