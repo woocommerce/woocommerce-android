@@ -187,7 +187,7 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
             val shipmentArgs = SplitShipmentArgs(
                 orderId = 1L,
                 storeOptions = StoreOptionsModel.EMPTY,
-                shipments = twoShipment
+                shipments = twoShipments
             )
             val updatedCurrentShipmentItems = defaultShipment.getValue(0)
             val updatedShipmentItems = listOf(
@@ -301,7 +301,7 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
         val shipmentArgs = SplitShipmentArgs(
             orderId = 1L,
             storeOptions = StoreOptionsModel.EMPTY,
-            shipments = twoShipment
+            shipments = twoShipments
         )
 
         val expectedQuantity = 6 // Total single items in the Shipment 1 from `twoShipment`
@@ -321,9 +321,9 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
         val shipmentArgs = SplitShipmentArgs(
             orderId = 1L,
             storeOptions = StoreOptionsModel.EMPTY,
-            shipments = twoShipment
+            shipments = twoShipments
         )
-        val movingItems = twoShipment.getValue(1)
+        val movingItems = twoShipments.getValue(1)
 
         // Removing "Shipment 2"
         val movement = SplitMovement(
@@ -349,9 +349,9 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
         val shipmentArgs = SplitShipmentArgs(
             orderId = 1L,
             storeOptions = StoreOptionsModel.EMPTY,
-            shipments = twoShipment
+            shipments = twoShipments
         )
-        val movingItems = twoShipment.getValue(1)
+        val movingItems = twoShipments.getValue(1)
 
         // Removing "Shipment 2"
         val movement = SplitMovement(
@@ -360,7 +360,7 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
             destinationShipmentKey = 0,
             movingShipmentItems = movingItems
         )
-        val expectedItemCount = twoShipment.getValue(0).size + twoShipment.getValue(1).size
+        val expectedItemCount = twoShipments.getValue(0).size + twoShipments.getValue(1).size
 
         createViewModel(shipmentArgs)
 
@@ -417,7 +417,7 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
             )
         )
     )
-    private val twoShipment = mapOf(
+    private val twoShipments = mapOf(
         0 to listOf(
             ShippableItemModel(
                 itemId = 1L,
