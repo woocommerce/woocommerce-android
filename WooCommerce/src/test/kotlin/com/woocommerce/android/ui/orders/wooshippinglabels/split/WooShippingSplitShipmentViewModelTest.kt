@@ -462,4 +462,64 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
             )
         )
     )
+    private val threeShipments = mapOf(
+        0 to listOf(
+            ShippableItemModel(
+                itemId = 1L,
+                productId = 1L,
+                title = "A product with quantity 1",
+                price = BigDecimal(30),
+                quantity = 1f,
+                imageUrl = null,
+                currency = "USD",
+                length = 3f,
+                width = 3f,
+                height = 3f,
+                weight = 8f
+            ),
+            ShippableItemModel(
+                itemId = 2L,
+                productId = 2L,
+                title = "A product with quantity 5",
+                price = BigDecimal(10),
+                quantity = 5f,
+                imageUrl = null,
+                currency = "USD",
+                length = 3f,
+                width = 3f,
+                height = 3f,
+                weight = 8f
+            )
+        ),
+        1 to listOf(
+            ShippableItemModel(
+                itemId = 3L,
+                productId = 3L,
+                title = "Another product with quantity 3",
+                price = BigDecimal(10),
+                quantity = 3f,
+                imageUrl = null,
+                currency = "USD",
+                length = 3f,
+                width = 3f,
+                height = 3f,
+                weight = 8f
+            )
+        ),
+        2 to listOf(
+            ShippableItemModel(
+                itemId = 3L,
+                productId = 3L,
+                title = "Another product with quantity 3",
+                price = BigDecimal(10),
+                quantity = 1f,
+                imageUrl = null,
+                currency = "USD",
+                length = 3f,
+                width = 3f,
+                height = 3f,
+                weight = 8f
+            )
+        )
+    )
 }
