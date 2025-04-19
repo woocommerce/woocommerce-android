@@ -374,6 +374,71 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
         assertThat(modifiedShipment.shippableItems.size).isEqualTo(expectedItemCount)
     }
 
+    @Test
+    fun `when there are 2 shipments, then do not display the Merge all unfulfilled option`() = testBlocking {
+        val shipmentArgs = SplitShipmentArgs(
+            orderId = 1L,
+            storeOptions = StoreOptionsModel.EMPTY,
+            shipments = twoShipments
+        )
+
+        createViewModel(shipmentArgs)
+
+        sut.viewState.observeForTesting { }
+
+        val state = sut.viewState.value!!
+
+        assertThat(state.overflowMenuItems.size).isEqualTo(2)
+    }
+
+    @Test
+    fun `when there are 3 shipments, then display the Merge all unfulfilled option`() = testBlocking {
+        val shipmentArgs = SplitShipmentArgs(
+            orderId = 1L,
+            storeOptions = StoreOptionsModel.EMPTY,
+            shipments = threeShipments
+        )
+
+        createViewModel(shipmentArgs)
+
+        sut.viewState.observeForTesting { }
+
+        val state = sut.viewState.value!!
+        val lastMenuItem = state.overflowMenuItems.last()
+        val expectedShipmentCountToBeMerged = threeShipments.size
+        val expectedMenuItemCount = expectedShipmentCountToBeMerged + 1
+
+        assertThat(state.overflowMenuItems.size).isEqualTo(expectedMenuItemCount)
+
+        // Verifying if the last item is "Merge all unfulfilled"
+        assertThat(lastMenuItem.size).isEqualTo(expectedShipmentCountToBeMerged)
+    }
+
+    @Test
+    fun `when merging unfulfilled shipments, a single unfulfilled shipment contains all items`() = testBlocking {
+        val shipmentArgs = SplitShipmentArgs(
+            orderId = 1L,
+            storeOptions = StoreOptionsModel.EMPTY,
+            shipments = threeShipments
+        )
+
+        createViewModel(shipmentArgs)
+
+        // Trigger merging all shipments
+        sut.onRemoveShipments(removingShipmentKeys = threeShipments.keys.toList(), destinationShipmentKey = null)
+
+        sut.viewState.observeForTesting { }
+
+        val state = sut.viewState.value!!
+        val currentShipments = state.selectableItems
+        val expectedItemQuantity = 10 // All items from `threeShipments`
+
+        // Verify there is only one shipment
+        assertThat(currentShipments.size).isEqualTo(1)
+
+        assertThat(currentShipments.values.first().totalItemQuantity).isEqualTo(expectedItemQuantity)
+    }
+
     private val defaultShipment = mapOf(
         0 to listOf(
             ShippableItemModel(
