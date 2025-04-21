@@ -68,7 +68,6 @@ fun WooPosItemsScreen(
     modifier: Modifier = Modifier,
     listState: LazyListState,
 ) {
-    // CouponsProject: Needs to be renamed to WooPosItemsViewModel
     val productsViewModel: WooPosItemsViewModel = hiltViewModel()
     WooPosItemsScreen(
         modifier = modifier,
