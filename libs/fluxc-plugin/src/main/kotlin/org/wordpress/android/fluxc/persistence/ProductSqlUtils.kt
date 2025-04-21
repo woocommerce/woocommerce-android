@@ -123,7 +123,7 @@ internal object ProductSqlUtils {
         site: SiteModel,
         filterOptions: Map<ProductFilterOption, String>,
         sortType: ProductSorting = DEFAULT_PRODUCT_SORTING,
-        excludedProductIds: List<Long>? = null,
+        excludedProductIds: List<Long> = emptyList(),
         searchQuery: String? = null,
         skuSearchOptions: SkuSearchOptions = SkuSearchOptions.Disabled,
         excludeSampleProducts: Boolean = false,
