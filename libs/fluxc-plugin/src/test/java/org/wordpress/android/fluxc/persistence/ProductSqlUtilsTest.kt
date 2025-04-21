@@ -1,4 +1,4 @@
-package org.wordpress.android.fluxc.wc.product
+package org.wordpress.android.fluxc.persistence
 
 import com.yarolegovich.wellsql.WellSql
 import org.junit.Before
@@ -16,9 +16,8 @@ import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.WCProductReviewModel
 import org.wordpress.android.fluxc.model.WCProductShippingClassModel
 import org.wordpress.android.fluxc.model.WCProductTagModel
-import org.wordpress.android.fluxc.persistence.ProductSqlUtils
-import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
+import org.wordpress.android.fluxc.wc.product.ProductTestUtils
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
@@ -40,7 +39,6 @@ class ProductSqlUtilsTest {
         val config = SingleStoreWellSqlConfigForTests(
                 appContext,
                 listOf(
-                        WCProductModel::class.java,
                         WCProductReviewModel::class.java,
                         WCProductCategoryModel::class.java,
                         WCProductShippingClassModel::class.java,
@@ -87,8 +85,8 @@ class ProductSqlUtilsTest {
     @Test
     fun testInsertOrUpdateProductWithDecimalQuantity() {
         val productModel = ProductTestUtils.generateSampleProduct(
-                remoteId = 42,
-                stockQuantity = 4.2
+            remoteId = 42,
+            stockQuantity = 4.2
         )
         val site = SiteModel().apply { id = productModel.localSiteId }
 
@@ -305,7 +303,7 @@ class ProductSqlUtilsTest {
     @Test
     fun testGetProductShippingClassByRemoteShippingId() {
         val shippingClass = ProductTestUtils.generateSampleProductShippingClass(
-                remoteId = 40, siteId = site.id
+            remoteId = 40, siteId = site.id
         )
 
         // Insert product shipping class list
@@ -430,10 +428,10 @@ class ProductSqlUtilsTest {
         // insert products with the same productId but for a different site
         val differentSiteProduct1 = ProductTestUtils.generateSampleProduct(40, siteId = 10)
         val differentSiteProduct2 = ProductTestUtils.generateSampleProduct(
-                41, siteId = 10, type = "grouped"
+            41, siteId = 10, type = "grouped"
         )
         val differentSiteProduct3 = ProductTestUtils.generateSampleProduct(
-                2, siteId = 10, status = "pending"
+            2, siteId = 10, status = "pending"
         )
 
         ProductSqlUtils.insertOrUpdateProduct(differentSiteProduct1)
@@ -451,12 +449,18 @@ class ProductSqlUtilsTest {
 
     @Test
     fun testGetProductsWithSearchQuery() {
-        val product1 = ProductTestUtils.generateSampleProduct(40, name = "a",
-                description = "1", shortDescription = "+")
-        val product2 = ProductTestUtils.generateSampleProduct(41, name = "b",
-                description = "2", shortDescription = "-")
-        val product3 = ProductTestUtils.generateSampleProduct(42, name = "xyz ab piu",
-                description = "xyz 12 piu", shortDescription = "xyz +- piu", stockStatus = "onbackorder")
+        val product1 = ProductTestUtils.generateSampleProduct(
+            40, name = "a",
+            description = "1", shortDescription = "+"
+        )
+        val product2 = ProductTestUtils.generateSampleProduct(
+            41, name = "b",
+            description = "2", shortDescription = "-"
+        )
+        val product3 = ProductTestUtils.generateSampleProduct(
+            42, name = "xyz ab piu",
+            description = "xyz 12 piu", shortDescription = "xyz +- piu", stockStatus = "onbackorder"
+        )
 
         ProductSqlUtils.insertOrUpdateProduct(product1)
         ProductSqlUtils.insertOrUpdateProduct(product2)
@@ -533,10 +537,10 @@ class ProductSqlUtilsTest {
         // insert products with the same productId but for a different site
         val differentSiteProduct1 = ProductTestUtils.generateSampleProduct(40, siteId = 10)
         val differentSiteProduct2 = ProductTestUtils.generateSampleProduct(
-                41, siteId = 10
+            41, siteId = 10
         )
         val differentSiteProduct3 = ProductTestUtils.generateSampleProduct(
-                42, siteId = 10
+            42, siteId = 10
         )
 
         ProductSqlUtils.insertOrUpdateProduct(differentSiteProduct1)
