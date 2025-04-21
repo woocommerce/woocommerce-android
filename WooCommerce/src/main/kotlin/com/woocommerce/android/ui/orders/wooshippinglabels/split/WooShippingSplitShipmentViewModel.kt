@@ -52,6 +52,12 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
                         weightUnit = storeOptions.weightUnit
                     )
                 }
+
+                if (shipments.size == 1) {
+                    // The shipments row was removed. Since the pager can no longer manage the selected shipment,
+                    // update it manually.
+                    shipmentSelected.update { shipments.keys.first() }
+                }
             }
         }
     }
@@ -122,9 +128,17 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
                 )
             )
         } else {
-            // Merging all unfulfilled shipments
+            mergeUnfulfilledShipments()
         }
         removeShipmentSheet.value = null
+    }
+
+    private fun mergeUnfulfilledShipments() {
+        currentShipments.value = currentShipments.value.run {
+            // TODO Once the purchasing shipments feature is implemented, exclude purchased shipments from the merging
+            //  action.
+            mapOf(keys.first() to values.reduce(List<ShippableItemModel>::combine))
+        }
     }
 
     fun onDismissRemoveSheet() {
@@ -169,12 +183,6 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
                 ?.combine(splitMovement.movingShipmentItems)
                 ?: splitMovement.movingShipmentItems
             reindexShipments(shipments)
-        }
-
-        if (currentShipments.value.size == 1) {
-            // The shipments row was removed. Since the pager can no longer manage the selected shipment, update it
-            // manually.
-            shipmentSelected.update { currentShipments.value.keys.first() }
         }
 
         val undoAction = {
