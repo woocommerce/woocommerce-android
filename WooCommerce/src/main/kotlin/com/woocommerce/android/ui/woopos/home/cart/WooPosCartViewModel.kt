@@ -9,6 +9,8 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
+import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.woopos.common.data.WooPosGetCouponById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetVariationById
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
@@ -29,12 +31,17 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTrackingDataKeeper
+import com.woocommerce.android.ui.woopos.util.format.WooPosFormatCouponSummary
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.model.WCSettingsModel
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 
@@ -43,12 +50,16 @@ class WooPosCartViewModel @Inject constructor(
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
     private val getProductById: WooPosGetProductById,
+    private val getCouponById: WooPosGetCouponById,
+    private val formatCouponSummary: WooPosFormatCouponSummary,
     private val getVariationsById: WooPosGetVariationById,
     private val resourceProvider: ResourceProvider,
     private val formatPrice: WooPosFormatPrice,
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val analyticsTrackingDataKeeper: WooPosAnalyticsTrackingDataKeeper,
     private val cartProductUpdater: WooPosCartProductUpdater,
+    private val wooCommerceStore: WooCommerceStore,
+    private val selectedSite: SelectedSite,
     savedState: SavedStateHandle,
 ) : ViewModel() {
     private val _state = savedState.getStateFlow(
@@ -64,6 +75,12 @@ class WooPosCartViewModel @Inject constructor(
         .map { updateStateDependingOnCartStatus(it) }
 
     private val itemNumberProvider = AtomicInteger(getInitialValueOrHighestUsedItemNumberAfterProcessDeath())
+
+    private val siteSettings: Deferred<WCSettingsModel> = viewModelScope.async(Dispatchers.IO) {
+        requireNotNull(wooCommerceStore.getSiteSettings(selectedSite.get())) {
+            "Site settings not found"
+        }
+    }
 
     init {
         listenEventsFromParent()
@@ -123,7 +140,7 @@ class WooPosCartViewModel @Inject constructor(
                     id = it.variationId
                 )
 
-                is WooPosCartItemViewState.Coupon -> WooPosItemsViewModel.ItemClickedData.Coupon(it.id, it.name)
+                is WooPosCartItemViewState.Coupon -> WooPosItemsViewModel.ItemClickedData.Coupon(it.id)
             }
         }
         sendEventToParent(ChildToParentEvent.CheckoutClicked(itemClickedDataList))
@@ -179,7 +196,7 @@ class WooPosCartViewModel @Inject constructor(
                         handleVariationClicked(event.itemData.productId, event.itemData.id)
 
                     is WooPosItemsViewModel.ItemClickedData.Coupon ->
-                        handleCouponClicked(event.itemData.id, event.itemData.couponCode)
+                        handleCouponClicked(event.itemData.id)
                 }
             }
 
@@ -209,11 +226,13 @@ class WooPosCartViewModel @Inject constructor(
         return productVariation.toCartListItem(itemNumber, product)
     }
 
-    private fun handleCouponClicked(couponId: Long, couponCode: String): WooPosCartItemViewState {
+    private suspend fun handleCouponClicked(couponId: Long): WooPosCartItemViewState {
+        val coupon = getCouponById(couponId)!!
         return WooPosCartItemViewState.Coupon(
             itemNumber = getItemNumber(),
             id = couponId,
-            name = couponCode
+            name = coupon.code ?: "",
+            summary = formatCouponSummary.formatCouponSummary(coupon, siteSettings.await().currencyCode),
         )
     }
 

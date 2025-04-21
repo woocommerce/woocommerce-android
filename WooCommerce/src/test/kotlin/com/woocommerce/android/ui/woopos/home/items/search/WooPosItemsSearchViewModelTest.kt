@@ -50,6 +50,7 @@ class WooPosItemsSearchViewModelTest {
     private val mockChildToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val mockParentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock()
     private val mockNavigator: WooPosItemsNavigator = mock()
+    private val mockSearchHelper: com.woocommerce.android.ui.woopos.home.items.WooPosItemsSearchHelper = mock()
 
     private val defaultQuery = "test query"
     private val defaultProduct = ProductTestUtils.generateProduct(
@@ -795,5 +796,6 @@ class WooPosItemsSearchViewModelTest {
         childToParentEventSender = mockChildToParentEventSender,
         parentToChildrenEventReceiver = mockParentToChildrenEventReceiver,
         navigator = mockNavigator,
+        searchHelper = mockSearchHelper,
     )
 }

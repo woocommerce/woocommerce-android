@@ -26,6 +26,9 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.LocalOffer
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -73,6 +76,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
+import com.woocommerce.android.ui.woopos.home.cart.WooPosCartUIEvent.ItemRemovedFromCart
 
 @Composable
 fun WooPosCartScreen(modifier: Modifier = Modifier) {
@@ -413,7 +417,7 @@ private fun ProductItem(
                     painter = painterResource(R.drawable.ic_box),
                     contentDescription = null,
                     colorFilter = ColorFilter.tint(WooPosTheme.colors.onSurfaceVariantLowest),
-                    modifier = Modifier.size(38.dp, 32.dp)
+                    modifier = Modifier.size(36.dp, 36.dp)
                 )
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
@@ -429,7 +433,9 @@ private fun ProductItem(
             Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value.toAdaptivePadding()))
 
             Column(
-                modifier = Modifier.weight(1f)
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = WooPosSpacing.Medium.value.toAdaptivePadding())
             ) {
                 WooPosText(
                     text = item.name,
@@ -464,26 +470,9 @@ private fun ProductItem(
             }
 
             if (canRemoveItems) {
-                Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value.toAdaptivePadding()))
-
-                val removeButtonContentDescription = stringResource(
-                    id = R.string.woopos_remove_item_button_from_cart_content_description,
-                    item.name
-                )
-                IconButton(
-                    onClick = { onUIEvent(WooPosCartUIEvent.ItemRemovedFromCart(item)) },
-                    modifier = Modifier
-                        .size(32.dp)
-                        .semantics { contentDescription = removeButtonContentDescription }
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_pos_remove_cart_item),
-                        tint = WooPosTheme.colors.onSurfaceVariantLowest,
-                        contentDescription = null,
-                    )
-                }
+                RemoveItemFromCartButton(item, onUIEvent)
             }
-            Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value.toAdaptivePadding()))
+            Spacer(modifier = Modifier.width(WooPosSpacing.Small.value.toAdaptivePadding()))
         }
     }
 }
@@ -515,21 +504,24 @@ private fun CouponItem(
         ) {
             Box(
                 modifier = Modifier
-                    .background(MaterialTheme.colorScheme.surfaceDim),
+                    .background(MaterialTheme.colorScheme.surfaceDim)
+                    .size(96.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Image(
-                    painter = painterResource(R.drawable.ic_more_menu_coupons),
+                    imageVector = Icons.Outlined.LocalOffer,
                     contentDescription = null,
                     colorFilter = ColorFilter.tint(WooPosTheme.colors.onSurfaceVariantLowest),
-                    modifier = Modifier.size(38.dp, 32.dp)
+                    modifier = Modifier.size(36.dp, 36.dp)
                 )
             }
 
             Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value.toAdaptivePadding()))
 
             Column(
-                modifier = Modifier.weight(1f)
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = WooPosSpacing.Medium.value.toAdaptivePadding())
             ) {
                 WooPosText(
                     text = item.name,
@@ -537,33 +529,48 @@ private fun CouponItem(
                     style = WooPosTypography.BodyLarge,
                     fontWeight = FontWeight.Bold,
                     overflow = TextOverflow.Ellipsis,
+                    color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.clearAndSetSemantics { }
                 )
                 Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value.toAdaptivePadding()))
+                WooPosText(
+                    text = item.summary,
+                    style = WooPosTypography.BodySmall,
+                    color = WooPosTheme.colors.onSurfaceVariantHighest,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.clearAndSetSemantics { }
+                )
             }
 
             if (canRemoveItems) {
-                Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value.toAdaptivePadding()))
-
-                val removeButtonContentDescription = stringResource(
-                    id = R.string.woopos_remove_item_button_from_cart_content_description,
-                    item.name
-                )
-                IconButton(
-                    onClick = { onUIEvent(WooPosCartUIEvent.ItemRemovedFromCart(item)) },
-                    modifier = Modifier
-                        .size(32.dp)
-                        .semantics { contentDescription = removeButtonContentDescription }
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_pos_remove_cart_item),
-                        tint = WooPosTheme.colors.onSurfaceVariantLowest,
-                        contentDescription = null,
-                    )
-                }
+                RemoveItemFromCartButton(item, onUIEvent)
             }
-            Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value.toAdaptivePadding()))
+            Spacer(modifier = Modifier.width(WooPosSpacing.Small.value.toAdaptivePadding()))
         }
+    }
+}
+
+@Composable
+private fun RemoveItemFromCartButton(
+    item: WooPosCartItemViewState,
+    onUIEvent: (WooPosCartUIEvent) -> Unit
+) {
+    val removeButtonContentDescription = stringResource(
+        id = R.string.woopos_remove_item_button_from_cart_content_description,
+        item.name
+    )
+    IconButton(
+        onClick = { onUIEvent(ItemRemovedFromCart(item)) },
+        modifier = Modifier
+            .size(48.dp)
+            .semantics { contentDescription = removeButtonContentDescription }
+    ) {
+        Icon(
+            imageVector = Icons.Outlined.Delete,
+            tint = WooPosTheme.colors.onSurfaceVariantHighest,
+            contentDescription = null,
+        )
     }
 }
 
@@ -584,6 +591,7 @@ fun WooPosCartScreenProductsPreview(modifier: Modifier = Modifier) {
                         WooPosCartItemViewState.Coupon(
                             itemNumber = 1,
                             name = "Test Coupon",
+                            summary = "50% Off · All Products",
                             id = 1L
                         ),
                         WooPosCartItemViewState.Product.Simple(
@@ -639,6 +647,10 @@ fun WooPosCartScreenCheckoutPreview(modifier: Modifier = Modifier) {
                         WooPosCartItemViewState.Coupon(
                             itemNumber = 1,
                             name = "Test Coupon",
+                            summary = "50% Off · 1 Product 50% Off · 1 Product 50% Off · 1 Product " +
+                                "50% Off · 1 Product 50% Off · 1 Product 50% Off · 1 Product 50% Off · 1 Product " +
+                                "50% Off · 1 Product 50% Off · 1 Product 50% Off · 1 Product 50% Off · 1 Product " +
+                                "50% Off · 1 Product 50% Off · 1 Product 50% Off · 1 Product 50% Off · 1 Product",
                             id = 1L
                         ),
                         WooPosCartItemViewState.Product.Simple(
