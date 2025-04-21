@@ -33,8 +33,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState.Product
-import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarTabs.COUPONS
-import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarTabs.PRODUCTS
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsUIEvent.EndOfItemsListReached
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsUIEvent.ProductsLoadingErrorRetryButtonClicked
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsUIEvent.PullToRefreshTriggered
@@ -97,19 +95,13 @@ private fun WooPosItemsScreen(
                         cursorPosition = it.cursorPosition,
                     )
                 )
+
                 is WooPosSearchUIEvent.AnimationComplete -> {
                     onUIEvent(WooPosItemsUIEvent.SearchAnimationComplete)
                 }
             }
         },
-        onTabClicked = { tab ->
-            onUIEvent(
-                when (tab) {
-                    PRODUCTS -> TODO()
-                    COUPONS -> TODO()
-                }
-            )
-        },
+        onTabClicked = { onUIEvent(WooPosItemsUIEvent.OnTabClicked(it)) },
         onPullToRefreshTriggered = { onUIEvent(PullToRefreshTriggered) },
     )
 }
@@ -127,7 +119,7 @@ private fun MainItemsList(
     onEndOfItemListReached: () -> Unit,
     onRetryClicked: () -> Unit,
     onSearchEvent: (WooPosSearchUIEvent) -> Unit,
-    onTabClicked: (WooPosItemsToolbarTabs) -> Unit,
+    onTabClicked: (WooPosItemsViewState.Tab) -> Unit,
     onPullToRefreshTriggered: () -> Unit,
 ) {
     val pullToRefreshState = rememberPullRefreshState(
@@ -331,7 +323,8 @@ fun WooPosItemsScreenPreview(modifier: Modifier = Modifier) {
                     input = WooPosSearchInputState.Open.Input.Query("", 0),
                     isLoading = false,
                 )
-            )
+            ),
+            tabs = tabs()
         )
     )
     WooPosTheme {
@@ -383,6 +376,7 @@ fun WooPosItemsScreenPaginationErrorPreview(modifier: Modifier = Modifier) {
                 icon = R.drawable.info,
             ),
             search = WooPosItemsViewState.Content.SearchState.Hidden,
+            tabs = tabs()
         )
     )
     WooPosTheme {
@@ -402,7 +396,8 @@ fun WooPosItemsScreenLoadingPreview() {
     val productState = MutableStateFlow(
         WooPosItemsViewState.Loading(
             pullToRefreshState = WooPosPullToRefreshState.Refreshing,
-            withCart = false
+            withCart = false,
+            tabs = tabs()
         )
     )
     WooPosTheme {
@@ -420,7 +415,8 @@ fun WooPosItemsScreenLoadingPreview() {
 fun WooPosProductsScreenEmptyListPreview() {
     val productState = MutableStateFlow(
         WooPosItemsViewState.Empty(
-            WooPosPullToRefreshState.Refreshing,
+            tabs = tabs(),
+            pullToRefreshState = WooPosPullToRefreshState.Refreshing,
         )
     )
     WooPosTheme {
@@ -436,7 +432,11 @@ fun WooPosProductsScreenEmptyListPreview() {
 @Composable
 @WooPosPreview
 fun WooPosProductsScreenErrorPreview() {
-    val productState = MutableStateFlow(WooPosItemsViewState.Error())
+    val productState = MutableStateFlow(
+        WooPosItemsViewState.Error(
+            tabs = tabs(),
+        )
+    )
     WooPosTheme {
         WooPosItemsScreen(
             itemsStateFlow = productState,
@@ -486,7 +486,8 @@ fun WooPosHomeScreenItemsWithSimpleProductsOnlyBannerPreview() {
                     input = WooPosSearchInputState.Open.Input.Query("", 0),
                     isLoading = false,
                 )
-            )
+            ),
+            tabs = tabs()
         )
     )
     WooPosTheme {
@@ -538,7 +539,8 @@ fun WooPosHomeScreenItemsWithInfoIconInToolbarPreview() {
                     input = WooPosSearchInputState.Open.Input.Query("", 0),
                     isLoading = false,
                 )
-            )
+            ),
+            tabs = tabs()
         )
     )
     WooPosTheme {
@@ -549,3 +551,15 @@ fun WooPosHomeScreenItemsWithInfoIconInToolbarPreview() {
         )
     }
 }
+
+@Composable
+private fun tabs(): List<WooPosItemsViewState.Tab> = listOf(
+    WooPosItemsViewState.Tab(
+        stringId = R.string.woopos_products_screen_title,
+        highlightLevel = WooPosItemsViewState.Tab.HighlightLevel.Full
+    ),
+    WooPosItemsViewState.Tab(
+        stringId = R.string.woopos_coupons_screen_title,
+        highlightLevel = WooPosItemsViewState.Tab.HighlightLevel.None
+    )
+)

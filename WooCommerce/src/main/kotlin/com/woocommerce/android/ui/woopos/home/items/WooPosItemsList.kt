@@ -456,6 +456,16 @@ fun ItemListPreview() {
                     R.string.woopos_banner_simple_products_only_message,
                     R.drawable.info
                 ),
+                tabs = listOf(
+                    WooPosItemsViewState.Tab(
+                        stringId = R.string.woopos_products_screen_title,
+                        highlightLevel = WooPosItemsViewState.Tab.HighlightLevel.Full
+                    ),
+                    WooPosItemsViewState.Tab(
+                        stringId = R.string.woopos_coupons_screen_title,
+                        highlightLevel = WooPosItemsViewState.Tab.HighlightLevel.None
+                    )
+                )
             ),
             listState = LazyListState(),
             onItemClicked = {},

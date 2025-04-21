@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.LocalOffer
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -35,8 +34,9 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
-import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState.Tab.HighlightLevel.*
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState.Tab.HighlightLevel.Full
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState.Tab.HighlightLevel.Half
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState.Tab.HighlightLevel.None
 
 @Composable
 fun WooPosItemsToolbar(
@@ -99,31 +99,6 @@ fun WooPosItemsToolbar(
 
                             Spacer(modifier = Modifier.width(WooPosSpacing.Small.value))
                         }
-                    }
-
-                    if (state.couponsEnabled) {
-                        IconButton(
-                            modifier = Modifier.size(40.dp),
-                            onClick = {
-                            }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Outlined.LocalOffer,
-                                contentDescription = stringResource(
-                                    id = R.string.coupons
-                                ),
-                                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.87f),
-                                modifier = Modifier.size(32.dp)
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(WooPosSpacing.Small.value))
-
-                        VerticalDivider(
-                            modifier = Modifier.padding(vertical = WooPosSpacing.Small.value),
-                            thickness = 1.dp,
-                        )
-
-                        Spacer(modifier = Modifier.width(WooPosSpacing.Small.value))
                     }
 
                     if (state.bannerState.isBannerHiddenByUser) {
