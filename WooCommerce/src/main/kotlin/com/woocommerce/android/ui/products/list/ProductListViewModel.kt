@@ -280,7 +280,7 @@ class ProductListViewModel @Inject constructor(
             val excludedProductIds: List<Long>? = excludeProductId?.let { id ->
                 ArrayList<Long>().also { it.add(id) }
             }
-            val products = productRepository.getProductList(productFilterOptions, excludedProductIds)
+            val products = productRepository.getProductList(productFilterOptions, excludedProductIds.orEmpty())
 
             resetOpenProductIfNotInList(products)
 
