@@ -255,7 +255,7 @@ private fun ProductImage(item: WooPosItemSelectionViewState) {
             painter = painterResource(R.drawable.ic_box),
             contentDescription = null,
             colorFilter = ColorFilter.tint(WooPosTheme.colors.onSurfaceVariantLowest),
-            modifier = Modifier.size(38.dp, 32.dp)
+            modifier = Modifier.size(36.dp, 36.dp)
         )
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)

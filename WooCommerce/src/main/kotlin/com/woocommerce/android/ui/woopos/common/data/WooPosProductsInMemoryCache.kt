@@ -28,6 +28,16 @@ class WooPosProductsInMemoryCache @Inject constructor() : WooPosProductsCache {
         }
     }
 
+    override suspend fun updateProduct(product: Product) = mutex.withLock {
+        productsCache[product.remoteId] = product
+    }
+
+    override suspend fun deleteProduct(productId: Long) {
+        mutex.withLock {
+            productsCache.remove(productId)
+        }
+    }
+
     override suspend fun getAll(): List<Product> = mutex.withLock {
         return productsCache.values.toList()
     }

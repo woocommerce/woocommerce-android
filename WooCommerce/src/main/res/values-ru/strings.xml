@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-03-26 09:54:03+0000
+Translation-Revision-Date: 2025-04-08 17:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_split_shipment_shipment_new">Новая доставка</string>
+    <string name="woo_shipping_split_shipment_shipment_name">Доставка %s</string>
+    <string name="woo_shipping_split_move_to">Переместить в</string>
+    <string name="woo_shipping_split_move_to_new">Переместить в новую доставку</string>
+    <string name="woo_shipping_split_shipment_instructions">Чтобы разделить товары, выберите их и нажмите «&lt;b&gt;Переместить в новую доставку&lt;/b&gt;» на панели инструментов.</string>
+    <string name="woo_shipping_labels_hazmat_selection_removed">Удалена категория опасных веществ</string>
+    <string name="woo_shipping_labels_hazmat_selection_set">Присвоена категория опасных веществ</string>
+    <string name="woo_shipping_labels_hazmat_search_hint">Поиск категории</string>
+    <string name="woo_shipping_labels_hazmat_info_select_category">Выбрать категорию</string>
+    <string name="woo_shipping_labels_hazmat_info_tooltip_2">В настоящее время WooCommerce Shipping не поддерживает доставку опасных веществ по &lt;a href=\'dhl-hazmat\'&gt;&lt;u&gt;DHL Express&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="woo_shipping_labels_hazmat_info_tooltip_1">Узнайте, как надежно упаковать, выполнить адресацию и доставить опасные вещества с помощью USPS® здесь: &lt;a href=\'usps-hazmat\'&gt;&lt;u&gt;www.usps.com/hazmat&lt;/u&gt;&lt;/a&gt;. С помощью &lt;a href=\'hazmat-tool\'&gt;&lt;u&gt;USPS HAZMAT Search Tool&lt;/u&gt;&lt;/a&gt; выясните, подлежит ли ваш товар доставке по почте.</string>
+    <string name="woo_shipping_labels_hazmat_info_full_description">К потенциально опасным материалам относятся: батарейки и аккумуляторы, сухой лёд, воспламеняющиеся жидкости, аэрозоли, боеприпасы, фейерверки, лаки для ногтей, парфюмерные изделия, краски, растворители и т. д. Опасные товары должны доставляться в отдельной упаковке.</string>
+    <string name="woo_shipping_labels_hazmat_info_contains_hazmat">Содержит опасные вещества</string>
+    <string name="woo_shipping_labels_hazmat_info_title">Имеются ли в вашем отправлении опасные товары или вещества?</string>
+    <string name="woopos_search_items_error_description">Хотите повторить попытку?</string>
+    <string name="woopos_search_items_error_title">Не удалось загрузить ваши товары</string>
+    <string name="woopos_search_empty_image_content_description">Товары не найдены</string>
+    <string name="woopos_search_empty_description">По вашему запросу ничего не найдено.</string>
+    <string name="woopos_search_items_empty_title">Ничего не найдено</string>
+    <string name="woopos_payment_discount_label">Скидка</string>
+    <string name="woopos_cart_item_coupon_content_description">Купон в корзине %s</string>
+    <string name="shipping_label_package_title">Выберите упаковку</string>
+    <string name="receipt_preview_toolbar_title">Предварительный просмотр чека</string>
     <string name="woo_shipping_split_shipment">Раздельная доставка</string>
     <string name="woo_shipping_labels_purchase_error">Не удалось приобрести транспортную этикетку. Повторите попытку.</string>
     <string name="woo_shipping_address_notification_origin_verified">Подтверждённый адрес отправителя</string>
@@ -330,7 +353,7 @@ Language: ru
     <string name="more_menu_button_payments_description">Принимайте платежи на ходу</string>
     <string name="card_reader_payment_failed_incorrect_pin">Введён неверный PIN-код. Повторите попытку или попробуйте другое средство платежа</string>
     <string name="woopos_menu_toolbar_content_description">Меню</string>
-    <string name="woopos_cart_item_content_description">Товар в корзине %s, цена %s</string>
+    <string name="woopos_cart_item_product_content_description">Товар в корзине: %s, цена: %s</string>
     <string name="woopos_product_item_content_description">Товар %s, цена %s</string>
     <string name="blaze_campaign_status_suspended">Приостановлено</string>
     <string name="woopos_new_order_button">Новый заказ</string>
@@ -562,12 +585,8 @@ Language: ru
     <string name="login_app_password_title">Не удалось войти в ваш магазин</string>
     <string name="empty_order_detail_message">Когда вы сделаете заказ, сведения о нём отобразятся здесь.</string>
     <string name="empty_order_detail_title">Сведений о заказе ещё нет</string>
-    <string name="order_creation_simple_payment_migration_button">Добавить индивидуальную сумму</string>
-    <string name="order_creation_simple_payment_migration_message_two">Чтобы указать сумму платежа, добавьте\nиндивидуальную сумму к своему заказу.</string>
     <string name="login_app_password_instructions_step_2">2. Когда появится запрос, подтвердите подключение, нажав кнопку подтверждения.</string>
     <string name="login_app_password_subtitle">Возможно, это потому, что в вашем магазине действуют дополнительные меры безопасности.</string>
-    <string name="order_creation_simple_payment_migration_message_one">Мы объединили получение платежа и\nсоздание заказа, сделав операцию более доступной\nи эффективной.</string>
-    <string name="order_creation_simple_payment_migration_title">Получение платежа \nперемещено</string>
     <string name="analytics_bundles_card_title">Комплекты</string>
     <string name="analytics_bundles_list_header_subtitle">Продано комплектов</string>
     <string name="analytics_bundles_list_header_title">Комплекты</string>
@@ -1165,7 +1184,6 @@ Language: ru
     <string name="last_update">Последнее обновление %s</string>
     <string name="order_creation_customer_search_empty_on_old_version_wcpay">Поиск существующего клиента или</string>
     <string name="card_reader_tap_to_pay_learn_more">&lt;a href=\'\'&gt;Узнайте больше&lt;/a&gt; о том, как принимать оплату в касание на Android</string>
-    <string name="card_reader_hub_collect_payment">Получение платежей</string>
     <string name="order_creation_barcode_scanning_unable_to_add_product_with_invalid_price">Нельзя добавить товар, не указав цену</string>
     <string name="order_creation_barcode_scanning_unable_to_add_draft_product">Нельзя добавить неопубликованный товар</string>
     <string name="order_creation_add_customer_content_description">добавить клиента</string>
@@ -1488,7 +1506,6 @@ Language: ru
     <string name="domain_registration_state_picker_dialog_title">Выберите округ/область</string>
     <string name="card_reader_tap_to_pay_explanation_title">Получение платежей по карте\nна вашем телефоне</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Оплата в касание</string>
-    <string name="card_reader_hub_actions_category_header">ДЕЙСТВИЯ</string>
     <string name="domain_registration_generic_error">Во время регистрации домена произошла ошибка</string>
     <string name="domain_contact_information_phone_number_hint">Телефон</string>
     <string name="domain_contact_information_country_code_hint">Код страны</string>

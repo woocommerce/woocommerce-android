@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
-import okhttp3.Credentials
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.UrlUtils
@@ -22,16 +21,6 @@ class ApplicationPasswordsStore @Inject constructor(
         private const val UUID_PREFERENCE_KEY_PREFIX = "app_password_uuid_"
     }
 
-    /*
-    Exposed only to pass to React Native instance so we can authenticate via application password
-    there. Do not use directly in WCAndroid app.
-     */
-    fun getApplicationPasswordAuthHeader(site: SiteModel): String =
-        Credentials.basic(
-            username = encryptedPreferences.getString(site.usernamePrefKey, null).orEmpty(),
-            password = encryptedPreferences.getString(site.passwordPrefKey, null).orEmpty()
-        )
-
     @Inject internal lateinit var configuration: ApplicationPasswordsConfiguration
 
     private val applicationName: String
@@ -40,6 +29,8 @@ class ApplicationPasswordsStore @Inject constructor(
     private val encryptedPreferences by lazy {
         initEncryptedPrefs()
     }
+
+    fun hasCredentials(site: SiteModel): Boolean = getCredentials(site) != null
 
     @Synchronized
     internal fun getCredentials(site: SiteModel): ApplicationPasswordCredentials? {

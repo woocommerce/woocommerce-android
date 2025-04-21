@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-03-25 11:54:05+0000
+Translation-Revision-Date: 2025-04-08 09:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_split_shipment_shipment_new">Yeni gönderi</string>
+    <string name="woo_shipping_split_shipment_shipment_name">%s gönderimi</string>
+    <string name="woo_shipping_split_move_to">Taşı:</string>
+    <string name="woo_shipping_split_move_to_new">Yeni gönderiye taşı</string>
+    <string name="woo_shipping_split_shipment_instructions">Bölmek için öğeleri seçin ve araç çubuğu göründüğünde &lt;b&gt;yeni gönderiye taşı&lt;/b&gt; seçeneğine dokunun.</string>
+    <string name="woo_shipping_labels_hazmat_selection_removed">Tehlikeli maddeler kategorisi kaldırıldı</string>
+    <string name="woo_shipping_labels_hazmat_selection_set">Tehlikeli maddeler kategorisi ayarlandı</string>
+    <string name="woo_shipping_labels_hazmat_search_hint">Bir Kategori Arayın</string>
+    <string name="woo_shipping_labels_hazmat_info_select_category">Kategori Seçin</string>
+    <string name="woo_shipping_labels_hazmat_info_tooltip_2">WooCommerce Shipping, şu anda &lt;a href=\'dhl-hazmat\'&gt;&lt;u&gt;DHL Express&lt;/u&gt;&lt;/a&gt; yoluyla Tehlikeli Madde gönderimlerini desteklemiyor.</string>
+    <string name="woo_shipping_labels_hazmat_info_tooltip_1">Şu adresten USPS® yoluyla Tehlikeli Maddelerin nasıl güvenli bir şekilde paketleneceğini, etiketleneceğini ve gönderileceğini öğrenin: &lt;a href=\'usps-hazmat\'&gt;&lt;u&gt;www.usps.com/hazmat&lt;/u&gt;&lt;/a&gt;. &lt;a href=\'hazmat-tool\'&gt;&lt;u&gt;USPS Tehlikeli Madde Arama Aracı&lt;/u&gt;&lt;/a&gt; kullanarak ürününüzün postayla gönderilebilir olup olmadığını öğrenin.</string>
+    <string name="woo_shipping_labels_hazmat_info_full_description">Potansiyel olarak tehlikeli maddeler arasında piller, kuru buz, yanıcı sıvılar, aerosoller, mühimmat, havai fişekler, oje, parfüm, boya, çözücüler ve daha fazlası yer almaktadır. Tehlikeli maddeler ayrı paketlerde gönderilmelidir.</string>
+    <string name="woo_shipping_labels_hazmat_info_contains_hazmat">Tehlikeli maddeler içerir</string>
+    <string name="woo_shipping_labels_hazmat_info_title">Zararlı ürünler veya tehlikeli materyaller mi gönderiyorsunuz?</string>
+    <string name="woopos_search_items_error_description">Bir kez daha denemek ister misiniz?</string>
+    <string name="woopos_search_items_error_title">Öğelerinizi yükleyemedik</string>
+    <string name="woopos_search_empty_image_content_description">Hiç bir öğe bulunamadı</string>
+    <string name="woopos_search_empty_description">Aramanızla eşleşen bir şey bulamadık.</string>
+    <string name="woopos_search_items_empty_title">Hiçbir şey bulunmadı</string>
+    <string name="woopos_payment_discount_label">İndirim</string>
+    <string name="woopos_cart_item_coupon_content_description">Sepette kupon %s</string>
+    <string name="shipping_label_package_title">Paket Seçin</string>
+    <string name="receipt_preview_toolbar_title">Makbuz Önizleme</string>
     <string name="woo_shipping_split_shipment">Gönderimi böl</string>
     <string name="woo_shipping_labels_purchase_error">Gönderim etiketini satın alamıyoruz. Lütfen tekrar deneyin.</string>
     <string name="woo_shipping_address_notification_origin_verified">Doğrulanmış menşe adresi</string>
@@ -330,7 +353,7 @@ Language: tr
     <string name="more_menu_button_payments_description">Hareket halindeyken ödeme alın</string>
     <string name="card_reader_payment_failed_incorrect_pin">Yanlış PIN girildi. Yeniden deneyin veya başka bir ödeme yöntemi kullanın</string>
     <string name="woopos_menu_toolbar_content_description">Menü</string>
-    <string name="woopos_cart_item_content_description">Sepetteki ürün %s, Fiyatı %s</string>
+    <string name="woopos_cart_item_product_content_description">Sepetteki ürün %s, Fiyatı %s</string>
     <string name="woopos_product_item_content_description">Ürün %s, Fiyatı %s</string>
     <string name="blaze_campaign_status_suspended">Askıya alındı</string>
     <string name="woopos_new_order_button">Yeni sipariş</string>
@@ -564,10 +587,6 @@ Language: tr
     <string name="login_app_password_title">Sitenizde oturum açamadık</string>
     <string name="empty_order_detail_message">Sipariş oluşturduğunuzda sipariş bilgileriniz burada görünür.</string>
     <string name="empty_order_detail_title">Henüz Sipariş Ayrıntısı Yok</string>
-    <string name="order_creation_simple_payment_migration_button">Özel Tutar Ekle</string>
-    <string name="order_creation_simple_payment_migration_message_two">Ödeme tutarı belirlemek için yeni\nsiparişinize özel bir tutar ekleyin.</string>
-    <string name="order_creation_simple_payment_migration_message_one">Ödeme almayı sipariş oluşturmayla birleştirdik\nbu sayede bunu daha erişilebilir\nve daha güçlü hale getirdik.</string>
-    <string name="order_creation_simple_payment_migration_title">Ödeme Alma \ntaşındı</string>
     <string name="analytics_bundles_card_title">Paketler</string>
     <string name="analytics_bundles_list_header_subtitle">Satılan paketler</string>
     <string name="analytics_bundles_list_header_title">Paketler</string>
@@ -1165,7 +1184,6 @@ Language: tr
     <string name="last_update_with_frequency">Son güncelleme %s (Her 30 dakikada bir güncellenir)</string>
     <string name="last_update">Son güncelleme %s</string>
     <string name="card_reader_tap_to_pay_learn_more">Android\'de Tap To Pay ile ödemeleri kabul etme hakkında &lt;a href=\'\'&gt;daha fazla bilgi alın&lt;/a&gt;</string>
-    <string name="card_reader_hub_collect_payment">Ödeme Alın</string>
     <string name="order_creation_barcode_scanning_unable_to_add_product_with_invalid_price">Fiyatı belirtilmemiş ürünleri ekleyemezsiniz</string>
     <string name="order_creation_barcode_scanning_unable_to_add_draft_product">Yayımlanmamış ürünleri ekleyemezsiniz</string>
     <string name="order_creation_add_customer_content_description">müşteri ekle</string>
@@ -1485,7 +1503,6 @@ Language: tr
     <string name="card_reader_tap_to_pay_explanation_try_payment">Ödeme yapmayı deneyin</string>
     <string name="card_reader_tap_to_pay_explanation_title">Kart ödemelerini\ntelefonunuzla alın</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tap To Pay</string>
-    <string name="card_reader_hub_actions_category_header">EYLEMLER</string>
     <string name="domain_registration_generic_error">Alan adı kaydı sırasında bir hata oluştu</string>
     <string name="domain_registration_state_picker_dialog_title">Eyalet seçin</string>
     <string name="domain_registration_country_picker_dialog_title">Ülke seçin</string>

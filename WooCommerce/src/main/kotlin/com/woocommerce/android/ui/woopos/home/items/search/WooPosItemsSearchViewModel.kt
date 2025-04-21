@@ -10,6 +10,7 @@ import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemNavigationData.VariableProductData
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsSearchHelper
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
@@ -35,6 +36,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
     private val childToParentEventSender: WooPosChildrenToParentEventSender,
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
     private val navigator: WooPosItemsNavigator,
+    private val searchHelper: WooPosItemsSearchHelper,
 ) : ViewModel() {
     private val _viewState =
         MutableStateFlow<WooPosItemsSearchViewState>(WooPosItemsSearchViewState.Empty)
@@ -86,11 +88,15 @@ class WooPosItemsSearchViewModel @Inject constructor(
                     ParentToChildrenEvent.SearchEvent.Started -> Unit
                     ParentToChildrenEvent.SearchEvent.Finished -> Unit
                     is ParentToChildrenEvent.BackFromCheckoutToCartClicked -> Unit
-                    is ParentToChildrenEvent.ItemClickedInProductSelector -> Unit
                     is ParentToChildrenEvent.OrderSuccessfullyPaid -> Unit
                     is ParentToChildrenEvent.CheckoutClicked -> Unit
                     is ParentToChildrenEvent.SearchEvent.RecentSearchSelected -> Unit
                     is ParentToChildrenEvent.OrderCreated -> Unit
+                    is ParentToChildrenEvent.ItemClickedInProductSelector -> {
+                        if (event.itemData is ItemClickedData.Product.Variation && searchHelper.isSearchOpen()) {
+                            storeRecentSearch()
+                        }
+                    }
                 }
             }
         }
