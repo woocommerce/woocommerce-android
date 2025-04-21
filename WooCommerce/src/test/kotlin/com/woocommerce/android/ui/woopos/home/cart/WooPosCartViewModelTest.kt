@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
+import com.woocommerce.android.ui.woopos.util.GetCachedStoreCurrency
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCartTapped
@@ -37,8 +38,6 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.model.WCSettingsModel
-import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import kotlin.test.Test
 
@@ -70,15 +69,12 @@ class WooPosCartViewModelTest {
         )
     }
     private val formatCouponSummary: WooPosFormatCouponSummary = mock {
-        on { formatCouponSummary(any(), any()) }
+        on { invoke(any(), any()) }
             .thenReturn("100% off everything")
     }
-    private val siteSettings: WCSettingsModel = mock {
-        on { currencyCode }.thenReturn("USD")
-    }
 
-    private val wooCommerceStore: WooCommerceStore = mock {
-        on { getSiteSettings(any()) }.thenReturn(siteSettings)
+    private val getCachedStoreCurrency: GetCachedStoreCurrency = mock {
+        onBlocking { invoke() }.thenReturn("USD")
     }
 
     private val selectedSite: SelectedSite = mock {
@@ -821,8 +817,7 @@ class WooPosCartViewModelTest {
             analyticsTracker,
             trackerData,
             cartProductUpdater,
-            wooCommerceStore,
-            selectedSite,
+            getCachedStoreCurrency,
             savedState
         )
     }
