@@ -158,8 +158,11 @@ class WooPosItemsViewModel @Inject constructor(
                 }
             }
 
-            is WooPosItemSelectionViewState.Variation -> {
-            }
+            is WooPosItemSelectionViewState.Variation ->
+                error("Variation item shouldn't be in this list")
+
+            is WooPosItemSelectionViewState.Coupon ->
+                error("Coupon item shouldn't be in this list")
         }
     }
 
