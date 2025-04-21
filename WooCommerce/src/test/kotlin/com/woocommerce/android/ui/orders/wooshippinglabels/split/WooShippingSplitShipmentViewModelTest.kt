@@ -24,7 +24,11 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
     lateinit var sut: WooShippingSplitShipmentViewModel
 
     private fun createViewModel(
-        shipmentArgs: SplitShipmentArgs
+        shipmentArgs: SplitShipmentArgs = SplitShipmentArgs(
+            orderId = 1L,
+            storeOptions = StoreOptionsModel.EMPTY,
+            shipments = defaultShipment
+        )
     ) {
         val savedState = WooShippingSplitShipmentFragmentArgs(shipmentArgs).toSavedStateHandle()
         sut = WooShippingSplitShipmentViewModel(
@@ -36,13 +40,7 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when split shipments is opened, then display the correct number of expandable products`() = testBlocking {
-        val shipmentArgs = SplitShipmentArgs(
-            orderId = 1L,
-            storeOptions = StoreOptionsModel.EMPTY,
-            shipments = defaultShipment
-        )
-
-        createViewModel(shipmentArgs)
+        createViewModel()
 
         sut.viewState.observeForTesting { }
 
@@ -78,13 +76,8 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
     @Test
     fun `when an expandable product inner selection changes, then the product is updated`() = testBlocking {
         val shippableItemIndex = 2
-        val shipmentArgs = SplitShipmentArgs(
-            orderId = 1L,
-            storeOptions = StoreOptionsModel.EMPTY,
-            shipments = defaultShipment
-        )
 
-        createViewModel(shipmentArgs)
+        createViewModel()
 
         sut.onUpdateSelection(shippableItemIndex, List(3) { it }.toSet())
 
@@ -103,13 +96,8 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
     @Test
     fun `when an expandable product selection changes, then the product is updated`() = testBlocking {
         val shippableItemIndex = 2
-        val shipmentArgs = SplitShipmentArgs(
-            orderId = 1L,
-            storeOptions = StoreOptionsModel.EMPTY,
-            shipments = defaultShipment
-        )
 
-        createViewModel(shipmentArgs)
+        createViewModel()
 
         sut.onUpdateSelection(shippableItemIndex, null)
 
@@ -128,13 +116,8 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
     @Test
     fun `when a single product selection changes, then the product is updated`() = testBlocking {
         val shippableItemIndex = 0
-        val shipmentArgs = SplitShipmentArgs(
-            orderId = 1L,
-            storeOptions = StoreOptionsModel.EMPTY,
-            shipments = defaultShipment
-        )
 
-        createViewModel(shipmentArgs)
+        createViewModel()
 
         sut.onUpdateSelection(shippableItemIndex, null)
 
@@ -152,11 +135,6 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when moving a shippable item to a new shipment, then a new shipment is created`() = testBlocking {
-        val shipmentArgs = SplitShipmentArgs(
-            orderId = 1L,
-            storeOptions = StoreOptionsModel.EMPTY,
-            shipments = defaultShipment
-        )
         val updatedCurrentShipmentItems = defaultShipment.getValue(0).subList(fromIndex = 1, toIndex = 3)
         val updatedShipmentItems = defaultShipment.getValue(0).subList(fromIndex = 0, toIndex = 1)
 
@@ -167,7 +145,7 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
             movingShipmentItems = updatedShipmentItems
         )
 
-        createViewModel(shipmentArgs)
+        createViewModel()
 
         sut.onUpdateShipment(movement)
 
@@ -234,11 +212,6 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when moving a shippable item to new shipment, then show singular snackbar`() = testBlocking {
-        val shipmentArgs = SplitShipmentArgs(
-            orderId = 1L,
-            storeOptions = StoreOptionsModel.EMPTY,
-            shipments = defaultShipment
-        )
         val updatedCurrentShipmentItems = defaultShipment.getValue(0).subList(fromIndex = 1, toIndex = 3)
         val updatedShipmentItems = defaultShipment.getValue(0).subList(fromIndex = 0, toIndex = 1)
 
@@ -249,7 +222,7 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
             movingShipmentItems = updatedShipmentItems
         )
 
-        createViewModel(shipmentArgs)
+        createViewModel()
 
         sut.onUpdateShipment(movement)
 
@@ -266,11 +239,6 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when moving shippable items to new shipment, then show plural snackbar`() = testBlocking {
-        val shipmentArgs = SplitShipmentArgs(
-            orderId = 1L,
-            storeOptions = StoreOptionsModel.EMPTY,
-            shipments = defaultShipment
-        )
         val updatedCurrentShipmentItems = defaultShipment.getValue(0).subList(fromIndex = 0, toIndex = 1)
         val updatedShipmentItems = defaultShipment.getValue(0).subList(fromIndex = 1, toIndex = 2)
 
@@ -281,7 +249,7 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
             movingShipmentItems = updatedShipmentItems
         )
 
-        createViewModel(shipmentArgs)
+        createViewModel()
 
         sut.onUpdateShipment(movement)
 
@@ -318,11 +286,6 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when removing a shipment, then the total shipment count is reduced by 1`() = testBlocking {
-        val shipmentArgs = SplitShipmentArgs(
-            orderId = 1L,
-            storeOptions = StoreOptionsModel.EMPTY,
-            shipments = twoShipment
-        )
         val movingItems = twoShipment.getValue(1)
 
         // Removing "Shipment 2"
@@ -333,7 +296,7 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
             movingShipmentItems = movingItems
         )
 
-        createViewModel(shipmentArgs)
+        createViewModel()
 
         sut.onUpdateShipment(movement)
 
