@@ -9,7 +9,6 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetCouponById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetVariationById
@@ -22,6 +21,7 @@ import com.woocommerce.android.ui.woopos.home.cart.WooPosCartStatus.EDITABLE
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartStatus.EMPTY
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.home.items.variations.getNameForPOS
+import com.woocommerce.android.ui.woopos.util.GetCachedStoreCurrency
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCartTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.CheckoutTapped
@@ -36,12 +36,8 @@ import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import org.wordpress.android.fluxc.model.WCSettingsModel
-import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 
@@ -58,8 +54,7 @@ class WooPosCartViewModel @Inject constructor(
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val analyticsTrackingDataKeeper: WooPosAnalyticsTrackingDataKeeper,
     private val cartProductUpdater: WooPosCartProductUpdater,
-    private val wooCommerceStore: WooCommerceStore,
-    private val selectedSite: SelectedSite,
+    private val getCachedStoreCurrency: GetCachedStoreCurrency,
     savedState: SavedStateHandle,
 ) : ViewModel() {
     private val _state = savedState.getStateFlow(
@@ -75,12 +70,6 @@ class WooPosCartViewModel @Inject constructor(
         .map { updateStateDependingOnCartStatus(it) }
 
     private val itemNumberProvider = AtomicInteger(getInitialValueOrHighestUsedItemNumberAfterProcessDeath())
-
-    private val siteSettings: Deferred<WCSettingsModel> = viewModelScope.async(Dispatchers.IO) {
-        requireNotNull(wooCommerceStore.getSiteSettings(selectedSite.get())) {
-            "Site settings not found"
-        }
-    }
 
     init {
         listenEventsFromParent()
@@ -232,7 +221,7 @@ class WooPosCartViewModel @Inject constructor(
             itemNumber = getItemNumber(),
             id = couponId,
             name = coupon.code ?: "",
-            summary = formatCouponSummary.formatCouponSummary(coupon, siteSettings.await().currencyCode),
+            summary = formatCouponSummary(coupon, getCachedStoreCurrency()),
         )
     }
 
