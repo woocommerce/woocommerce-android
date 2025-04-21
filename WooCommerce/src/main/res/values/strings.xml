@@ -4310,6 +4310,7 @@
     <string name="woopos_items_in_cart_multiple">%d items</string>
     <string name="woopos_remove_cart_item_content_description">Remove this item from the cart</string>
     <string name="woopos_products_screen_title">Products</string>
+    <string name="woopos_coupons_screen_title">Coupons</string>
     <string name="woopos_cart_back_content_description">Cart icon</string>
     <string name="woopos_payment_failed_please_try_again">Payment failed. Please try again.</string>
     <string name="woopos_payment_successful_label">Payment successful</string>

@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -32,12 +33,15 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearch
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState.Tab.HighlightLevel.*
 
 @Composable
 fun WooPosItemsToolbar(
     state: WooPosItemsViewState,
-    onTabClicked: (WooPosItemsToolbarTabs) -> Unit,
+    onTabClicked: (WooPosItemsViewState.Tab) -> Unit,
     onToolbarInfoIconClicked: () -> Unit,
     onSearchEvent: (WooPosSearchUIEvent) -> Unit,
 ) {
@@ -57,12 +61,18 @@ fun WooPosItemsToolbar(
             enter = fadeIn(animationSpec = tween(200)),
             exit = fadeOut(animationSpec = tween(200)),
         ) {
-            WooPosText(
-                text = stringResource(id = R.string.woopos_products_screen_title),
-                style = WooPosTypography.Heading,
-                fontWeight = FontWeight.Bold,
-                color = titleColor(state),
-            )
+            state.tabs.forEach { tab ->
+                WooPosText(
+                    text = stringResource(id = tab.stringId),
+                    style = WooPosTypography.Heading,
+                    fontWeight = FontWeight.Bold,
+                    color = tab.highlightLevel.titleColor(),
+                    modifier = Modifier.clickable(
+                        onClick = { onTabClicked(tab) },
+                    )
+                )
+                Spacer(modifier = Modifier.width(WooPosSpacing.Large.value))
+            }
         }
 
         Row(
@@ -143,16 +153,9 @@ fun WooPosItemsToolbar(
     }
 }
 
-enum class WooPosItemsToolbarTabs {
-    PRODUCTS,
-    COUPONS,
-}
-
 @Composable
-private fun titleColor(state: WooPosItemsViewState): Color = when (state) {
-    is WooPosItemsViewState.Loading,
-    is WooPosItemsViewState.Empty,
-    is WooPosItemsViewState.Error -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-
-    is WooPosItemsViewState.Content -> MaterialTheme.colorScheme.onSurface
+private fun WooPosItemsViewState.Tab.HighlightLevel.titleColor(): Color = when (this) {
+    Full -> MaterialTheme.colorScheme.onSurface
+    Half -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+    None -> WooPosTheme.colors.onSurfaceVariantLowest
 }
