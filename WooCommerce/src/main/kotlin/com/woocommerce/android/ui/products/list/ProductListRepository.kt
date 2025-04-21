@@ -54,7 +54,7 @@ class ProductListRepository @Inject constructor(
     var lastSearchQuery: String? = null
         private set
 
-    var lastIsSkuSearch = WCProductStore.SkuSearchOptions.Disabled
+    var lastIsSkuSearch = SkuSearchOptions.Disabled
         private set
 
     var productSortingChoice: WCProductStore.ProductSorting

@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-03-25 15:54:03+0000
+Translation-Revision-Date: 2025-04-08 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_split_shipment_shipment_new">Nieuwe verzending</string>
+    <string name="woo_shipping_split_shipment_shipment_name">Verzending %s</string>
+    <string name="woo_shipping_split_move_to">Verplaatsen naar</string>
+    <string name="woo_shipping_split_move_to_new">Verplaatsen naar nieuwe verzending</string>
+    <string name="woo_shipping_split_shipment_instructions">Selecteer de items en tik op &lt;b&gt;Verplaatsen naar nieuwe verzending&lt;/b&gt; wanneer de werkbalk verschijnt om de verzending te splitsen.</string>
+    <string name="woo_shipping_labels_hazmat_selection_removed">Categorie gevaarlijke goederen verwijderd</string>
+    <string name="woo_shipping_labels_hazmat_selection_set">Categorie gevaarlijke goederen ingesteld</string>
+    <string name="woo_shipping_labels_hazmat_search_hint">Een categorie zoeken</string>
+    <string name="woo_shipping_labels_hazmat_info_select_category">Categorie selecteren</string>
+    <string name="woo_shipping_labels_hazmat_info_tooltip_2">WooCommerce Shipping ondersteunt op dit moment geen verzendingen met gevaarlijke goederen via &lt;a href=\'dhl-hazmat\'&gt;&lt;u&gt;DHL Express&lt;/u&gt;&lt;/a&gt;</string>
+    <string name="woo_shipping_labels_hazmat_info_tooltip_1">Ontdek hoe je gevaarlijke goederen via USPS® kan verpakken, labelen en verzenden op &lt;a href=\'usps-hazmat\'&gt;&lt;u&gt;www.usps.com/hazmat&lt;/u&gt;&lt;/a&gt;. Controleer de verzendbaarheid van je product met behulp van de &lt;a href=\'hazmat-tool\'&gt;&lt;u&gt;USPS HAZMAT Search Tool&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="woo_shipping_labels_hazmat_info_full_description">Mogelijk gevaarlijk materiaal waaronder batterijen, droogijs, ontvlambare vloeistoffen, aerosolen, ammunitie, vuurwerk, nagellak, parfum, verf, oplosmiddelen en meer. Gevaarlijke producten moeten in een aparte verpakking worden verzonden.</string>
+    <string name="woo_shipping_labels_hazmat_info_contains_hazmat">Bevat gevaarlijke materialen</string>
+    <string name="woo_shipping_labels_hazmat_info_title">Ben je van plan om gevaarlijke goederen of materialen te verzenden?</string>
+    <string name="woopos_search_items_error_description">Nog een keer proberen?</string>
+    <string name="woopos_search_items_error_title">We konden je items niet laden</string>
+    <string name="woopos_search_empty_image_content_description">Geen items gevonden</string>
+    <string name="woopos_search_empty_description">We konden niets vinden dat aan je zoekopdracht voldoet.</string>
+    <string name="woopos_search_items_empty_title">Niets gevonden</string>
+    <string name="woopos_payment_discount_label">Korting</string>
+    <string name="woopos_cart_item_coupon_content_description">Coupon in winkelwagen %s</string>
+    <string name="shipping_label_package_title">Een pakket selecteren</string>
+    <string name="receipt_preview_toolbar_title">Voorbeeld betalingsbewijs</string>
     <string name="woo_shipping_split_shipment">Verzending spreiden</string>
     <string name="woo_shipping_labels_purchase_error">We kunnen het verzendlabel niet aanschaffen. Probeer het nog eens.</string>
     <string name="woo_shipping_address_notification_origin_verified">Adres van oorsprong geverifieerd</string>
@@ -330,7 +353,7 @@ Language: nl
     <string name="more_menu_button_payments_description">Neem onderweg betalingen aan</string>
     <string name="card_reader_payment_failed_incorrect_pin">Er is een onjuiste pincode ingevoerd. Probeer het opnieuw of probeer een andere betaalmethode</string>
     <string name="woopos_menu_toolbar_content_description">Menu</string>
-    <string name="woopos_cart_item_content_description">Product in winkelwagen %s, prijs %s</string>
+    <string name="woopos_cart_item_product_content_description">Product in winkelwagen %s, prijs %s</string>
     <string name="woopos_product_item_content_description">Product %s, prijs %s</string>
     <string name="blaze_campaign_status_suspended">Opgeschort</string>
     <string name="woopos_new_order_button">Nieuwe bestelling</string>
@@ -564,10 +587,6 @@ Language: nl
     <string name="login_app_password_title">We konden niet inloggen bij je winkel</string>
     <string name="empty_order_detail_message">Je bestelgegevens worden hier weergegeven wanneer je een bestelling hebt aangemaakt.</string>
     <string name="empty_order_detail_title">Nog geen bestelgegevens</string>
-    <string name="order_creation_simple_payment_migration_button">Aangepast bedrag toevoegen</string>
-    <string name="order_creation_simple_payment_migration_message_two">Om een betaalbedrag in te stellen, voeg je\neen aangepast bedrag toe aan je nieuwe bestelling.</string>
-    <string name="order_creation_simple_payment_migration_message_one">We hebben betalingen ontvangen gecombineerd met\nbestellingen aanmaken, wat het toegankelijker\nen krachtiger maakt.</string>
-    <string name="order_creation_simple_payment_migration_title">Betaling innen \nis verplaatst</string>
     <string name="analytics_bundles_card_title">Bundels</string>
     <string name="analytics_bundles_list_header_subtitle">Verkochte bundels</string>
     <string name="analytics_bundles_list_header_title">Bundels</string>
@@ -1165,7 +1184,6 @@ Language: nl
     <string name="last_update_with_frequency">Laatst bijgewerkt %s (wordt elke 30 minuten bijgewerkt)</string>
     <string name="last_update">Laatst bijgewerkt %s</string>
     <string name="card_reader_tap_to_pay_learn_more">&lt;a href=\'\'&gt;Meer informatie&lt;/a&gt; over het accepteren van betalingen met Tap to Pay op Android</string>
-    <string name="card_reader_hub_collect_payment">Betaling ontvangen</string>
     <string name="order_creation_barcode_scanning_unable_to_add_product_with_invalid_price">Je kan geen producten zonder prijs toevoegen</string>
     <string name="order_creation_barcode_scanning_unable_to_add_draft_product">Je kan geen producten toevoegen die niet zijn gepubliceerd</string>
     <string name="order_creation_add_customer_content_description">klant toevoegen</string>
@@ -1485,7 +1503,6 @@ Language: nl
     <string name="card_reader_tap_to_pay_explanation_try_payment">Probeer een betaling</string>
     <string name="card_reader_tap_to_pay_explanation_title">Pinbetalingen verzamelen\nMet je telefoon</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tik om te betalen</string>
-    <string name="card_reader_hub_actions_category_header">ACTIES</string>
     <string name="domain_registration_generic_error">Er is een fout opgetreden tijdens domeinregistratie</string>
     <string name="domain_registration_state_picker_dialog_title">Selecteer provincie</string>
     <string name="domain_registration_country_picker_dialog_title">Selecteer land</string>

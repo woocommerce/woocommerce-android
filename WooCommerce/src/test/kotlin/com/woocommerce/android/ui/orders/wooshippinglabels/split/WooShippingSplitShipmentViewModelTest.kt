@@ -17,7 +17,6 @@ import kotlin.test.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
-
     private val currencyFormatter: CurrencyFormatter = org.mockito.kotlin.mock {
         on { formatCurrency(amount = any(), any(), any()) }.doAnswer { it.getArgument<BigDecimal>(0).toString() }
     }
@@ -87,7 +86,7 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
 
         createViewModel(shipmentArgs)
 
-        sut.onUpdateSelection(1, shippableItemIndex, List(3) { it }.toSet())
+        sut.onUpdateSelection(shippableItemIndex, List(3) { it }.toSet())
 
         sut.viewState.observeForTesting { }
 
@@ -112,7 +111,7 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
 
         createViewModel(shipmentArgs)
 
-        sut.onUpdateSelection(1, shippableItemIndex, null)
+        sut.onUpdateSelection(shippableItemIndex, null)
 
         sut.viewState.observeForTesting { }
 
@@ -137,7 +136,7 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
 
         createViewModel(shipmentArgs)
 
-        sut.onUpdateSelection(1, shippableItemIndex, null)
+        sut.onUpdateSelection(shippableItemIndex, null)
 
         sut.viewState.observeForTesting { }
 
