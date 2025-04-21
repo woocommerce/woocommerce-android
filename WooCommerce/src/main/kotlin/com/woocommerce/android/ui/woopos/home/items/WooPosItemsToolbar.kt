@@ -37,7 +37,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 @Composable
 fun WooPosItemsToolbar(
     state: WooPosItemsViewState,
-    titleColor: Color,
     onToolbarInfoIconClicked: () -> Unit,
     onCouponsButtonClicked: () -> Unit,
     onSearchEvent: (WooPosSearchUIEvent) -> Unit,
@@ -62,7 +61,7 @@ fun WooPosItemsToolbar(
                 text = stringResource(id = R.string.woopos_products_screen_title),
                 style = WooPosTypography.Heading,
                 fontWeight = FontWeight.Bold,
-                color = titleColor,
+                color = titleColor(state),
             )
         }
 
@@ -143,4 +142,13 @@ fun WooPosItemsToolbar(
             }
         }
     }
+}
+
+@Composable
+private fun titleColor(state: WooPosItemsViewState): Color = when (state) {
+    is WooPosItemsViewState.Loading,
+    is WooPosItemsViewState.Empty,
+    is WooPosItemsViewState.Error -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+
+    is WooPosItemsViewState.Content -> MaterialTheme.colorScheme.onSurface
 }

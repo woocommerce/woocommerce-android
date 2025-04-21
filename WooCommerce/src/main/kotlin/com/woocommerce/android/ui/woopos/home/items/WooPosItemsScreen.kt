@@ -15,7 +15,6 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
@@ -144,16 +143,8 @@ private fun MainItemsList(
         Column(
             modifier.fillMaxHeight()
         ) {
-            val titleColor = when (state.value) {
-                is WooPosItemsViewState.Loading,
-                is WooPosItemsViewState.Empty,
-                is WooPosItemsViewState.Error -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-
-                is WooPosItemsViewState.Content -> MaterialTheme.colorScheme.onSurface
-            }
             WooPosItemsToolbar(
                 state = state.value,
-                titleColor = titleColor,
                 onToolbarInfoIconClicked = onToolbarInfoIconClicked,
                 onCouponsButtonClicked = onCouponsButtonClicked,
                 onSearchEvent = onSearchEvent,
