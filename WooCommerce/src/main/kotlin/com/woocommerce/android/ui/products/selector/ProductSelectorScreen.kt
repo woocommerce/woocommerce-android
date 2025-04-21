@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -75,7 +76,10 @@ import com.woocommerce.android.ui.products.selector.components.SelectorListItem
 import com.woocommerce.android.util.StringUtils
 
 @Composable
-fun ProductSelectorScreen(viewModel: ProductSelectorViewModel) {
+fun ProductSelectorScreen(
+    viewModel: ProductSelectorViewModel,
+    handleImeInsets: Boolean = false
+) {
     val viewState by viewModel.viewState.observeAsState()
     BackHandler(onBack = viewModel::onNavigateBack)
     viewState?.let { state ->
@@ -106,13 +110,11 @@ fun ProductSelectorScreen(viewModel: ProductSelectorViewModel) {
                 )
             }
         }) { padding ->
-            val modifier = if (showToolbar) {
-                Modifier.padding(padding)
-            } else {
-                Modifier
-                    .padding(padding)
-                    .statusBarsPadding()
-            }.navigationBarsPadding()
+            val modifier = Modifier
+                .padding(padding)
+                .navigationBarsPadding()
+                .then(if (!showToolbar) Modifier.statusBarsPadding() else Modifier)
+                .then(if (handleImeInsets) Modifier.imePadding() else Modifier)
             ProductSelectorScreen(
                 modifier = modifier,
                 state = state,
