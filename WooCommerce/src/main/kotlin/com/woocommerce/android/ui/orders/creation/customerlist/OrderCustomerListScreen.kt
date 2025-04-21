@@ -2,6 +2,8 @@
 
 package com.woocommerce.android.ui.orders.creation.customerlist
 
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
@@ -26,11 +28,15 @@ import com.woocommerce.android.ui.customer.CustomerListScreen
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 
 @Composable
-fun OrderCustomerListScreen(viewModel: CustomerListSelectionViewModel) {
+fun OrderCustomerListScreen(
+    viewModel: CustomerListSelectionViewModel,
+    handleImeInsets: Boolean = true,
+) {
     val state by viewModel.viewState.observeAsState()
     state?.let {
         OrderCustomerListScreen(
             state = it,
+            handleImeInsets = handleImeInsets,
             onNavigateBack = viewModel::onNavigateBack,
             onAddCustomerClicked = viewModel::onAddCustomerClicked,
             onCustomerSelected = viewModel::onCustomerSelected,
@@ -44,6 +50,7 @@ fun OrderCustomerListScreen(viewModel: CustomerListSelectionViewModel) {
 @Composable
 fun OrderCustomerListScreen(
     state: CustomerListViewState,
+    handleImeInsets: Boolean,
     onNavigateBack: () -> Unit,
     onAddCustomerClicked: () -> Unit,
     onCustomerSelected: (WCCustomerModel) -> Unit,
@@ -74,7 +81,10 @@ fun OrderCustomerListScreen(
         modifier = modifier
     ) { padding ->
         CustomerListScreen(
-            modifier = Modifier.padding(padding),
+            modifier = Modifier
+                .padding(padding)
+                .navigationBarsPadding()
+                .then(if (handleImeInsets) Modifier.imePadding() else Modifier),
             state = state,
             onCustomerSelected = onCustomerSelected,
             onSearchQueryChanged = onSearchQueryChanged,
@@ -161,6 +171,7 @@ fun OrderCustomerListScreenPreview() {
                     shouldResetScrollPosition = true
                 ),
             ),
+            handleImeInsets = false,
             onNavigateBack = {},
             onAddCustomerClicked = {},
             onCustomerSelected = {},
