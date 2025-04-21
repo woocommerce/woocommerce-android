@@ -463,7 +463,7 @@ fun ItemListPreview() {
                     ),
                     WooPosItemsViewState.Tab(
                         stringId = R.string.woopos_coupons_screen_title,
-                        highlightLevel = WooPosItemsViewState.Tab.HighlightLevel.None
+                        highlightLevel = WooPosItemsViewState.Tab.HighlightLevel.Normal
                     )
                 )
             ),

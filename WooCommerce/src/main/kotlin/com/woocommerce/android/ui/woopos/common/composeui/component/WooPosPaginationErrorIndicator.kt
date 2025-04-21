@@ -159,7 +159,7 @@ fun WooPosPaginationErrorScreenPreview() {
             ),
             tabs = listOf(
                 WooPosItemsViewState.Tab(R.string.woopos_products_screen_title, highlightLevel = HighlightLevel.Full),
-                WooPosItemsViewState.Tab(R.string.woopos_coupons_screen_title, highlightLevel = HighlightLevel.Half),
+                WooPosItemsViewState.Tab(R.string.woopos_coupons_screen_title, highlightLevel = HighlightLevel.Normal),
             ),
             search = WooPosItemsViewState.Content.SearchState.Hidden
         )

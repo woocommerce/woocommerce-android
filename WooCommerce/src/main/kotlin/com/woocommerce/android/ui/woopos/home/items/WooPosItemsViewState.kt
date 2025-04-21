@@ -47,7 +47,7 @@ sealed class WooPosItemsViewState(
 
     data class Tab(@StringRes val stringId: Int, val highlightLevel: HighlightLevel) {
         enum class HighlightLevel {
-            Full, Half, None
+            Full, Normal
         }
     }
 }

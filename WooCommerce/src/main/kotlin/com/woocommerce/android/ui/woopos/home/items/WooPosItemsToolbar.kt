@@ -35,8 +35,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState.Tab.HighlightLevel.Full
-import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState.Tab.HighlightLevel.Half
-import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState.Tab.HighlightLevel.None
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState.Tab.HighlightLevel.Normal
 
 @Composable
 fun WooPosItemsToolbar(
@@ -131,6 +130,5 @@ fun WooPosItemsToolbar(
 @Composable
 private fun WooPosItemsViewState.Tab.HighlightLevel.titleColor(): Color = when (this) {
     Full -> MaterialTheme.colorScheme.onSurface
-    Half -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-    None -> WooPosTheme.colors.onSurfaceVariantLowest
+    Normal -> WooPosTheme.colors.onSurfaceVariantLowest
 }
