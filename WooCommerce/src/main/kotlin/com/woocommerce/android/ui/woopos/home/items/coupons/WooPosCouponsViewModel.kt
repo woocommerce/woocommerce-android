@@ -68,20 +68,15 @@ class WooPosCouponsViewModel @Inject constructor(
     }
 
     private fun handleCouponClicked(event: WooPosCouponsUIEvent.CouponClicked) {
-        // CouponsProject: handle coupon click
+        viewModelScope.launch {
+            fromChildToParentEventSender.sendToParent(
+                // CouponsProject: rename ItemClickedInProductSelector to ItemClicked
+                ChildToParentEvent.ItemClickedInProductSelector(ItemClickedData.Coupon(event.couponId))
+            )
+        }
     }
 
     private fun onEndOfProductsListReached() {
         // CouponsProject: Load More
     }
-
-    private fun onItemClicked(itemData: ItemClickedData) {
-        viewModelScope.launch {
-            fromChildToParentEventSender.sendToParent(
-                // CouponsProject: rename ItemClickedInProductSelector to ItemClicked
-                ChildToParentEvent.ItemClickedInProductSelector(itemData)
-            )
-        }
-    }
 }
-
