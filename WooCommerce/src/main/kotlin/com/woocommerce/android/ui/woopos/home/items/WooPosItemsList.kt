@@ -59,6 +59,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState.Coupon
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState.Product
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState.Variation
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState.Content.BannerState
@@ -82,12 +83,12 @@ fun WooPosItemList(
         items(
             state.items,
             key = { product -> product.id }
-        ) { product ->
-            when (product) {
+        ) { posItem ->
+            when (posItem) {
                 is Product.Simple -> {
                     ProductItem(
                         modifier = Modifier.animateItem(),
-                        item = product,
+                        item = posItem,
                         onItemClicked = onItemClicked
                     )
                 }
@@ -95,7 +96,7 @@ fun WooPosItemList(
                 is Product.Variable -> {
                     VariableProductItem(
                         modifier = Modifier.animateItem(),
-                        item = product,
+                        item = posItem,
                         onItemClicked = onItemClicked
                     )
                 }
@@ -103,10 +104,16 @@ fun WooPosItemList(
                 is Variation -> {
                     VariationItem(
                         modifier = Modifier.animateItem(),
-                        item = product,
+                        item = posItem,
                         onItemClicked = onItemClicked
                     )
                 }
+
+                is Coupon -> CouponItem(
+                    modifier = Modifier.animateItem(),
+                    item = posItem,
+                    onItemClicked = onItemClicked
+                )
             }
         }
 
@@ -211,6 +218,19 @@ fun WooPosItemCard(
 }
 
 @Composable
+private fun CouponItem(
+    modifier: Modifier = Modifier,
+    item: Coupon,
+    onItemClicked: (item: WooPosItemSelectionViewState) -> Unit
+) {
+    val itemContentDescription = stringResource(
+        id = R.string.woopos_coupon_item_content_description,
+        item.name,
+    )
+    WooPosItemCard(modifier, itemContentDescription, onItemClicked, item)
+}
+
+@Composable
 private fun ProductInfo(item: WooPosItemSelectionViewState) {
     Column(
         modifier = Modifier
@@ -234,6 +254,7 @@ private fun ProductInfo(item: WooPosItemSelectionViewState) {
             is Product.Simple -> SimpleProductDetails(item = item)
             is Product.Variable -> VariableProductDetails()
             is Variation -> VariationProductDetails(item = item)
+            is Coupon -> CouponDetails(item = item)
         }
     }
 }
@@ -244,6 +265,7 @@ private fun ProductImage(item: WooPosItemSelectionViewState) {
         is Product.Simple -> item.imageUrl
         is Product.Variable -> item.imageUrl
         is Variation -> item.imageUrl
+        is Coupon -> R.drawable.ic_coupon_percentage
     }
     Box(
         modifier = Modifier
@@ -291,6 +313,15 @@ private fun VariableProductDetails() {
 fun VariationProductDetails(item: Variation) {
     WooPosText(
         text = item.price,
+        style = WooPosTypography.BodyLarge,
+        color = WooPosTheme.colors.onSurfaceVariantHighest,
+    )
+}
+
+@Composable
+fun CouponDetails(item: Coupon) {
+    WooPosText(
+        text = item.name,
         style = WooPosTypography.BodyLarge,
         color = WooPosTheme.colors.onSurfaceVariantHighest,
     )
