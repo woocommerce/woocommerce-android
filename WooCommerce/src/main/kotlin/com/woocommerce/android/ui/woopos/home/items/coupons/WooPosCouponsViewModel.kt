@@ -32,7 +32,7 @@ class WooPosCouponsViewModel @Inject constructor(
         )
 
     init {
-        // TODO load initial coupons
+        // CouponsProject: load initial coupons
     }
 
     fun onUIEvent(event: WooPosCouponsUIEvent) {
@@ -42,7 +42,7 @@ class WooPosCouponsViewModel @Inject constructor(
             }
 
             WooPosCouponsUIEvent.PullToRefreshTriggered -> {
-                // TODO PTR Action
+                // CouponsProject: PTR Action
             }
 
             is WooPosCouponsUIEvent.EndOfItemsListReached -> {
@@ -50,7 +50,7 @@ class WooPosCouponsViewModel @Inject constructor(
             }
 
             WooPosCouponsUIEvent.RetryLoadMoreTriggered -> {
-                // TODO retry load more action
+                // CouponsProject: retry load more action
             }
 
             WooPosCouponsUIEvent.BackButtonClicked -> {
@@ -68,17 +68,17 @@ class WooPosCouponsViewModel @Inject constructor(
     }
 
     private fun handleCouponClicked(event: WooPosCouponsUIEvent.CouponClicked) {
-        // TODO handle coupon click
+        // CouponsProject: handle coupon click
     }
 
     private fun onEndOfProductsListReached() {
-        // TODO Load More
+        // CouponsProject: Load More
     }
 
     private fun onItemClicked(itemData: ItemClickedData) {
         viewModelScope.launch {
             fromChildToParentEventSender.sendToParent(
-                // TODO rename ItemClickedInProductSelector to ItemClicked
+                // CouponsProject: rename ItemClickedInProductSelector to ItemClicked
                 ChildToParentEvent.ItemClickedInProductSelector(itemData)
             )
         }
