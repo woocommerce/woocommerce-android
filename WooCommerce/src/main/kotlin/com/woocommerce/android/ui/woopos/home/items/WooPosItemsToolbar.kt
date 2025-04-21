@@ -37,8 +37,8 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 @Composable
 fun WooPosItemsToolbar(
     state: WooPosItemsViewState,
+    onTabClicked: (WooPosItemsToolbarTabs) -> Unit,
     onToolbarInfoIconClicked: () -> Unit,
-    onCouponsButtonClicked: () -> Unit,
     onSearchEvent: (WooPosSearchUIEvent) -> Unit,
 ) {
     val isSearchExpanded = state is WooPosItemsViewState.Content &&
@@ -95,7 +95,6 @@ fun WooPosItemsToolbar(
                         IconButton(
                             modifier = Modifier.size(40.dp),
                             onClick = {
-                                onCouponsButtonClicked()
                             }
                         ) {
                             Icon(
@@ -142,6 +141,11 @@ fun WooPosItemsToolbar(
             }
         }
     }
+}
+
+enum class WooPosItemsToolbarTabs {
+    PRODUCTS,
+    COUPONS,
 }
 
 @Composable

@@ -33,6 +33,8 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState.Product
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarTabs.COUPONS
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarTabs.PRODUCTS
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsUIEvent.EndOfItemsListReached
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsUIEvent.ProductsLoadingErrorRetryButtonClicked
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsUIEvent.PullToRefreshTriggered
@@ -100,7 +102,14 @@ private fun WooPosItemsScreen(
                 }
             }
         },
-        onCouponsButtonClicked = { onUIEvent(WooPosItemsUIEvent.CouponsButtonClicked) },
+        onTabClicked = { tab ->
+            onUIEvent(
+                when (tab) {
+                    PRODUCTS -> TODO()
+                    COUPONS -> TODO()
+                }
+            )
+        },
         onPullToRefreshTriggered = { onUIEvent(PullToRefreshTriggered) },
     )
 }
@@ -118,7 +127,7 @@ private fun MainItemsList(
     onEndOfItemListReached: () -> Unit,
     onRetryClicked: () -> Unit,
     onSearchEvent: (WooPosSearchUIEvent) -> Unit,
-    onCouponsButtonClicked: () -> Unit,
+    onTabClicked: (WooPosItemsToolbarTabs) -> Unit,
     onPullToRefreshTriggered: () -> Unit,
 ) {
     val pullToRefreshState = rememberPullRefreshState(
@@ -146,7 +155,7 @@ private fun MainItemsList(
             WooPosItemsToolbar(
                 state = state.value,
                 onToolbarInfoIconClicked = onToolbarInfoIconClicked,
-                onCouponsButtonClicked = onCouponsButtonClicked,
+                onTabClicked = onTabClicked,
                 onSearchEvent = onSearchEvent,
             )
 
