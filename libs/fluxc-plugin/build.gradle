@@ -57,8 +57,6 @@ dependencies {
     testFixturesCompileOnly libs.wordpress.utils
     testFixturesCompileOnly libs.assertj.core
 
-    testImplementation testFixtures(project(":libs:fluxc-plugin"))
-
     // WordPress libs
     implementation(libs.wordpress.utils) {
         // Using official volley package
