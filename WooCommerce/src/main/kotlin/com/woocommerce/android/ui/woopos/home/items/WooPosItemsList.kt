@@ -322,6 +322,7 @@ fun VariationProductDetails(item: Variation) {
 fun CouponDetails(item: Coupon) {
     WooPosText(
         text = item.name,
+        maxLines = 1,
         style = WooPosTypography.BodyLarge,
         color = WooPosTheme.colors.onSurfaceVariantHighest,
     )
