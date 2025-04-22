@@ -196,6 +196,7 @@ class WooPosItemsSearchHelperTest {
 
     private fun createContentState(): WooPosItemsViewState.Content {
         return WooPosItemsViewState.Content(
+            contentType = WooPosItemsViewState.Content.ContentState.ProductList,
             search = WooPosItemsViewState.Content.SearchState.Visible(
                 state = WooPosSearchInputState.Open(
                     input = WooPosSearchInputState.Open.Input.Hint("Search products"),
