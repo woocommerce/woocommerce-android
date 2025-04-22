@@ -5,10 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.WooPosCouponsViewState
-import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
-import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
-import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsUIEvent.BackButtonClicked
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsUIEvent.CouponClicked
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsUIEvent.EndOfListReached
@@ -17,23 +14,18 @@ import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsUIEvent
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsUIEvent.RetryTriggered
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent
-import com.woocommerce.android.ui.woopos.home.items.updatePullToRefreshState
-import com.woocommerce.android.ui.woopos.util.GetCachedStoreCurrency
-import com.woocommerce.android.ui.woopos.util.format.WooPosFormatCouponSummary
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class WooPosCouponsViewModel @Inject constructor(
-    private val couponsDataSource: WooPosCouponsDataSource,
-    private val formatCouponSummary: WooPosFormatCouponSummary,
-    private val getCachedStoreCurrency: GetCachedStoreCurrency,
+    private val listViewStateManager: WooPosCouponsListViewStateManager,
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender,
     private val navigator: WooPosItemsNavigator,
 ) : ViewModel() {
@@ -47,39 +39,12 @@ class WooPosCouponsViewModel @Inject constructor(
             initialValue = _viewState.value,
         )
 
-    private val couponsList = couponsDataSource.couponsFlow
-    private val isFetching = couponsDataSource.isFetching
-
     init {
         viewModelScope.launch {
-            couponsList.combine(isFetching) { coupons, isFetching ->
-                if (coupons.isEmpty()) {
-                    if (isFetching) {
-                        WooPosCouponsViewState.Loading()
-                    } else {
-                        WooPosCouponsViewState.Empty()
-                    }
-                } else {
-                    WooPosCouponsViewState.Content(
-                        items = coupons.map { coupon ->
-                            WooPosItemSelectionViewState.Coupon(
-                                id = coupon.id,
-                                name = coupon.code ?: "",
-                                summary = formatCouponSummary(coupon, getCachedStoreCurrency()),
-                            )
-                        },
-                        paginationState = WooPosPaginationState.None,
-                        pullToRefreshState = WooPosPullToRefreshState.Enabled,
-                    )
-                }
-            }.collect { newState ->
+            listViewStateManager.viewState.collect { newState ->
                 _viewState.value = newState
             }
         }
-
-        fetchCoupons(
-            withPullToRefresh = false
-        )
     }
 
     fun onUIEvent(event: WooPosCouponsUIEvent) {
@@ -88,38 +53,33 @@ class WooPosCouponsViewModel @Inject constructor(
                 handleCouponClicked(event)
             }
 
-            PullToRefreshTriggered -> {
-                // CouponsProject: PTR Action
-            }
+            PullToRefreshTriggered -> fetchCoupons()
 
             is EndOfListReached -> {
-                onEndOfListReached()
+                loadMore()
             }
 
             RetryLoadMoreTriggered -> {
-                // CouponsProject: retry load more action
+                loadMore()
             }
 
             BackButtonClicked -> {
                 navigateBackToItemListScreen()
             }
 
-            RetryTriggered -> fetchCoupons(withPullToRefresh = false)
+            RetryTriggered -> fetchCoupons()
         }
     }
 
-    private fun fetchCoupons(withPullToRefresh: Boolean) {
-        viewModelScope.launch {
-            _viewState.value = if (withPullToRefresh) {
-                _viewState.value.updatePullToRefreshState(newState = WooPosPullToRefreshState.Refreshing)
-            } else {
-                WooPosCouponsViewState.Loading()
-            }
-            val result = couponsDataSource.clearCacheAndFetchFirstPage()
+    private fun fetchCoupons() {
+        viewModelScope.launch(Dispatchers.IO) {
+            listViewStateManager.fetchCoupons()
+        }
+    }
 
-            if (!result.isSuccess) {
-                _viewState.value = WooPosCouponsViewState.Error()
-            }
+    private fun loadMore() {
+        viewModelScope.launch(Dispatchers.IO) {
+            listViewStateManager.loadMore()
         }
     }
 
@@ -137,21 +97,6 @@ class WooPosCouponsViewModel @Inject constructor(
                 // CouponsProject: rename ItemClickedInProductSelector to ItemClicked
                 ChildToParentEvent.ItemClickedInProductSelector(ItemClickedData.Coupon(event.couponId))
             )
-        }
-    }
-
-    private fun onEndOfListReached() {
-        val currentState = _viewState.value
-        if (currentState !is WooPosCouponsViewState.Content) {
-            return
-        }
-
-        _viewState.value = currentState.copy(paginationState = WooPosPaginationState.Loading)
-        viewModelScope.launch {
-            val result = couponsDataSource.loadMore()
-            if (!result.isSuccess) {
-                _viewState.value = currentState.copy(paginationState = WooPosPaginationState.Error)
-            }
         }
     }
 }
