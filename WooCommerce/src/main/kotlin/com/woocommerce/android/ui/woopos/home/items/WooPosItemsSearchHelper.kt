@@ -68,7 +68,7 @@ class WooPosItemsSearchHelper @Inject constructor(
             )
         }
 
-        val currentState = getCurrentContentState() ?: return
+        val currentState = getCurrentContentState()
 
         if (newQuery.isEmpty()) {
             updateToInitialOpenState()
@@ -89,7 +89,7 @@ class WooPosItemsSearchHelper @Inject constructor(
     }
 
     fun onCloseSearchClicked() {
-        val currentState = getCurrentContentState() ?: return
+        val currentState = getCurrentContentState()
         updateSearchState(
             currentState.copy(
                 search = SearchState.Visible(
@@ -110,7 +110,7 @@ class WooPosItemsSearchHelper @Inject constructor(
 
     @Suppress("ReturnCount")
     fun onAnimationComplete() {
-        val currentState = getCurrentContentState() ?: return
+        val currentState = getCurrentContentState()
         val searchState = getCurrentSearchVisibleState() ?: return
         val openState = getCurrentSearchOpenState() ?: return
 
@@ -131,7 +131,7 @@ class WooPosItemsSearchHelper @Inject constructor(
     }
 
     private fun updateToInitialOpenState() {
-        val currentState = getCurrentContentState() ?: return
+        val currentState = getCurrentContentState()
         updateSearchState(
             currentState.copy(
                 search = SearchState.Visible(
@@ -159,7 +159,7 @@ class WooPosItemsSearchHelper @Inject constructor(
 
     @Suppress("ReturnCount")
     private fun updateLoadingState(isLoading: Boolean) {
-        val currentState = getCurrentContentState() ?: return
+        val currentState = getCurrentContentState()
         val searchState = getCurrentSearchVisibleState() ?: return
         val searchStateValue = getCurrentSearchOpenState() ?: return
 
@@ -186,7 +186,7 @@ class WooPosItemsSearchHelper @Inject constructor(
                 }
             }
         }
-        viewStateFlow.value = newState.copy(pullToRefreshState = pullToRefreshState)
+        // TODO("viewStateFlow.value = newState.copy(pullToRefreshState = pullToRefreshState)")
     }
 
     private fun getCurrentContentState(): WooPosItemsViewState {
@@ -194,7 +194,7 @@ class WooPosItemsSearchHelper @Inject constructor(
     }
 
     private fun getCurrentSearchVisibleState(): SearchState.Visible? {
-        val currentState = getCurrentContentState() ?: return null
+        val currentState = getCurrentContentState()
         return currentState.search as? SearchState.Visible
     }
 
