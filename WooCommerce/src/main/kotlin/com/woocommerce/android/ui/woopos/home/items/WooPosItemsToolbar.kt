@@ -161,7 +161,8 @@ fun WooPosItemsToolbarPreview() {
                     icon = R.drawable.info,
                 ),
                 tabs = tabs,
-                search = WooPosItemsViewState.Content.SearchState.Hidden
+                search = WooPosItemsViewState.Content.SearchState.Hidden,
+                contentType = WooPosItemsViewState.Content.ContentState.ProductList,
             ),
             onTabClicked = {},
             onToolbarInfoIconClicked = {},
