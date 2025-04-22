@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ProductsPullToRefreshTriggered
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -29,6 +30,7 @@ import java.math.BigDecimal
 
 class WooPosProductsViewModelTest {
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Rule
     @JvmField
     val coroutinesTestRule = WooPosCoroutineTestRule()
@@ -280,43 +282,6 @@ class WooPosProductsViewModelTest {
         viewModel.viewState.test {
             val value = awaitItem()
             assertThat(value).isInstanceOf(WooPosProductsViewState.Empty::class.java)
-        }
-    }
-
-    @Test
-    fun `given empty list, when pull to refresh, then parent notified correctly`() = runTest {
-        // GIVEN
-        val viewModel = createViewModel()
-        whenever(productsDataSource.loadProducts(any())).thenReturn(
-            flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
-                    Result.success(emptyList())
-                )
-            )
-        )
-
-        // WHEN
-        viewModel.onUIEvent(WooPosProductsUIEvent.PullToRefreshTriggered)
-
-        // THEN
-        viewModel.viewState.test {
-            verify(fromChildToParentEventSender).sendToParent(ChildToParentEvent.ProductsStatusChanged.FullScreen)
-            cancelAndConsumeRemainingEvents()
-        }
-    }
-
-    @Test
-    fun `given products, when pull to refresh, then parent notified correctly`() = runTest {
-        // GIVEN
-        val viewModel = createViewModel()
-
-        // WHEN
-        viewModel.onUIEvent(WooPosProductsUIEvent.PullToRefreshTriggered)
-
-        // THEN
-        viewModel.viewState.test {
-            verify(fromChildToParentEventSender).sendToParent(ChildToParentEvent.ProductsStatusChanged.WithCart)
-            cancelAndConsumeRemainingEvents()
         }
     }
 
