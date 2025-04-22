@@ -65,29 +65,15 @@ class WooPosItemsViewModelTest {
     @Test
     fun `given variations screen, when clicked back, then trigger proper event`() = runTest {
         // GIVEN
-        TODO("Implement this test")
-//        val products = listOf(
-//            ProductTestUtils.generateProduct(
-//                productId = 1,
-//                productName = "Product 1",
-//                amount = "10.0",
-//                productType = "variable",
-//                isVariable = true
-//            )
-//        )
-//        whenever(productsDataSource.loadProducts(any())).thenReturn(
-//            flowOf(
-//                WooPosProductsDataSource.ProductsResult.Remote(
-//                    Result.success(products)
-//                )
-//            )
-//        )
-//        val viewModel = createViewModel()
-//        viewModel.onUIEvent(WooPosItemsUIEvent.BackButtonClicked)
-//
-//        verify(wooPosItemsNavigator).sendNavigationEvent(
-//            WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateBackToItemListScreen
-//        )
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosItemsUIEvent.BackButtonClicked)
+
+        // THEN
+        verify(wooPosItemsNavigator).sendNavigationEvent(
+            WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateBackToItemListScreen
+        )
     }
 
 
