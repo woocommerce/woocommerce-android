@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.woopos.featureflags.WooPosIsProductsSearchEnab
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemNavigationData.VariableProductData
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState.Content.ContentState
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateToVariationsScreen
@@ -120,12 +121,7 @@ class WooPosItemsViewModel @Inject constructor(
             WooPosItemsUIEvent.SearchAnimationComplete -> searchHelper.onAnimationComplete()
 
             WooPosItemsUIEvent.CouponsButtonClicked -> {
-                sendEventToParent(
-                    ChildToParentEvent.ItemClickedInProductSelector(
-                        // CouponsProject: Show available coupons instead
-                        ItemClickedData.Coupon(id = 5013)
-                    )
-                )
+                handleCouponsButtonClick()
             }
         }
     }
@@ -189,6 +185,18 @@ class WooPosItemsViewModel @Inject constructor(
         }
     }
 
+    private fun handleCouponsButtonClick() {
+        (_viewState.value as? WooPosItemsViewState.Content)?.let { currentState ->
+            _viewState.value = currentState.copy(
+                contentType =
+                when (currentState.contentType) {
+                    ContentState.CouponsList -> ContentState.ProductList
+                    ContentState.ProductList -> ContentState.CouponsList
+                }
+            )
+        }
+    }
+
     private fun loadProducts(
         forceRefreshProducts: Boolean,
         withPullToRefresh: Boolean,
@@ -215,7 +223,7 @@ class WooPosItemsViewModel @Inject constructor(
                                 val products = result.productsResult.getOrThrow()
                                 if (products.isNotEmpty()) {
                                     val currentState = _viewState.value
-                                    var paginationState = if (loadMoreProductsJob?.isActive == true) {
+                                    val paginationState = if (loadMoreProductsJob?.isActive == true) {
                                         WooPosPaginationState.Loading
                                     } else {
                                         WooPosPaginationState.None
@@ -258,6 +266,7 @@ class WooPosItemsViewModel @Inject constructor(
     private suspend fun List<Product>.toContentState(
         paginationState: WooPosPaginationState = WooPosPaginationState.None
     ) = WooPosItemsViewState.Content(
+        contentType = ContentState.ProductList,
         items = map { it.toItemSelectionViewState() },
         paginationState = paginationState,
         pullToRefreshState = WooPosPullToRefreshState.Enabled,
