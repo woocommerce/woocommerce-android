@@ -5,7 +5,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.featureflags.WooPosIsProductsSearchEnabled
-import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
@@ -26,7 +25,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
-import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
 class WooPosItemsViewModelTest {
@@ -90,159 +88,6 @@ class WooPosItemsViewModelTest {
             )
         )
     }
-
-    @Test
-    fun `when simple products only banner is closed, then state is updated to true`() = runTest {
-        // GIVEN
-        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerWasHiddenByUser).thenReturn(
-            flowOf(true)
-        )
-        val viewModel = createViewModel()
-        viewModel.viewState.test {
-            val contentState = awaitItem() as WooPosItemsViewState.Content
-            // WHEN
-            viewModel.onUIEvent(WooPosItemsUIEvent.SimpleProductsBannerClosed)
-
-            // THEN
-            assertTrue(contentState.bannerState.isBannerHiddenByUser)
-        }
-    }
-
-    @Test
-    fun `when simple products only banner is closed, then data store is updated to true`() = runTest {
-        // GIVEN
-        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerWasHiddenByUser).thenReturn(
-            flowOf(true)
-        )
-        val viewModel = createViewModel()
-
-        // WHEN
-        viewModel.onUIEvent(WooPosItemsUIEvent.SimpleProductsBannerClosed)
-
-        // THEN
-        verify(posPreferencesRepository).setSimpleProductsOnlyBannerWasHiddenByUser(true)
-    }
-
-    @Test
-    fun `given simple products only banner is shown, when view model init, then state is updated with false`() =
-        runTest {
-            // GIVEN
-            whenever(posPreferencesRepository.isSimpleProductsOnlyBannerWasHiddenByUser).thenReturn(
-                flowOf(false)
-            )
-
-            // WHEN
-            val viewModel = createViewModel()
-
-            // THEN
-            viewModel.viewState.test {
-                val contentState = awaitItem() as WooPosItemsViewState.Content
-                assertThat(contentState.bannerState.isBannerHiddenByUser).isFalse()
-            }
-        }
-
-    @Test
-    fun `given simple products only banner already closed by user, when view model init, then banner state is updated to true`() =
-        runTest {
-            // GIVEN
-            whenever(posPreferencesRepository.isSimpleProductsOnlyBannerWasHiddenByUser).thenReturn(
-                flowOf(true)
-            )
-
-            // WHEN
-            val viewModel = createViewModel()
-
-            // THEN
-            viewModel.viewState.test {
-                val contentState = awaitItem() as WooPosItemsViewState.Content
-                assertTrue(contentState.bannerState.isBannerHiddenByUser)
-            }
-        }
-
-    @Test
-    fun `given simple products only banner is shown, then correct title is displayed`() = runTest {
-        // GIVEN
-        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerWasHiddenByUser).thenReturn(
-            flowOf(false)
-        )
-
-        // WHEN
-        val viewModel = createViewModel()
-
-        // THEN
-        viewModel.viewState.test {
-            val contentState = awaitItem() as WooPosItemsViewState.Content
-            assertThat(contentState.bannerState.title).isEqualTo(R.string.woopos_banner_simple_products_only_title)
-        }
-    }
-
-    @Test
-    fun `given simple products only banner is shown, then correct message is displayed`() = runTest {
-        // GIVEN
-        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerWasHiddenByUser).thenReturn(
-            flowOf(false)
-        )
-
-        // WHEN
-        val viewModel = createViewModel()
-
-        // THEN
-        viewModel.viewState.test {
-            val contentState = awaitItem() as WooPosItemsViewState.Content
-
-            assertThat(contentState.bannerState.message).isEqualTo(R.string.woopos_banner_simple_products_only_message)
-        }
-    }
-
-    @Test
-    fun `given simple products only banner is shown, then correct banner icon is displayed`() = runTest {
-        // GIVEN
-        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerWasHiddenByUser).thenReturn(
-            flowOf(false)
-        )
-
-        // WHEN
-        val viewModel = createViewModel()
-
-        // THEN
-        viewModel.viewState.test {
-            val contentState = awaitItem() as WooPosItemsViewState.Content
-            assertThat(contentState.bannerState.icon).isEqualTo(R.drawable.info)
-        }
-    }
-
-    @Test
-    fun `given info icon displayed, when clicked, then appropriate event is triggered`() = runTest {
-        // GIVEN
-        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerWasHiddenByUser).thenReturn(
-            flowOf(true)
-        )
-        val viewModel = createViewModel()
-
-        // WHEN
-        viewModel.onUIEvent(WooPosItemsUIEvent.SimpleProductsDialogInfoIconClicked)
-
-        // THEN
-        verify(fromChildToParentEventSender).sendToParent(ChildToParentEvent.ProductsDialogInfoIconClicked)
-    }
-
-    @Test
-    fun `given simple products banner displayed, when learn more clicked, then appropriate event is triggered`() =
-        runTest {
-            // GIVEN
-            whenever(posPreferencesRepository.isSimpleProductsOnlyBannerWasHiddenByUser).thenReturn(
-                flowOf(false)
-            )
-            val viewModel = createViewModel()
-
-            // WHEN
-            viewModel.onUIEvent(WooPosItemsUIEvent.SimpleProductsBannerLearnMoreClicked)
-
-            // THEN
-            verify(fromChildToParentEventSender).sendToParent(ChildToParentEvent.ProductsDialogInfoIconClicked)
-        }
-
-
 
     @Test
     fun `given variations screen, when clicked back, then trigger proper event`() = runTest {
