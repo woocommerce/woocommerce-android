@@ -4,7 +4,6 @@ import app.cash.turbine.test
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
-import com.woocommerce.android.ui.woopos.featureflags.WooPosIsCouponsEnabled
 import com.woocommerce.android.ui.woopos.featureflags.WooPosIsProductsSearchEnabled
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
@@ -36,6 +35,17 @@ class WooPosItemsViewModelTestSelectionViewState {
     @JvmField
     val coroutinesTestRule = WooPosCoroutineTestRule()
 
+    private val tabs = listOf(
+        WooPosItemsViewState.Tab(
+            R.string.woopos_products_screen_title,
+            WooPosItemsViewState.Tab.HighlightLevel.Full
+        ),
+        WooPosItemsViewState.Tab(
+            R.string.woopos_coupons_screen_title,
+            WooPosItemsViewState.Tab.HighlightLevel.Normal
+        )
+    )
+
     private val productsDataSource: WooPosProductsDataSource = mock()
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val posPreferencesRepository: WooPosPreferencesRepository = mock()
@@ -46,8 +56,10 @@ class WooPosItemsViewModelTestSelectionViewState {
     }
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private val isProductsSearchEnabled: WooPosIsProductsSearchEnabled = mock()
-    private val isCouponsEnabled: WooPosIsCouponsEnabled = mock()
     private val searchHelper: WooPosItemsSearchHelper = mock()
+    private val tabsHelper: WooPosItemsTabsHelper = mock {
+        on { defaultTabs }.thenReturn(tabs)
+    }
 
     @Before
     fun setup() {
@@ -143,7 +155,9 @@ class WooPosItemsViewModelTestSelectionViewState {
         // THEN
         viewModel.viewState.test {
             val value = awaitItem()
-            assertThat(value).isEqualTo(WooPosItemsViewState.Empty())
+            assertThat(value).isEqualTo(
+                WooPosItemsViewState.Empty(tabs)
+            )
         }
     }
 
@@ -164,7 +178,9 @@ class WooPosItemsViewModelTestSelectionViewState {
         // THEN
         viewModel.viewState.test {
             val value = awaitItem()
-            assertThat(value).isEqualTo(WooPosItemsViewState.Error())
+            assertThat(value).isEqualTo(WooPosItemsViewState.Error(
+                tabs = tabs
+            ))
         }
     }
 
@@ -611,36 +627,6 @@ class WooPosItemsViewModelTestSelectionViewState {
         }
 
     @Test
-    fun `given ff disabled, when view model created, then coupons button hidden`() = runTest {
-        // GIVEN
-        whenever(isCouponsEnabled.invoke()).thenReturn(false)
-
-        // WHEN
-        val viewModel = createViewModel()
-
-        // THEN
-        viewModel.viewState.test {
-            val value = awaitItem() as WooPosItemsViewState.Content
-            assertThat(value.couponsEnabled).isFalse()
-        }
-    }
-
-    @Test
-    fun `given ff enabled, when view model created, then coupons button visible`() = runTest {
-        // GIVEN
-        whenever(isCouponsEnabled.invoke()).thenReturn(true)
-
-        // WHEN
-        val viewModel = createViewModel()
-
-        // THEN
-        viewModel.viewState.test {
-            val value = awaitItem() as WooPosItemsViewState.Content
-            assertThat(value.couponsEnabled).isTrue()
-        }
-    }
-
-    @Test
     fun `given products search feature enabled, when view model created, then search state is visible`() = runTest {
         // GIVEN
         val products = listOf(
@@ -796,6 +782,6 @@ class WooPosItemsViewModelTestSelectionViewState {
             analyticsTracker,
             searchHelper,
             isProductsSearchEnabled,
-            isCouponsEnabled,
+            tabsHelper,
         )
 }

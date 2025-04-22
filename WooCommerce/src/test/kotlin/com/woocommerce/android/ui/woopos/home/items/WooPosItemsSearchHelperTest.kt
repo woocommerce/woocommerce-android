@@ -194,28 +194,6 @@ class WooPosItemsSearchHelperTest {
         assertThat(openState.isLoading).isFalse
     }
 
-    private fun createContentState(): WooPosItemsViewState.Content {
-        return WooPosItemsViewState.Content(
-            contentType = WooPosItemsViewState.Content.ContentState.ProductList,
-            search = WooPosItemsViewState.Content.SearchState.Visible(
-                state = WooPosSearchInputState.Open(
-                    input = WooPosSearchInputState.Open.Input.Hint("Search products"),
-                    isLoading = false
-                )
-            ),
-            items = emptyList(),
-            bannerState = WooPosItemsViewState.Content.BannerState(
-                isBannerHiddenByUser = false,
-                title = R.string.app_name,
-                message = R.string.app_name,
-                icon = R.drawable.ic_woo
-            ),
-            paginationState = WooPosPaginationState.None,
-            pullToRefreshState = WooPosPullToRefreshState.Enabled,
-            couponsEnabled = false
-        )
-    }
-
     @Test
     fun `when closed search, then pull to refresh is enabled`() = runTest {
         // GIVEN
@@ -331,5 +309,30 @@ class WooPosItemsSearchHelperTest {
         val currentState = viewStateFlow.value as WooPosItemsViewState.Content
         val searchState = currentState.search as WooPosItemsViewState.Content.SearchState.Visible
         assertThat(searchState.state).isInstanceOf(WooPosSearchInputState.Closed::class.java)
+    }
+
+    private fun createContentState(): WooPosItemsViewState.Content {
+        return WooPosItemsViewState.Content(
+            contentType = WooPosItemsViewState.Content.ContentState.ProductList,
+            search = WooPosItemsViewState.Content.SearchState.Visible(
+                state = WooPosSearchInputState.Open(
+                    input = WooPosSearchInputState.Open.Input.Hint("Search products"),
+                    isLoading = false
+                )
+            ),
+            items = emptyList(),
+            bannerState = WooPosItemsViewState.Content.BannerState(
+                isBannerHiddenByUser = false,
+                title = R.string.app_name,
+                message = R.string.app_name,
+                icon = R.drawable.ic_woo
+            ),
+            paginationState = WooPosPaginationState.None,
+            pullToRefreshState = WooPosPullToRefreshState.Enabled,
+            tabs = listOf(
+                WooPosItemsViewState.Tab(R.string.woopos_products_screen_title, highlightLevel = WooPosItemsViewState.Tab.HighlightLevel.Full),
+                WooPosItemsViewState.Tab(R.string.woopos_coupons_screen_title, highlightLevel = WooPosItemsViewState.Tab.HighlightLevel.Normal)
+            )
+        )
     }
 }
