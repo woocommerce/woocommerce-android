@@ -27,6 +27,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInput
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent
@@ -60,17 +61,19 @@ fun WooPosItemsToolbar(
             enter = fadeIn(animationSpec = tween(200)),
             exit = fadeOut(animationSpec = tween(200)),
         ) {
-            state.tabs.forEach { tab ->
-                WooPosText(
-                    text = stringResource(id = tab.stringId),
-                    style = WooPosTypography.Heading,
-                    fontWeight = FontWeight.Bold,
-                    color = tab.highlightLevel.titleColor(),
-                    modifier = Modifier.clickable(
-                        onClick = { onTabClicked(tab) },
+            Row {
+                state.tabs.forEach { tab ->
+                    WooPosText(
+                        text = stringResource(id = tab.stringId),
+                        style = WooPosTypography.Heading,
+                        fontWeight = FontWeight.Bold,
+                        color = tab.highlightLevel.titleColor(),
+                        modifier = Modifier.clickable(
+                            onClick = { onTabClicked(tab) },
+                        )
                     )
-                )
-                Spacer(modifier = Modifier.width(WooPosSpacing.Large.value))
+                    Spacer(modifier = Modifier.width(WooPosSpacing.Large.value))
+                }
             }
         }
 
@@ -131,4 +134,34 @@ fun WooPosItemsToolbar(
 private fun WooPosItemsViewState.Tab.HighlightLevel.titleColor(): Color = when (this) {
     Full -> MaterialTheme.colorScheme.onSurface
     Normal -> WooPosTheme.colors.onSurfaceVariantLowest
+}
+
+@Composable
+@WooPosPreview
+fun WooPosItemsToolbarPreview() {
+    val tabs = listOf(
+        WooPosItemsViewState.Tab(R.string.woopos_products_screen_title, highlightLevel = Full),
+        WooPosItemsViewState.Tab(R.string.woopos_coupons_screen_title, highlightLevel = Normal),
+    )
+
+    WooPosTheme {
+        WooPosItemsToolbar(
+            state = WooPosItemsViewState.Content(
+                items = emptyList(),
+                paginationState = WooPosPaginationState.Error,
+                pullToRefreshState = WooPosPullToRefreshState.Refreshing,
+                bannerState = WooPosItemsViewState.Content.BannerState(
+                    isBannerHiddenByUser = true,
+                    title = R.string.woopos_banner_simple_products_only_title,
+                    message = R.string.woopos_banner_simple_products_only_message,
+                    icon = R.drawable.info,
+                ),
+                tabs = tabs,
+                search = WooPosItemsViewState.Content.SearchState.Hidden
+            ),
+            onTabClicked = {},
+            onToolbarInfoIconClicked = {},
+            onSearchEvent = {}
+        )
+    }
 }
