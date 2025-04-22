@@ -175,18 +175,18 @@ class WooPosItemsSearchHelper @Inject constructor(
     }
 
     private fun updateSearchState(newState: WooPosItemsViewState) {
-        var pullToRefreshState = when (val searchState = newState.search) {
-            SearchState.Hidden -> WooPosPullToRefreshState.Enabled
-
-            is SearchState.Visible -> {
-                when (searchState.state) {
-                    WooPosSearchInputState.Closed -> WooPosPullToRefreshState.Enabled
-
-                    is WooPosSearchInputState.Open -> WooPosPullToRefreshState.Disabled
-                }
-            }
-        }
-         viewStateFlow.value = newState // TODO .copy(pullToRefreshState = pullToRefreshState)
+//        var pullToRefreshState = when (val searchState = newState.search) {
+//            SearchState.Hidden -> WooPosPullToRefreshState.Enabled
+//
+//            is SearchState.Visible -> {
+//                when (searchState.state) {
+//                    WooPosSearchInputState.Closed -> WooPosPullToRefreshState.Enabled
+//
+//                    is WooPosSearchInputState.Open -> WooPosPullToRefreshState.Disabled
+//                }
+//            }
+//        }
+        viewStateFlow.value = newState // TODO .copy(pullToRefreshState = pullToRefreshState)
     }
 
     private fun getCurrentContentState(): WooPosItemsViewState {

@@ -38,7 +38,7 @@ sealed class WooPosItemsViewState private constructor(
         data object Hidden : SearchState()
     }
 
-    sealed class BannerState() {
+    sealed class BannerState {
         data class Visible(
             @StringRes val title: Int,
             @StringRes val message: Int,

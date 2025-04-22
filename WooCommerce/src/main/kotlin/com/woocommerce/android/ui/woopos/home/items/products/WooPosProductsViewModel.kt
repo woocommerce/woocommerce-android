@@ -52,7 +52,6 @@ class WooPosProductsViewModel @Inject constructor(
         loadProducts(
             forceRefreshProducts = false,
             withPullToRefresh = false,
-            withCart = true,
         )
     }
 
@@ -70,7 +69,6 @@ class WooPosProductsViewModel @Inject constructor(
                 loadProducts(
                     forceRefreshProducts = true,
                     withPullToRefresh = true,
-                    withCart = true,
                 )
                 viewModelScope.launch { analyticsTracker.track(ProductsPullToRefreshTriggered) }
             }
@@ -79,7 +77,6 @@ class WooPosProductsViewModel @Inject constructor(
                 loadProducts(
                     forceRefreshProducts = false,
                     withPullToRefresh = false,
-                    withCart = false,
                 )
             }
 
@@ -128,7 +125,6 @@ class WooPosProductsViewModel @Inject constructor(
     private fun loadProducts(
         forceRefreshProducts: Boolean,
         withPullToRefresh: Boolean,
-        withCart: Boolean
     ) {
         viewModelScope.launch {
             _viewState.value = if (withPullToRefresh) {
@@ -160,11 +156,12 @@ class WooPosProductsViewModel @Inject constructor(
                                         currentState.copy(
                                             items = products.map { it.toItemSelectionViewState() },
                                             paginationState = paginationState,
-                                            pullToRefreshState = // TODO( "Add pull to refresh state when search is open"),
+                                            // TODO( "Add pull to refresh state when search is open"),
+                                            pullToRefreshState =
 //                                            if (searchHelper.isSearchOpen()) {
 //                                                WooPosPullToRefreshState.Disabled
 //                                            } else {
-                                                WooPosPullToRefreshState.Enabled
+                                            WooPosPullToRefreshState.Enabled
 //                                            },
                                         )
                                     } else {
