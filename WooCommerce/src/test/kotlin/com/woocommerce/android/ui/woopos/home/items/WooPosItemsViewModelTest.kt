@@ -23,6 +23,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -770,6 +771,56 @@ class WooPosItemsViewModelTest {
         viewModel.onUIEvent(WooPosItemsUIEvent.CloseSearchClicked)
 
         verify(searchHelper).onCloseSearchClicked()
+    }
+
+    @Test
+    fun `when tab clicked, then tab is selected and state is updated`() = runTest {
+        // GIVEN
+        val products = listOf(
+            ProductTestUtils.generateProduct(
+                productId = 1,
+                productName = "Product 1",
+                amount = "10.0",
+                productType = "simple"
+            )
+        )
+
+        whenever(productsDataSource.loadProducts(any())).thenReturn(
+            flowOf(
+                WooPosProductsDataSource.ProductsResult.Remote(
+                    Result.success(products)
+                )
+            )
+        )
+
+        val couponsTab = WooPosItemsViewState.Tab(
+            R.string.woopos_coupons_screen_title,
+            WooPosItemsViewState.Tab.HighlightLevel.Normal
+        )
+
+        whenever(tabsHelper.selectTab(any(), eq(couponsTab))).thenReturn(
+            listOf(
+                WooPosItemsViewState.Tab(
+                    R.string.woopos_products_screen_title,
+                    WooPosItemsViewState.Tab.HighlightLevel.Normal
+                ),
+                WooPosItemsViewState.Tab(
+                    R.string.woopos_coupons_screen_title,
+                    WooPosItemsViewState.Tab.HighlightLevel.Full
+                )
+            )
+        )
+
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosItemsUIEvent.OnTabClicked(couponsTab))
+
+        // THEN
+        viewModel.viewState.test {
+            val value = awaitItem() as WooPosItemsViewState.Content
+            assertThat(value.contentType).isEqualTo(WooPosItemsViewState.Content.ContentState.CouponsList)
+        }
     }
 
     private fun createViewModel() =

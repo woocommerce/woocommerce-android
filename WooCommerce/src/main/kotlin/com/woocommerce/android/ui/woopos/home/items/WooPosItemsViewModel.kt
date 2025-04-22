@@ -268,7 +268,7 @@ class WooPosItemsViewModel @Inject constructor(
             ContentState.ProductList -> ContentState.CouponsList
         }
 
-        _viewState.value = when (val state = viewState.value) {
+        _viewState.value = when (val state = _viewState.value) {
             is WooPosItemsViewState.Content -> {
                 state.copy(
                     contentType = contentState(state),
