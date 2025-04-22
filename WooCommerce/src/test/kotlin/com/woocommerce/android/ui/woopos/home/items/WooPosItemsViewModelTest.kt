@@ -179,9 +179,11 @@ class WooPosItemsViewModelTest {
         // THEN
         viewModel.viewState.test {
             val value = awaitItem()
-            assertThat(value).isEqualTo(WooPosItemsViewState.Error(
-                tabs = tabs
-            ))
+            assertThat(value).isEqualTo(
+                WooPosItemsViewState.Error(
+                    tabs = tabs
+                )
+            )
         }
     }
 

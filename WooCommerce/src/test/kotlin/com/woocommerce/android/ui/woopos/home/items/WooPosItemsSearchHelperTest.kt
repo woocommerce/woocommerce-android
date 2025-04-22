@@ -21,6 +21,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+
 @ExperimentalCoroutinesApi
 class WooPosItemsSearchHelperTest {
     @Rule
@@ -330,8 +331,14 @@ class WooPosItemsSearchHelperTest {
             paginationState = WooPosPaginationState.None,
             pullToRefreshState = WooPosPullToRefreshState.Enabled,
             tabs = listOf(
-                WooPosItemsViewState.Tab(R.string.woopos_products_screen_title, highlightLevel = WooPosItemsViewState.Tab.HighlightLevel.Full),
-                WooPosItemsViewState.Tab(R.string.woopos_coupons_screen_title, highlightLevel = WooPosItemsViewState.Tab.HighlightLevel.Normal)
+                WooPosItemsViewState.Tab(
+                    R.string.woopos_products_screen_title,
+                    highlightLevel = WooPosItemsViewState.Tab.HighlightLevel.Full
+                ),
+                WooPosItemsViewState.Tab(
+                    R.string.woopos_coupons_screen_title,
+                    highlightLevel = WooPosItemsViewState.Tab.HighlightLevel.Normal
+                )
             )
         )
     }
