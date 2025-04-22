@@ -12,12 +12,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -30,6 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCircularIconButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInput
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent
@@ -108,21 +106,13 @@ fun WooPosItemsToolbar(
                     }
 
                     if (state.bannerState.isBannerHiddenByUser) {
-                        IconButton(
-                            modifier = Modifier.size(40.dp),
-                            onClick = {
-                                onToolbarInfoIconClicked()
-                            }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Outlined.Info,
-                                contentDescription = stringResource(
-                                    id = R.string.woopos_banner_simple_products_info_content_description
-                                ),
-                                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.87f),
-                                modifier = Modifier.size(32.dp)
-                            )
-                        }
+                        WooPosCircularIconButton(
+                            icon = Icons.Outlined.Info,
+                            contentDescription = stringResource(
+                                id = R.string.woopos_banner_simple_products_info_content_description
+                            ),
+                            onClick = { onToolbarInfoIconClicked() }
+                        )
                     }
                 }
 

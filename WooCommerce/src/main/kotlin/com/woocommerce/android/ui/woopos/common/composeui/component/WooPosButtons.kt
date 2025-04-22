@@ -154,13 +154,14 @@ fun WooPosOutlinedButtonSmall(
 
 @Composable
 fun WooPosCircularIconButton(
+    modifier: Modifier = Modifier,
     icon: ImageVector,
     contentDescription: String? = null,
     onClick: () -> Unit
 ) {
     Box(
         contentAlignment = Alignment.Center,
-        modifier = Modifier
+        modifier = modifier
             .size(56.dp)
             .clip(CircleShape)
             .background(MaterialTheme.colorScheme.surfaceContainerLow)

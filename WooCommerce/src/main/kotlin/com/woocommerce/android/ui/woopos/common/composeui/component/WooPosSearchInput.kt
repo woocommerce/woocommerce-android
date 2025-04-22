@@ -27,7 +27,6 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -88,30 +87,15 @@ fun WooPosSearchInput(
             }
 
             WooPosSearchInputState.Closed -> {
-                SearchButton(onEvent = onEvent)
+                WooPosCircularIconButton(
+                    icon = Icons.Default.Search,
+                    contentDescription = stringResource(
+                        id = R.string.woopos_search_products,
+                    ),
+                    onClick = { onEvent(WooPosSearchUIEvent.Search("", 0)) }
+                )
             }
         }
-    }
-}
-
-@Composable
-fun SearchButton(onEvent: (WooPosSearchUIEvent) -> Unit) {
-    IconButton(
-        modifier = Modifier.size(BUTTON_SIZE),
-        onClick = { onEvent(WooPosSearchUIEvent.Search("", 0)) },
-        colors = IconButtonDefaults.outlinedIconButtonColors(
-            containerColor = WooPosTheme.colors.transparent,
-            contentColor = MaterialTheme.colorScheme.onSurface
-        )
-    ) {
-        Icon(
-            imageVector = Icons.Default.Search,
-            contentDescription = stringResource(
-                R.string.woopos_search_products
-            ),
-            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.87f),
-            modifier = Modifier.size(32.dp)
-        )
     }
 }
 
