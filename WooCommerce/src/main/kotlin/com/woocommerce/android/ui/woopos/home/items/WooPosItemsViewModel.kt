@@ -262,25 +262,28 @@ class WooPosItemsViewModel @Inject constructor(
             is WooPosItemsViewState.Empty -> state.copy(pullToRefreshState = WooPosPullToRefreshState.Refreshing)
         }
 
-    private fun selectTab(tab: Tab) {
-        fun contentState(state: WooPosItemsViewState.Content) = when (state.contentType) {
-            ContentState.CouponsList -> ContentState.ProductList
-            ContentState.ProductList -> ContentState.CouponsList
+    private fun selectTab(selectedTab: Tab) {
+        if (_viewState.value.tabs.size == 1) return
+
+        val newContentState = when (selectedTab.stringId) {
+            R.string.woopos_products_screen_title -> ContentState.ProductList
+            R.string.woopos_coupons_screen_title -> ContentState.CouponsList
+            else -> error("Invalid tab $selectedTab")
         }
 
         _viewState.value = when (val state = _viewState.value) {
             is WooPosItemsViewState.Content -> {
                 state.copy(
-                    contentType = contentState(state),
-                    tabs = tabsHelper.selectTab(state.tabs, tab)
+                    contentType = newContentState,
+                    tabs = tabsHelper.selectTab(state.tabs, selectedTab)
                 )
             }
 
-            is WooPosItemsViewState.Loading -> state.copy(tabs = tabsHelper.selectTab(state.tabs, tab))
+            is WooPosItemsViewState.Loading -> state.copy(tabs = tabsHelper.selectTab(state.tabs, selectedTab))
 
-            is WooPosItemsViewState.Error -> state.copy(tabs = tabsHelper.selectTab(state.tabs, tab))
+            is WooPosItemsViewState.Error -> state.copy(tabs = tabsHelper.selectTab(state.tabs, selectedTab))
 
-            is WooPosItemsViewState.Empty -> state.copy(tabs = tabsHelper.selectTab(state.tabs, tab))
+            is WooPosItemsViewState.Empty -> state.copy(tabs = tabsHelper.selectTab(state.tabs, selectedTab))
         }
     }
 
