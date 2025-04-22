@@ -66,7 +66,7 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
             shipmentSelected = shipmentSelected,
             selectableItems = selectableItems,
             splitMovements = getSplitMovements(
-                currentShipment = shipmentSelected,
+                sourceShipmentKey = shipmentSelected,
                 shipments = currentShipments.value,
                 selection = selectableItems
             ),
@@ -96,9 +96,17 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
         )
     }
 
-    @Suppress("UnusedParameter")
-    fun onRemoveShipment(removingShipmentKey: Int, movingToShipmentKey: Int) {
-        // TODO handle removing shipment
+    fun onRemoveShipment(removingShipmentKey: Int, destinationShipmentKey: Int) {
+        val movingShipmentItems = currentShipments.value[removingShipmentKey] ?: return
+        onUpdateShipment(
+            SplitMovement(
+                sourceShipmentKey = removingShipmentKey,
+                updatedSourceShipmentItems = emptyList(),
+                destinationShipmentKey = destinationShipmentKey,
+                movingShipmentItems = movingShipmentItems
+            )
+        )
+        removeShipmentSheet.value = null
     }
 
     fun onDismissRemoveSheet() {
@@ -133,16 +141,22 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
         val currentShipmentBackup = currentShipments.value
         currentShipments.update {
             val shipments = it.toMutableMap()
-            if (splitMovement.updatedCurrentShipmentItems.isEmpty()) {
-                shipments.remove(splitMovement.currentShipment)
+            if (splitMovement.updatedSourceShipmentItems.isEmpty()) {
+                shipments.remove(splitMovement.sourceShipmentKey)
             } else {
-                shipments[splitMovement.currentShipment] = splitMovement.updatedCurrentShipmentItems
+                shipments[splitMovement.sourceShipmentKey] = splitMovement.updatedSourceShipmentItems
             }
-            shipments[splitMovement.updatedShipment] = shipments[splitMovement.updatedShipment]
+            shipments[splitMovement.destinationShipmentKey] = shipments[splitMovement.destinationShipmentKey]
                 ?.takeIf { it.isNotEmpty() }
-                ?.combine(splitMovement.updatedShipmentItems)
-                ?: splitMovement.updatedShipmentItems
-            shipments
+                ?.combine(splitMovement.movingShipmentItems)
+                ?: splitMovement.movingShipmentItems
+            reindexShipments(shipments)
+        }
+
+        if (currentShipments.value.size == 1) {
+            // The shipments row was removed. Since the pager can no longer manage the selected shipment, update it
+            // manually.
+            shipmentSelected.update { currentShipments.value.keys.first() }
         }
 
         val undoAction = {
@@ -157,6 +171,15 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
         showUndoSnackbar(splitMovement, undoAction)
     }
 
+    /**
+     * Reindexes the keys of the given shipments so that they form a consecutive sequence starting from 0. For example,
+     * if "Shipment 1" was removed from "Shipment 0, Shipment 1, Shipment 2", the remaining shipments will be reindexed
+     * as "Shipment 0, Shipment 1".
+     */
+    private fun reindexShipments(
+        shipments: Map<Int, List<ShippableItemModel>>
+    ) = shipments.values.mapIndexed { index, items -> index to items }.toMap()
+
     private fun showUndoSnackbar(splitMovement: SplitMovement, undoAction: () -> Unit) {
         val snackbarMessage = if (splitMovement.totalItemsToMove > 1) {
             R.string.woo_shipping_split_shipment_moved_notice_plural
@@ -167,7 +190,7 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
         splitMessage.value = SplitShipmentMessage.Success(
             ShippingLabelsSnackbarData(
                 message = snackbarMessage,
-                messageParameters = listOf(splitMovement.totalItemsToMove, splitMovement.updatedShipment + 1),
+                messageParameters = listOf(splitMovement.totalItemsToMove, splitMovement.destinationShipmentKey + 1),
                 actionLabel = R.string.undo,
                 dismissAction = { splitMessage.value = null },
                 action = undoAction
