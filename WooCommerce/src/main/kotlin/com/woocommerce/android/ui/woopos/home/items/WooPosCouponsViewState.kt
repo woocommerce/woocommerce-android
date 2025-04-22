@@ -4,10 +4,11 @@ sealed class WooPosCouponsViewState(
     override val pullToRefreshState: WooPosPullToRefreshState,
 ) : WooPosBaseViewState(pullToRefreshState) {
     data class Content(
-        val coupons: List<WooPosItemSelectionViewState>,
-        val paginationState: WooPosPaginationState = WooPosPaginationState.None,
+        override val items: List<WooPosItemSelectionViewState>,
+        override val paginationState: WooPosPaginationState = WooPosPaginationState.None,
         override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Enabled,
-    ) : WooPosCouponsViewState(pullToRefreshState)
+    ) : WooPosCouponsViewState(pullToRefreshState), WooPosContentViewState
+
     data class Loading(
         override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Enabled,
     ) : WooPosCouponsViewState(pullToRefreshState)
@@ -19,4 +20,13 @@ sealed class WooPosCouponsViewState(
     data class Empty(
         override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Enabled,
     ) : WooPosCouponsViewState(pullToRefreshState)
+
 }
+
+fun WooPosCouponsViewState.updatePullToRefreshState(newState: WooPosPullToRefreshState): WooPosCouponsViewState =
+    when (this) {
+        is WooPosCouponsViewState.Content -> this.copy(pullToRefreshState = newState)
+        is WooPosCouponsViewState.Loading -> this.copy(pullToRefreshState = newState)
+        is WooPosCouponsViewState.Error -> this.copy(pullToRefreshState = newState)
+        is WooPosCouponsViewState.Empty -> this.copy(pullToRefreshState = newState)
+    }
