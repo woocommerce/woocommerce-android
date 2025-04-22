@@ -53,28 +53,28 @@ class WooPosCouponsViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             couponsList.combine(isFetching) { coupons, isFetching ->
-                    if (coupons.isEmpty()) {
-                        if (isFetching) {
-                            WooPosCouponsViewState.Loading()
-                        } else {
-                            WooPosCouponsViewState.Empty()
-                        }
+                if (coupons.isEmpty()) {
+                    if (isFetching) {
+                        WooPosCouponsViewState.Loading()
                     } else {
-                        WooPosCouponsViewState.Content(
-                            items = coupons.map { coupon ->
-                                WooPosItemSelectionViewState.Coupon(
-                                    id = coupon.id,
-                                    name = coupon.code ?: "",
-                                    summary = formatCouponSummary(coupon, getCachedStoreCurrency()),
-                                )
-                            },
-                            paginationState = WooPosPaginationState.None,
-                            pullToRefreshState = WooPosPullToRefreshState.Enabled,
-                        )
+                        WooPosCouponsViewState.Empty()
                     }
-            }.collect { newState ->
-                    _viewState.value = newState
+                } else {
+                    WooPosCouponsViewState.Content(
+                        items = coupons.map { coupon ->
+                            WooPosItemSelectionViewState.Coupon(
+                                id = coupon.id,
+                                name = coupon.code ?: "",
+                                summary = formatCouponSummary(coupon, getCachedStoreCurrency()),
+                            )
+                        },
+                        paginationState = WooPosPaginationState.None,
+                        pullToRefreshState = WooPosPullToRefreshState.Enabled,
+                    )
                 }
+            }.collect { newState ->
+                _viewState.value = newState
+            }
         }
 
         fetchCoupons(
@@ -131,7 +131,7 @@ class WooPosCouponsViewModel @Inject constructor(
         }
     }
 
-    private fun handleCouponClicked(event: WooPosCouponsUIEvent.CouponClicked) {
+    private fun handleCouponClicked(event: CouponClicked) {
         viewModelScope.launch {
             fromChildToParentEventSender.sendToParent(
                 // CouponsProject: rename ItemClickedInProductSelector to ItemClicked

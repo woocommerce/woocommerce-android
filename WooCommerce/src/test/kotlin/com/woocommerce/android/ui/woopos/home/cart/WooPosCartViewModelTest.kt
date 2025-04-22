@@ -4,7 +4,6 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Coupon
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetCouponById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
@@ -75,10 +74,6 @@ class WooPosCartViewModelTest {
 
     private val getCachedStoreCurrency: GetCachedStoreCurrency = mock {
         onBlocking { invoke() }.thenReturn("USD")
-    }
-
-    private val selectedSite: SelectedSite = mock {
-        on { get() }.thenReturn(mock())
     }
 
     private val getVariationsById: WooPosGetVariationById = mock()

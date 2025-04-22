@@ -20,7 +20,6 @@ sealed class WooPosCouponsViewState(
     data class Empty(
         override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Enabled,
     ) : WooPosCouponsViewState(pullToRefreshState)
-
 }
 
 fun WooPosCouponsViewState.updatePullToRefreshState(newState: WooPosPullToRefreshState): WooPosCouponsViewState =

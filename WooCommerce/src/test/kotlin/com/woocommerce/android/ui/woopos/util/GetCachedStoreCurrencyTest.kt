@@ -24,7 +24,7 @@ class GetCachedStoreCurrencyTest {
     private val wooCommerceStore: WooCommerceStore = mock {
         on { getSiteSettings(any()) }.thenReturn(siteSettings)
     }
-    private val selectedSite: SelectedSite = mock() {
+    private val selectedSite: SelectedSite = mock {
         on { get() }.thenReturn(mock())
     }
 
