@@ -30,7 +30,7 @@ import java.math.BigDecimal
 import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
-class WooPosItemsViewModelTestSelectionViewState {
+class WooPosItemsViewModelTest {
     @Rule
     @JvmField
     val coroutinesTestRule = WooPosCoroutineTestRule()
