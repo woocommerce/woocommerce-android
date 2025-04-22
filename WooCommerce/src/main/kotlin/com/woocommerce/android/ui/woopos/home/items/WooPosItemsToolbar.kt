@@ -12,8 +12,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -25,12 +23,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCircularIconButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInput
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing.Medium
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState.Tab.HighlightLevel.Full
@@ -43,9 +41,9 @@ fun WooPosItemsToolbar(
     onToolbarInfoIconClicked: () -> Unit,
     onSearchEvent: (WooPosSearchUIEvent) -> Unit,
 ) {
-    val isSearchExpanded = state is WooPosItemsViewState.Content &&
-        state.search is WooPosItemsViewState.Content.SearchState.Visible &&
-        state.search.state is WooPosSearchInputState.Open
+    val isSearchExpanded = state is WooPosItemsViewState.ProductList &&
+        state.search is WooPosItemsViewState.SearchState.Visible &&
+        (state.search as WooPosItemsViewState.SearchState.Visible).state is WooPosSearchInputState.Open
 
     Row(
         modifier = Modifier
@@ -82,34 +80,22 @@ fun WooPosItemsToolbar(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             when (state) {
-                is WooPosItemsViewState.Content -> {
+                is WooPosItemsViewState.ProductList -> {
                     when (val searchState = state.search) {
-                        WooPosItemsViewState.Content.SearchState.Hidden -> Unit
-                        is WooPosItemsViewState.Content.SearchState.Visible -> {
+                        WooPosItemsViewState.SearchState.Hidden -> Unit
+                        is WooPosItemsViewState.SearchState.Visible -> {
                             WooPosSearchInput(
                                 state = searchState.state,
                                 onEvent = onSearchEvent,
                                 modifier = Modifier.weight(1f)
                             )
 
-                            Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
+                            Spacer(modifier = Modifier.width(Medium.value))
                         }
-                    }
-
-                    if (state.bannerState.isBannerHiddenByUser) {
-                        WooPosCircularIconButton(
-                            icon = Icons.Outlined.Info,
-                            contentDescription = stringResource(
-                                id = R.string.woopos_banner_simple_products_info_content_description
-                            ),
-                            onClick = { onToolbarInfoIconClicked() }
-                        )
                     }
                 }
 
-                is WooPosItemsViewState.Empty,
-                is WooPosItemsViewState.Error,
-                is WooPosItemsViewState.Loading -> Unit
+                is WooPosItemsViewState.CouponList -> Unit
             }
         }
     }
@@ -131,19 +117,10 @@ fun WooPosItemsToolbarPreview() {
 
     WooPosTheme {
         WooPosItemsToolbar(
-            state = WooPosItemsViewState.Content(
-                items = emptyList(),
-                paginationState = WooPosPaginationState.Error,
-                pullToRefreshState = WooPosPullToRefreshState.Refreshing,
-                bannerState = WooPosItemsViewState.Content.BannerState(
-                    isBannerHiddenByUser = true,
-                    title = R.string.woopos_banner_simple_products_only_title,
-                    message = R.string.woopos_banner_simple_products_only_message,
-                    icon = R.drawable.info,
-                ),
+            state = WooPosItemsViewState.ProductList(
                 tabs = tabs,
-                search = WooPosItemsViewState.Content.SearchState.Hidden,
-                contentType = WooPosItemsViewState.Content.ContentState.ProductList,
+                search = WooPosItemsViewState.SearchState.Hidden,
+                banner = WooPosItemsViewState.BannerState.Hidden,
             ),
             onTabClicked = {},
             onToolbarInfoIconClicked = {},
