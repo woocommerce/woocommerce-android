@@ -1055,6 +1055,7 @@ class WCProductStore @Inject internal constructor(
             type = filterOptions[ProductFilterOption.TYPE],
             category = filterOptions[ProductFilterOption.CATEGORY]?.let { categoryFilter(it) },
             excludeSampleProducts = excludeSampleProducts,
+            excludedProductIds = emptyList(),
             limit = limit,
         ).map { it.sort(sortType) }
     }
@@ -1071,6 +1072,7 @@ class WCProductStore @Inject internal constructor(
         category = filterOptions[ProductFilterOption.CATEGORY]?.let { categoryFilter(it) },
         excludeSampleProducts = excludeSampleProducts,
         limit = null,
+        excludedProductIds = emptyList()
     ).map { it.size.toLong() }
 
     fun observeVariations(site: SiteModel, productId: Long): Flow<List<WCProductVariationModel>> =

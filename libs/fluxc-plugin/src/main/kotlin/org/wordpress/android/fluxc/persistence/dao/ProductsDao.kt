@@ -31,7 +31,7 @@ internal abstract class ProductsDao {
         category: String?,
         excludeSampleProducts: Boolean,
         limit: Int?,
-        excludedProductIds: List<Long> = emptyList()
+        excludedProductIds: List<Long>
     ): Flow<List<WCProductModel>>
 
     @Query(
