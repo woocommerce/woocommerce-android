@@ -33,4 +33,10 @@ sealed class WooPosItemSelectionViewState(
         val price: String,
         val imageUrl: String?,
     ) : WooPosItemSelectionViewState(id, name)
+
+    data class Coupon(
+        override val id: Long,
+        override val name: String,
+        val summary: String,
+    ) : WooPosItemSelectionViewState(id, name)
 }
