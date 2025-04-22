@@ -438,6 +438,7 @@ fun ItemListPreview() {
     WooPosTheme {
         WooPosItemList(
             WooPosItemsViewState.Content(
+                contentType = WooPosItemsViewState.Content.ContentState.ProductList,
                 WooPosItemsViewState.Content.SearchState.Hidden,
                 listOf(
                     Product.Simple(

@@ -125,6 +125,7 @@ private fun WooPosPaginationErrorIndicatorContent(
 fun WooPosPaginationErrorScreenPreview() {
     val itemsState =
         WooPosItemsViewState.Content(
+            contentType = WooPosItemsViewState.Content.ContentState.ProductList,
             items = listOf(
                 Product.Simple(
                     1,

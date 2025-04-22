@@ -37,6 +37,9 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsUIEvent.EndOfItem
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsUIEvent.ProductsLoadingErrorRetryButtonClicked
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsUIEvent.PullToRefreshTriggered
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsUIEvent.SearchChanged
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState.Content.ContentState.CouponsList
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState.Content.ContentState.ProductList
+import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsScreen
 import com.woocommerce.android.ui.woopos.home.items.search.WooPosItemsSearchScreen
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -47,7 +50,6 @@ fun WooPosItemsScreen(
     modifier: Modifier = Modifier,
     listState: LazyListState,
 ) {
-    // CouponsProject: Needs to be renamed to WooPosItemsViewModel
     val productsViewModel: WooPosItemsViewModel = hiltViewModel()
     WooPosItemsScreen(
         modifier = modifier,
@@ -166,18 +168,7 @@ private fun MainItemsList(
                             is WooPosItemsViewState.Content.SearchState.Visible -> {
                                 when (itemsState.search.state) {
                                     WooPosSearchInputState.Closed -> {
-                                        WooPosItemList(
-                                            itemsState,
-                                            listState,
-                                            onItemClicked,
-                                            onEndOfItemListReached,
-                                        ) {
-                                            ProductsPaginationError(
-                                                onRetryClicked = {
-                                                    onEndOfItemListReached()
-                                                }
-                                            )
-                                        }
+                                        Content(itemsState, listState, onItemClicked, onEndOfItemListReached)
                                     }
 
                                     is WooPosSearchInputState.Open -> WooPosItemsSearchScreen()
@@ -185,18 +176,7 @@ private fun MainItemsList(
                             }
 
                             WooPosItemsViewState.Content.SearchState.Hidden -> {
-                                WooPosItemList(
-                                    itemsState,
-                                    listState,
-                                    onItemClicked,
-                                    onEndOfItemListReached,
-                                ) {
-                                    ProductsPaginationError(
-                                        onRetryClicked = {
-                                            onEndOfItemListReached()
-                                        }
-                                    )
-                                }
+                                Content(itemsState, listState, onItemClicked, onEndOfItemListReached)
                             }
                         }
                     }
@@ -218,6 +198,145 @@ private fun MainItemsList(
             refreshing = state.value.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
             state = pullToRefreshState
         )
+    }
+}
+
+@Composable
+private fun Content(
+    itemsState: WooPosItemsViewState.Content,
+    listState: LazyListState,
+    onItemClicked: (item: WooPosItemSelectionViewState) -> Unit,
+    onEndOfItemListReached: () -> Unit
+) {
+    when (itemsState.contentType) {
+        CouponsList -> {
+            WooPosCouponsScreen(modifier = Modifier)
+        }
+        ProductList -> {
+            WooPosItemList(
+                itemsState,
+                listState,
+                onItemClicked,
+                onEndOfItemListReached,
+            ) {
+                ProductsPaginationError(
+                    onRetryClicked = {
+                        onEndOfItemListReached()
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ItemsToolbar(
+    state: WooPosItemsViewState,
+    titleColor: Color,
+    onToolbarInfoIconClicked: () -> Unit,
+    onCouponsButtonClicked: () -> Unit,
+    onSearchEvent: (WooPosSearchUIEvent) -> Unit,
+) {
+    val isSearchExpanded = state is WooPosItemsViewState.Content &&
+        state.search is WooPosItemsViewState.Content.SearchState.Visible &&
+        state.search.state is WooPosSearchInputState.Open
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(56.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        AnimatedVisibility(
+            visible = !isSearchExpanded,
+            enter = fadeIn(animationSpec = tween(200)),
+            exit = fadeOut(animationSpec = tween(200)),
+        ) {
+            WooPosText(
+                text = stringResource(id = R.string.woopos_products_screen_title),
+                style = WooPosTypography.Heading,
+                fontWeight = FontWeight.Bold,
+                color = titleColor,
+            )
+        }
+
+        Row(
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            when (state) {
+                is WooPosItemsViewState.Content -> {
+                    when (val searchState = state.search) {
+                        WooPosItemsViewState.Content.SearchState.Hidden -> Unit
+                        is WooPosItemsViewState.Content.SearchState.Visible -> {
+                            WooPosSearchInput(
+                                state = searchState.state,
+                                onEvent = onSearchEvent,
+                                modifier = Modifier.weight(1f)
+                            )
+
+                            Spacer(modifier = Modifier.width(WooPosSpacing.Small.value))
+
+                            VerticalDivider(
+                                modifier = Modifier.padding(vertical = WooPosSpacing.Small.value),
+                                thickness = 1.dp,
+                            )
+
+                            Spacer(modifier = Modifier.width(WooPosSpacing.Small.value))
+                        }
+                    }
+
+                    if (state.couponsEnabled) {
+                        IconButton(
+                            modifier = Modifier.size(40.dp),
+                            onClick = {
+                                onCouponsButtonClicked()
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.LocalOffer,
+                                contentDescription = stringResource(
+                                    id = R.string.coupons
+                                ),
+                                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.87f),
+                                modifier = Modifier.size(32.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(WooPosSpacing.Small.value))
+
+                        VerticalDivider(
+                            modifier = Modifier.padding(vertical = WooPosSpacing.Small.value),
+                            thickness = 1.dp,
+                        )
+
+                        Spacer(modifier = Modifier.width(WooPosSpacing.Small.value))
+                    }
+
+                    if (state.bannerState.isBannerHiddenByUser) {
+                        IconButton(
+                            modifier = Modifier.size(40.dp),
+                            onClick = {
+                                onToolbarInfoIconClicked()
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.Info,
+                                contentDescription = stringResource(
+                                    id = R.string.woopos_banner_simple_products_info_content_description
+                                ),
+                                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.87f),
+                                modifier = Modifier.size(32.dp)
+                            )
+                        }
+                    }
+                }
+
+                is WooPosItemsViewState.Empty,
+                is WooPosItemsViewState.Error,
+                is WooPosItemsViewState.Loading -> Unit
+            }
+        }
     }
 }
 
@@ -280,6 +399,7 @@ private fun ProductsPaginationError(onRetryClicked: () -> Unit) {
 fun WooPosItemsScreenPreview(modifier: Modifier = Modifier) {
     val productState = MutableStateFlow(
         WooPosItemsViewState.Content(
+            contentType = ProductList,
             items = listOf(
                 Product.Simple(
                     1,
@@ -343,6 +463,7 @@ fun WooPosItemsScreenPreview(modifier: Modifier = Modifier) {
 fun WooPosItemsScreenPaginationErrorPreview(modifier: Modifier = Modifier) {
     val productState = MutableStateFlow(
         WooPosItemsViewState.Content(
+            contentType = ProductList,
             items = listOf(
                 Product.Simple(
                     1,
@@ -452,6 +573,7 @@ fun WooPosProductsScreenErrorPreview() {
 fun WooPosHomeScreenItemsWithSimpleProductsOnlyBannerPreview() {
     val productState = MutableStateFlow(
         WooPosItemsViewState.Content(
+            contentType = ProductList,
             items = listOf(
                 Product.Simple(
                     1,
@@ -505,6 +627,7 @@ fun WooPosHomeScreenItemsWithSimpleProductsOnlyBannerPreview() {
 fun WooPosHomeScreenItemsWithInfoIconInToolbarPreview() {
     val productState = MutableStateFlow(
         WooPosItemsViewState.Content(
+            contentType = ProductList,
             items = listOf(
                 Product.Simple(
                     1,

@@ -9,6 +9,7 @@ sealed class WooPosItemsViewState(
     override val pullToRefreshState: WooPosPullToRefreshState,
 ) : WooPosBaseViewState(pullToRefreshState) {
     data class Content(
+        val contentType: ContentState,
         val search: SearchState,
         override val items: List<WooPosItemSelectionViewState>,
         val bannerState: BannerState,
@@ -26,6 +27,11 @@ sealed class WooPosItemsViewState(
         sealed class SearchState {
             data class Visible(val state: WooPosSearchInputState) : SearchState()
             object Hidden : SearchState()
+        }
+
+        sealed class ContentState {
+            data object ProductList : ContentState()
+            data object CouponsList : ContentState()
         }
     }
 
