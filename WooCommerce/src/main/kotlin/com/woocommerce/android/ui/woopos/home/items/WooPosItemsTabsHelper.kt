@@ -22,8 +22,8 @@ class WooPosItemsTabsHelper @Inject constructor(isCouponsEnabled: WooPosIsCoupon
             emptyList()
         }
 
-    fun List<WooPosItemsViewState.Tab>.selectTab(tab: WooPosItemsViewState.Tab): List<WooPosItemsViewState.Tab> =
-        this.map {
+    fun selectTab(tabs: List<WooPosItemsViewState.Tab>, tab: WooPosItemsViewState.Tab): List<WooPosItemsViewState.Tab> =
+        tabs.map {
             if (it == tab) {
                 it.copy(highlightLevel = WooPosItemsViewState.Tab.HighlightLevel.Full)
             } else {

@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemNavigationData.VariableProductData
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState.Content.ContentState
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState.Tab
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateToVariationsScreen
@@ -124,9 +125,7 @@ class WooPosItemsViewModel @Inject constructor(
 
             WooPosItemsUIEvent.SearchAnimationComplete -> searchHelper.onAnimationComplete()
 
-            is WooPosItemsUIEvent.OnTabClicked -> {
-
-            }
+            is WooPosItemsUIEvent.OnTabClicked -> selectTab(event.tab)
         }
     }
 
@@ -185,18 +184,6 @@ class WooPosItemsViewModel @Inject constructor(
                 bannerState = currentState.bannerState.copy(
                     isBannerHiddenByUser = true
                 )
-            )
-        }
-    }
-
-    private fun handleCouponsButtonClick() {
-        (_viewState.value as? WooPosItemsViewState.Content)?.let { currentState ->
-            _viewState.value = currentState.copy(
-                contentType =
-                when (currentState.contentType) {
-                    ContentState.CouponsList -> ContentState.ProductList
-                    ContentState.ProductList -> ContentState.CouponsList
-                }
             )
         }
     }
@@ -275,8 +262,30 @@ class WooPosItemsViewModel @Inject constructor(
             is WooPosItemsViewState.Empty -> state.copy(pullToRefreshState = WooPosPullToRefreshState.Refreshing)
         }
 
+    private fun selectTab(tab: Tab) {
+        fun contentState(state: WooPosItemsViewState.Content) = when (state.contentType) {
+            ContentState.CouponsList -> ContentState.ProductList
+            ContentState.ProductList -> ContentState.CouponsList
+        }
+
+        _viewState.value = when (val state = viewState.value) {
+            is WooPosItemsViewState.Content -> {
+                state.copy(
+                    contentType = contentState(state),
+                    tabs = tabsHelper.selectTab(state.tabs, tab)
+                )
+            }
+
+            is WooPosItemsViewState.Loading -> state.copy(tabs = tabsHelper.selectTab(state.tabs, tab))
+
+            is WooPosItemsViewState.Error -> state.copy(tabs = tabsHelper.selectTab(state.tabs, tab))
+
+            is WooPosItemsViewState.Empty -> state.copy(tabs = tabsHelper.selectTab(state.tabs, tab))
+        }
+    }
+
     private suspend fun List<Product>.toContentState(
-        tabs: List<WooPosItemsViewState.Tab>,
+        tabs: List<Tab>,
         paginationState: WooPosPaginationState = WooPosPaginationState.None
     ) = WooPosItemsViewState.Content(
         contentType = ContentState.ProductList,
