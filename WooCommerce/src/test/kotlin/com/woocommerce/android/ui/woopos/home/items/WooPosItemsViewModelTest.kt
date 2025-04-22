@@ -38,7 +38,6 @@ class WooPosItemsViewModelTest {
         )
     )
 
-
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val posPreferencesRepository: WooPosPreferencesRepository = mock()
     private val wooPosItemsNavigator: WooPosItemsNavigator = mock()
@@ -75,8 +74,6 @@ class WooPosItemsViewModelTest {
             WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateBackToItemListScreen
         )
     }
-
-
 
     @Test
     fun `given products search feature enabled, when view model created, then search state is visible`() = runTest {
