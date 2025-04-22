@@ -4334,6 +4334,13 @@
     <string name="woopos_products_empty_list_message_two">POS currently only supports simple products</string>
     <string name="woopos_products_loading_error_title">Error loading products</string>
     <string name="woopos_products_loading_error_message">Give it another go?</string>
+
+    <string name="woopos_coupons_empty_list_image_description">No products</string>
+    <string name="woopos_coupons_empty_list_title">No coupons found</string>
+    <string name="woopos_coupons_empty_list_message">Boost your business by sending customers special offers and discounts.</string>
+    <string name="woopos_coupons_loading_error_title">Error loading coupons</string>
+    <string name="woopos_coupons_loading_error_message">Give it another go?</string>
+
     <string name="woopos_error_icon_content_description">Error indication icon</string>
     <string name="woopos_reader_not_connected_description">Please make sure a card reader is connected.</string>
     <string name="woopos_products_loading_error_retry_button">Retry</string>
@@ -4380,6 +4387,11 @@
     <string name="woopos_items_pagination_error_content_description">"Failed to load more items. Double tap to try again."</string>
     <string name="woopos_variations_loading_error_title">Error loading variations</string>
     <string name="woopos_variations_options_available_text">Options available</string>
+
+    <string name="woopos_coupons_pagination_try_again_label">Try again</string>
+    <string name="woopos_coupons_pagination_error_title">Failed to load more items"</string>
+    <string name="woopos_coupons_pagination_error_description">"An error occurred while loading coupons."</string>
+    <string name="woopos_coupons_pagination_error_content_description">"Failed to load more coupons. Double tap to try again."</string>
 
     <string name="woopos_cash_payment_title">Cash payment</string>
     <string name="woopos_complete_cash_order_button">Mark payment as complete</string>
