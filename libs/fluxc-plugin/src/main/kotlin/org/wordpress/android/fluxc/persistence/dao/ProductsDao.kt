@@ -18,7 +18,7 @@ internal abstract class ProductsDao {
             AND (:type IS NULL OR type = :type)
             AND (:category IS NULL OR categories LIKE '%' || :category || '%')
             AND (:excludeSampleProducts IS NULL OR isSampleProduct = :excludeSampleProducts)
-            AND (:excludedProductIds IS NULL OR remoteId NOT IN (:excludedProductIds))
+            AND (remoteId NOT IN (:excludedProductIds))
             LIMIT CASE WHEN :limit IS NULL THEN -1 ELSE :limit END
         """
     )
@@ -31,7 +31,7 @@ internal abstract class ProductsDao {
         category: String?,
         excludeSampleProducts: Boolean,
         limit: Int?,
-        excludedProductIds: List<Long>? = null
+        excludedProductIds: List<Long>
     ): Flow<List<WCProductModel>>
 
     @Query(

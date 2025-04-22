@@ -217,7 +217,7 @@ class ProductListRepository @Inject constructor(
                     selectedSite.get(),
                     filterOptions = productFilterOptions,
                     sortType = sortType ?: productSortingChoice,
-                    excludedProductIds = excludedIds
+                    excludedProductIds = excludedIds.orEmpty()
                 )
             }
             wcProducts.map { it.toAppModel() }
