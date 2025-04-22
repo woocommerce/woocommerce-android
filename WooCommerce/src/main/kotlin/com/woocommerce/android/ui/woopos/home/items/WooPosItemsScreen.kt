@@ -58,9 +58,6 @@ private fun WooPosItemsScreen(
         modifier = modifier,
         state = state,
         listState = listState,
-        onToolbarInfoIconClicked = {
-            onUIEvent(WooPosItemsUIEvent.SimpleProductsDialogInfoIconClicked)
-        },
         onSearchEvent = {
             when (it) {
                 WooPosSearchUIEvent.Clear -> onUIEvent(WooPosItemsUIEvent.ClearSearchClicked)
@@ -87,7 +84,6 @@ private fun MainItemsList(
     modifier: Modifier,
     state: State<WooPosItemsViewState>,
     listState: LazyListState,
-    onToolbarInfoIconClicked: () -> Unit,
     onSearchEvent: (WooPosSearchUIEvent) -> Unit,
     onTabClicked: (WooPosItemsViewState.Tab) -> Unit,
 ) {
@@ -106,7 +102,6 @@ private fun MainItemsList(
         ) {
             WooPosItemsToolbar(
                 state = state.value,
-                onToolbarInfoIconClicked = onToolbarInfoIconClicked,
                 onTabClicked = onTabClicked,
                 onSearchEvent = onSearchEvent,
             )

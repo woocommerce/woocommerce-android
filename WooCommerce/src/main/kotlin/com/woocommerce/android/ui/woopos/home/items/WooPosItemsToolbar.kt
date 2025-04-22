@@ -38,7 +38,6 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState.Tab.Hig
 fun WooPosItemsToolbar(
     state: WooPosItemsViewState,
     onTabClicked: (WooPosItemsViewState.Tab) -> Unit,
-    onToolbarInfoIconClicked: () -> Unit,
     onSearchEvent: (WooPosSearchUIEvent) -> Unit,
 ) {
     val isSearchExpanded = state is WooPosItemsViewState.ProductList &&
@@ -123,7 +122,6 @@ fun WooPosItemsToolbarPreview() {
                 banner = WooPosItemsViewState.BannerState.Hidden,
             ),
             onTabClicked = {},
-            onToolbarInfoIconClicked = {},
             onSearchEvent = {}
         )
     }
