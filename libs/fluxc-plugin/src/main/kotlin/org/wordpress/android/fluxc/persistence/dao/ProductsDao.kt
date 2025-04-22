@@ -87,10 +87,10 @@ internal abstract class ProductsDao {
     ): List<WCProductModel>
 
     @Upsert
-    abstract fun upsertProduct(product: WCProductModel)
+    abstract suspend fun upsertProduct(product: WCProductModel)
 
     @Upsert
-    abstract fun upsertProducts(products: List<WCProductModel>)
+    abstract suspend fun upsertProducts(products: List<WCProductModel>)
 
     @Query(
         """
