@@ -269,25 +269,6 @@ class WooPosHomeViewModelTest {
     }
 
     @Test
-    fun `given home screen is at checkout, when products are updated, then should not modify screen position`() {
-        TODO("Test not implemented - ProductsStatusChanged has been removed")
-//        val itemClickedData = listOf(
-//            ItemClickedData.Product.Simple(
-//                id = 1L
-//            )
-//        )
-//        whenever(childrenToParentEventReceiver.events).thenReturn(
-//            flowOf(
-//                ChildToParentEvent.CheckoutClicked(itemClickedData),
-//                ChildToParentEvent.ProductsStatusChanged.FullScreen
-//            )
-//        )
-//        val viewModel = createViewModel()
-//
-//        assertTrue(viewModel.state.value.screenPositionState is WooPosHomeState.ScreenPositionState.Checkout)
-    }
-
-    @Test
     fun `given home screen is at checkout, when go back to checkout clicked after failed payment, then should show cart with totals`() = runTest {
         // GIVEN
         val events = MutableSharedFlow<ChildToParentEvent>()
