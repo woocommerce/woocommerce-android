@@ -186,7 +186,7 @@ class WooPosItemsSearchHelper @Inject constructor(
                 }
             }
         }
-        // TODO("viewStateFlow.value = newState.copy(pullToRefreshState = pullToRefreshState)")
+         viewStateFlow.value = newState // TODO .copy(pullToRefreshState = pullToRefreshState)
     }
 
     private fun getCurrentContentState(): WooPosItemsViewState {
