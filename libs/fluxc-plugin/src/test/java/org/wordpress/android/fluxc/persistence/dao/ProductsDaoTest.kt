@@ -402,6 +402,7 @@ class ProductsDaoTest {
             category = null,
             excludeSampleProducts = false,
             limit = null,
+            excludedProductIds = emptyList()
         ).first()
     }
 
