@@ -15,6 +15,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductCategory
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductReviewApiResponse
 import kotlin.random.Random
 
+@Suppress("MagicNumber")
 object ProductTestUtils {
     fun generateSampleProduct(
         remoteId: Long,
