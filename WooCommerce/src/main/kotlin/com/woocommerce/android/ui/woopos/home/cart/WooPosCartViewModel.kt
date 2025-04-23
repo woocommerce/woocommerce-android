@@ -53,7 +53,7 @@ class WooPosCartViewModel @Inject constructor(
     private val formatPrice: WooPosFormatPrice,
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val analyticsTrackingDataKeeper: WooPosAnalyticsTrackingDataKeeper,
-    private val cartProductUpdater: WooPosCartProductUpdater,
+    private val updateCartItemsWithChanges: WooPosCartProductUpdater,
     private val getCachedStoreCurrency: GetCachedStoreCurrency,
     savedState: SavedStateHandle,
 ) : ViewModel() {
@@ -154,9 +154,15 @@ class WooPosCartViewModel @Inject constructor(
                     is ParentToChildrenEvent.OrderSuccessfullyPaid -> clearCart()
 
                     is ParentToChildrenEvent.OrderCreated -> {
-                        _state.value = cartProductUpdater(
-                            currentState = _state.value,
+                        val body = _state.value.body as? WooPosCartState.Body.WithItems ?: return@collect
+                        val updateCartItems = updateCartItemsWithChanges(
+                            itemsInCart = body.itemsInCart,
                             updatedProducts = event.updatedProducts
+                        )
+                        _state.value = _state.value.copy(
+                            body = body.copy(
+                                itemsInCart = updateCartItems,
+                            ),
                         )
                     }
 

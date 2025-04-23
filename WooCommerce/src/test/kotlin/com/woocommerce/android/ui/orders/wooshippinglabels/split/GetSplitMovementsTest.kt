@@ -21,7 +21,7 @@ class GetSplitMovementsTest : BaseUnitTest() {
     @Test
     fun `when there is no items selection, then movements is empty`() {
         val result = sut.invoke(
-            currentShipment = defaultShipments.keys.first(),
+            sourceShipmentKey = defaultShipments.keys.first(),
             shipments = defaultShipments,
             selection = defaultSelection
         )
@@ -38,7 +38,7 @@ class GetSplitMovementsTest : BaseUnitTest() {
         selection[key] = defaultSelection.getValue(key).copy(shippableItems = updatedList)
 
         val result = sut.invoke(
-            currentShipment = defaultShipments.keys.first(),
+            sourceShipmentKey = defaultShipments.keys.first(),
             shipments = defaultShipments,
             selection = selection
         )
@@ -56,7 +56,7 @@ class GetSplitMovementsTest : BaseUnitTest() {
         selection[key] = defaultSelection.getValue(key).copy(shippableItems = updatedList)
 
         val result = sut.invoke(
-            currentShipment = defaultShipments.keys.first(),
+            sourceShipmentKey = defaultShipments.keys.first(),
             shipments = defaultShipments,
             selection = selection
         )
@@ -74,7 +74,7 @@ class GetSplitMovementsTest : BaseUnitTest() {
         selection[key] = defaultSelection.getValue(key).copy(shippableItems = updatedList)
 
         val result = sut.invoke(
-            currentShipment = defaultShipments.keys.first(),
+            sourceShipmentKey = defaultShipments.keys.first(),
             shipments = defaultShipments,
             selection = selection
         )
@@ -88,7 +88,7 @@ class GetSplitMovementsTest : BaseUnitTest() {
         val selection = defaultSelection
 
         val result = sut.invoke(
-            currentShipment = keyNotInSelection,
+            sourceShipmentKey = keyNotInSelection,
             shipments = defaultShipments,
             selection = selection
         )
@@ -114,13 +114,13 @@ class GetSplitMovementsTest : BaseUnitTest() {
         selection[0] = defaultSelection.getValue(0).copy(shippableItems = allItemsSelected)
 
         val result = sut.invoke(
-            currentShipment = 0,
+            sourceShipmentKey = 0,
             shipments = twoShipments,
             selection = selection
         )
 
         assertThat(result.size).isEqualTo(1)
-        val isAnExistingKey = result.first().updatedShipment in twoShipments.keys
+        val isAnExistingKey = result.first().destinationShipmentKey in twoShipments.keys
         assertThat(isAnExistingKey).isTrue
     }
 
@@ -140,13 +140,13 @@ class GetSplitMovementsTest : BaseUnitTest() {
         selection[0] = defaultSelection.getValue(0).copy(shippableItems = expandableItemsSelected)
 
         val result = sut.invoke(
-            currentShipment = 0,
+            sourceShipmentKey = 0,
             shipments = twoShipments,
             selection = selection
         )
 
         assertThat(result.size).isEqualTo(2)
-        val hasNewKey = result.any { (it.updatedShipment in twoShipments.keys).not() }
+        val hasNewKey = result.any { (it.destinationShipmentKey in twoShipments.keys).not() }
         assertThat(hasNewKey).isTrue
     }
 

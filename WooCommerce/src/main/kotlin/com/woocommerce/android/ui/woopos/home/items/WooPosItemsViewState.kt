@@ -5,45 +5,46 @@ import androidx.annotation.StringRes
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 
 sealed class WooPosItemsViewState(
-    override val pullToRefreshState: WooPosPullToRefreshState,
-) : WooPosBaseViewState(pullToRefreshState) {
-    data class Content(
-        val contentType: ContentState,
-        val search: SearchState,
-        override val items: List<WooPosItemSelectionViewState>,
-        val bannerState: BannerState,
-        override val paginationState: WooPosPaginationState = WooPosPaginationState.None,
-        override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Enabled,
-        val couponsEnabled: Boolean = false,
-    ) : WooPosItemsViewState(pullToRefreshState), WooPosContentViewState {
-        data class BannerState(
-            val isBannerHiddenByUser: Boolean,
-            @StringRes val title: Int,
-            @StringRes val message: Int,
-            @DrawableRes val icon: Int
-        )
+    open val tabs: List<Tab>,
+    open val search: SearchState,
+    open val banner: BannerState,
+) {
+    data class ProductList(
+        override val tabs: List<Tab>,
+        override val search: SearchState,
+        override val banner: BannerState,
+    ) : WooPosItemsViewState(
+        tabs = tabs,
+        search = search,
+        banner = banner,
+    )
 
-        sealed class SearchState {
-            data class Visible(val state: WooPosSearchInputState) : SearchState()
-            object Hidden : SearchState()
-        }
+    data class CouponList(
+        override val tabs: List<Tab>,
+    ) : WooPosItemsViewState(
+        tabs = tabs,
+        search = SearchState.Hidden,
+        banner = BannerState.Hidden,
+    )
 
-        sealed class ContentState {
-            data object ProductList : ContentState()
-            data object CouponsList : ContentState()
+    data class Tab(@StringRes val stringId: Int, val highlightLevel: HighlightLevel) {
+        enum class HighlightLevel {
+            Full, Normal
         }
     }
 
-    data class Loading(
-        override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Enabled,
-        val withCart: Boolean
-    ) : WooPosItemsViewState(pullToRefreshState)
+    sealed class SearchState {
+        data class Visible(val state: WooPosSearchInputState) : SearchState()
+        data object Hidden : SearchState()
+    }
 
-    data class Error(
-        override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Enabled,
-    ) : WooPosItemsViewState(pullToRefreshState)
+    sealed class BannerState {
+        data class Visible(
+            @StringRes val title: Int,
+            @StringRes val message: Int,
+            @DrawableRes val icon: Int
+        ) : BannerState()
 
-    data class Empty(
-        override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Enabled,
-    ) : WooPosItemsViewState(pullToRefreshState)
+        data object Hidden : BannerState()
+    }
 }
