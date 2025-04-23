@@ -65,7 +65,7 @@ class ProductSelectorDialogFragment : DialogFragment() {
 
             setContent {
                 WooThemeWithBackground {
-                    ProductSelectorScreen(viewModel, handleImeInsets = true)
+                    ProductSelectorScreen(viewModel = viewModel, handleInsets = true)
                 }
             }
         }
