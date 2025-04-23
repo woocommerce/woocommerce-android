@@ -5,7 +5,6 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -49,15 +48,16 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductRestClie
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductVariationMapper
 import org.wordpress.android.fluxc.persistence.ProductSqlUtils
 import org.wordpress.android.fluxc.persistence.ProductSqlUtils.getCompositeProducts
-import org.wordpress.android.fluxc.persistence.ProductSqlUtils.getProducts
 import org.wordpress.android.fluxc.persistence.ProductSqlUtils.observeBundledProducts
-import org.wordpress.android.fluxc.persistence.ProductSqlUtils.sort
 import org.wordpress.android.fluxc.persistence.ProductStorageHelper
 import org.wordpress.android.fluxc.persistence.dao.AddonsDao
 import org.wordpress.android.fluxc.persistence.dao.ProductsDao
 import org.wordpress.android.fluxc.store.WCProductStore.ProductCategorySorting.NAME_ASC
 import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_ASC
+import org.wordpress.android.fluxc.store.WCProductStore.SkuSearchOptions.Disabled
+import org.wordpress.android.fluxc.store.WCProductStore.SkuSearchOptions.ExactSearch
+import org.wordpress.android.fluxc.store.WCProductStore.SkuSearchOptions.PartialMatch
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.fluxc.utils.AppLogWrapper
 import org.wordpress.android.util.AppLog
@@ -861,7 +861,7 @@ class WCProductStore @Inject internal constructor(
         productsDao.getProducts(localSiteId = site.id, remoteProductIds = remoteProductIds)
 
     /**
-     * Returns a list of [WCProductModel] for the given [SiteModel], [filterOptions] and [searchQuery].
+     * Returns a list of [WCProductModel] for the given [SiteModel] and [filterOptions].
      * To filter by category, make sure the [filterOptions] value is the category ID in String.
      */
     suspend fun getProducts(
@@ -869,17 +869,33 @@ class WCProductStore @Inject internal constructor(
         filterOptions: Map<ProductFilterOption, String>,
         sortType: ProductSorting = DEFAULT_PRODUCT_SORTING,
         excludedProductIds: List<Long> = emptyList(),
-        searchQuery: String? = null,
-        skuSearchOptions: SkuSearchOptions = SkuSearchOptions.Disabled,
-    ): List<WCProductModel> =
-        productsDao.getProducts(
-            site = site,
-            filterOptions = filterOptions,
-            sortType = sortType,
+    ): List<WCProductModel> {
+        return productsDao.getProducts(
+            localSiteId = site.id,
+            status = filterOptions[ProductFilterOption.STATUS],
+            stockStatus = filterOptions[ProductFilterOption.STOCK_STATUS],
+            type = filterOptions[ProductFilterOption.TYPE],
+            category = filterOptions[ProductFilterOption.CATEGORY]?.let { categoryFilter(it) },
+            excludeSampleProducts = false,
+            limit = null,
             excludedProductIds = excludedProductIds,
-            searchQuery = searchQuery,
-            skuSearchOptions = skuSearchOptions
+            sortType = sortType
         )
+    }
+
+    suspend fun searchCachedProducts(
+        site: SiteModel,
+        searchQuery: String,
+        skuSearchOptions: SkuSearchOptions
+    ): List<WCProductModel> {
+        return with(productsDao) {
+            when (skuSearchOptions) {
+                Disabled -> searchProductsByQuery(site.id, searchQuery)
+                ExactSearch -> searchProductsBySkuExactMatch(site.id, searchQuery)
+                PartialMatch -> searchProductsBySkuPartialMatch(site.id, searchQuery)
+            }
+        }
+    }
 
     suspend fun getProduct(site: SiteModel, remoteProductId: Long): WCProductModel? {
         return productsDao.getProduct(site.id, remoteProductId)
@@ -1057,23 +1073,22 @@ class WCProductStore @Inject internal constructor(
             excludeSampleProducts = excludeSampleProducts,
             excludedProductIds = emptyList(),
             limit = limit,
-        ).map { it.sort(sortType) }
+            sortType = sortType
+        )
     }
 
     fun observeProductsCount(
         site: SiteModel,
-        filterOptions: Map<ProductFilterOption, String> = emptyMap(),
-        excludeSampleProducts: Boolean = false
-    ): Flow<Long> = productsDao.observeProducts(
+        filterOptions: Map<ProductFilterOption, String>,
+        excludeSampleProducts: Boolean
+    ): Flow<Long> = productsDao.observeProductsCount(
         localSiteId = site.id,
         status = filterOptions[ProductFilterOption.STATUS],
         stockStatus = filterOptions[ProductFilterOption.STOCK_STATUS],
         type = filterOptions[ProductFilterOption.TYPE],
         category = filterOptions[ProductFilterOption.CATEGORY]?.let { categoryFilter(it) },
         excludeSampleProducts = excludeSampleProducts,
-        limit = null,
-        excludedProductIds = emptyList()
-    ).map { it.size.toLong() }
+    )
 
     fun observeVariations(site: SiteModel, productId: Long): Flow<List<WCProductVariationModel>> =
         ProductSqlUtils.observeVariations(site, productId)

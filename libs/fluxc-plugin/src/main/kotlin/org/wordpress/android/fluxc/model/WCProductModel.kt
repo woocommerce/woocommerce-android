@@ -23,9 +23,6 @@ import org.wordpress.android.util.AppLog.T
  */
 @Entity(
     tableName = "ProductEntity",
-    indices = [Index(
-        value = ["localSiteId", "remoteId"],
-    )],
     primaryKeys = ["localSiteId", "remoteId"],
 )
 data class WCProductModel(

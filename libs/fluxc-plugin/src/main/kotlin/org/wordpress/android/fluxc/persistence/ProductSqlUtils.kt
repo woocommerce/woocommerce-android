@@ -38,13 +38,6 @@ import org.wordpress.android.fluxc.store.WCProductStore.ProductCategorySorting.N
 import org.wordpress.android.fluxc.store.WCProductStore.ProductCategorySorting.NAME_DESC
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
-import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.DATE_ASC
-import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.DATE_DESC
-import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.POPULARITY_ASC
-import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.POPULARITY_DESC
-import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_ASC
-import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_DESC
-import org.wordpress.android.fluxc.store.WCProductStore.SkuSearchOptions
 import java.util.Locale
 
 @Suppress("LargeClass")
@@ -118,69 +111,6 @@ internal object ProductSqlUtils {
             .endGroup().endWhere()
             .asModel.firstOrNull()
     }
-
-    suspend fun ProductsDao.getProducts(
-        site: SiteModel,
-        filterOptions: Map<ProductFilterOption, String>,
-        sortType: ProductSorting = DEFAULT_PRODUCT_SORTING,
-        excludedProductIds: List<Long> = emptyList(),
-        searchQuery: String? = null,
-        skuSearchOptions: SkuSearchOptions = SkuSearchOptions.Disabled,
-        excludeSampleProducts: Boolean = false,
-        limit: Int? = null
-    ): List<WCProductModel> {
-
-        val products = observeProducts(
-            localSiteId = site.id,
-            status = filterOptions[ProductFilterOption.STATUS],
-            stockStatus = filterOptions[ProductFilterOption.STOCK_STATUS],
-            type = filterOptions[ProductFilterOption.TYPE],
-            category = filterOptions[ProductFilterOption.CATEGORY]?.let { categoryFilter(it) },
-            excludeSampleProducts = excludeSampleProducts,
-            limit = limit,
-            excludedProductIds = excludedProductIds
-        ).firstOrNull().orEmpty()
-            .sort(sortType)
-            .filter { product ->
-            if (searchQuery.isNullOrBlank()) {
-                true
-            } else {
-                when (skuSearchOptions) {
-                    SkuSearchOptions.Disabled -> {
-                        searchQuery.let { query ->
-                            listOf(
-                                product.name,
-                                product.description,
-                                product.shortDescription
-                            ).any { it.contains(query) }
-                        }
-                    }
-
-                    SkuSearchOptions.ExactSearch -> {
-                        product.sku == searchQuery
-                    }
-
-                    SkuSearchOptions.PartialMatch -> {
-                        searchQuery.let { query ->
-                            product.sku.contains(query)
-                        }
-                    }
-                }
-            }
-        }
-
-        return products
-    }
-
-    internal fun List<WCProductModel>.sort(sortType: ProductSorting): List<WCProductModel> =
-        when (sortType) {
-            TITLE_ASC -> sortedBy { it.name }
-            TITLE_DESC -> sortedByDescending { it.name }
-            DATE_ASC -> sortedBy { it.dateCreated }
-            DATE_DESC -> sortedByDescending { it.dateCreated }
-            POPULARITY_ASC -> sortedBy { it.totalSales }
-            POPULARITY_DESC -> sortedByDescending { it.totalSales }
-        }
 
     fun insertOrUpdateProductVariation(variation: WCProductVariationModel): Int {
         val result = WellSql.select(WCProductVariationModel::class.java)
@@ -634,5 +564,4 @@ internal object ProductSqlUtils {
     private fun triggerCategoriesUpdateIfNeeded(affectedRows: Int) {
         if (affectedRows != 0) categoriesUpdatesTrigger.tryEmit(Unit)
     }
-
 }

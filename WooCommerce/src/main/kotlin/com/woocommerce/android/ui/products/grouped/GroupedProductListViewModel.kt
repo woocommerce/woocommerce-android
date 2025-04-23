@@ -121,19 +121,17 @@ class GroupedProductListViewModel @Inject constructor(
             _productList.value = emptyList()
             productListViewState = productListViewState.copy(isSkeletonShown = false)
         } else {
-            launch {
-                val productsInDb = groupedProductListRepository.getProductList(
-                    selectedProductIds
-                )
-                if (productsInDb.isNotEmpty()) {
-                    _productList.value = productsInDb
-                    productListViewState = productListViewState.copy(isSkeletonShown = false)
-                } else {
-                    productListViewState = productListViewState.copy(isSkeletonShown = true)
-                }
-
-                fetchProducts(selectedProductIds, loadMore = loadMore)
+            val productsInDb = groupedProductListRepository.getProductList(
+                selectedProductIds
+            )
+            if (productsInDb.isNotEmpty()) {
+                _productList.value = productsInDb
+                productListViewState = productListViewState.copy(isSkeletonShown = false)
+            } else {
+                productListViewState = productListViewState.copy(isSkeletonShown = true)
             }
+
+            launch { fetchProducts(selectedProductIds, loadMore = loadMore) }
         }
     }
 
