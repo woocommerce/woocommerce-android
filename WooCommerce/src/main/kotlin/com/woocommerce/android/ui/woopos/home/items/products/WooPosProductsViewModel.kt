@@ -143,13 +143,7 @@ class WooPosProductsViewModel @Inject constructor(
                                         currentState.copy(
                                             items = products.map { it.toItemSelectionViewState() },
                                             paginationState = paginationState,
-                                            // TODO( "Add pull to refresh state when search is open"),
-                                            pullToRefreshState =
-//                                            if (searchHelper.isSearchOpen()) {
-//                                                WooPosPullToRefreshState.Disabled
-//                                            } else {
-                                            WooPosPullToRefreshState.Enabled
-//                                            },
+                                            pullToRefreshState = WooPosPullToRefreshState.Enabled
                                         )
                                     } else {
                                         products.toContentState(

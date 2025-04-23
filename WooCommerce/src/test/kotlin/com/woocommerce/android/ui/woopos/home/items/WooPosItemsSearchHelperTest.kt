@@ -196,51 +196,6 @@ class WooPosItemsSearchHelperTest {
     }
 
     @Test
-    fun `when closed search, then pull to refresh is enabled`() = runTest {
-        TODO("Implement this test")
-//        // GIVEN
-//        searchHelper.initialize(this, viewStateFlow)
-//
-//        // WHEN
-//        searchHelper.onCloseSearchClicked()
-//
-//        // THEN
-//        val currentState = viewStateFlow.value as WooPosItemsViewState.ProductList
-//        assertThat(currentState.pullToRefreshState).isEqualTo(WooPosPullToRefreshState.Enabled)
-    }
-
-    @Test
-    fun `when search changed, then pull to refresh is disabled`() = runTest {
-        TODO("Implement this test")
-//        // GIVEN
-//        searchHelper.initialize(this, viewStateFlow)
-//
-//        // WHEN
-//        searchHelper.onSearchChanged("test query", "test query".length)
-//
-//        // THEN
-//        val currentState = viewStateFlow.value as WooPosItemsViewState.ProductList
-//        assertThat(currentState.pullToRefreshState).isEqualTo(WooPosPullToRefreshState.Disabled)
-    }
-
-    @Test
-    fun `when hidden search state, then pull to refresh is enabled`() = runTest {
-        TODO("Implement this test")
-        // GIVEN
-//        searchHelper.initialize(this, viewStateFlow)
-//        val contentState = createContentState().copy(
-//            search = WooPosItemsViewState.SearchState.Hidden
-//        )
-//
-//        // WHEN
-//        viewStateFlow.value = contentState
-//
-//        // THEN
-//        val currentState = viewStateFlow.value as WooPosItemsViewState.ProductList
-//        assertThat(currentState.pullToRefreshState).isEqualTo(WooPosPullToRefreshState.Enabled)
-    }
-
-    @Test
     fun `when animation completes, then hasAnimationPlayed flag is set to true`() = runTest {
         // GIVEN
         searchHelper.initialize(this, viewStateFlow)
