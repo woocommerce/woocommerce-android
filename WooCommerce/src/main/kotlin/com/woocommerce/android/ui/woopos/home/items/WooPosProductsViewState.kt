@@ -1,8 +1,8 @@
 package com.woocommerce.android.ui.woopos.home.items
 
 sealed class WooPosProductsViewState(
-    override val pullToRefreshState: WooPosPullToRefreshState,
-) : WooPosBaseViewState(pullToRefreshState) {
+    open val pullToRefreshState: WooPosPullToRefreshState,
+) {
     data class Content(
         override val items: List<WooPosItemSelectionViewState>,
         override val paginationState: WooPosPaginationState = WooPosPaginationState.None,

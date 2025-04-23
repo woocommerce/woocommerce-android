@@ -1,9 +1,5 @@
 package com.woocommerce.android.ui.woopos.home.items
 
-sealed class WooPosBaseViewState(
-    open val pullToRefreshState: WooPosPullToRefreshState
-)
-
 interface WooPosContentViewState {
     val items: List<WooPosItemSelectionViewState>
     val pullToRefreshState: WooPosPullToRefreshState

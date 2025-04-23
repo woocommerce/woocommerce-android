@@ -1,9 +1,8 @@
 package com.woocommerce.android.ui.woopos.home.items
 
 sealed class WooPosVariationsViewState(
-    override val pullToRefreshState: WooPosPullToRefreshState
-) : WooPosBaseViewState(pullToRefreshState) {
-
+    open val pullToRefreshState: WooPosPullToRefreshState
+) {
     data class Content(
         override val items: List<WooPosItemSelectionViewState.Variation>,
         override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Enabled,
