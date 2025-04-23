@@ -51,7 +51,7 @@ class CustomerListDialogFragment : DialogFragment() {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
             WooThemeWithBackground {
-                OrderCustomerListScreen(viewModel, handleImeInsets = true)
+                OrderCustomerListScreen(viewModel = viewModel, handleInsets = true)
             }
         }
     }
