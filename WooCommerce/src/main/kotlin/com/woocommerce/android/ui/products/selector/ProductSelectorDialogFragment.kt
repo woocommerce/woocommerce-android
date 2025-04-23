@@ -33,7 +33,8 @@ class ProductSelectorDialogFragment : DialogFragment() {
         private const val TABLET_LANDSCAPE_HEIGHT_RATIO = 0.6f
     }
 
-    @Inject lateinit var navigator: ProductNavigator
+    @Inject
+    lateinit var navigator: ProductNavigator
 
     private val viewModel: ProductSelectorViewModel by viewModels()
 
@@ -64,7 +65,7 @@ class ProductSelectorDialogFragment : DialogFragment() {
 
             setContent {
                 WooThemeWithBackground {
-                    ProductSelectorScreen(viewModel)
+                    ProductSelectorScreen(viewModel = viewModel, handleInsets = true)
                 }
             }
         }
@@ -99,6 +100,7 @@ class ProductSelectorDialogFragment : DialogFragment() {
                         event.data as Collection<SelectedItem>
                     )
                 }
+
                 is ProductNavigationTarget -> navigator.navigate(this, event)
                 is Exit -> findNavController().navigateUp()
             }

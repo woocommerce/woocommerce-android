@@ -9,9 +9,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -23,10 +25,9 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.AppBarDefaults
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -44,7 +45,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
@@ -53,7 +53,7 @@ import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.SearchLayoutWithParams
 import com.woocommerce.android.ui.compose.component.SearchLayoutWithParamsState
-import com.woocommerce.android.ui.compose.component.TopAppBarEdgeToEdge
+import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.products.ProductType.BUNDLE
@@ -74,45 +74,50 @@ import com.woocommerce.android.ui.products.selector.SelectionState.SELECTED
 import com.woocommerce.android.ui.products.selector.components.SelectorListItem
 import com.woocommerce.android.util.StringUtils
 
+/**
+ * @param handleInsets true if the screen should handle insets manually.
+ *  This is needed when the screen is used in a DialogFragment, otherwise the handling of insets at the root
+ *  layout will be enough.
+ *
+ *  Note: normally this shouldn't be needed, as we consume the insets in the root layout, but due to this
+ *  bug https://issuetracker.google.com/issues/411868840 the insets are re-applied when the keyboard is shown.
+ */
 @Composable
-fun ProductSelectorScreen(viewModel: ProductSelectorViewModel) {
+fun ProductSelectorScreen(
+    viewModel: ProductSelectorViewModel,
+    handleInsets: Boolean,
+) {
     val viewState by viewModel.viewState.observeAsState()
     BackHandler(onBack = viewModel::onNavigateBack)
     viewState?.let { state ->
         val showToolbar = state.selectionMode != SelectionMode.LIVE
         Scaffold(topBar = {
             if (showToolbar) {
-                TopAppBarEdgeToEdge(
-                    title = {
-                        Text(
-                            text = state.screenTitleOverride
-                                ?: stringResource(id = string.coupon_conditions_products_select_products_title)
-                        )
+                Toolbar(
+                    title = state.screenTitleOverride
+                        ?: stringResource(id = string.coupon_conditions_products_select_products_title),
+                    navigationIcon = if (state.searchState.isActive) {
+                        Icons.AutoMirrored.Filled.ArrowBack
+                    } else {
+                        Icons.Filled.Close
                     },
-                    navigationIcon = {
-                        IconButton(viewModel::onNavigateBack) {
-                            Icon(
-                                imageVector = if (state.searchState.isActive) {
-                                    Icons.AutoMirrored.Filled.ArrowBack
-                                } else {
-                                    Icons.Filled.Close
-                                },
-                                contentDescription = stringResource(id = string.back)
-                            )
-                        }
-                    },
-                    backgroundColor = colorResource(id = R.color.color_toolbar),
-                    elevation = 0.dp,
+                    onNavigationButtonClick = viewModel::onNavigateBack,
+                    windowInsets = if (handleInsets) AppBarDefaults.topAppBarWindowInsets else WindowInsets(0),
                 )
             }
         }) { padding ->
-            val modifier = if (showToolbar) {
-                Modifier.padding(padding)
-            } else {
-                Modifier
-                    .padding(padding)
-                    .statusBarsPadding()
-            }.navigationBarsPadding()
+            val modifier = Modifier
+                .padding(padding)
+                .then(
+                    if (handleInsets) {
+                        Modifier
+                            .navigationBarsPadding()
+                            .imePadding()
+                            .then(if (!showToolbar) Modifier.statusBarsPadding() else Modifier)
+                    } else {
+                        Modifier
+                    }
+                )
             ProductSelectorScreen(
                 modifier = modifier,
                 state = state,

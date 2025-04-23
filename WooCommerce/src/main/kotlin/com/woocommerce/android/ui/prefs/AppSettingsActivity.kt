@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.fragment.app.DialogFragment
@@ -70,7 +71,12 @@ class AppSettingsActivity :
         binding = ActivityAppSettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.root.doOnApplyWindowInsets(consumeInsets = true) {
+        binding.root.doOnApplyWindowInsets(
+            insetsMask = WindowInsetsCompat.Type.systemBars() or
+                WindowInsetsCompat.Type.displayCutout() or
+                WindowInsetsCompat.Type.ime(),
+            consumeInsets = true
+        ) {
             binding.root.updatePadding(
                 left = it.left,
                 right = it.right,
