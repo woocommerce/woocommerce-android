@@ -790,7 +790,7 @@ class WooPosItemsViewModelTest {
     }
 
     @Test
-    fun `when initial products load is active and load more is triggered, then do not start load more job`() = runTest {
+    fun `when initial products load is active and load more is triggered, then set loadMoreAfterLoadCompletes flag`() = runTest {
         // GIVEN
         whenever(productsDataSource.hasMorePages).thenReturn(true)
 
@@ -799,10 +799,82 @@ class WooPosItemsViewModelTest {
         whenever(productsDataSource.loadProducts(any())).thenReturn(productsFlow)
 
         val viewModel = createViewModel()
+        val products = listOf(
+            ProductTestUtils.generateProduct(
+                productId = 1,
+                productName = "Product 1",
+                amount = "10.0",
+                productType = "simple"
+            )
+        )
+        val remoteResult = WooPosProductsDataSource.ProductsResult.Remote(
+            Result.success(products)
+        )
+        productsFlow.emit(remoteResult)
 
         // WHEN
         viewModel.onUIEvent(WooPosItemsUIEvent.EndOfItemsListReached)
 
+        // THEN
+        viewModel.viewState.test {
+            val value = awaitItem() as WooPosItemsViewState.Content
+            assertThat(value.paginationState).isEqualTo(WooPosPaginationState.Loading)
+            verify(productsDataSource, never()).loadMore()
+        }
+    }
+
+    @Test
+    fun `when loadMoreAfterLoadCompletes is set and initial load completes, then load more is triggered`() = runTest {
+        // GIVEN
+        whenever(productsDataSource.hasMorePages).thenReturn(true)
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosItemsUIEvent.EndOfItemsListReached)
+        advanceUntilIdle()
+
+        // THEN
+        verify(productsDataSource).loadMore()
+    }
+
+    @Test
+    fun `when loadMoreAfterLoadCompletes is set and initial load fails, then load more is not triggered`() = runTest {
+        // GIVEN
+        whenever(productsDataSource.hasMorePages).thenReturn(true)
+        whenever(productsDataSource.loadProducts(any())).thenReturn(
+            flowOf(
+                WooPosProductsDataSource.ProductsResult.Remote(
+                    Result.failure(Exception())
+                )
+            )
+        )
+
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosItemsUIEvent.EndOfItemsListReached)
+        advanceUntilIdle()
+
+        // THEN
+        verify(productsDataSource, never()).loadMore()
+    }
+
+    @Test
+    fun `when loadMoreAfterLoadCompletes is set and view state is not Content, then load more is not triggered`() = runTest {
+        // GIVEN
+        whenever(productsDataSource.hasMorePages).thenReturn(true)
+        whenever(productsDataSource.loadProducts(any())).thenReturn(
+            flowOf(
+                WooPosProductsDataSource.ProductsResult.Remote(
+                    Result.success(emptyList())
+                )
+            )
+        )
+
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosItemsUIEvent.EndOfItemsListReached)
         advanceUntilIdle()
 
         // THEN
