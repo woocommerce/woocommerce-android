@@ -8,6 +8,7 @@ import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsTypesFilterConfig
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
@@ -70,9 +71,6 @@ class WooPosProductsDataSource @Inject constructor(
 
     fun loadProducts(forceRefreshProducts: Boolean): Flow<ProductsResult> = flow {
         offset.set(0)
-        if (forceRefreshProducts) {
-            productsCache.clear()
-        }
         productsIndex.clearCache()
 
         val cachedProducts = sortProducts(productsCache.getAll()).take(NORMAL_PAGE_SIZE)
@@ -81,6 +79,10 @@ class WooPosProductsDataSource @Inject constructor(
         val fetchResult = fetchProducts()
 
         if (fetchResult.isSuccess) {
+            if (forceRefreshProducts) {
+                productsCache.clear()
+                productsCache.addAll(fetchResult.getOrThrow())
+            }
             emit(ProductsResult.Remote(Result.success(fetchResult.getOrThrow())))
         } else {
             emit(ProductsResult.Remote(Result.failure(fetchResult.exceptionOrNull() ?: Exception("Unknown error"))))
