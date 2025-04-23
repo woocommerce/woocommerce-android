@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBars
+import androidx.compose.material.AppBarDefaults
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
@@ -72,7 +72,7 @@ fun OrderCustomerListScreen(
                 title = stringResource(id = R.string.order_creation_add_customer),
                 navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
                 onNavigationButtonClick = onNavigateBack,
-                windowInsets = if (handleInsets) WindowInsets.statusBars else WindowInsets(0),
+                windowInsets = if (handleInsets) AppBarDefaults.topAppBarWindowInsets else WindowInsets(0),
             )
         },
         floatingActionButton = {
