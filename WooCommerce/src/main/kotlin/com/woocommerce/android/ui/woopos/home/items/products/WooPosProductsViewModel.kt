@@ -105,7 +105,7 @@ class WooPosProductsViewModel @Inject constructor(
                 }
             }
 
-            is WooPosItemSelectionViewState.Variation -> error("Variation item not support in products list")
+            is WooPosItemSelectionViewState.Product.Variation -> error("Variation item not supported in products list")
         }
     }
 
