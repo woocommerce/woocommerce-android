@@ -138,9 +138,9 @@ internal object ProductSqlUtils {
             category = filterOptions[ProductFilterOption.CATEGORY]?.let { categoryFilter(it) },
             excludeSampleProducts = excludeSampleProducts,
             limit = limit,
-            excludedProductIds = excludedProductIds
+            excludedProductIds = excludedProductIds,
+            sortType = sortType
         ).firstOrNull().orEmpty()
-            .sort(sortType)
             .filter { product ->
             if (searchQuery.isNullOrBlank()) {
                 true
@@ -171,16 +171,6 @@ internal object ProductSqlUtils {
 
         return products
     }
-
-    internal fun List<WCProductModel>.sort(sortType: ProductSorting): List<WCProductModel> =
-        when (sortType) {
-            TITLE_ASC -> sortedBy { it.name }
-            TITLE_DESC -> sortedByDescending { it.name }
-            DATE_ASC -> sortedBy { it.dateCreated }
-            DATE_DESC -> sortedByDescending { it.dateCreated }
-            POPULARITY_ASC -> sortedBy { it.totalSales }
-            POPULARITY_DESC -> sortedByDescending { it.totalSales }
-        }
 
     fun insertOrUpdateProductVariation(variation: WCProductVariationModel): Int {
         val result = WellSql.select(WCProductVariationModel::class.java)
@@ -634,5 +624,4 @@ internal object ProductSqlUtils {
     private fun triggerCategoriesUpdateIfNeeded(affectedRows: Int) {
         if (affectedRows != 0) categoriesUpdatesTrigger.tryEmit(Unit)
     }
-
 }

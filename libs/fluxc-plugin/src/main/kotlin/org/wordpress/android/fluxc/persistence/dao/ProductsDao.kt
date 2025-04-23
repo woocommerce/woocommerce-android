@@ -5,6 +5,7 @@ import androidx.room.Query
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 import org.wordpress.android.fluxc.model.WCProductModel
+import org.wordpress.android.fluxc.store.WCProductStore
 
 @Dao
 internal abstract class ProductsDao {
@@ -19,10 +20,16 @@ internal abstract class ProductsDao {
             AND (:category IS NULL OR categories LIKE '%' || :category || '%')
             AND (:excludeSampleProducts = 0 OR isSampleProduct = 0)
             AND (remoteId NOT IN (:excludedProductIds))
+            ORDER BY
+                CASE WHEN :sortType = 'TITLE_ASC' THEN name END ASC,
+                CASE WHEN :sortType = 'TITLE_DESC' THEN name END DESC,
+                CASE WHEN :sortType = 'DATE_ASC' THEN dateCreated END ASC,
+                CASE WHEN :sortType = 'DATE_DESC' THEN dateCreated END DESC,
+                CASE WHEN :sortType = 'POPULARITY_ASC' THEN totalSales END ASC,
+                CASE WHEN :sortType = 'POPULARITY_DESC' THEN totalSales END DESC
             LIMIT CASE WHEN :limit IS NULL THEN -1 ELSE :limit END
         """
     )
-    @Suppress("LongParameterList")
     abstract fun observeProducts(
         localSiteId: Int,
         status: String?,
@@ -31,7 +38,8 @@ internal abstract class ProductsDao {
         category: String?,
         excludeSampleProducts: Boolean,
         limit: Int?,
-        excludedProductIds: List<Long>
+        excludedProductIds: List<Long>,
+        sortType: WCProductStore.ProductSorting
     ): Flow<List<WCProductModel>>
 
     @Query(

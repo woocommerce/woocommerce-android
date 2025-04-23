@@ -51,12 +51,12 @@ import org.wordpress.android.fluxc.persistence.ProductSqlUtils
 import org.wordpress.android.fluxc.persistence.ProductSqlUtils.getCompositeProducts
 import org.wordpress.android.fluxc.persistence.ProductSqlUtils.getProducts
 import org.wordpress.android.fluxc.persistence.ProductSqlUtils.observeBundledProducts
-import org.wordpress.android.fluxc.persistence.ProductSqlUtils.sort
 import org.wordpress.android.fluxc.persistence.ProductStorageHelper
 import org.wordpress.android.fluxc.persistence.dao.AddonsDao
 import org.wordpress.android.fluxc.persistence.dao.ProductsDao
 import org.wordpress.android.fluxc.store.WCProductStore.ProductCategorySorting.NAME_ASC
 import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType.GENERIC_ERROR
+import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.DATE_ASC
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_ASC
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.fluxc.utils.AppLogWrapper
@@ -1057,7 +1057,8 @@ class WCProductStore @Inject internal constructor(
             excludeSampleProducts = excludeSampleProducts,
             excludedProductIds = emptyList(),
             limit = limit,
-        ).map { it.sort(sortType) }
+            sortType = sortType
+        )
     }
 
     fun observeProductsCount(
@@ -1072,7 +1073,8 @@ class WCProductStore @Inject internal constructor(
         category = filterOptions[ProductFilterOption.CATEGORY]?.let { categoryFilter(it) },
         excludeSampleProducts = excludeSampleProducts,
         limit = null,
-        excludedProductIds = emptyList()
+        excludedProductIds = emptyList(),
+        sortType = DATE_ASC
     ).map { it.size.toLong() }
 
     fun observeVariations(site: SiteModel, productId: Long): Flow<List<WCProductVariationModel>> =
