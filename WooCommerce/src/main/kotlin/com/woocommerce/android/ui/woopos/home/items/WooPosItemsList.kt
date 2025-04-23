@@ -61,7 +61,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState.Product
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState.Variation
-import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState.Content.BannerState
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 
@@ -437,8 +436,7 @@ private fun InfiniteListHandler(
 fun ItemListPreview() {
     WooPosTheme {
         WooPosItemList(
-            WooPosItemsViewState.Content(
-                WooPosItemsViewState.Content.SearchState.Hidden,
+            WooPosProductsViewState.Content(
                 listOf(
                     Product.Simple(
                         id = 1,
@@ -449,12 +447,6 @@ fun ItemListPreview() {
                     ),
                     Product.Variable(id = 2, name = "Variable Product", price = "$10.00", "", 1, listOf()),
                     Variation(3, "Variation", 0, "$10", ""),
-                ),
-                BannerState(
-                    false,
-                    R.string.woopos_banner_simple_products_only_title,
-                    R.string.woopos_banner_simple_products_only_message,
-                    R.drawable.info
                 ),
             ),
             listState = LazyListState(),

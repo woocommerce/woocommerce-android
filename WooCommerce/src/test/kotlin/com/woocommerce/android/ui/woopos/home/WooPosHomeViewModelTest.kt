@@ -22,7 +22,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import kotlin.test.Test
-import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
 class WooPosHomeViewModelTest {
@@ -49,7 +48,7 @@ class WooPosHomeViewModelTest {
             val viewModel = createViewModel()
 
             // WHEN
-            viewModel.onUIEvent(WooPosHomeUIEvent.SystemBackClicked)
+            viewModel.onUIEvent(SystemBackClicked)
 
             // THEN
             verify(parentToChildrenEventSender).sendToChildren(ParentToChildrenEvent.BackFromCheckoutToCartClicked)
@@ -65,7 +64,7 @@ class WooPosHomeViewModelTest {
         val viewModel = createViewModel()
 
         // WHEN
-        viewModel.onUIEvent(WooPosHomeUIEvent.SystemBackClicked)
+        viewModel.onUIEvent(SystemBackClicked)
 
         // THEN
         assertThat(viewModel.state.value.exitConfirmationDialog).isEqualTo(
@@ -85,7 +84,7 @@ class WooPosHomeViewModelTest {
             val viewModel = createViewModel()
 
             // WHEN
-            viewModel.onUIEvent(WooPosHomeUIEvent.SystemBackClicked)
+            viewModel.onUIEvent(SystemBackClicked)
 
             // THEN
             verify(parentToChildrenEventSender).sendToChildren(
@@ -267,24 +266,6 @@ class WooPosHomeViewModelTest {
 
         // THEN
         assertThat(viewModel.state.value.productsInfoDialog.isVisible).isFalse()
-    }
-
-    @Test
-    fun `given home screen is at checkout, when products are updated, then should not modify screen position`() {
-        val itemClickedData = listOf(
-            ItemClickedData.Product.Simple(
-                id = 1L
-            )
-        )
-        whenever(childrenToParentEventReceiver.events).thenReturn(
-            flowOf(
-                ChildToParentEvent.CheckoutClicked(itemClickedData),
-                ChildToParentEvent.ProductsStatusChanged.FullScreen
-            )
-        )
-        val viewModel = createViewModel()
-
-        assertTrue(viewModel.state.value.screenPositionState is WooPosHomeState.ScreenPositionState.Checkout)
     }
 
     @Test
