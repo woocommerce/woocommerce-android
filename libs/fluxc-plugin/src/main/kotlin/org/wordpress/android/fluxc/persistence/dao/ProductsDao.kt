@@ -10,8 +10,8 @@ import org.wordpress.android.fluxc.store.WCProductStore
 @Dao
 internal abstract class ProductsDao {
 
-    @Query(
-        """
+    companion object {
+        const val DEFAULT_SELECT_QUERY = """
             SELECT * FROM ProductEntity
             WHERE localSiteId = :localSiteId
             AND (:status IS NULL OR status = :status)
@@ -29,7 +29,9 @@ internal abstract class ProductsDao {
                 CASE WHEN :sortType = 'POPULARITY_DESC' THEN totalSales END DESC
             LIMIT CASE WHEN :limit IS NULL THEN -1 ELSE :limit END
         """
-    )
+    }
+
+    @Query(DEFAULT_SELECT_QUERY)
     abstract fun observeProducts(
         localSiteId: Int,
         status: String?,
@@ -41,6 +43,19 @@ internal abstract class ProductsDao {
         excludedProductIds: List<Long>,
         sortType: WCProductStore.ProductSorting
     ): Flow<List<WCProductModel>>
+
+    @Query(DEFAULT_SELECT_QUERY)
+    abstract suspend fun getProducts(
+        localSiteId: Int,
+        status: String?,
+        stockStatus: String?,
+        type: String?,
+        category: String?,
+        excludeSampleProducts: Boolean,
+        limit: Int?,
+        excludedProductIds: List<Long>,
+        sortType: WCProductStore.ProductSorting
+    ): List<WCProductModel>
 
     @Query(
         """

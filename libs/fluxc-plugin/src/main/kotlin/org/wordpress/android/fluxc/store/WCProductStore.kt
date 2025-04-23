@@ -48,7 +48,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductRestClie
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductVariationMapper
 import org.wordpress.android.fluxc.persistence.ProductSqlUtils
 import org.wordpress.android.fluxc.persistence.ProductSqlUtils.getCompositeProducts
-import org.wordpress.android.fluxc.persistence.ProductSqlUtils.getProducts
 import org.wordpress.android.fluxc.persistence.ProductSqlUtils.observeBundledProducts
 import org.wordpress.android.fluxc.persistence.ProductStorageHelper
 import org.wordpress.android.fluxc.persistence.dao.AddonsDao
@@ -870,13 +869,19 @@ class WCProductStore @Inject internal constructor(
         filterOptions: Map<ProductFilterOption, String>,
         sortType: ProductSorting = DEFAULT_PRODUCT_SORTING,
         excludedProductIds: List<Long> = emptyList(),
-    ): List<WCProductModel> =
-        productsDao.getProducts(
-            site = site,
-            filterOptions = filterOptions,
-            sortType = sortType,
+    ): List<WCProductModel> {
+        return productsDao.getProducts(
+            localSiteId = site.id,
+            status = filterOptions[ProductFilterOption.STATUS],
+            stockStatus = filterOptions[ProductFilterOption.STOCK_STATUS],
+            type = filterOptions[ProductFilterOption.TYPE],
+            category = filterOptions[ProductFilterOption.CATEGORY]?.let { categoryFilter(it) },
+            excludeSampleProducts = false,
+            limit = null,
             excludedProductIds = excludedProductIds,
+            sortType = sortType
         )
+    }
 
     suspend fun searchCachedProducts(
         site: SiteModel,

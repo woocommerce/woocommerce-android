@@ -112,30 +112,6 @@ internal object ProductSqlUtils {
             .asModel.firstOrNull()
     }
 
-    suspend fun ProductsDao.getProducts(
-        site: SiteModel,
-        filterOptions: Map<ProductFilterOption, String>,
-        sortType: ProductSorting = DEFAULT_PRODUCT_SORTING,
-        excludedProductIds: List<Long> = emptyList(),
-        excludeSampleProducts: Boolean = false,
-        limit: Int? = null
-    ): List<WCProductModel> {
-
-        val products = observeProducts(
-            localSiteId = site.id,
-            status = filterOptions[ProductFilterOption.STATUS],
-            stockStatus = filterOptions[ProductFilterOption.STOCK_STATUS],
-            type = filterOptions[ProductFilterOption.TYPE],
-            category = filterOptions[ProductFilterOption.CATEGORY]?.let { categoryFilter(it) },
-            excludeSampleProducts = excludeSampleProducts,
-            limit = limit,
-            excludedProductIds = excludedProductIds,
-            sortType = sortType
-        ).firstOrNull().orEmpty()
-
-        return products
-    }
-
     fun insertOrUpdateProductVariation(variation: WCProductVariationModel): Int {
         val result = WellSql.select(WCProductVariationModel::class.java)
             .where().beginGroup()
