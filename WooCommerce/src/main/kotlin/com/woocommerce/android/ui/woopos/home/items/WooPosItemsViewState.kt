@@ -4,7 +4,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 
-sealed class WooPosItemsViewState private constructor(
+sealed class WooPosItemsViewState(
     open val tabs: List<Tab>,
     open val search: SearchState,
     open val banner: BannerState,
