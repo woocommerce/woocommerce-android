@@ -86,7 +86,7 @@ class WooPosCouponsListViewStateManager @Inject constructor(
     suspend fun fetchCoupons() {
         val result = couponsDataSource.clearCacheAndFetchFirstPage()
         if (!result.isSuccess) {
-            delay(1)
+            delay(500) // avoid UI flickering when there is no network connection
             errorStates.emit(CouponsErrorEvent.FullScreen)
         }
     }
@@ -94,7 +94,7 @@ class WooPosCouponsListViewStateManager @Inject constructor(
     suspend fun loadMore() {
         val result = couponsDataSource.loadMore()
         if (!result.isSuccess) {
-            delay(1)
+            delay(500) // avoid UI flickering when there is no network connection
             errorStates.emit(CouponsErrorEvent.Pagination)
         }
     }
