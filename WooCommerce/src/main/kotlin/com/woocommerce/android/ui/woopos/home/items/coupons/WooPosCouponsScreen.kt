@@ -99,7 +99,7 @@ private fun WooPosCouponsScreen(
                 contentDescription = stringResource(id = R.string.woopos_coupons_empty_list_image_description),
             )
 
-            is WooPosCouponsViewState.Error -> ProductsError { onUIEvent(WooPosCouponsUIEvent.RetryTriggered) }
+            is WooPosCouponsViewState.Error -> CouponsError { onUIEvent(WooPosCouponsUIEvent.RetryTriggered) }
         }
     }
 }
@@ -114,6 +114,23 @@ private fun CouponsPaginationError(onRetryClicked: () -> Unit) {
             click = onRetryClicked
         ),
     )
+}
+
+@Composable
+fun CouponsError(onRetryClicked: () -> Unit) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
+    ) {
+        WooPosErrorScreen(
+            message = stringResource(id = R.string.woopos_coupons_loading_error_title),
+            reason = stringResource(id = R.string.woopos_coupons_loading_error_message),
+            primaryButton = Button(
+                text = stringResource(id = R.string.woopos_products_loading_error_retry_button),
+                click = onRetryClicked
+            )
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterialApi::class)
