@@ -8,6 +8,7 @@ import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.store.WCProductStore
 
 @Dao
+@Suppress("LongParameterList")
 internal abstract class ProductsDao {
 
     companion object {
