@@ -11,7 +11,6 @@ sealed class WooPosVariationsViewState(
 
     data class Loading(
         override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Enabled,
-        val withCart: Boolean
     ) : WooPosVariationsViewState(pullToRefreshState)
 
     data class Error(
