@@ -38,13 +38,6 @@ import org.wordpress.android.fluxc.store.WCProductStore.ProductCategorySorting.N
 import org.wordpress.android.fluxc.store.WCProductStore.ProductCategorySorting.NAME_DESC
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
-import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.DATE_ASC
-import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.DATE_DESC
-import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.POPULARITY_ASC
-import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.POPULARITY_DESC
-import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_ASC
-import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_DESC
-import org.wordpress.android.fluxc.store.WCProductStore.SkuSearchOptions
 import java.util.Locale
 
 @Suppress("LargeClass")
@@ -124,8 +117,6 @@ internal object ProductSqlUtils {
         filterOptions: Map<ProductFilterOption, String>,
         sortType: ProductSorting = DEFAULT_PRODUCT_SORTING,
         excludedProductIds: List<Long> = emptyList(),
-        searchQuery: String? = null,
-        skuSearchOptions: SkuSearchOptions = SkuSearchOptions.Disabled,
         excludeSampleProducts: Boolean = false,
         limit: Int? = null
     ): List<WCProductModel> {
@@ -141,33 +132,6 @@ internal object ProductSqlUtils {
             excludedProductIds = excludedProductIds,
             sortType = sortType
         ).firstOrNull().orEmpty()
-            .filter { product ->
-            if (searchQuery.isNullOrBlank()) {
-                true
-            } else {
-                when (skuSearchOptions) {
-                    SkuSearchOptions.Disabled -> {
-                        searchQuery.let { query ->
-                            listOf(
-                                product.name,
-                                product.description,
-                                product.shortDescription
-                            ).any { it.contains(query) }
-                        }
-                    }
-
-                    SkuSearchOptions.ExactSearch -> {
-                        product.sku == searchQuery
-                    }
-
-                    SkuSearchOptions.PartialMatch -> {
-                        searchQuery.let { query ->
-                            product.sku.contains(query)
-                        }
-                    }
-                }
-            }
-        }
 
         return products
     }

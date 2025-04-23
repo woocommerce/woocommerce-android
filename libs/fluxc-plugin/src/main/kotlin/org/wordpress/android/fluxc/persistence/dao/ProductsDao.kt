@@ -119,4 +119,47 @@ internal abstract class ProductsDao {
         localSiteId: Int,
         remoteProductId: Long
     )
+
+    @Query(
+        """
+        SELECT * FROM ProductEntity
+        WHERE localSiteId = :localSiteId
+        AND (
+            name LIKE '%' || :searchQuery || '%'
+            OR description LIKE '%' || :searchQuery || '%'
+            OR shortDescription LIKE '%' || :searchQuery || '%'
+        )
+        """
+    )
+    abstract suspend fun searchProductsByQuery(
+        localSiteId: Int,
+        searchQuery: String
+    ): List<WCProductModel>
+
+    @Query(
+        """
+        SELECT * FROM ProductEntity
+        WHERE localSiteId = :localSiteId
+        AND :sku IS sku
+        ORDER BY name ASC
+        """
+    )
+    abstract suspend fun searchProductsBySkuExactMatch(
+        localSiteId: Int,
+        sku: String?
+    ): List<WCProductModel>
+
+    @Query(
+        """
+        SELECT * FROM ProductEntity
+        WHERE localSiteId = :localSiteId
+        AND :sku LIKE '%' || sku || '%'
+        ORDER BY name ASC
+        """
+    )
+    abstract suspend fun searchProductsBySkuPartialMatch(
+        localSiteId: Int,
+        sku: String?
+    ): List<WCProductModel>
+
 }

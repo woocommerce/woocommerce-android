@@ -58,6 +58,9 @@ import org.wordpress.android.fluxc.store.WCProductStore.ProductCategorySorting.N
 import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.DATE_ASC
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_ASC
+import org.wordpress.android.fluxc.store.WCProductStore.SkuSearchOptions.Disabled
+import org.wordpress.android.fluxc.store.WCProductStore.SkuSearchOptions.ExactSearch
+import org.wordpress.android.fluxc.store.WCProductStore.SkuSearchOptions.PartialMatch
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.fluxc.utils.AppLogWrapper
 import org.wordpress.android.util.AppLog
@@ -861,7 +864,7 @@ class WCProductStore @Inject internal constructor(
         productsDao.getProducts(localSiteId = site.id, remoteProductIds = remoteProductIds)
 
     /**
-     * Returns a list of [WCProductModel] for the given [SiteModel], [filterOptions] and [searchQuery].
+     * Returns a list of [WCProductModel] for the given [SiteModel] and [filterOptions].
      * To filter by category, make sure the [filterOptions] value is the category ID in String.
      */
     suspend fun getProducts(
@@ -869,17 +872,27 @@ class WCProductStore @Inject internal constructor(
         filterOptions: Map<ProductFilterOption, String>,
         sortType: ProductSorting = DEFAULT_PRODUCT_SORTING,
         excludedProductIds: List<Long> = emptyList(),
-        searchQuery: String? = null,
-        skuSearchOptions: SkuSearchOptions = SkuSearchOptions.Disabled,
     ): List<WCProductModel> =
         productsDao.getProducts(
             site = site,
             filterOptions = filterOptions,
             sortType = sortType,
             excludedProductIds = excludedProductIds,
-            searchQuery = searchQuery,
-            skuSearchOptions = skuSearchOptions
         )
+
+    suspend fun searchCachedProducts(
+        site: SiteModel,
+        searchQuery: String,
+        skuSearchOptions: SkuSearchOptions
+    ): List<WCProductModel> {
+        return with(productsDao) {
+            when (skuSearchOptions) {
+                Disabled -> searchProductsByQuery(site.id, searchQuery)
+                ExactSearch -> searchProductsBySkuExactMatch(site.id, searchQuery)
+                PartialMatch -> searchProductsBySkuPartialMatch(site.id, searchQuery)
+            }
+        }
+    }
 
     suspend fun getProduct(site: SiteModel, remoteProductId: Long): WCProductModel? {
         return productsDao.getProduct(site.id, remoteProductId)
