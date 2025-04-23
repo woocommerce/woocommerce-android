@@ -4336,7 +4336,7 @@
     <string name="woopos_products_loading_error_title">Error loading products</string>
     <string name="woopos_products_loading_error_message">Give it another go?</string>
 
-    <string name="woopos_coupons_empty_list_image_description">No products</string>
+    <string name="woopos_coupons_empty_list_image_description">No coupons</string>
     <string name="woopos_coupons_empty_list_title">No coupons found</string>
     <string name="woopos_coupons_empty_list_message">Boost your business by sending customers special offers and discounts.</string>
     <string name="woopos_coupons_loading_error_title">Error loading coupons</string>
