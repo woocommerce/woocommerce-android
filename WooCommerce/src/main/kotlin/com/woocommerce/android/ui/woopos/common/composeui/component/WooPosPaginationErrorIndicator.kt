@@ -31,9 +31,8 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemList
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState.Product
-import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState
-import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState.Tab.HighlightLevel
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
+import com.woocommerce.android.ui.woopos.home.items.WooPosProductsViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 
 @Composable
@@ -124,8 +123,7 @@ private fun WooPosPaginationErrorIndicatorContent(
 @WooPosPreview
 fun WooPosPaginationErrorScreenPreview() {
     val itemsState =
-        WooPosItemsViewState.Content(
-            contentType = WooPosItemsViewState.Content.ContentState.ProductList,
+        WooPosProductsViewState.Content(
             items = listOf(
                 Product.Simple(
                     1,
@@ -152,17 +150,6 @@ fun WooPosPaginationErrorScreenPreview() {
             ),
             paginationState = WooPosPaginationState.Error,
             pullToRefreshState = WooPosPullToRefreshState.Refreshing,
-            bannerState = WooPosItemsViewState.Content.BannerState(
-                isBannerHiddenByUser = true,
-                title = R.string.woopos_banner_simple_products_only_title,
-                message = R.string.woopos_banner_simple_products_only_message,
-                icon = R.drawable.info,
-            ),
-            tabs = listOf(
-                WooPosItemsViewState.Tab(R.string.woopos_products_screen_title, highlightLevel = HighlightLevel.Full),
-                WooPosItemsViewState.Tab(R.string.woopos_coupons_screen_title, highlightLevel = HighlightLevel.Normal),
-            ),
-            search = WooPosItemsViewState.Content.SearchState.Hidden
         )
     WooPosTheme {
         WooPosItemList(
