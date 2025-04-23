@@ -5,7 +5,6 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -56,7 +55,6 @@ import org.wordpress.android.fluxc.persistence.dao.AddonsDao
 import org.wordpress.android.fluxc.persistence.dao.ProductsDao
 import org.wordpress.android.fluxc.store.WCProductStore.ProductCategorySorting.NAME_ASC
 import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType.GENERIC_ERROR
-import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.DATE_ASC
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_ASC
 import org.wordpress.android.fluxc.store.WCProductStore.SkuSearchOptions.Disabled
 import org.wordpress.android.fluxc.store.WCProductStore.SkuSearchOptions.ExactSearch
@@ -1076,19 +1074,16 @@ class WCProductStore @Inject internal constructor(
 
     fun observeProductsCount(
         site: SiteModel,
-        filterOptions: Map<ProductFilterOption, String> = emptyMap(),
-        excludeSampleProducts: Boolean = false
-    ): Flow<Long> = productsDao.observeProducts(
+        filterOptions: Map<ProductFilterOption, String>,
+        excludeSampleProducts: Boolean
+    ): Flow<Long> = productsDao.observeProductsCount(
         localSiteId = site.id,
         status = filterOptions[ProductFilterOption.STATUS],
         stockStatus = filterOptions[ProductFilterOption.STOCK_STATUS],
         type = filterOptions[ProductFilterOption.TYPE],
         category = filterOptions[ProductFilterOption.CATEGORY]?.let { categoryFilter(it) },
         excludeSampleProducts = excludeSampleProducts,
-        limit = null,
-        excludedProductIds = emptyList(),
-        sortType = DATE_ASC
-    ).map { it.size.toLong() }
+    )
 
     fun observeVariations(site: SiteModel, productId: Long): Flow<List<WCProductVariationModel>> =
         ProductSqlUtils.observeVariations(site, productId)
