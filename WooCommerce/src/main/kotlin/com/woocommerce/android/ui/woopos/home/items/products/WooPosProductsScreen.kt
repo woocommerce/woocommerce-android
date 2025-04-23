@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ExperimentalMaterialApi
@@ -23,9 +22,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.Button
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreen
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosPaginationErrorIndicator
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemList
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState.Product
@@ -100,12 +97,6 @@ private fun ProductsList(
             .pullRefresh(
                 state = pullToRefreshState,
                 enabled = state.value.pullToRefreshState == WooPosPullToRefreshState.Enabled,
-            )
-            .padding(
-                start = WooPosSpacing.Medium.value.toAdaptivePadding(),
-                end = WooPosSpacing.Medium.value.toAdaptivePadding(),
-                top = WooPosSpacing.XLarge.value.toAdaptivePadding(),
-                bottom = WooPosSpacing.None.value.toAdaptivePadding(),
             )
     ) {
         Column(
