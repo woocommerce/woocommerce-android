@@ -411,7 +411,7 @@ private fun InfiniteListHandler(
     state: WooPosContentViewState,
     onEndOfProductsListReached: () -> Unit
 ) {
-    val buffer = 5
+    val buffer = 5 // must be smaller than the page size, otherwise won't call onEndOfProductsListReached
     val loadMore = remember {
         derivedStateOf {
             val layoutInfo = listState.layoutInfo
