@@ -881,6 +881,54 @@ class WooPosItemsViewModelTest {
         verify(productsDataSource, never()).loadMore()
     }
 
+    @Test
+    fun `given content and PTR triggered and ongoing, when visible item tapped, then ItemClickedInProductSelector sent to parent`() = runTest {
+        // GIVEN
+        val products = listOf(
+            ProductTestUtils.generateProduct(
+                productId = 1,
+                productName = "Product 1",
+                amount = "10.0",
+                productType = "simple"
+            )
+        )
+        val productsFlow = MutableSharedFlow<WooPosProductsDataSource.ProductsResult>(replay = 1)
+        productsFlow.tryEmit(
+            WooPosProductsDataSource.ProductsResult.Remote(
+                Result.success(products)
+            )
+        )
+        whenever(productsDataSource.loadProducts(any())).thenReturn(productsFlow)
+
+        val viewModel = createViewModel()
+        viewModel.viewState.test {
+            assertThat(awaitItem()).isInstanceOf(WooPosItemsViewState.Content::class.java)
+        }
+
+        // Trigger PTR but don't let it complete
+        val ptrFlow = MutableSharedFlow<WooPosProductsDataSource.ProductsResult>()
+        whenever(productsDataSource.loadProducts(forceRefreshProducts = true)).thenReturn(ptrFlow)
+        viewModel.onUIEvent(WooPosItemsUIEvent.PullToRefreshTriggered)
+
+        // Ensure state reflects refreshing
+        viewModel.viewState.test {
+            val refreshingState = awaitItem() as WooPosItemsViewState.Content
+            assertThat(refreshingState.pullToRefreshState).isEqualTo(WooPosPullToRefreshState.Refreshing)
+        }
+
+        val itemToClick = Product.Simple(id = 1, name = "Product 1", price = "$10.0", imageUrl = null)
+
+        // WHEN
+        viewModel.onUIEvent(WooPosItemsUIEvent.ItemClicked(itemToClick))
+
+        // THEN
+        verify(fromChildToParentEventSender).sendToParent(
+            ChildToParentEvent.ItemClickedInProductSelector(
+                WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1)
+            )
+        )
+    }
+
     private fun createViewModel() =
         WooPosItemsViewModel(
             productsDataSource,
