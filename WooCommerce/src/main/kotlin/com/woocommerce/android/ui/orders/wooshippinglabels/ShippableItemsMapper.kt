@@ -18,7 +18,7 @@ fun ShippableItemModel.toUIModel(
         itemId = itemId,
         productId = productId,
         title = title,
-        formattedPrice = currencyFormatter.formatCurrency(price, currency),
+        formattedPrice = currencyFormatter.formatCurrency(shippingTotalValue, currency),
         quantity = quantity,
         imageUrl = imageUrl,
         formattedSize = getSizeWithUnits(dimensionUnit),
@@ -91,7 +91,7 @@ fun List<ShippableItemModel>.toSelectableUIModel(
 }
 
 fun List<ShippableItemModel>.getFormattedTotalPrice(currencyFormatter: CurrencyFormatter): String {
-    val totalPrice = sumOf { it.price }
+    val totalPrice = sumOf { it.shippingTotalValue }
     val formattedTotalPrice = firstOrNull()?.currency?.let {
         currencyFormatter.formatCurrency(totalPrice, it)
     } ?: currencyFormatter.formatCurrency(totalPrice)

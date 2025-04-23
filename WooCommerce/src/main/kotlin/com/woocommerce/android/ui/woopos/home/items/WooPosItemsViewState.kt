@@ -5,16 +5,18 @@ import androidx.annotation.StringRes
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 
 sealed class WooPosItemsViewState(
+    open val tabs: List<Tab>,
     override val pullToRefreshState: WooPosPullToRefreshState,
 ) : WooPosBaseViewState(pullToRefreshState) {
     data class Content(
+        val contentType: ContentState,
         val search: SearchState,
         override val items: List<WooPosItemSelectionViewState>,
         val bannerState: BannerState,
         override val paginationState: WooPosPaginationState = WooPosPaginationState.None,
         override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Enabled,
-        val couponsEnabled: Boolean = false,
-    ) : WooPosItemsViewState(pullToRefreshState), WooPosContentViewState {
+        override val tabs: List<Tab>,
+    ) : WooPosItemsViewState(tabs, pullToRefreshState), WooPosContentViewState {
         data class BannerState(
             val isBannerHiddenByUser: Boolean,
             @StringRes val title: Int,
@@ -26,18 +28,32 @@ sealed class WooPosItemsViewState(
             data class Visible(val state: WooPosSearchInputState) : SearchState()
             object Hidden : SearchState()
         }
+
+        sealed class ContentState {
+            data object ProductList : ContentState()
+            data object CouponsList : ContentState()
+        }
     }
 
     data class Loading(
         override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Enabled,
+        override val tabs: List<Tab>,
         val withCart: Boolean
-    ) : WooPosItemsViewState(pullToRefreshState)
+    ) : WooPosItemsViewState(tabs, pullToRefreshState)
 
     data class Error(
+        override val tabs: List<Tab>,
         override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Enabled,
-    ) : WooPosItemsViewState(pullToRefreshState)
+    ) : WooPosItemsViewState(tabs, pullToRefreshState)
 
     data class Empty(
+        override val tabs: List<Tab>,
         override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Enabled,
-    ) : WooPosItemsViewState(pullToRefreshState)
+    ) : WooPosItemsViewState(tabs, pullToRefreshState)
+
+    data class Tab(@StringRes val stringId: Int, val highlightLevel: HighlightLevel) {
+        enum class HighlightLevel {
+            Full, Normal
+        }
+    }
 }

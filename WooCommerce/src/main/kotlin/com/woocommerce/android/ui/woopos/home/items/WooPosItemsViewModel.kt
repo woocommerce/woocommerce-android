@@ -6,11 +6,12 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ProductType
-import com.woocommerce.android.ui.woopos.featureflags.WooPosIsCouponsEnabled
 import com.woocommerce.android.ui.woopos.featureflags.WooPosIsProductsSearchEnabled
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemNavigationData.VariableProductData
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState.Content.ContentState
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState.Tab
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateToVariationsScreen
@@ -41,12 +42,16 @@ class WooPosItemsViewModel @Inject constructor(
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val searchHelper: WooPosItemsSearchHelper,
     private val isProductsSearchEnabled: WooPosIsProductsSearchEnabled,
-    private val isCouponsEnabled: WooPosIsCouponsEnabled,
+    private val tabsHelper: WooPosItemsTabsHelper,
 ) : ViewModel() {
     private var loadMoreProductsJob: Job? = null
 
-    private val _viewState =
-        MutableStateFlow<WooPosItemsViewState>(WooPosItemsViewState.Loading(withCart = true))
+    private val _viewState = MutableStateFlow<WooPosItemsViewState>(
+        WooPosItemsViewState.Loading(
+            tabs = tabsHelper.defaultTabs,
+            withCart = true
+        )
+    )
     val viewState: StateFlow<WooPosItemsViewState> = _viewState
         .onEach { notifyParentAboutStatusChange(it) }
         .stateIn(
@@ -117,16 +122,10 @@ class WooPosItemsViewModel @Inject constructor(
                 event.query,
                 event.cursorPosition
             )
+
             WooPosItemsUIEvent.SearchAnimationComplete -> searchHelper.onAnimationComplete()
 
-            WooPosItemsUIEvent.CouponsButtonClicked -> {
-                sendEventToParent(
-                    ChildToParentEvent.ItemClickedInProductSelector(
-                        // CouponsProject: Show available coupons instead
-                        ItemClickedData.Coupon(id = 5013)
-                    )
-                )
-            }
+            is WooPosItemsUIEvent.OnTabClicked -> selectTab(event.tab)
         }
     }
 
@@ -198,14 +197,20 @@ class WooPosItemsViewModel @Inject constructor(
             _viewState.value = if (withPullToRefresh) {
                 buildProductsReloadingState()
             } else {
-                WooPosItemsViewState.Loading(withCart = withCart)
+                WooPosItemsViewState.Loading(
+                    withCart = withCart,
+                    tabs = tabsHelper.defaultTabs,
+                )
             }
 
             productsDataSource.loadProducts(forceRefreshProducts = forceRefreshProducts).collect { result ->
+                val currentState = _viewState.value
                 when (result) {
                     is WooPosProductsDataSource.ProductsResult.Cached -> {
                         if (result.products.isNotEmpty()) {
-                            _viewState.value = result.products.toContentState()
+                            _viewState.value = result.products.toContentState(
+                                tabs = currentState.tabs
+                            )
                         }
                     }
 
@@ -215,7 +220,7 @@ class WooPosItemsViewModel @Inject constructor(
                                 val products = result.productsResult.getOrThrow()
                                 if (products.isNotEmpty()) {
                                     val currentState = _viewState.value
-                                    var paginationState = if (loadMoreProductsJob?.isActive == true) {
+                                    val paginationState = if (loadMoreProductsJob?.isActive == true) {
                                         WooPosPaginationState.Loading
                                     } else {
                                         WooPosPaginationState.None
@@ -232,14 +237,16 @@ class WooPosItemsViewModel @Inject constructor(
                                         )
                                     } else {
                                         products.toContentState(
-                                            paginationState = paginationState
+                                            tabs = currentState.tabs,
+                                            paginationState = paginationState,
                                         )
                                     }
                                 } else {
-                                    WooPosItemsViewState.Empty()
+                                    WooPosItemsViewState.Empty(tabs = _viewState.value.tabs)
                                 }
                             }
-                            else -> WooPosItemsViewState.Error()
+
+                            else -> WooPosItemsViewState.Error(tabs = _viewState.value.tabs)
                         }
                     }
                 }
@@ -255,20 +262,47 @@ class WooPosItemsViewModel @Inject constructor(
             is WooPosItemsViewState.Empty -> state.copy(pullToRefreshState = WooPosPullToRefreshState.Refreshing)
         }
 
+    private fun selectTab(selectedTab: Tab) {
+        if (_viewState.value.tabs.size == 1) return
+
+        val newContentState = when (selectedTab.stringId) {
+            R.string.woopos_products_screen_title -> ContentState.ProductList
+            R.string.woopos_coupons_screen_title -> ContentState.CouponsList
+            else -> error("Invalid tab $selectedTab")
+        }
+
+        _viewState.value = when (val state = _viewState.value) {
+            is WooPosItemsViewState.Content -> {
+                state.copy(
+                    contentType = newContentState,
+                    tabs = tabsHelper.selectTab(state.tabs, selectedTab)
+                )
+            }
+
+            is WooPosItemsViewState.Loading -> state.copy(tabs = tabsHelper.selectTab(state.tabs, selectedTab))
+
+            is WooPosItemsViewState.Error -> state.copy(tabs = tabsHelper.selectTab(state.tabs, selectedTab))
+
+            is WooPosItemsViewState.Empty -> state.copy(tabs = tabsHelper.selectTab(state.tabs, selectedTab))
+        }
+    }
+
     private suspend fun List<Product>.toContentState(
+        tabs: List<Tab>,
         paginationState: WooPosPaginationState = WooPosPaginationState.None
     ) = WooPosItemsViewState.Content(
+        contentType = ContentState.ProductList,
         items = map { it.toItemSelectionViewState() },
         paginationState = paginationState,
         pullToRefreshState = WooPosPullToRefreshState.Enabled,
-        couponsEnabled = isCouponsEnabled.invoke(),
         bannerState = WooPosItemsViewState.Content.BannerState(
             isBannerHiddenByUser = isBannerHiddenByUser(),
             title = R.string.woopos_banner_simple_products_only_title,
             message = R.string.woopos_banner_simple_products_only_message,
             icon = R.drawable.info,
         ),
-        search = searchHelper.getInitialSearchState(isProductsSearchEnabled())
+        search = searchHelper.getInitialSearchState(isProductsSearchEnabled()),
+        tabs = tabs,
     )
 
     private suspend fun Product.toItemSelectionViewState(): WooPosItemSelectionViewState {
@@ -307,7 +341,7 @@ class WooPosItemsViewModel @Inject constructor(
         loadMoreProductsJob = viewModelScope.launch {
             val result = productsDataSource.loadMore()
             _viewState.value = if (result.isSuccess) {
-                result.getOrThrow().toContentState()
+                result.getOrThrow().toContentState(tabs = currentState.tabs)
             } else {
                 currentState.copy(paginationState = WooPosPaginationState.Error)
             }

@@ -3,29 +3,38 @@
 package com.woocommerce.android.ui.woopos.common.composeui.component
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -141,6 +150,33 @@ fun WooPosOutlinedButtonSmall(
         state = state,
         onClick = onClick,
     )
+}
+
+@Composable
+fun WooPosCircularIconButton(
+    modifier: Modifier = Modifier,
+    icon: ImageVector,
+    contentDescription: String? = null,
+    onClick: () -> Unit
+) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = modifier
+            .size(56.dp)
+            .clip(CircleShape)
+            .background(MaterialTheme.colorScheme.surfaceContainerLow)
+    ) {
+        IconButton(
+            onClick = onClick,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = contentDescription,
+                tint = MaterialTheme.colorScheme.onSurface,
+            )
+        }
+    }
 }
 
 @Composable
@@ -262,7 +298,10 @@ fun WooPosButtonsPreview() {
 
             Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
-            Row(horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value)) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
                 WooPosButtonSmall(
                     text = "Button Small",
                     state = WooPosButtonState.ENABLED,
@@ -278,6 +317,10 @@ fun WooPosButtonsPreview() {
                 WooPosButtonSmall(
                     text = "Button Small",
                     state = WooPosButtonState.LOADING,
+                    onClick = {}
+                )
+                WooPosCircularIconButton(
+                    icon = Icons.Default.Search,
                     onClick = {}
                 )
             }

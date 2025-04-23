@@ -438,6 +438,7 @@ fun ItemListPreview() {
     WooPosTheme {
         WooPosItemList(
             WooPosItemsViewState.Content(
+                contentType = WooPosItemsViewState.Content.ContentState.ProductList,
                 WooPosItemsViewState.Content.SearchState.Hidden,
                 listOf(
                     Product.Simple(
@@ -456,6 +457,16 @@ fun ItemListPreview() {
                     R.string.woopos_banner_simple_products_only_message,
                     R.drawable.info
                 ),
+                tabs = listOf(
+                    WooPosItemsViewState.Tab(
+                        stringId = R.string.woopos_products_screen_title,
+                        highlightLevel = WooPosItemsViewState.Tab.HighlightLevel.Full
+                    ),
+                    WooPosItemsViewState.Tab(
+                        stringId = R.string.woopos_coupons_screen_title,
+                        highlightLevel = WooPosItemsViewState.Tab.HighlightLevel.Normal
+                    )
+                )
             ),
             listState = LazyListState(),
             onItemClicked = {},
