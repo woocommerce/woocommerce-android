@@ -726,6 +726,31 @@ class WooPosItemsSearchViewModelTest {
         verify(mockEmptyStateProvider, never()).addRecentSearch(any())
     }
 
+    @Test
+    fun `given popular item, when OnPopularItemClicked event is triggered, then add popular items to cache and handle item click`() =
+        runTest {
+            // GIVEN
+            val simpleProduct = Product.Simple(
+                id = 42L,
+                name = "Popular Product",
+                price = "$15.0",
+                imageUrl = "https://example.com/image.jpg"
+            )
+
+            // WHEN
+            val viewModel = createViewModel()
+            viewModel.onUIEvent(WooPosItemsSearchUiEvent.OnPopularItemClicked(simpleProduct))
+            advanceUntilIdle()
+
+            // THEN
+            verify(mockEmptyStateProvider).addPopularItemsToCache()
+            verify(mockChildToParentEventSender).sendToParent(
+                ChildToParentEvent.ItemClickedInProductSelector(
+                    ItemClickedData.Product.Simple(id = simpleProduct.id)
+                )
+            )
+        }
+
     private fun mockSuccessfulSearch(query: String, products: List<com.woocommerce.android.model.Product>) {
         whenever(mockDataSource.searchProducts(query)).thenReturn(
             flow {
