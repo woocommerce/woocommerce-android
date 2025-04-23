@@ -45,6 +45,7 @@ class WooPosItemsViewModel @Inject constructor(
 ) : ViewModel() {
     private var loadMoreProductsJob: Job? = null
     private var loadProductsJob: Job? = null
+    private var loadMoreAfterLoadCompletes = false
 
     private val _viewState =
         MutableStateFlow<WooPosItemsViewState>(WooPosItemsViewState.Loading(withCart = true))
@@ -244,8 +245,21 @@ class WooPosItemsViewModel @Inject constructor(
                             }
                             else -> WooPosItemsViewState.Error()
                         }
+
+                        if (loadMoreAfterLoadCompletes) {
+                            queueLoadMoreAfterLoadCompletes()
+                        }
                     }
                 }
+            }
+        }
+    }
+
+    private fun queueLoadMoreAfterLoadCompletes() {
+        loadProductsJob?.invokeOnCompletion { throwable ->
+            if (throwable == null && _viewState.value is WooPosItemsViewState.Content) {
+                loadMoreAfterLoadCompletes = false
+                onEndOfProductsListReached()
             }
         }
     }
@@ -298,9 +312,22 @@ class WooPosItemsViewModel @Inject constructor(
     private fun onEndOfProductsListReached() {
         val currentState = _viewState.value
 
-        if (currentState !is WooPosItemsViewState.Content) return
-        if (loadMoreProductsJob?.isActive == true || loadProductsJob?.isActive == true) return
-        if (!productsDataSource.hasMorePages) return
+        if (currentState !is WooPosItemsViewState.Content) {
+            return
+        }
+
+        if (loadProductsJob?.isActive == true) {
+            loadMoreAfterLoadCompletes = true
+            _viewState.value = currentState.copy(paginationState = WooPosPaginationState.Loading)
+            return
+        }
+
+        if (loadMoreProductsJob?.isActive == true) {
+            return
+        }
+        if (!productsDataSource.hasMorePages) {
+            return
+        }
 
         _viewState.value = currentState.copy(paginationState = WooPosPaginationState.Loading)
 
