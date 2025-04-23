@@ -153,9 +153,9 @@ fun WooShippingSplitShipmentScreen(
 
                     val onUpdateShipmentAndChangeSelection: (splitMovement: SplitMovement) -> Unit = { splitMovement ->
                         if (splitMovement.isRemoveMovement) {
-                            val nextPage = shipments.indexOfFirst { it == splitMovement.updatedShipment }
+                            val nextPage = shipments.indexOfFirst { it == splitMovement.destinationShipmentKey }
                                 .takeIf { it != -1 && it < shipments.lastIndex }
-                                ?: shipments.first { it != splitMovement.currentShipment }
+                                ?: shipments.first { it != splitMovement.sourceShipmentKey }
                             onUpdateSelectedShipment(shipments[nextPage])
                             onUpdateShipment(splitMovement)
                         } else {
@@ -412,7 +412,8 @@ private fun SplitMovements(
                     modifier = Modifier.weight(1f)
                 )
 
-                val containsOnlyANewKey = movements.size == 1 && (movements.first().updatedShipment in shipments).not()
+                val containsOnlyANewKey = movements.size == 1 &&
+                    (movements.first().destinationShipmentKey in shipments).not()
                 if (containsOnlyANewKey) {
                     Text(
                         text = stringResource(R.string.woo_shipping_split_move_to_new).uppercase(),
@@ -454,7 +455,7 @@ private fun SplitMovements(
                                     expanded = false
                                 }) {
                                     Text(
-                                        text = shipmentIndex[movement.updatedShipment]?.let {
+                                        text = shipmentIndex[movement.destinationShipmentKey]?.let {
                                             stringResource(R.string.woo_shipping_split_shipment_shipment_name, it + 1)
                                         } ?: stringResource(R.string.woo_shipping_split_shipment_shipment_new),
                                         style = MaterialTheme.typography.subtitle1

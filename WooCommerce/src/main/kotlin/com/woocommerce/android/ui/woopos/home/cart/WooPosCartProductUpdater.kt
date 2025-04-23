@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.home.cart
 
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
@@ -11,19 +12,19 @@ import javax.inject.Inject
 class WooPosCartProductUpdater @Inject constructor(
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
     private val resourceProvider: ResourceProvider,
-    private val formatPrice: WooPosFormatPrice
+    private val formatPrice: WooPosFormatPrice,
+    private val productsCache: WooPosProductsCache,
 ) {
     suspend operator fun invoke(
-        currentState: WooPosCartState,
+        itemsInCart: List<WooPosCartItemViewState>,
         updatedProducts: List<ParentToChildrenEvent.OrderCreated.ProductInfo>,
-    ): WooPosCartState {
-        val currentBodyState = currentState.body as? WooPosCartState.Body.WithItems ?: return currentState
-        val mutableCurrentBodyList = currentBodyState.itemsInCart.toMutableList()
+    ): List<WooPosCartItemViewState> {
+        val mutableCurrentBodyList = itemsInCart.toMutableList()
         var changesDone = false
 
         val availableProductsMap = createAvailableProductsMap(updatedProducts)
 
-        currentBodyState.itemsInCart.forEachIndexed { index, item ->
+        itemsInCart.forEachIndexed { index, item ->
             when (item) {
                 is WooPosCartItemViewState.Product -> {
                     val productKey = getProductKey(item)
@@ -31,15 +32,15 @@ class WooPosCartProductUpdater @Inject constructor(
 
                     if (availableQuantity > 0) {
                         availableProductsMap[productKey] = availableQuantity - 1
-
                         val updatedProduct = findMatchingProduct(item, updatedProducts)
 
-                        if (updatedProduct != null) {
-                            val updatedItem = updateProductWithNewInfo(
-                                item = item,
-                                updatedProduct = updatedProduct
-                            )
-                            val itemChanged = (updatedItem.name != item.name || updatedItem.price != item.price)
+                        updatedProduct?.let {
+                            val updatedItem = updateProductWithNewInfo(item, it)
+                            val itemChanged = updatedItem.name != item.name || updatedItem.price != item.price
+
+                            if (itemChanged) {
+                                updateProductInCache(updatedItem, updatedProduct)
+                            }
 
                             mutableCurrentBodyList[index] = updatedItem
                             changesDone = changesDone || itemChanged
@@ -47,11 +48,13 @@ class WooPosCartProductUpdater @Inject constructor(
                     } else {
                         val updatedItem = markProductAsNotExisting(item)
                         mutableCurrentBodyList[index] = updatedItem
-                        val itemChanged = (
-                            updatedItem.name != item.name ||
-                                updatedItem.price != item.price ||
-                                updatedItem.productDoesNotExist != item.productDoesNotExist
-                            )
+                        val itemChanged = updatedItem.name != item.name ||
+                            updatedItem.price != item.price ||
+                            updatedItem.productDoesNotExist != item.productDoesNotExist
+
+                        if (itemChanged) {
+                            deleteProductFromCache(updatedItem.id)
+                        }
                         changesDone = changesDone || itemChanged
                     }
                 }
@@ -63,18 +66,36 @@ class WooPosCartProductUpdater @Inject constructor(
         }
 
         if (changesDone) {
-            childrenToParentEventSender.sendToParent(
-                ChildToParentEvent.ToastMessageDisplayed(
-                    message = resourceProvider.getString(R.string.woopos_cart_changes_in_the_cart)
+            notifyParentAboutChanges()
+        }
+
+        return mutableCurrentBodyList
+    }
+
+    private suspend fun notifyParentAboutChanges() {
+        childrenToParentEventSender.sendToParent(
+            ChildToParentEvent.ToastMessageDisplayed(
+                message = resourceProvider.getString(R.string.woopos_cart_changes_in_the_cart)
+            )
+        )
+    }
+
+    private suspend fun updateProductInCache(
+        updatedItem: WooPosCartItemViewState.Product,
+        updatedProduct: ParentToChildrenEvent.OrderCreated.ProductInfo
+    ) {
+        productsCache.getProductById(updatedItem.id)?.let { product ->
+            productsCache.updateProduct(
+                product.copy(
+                    name = updatedItem.name,
+                    price = updatedProduct.price,
                 )
             )
         }
+    }
 
-        return currentState.copy(
-            body = currentBodyState.copy(
-                itemsInCart = mutableCurrentBodyList
-            )
-        )
+    private suspend fun deleteProductFromCache(productId: Long) {
+        productsCache.deleteProduct(productId)
     }
 
     private fun getProductKey(item: WooPosCartItemViewState.Product): String {
@@ -154,13 +175,8 @@ class WooPosCartProductUpdater @Inject constructor(
         item: WooPosCartItemViewState.Product
     ): WooPosCartItemViewState.Product {
         return when (item) {
-            is WooPosCartItemViewState.Product.Simple -> {
-                item.copy(productDoesNotExist = true)
-            }
-
-            is WooPosCartItemViewState.Product.Variation -> {
-                item.copy(productDoesNotExist = true)
-            }
+            is WooPosCartItemViewState.Product.Simple -> item.copy(productDoesNotExist = true)
+            is WooPosCartItemViewState.Product.Variation -> item.copy(productDoesNotExist = true)
         }
     }
 }
