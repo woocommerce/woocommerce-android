@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.woopos.home.items.coupons
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ExperimentalMaterialApi
@@ -10,17 +9,16 @@ import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.Button
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreen
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosPaginationErrorIndicator
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
-import com.woocommerce.android.ui.woopos.home.items.ProductsError
 import com.woocommerce.android.ui.woopos.home.items.WooPosCouponsViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemList
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
@@ -67,12 +65,6 @@ private fun WooPosCouponsScreen(
             .pullRefresh(
                 state = pullToRefreshState,
                 enabled = state.value.pullToRefreshState == WooPosPullToRefreshState.Enabled,
-            )
-            .padding(
-                start = WooPosSpacing.Medium.value.toAdaptivePadding(),
-                end = WooPosSpacing.Medium.value.toAdaptivePadding(),
-                top = WooPosSpacing.XLarge.value.toAdaptivePadding(),
-                bottom = WooPosSpacing.None.value.toAdaptivePadding(),
             )
     ) {
         when (val itemsState = state.value) {
