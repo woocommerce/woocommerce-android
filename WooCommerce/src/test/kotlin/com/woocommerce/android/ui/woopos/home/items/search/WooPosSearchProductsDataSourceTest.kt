@@ -36,7 +36,7 @@ class WooPosSearchProductsDataSourceTest {
     private val wooPosProductsCache: WooPosProductsCache = mock()
     private val searchResultsIndex: WooPosSearchResultsIndex = mock()
     private val selectedSite: SelectedSite = mock()
-    private val searchPredicate: ProductSearchPredicate = mock()
+    private val searchPredicate: WooPosProductSearchPredicate = mock()
     private val siteModel: SiteModel = mock()
 
     private lateinit var sut: WooPosSearchProductsDataSource

@@ -24,7 +24,7 @@ class WooPosSearchProductsDataSource @Inject constructor(
     private val selectedSite: SelectedSite,
     private val productsCache: WooPosProductsCache,
     private val searchResultsIndex: WooPosSearchResultsIndex,
-    private val searchPredicate: ProductSearchPredicate,
+    private val searchPredicate: WooPosProductSearchPredicate,
     private val productsTypesFilterConfig: WooPosProductsTypesFilterConfig
 ) {
     companion object {

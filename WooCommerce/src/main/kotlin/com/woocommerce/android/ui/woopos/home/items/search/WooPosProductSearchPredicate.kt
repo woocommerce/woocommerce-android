@@ -5,7 +5,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class ProductSearchPredicate @Inject constructor() {
+class WooPosProductSearchPredicate @Inject constructor() {
     private val whitespaceRegex = "\\s+".toRegex()
 
     operator fun invoke(query: String): (Product) -> Boolean {
