@@ -33,7 +33,7 @@ class GetShippableItems @Inject constructor(
                 title = product.name,
                 imageUrl = product.firstImageUrl,
                 quantity = item.quantity,
-                price = item.total,
+                price = item.price,
                 currency = order.currency
             )
         }

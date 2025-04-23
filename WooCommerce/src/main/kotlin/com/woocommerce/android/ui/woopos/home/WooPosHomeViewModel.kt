@@ -166,8 +166,6 @@ class WooPosHomeViewModel @Inject constructor(
                         )
                     }
 
-                    is ChildToParentEvent.ProductsStatusChanged -> handleProductsStatusChanged(event)
-
                     ChildToParentEvent.ProductsDialogInfoIconClicked -> {
                         _state.value = _state.value.copy(
                             productsInfoDialog = ProductsInfoDialog(isVisible = true)
@@ -227,28 +225,6 @@ class WooPosHomeViewModel @Inject constructor(
                 }
             )
         )
-    }
-
-    private fun handleProductsStatusChanged(event: ChildToParentEvent.ProductsStatusChanged) {
-        val screenPosition = _state.value.screenPositionState
-        val newScreenPositionState = when (event) {
-            ChildToParentEvent.ProductsStatusChanged.FullScreen -> {
-                when (screenPosition) {
-                    is ScreenPositionState.Cart -> ScreenPositionState.Cart.Hidden
-                    is ScreenPositionState.Checkout -> screenPosition
-                }
-            }
-            ChildToParentEvent.ProductsStatusChanged.WithCart -> {
-                when (screenPosition) {
-                    ScreenPositionState.Cart.Hidden -> ScreenPositionState.Cart.Visible
-
-                    ScreenPositionState.Cart.Visible,
-                    ScreenPositionState.Checkout.CartWithTotals,
-                    ScreenPositionState.Checkout.FullScreenTotals -> screenPosition
-                }
-            }
-        }
-        _state.value = _state.value.copy(screenPositionState = newScreenPositionState)
     }
 
     private fun sendEventToChildren(event: ParentToChildrenEvent) {
