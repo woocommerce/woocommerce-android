@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 39,
-    "identityHash": "71b1246c73504aeb41cec6c45b0206e8",
+    "identityHash": "7c3b84c28bd99259624b7a03a82a7ea3",
     "entities": [
       {
         "tableName": "AddonEntity",
@@ -2251,25 +2251,14 @@
             "remoteId"
           ]
         },
-        "indices": [
-          {
-            "name": "index_ProductEntity_localSiteId_remoteId",
-            "unique": false,
-            "columnNames": [
-              "localSiteId",
-              "remoteId"
-            ],
-            "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_ProductEntity_localSiteId_remoteId` ON `${TABLE_NAME}` (`localSiteId`, `remoteId`)"
-          }
-        ],
+        "indices": [],
         "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '71b1246c73504aeb41cec6c45b0206e8')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '7c3b84c28bd99259624b7a03a82a7ea3')"
     ]
   }
 }
