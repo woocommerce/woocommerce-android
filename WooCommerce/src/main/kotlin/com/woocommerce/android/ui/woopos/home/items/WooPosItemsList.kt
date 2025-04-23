@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.home.items
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -63,7 +62,6 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun WooPosItemList(
     state: WooPosContentViewState,
@@ -146,7 +144,7 @@ private fun ProductItem(
         item.name,
         item.price
     )
-    WooPosItemCard(modifier, itemContentDescription, onItemClicked, item)
+    WooPosProductCard(modifier, itemContentDescription, onItemClicked, item)
 }
 
 @Composable
@@ -160,7 +158,7 @@ private fun VariableProductItem(
         item.name,
         item.price
     )
-    WooPosItemCard(modifier, itemContentDescription, onItemClicked, item)
+    WooPosProductCard(modifier, itemContentDescription, onItemClicked, item)
 }
 
 @Composable
@@ -174,11 +172,11 @@ private fun VariationItem(
         item.name,
         item.price
     )
-    WooPosItemCard(modifier, itemContentDescription, onItemClicked, item)
+    WooPosProductCard(modifier, itemContentDescription, onItemClicked, item)
 }
 
 @Composable
-fun WooPosItemCard(
+fun WooPosProductCard(
     modifier: Modifier,
     itemContentDescription: String,
     onItemClicked: (item: WooPosItemSelectionViewState) -> Unit,
