@@ -13,7 +13,7 @@ sealed class WooPosCouponsViewState(
     ) : WooPosCouponsViewState(pullToRefreshState)
 
     data class Error(
-        override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Enabled,
+        override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Disabled,
     ) : WooPosCouponsViewState(pullToRefreshState)
 
     data class Empty(

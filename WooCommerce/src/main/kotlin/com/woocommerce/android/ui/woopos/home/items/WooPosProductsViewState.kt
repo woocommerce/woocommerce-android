@@ -14,7 +14,7 @@ sealed class WooPosProductsViewState(
     ) : WooPosProductsViewState(pullToRefreshState)
 
     data class Error(
-        override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Enabled,
+        override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Disabled,
     ) : WooPosProductsViewState(pullToRefreshState)
 
     data class Empty(
