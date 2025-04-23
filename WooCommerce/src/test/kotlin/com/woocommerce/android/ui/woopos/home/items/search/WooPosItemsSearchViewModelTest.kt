@@ -7,7 +7,6 @@ import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemNavigationData.VariableProductData
-import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState.Product
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
@@ -663,7 +662,7 @@ class WooPosItemsSearchViewModelTest {
     @Test
     fun `given variation, when item clicked, then throw error`() = runTest {
         // GIVEN
-        val variation = WooPosItemSelectionViewState.Variation(
+        val variation = Product.Variation(
             id = 1,
             name = "Test Variation",
             price = "$10.0",
