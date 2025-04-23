@@ -621,7 +621,7 @@ class WooPosItemsSearchViewModelTest {
 
         // WHEN
         val viewModel = createViewModel()
-        viewModel.onUIEvent(WooPosItemsSearchUiEvent.ItemClicked(simpleProduct))
+        viewModel.onUIEvent(WooPosItemsSearchUiEvent.OnItemClicked(simpleProduct))
 
         // THEN
         verify(mockChildToParentEventSender).sendToParent(
@@ -645,7 +645,7 @@ class WooPosItemsSearchViewModelTest {
 
         // WHEN
         val viewModel = createViewModel()
-        viewModel.onUIEvent(WooPosItemsSearchUiEvent.ItemClicked(variableProduct))
+        viewModel.onUIEvent(WooPosItemsSearchUiEvent.OnItemClicked(variableProduct))
         advanceUntilIdle()
 
         // THEN
@@ -676,7 +676,7 @@ class WooPosItemsSearchViewModelTest {
 
         // THEN
         assertThrows(IllegalStateException::class.java) {
-            viewModel.onUIEvent(WooPosItemsSearchUiEvent.ItemClicked(variation))
+            viewModel.onUIEvent(WooPosItemsSearchUiEvent.OnItemClicked(variation))
         }
     }
 
@@ -707,7 +707,7 @@ class WooPosItemsSearchViewModelTest {
             // WHEN
             val viewModel = createViewModel()
             advanceTimeBy(600)
-            viewModel.onUIEvent(WooPosItemsSearchUiEvent.ItemClicked(simpleProduct))
+            viewModel.onUIEvent(WooPosItemsSearchUiEvent.OnItemClicked(simpleProduct))
 
             // THEN
             verify(mockEmptyStateProvider).addRecentSearch(query)
@@ -720,7 +720,7 @@ class WooPosItemsSearchViewModelTest {
 
         // WHEN
         val viewModel = createViewModel()
-        viewModel.onUIEvent(WooPosItemsSearchUiEvent.ItemClicked(simpleProduct))
+        viewModel.onUIEvent(WooPosItemsSearchUiEvent.OnItemClicked(simpleProduct))
 
         // THEN
         verify(mockEmptyStateProvider, never()).addRecentSearch(any())
