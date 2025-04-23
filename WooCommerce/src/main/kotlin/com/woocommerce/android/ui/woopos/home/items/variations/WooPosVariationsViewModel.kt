@@ -92,7 +92,7 @@ class WooPosVariationsViewModel @Inject constructor(
                                 if (variations.isNotEmpty()) {
                                     WooPosVariationsViewState.Content(
                                         items = variations.map {
-                                            WooPosItemSelectionViewState.Variation(
+                                            WooPosItemSelectionViewState.Product.Variation(
                                                 id = it.remoteVariationId,
                                                 name = it.getNameForPOS(getProductById(productId), resourceProvider),
                                                 productId = it.remoteProductId,
@@ -125,7 +125,7 @@ class WooPosVariationsViewModel @Inject constructor(
         } else {
             _viewState.value = WooPosVariationsViewState.Content(
                 items = variations.map {
-                    WooPosItemSelectionViewState.Variation(
+                    WooPosItemSelectionViewState.Product.Variation(
                         id = it.remoteVariationId,
                         name = it.getNameForPOS(getProductById(productId), resourceProvider),
                         productId = it.remoteProductId,
@@ -171,7 +171,7 @@ class WooPosVariationsViewModel @Inject constructor(
             _viewState.value = if (result.isSuccess) {
                 WooPosVariationsViewState.Content(
                     items = result.getOrThrow().map {
-                        WooPosItemSelectionViewState.Variation(
+                        WooPosItemSelectionViewState.Product.Variation(
                             id = it.remoteVariationId,
                             name = it.getNameForPOS(getProductById(productId), resourceProvider),
                             productId = it.remoteProductId,
