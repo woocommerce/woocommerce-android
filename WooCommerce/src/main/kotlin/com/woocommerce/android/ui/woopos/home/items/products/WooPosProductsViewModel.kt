@@ -13,7 +13,6 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosProductsViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
-import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateToVariationsScreen
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ProductsPullToRefreshTriggered
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
@@ -79,18 +78,6 @@ class WooPosProductsViewModel @Inject constructor(
                     withPullToRefresh = false,
                 )
             }
-
-            WooPosProductsUIEvent.BackButtonClicked -> {
-                navigateBackToItemListScreen()
-            }
-        }
-    }
-
-    private fun navigateBackToItemListScreen() {
-        viewModelScope.launch {
-            navigator.sendNavigationEvent(
-                WooPosItemsScreenNavigationEvent.NavigateBackToItemListScreen
-            )
         }
     }
 
