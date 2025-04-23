@@ -17,7 +17,7 @@ internal abstract class ProductsDao {
             AND (:stockStatus IS NULL OR stockStatus = :stockStatus)
             AND (:type IS NULL OR type = :type)
             AND (:category IS NULL OR categories LIKE '%' || :category || '%')
-            AND (:excludeSampleProducts IS NULL OR isSampleProduct = :excludeSampleProducts)
+            AND (:excludeSampleProducts = 0 OR isSampleProduct = 0)
             AND (remoteId NOT IN (:excludedProductIds))
             LIMIT CASE WHEN :limit IS NULL THEN -1 ELSE :limit END
         """
