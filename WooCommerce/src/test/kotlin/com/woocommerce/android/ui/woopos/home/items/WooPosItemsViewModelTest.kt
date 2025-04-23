@@ -910,7 +910,6 @@ class WooPosItemsViewModelTest {
         whenever(productsDataSource.loadProducts(forceRefreshProducts = true)).thenReturn(ptrFlow)
         viewModel.onUIEvent(WooPosItemsUIEvent.PullToRefreshTriggered)
 
-        // Ensure state reflects refreshing
         viewModel.viewState.test {
             val refreshingState = awaitItem() as WooPosItemsViewState.Content
             assertThat(refreshingState.pullToRefreshState).isEqualTo(WooPosPullToRefreshState.Refreshing)
