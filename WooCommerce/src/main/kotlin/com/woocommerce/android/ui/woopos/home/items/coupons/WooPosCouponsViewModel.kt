@@ -15,7 +15,6 @@ import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsUIEvent
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -78,13 +77,11 @@ class WooPosCouponsViewModel @Inject constructor(
     }
 
     private fun onEndOfListReached() {
-        listViewStateManager.loadMore(viewModelScope)
+        listViewStateManager.endOfListReached(viewModelScope)
     }
 
     private fun retryLoadMore() {
-        viewModelScope.launch(Dispatchers.IO) {
-            listViewStateManager.loadMore(viewModelScope)
-        }
+        listViewStateManager.loadMore(viewModelScope)
     }
 
     private fun navigateBackToItemListScreen() {

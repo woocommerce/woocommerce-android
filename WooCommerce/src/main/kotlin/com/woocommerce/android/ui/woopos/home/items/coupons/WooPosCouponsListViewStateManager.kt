@@ -43,7 +43,9 @@ class WooPosCouponsListViewStateManager @Inject constructor(
     }
 
     private val contentFlow = couponsDataSource.couponsFlow.combine(fetchingState) { coupons, fetchingState ->
-        if (coupons.isEmpty()) {
+        if (fetchingState == FETCHING_FIRST_PAGE) {
+            WooPosCouponsViewState.Loading()
+        } else if (coupons.isEmpty()) {
             return@combine if (fetchingState == IDLE) {
                 WooPosCouponsViewState.Empty()
             } else {
@@ -83,6 +85,11 @@ class WooPosCouponsListViewStateManager @Inject constructor(
         }
     }
 
+    fun endOfListReached(viewModelScope: CoroutineScope) {
+        if (fetchingState.value == ERROR_LOADING_MORE) return
+        loadMore(viewModelScope)
+    }
+
     fun loadMore(viewModelScope: CoroutineScope) {
         if (!canLoadMore || loadingMoreJob?.isActive == true) {
             return
@@ -96,9 +103,7 @@ class WooPosCouponsListViewStateManager @Inject constructor(
                 fetchingState.emit(ERROR_LOADING_MORE)
             } else {
                 canLoadMore = result.getOrNull() ?: false
-                if (!canLoadMore) {
-                    fetchingState.emit(IDLE)
-                }
+                fetchingState.emit(IDLE)
             }
         }
     }
