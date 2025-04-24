@@ -6,7 +6,6 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.WooPosCouponsViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
-import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsUIEvent.BackButtonClicked
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsUIEvent.CouponClicked
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsUIEvent.EndOfListReached
@@ -46,6 +45,8 @@ class WooPosCouponsViewModel @Inject constructor(
                 _viewState.value = newState
             }
         }
+
+        listViewStateManager.fetchCoupons(viewModelScope)
     }
 
     fun onUIEvent(event: WooPosCouponsUIEvent) {
@@ -73,25 +74,16 @@ class WooPosCouponsViewModel @Inject constructor(
     }
 
     private fun fetchCoupons() {
-        viewModelScope.launch(Dispatchers.IO) {
-            listViewStateManager.fetchCoupons()
-        }
+        listViewStateManager.fetchCoupons(viewModelScope)
     }
 
     private fun onEndOfListReached() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val currentState = _viewState.value
-            if (currentState is WooPosCouponsViewState.Content
-                && currentState.paginationState == WooPosPaginationState.None
-            ) {
-                listViewStateManager.loadMore()
-            }
-        }
+        listViewStateManager.loadMore(viewModelScope)
     }
 
     private fun retryLoadMore() {
         viewModelScope.launch(Dispatchers.IO) {
-            listViewStateManager.loadMore()
+            listViewStateManager.loadMore(viewModelScope)
         }
     }
 

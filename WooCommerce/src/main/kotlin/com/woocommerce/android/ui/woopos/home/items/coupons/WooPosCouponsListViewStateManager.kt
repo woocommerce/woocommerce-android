@@ -16,11 +16,13 @@ import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsListVie
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsListViewStateManager.FetchingCouponsState.LOADING_MORE
 import com.woocommerce.android.ui.woopos.util.GetCachedStoreCurrency
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatCouponSummary
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class WooPosCouponsListViewStateManager @Inject constructor(
@@ -52,31 +54,33 @@ class WooPosCouponsListViewStateManager @Inject constructor(
                 )
             }
         }
-    }.onStart {
-        fetchCoupons()
     }
 
     val viewState: Flow<WooPosCouponsViewState> = contentFlow
 
-    suspend fun fetchCoupons() {
-        fetchingState.emit(FETCHING_FIRST_PAGE)
-        val result = couponsDataSource.clearCacheAndFetchFirstPage()
-        delay(500) // avoid UI flickering when there is no network connection
-        if (!result.isSuccess) {
-            fetchingState.emit(ERROR_FETCHING_FIRST_PAGE)
-        } else {
-            fetchingState.emit(IDLE)
+    fun fetchCoupons(viewModelScope: CoroutineScope) {
+        viewModelScope.launch(Dispatchers.IO) {
+            fetchingState.emit(FETCHING_FIRST_PAGE)
+            val result = couponsDataSource.clearCacheAndFetchFirstPage()
+            delay(500) // avoid UI flickering when there is no network connection
+            if (!result.isSuccess) {
+                fetchingState.emit(ERROR_FETCHING_FIRST_PAGE)
+            } else {
+                fetchingState.emit(IDLE)
+            }
         }
     }
 
-    suspend fun loadMore() {
-        fetchingState.emit(LOADING_MORE)
-        val result = couponsDataSource.loadMore()
-        delay(500) // avoid UI flickering when there is no network connection
-        if (!result.isSuccess) {
-            fetchingState.emit(ERROR_LOADING_MORE)
-        } else {
-//            fetchingState.emit(IDLE)
+    fun loadMore(viewModelScope: CoroutineScope) {
+        viewModelScope.launch(Dispatchers.IO) {
+            fetchingState.emit(LOADING_MORE)
+            val result = couponsDataSource.loadMore()
+            delay(500) // avoid UI flickering when there is no network connection
+            if (!result.isSuccess) {
+                fetchingState.emit(ERROR_LOADING_MORE)
+            } else {
+                fetchingState.emit(IDLE)
+            }
         }
     }
 
