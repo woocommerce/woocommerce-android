@@ -22,8 +22,8 @@ internal abstract class ProductsDao {
             AND (:excludeSampleProducts = 0 OR isSampleProduct = 0)
             AND (remoteId NOT IN (:excludedProductIds))
             ORDER BY
-                CASE WHEN :sortType = 'TITLE_ASC' THEN name END ASC,
-                CASE WHEN :sortType = 'TITLE_DESC' THEN name END DESC,
+                CASE WHEN :sortType = 'TITLE_ASC' THEN name COLLATE NOCASE END ASC,
+                CASE WHEN :sortType = 'TITLE_DESC' THEN name COLLATE NOCASE END DESC,
                 CASE WHEN :sortType = 'DATE_ASC' THEN dateCreated END ASC,
                 CASE WHEN :sortType = 'DATE_DESC' THEN dateCreated END DESC,
                 CASE WHEN :sortType = 'POPULARITY_ASC' THEN totalSales END ASC,
