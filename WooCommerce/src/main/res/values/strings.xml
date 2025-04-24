@@ -1129,7 +1129,7 @@
     <string name="print_receipt_label_info_step_count_5" translatable="false">5</string>
     <string name="print_receipt_label_info_step_count_6" translatable="false">6</string>
     <string name="print_receipt_label_info_step_count_7" translatable="false">7</string>
-    <string name="print_receipt_label_info_step_1">Make sure the Print Service Plugin for yor printer is installed.</string>
+    <string name="print_receipt_label_info_step_1">Make sure the Print Service Plugin for your printer is installed.</string>
     <string name="print_receipt_label_info_step_2">Enable bluetooth or Wifi connection on your printer.</string>
     <string name="print_receipt_label_info_step_3">When selecting "Print receipt" after accepting payment, replace "Save as PDF" with "All printers", and search for new printer.</string>
     <string name="print_receipt_label_info_step_4">Pair and connect the printer to your mobile when prompted.</string>
