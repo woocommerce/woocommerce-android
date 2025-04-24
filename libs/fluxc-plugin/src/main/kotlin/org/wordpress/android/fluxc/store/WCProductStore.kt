@@ -826,12 +826,16 @@ class WCProductStore @Inject internal constructor(
     /**
      * returns the corresponding variation from the database as a [WCProductVariationModel].
      */
-    fun getVariationByRemoteId(
+    suspend fun getVariationByRemoteId(
         site: SiteModel,
         remoteProductId: Long,
         remoteVariationId: Long
     ): WCProductVariationModel? =
-        ProductSqlUtils.getVariationByRemoteId(site, remoteProductId, remoteVariationId)
+        productVariationsDao.getVariation(
+            localSiteId = site.siteId,
+            remoteProductId = remoteProductId,
+            remoteVariationId = remoteVariationId
+        )
 
     suspend fun isProductExists(site: SiteModel, sku: String): Boolean {
         return productsDao.getProduct(site.id, sku = sku) != null

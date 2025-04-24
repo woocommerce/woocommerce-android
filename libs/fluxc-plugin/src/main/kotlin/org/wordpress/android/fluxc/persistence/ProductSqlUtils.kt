@@ -87,21 +87,6 @@ internal object ProductSqlUtils {
         }
     }
 
-    fun getVariationByRemoteId(
-        site: SiteModel,
-        remoteProductId: Long,
-        remoteVariationId: Long
-    ): WCProductVariationModel? {
-        return null
-//        WellSql.select(WCProductVariationModel::class.java)
-//            .where().beginGroup()
-//            .equals(WCProductVariationModelTable.REMOTE_PRODUCT_ID, remoteProductId)
-//            .equals(WCProductVariationModelTable.REMOTE_VARIATION_ID, remoteVariationId)
-//            .equals(WCProductVariationModelTable.LOCAL_SITE_ID, site.id)
-//            .endGroup().endWhere()
-//            .asModel.firstOrNull()
-    }
-
     fun insertOrUpdateProductVariation(variation: WCProductVariationModel): Int {
 //        val result = WellSql.select(WCProductVariationModel::class.java)
 //            .where().beginGroup()

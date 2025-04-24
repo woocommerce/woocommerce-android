@@ -23,5 +23,18 @@ abstract class ProductVariationsDao {
     @Query(DEFAULT_SELECT_QUERY)
     abstract fun observeVariations(localSiteId: Long, remoteProductId: Long): Flow<List<WCProductVariationModel>>
 
+    @Query(
+        """
+        SELECT * FROM ProductVariationEntity
+        WHERE remoteProductId = :remoteProductId
+        AND remoteVariationId = :remoteVariationId
+        AND localSiteId = :localSiteId
+        """
+    )
+    abstract suspend fun getVariation(
+        localSiteId: Long,
+        remoteProductId: Long,
+        remoteVariationId: Long
+    ): WCProductVariationModel?
 
 }
