@@ -76,7 +76,7 @@ class WooPosCouponsListViewStateManager @Inject constructor(
         if (!result.isSuccess) {
             fetchingState.emit(ERROR_LOADING_MORE)
         } else {
-            fetchingState.emit(IDLE)
+//            fetchingState.emit(IDLE)
         }
     }
 
