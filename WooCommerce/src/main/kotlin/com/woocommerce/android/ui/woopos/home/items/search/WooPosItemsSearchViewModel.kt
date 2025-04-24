@@ -64,7 +64,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
             is WooPosItemsSearchUiEvent.ItemClicked -> handleItemClicked(event.item)
             WooPosItemsSearchUiEvent.LoadingErrorRetryButtonClicked -> {
                 val currentState = _viewState.value as? WooPosItemsSearchViewState.Error ?: return
-                doSearch(currentState.searchQuery)
+                performSearch(currentState.searchQuery)
             }
 
             is WooPosItemsSearchUiEvent.OnRecentSearchClicked -> {
@@ -79,7 +79,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
         }
     }
 
-    private fun doSearch(query: String) {
+    private fun performSearch(query: String) {
         localSearchJob?.cancel()
         remoteSearchJob?.cancel()
 
@@ -94,8 +94,6 @@ class WooPosItemsSearchViewModel @Inject constructor(
     }
 
     private fun performLocalSearch(query: String) {
-        if (query.isEmpty()) return
-
         localSearchJob?.cancel()
         localSearchJob = viewModelScope.launch {
             val localProducts = dataSource.searchLocalProducts(query)
@@ -113,20 +111,18 @@ class WooPosItemsSearchViewModel @Inject constructor(
     }
 
     private fun performRemoteSearch(query: String) {
-        if (query.isEmpty()) return
-
         remoteSearchJob?.cancel()
         remoteSearchJob = viewModelScope.launch {
             delay(SEARCH_DEBOUNCING_TIME)
 
-            if (query != currentQuery.get() || query.isEmpty()) {
+            if (query != currentQuery.get()) {
                 return@launch
             }
 
             childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Started)
             val result = dataSource.searchRemoteProducts(query)
 
-            if (query != currentQuery.get() || query.isEmpty()) {
+            if (query != currentQuery.get()) {
                 childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Finished)
                 return@launch
             }
@@ -136,9 +132,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
                 if (products.isEmpty()) {
                     _viewState.value = WooPosItemsSearchViewState.Empty
                 } else {
-                    _viewState.value = products.toContentState(
-                        searchQuery = query,
-                    )
+                    _viewState.value = products.toContentState(searchQuery = query)
                 }
             } else {
                 _viewState.value = WooPosItemsSearchViewState.Error(searchQuery = query)
@@ -152,7 +146,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
         viewModelScope.launch {
             parentToChildrenEventReceiver.events.collect { event ->
                 when (event) {
-                    is ParentToChildrenEvent.SearchEvent.ChangedQuery -> doSearch(event.query)
+                    is ParentToChildrenEvent.SearchEvent.ChangedQuery -> performSearch(event.query)
 
                     ParentToChildrenEvent.SearchEvent.Started -> Unit
                     ParentToChildrenEvent.SearchEvent.Finished -> Unit
