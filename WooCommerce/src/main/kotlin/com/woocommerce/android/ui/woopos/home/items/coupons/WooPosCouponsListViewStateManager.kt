@@ -18,6 +18,7 @@ import com.woocommerce.android.ui.woopos.util.GetCachedStoreCurrency
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatCouponSummary
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,6 +32,9 @@ class WooPosCouponsListViewStateManager @Inject constructor(
     private val getCachedStoreCurrency: GetCachedStoreCurrency,
 ) {
     private val fetchingState: MutableStateFlow<FetchingCouponsState> = MutableStateFlow(IDLE)
+
+    private var loadingMoreJob: Job? = null
+    private var fetchingFirstPageJob: Job? = null
 
     enum class FetchingCouponsState {
         IDLE, LOADING_MORE, FETCHING_FIRST_PAGE, ERROR_LOADING_MORE, ERROR_FETCHING_FIRST_PAGE
@@ -59,7 +63,11 @@ class WooPosCouponsListViewStateManager @Inject constructor(
     val viewState: Flow<WooPosCouponsViewState> = contentFlow
 
     fun fetchCoupons(viewModelScope: CoroutineScope) {
-        viewModelScope.launch(Dispatchers.IO) {
+        if(fetchingFirstPageJob?.isActive == true) {
+            return
+        }
+        loadingMoreJob?.cancel()
+        fetchingFirstPageJob = viewModelScope.launch(Dispatchers.IO) {
             fetchingState.emit(FETCHING_FIRST_PAGE)
             val result = couponsDataSource.clearCacheAndFetchFirstPage()
             if (!result.isSuccess) {
@@ -72,7 +80,10 @@ class WooPosCouponsListViewStateManager @Inject constructor(
     }
 
     fun loadMore(viewModelScope: CoroutineScope) {
-        viewModelScope.launch(Dispatchers.IO) {
+        if (loadingMoreJob?.isActive == true) {
+            return
+        }
+        loadingMoreJob = viewModelScope.launch(Dispatchers.IO) {
             fetchingState.emit(LOADING_MORE)
             val result = couponsDataSource.loadMore()
             if (!result.isSuccess) {
