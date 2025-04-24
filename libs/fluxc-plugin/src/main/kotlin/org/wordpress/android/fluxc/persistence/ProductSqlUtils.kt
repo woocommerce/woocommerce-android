@@ -15,7 +15,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onStart
@@ -27,22 +26,16 @@ import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.WCProductReviewModel
 import org.wordpress.android.fluxc.model.WCProductShippingClassModel
 import org.wordpress.android.fluxc.model.WCProductTagModel
-import org.wordpress.android.fluxc.model.WCProductVariationModel
 import org.wordpress.android.fluxc.persistence.dao.ProductsDao
 import org.wordpress.android.fluxc.store.WCProductStore.Companion.DEFAULT_CATEGORY_SORTING
-import org.wordpress.android.fluxc.store.WCProductStore.Companion.DEFAULT_PRODUCT_SORTING
-import org.wordpress.android.fluxc.store.WCProductStore.Companion.categoryFilter
 import org.wordpress.android.fluxc.store.WCProductStore.ProductCategorySorting
 import org.wordpress.android.fluxc.store.WCProductStore.ProductCategorySorting.NAME_ASC
 import org.wordpress.android.fluxc.store.WCProductStore.ProductCategorySorting.NAME_DESC
-import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
-import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
 import java.util.Locale
 
 @Suppress("LargeClass")
 internal object ProductSqlUtils {
     private const val DEBOUNCE_DELAY_FOR_OBSERVERS = 50L
-    private val variationsUpdatesTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
     private val categoriesUpdatesTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
     private val gson by lazy { Gson() }
@@ -470,10 +463,6 @@ internal object ProductSqlUtils {
         } finally {
             db.endTransaction()
         }
-    }
-
-    private fun triggerVariationsUpdateIfNeeded(affectedRows: Int) {
-        if (affectedRows != 0) variationsUpdatesTrigger.tryEmit(Unit)
     }
 
     private fun triggerCategoriesUpdateIfNeeded(affectedRows: Int) {
