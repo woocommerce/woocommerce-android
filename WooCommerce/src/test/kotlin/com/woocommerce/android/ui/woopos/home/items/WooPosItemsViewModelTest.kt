@@ -823,7 +823,7 @@ class WooPosItemsViewModelTest {
     }
 
     @Test
-    fun `when loadMoreAfterLoadCompletes is set and initial load completes, then load more is triggered`() = runTest {
+    fun `given load more queued, when initial load completes, then load more is triggered`() = runTest {
         // GIVEN
         whenever(productsDataSource.hasMorePages).thenReturn(true)
         val viewModel = createViewModel()
