@@ -90,7 +90,7 @@ class WooPosCouponsListViewStateManager @Inject constructor(
                 delay(500) // avoid UI flickering when there is no network connection
                 fetchingState.emit(ERROR_LOADING_MORE)
             } else {
-                fetchingState.emit(IDLE)
+                // Do not emit IDLE here to avoid flickering UI, we'll hide loading more state when we ran out of items
             }
         }
     }
