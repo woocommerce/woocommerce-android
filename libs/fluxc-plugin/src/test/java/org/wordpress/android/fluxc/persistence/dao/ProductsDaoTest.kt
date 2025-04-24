@@ -12,10 +12,8 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCProductModel
-import org.wordpress.android.fluxc.persistence.ProductSqlUtils
-import org.wordpress.android.fluxc.persistence.ProductSqlUtils.getProducts
 import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
-import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
+import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.wc.product.ProductTestUtils
 import java.io.IOException
 import kotlin.test.assertEquals
@@ -248,12 +246,6 @@ class ProductsDaoTest {
 
     @Test
     fun testGetProductsWithFilterOptions() = runTest {
-        val productFilterOptions = mapOf(
-            ProductFilterOption.STOCK_STATUS to "instock",
-            ProductFilterOption.STATUS to "publish",
-            ProductFilterOption.TYPE to "simple"
-        )
-
         val product1 = ProductTestUtils.generateSampleProduct(40)
         val product2 = ProductTestUtils.generateSampleProduct(41)
         val product3 = ProductTestUtils.generateSampleProduct(42, stockStatus = "onbackorder")
@@ -261,7 +253,7 @@ class ProductsDaoTest {
         sut.upsertProducts(listOf(product1, product2, product3))
 
         val site = SiteModel().apply { id = product1.localSiteId.value }
-        val products = sut.getProducts(site, filterOptions = productFilterOptions)
+        val products = sut.getFilteredProducts(site, status = "publish", stockStatus = "instock", type = "simple")
         assertEquals(2, products.size)
 
         // insert products with the same productId but for a different site
@@ -276,11 +268,11 @@ class ProductsDaoTest {
         sut.upsertProducts(listOf(differentSiteProduct1, differentSiteProduct2, differentSiteProduct3))
 
         // verify that the products for the first site is still 2
-        assertEquals(2, sut.getProducts(site, productFilterOptions).size)
+        assertEquals(2, sut.getFilteredProducts(site, status = "publish", stockStatus = "instock", type = "simple").size)
 
         // verify that the products for the second site is 3
         val site2 = SiteModel().apply { id = differentSiteProduct1.localSiteId.value }
-        val differentSiteProducts = sut.getProducts(site2, productFilterOptions)
+        val differentSiteProducts = sut.getFilteredProducts(site2, status = "publish", stockStatus = "instock", type = "simple")
         assertEquals(1, differentSiteProducts.size)
     }
 
@@ -304,51 +296,44 @@ class ProductsDaoTest {
         val site = SiteModel().apply { id = product1.localSiteId.value }
 
         // Test search in name
-        var products = sut.getProducts(site, emptyMap(), searchQuery = "a")
+        var products = sut.searchProductsByQuery(site.id, searchQuery = "a")
         // Products 1 and 3
         assertEquals(2, products.size)
 
-        products = sut.getProducts(site, emptyMap(), searchQuery = "b")
+        products = sut.searchProductsByQuery(site.id, searchQuery = "b")
         // Products 2 and 3
         assertEquals(2, products.size)
 
         // Product 3
-        products = sut.getProducts(site, emptyMap(), searchQuery = "ab")
+        products = sut.searchProductsByQuery(site.id, searchQuery = "ab")
         assertEquals(1, products.size)
 
         // Test search in description
-        products = sut.getProducts(site, emptyMap(), searchQuery = "1")
+        products = sut.searchProductsByQuery(site.id, searchQuery = "1")
         // Products 1 and 3
         assertEquals(2, products.size)
 
-        products = sut.getProducts(site, emptyMap(), searchQuery = "2")
+        products = sut.searchProductsByQuery(site.id, searchQuery = "2")
         // Products 2 and 3
         assertEquals(2, products.size)
 
-        products = sut.getProducts(site, emptyMap(), searchQuery = "12")
+        products = sut.searchProductsByQuery(site.id, searchQuery = "12")
         // Product 3
         assertEquals(1, products.size)
 
         // Test search in short description
-        products = sut.getProducts(site, emptyMap(), searchQuery = "+")
+        products = sut.searchProductsByQuery(site.id, searchQuery = "+")
         // Products 1 and 3
         assertEquals(2, products.size)
 
-        products = sut.getProducts(site, emptyMap(), searchQuery = "-")
+        products = sut.searchProductsByQuery(site.id, searchQuery = "-")
         // Products 2 and 3
         assertEquals(2, products.size)
 
-        products = sut.getProducts(site, emptyMap(), searchQuery = "+-")
+        products = sut.searchProductsByQuery(site.id, searchQuery = "+-")
         // Product 3
         assertEquals(1, products.size)
-
-        // Test search with filter options
-        products = sut.getProducts(site, mapOf(ProductFilterOption.STOCK_STATUS to "instock"),
-            searchQuery = "a")
-        // Product 1
-        assertEquals(1, products.size)
     }
-
 
     @Test
     fun testGetProductsForSiteWithExcludedProductIds() = runTest {
@@ -362,7 +347,15 @@ class ProductsDaoTest {
 
         val site = SiteModel().apply { id = product1.localSiteId.value }
         val products = sut.getProducts(
-                site, filterOptions = emptyMap(), excludedProductIds = excludedProductIds
+            site.id,
+            status = null,
+            stockStatus = null,
+            type = null,
+            excludeSampleProducts = false,
+            category = null,
+            sortType = WCProductStore.ProductSorting.TITLE_ASC,
+            excludedProductIds = excludedProductIds,
+            limit = null
         )
         assertEquals(2, products.size)
         assertEquals(41, products.first().remoteProductId)
@@ -380,14 +373,32 @@ class ProductsDaoTest {
         sut.upsertProducts(listOf(differentSiteProduct1, differentSiteProduct2, differentSiteProduct3))
 
         // verify that the products for the first site is still 2
-        assertEquals(2, sut.getProducts(
-                site, emptyMap(), excludedProductIds = excludedProductIds
-        ).size)
+        assertEquals(
+            2, sut.getProducts(
+                site.id,
+                status = null,
+                stockStatus = null,
+                type = null,
+                excludeSampleProducts = false,
+                category = null,
+                sortType = WCProductStore.ProductSorting.TITLE_ASC,
+                excludedProductIds = excludedProductIds,
+                limit = null
+            ).size
+        )
 
         // verify that the products for the second site is also 2
         val site2 = SiteModel().apply { id = differentSiteProduct1.localSiteId.value }
         val differentSiteProducts = sut.getProducts(
-                site2, filterOptions = emptyMap(), excludedProductIds = listOf(40, 41)
+            site2.id,
+            status = null,
+            stockStatus = null,
+            type = null,
+            excludeSampleProducts = false,
+            category = null,
+            sortType = WCProductStore.ProductSorting.TITLE_ASC,
+            excludedProductIds = listOf(40, 41),
+            limit = null
         )
         assertEquals(1, differentSiteProducts.size)
         assertEquals(42, differentSiteProducts.first().remoteProductId)
@@ -402,9 +413,27 @@ class ProductsDaoTest {
             category = null,
             excludeSampleProducts = false,
             limit = null,
-            excludedProductIds = emptyList()
+            excludedProductIds = emptyList(),
+            sortType = WCProductStore.ProductSorting.TITLE_ASC
         ).first()
     }
+
+    private suspend fun ProductsDao.getFilteredProducts(
+        site: SiteModel,
+        status: String,
+        stockStatus: String,
+        type: String
+    ): List<WCProductModel> = getProducts(
+        site.id,
+        status = status,
+        stockStatus = stockStatus,
+        type = type,
+        excludeSampleProducts = false,
+        category = null,
+        sortType = WCProductStore.ProductSorting.TITLE_ASC,
+        excludedProductIds = emptyList(),
+        limit = null
+    )
 
     @After
     @Throws(IOException::class)
