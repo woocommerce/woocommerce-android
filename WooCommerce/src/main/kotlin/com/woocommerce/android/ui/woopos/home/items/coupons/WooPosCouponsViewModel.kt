@@ -81,7 +81,7 @@ class WooPosCouponsViewModel @Inject constructor(
     }
 
     private fun retryLoadMore() {
-        listViewStateManager.loadMore(viewModelScope)
+        listViewStateManager.retryLoadMore(viewModelScope)
     }
 
     private fun navigateBackToItemListScreen() {
