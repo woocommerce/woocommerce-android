@@ -790,11 +790,10 @@ class WooPosItemsViewModelTest {
     }
 
     @Test
-    fun `when initial products load is active and load more is triggered, then set loadMoreAfterLoadCompletes flag`() = runTest {
+    fun `given initial load in progress, when end of list reached, then pagination state set to loading`() = runTest {
         // GIVEN
         whenever(productsDataSource.hasMorePages).thenReturn(true)
 
-        // Use a controlled flow that won't complete immediately
         val productsFlow = MutableSharedFlow<WooPosProductsDataSource.ProductsResult>()
         whenever(productsDataSource.loadProducts(any())).thenReturn(productsFlow)
 
