@@ -64,76 +64,58 @@ class ProductVariationApiResponse : Response {
     var meta_data: JsonElement? = null
 
     @Suppress("ComplexMethod")
-    fun asProductVariationModel() =
-        WCProductVariationModel().apply {
-            val response = this@ProductVariationApiResponse
-            remoteVariationId = response.id
-            permalink = response.permalink ?: ""
-
-            dateCreated = response.date_created ?: ""
-            dateModified = response.date_modified ?: ""
-
-            status = response.status ?: ""
-            description = response.description ?: ""
-            sku = response.sku ?: ""
-            globalUniqueId = response.global_unique_id ?: ""
-
-            price = response.price ?: ""
-            regularPrice = response.regular_price ?: ""
-            salePrice = response.sale_price ?: ""
-            onSale = response.on_sale
-
-            dateOnSaleFrom = response.date_on_sale_from ?: ""
-            dateOnSaleTo = response.date_on_sale_to ?: ""
-            dateOnSaleFromGmt = response.date_on_sale_from_gmt ?: ""
-            dateOnSaleToGmt = response.date_on_sale_to_gmt ?: ""
-
-            taxStatus = response.tax_status ?: ""
-            taxClass = response.tax_class ?: ""
-
-            backorders = response.backorders ?: ""
-            backordersAllowed = response.backorders_allowed
-            backordered = response.backordered
-
-            shippingClass = response.shipping_class ?: ""
-            shippingClassId = response.shipping_class_id
-
-            downloadLimit = response.download_limit
-            downloadExpiry = response.download_expiry
-
-            virtual = response.virtual
-            downloadable = response.downloadable
-            purchasable = response.purchasable
-
-            manageStock = response.manage_stock
-            stockQuantity = response.stock_quantity
-            stockStatus = response.stock_status ?: ""
-
-            attributes = response.attributes?.toString() ?: ""
-
-            weight = response.weight ?: ""
-            menuOrder = response.menu_order
-
-            attributes = response.attributes?.toString() ?: ""
-            downloads = response.downloads?.toString() ?: ""
-
-            response.dimensions?.asJsonObject?.let { json ->
-                length = json.getString("length") ?: ""
-                width = json.getString("width") ?: ""
-                height = json.getString("height") ?: ""
-            }
-
-            image = response.image?.toString() ?: ""
-
-            minAllowedQuantity = response.min_quantity?.toInt() ?: -1
+    fun asProductVariationModel(): WCProductVariationModel {
+        val response = this@ProductVariationApiResponse
+        val dimensions = response.dimensions?.asJsonObject
+        return WCProductVariationModel(
+            remoteVariationId = response.id,
+            permalink = response.permalink ?: "",
+            dateCreated = response.date_created ?: "",
+            dateModified = response.date_modified ?: "",
+            status = response.status ?: "",
+            description = response.description ?: "",
+            sku = response.sku ?: "",
+            globalUniqueId = response.global_unique_id ?: "",
+            price = response.price ?: "",
+            regularPrice = response.regular_price ?: "",
+            salePrice = response.sale_price ?: "",
+            onSale = response.on_sale,
+            dateOnSaleFrom = response.date_on_sale_from ?: "",
+            dateOnSaleTo = response.date_on_sale_to ?: "",
+            dateOnSaleFromGmt = response.date_on_sale_from_gmt ?: "",
+            dateOnSaleToGmt = response.date_on_sale_to_gmt ?: "",
+            taxStatus = response.tax_status ?: "",
+            taxClass = response.tax_class ?: "",
+            backorders = response.backorders ?: "",
+            backordersAllowed = response.backorders_allowed,
+            backordered = response.backordered,
+            shippingClass = response.shipping_class ?: "",
+            shippingClassId = response.shipping_class_id,
+            downloadLimit = response.download_limit,
+            downloadExpiry = response.download_expiry,
+            virtual = response.virtual,
+            downloadable = response.downloadable,
+            purchasable = response.purchasable,
+            manageStock = response.manage_stock,
+            stockQuantity = response.stock_quantity,
+            stockStatus = response.stock_status ?: "",
+            attributes = response.attributes?.toString() ?: "",
+            weight = response.weight ?: "",
+            menuOrder = response.menu_order,
+            downloads = response.downloads?.toString() ?: "",
+            length = dimensions?.getString("length") ?: "",
+            width = dimensions?.getString("width") ?: "",
+            height = dimensions?.getString("height") ?: "",
+            image = response.image?.toString() ?: "",
+            minAllowedQuantity = response.min_quantity?.toInt() ?: -1,
             maxAllowedQuantity = response.max_quantity?.let {
                 if (it.isEmpty()) "0" else it
-            }?.toInt() ?: -1
-            groupOfQuantity = response.group_of_quantity?.toInt() ?: -1
+            }?.toInt() ?: -1,
+            groupOfQuantity = response.group_of_quantity?.toInt() ?: -1,
             overrideProductQuantities = response.variation_quantity_rules?.let {
                 it == "yes"
-            } ?: false
-
-            metadata = response.meta_data?.toString()
-        }
+            } ?: false,
+            metadata = response.meta_data?.toString(),
+        )
+    }
 }

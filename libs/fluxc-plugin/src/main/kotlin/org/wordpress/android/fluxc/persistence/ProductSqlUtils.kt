@@ -8,7 +8,6 @@ import com.wellsql.generated.WCProductCategoryModelTable
 import com.wellsql.generated.WCProductReviewModelTable
 import com.wellsql.generated.WCProductShippingClassModelTable
 import com.wellsql.generated.WCProductTagModelTable
-import com.wellsql.generated.WCProductVariationModelTable
 import com.yarolegovich.wellsql.SelectQuery
 import com.yarolegovich.wellsql.WellSql
 import kotlinx.coroutines.Dispatchers
@@ -103,41 +102,43 @@ internal object ProductSqlUtils {
         remoteProductId: Long,
         remoteVariationId: Long
     ): WCProductVariationModel? {
-        return WellSql.select(WCProductVariationModel::class.java)
-            .where().beginGroup()
-            .equals(WCProductVariationModelTable.REMOTE_PRODUCT_ID, remoteProductId)
-            .equals(WCProductVariationModelTable.REMOTE_VARIATION_ID, remoteVariationId)
-            .equals(WCProductVariationModelTable.LOCAL_SITE_ID, site.id)
-            .endGroup().endWhere()
-            .asModel.firstOrNull()
+        return null
+//        WellSql.select(WCProductVariationModel::class.java)
+//            .where().beginGroup()
+//            .equals(WCProductVariationModelTable.REMOTE_PRODUCT_ID, remoteProductId)
+//            .equals(WCProductVariationModelTable.REMOTE_VARIATION_ID, remoteVariationId)
+//            .equals(WCProductVariationModelTable.LOCAL_SITE_ID, site.id)
+//            .endGroup().endWhere()
+//            .asModel.firstOrNull()
     }
 
     fun insertOrUpdateProductVariation(variation: WCProductVariationModel): Int {
-        val result = WellSql.select(WCProductVariationModel::class.java)
-            .where().beginGroup()
-            .equals(WCProductVariationModelTable.ID, variation.id)
-            .or()
-            .beginGroup()
-            .equals(WCProductVariationModelTable.REMOTE_PRODUCT_ID, variation.remoteProductId)
-            .equals(WCProductVariationModelTable.REMOTE_VARIATION_ID, variation.remoteVariationId)
-            .equals(WCProductVariationModelTable.LOCAL_SITE_ID, variation.localSiteId)
-            .endGroup()
-            .endGroup().endWhere()
-            .asModel.firstOrNull()
-
-        return if (result == null) {
-            // Insert
-            WellSql.insert(variation).execute()
-            variationsUpdatesTrigger.tryEmit(Unit)
-            1
-        } else {
-            // Update
-            val oldId = result.id
-            WellSql.update(WCProductVariationModel::class.java).whereId(oldId)
-                .put(variation, UpdateAllExceptId(WCProductVariationModel::class.java))
-                .execute()
-                .also(::triggerVariationsUpdateIfNeeded)
-        }
+//        val result = WellSql.select(WCProductVariationModel::class.java)
+//            .where().beginGroup()
+//            .equals(WCProductVariationModelTable.ID, variation.id)
+//            .or()
+//            .beginGroup()
+//            .equals(WCProductVariationModelTable.REMOTE_PRODUCT_ID, variation.remoteProductId)
+//            .equals(WCProductVariationModelTable.REMOTE_VARIATION_ID, variation.remoteVariationId)
+//            .equals(WCProductVariationModelTable.LOCAL_SITE_ID, variation.localSiteId)
+//            .endGroup()
+//            .endGroup().endWhere()
+//            .asModel.firstOrNull()
+//
+//        return if (result == null) {
+//            // Insert
+//            WellSql.insert(variation).execute()
+//            variationsUpdatesTrigger.tryEmit(Unit)
+//            1
+//        } else {
+//            // Update
+//            val oldId = result.id
+//            WellSql.update(WCProductVariationModel::class.java).whereId(oldId)
+//                .put(variation, UpdateAllExceptId(WCProductVariationModel::class.java))
+//                .execute()
+//                .also(::triggerVariationsUpdateIfNeeded)
+//        }
+        return -1
     }
 
     fun insertOrUpdateProductVariations(variations: List<WCProductVariationModel>): Int {
@@ -151,25 +152,27 @@ internal object ProductSqlUtils {
     }
 
     fun getVariationsForProduct(site: SiteModel, remoteProductId: Long): List<WCProductVariationModel> {
-        return WellSql.select(WCProductVariationModel::class.java)
-            .where()
-            .beginGroup()
-            .equals(WCProductVariationModelTable.REMOTE_PRODUCT_ID, remoteProductId)
-            .equals(WCProductVariationModelTable.LOCAL_SITE_ID, site.id)
-            .endGroup().endWhere()
-            .orderBy(WCProductVariationModelTable.MENU_ORDER, SelectQuery.ORDER_ASCENDING)
-            .asModel
+//        return WellSql.select(WCProductVariationModel::class.java)
+//            .where()
+//            .beginGroup()
+//            .equals(WCProductVariationModelTable.REMOTE_PRODUCT_ID, remoteProductId)
+//            .equals(WCProductVariationModelTable.LOCAL_SITE_ID, site.id)
+//            .endGroup().endWhere()
+//            .orderBy(WCProductVariationModelTable.MENU_ORDER, SelectQuery.ORDER_ASCENDING)
+//            .asModel
+        return emptyList()
     }
 
     fun deleteVariationsForProduct(site: SiteModel, remoteProductId: Long): Int {
-        return WellSql.delete(WCProductVariationModel::class.java)
-            .where().beginGroup()
-            .equals(WCProductVariationModelTable.LOCAL_SITE_ID, site.id)
-            .equals(WCProductVariationModelTable.REMOTE_PRODUCT_ID, remoteProductId)
-            .endGroup()
-            .endWhere()
-            .execute()
-            .also(::triggerVariationsUpdateIfNeeded)
+//        return WellSql.delete(WCProductVariationModel::class.java)
+//            .where().beginGroup()
+//            .equals(WCProductVariationModelTable.LOCAL_SITE_ID, site.id)
+//            .equals(WCProductVariationModelTable.REMOTE_PRODUCT_ID, remoteProductId)
+//            .endGroup()
+//            .endWhere()
+//            .execute()
+//            .also(::triggerVariationsUpdateIfNeeded)
+        return -1
     }
 
     fun insertOrUpdateProductReviews(productReviews: List<WCProductReviewModel>): Int {

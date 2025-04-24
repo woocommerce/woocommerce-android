@@ -8,6 +8,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.withTransaction
 import org.wordpress.android.fluxc.model.WCProductModel
+import org.wordpress.android.fluxc.model.WCProductVariationModel
 import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.fluxc.model.taxes.TaxBasedOnSettingEntity
 import org.wordpress.android.fluxc.model.taxes.TaxRateEntity
@@ -74,7 +75,7 @@ import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_7_8
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_8_9
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_9_10
 
-const val WC_DATABASE_VERSION = 39
+const val WC_DATABASE_VERSION = 40
 
 @Database(
     version = WC_DATABASE_VERSION,
@@ -100,6 +101,7 @@ const val WC_DATABASE_VERSION = 39
         ShippingMethodEntity::class,
         CustomerFromAnalyticsEntity::class,
         WCProductModel::class,
+        WCProductVariationModel::class
     ],
     autoMigrations = [
         AutoMigration(from = 12, to = 13),
@@ -121,7 +123,8 @@ const val WC_DATABASE_VERSION = 39
         AutoMigration(from = 35, to = 36),
         AutoMigration(from = 36, to = 37),
         AutoMigration(from = 37, to = 38, spec = AutoMigration37to38::class),
-        AutoMigration(from = 38, to = 39)
+        AutoMigration(from = 38, to = 39),
+        AutoMigration(from = 39, to = 40)
     ]
 )
 @TypeConverters(

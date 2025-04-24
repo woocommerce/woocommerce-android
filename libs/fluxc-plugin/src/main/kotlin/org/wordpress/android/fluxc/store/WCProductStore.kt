@@ -1586,10 +1586,10 @@ class WCProductStore @Inject internal constructor(
                     WooResult(result.error)
                 } else {
                     val generatedVariations = result.result?.createdVariations?.map { response ->
-                        response.asProductVariationModel().apply {
-                            remoteProductId = payload.remoteProductId
+                        response.asProductVariationModel().copy(
+                            remoteProductId = payload.remoteProductId,
                             localSiteId = payload.site.id
-                        }
+                        )
                     } ?: emptyList()
                     ProductSqlUtils.insertOrUpdateProductVariations(generatedVariations)
                     WooResult(result.result)
@@ -1622,10 +1622,10 @@ class WCProductStore @Inject internal constructor(
                     WooResult(result.error)
                 } else {
                     val updatedVariations = result.result?.updatedVariations?.map { response ->
-                        response.asProductVariationModel().apply {
-                            remoteProductId = payload.remoteProductId
+                        response.asProductVariationModel().copy(
+                            remoteProductId = payload.remoteProductId,
                             localSiteId = payload.site.id
-                        }
+                        )
                     } ?: emptyList()
                     ProductSqlUtils.insertOrUpdateProductVariations(updatedVariations)
                     WooResult(result.result)
@@ -1928,10 +1928,10 @@ class WCProductStore @Inject internal constructor(
         result.model
             ?.createdVariations
             ?.map { variationResponse ->
-                variationResponse.asProductVariationModel().apply {
-                    remoteProductId = productId.value
+                variationResponse.asProductVariationModel().copy(
+                    remoteProductId = productId.value,
                     localSiteId = site.id
-                }
+                )
             }
             ?.let { databaseEntities ->
                 ProductSqlUtils.insertOrUpdateProductVariations(databaseEntities)
