@@ -89,15 +89,18 @@ class WooPosCouponsListViewStateManager @Inject constructor(
 
     fun endOfListReached(viewModelScope: CoroutineScope) {
         if (fetchingState.value == ERROR_LOADING_MORE) return
-        retryLoadMore(viewModelScope)
+
+        fetchingFirstPageJob?.invokeOnCompletion {
+            retryLoadMore(viewModelScope)
+        } ?: retryLoadMore(viewModelScope)
     }
 
     fun retryLoadMore(viewModelScope: CoroutineScope) {
-        if (!canLoadMore || loadingMoreJob?.isActive == true) {
+        if (!canLoadMore || loadingMoreJob?.isActive == true || fetchingFirstPageJob?.isActive == true) {
             return
         }
+
         loadingMoreJob = viewModelScope.launch(dispatcher) {
-            fetchingFirstPageJob?.join()
             fetchingState.emit(LOADING_MORE)
             val result = couponsDataSource.loadMore()
             if (!result.isSuccess) {
