@@ -19,6 +19,7 @@ import com.woocommerce.android.ui.woopos.util.format.WooPosFormatCouponSummary
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,6 +36,7 @@ class WooPosCouponsListViewStateManager @Inject constructor(
 
     private var loadingMoreJob: Job? = null
     private var fetchingFirstPageJob: Job? = null
+    private var canLoadMore: Boolean = false
 
     enum class FetchingCouponsState {
         IDLE, LOADING_MORE, FETCHING_FIRST_PAGE, ERROR_LOADING_MORE, ERROR_FETCHING_FIRST_PAGE
@@ -63,34 +65,40 @@ class WooPosCouponsListViewStateManager @Inject constructor(
     val viewState: Flow<WooPosCouponsViewState> = contentFlow
 
     fun fetchCoupons(viewModelScope: CoroutineScope) {
-        if(fetchingFirstPageJob?.isActive == true) {
+        if (fetchingFirstPageJob?.isActive == true) {
             return
         }
-        loadingMoreJob?.cancel()
+
         fetchingFirstPageJob = viewModelScope.launch(Dispatchers.IO) {
+            loadingMoreJob?.cancelAndJoin()
             fetchingState.emit(FETCHING_FIRST_PAGE)
             val result = couponsDataSource.clearCacheAndFetchFirstPage()
             if (!result.isSuccess) {
                 delay(500) // avoid UI flickering when there is no network connection
                 fetchingState.emit(ERROR_FETCHING_FIRST_PAGE)
             } else {
+                canLoadMore = result.getOrNull() ?: false
                 fetchingState.emit(IDLE)
             }
         }
     }
 
     fun loadMore(viewModelScope: CoroutineScope) {
-        if (loadingMoreJob?.isActive == true) {
+        if (!canLoadMore || loadingMoreJob?.isActive == true) {
             return
         }
         loadingMoreJob = viewModelScope.launch(Dispatchers.IO) {
+            fetchingFirstPageJob?.join()
             fetchingState.emit(LOADING_MORE)
             val result = couponsDataSource.loadMore()
             if (!result.isSuccess) {
                 delay(500) // avoid UI flickering when there is no network connection
                 fetchingState.emit(ERROR_LOADING_MORE)
             } else {
-                // Do not emit IDLE here to avoid flickering UI, we'll hide loading more state when we ran out of items
+                canLoadMore = result.getOrNull() ?: false
+                if (!canLoadMore) {
+                    fetchingState.emit(IDLE)
+                }
             }
         }
     }
