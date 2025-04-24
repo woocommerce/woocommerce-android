@@ -120,9 +120,9 @@ class WooPosCouponsListViewStateManager @Inject constructor(
 
     private fun mapFetchingStateToPaginationState(fetchingState: FetchingCouponsState) =
         when (fetchingState) {
-            IDLE, FETCHING_FIRST_PAGE, ERROR_FETCHING_FIRST_PAGE -> None
-            LOADING_MORE -> Loading
+            IDLE, FETCHING_FIRST_PAGE, LOADING_MORE -> if (canLoadMore) Loading else None
             ERROR_LOADING_MORE -> Error
+            ERROR_FETCHING_FIRST_PAGE -> error("Full screen error should be displayed")
         }
 
     private fun mapFetchingStateToPTRState(fetchingState: FetchingCouponsState) =
