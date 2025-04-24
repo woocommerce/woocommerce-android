@@ -837,7 +837,7 @@ class WooPosItemsViewModelTest {
     }
 
     @Test
-    fun `when loadMoreAfterLoadCompletes is set and initial load fails, then load more is not triggered`() = runTest {
+    fun `given load more queued, when initial load fails, then load more is not triggered`() = runTest {
         // GIVEN
         whenever(productsDataSource.hasMorePages).thenReturn(true)
         whenever(productsDataSource.loadProducts(any())).thenReturn(
