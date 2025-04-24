@@ -87,46 +87,6 @@ internal object ProductSqlUtils {
         }
     }
 
-    fun insertOrUpdateProductVariation(variation: WCProductVariationModel): Int {
-//        val result = WellSql.select(WCProductVariationModel::class.java)
-//            .where().beginGroup()
-//            .equals(WCProductVariationModelTable.ID, variation.id)
-//            .or()
-//            .beginGroup()
-//            .equals(WCProductVariationModelTable.REMOTE_PRODUCT_ID, variation.remoteProductId)
-//            .equals(WCProductVariationModelTable.REMOTE_VARIATION_ID, variation.remoteVariationId)
-//            .equals(WCProductVariationModelTable.LOCAL_SITE_ID, variation.localSiteId)
-//            .endGroup()
-//            .endGroup().endWhere()
-//            .asModel.firstOrNull()
-//
-//        return if (result == null) {
-//            // Insert
-//            WellSql.insert(variation).execute()
-//            variationsUpdatesTrigger.tryEmit(Unit)
-//            1
-//        } else {
-//            // Update
-//            val oldId = result.id
-//            WellSql.update(WCProductVariationModel::class.java).whereId(oldId)
-//                .put(variation, UpdateAllExceptId(WCProductVariationModel::class.java))
-//                .execute()
-//                .also(::triggerVariationsUpdateIfNeeded)
-//        }
-        return -1
-    }
-
-    fun insertOrUpdateProductVariations(variations: List<WCProductVariationModel>): Int {
-        var rowsAffected = 0
-        executeInTransaction {
-            variations.forEach {
-                rowsAffected += insertOrUpdateProductVariation(it)
-            }
-        }
-        return rowsAffected
-    }
-
-
     fun deleteVariationsForProduct(site: SiteModel, remoteProductId: Long): Int {
 //        return WellSql.delete(WCProductVariationModel::class.java)
 //            .where().beginGroup()

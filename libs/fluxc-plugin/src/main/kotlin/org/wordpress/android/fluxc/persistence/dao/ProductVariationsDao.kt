@@ -2,6 +2,7 @@ package org.wordpress.android.fluxc.persistence.dao
 
 import androidx.room.Dao
 import androidx.room.Query
+import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 import org.wordpress.android.fluxc.model.WCProductVariationModel
 
@@ -36,5 +37,11 @@ abstract class ProductVariationsDao {
         remoteProductId: Long,
         remoteVariationId: Long
     ): WCProductVariationModel?
+
+    @Upsert
+    abstract suspend fun upsertProductVariation(variation: WCProductVariationModel)
+
+    @Upsert
+    abstract suspend fun upsertProductVariations(variations: List<WCProductVariationModel>)
 
 }
