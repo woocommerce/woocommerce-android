@@ -1,9 +1,9 @@
 package com.woocommerce.android.cardreader.internal.connection
 
+import com.stripe.stripeterminal.external.callable.Cancelable
 import com.stripe.stripeterminal.external.callable.TapToPayReaderListener
 import com.stripe.stripeterminal.external.models.DisconnectReason
 import com.stripe.stripeterminal.external.models.Reader
-import com.stripe.stripeterminal.external.callable.Cancelable
 import com.woocommerce.android.cardreader.LogWrapper
 import com.woocommerce.android.cardreader.internal.LOG_TAG
 

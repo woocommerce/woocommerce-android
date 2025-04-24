@@ -1,7 +1,6 @@
 package com.woocommerce.android.cardreader.internal.connection
 
 import com.stripe.stripeterminal.external.models.TerminalErrorCode
-import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatusErrorType
 
 internal class UpdateErrorMapper(private val batteryLevelProvider: () -> Float?) {
