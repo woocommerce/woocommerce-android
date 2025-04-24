@@ -70,17 +70,19 @@ class WooPosProductsDataSource @Inject constructor(
 
     fun loadProducts(forceRefreshProducts: Boolean): Flow<ProductsResult> = flow {
         offset.set(0)
-        if (forceRefreshProducts) {
-            productsCache.clear()
-        }
         productsIndex.clearCache()
 
-        val cachedProducts = sortProducts(productsCache.getAll()).take(NORMAL_PAGE_SIZE)
-        emit(ProductsResult.Cached(cachedProducts))
+        if (!forceRefreshProducts) {
+            val cachedProducts = sortProducts(productsCache.getAll()).take(NORMAL_PAGE_SIZE)
+            emit(ProductsResult.Cached(cachedProducts))
+        }
 
         val fetchResult = fetchProducts()
 
         if (fetchResult.isSuccess) {
+            if (forceRefreshProducts) {
+                productsCache.setAll(fetchResult.getOrThrow())
+            }
             emit(ProductsResult.Remote(Result.success(fetchResult.getOrThrow())))
         } else {
             emit(ProductsResult.Remote(Result.failure(fetchResult.exceptionOrNull() ?: Exception("Unknown error"))))
