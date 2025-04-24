@@ -91,7 +91,7 @@ class WooPosProductsDataSourceTest {
     private val productsTypesFilterConfig = WooPosProductsTypesFilterConfig()
 
     @Test
-    fun `given force refresh, when loadProducts called, then should clear cache`() = runTest {
+    fun `given force refresh, when loadProducts called, then should clear cache and insert products again`() = runTest {
         // GIVEN
         whenever(productsIndex.getProductList()).thenReturn(emptyList(), sampleProducts)
 
@@ -117,7 +117,7 @@ class WooPosProductsDataSourceTest {
         sut.loadProducts(forceRefreshProducts = true).first()
 
         // THEN
-        verify(productsCache).clear()
+        verify(productsCache).setAll(any())
         verify(productsIndex).clearCache()
     }
 
