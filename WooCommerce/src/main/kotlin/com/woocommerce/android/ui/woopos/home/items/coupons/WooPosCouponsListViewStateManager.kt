@@ -57,8 +57,8 @@ class WooPosCouponsListViewStateManager @Inject constructor(
             } else {
                 WooPosCouponsViewState.Content(
                     items = mapCouponsToSelectionState(coupons),
-                    paginationState = mapFetchingStateToPaginationState(fetchingState),
-                    pullToRefreshState = mapFetchingStateToPTRState(fetchingState)
+                    paginationState = getPaginationState(fetchingState),
+                    pullToRefreshState = getPullToRefreshState(fetchingState)
                 )
             }
         }
@@ -118,18 +118,19 @@ class WooPosCouponsListViewStateManager @Inject constructor(
         )
     }
 
-    private fun mapFetchingStateToPaginationState(fetchingState: FetchingCouponsState) =
+    private fun getPaginationState(fetchingState: FetchingCouponsState) =
         when (fetchingState) {
             IDLE, FETCHING_FIRST_PAGE, LOADING_MORE -> if (canLoadMore) Loading else None
             ERROR_LOADING_MORE -> Error
             ERROR_FETCHING_FIRST_PAGE -> error("Full screen error should be displayed")
         }
 
-    private fun mapFetchingStateToPTRState(fetchingState: FetchingCouponsState) =
+    private fun getPullToRefreshState(fetchingState: FetchingCouponsState) =
         when (fetchingState) {
-            ERROR_LOADING_MORE, IDLE, ERROR_FETCHING_FIRST_PAGE -> Enabled
+            ERROR_LOADING_MORE, IDLE -> Enabled
             // We might need to keep this enabled and cancel the loadMore job when PTR starts.
             LOADING_MORE -> Disabled
             FETCHING_FIRST_PAGE -> Refreshing
+            ERROR_FETCHING_FIRST_PAGE -> error("Full screen error should be displayed")
         }
 }
