@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.home
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.ui.woopos.common.util.WooPosSoundHelper
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.CheckoutClicked
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.ItemClickedInProductSelector
@@ -31,6 +32,7 @@ class WooPosHomeViewModel @Inject constructor(
     private val parentToChildrenEventSender: WooPosParentToChildrenEventSender,
     private val wooPosItemsNavigator: WooPosItemsNavigator,
     private val analyticsTracker: WooPosAnalyticsTracker,
+    private val soundHelper: WooPosSoundHelper,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     private val _state = savedStateHandle.getStateFlow(
@@ -235,6 +237,8 @@ class WooPosHomeViewModel @Inject constructor(
 
     private fun onOrderSuccessfullyPaid(paymentMethod: PaymentMethod) {
         viewModelScope.launch {
+            soundHelper.playChaChing()
+
             wooPosItemsNavigator.sendNavigationEvent(
                 WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateBackToItemListScreen
             )
