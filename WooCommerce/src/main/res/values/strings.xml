@@ -4606,4 +4606,8 @@
     <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_one">Choose where to move the %d item in this shipment to.</string>
     <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_plural">Choose where to move the %d items in this shipment to.</string>
     <string name="woo_shipping_split_shipment_bottom_sheet_remove_button">Remove Shipment</string>
+    <string name="woo_shipping_split_shipment_merge_unfulfilled_menu">Merge all unfulfilled</string>
+    <string name="woo_shipping_split_shipment_merge_unfulfilled_title">Merge all unfulfilled shipments</string>
+    <string name="woo_shipping_split_shipment_merge_unfulfilled_desc">This will remove all unfulfilled split shipments and move all items into one shipment.</string>
+    <string name="woo_shipping_split_shipment_merge_unfulfilled_button">Merge all shipments</string>
 </resources>
