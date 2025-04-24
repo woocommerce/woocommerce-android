@@ -14,4 +14,6 @@ interface WooPosProductsCache {
     suspend fun getProductById(productId: Long): Product?
 
     suspend fun clear()
+
+    suspend fun setAll(products: List<Product>)
 }

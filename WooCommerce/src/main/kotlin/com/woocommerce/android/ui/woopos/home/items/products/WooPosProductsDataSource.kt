@@ -79,8 +79,7 @@ class WooPosProductsDataSource @Inject constructor(
 
         if (fetchResult.isSuccess) {
             if (forceRefreshProducts) {
-                productsCache.clear()
-                productsCache.addAll(fetchResult.getOrThrow())
+                productsCache.setAll(fetchResult.getOrThrow())
             }
             emit(ProductsResult.Remote(Result.success(fetchResult.getOrThrow())))
         } else {

@@ -39,4 +39,9 @@ class WooPosProductsInMemoryCache @Inject constructor() : WooPosProductsCache {
     override suspend fun clear() = mutex.withLock {
         productsCache.clear()
     }
+
+    override suspend fun setAll(products: List<Product>) = mutex.withLock {
+        clear()
+        addAll(products)
+    }
 }
