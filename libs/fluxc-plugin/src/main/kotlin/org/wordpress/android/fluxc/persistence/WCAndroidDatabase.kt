@@ -24,6 +24,7 @@ import org.wordpress.android.fluxc.persistence.dao.InboxNotesDao
 import org.wordpress.android.fluxc.persistence.dao.MetaDataDao
 import org.wordpress.android.fluxc.persistence.dao.OrderNotesDao
 import org.wordpress.android.fluxc.persistence.dao.OrdersDao
+import org.wordpress.android.fluxc.persistence.dao.ProductVariationsDao
 import org.wordpress.android.fluxc.persistence.dao.ProductsDao
 import org.wordpress.android.fluxc.persistence.dao.ShippingMethodDao
 import org.wordpress.android.fluxc.persistence.dao.TaxBasedOnDao
@@ -151,6 +152,7 @@ abstract class WCAndroidDatabase : RoomDatabase(), TransactionExecutor {
     abstract val shippingMethodDao: ShippingMethodDao
     abstract val customerFromAnalyticsDao: CustomerFromAnalyticsDao
     internal abstract val productsDao: ProductsDao
+    internal abstract val productVariationsDao: ProductVariationsDao
 
     companion object {
         fun buildDb(applicationContext: Context) = Room.databaseBuilder(

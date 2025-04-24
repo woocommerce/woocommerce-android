@@ -51,6 +51,7 @@ import org.wordpress.android.fluxc.persistence.ProductSqlUtils.getCompositeProdu
 import org.wordpress.android.fluxc.persistence.ProductSqlUtils.observeBundledProducts
 import org.wordpress.android.fluxc.persistence.ProductStorageHelper
 import org.wordpress.android.fluxc.persistence.dao.AddonsDao
+import org.wordpress.android.fluxc.persistence.dao.ProductVariationsDao
 import org.wordpress.android.fluxc.persistence.dao.ProductsDao
 import org.wordpress.android.fluxc.store.WCProductStore.ProductCategorySorting.NAME_ASC
 import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType.GENERIC_ERROR
@@ -77,6 +78,7 @@ class WCProductStore @Inject internal constructor(
     private val productStorageHelper: ProductStorageHelper,
     private val logger: AppLogWrapper,
     private val productsDao: ProductsDao,
+    private val productVariationsDao: ProductVariationsDao
 ) : Store(dispatcher) {
     companion object {
         const val NUM_REVIEWS_PER_FETCH = 25
@@ -838,8 +840,8 @@ class WCProductStore @Inject internal constructor(
     /**
      * returns a list of variations for a specific product in the database
      */
-    fun getVariationsForProduct(site: SiteModel, remoteProductId: Long): List<WCProductVariationModel> =
-        ProductSqlUtils.getVariationsForProduct(site, remoteProductId)
+    suspend fun getVariationsForProduct(site: SiteModel, remoteProductId: Long): List<WCProductVariationModel> =
+        productVariationsDao.getVariations(localSiteId = site.siteId, remoteProductId = remoteProductId)
 
     /**
      * returns a list of shipping classes for a specific site in the database
@@ -1091,7 +1093,7 @@ class WCProductStore @Inject internal constructor(
     )
 
     fun observeVariations(site: SiteModel, productId: Long): Flow<List<WCProductVariationModel>> =
-        ProductSqlUtils.observeVariations(site, productId)
+        productVariationsDao.observeVariations(localSiteId = site.siteId, remoteProductId = productId)
 
     fun observeCategories(
         site: SiteModel,

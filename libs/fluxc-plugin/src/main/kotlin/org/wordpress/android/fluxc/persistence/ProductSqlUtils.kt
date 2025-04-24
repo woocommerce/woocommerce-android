@@ -47,16 +47,6 @@ internal object ProductSqlUtils {
 
     private val gson by lazy { Gson() }
 
-    fun observeVariations(site: SiteModel, productId: Long): Flow<List<WCProductVariationModel>> {
-        return variationsUpdatesTrigger
-            .onStart { emit(Unit) }
-            .debounce(DEBOUNCE_DELAY_FOR_OBSERVERS)
-            .mapLatest {
-                getVariationsForProduct(site, productId)
-            }
-            .flowOn(Dispatchers.IO)
-    }
-
     fun observeCategories(site: SiteModel, sortType: ProductCategorySorting): Flow<List<WCProductCategoryModel>> {
         return categoriesUpdatesTrigger
             .onStart { emit(Unit) }
@@ -151,17 +141,6 @@ internal object ProductSqlUtils {
         return rowsAffected
     }
 
-    fun getVariationsForProduct(site: SiteModel, remoteProductId: Long): List<WCProductVariationModel> {
-//        return WellSql.select(WCProductVariationModel::class.java)
-//            .where()
-//            .beginGroup()
-//            .equals(WCProductVariationModelTable.REMOTE_PRODUCT_ID, remoteProductId)
-//            .equals(WCProductVariationModelTable.LOCAL_SITE_ID, site.id)
-//            .endGroup().endWhere()
-//            .orderBy(WCProductVariationModelTable.MENU_ORDER, SelectQuery.ORDER_ASCENDING)
-//            .asModel
-        return emptyList()
-    }
 
     fun deleteVariationsForProduct(site: SiteModel, remoteProductId: Long): Int {
 //        return WellSql.delete(WCProductVariationModel::class.java)
