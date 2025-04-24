@@ -18,6 +18,4 @@ class WooPosCouponsDataSource @Inject constructor(private val handler: CouponLis
     suspend fun loadMore(): Result<CanLoadMore> {
         return handler.loadMore()
     }
-
-
 }

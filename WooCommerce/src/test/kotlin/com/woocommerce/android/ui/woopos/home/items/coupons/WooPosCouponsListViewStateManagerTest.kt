@@ -304,7 +304,6 @@ class WooPosCouponsListViewStateManagerTest {
         }
         sat.endOfListReached(this)
 
-
         sat.viewState.test {
             advanceUntilIdle()
             expectMostRecentItem() // ignore previous events
@@ -363,7 +362,7 @@ class WooPosCouponsListViewStateManagerTest {
 
             // THEN
             testScheduler.advanceTimeBy(499)
-            expectNoEvents()      // OK, still Loading
+            expectNoEvents() // Still Loading
             testScheduler.advanceTimeBy(2)
 
             assertThat(expectMostRecentItem()).isInstanceOf(WooPosCouponsViewState.Empty::class.java)
