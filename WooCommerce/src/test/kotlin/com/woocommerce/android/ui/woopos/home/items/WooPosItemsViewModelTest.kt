@@ -790,11 +790,10 @@ class WooPosItemsViewModelTest {
     }
 
     @Test
-    fun `when initial products load is active and load more is triggered, then set loadMoreAfterLoadCompletes flag`() = runTest {
+    fun `given initial load in progress, when end of list reached, then pagination state set to loading`() = runTest {
         // GIVEN
         whenever(productsDataSource.hasMorePages).thenReturn(true)
 
-        // Use a controlled flow that won't complete immediately
         val productsFlow = MutableSharedFlow<WooPosProductsDataSource.ProductsResult>()
         whenever(productsDataSource.loadProducts(any())).thenReturn(productsFlow)
 
@@ -824,7 +823,7 @@ class WooPosItemsViewModelTest {
     }
 
     @Test
-    fun `when loadMoreAfterLoadCompletes is set and initial load completes, then load more is triggered`() = runTest {
+    fun `given load more queued, when initial load completes, then load more is triggered`() = runTest {
         // GIVEN
         whenever(productsDataSource.hasMorePages).thenReturn(true)
         val viewModel = createViewModel()
@@ -838,7 +837,7 @@ class WooPosItemsViewModelTest {
     }
 
     @Test
-    fun `when loadMoreAfterLoadCompletes is set and initial load fails, then load more is not triggered`() = runTest {
+    fun `given load more queued, when initial load fails, then load more is not triggered`() = runTest {
         // GIVEN
         whenever(productsDataSource.hasMorePages).thenReturn(true)
         whenever(productsDataSource.loadProducts(any())).thenReturn(
@@ -860,7 +859,7 @@ class WooPosItemsViewModelTest {
     }
 
     @Test
-    fun `when loadMoreAfterLoadCompletes is set and view state is not Content, then load more is not triggered`() = runTest {
+    fun `given load more queued, when items list is not displayed, then load more is not triggered`() = runTest {
         // GIVEN
         whenever(productsDataSource.hasMorePages).thenReturn(true)
         whenever(productsDataSource.loadProducts(any())).thenReturn(
