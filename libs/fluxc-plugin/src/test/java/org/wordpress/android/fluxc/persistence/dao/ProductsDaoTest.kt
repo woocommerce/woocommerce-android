@@ -404,6 +404,23 @@ class ProductsDaoTest {
         assertEquals(42, differentSiteProducts.first().remoteProductId)
     }
 
+    @Test
+    fun `order should ignore case`() = runTest {
+        val input = listOf("apple", "Banana", "cherry", "Apple", "banana", "Cherry")
+        val expected = listOf("apple", "Apple", "Banana", "banana", "cherry", "Cherry")
+        val products = input.mapIndexed { index, name ->
+            ProductTestUtils.generateSampleProduct(
+                remoteId = index.toLong(),
+                name = name
+            )
+        }
+        sut.upsertProducts(products)
+
+        val storedProducts = sut.getAllProductsForSite(siteId = products.first().localSiteId.value)
+
+        assertEquals(expected, storedProducts.map { it.name })
+    }
+
     private suspend fun ProductsDao.getAllProductsForSite(siteId: Int): List<WCProductModel> {
         return observeProducts(
             siteId,
