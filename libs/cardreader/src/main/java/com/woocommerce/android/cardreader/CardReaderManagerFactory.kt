@@ -6,6 +6,7 @@ import com.woocommerce.android.cardreader.internal.CardReaderManagerImpl
 import com.woocommerce.android.cardreader.internal.TokenProvider
 import com.woocommerce.android.cardreader.internal.connection.BluetoothReaderListenerImpl
 import com.woocommerce.android.cardreader.internal.connection.ConnectionManager
+import com.woocommerce.android.cardreader.internal.connection.TapToPayReaderListenerImpl
 import com.woocommerce.android.cardreader.internal.connection.TerminalListenerImpl
 import com.woocommerce.android.cardreader.internal.connection.UpdateErrorMapper
 import com.woocommerce.android.cardreader.internal.connection.actions.DiscoverReadersAction
@@ -39,6 +40,7 @@ object CardReaderManagerFactory {
             AdditionalInfoMapper(),
             UpdateErrorMapper(batteryLevelProvider)
         )
+        val tapToPayReaderListener = TapToPayReaderListenerImpl(logWrapper)
         val terminalListener = TerminalListenerImpl(logWrapper)
         val cardReaderConfigFactory = CardReaderConfigFactory()
         val paymentUtils = PaymentUtils(logWrapper)
@@ -74,6 +76,7 @@ object CardReaderManagerFactory {
             ConnectionManager(
                 terminal,
                 bluetoothReaderListener,
+                tapToPayReaderListener,
                 DiscoverReadersAction(terminal, logWrapper),
                 terminalListener,
                 application,
