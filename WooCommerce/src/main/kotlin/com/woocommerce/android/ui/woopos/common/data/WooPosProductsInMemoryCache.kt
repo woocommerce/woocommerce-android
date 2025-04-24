@@ -39,7 +39,7 @@ class WooPosProductsInMemoryCache @Inject constructor() : WooPosProductsCache {
         addAllInternal(products)
     }
 
-    fun addAllInternal(products: List<Product>) {
+    private fun addAllInternal(products: List<Product>) {
         products.forEach { product ->
             productsCache[product.remoteId] = product
             if (productsCache.size > MAX_CACHE_SIZE) {
