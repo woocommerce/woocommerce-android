@@ -96,12 +96,14 @@ class WooPosSearchProductsDataSourceTest {
             whenever(searchResultsIndex.getSearchResults(query)).thenReturn(products)
             whenever(
                 productStore.searchProducts(
-                    anyOrNull(),
+                    site = anyOrNull(),
                     searchString = anyOrNull(),
+                    skuSearchOptions = anyOrNull(),
                     offset = anyOrNull(),
                     pageSize = anyOrNull(),
                     filterOptions = anyOrNull(),
                     includeTypes = anyOrNull(),
+                    orderCurrency = anyOrNull(),
                 )
             ).thenReturn(WooResult(ProductSearchResult(emptyList(), true)))
 
@@ -125,12 +127,14 @@ class WooPosSearchProductsDataSourceTest {
         )
         whenever(
             productStore.searchProducts(
-                anyOrNull(),
+                site = anyOrNull(),
                 searchString = anyOrNull(),
+                skuSearchOptions = anyOrNull(),
                 offset = anyOrNull(),
                 pageSize = anyOrNull(),
                 filterOptions = anyOrNull(),
                 includeTypes = anyOrNull(),
+                orderCurrency = anyOrNull(),
             )
         ).thenReturn(WooResult(error))
 
@@ -155,12 +159,14 @@ class WooPosSearchProductsDataSourceTest {
             assertThat(result.isSuccess).isTrue()
             assertThat(result.getOrNull()).isEqualTo(products)
             verify(productStore, never()).searchProducts(
-                anyOrNull(),
+                site = anyOrNull(),
                 searchString = anyOrNull(),
+                skuSearchOptions = anyOrNull(),
                 offset = anyOrNull(),
                 pageSize = anyOrNull(),
                 filterOptions = anyOrNull(),
                 includeTypes = anyOrNull(),
+                orderCurrency = anyOrNull(),
             )
         }
 }
