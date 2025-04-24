@@ -1175,7 +1175,10 @@ class WCProductStore @Inject internal constructor(
                 .asWooResult()
                 .model?.asProductVariationModel()
                 ?.apply {
-                    ProductSqlUtils.deleteVariationsForProduct(site, productId)
+                    productVariationsDao.deleteVariationsForProduct(
+                        localSiteId = site.siteId,
+                        remoteProductId = productId
+                    )
                 }
                 ?.let { WooResult(it) }
                 ?: WooResult(WooError(INVALID_RESPONSE, GenericErrorType.INVALID_RESPONSE))
@@ -1321,7 +1324,10 @@ class WCProductStore @Inject internal constructor(
                 // delete product variations for site if this is the first page of results, otherwise
                 // product variations deleted outside of the app will persist
                 if (result.offset == 0) {
-                    ProductSqlUtils.deleteVariationsForProduct(result.site, result.remoteProductId)
+                    productVariationsDao.deleteVariationsForProduct(
+                        localSiteId = result.site.siteId,
+                        remoteProductId = payload.remoteProductId
+                    )
                 }
 
                 productVariationsDao.upsertProductVariations(result.variations)
@@ -1857,7 +1863,10 @@ class WCProductStore @Inject internal constructor(
                         includedVariationIds.isEmpty() &&
                         excludedVariationIds.isEmpty()
                     ) {
-                        ProductSqlUtils.deleteVariationsForProduct(site, productId)
+                        productVariationsDao.deleteVariationsForProduct(
+                            localSiteId = site.siteId,
+                            remoteProductId = productId
+                        )
                     }
 
                     productVariationsDao.upsertProductVariations(response.result)

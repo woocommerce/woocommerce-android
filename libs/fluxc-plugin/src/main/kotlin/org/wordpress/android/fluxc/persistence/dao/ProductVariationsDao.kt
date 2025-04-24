@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCProductVariationModel
 
 @Dao
@@ -43,5 +44,15 @@ abstract class ProductVariationsDao {
 
     @Upsert
     abstract suspend fun upsertProductVariations(variations: List<WCProductVariationModel>)
+
+    @Query(
+        """
+        DELETE FROM ProductVariationEntity
+        WHERE localSiteId = :localSiteId
+        AND remoteProductId = :remoteProductId
+        """
+    )
+    abstract suspend fun deleteVariationsForProduct(localSiteId: Long, remoteProductId: Long)
+
 
 }

@@ -87,18 +87,6 @@ internal object ProductSqlUtils {
         }
     }
 
-    fun deleteVariationsForProduct(site: SiteModel, remoteProductId: Long): Int {
-//        return WellSql.delete(WCProductVariationModel::class.java)
-//            .where().beginGroup()
-//            .equals(WCProductVariationModelTable.LOCAL_SITE_ID, site.id)
-//            .equals(WCProductVariationModelTable.REMOTE_PRODUCT_ID, remoteProductId)
-//            .endGroup()
-//            .endWhere()
-//            .execute()
-//            .also(::triggerVariationsUpdateIfNeeded)
-        return -1
-    }
-
     fun insertOrUpdateProductReviews(productReviews: List<WCProductReviewModel>): Int {
         var rowsAffected = 0
         executeInTransaction {
