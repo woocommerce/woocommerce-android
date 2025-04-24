@@ -17,7 +17,9 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -25,13 +27,14 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
 import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
-class WooPosItemsViewModelTestSelectionViewState {
+class WooPosItemsViewModelTest {
     @Rule
     @JvmField
     val coroutinesTestRule = WooPosCoroutineTestRule()
@@ -784,6 +787,97 @@ class WooPosItemsViewModelTestSelectionViewState {
         viewModel.onUIEvent(WooPosItemsUIEvent.CloseSearchClicked)
 
         verify(searchHelper).onCloseSearchClicked()
+    }
+
+    @Test
+    fun `given initial load in progress, when end of list reached, then pagination state set to loading`() = runTest {
+        // GIVEN
+        whenever(productsDataSource.hasMorePages).thenReturn(true)
+
+        val productsFlow = MutableSharedFlow<WooPosProductsDataSource.ProductsResult>()
+        whenever(productsDataSource.loadProducts(any())).thenReturn(productsFlow)
+
+        val viewModel = createViewModel()
+        val products = listOf(
+            ProductTestUtils.generateProduct(
+                productId = 1,
+                productName = "Product 1",
+                amount = "10.0",
+                productType = "simple"
+            )
+        )
+        val remoteResult = WooPosProductsDataSource.ProductsResult.Remote(
+            Result.success(products)
+        )
+        productsFlow.emit(remoteResult)
+
+        // WHEN
+        viewModel.onUIEvent(WooPosItemsUIEvent.EndOfItemsListReached)
+
+        // THEN
+        viewModel.viewState.test {
+            val value = awaitItem() as WooPosItemsViewState.Content
+            assertThat(value.paginationState).isEqualTo(WooPosPaginationState.Loading)
+            verify(productsDataSource, never()).loadMore()
+        }
+    }
+
+    @Test
+    fun `given load more queued, when initial load completes, then load more is triggered`() = runTest {
+        // GIVEN
+        whenever(productsDataSource.hasMorePages).thenReturn(true)
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosItemsUIEvent.EndOfItemsListReached)
+        advanceUntilIdle()
+
+        // THEN
+        verify(productsDataSource).loadMore()
+    }
+
+    @Test
+    fun `given load more queued, when initial load fails, then load more is not triggered`() = runTest {
+        // GIVEN
+        whenever(productsDataSource.hasMorePages).thenReturn(true)
+        whenever(productsDataSource.loadProducts(any())).thenReturn(
+            flowOf(
+                WooPosProductsDataSource.ProductsResult.Remote(
+                    Result.failure(Exception())
+                )
+            )
+        )
+
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosItemsUIEvent.EndOfItemsListReached)
+        advanceUntilIdle()
+
+        // THEN
+        verify(productsDataSource, never()).loadMore()
+    }
+
+    @Test
+    fun `given load more queued, when items list is not displayed, then load more is not triggered`() = runTest {
+        // GIVEN
+        whenever(productsDataSource.hasMorePages).thenReturn(true)
+        whenever(productsDataSource.loadProducts(any())).thenReturn(
+            flowOf(
+                WooPosProductsDataSource.ProductsResult.Remote(
+                    Result.success(emptyList())
+                )
+            )
+        )
+
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosItemsUIEvent.EndOfItemsListReached)
+        advanceUntilIdle()
+
+        // THEN
+        verify(productsDataSource, never()).loadMore()
     }
 
     private fun createViewModel() =
