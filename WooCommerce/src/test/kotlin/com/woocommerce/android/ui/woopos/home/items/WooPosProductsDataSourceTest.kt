@@ -124,7 +124,6 @@ class WooPosProductsDataSourceTest {
     @Test
     fun `given cached products, when loadProducts called, then should emit cached products first`() = runTest {
         // GIVEN
-
         whenever(productsCache.getAll()).thenReturn(sampleProducts)
         whenever(
             productStore.fetchProducts(
@@ -152,6 +151,36 @@ class WooPosProductsDataSourceTest {
         assertThat(result).isInstanceOf(WooPosProductsDataSource.ProductsResult.Cached::class.java)
         val cachedResult = result as WooPosProductsDataSource.ProductsResult.Cached
         assertThat(cachedResult.products).containsExactlyElementsOf(sampleProducts)
+    }
+
+    @Test
+    fun `given cached products, when loadProducts called with forceRefresh, then should not emit cached products`() = runTest {
+        // GIVEN
+        whenever(productsCache.getAll()).thenReturn(sampleProducts)
+        whenever(
+            productStore.fetchProducts(
+                site = eq(siteModel),
+                offset = any(),
+                pageSize = any(),
+                sortType = any(),
+                filterOptions = any(),
+                includeTypes = any()
+            )
+        ).thenReturn(WooResult(listOf<WCProductModel>()))
+        whenever(productsIndex.getProductList()).thenReturn(sampleProducts)
+        val sut = WooPosProductsDataSource(
+            productStore,
+            selectedSite,
+            productsCache,
+            productsIndex,
+            productsTypesFilterConfig
+        )
+
+        // WHEN
+        val result = sut.loadProducts(forceRefreshProducts = true).first()
+
+        // THEN
+        assertThat(result).isInstanceOf(WooPosProductsDataSource.ProductsResult.Remote::class.java)
     }
 
     @Test
