@@ -77,7 +77,7 @@ internal class TerminalWrapper {
         callback: PaymentIntentCallback
     ): Cancelable = Terminal.getInstance().collectPaymentMethod(paymentIntent, callback)
 
-    fun processPayment(paymentIntent: PaymentIntent, callback: PaymentIntentCallback) =
+    fun processPayment(paymentIntent: PaymentIntent, callback: PaymentIntentCallback): Cancelable =
         Terminal.getInstance().confirmPaymentIntent(paymentIntent, callback)
 
     fun cancelPayment(paymentIntent: PaymentIntent, callback: PaymentIntentCallback) =
