@@ -859,7 +859,7 @@ class WooPosItemsViewModelTest {
     }
 
     @Test
-    fun `when loadMoreAfterLoadCompletes is set and view state is not Content, then load more is not triggered`() = runTest {
+    fun `given load more queued, when items list is not displayed, then load more is not triggered`() = runTest {
         // GIVEN
         whenever(productsDataSource.hasMorePages).thenReturn(true)
         whenever(productsDataSource.loadProducts(any())).thenReturn(
