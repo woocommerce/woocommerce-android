@@ -732,7 +732,9 @@ class WooPosItemsSearchViewModelTest {
         remoteProduct: com.woocommerce.android.model.Product
     ) {
         wheneverBlocking { mockDataSource.searchLocalProducts(query) }.thenReturn(listOf(cachedProduct))
-        wheneverBlocking { mockDataSource.searchRemoteProducts(query) }.thenReturn(Result.success(listOf(remoteProduct)))
+        wheneverBlocking { mockDataSource.searchRemoteProducts(query) }.thenReturn(
+            Result.success(listOf(remoteProduct))
+        )
         whenever(mockParentToChildrenEventReceiver.events).thenReturn(
             flowOf(ParentToChildrenEvent.SearchEvent.ChangedQuery(query))
         )
