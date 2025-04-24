@@ -2,6 +2,7 @@ package com.woocommerce.android.cardreader.internal.connection
 
 import com.stripe.stripeterminal.external.models.ReaderDisplayMessage
 import com.stripe.stripeterminal.external.models.ReaderInputOptions
+import com.stripe.stripeterminal.external.models.TerminalErrorCode
 import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.LogWrapper
 import com.woocommerce.android.cardreader.connection.event.BatteryStatus.CRITICAL
@@ -35,9 +36,9 @@ class BluetoothReaderListenerImplTest {
         val errorType: SoftwareUpdateStatusErrorType = SoftwareUpdateStatusErrorType.Failed
         val exception = mock<TerminalException> {
             on { message }.thenReturn(expectedMessage)
-            on { errorCode }.thenReturn(TerminalException.TerminalErrorCode.READER_SOFTWARE_UPDATE_FAILED)
+            on { errorCode }.thenReturn(TerminalErrorCode.READER_SOFTWARE_UPDATE_FAILED)
         }
-        whenever(updateErrorMapper.map(TerminalException.TerminalErrorCode.READER_SOFTWARE_UPDATE_FAILED))
+        whenever(updateErrorMapper.map(TerminalErrorCode.READER_SOFTWARE_UPDATE_FAILED))
             .thenReturn(errorType)
 
         // WHEN
