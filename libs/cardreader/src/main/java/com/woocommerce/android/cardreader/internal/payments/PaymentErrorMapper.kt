@@ -2,7 +2,7 @@ package com.woocommerce.android.cardreader.internal.payments
 
 import com.stripe.stripeterminal.external.models.PaymentIntent
 import com.stripe.stripeterminal.external.models.TerminalException
-import com.stripe.stripeterminal.external.models.TerminalException.TerminalErrorCode
+import com.stripe.stripeterminal.external.models.TerminalErrorCode
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse.Error.NetworkError
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse.Error.ServerError
@@ -47,11 +47,11 @@ internal class PaymentErrorMapper {
             TerminalErrorCode.CARD_READ_TIMED_OUT -> CardReadTimeOut
             TerminalErrorCode.DECLINED_BY_STRIPE_API -> mapDeclinedByStripeApiError(exception)
             TerminalErrorCode.REQUEST_TIMED_OUT -> NoNetwork
-            TerminalErrorCode.LOCAL_MOBILE_NFC_DISABLED -> NfcDisabled
-            TerminalErrorCode.LOCAL_MOBILE_UNSUPPORTED_DEVICE,
-            TerminalErrorCode.LOCAL_MOBILE_DEVICE_TAMPERED,
-            TerminalErrorCode.LOCAL_MOBILE_UNSUPPORTED_ANDROID_VERSION -> DeviceIsNotSupported
-            TerminalErrorCode.LOCAL_MOBILE_LIBRARY_NOT_INCLUDED -> InvalidAppSetup
+            TerminalErrorCode.TAP_TO_PAY_NFC_DISABLED -> NfcDisabled
+            TerminalErrorCode.TAP_TO_PAY_UNSUPPORTED_DEVICE,
+            TerminalErrorCode.TAP_TO_PAY_DEVICE_TAMPERED,
+            TerminalErrorCode.TAP_TO_PAY_UNSUPPORTED_ANDROID_VERSION -> DeviceIsNotSupported
+            TerminalErrorCode.TAP_TO_PAY_LIBRARY_NOT_INCLUDED -> InvalidAppSetup
             TerminalErrorCode.CANCELED -> Canceled
             else -> Generic
         }
