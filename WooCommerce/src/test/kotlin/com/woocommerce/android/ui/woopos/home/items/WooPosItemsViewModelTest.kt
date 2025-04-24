@@ -905,7 +905,6 @@ class WooPosItemsViewModelTest {
             assertThat(awaitItem()).isInstanceOf(WooPosItemsViewState.Content::class.java)
         }
 
-        // Trigger PTR but don't let it complete
         val ptrFlow = MutableSharedFlow<WooPosProductsDataSource.ProductsResult>()
         whenever(productsDataSource.loadProducts(forceRefreshProducts = true)).thenReturn(ptrFlow)
         viewModel.onUIEvent(WooPosItemsUIEvent.PullToRefreshTriggered)
