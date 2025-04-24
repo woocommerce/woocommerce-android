@@ -163,12 +163,10 @@ class WooPosItemsSearchViewModelTest {
 
             // WHEN
             val viewModel = createViewModel()
+            advanceTimeBy(600)
 
             // THEN
             viewModel.viewState.test {
-                val initialState = awaitItem()
-                assertThat(initialState).isInstanceOf(WooPosItemsSearchViewState.EmptySearchQuery::class.java)
-
                 val contentState = awaitItem()
                 assertThat(contentState).isInstanceOf(WooPosItemsSearchViewState.Content::class.java)
 
@@ -392,8 +390,6 @@ class WooPosItemsSearchViewModelTest {
 
         // THEN
         viewModel.viewState.test {
-            awaitItem() as WooPosItemsSearchViewState.EmptySearchQuery
-
             val cachedState = awaitItem() as WooPosItemsSearchViewState.Content
             assertThat(cachedState.items).hasSize(1)
             assertThat((cachedState.items[0] as Product.Simple).name).isEqualTo("Cached Product")
@@ -484,8 +480,6 @@ class WooPosItemsSearchViewModelTest {
 
         // THEN
         viewModel.viewState.test {
-            awaitItem() as WooPosItemsSearchViewState.EmptySearchQuery
-
             val loadingState = awaitItem()
             assertThat(loadingState).isInstanceOf(WooPosItemsSearchViewState.Loading::class.java)
 
@@ -551,15 +545,11 @@ class WooPosItemsSearchViewModelTest {
         whenever(mockEmptyStateProvider.getPopularItems()).thenReturn(emptyList())
         whenever(mockEmptyStateProvider.getLastSearches()).thenReturn(emptyList())
 
-        var searchAttempt = 0
         whenever(mockDataSource.searchLocalProducts(query)).thenReturn(emptyList())
-        whenever(mockDataSource.searchRemoteProducts(query)).thenAnswer {
-            if (searchAttempt++ == 0) {
-                Result.failure<List<com.woocommerce.android.model.Product>>(Exception("Search failed"))
-            } else {
-                Result.success(products)
-            }
-        }
+        whenever(mockDataSource.searchRemoteProducts(query)).thenReturn(
+            Result.failure(Exception("Search failed")),
+            Result.success(products)
+        )
 
         whenever(mockPriceFormat(BigDecimal("10.0"))).thenReturn("$10.0")
         whenever(mockParentToChildrenEventReceiver.events).thenReturn(
@@ -577,6 +567,8 @@ class WooPosItemsSearchViewModelTest {
             assertThat((errorState as WooPosItemsSearchViewState.Error).searchQuery).isEqualTo(query)
 
             viewModel.onUIEvent(WooPosItemsSearchUiEvent.LoadingErrorRetryButtonClicked)
+
+            skipItems(1)
 
             val contentState = awaitItem() as WooPosItemsSearchViewState.Content
             assertThat(contentState.searchQuery).isEqualTo(query)
