@@ -75,7 +75,7 @@ class CouponsListViewModelTests : BaseUnitTest() {
         setup {
             whenever(couponListHandler.fetchCoupons(null, true)).doSuspendableAnswer {
                 delay(1L)
-                return@doSuspendableAnswer Result.success(Unit)
+                return@doSuspendableAnswer Result.success(true)
             }
         }
 
