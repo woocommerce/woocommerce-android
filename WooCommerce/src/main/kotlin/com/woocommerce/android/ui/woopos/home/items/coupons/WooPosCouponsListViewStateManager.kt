@@ -62,8 +62,8 @@ class WooPosCouponsListViewStateManager @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             fetchingState.emit(FETCHING_FIRST_PAGE)
             val result = couponsDataSource.clearCacheAndFetchFirstPage()
-            delay(500) // avoid UI flickering when there is no network connection
             if (!result.isSuccess) {
+                delay(500) // avoid UI flickering when there is no network connection
                 fetchingState.emit(ERROR_FETCHING_FIRST_PAGE)
             } else {
                 fetchingState.emit(IDLE)
@@ -75,8 +75,8 @@ class WooPosCouponsListViewStateManager @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             fetchingState.emit(LOADING_MORE)
             val result = couponsDataSource.loadMore()
-            delay(500) // avoid UI flickering when there is no network connection
             if (!result.isSuccess) {
+                delay(500) // avoid UI flickering when there is no network connection
                 fetchingState.emit(ERROR_LOADING_MORE)
             } else {
                 fetchingState.emit(IDLE)
