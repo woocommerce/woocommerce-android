@@ -25,7 +25,6 @@ import org.wordpress.android.fluxc.action.UploadAction.UPLOADED_MEDIA
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.media.MediaTestUtils
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.network.rest.wpapi.media.MediaWPRESTResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComNetwork
 import org.wordpress.android.fluxc.network.rest.wpcom.auth.AccessToken
 import org.wordpress.android.fluxc.store.MediaStore.ProgressPayload

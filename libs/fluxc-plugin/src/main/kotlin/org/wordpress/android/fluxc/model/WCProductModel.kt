@@ -8,17 +8,12 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonParseException
-import com.yarolegovich.wellsql.core.Identifiable
-import com.yarolegovich.wellsql.core.annotation.Column
-import com.yarolegovich.wellsql.core.annotation.PrimaryKey
-import com.yarolegovich.wellsql.core.annotation.Table
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductType
 import org.wordpress.android.fluxc.network.utils.getBoolean
 import org.wordpress.android.fluxc.network.utils.getLong
 import org.wordpress.android.fluxc.network.utils.getString
-import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.AppLog.T
 

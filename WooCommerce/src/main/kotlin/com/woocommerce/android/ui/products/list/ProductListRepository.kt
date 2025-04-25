@@ -83,7 +83,7 @@ class ProductListRepository @Inject constructor(
     suspend fun fetchProductList(
         loadMore: Boolean = false,
         productFilterOptions: Map<WCProductStore.ProductFilterOption, String> = emptyMap(),
-        excludedProductIds: List<Long>? = null,
+        excludedProductIds: List<Long> = emptyList(),
         sortType: WCProductStore.ProductSorting? = null
     ): Result<List<Product>> {
         offset = if (loadMore) offset + PRODUCT_PAGE_SIZE else 0
@@ -96,7 +96,7 @@ class ProductListRepository @Inject constructor(
             offset = offset,
             sortType = sortType ?: productSortingChoice,
             filterOptions = productFilterOptions,
-            excludedProductIds = excludedProductIds.orEmpty(),
+            excludedProductIds = excludedProductIds,
             includeTypes = emptyList()
         ).let { result ->
             if (result.isError) {
@@ -207,17 +207,16 @@ class ProductListRepository @Inject constructor(
      */
     fun getProductList(
         productFilterOptions: Map<WCProductStore.ProductFilterOption, String> = emptyMap(),
-        excludedProductIds: List<Long>? = null,
+        excludedProductIds: List<Long> = emptyList(),
         sortType: WCProductStore.ProductSorting? = null
     ): List<Product> {
-        val excludedIds = excludedProductIds?.takeIf { it.isNotEmpty() }
         return if (selectedSite.exists()) {
             val wcProducts = runBlocking {
                 productStore.getProducts(
                     selectedSite.get(),
                     filterOptions = productFilterOptions,
                     sortType = sortType ?: productSortingChoice,
-                    excludedProductIds = excludedIds.orEmpty()
+                    excludedProductIds = excludedProductIds
                 )
             }
             wcProducts.map { it.toAppModel() }
