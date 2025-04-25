@@ -9,8 +9,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.Divider
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.Star
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,7 +48,10 @@ fun WooShippingPackageListItem(
                 isSelected = packageData.isSelected,
                 onSelectionChange = { onPackageSelected(packageData, it) }
             )
-            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
                 Text(
                     text = stringResource(id = packageData.descriptionResId),
                     style = MaterialTheme.typography.caption,
@@ -62,6 +69,15 @@ fun WooShippingPackageListItem(
                     style = MaterialTheme.typography.body2
                 )
             }
+            Icon(
+                modifier = Modifier.padding(end = 16.dp),
+                tint = colorResource(id = R.color.color_on_surface_disabled),
+                imageVector = when (packageData.isPredefined) {
+                    true -> Icons.Filled.Star
+                    false -> Icons.Outlined.Star
+                },
+                contentDescription = "Star",
+            )
         }
         Divider()
     }
