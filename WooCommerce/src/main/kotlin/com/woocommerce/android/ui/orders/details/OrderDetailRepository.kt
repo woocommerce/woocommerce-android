@@ -24,6 +24,7 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.ORDERS
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import org.wordpress.android.fluxc.model.OrderAttributionInfo
@@ -197,20 +198,24 @@ class OrderDetailRepository @Inject constructor(
         productStore.fetchProductListSynced(selectedSite.get(), remoteIds)?.map { it.toAppModel() } ?: emptyList()
 
     fun hasVirtualProductsOnly(remoteProductIds: List<Long>): Boolean {
-        return if (remoteProductIds.isNotEmpty()) {
-            productStore.getVirtualProductCountByRemoteIds(
-                selectedSite.get(), remoteProductIds
-            ) == remoteProductIds.size
-        } else {
-            false
+        return runBlocking {
+            if (remoteProductIds.isNotEmpty()) {
+                productStore.getVirtualProductCountByRemoteIds(
+                    selectedSite.get(), remoteProductIds
+                ) == remoteProductIds.size
+            } else {
+                false
+            }
         }
     }
 
     fun getProductCountForOrder(remoteProductIds: List<Long>): Int {
-        return if (remoteProductIds.isNotEmpty()) {
-            productStore.getProductCountByRemoteIds(selectedSite.get(), remoteProductIds)
-        } else {
-            0
+        return runBlocking {
+            if (remoteProductIds.isNotEmpty()) {
+                productStore.getProductCountByRemoteIds(selectedSite.get(), remoteProductIds)
+            } else {
+                0
+            }
         }
     }
 
@@ -224,11 +229,13 @@ class OrderDetailRepository @Inject constructor(
     }
 
     fun hasSubscriptionProducts(remoteProductIds: List<Long>): Boolean {
-        return if (remoteProductIds.isNotEmpty()) {
-            productStore.getProductsByRemoteIds(selectedSite.get(), remoteProductIds)
-                .any { it.type == PRODUCT_SUBSCRIPTION_TYPE }
-        } else {
-            false
+        return runBlocking {
+            if (remoteProductIds.isNotEmpty()) {
+                productStore.getProductsByRemoteIds(selectedSite.get(), remoteProductIds)
+                    .any { it.type == PRODUCT_SUBSCRIPTION_TYPE }
+            } else {
+                false
+            }
         }
     }
 

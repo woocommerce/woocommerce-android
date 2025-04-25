@@ -5,6 +5,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.persistence.AccountSqlUtils
 import org.wordpress.android.fluxc.persistence.SiteSqlUtils
 
+@Suppress("MagicNumber")
 object SiteTestUtils {
     fun insertTestAccountAndSiteIntoDb(): SiteModel {
         val account = AccountModel().apply { userId = 412 }

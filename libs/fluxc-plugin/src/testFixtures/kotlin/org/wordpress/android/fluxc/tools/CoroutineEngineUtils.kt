@@ -10,6 +10,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
+@Suppress("MagicNumber")
 fun initCoroutineEngine() = runBlocking {
     val coroutineEngine = mock<CoroutineEngine>()
     lenient().doAnswer {

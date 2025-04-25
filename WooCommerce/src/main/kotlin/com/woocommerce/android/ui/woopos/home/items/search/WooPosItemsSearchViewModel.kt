@@ -10,6 +10,7 @@ import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemNavigationData.VariableProductData
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsSearchHelper
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
@@ -17,12 +18,15 @@ import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNaviga
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -35,6 +39,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
     private val childToParentEventSender: WooPosChildrenToParentEventSender,
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
     private val navigator: WooPosItemsNavigator,
+    private val searchHelper: WooPosItemsSearchHelper,
 ) : ViewModel() {
     private val _viewState =
         MutableStateFlow<WooPosItemsSearchViewState>(WooPosItemsSearchViewState.Empty)
@@ -45,13 +50,27 @@ class WooPosItemsSearchViewModel @Inject constructor(
             initialValue = _viewState.value,
         )
 
-    private var searchJob: Job? = null
+    private val searchQueryFlow = MutableStateFlow("")
     private var loadMoreJob: Job? = null
+    private var searchJob: Job? = null
 
     init {
         viewModelScope.launch { setEmptySearchQueryState() }
 
         listenEventsFromParent()
+        startSearchDebouncing()
+    }
+
+    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
+    private fun startSearchDebouncing() {
+        viewModelScope.launch {
+            searchQueryFlow
+                .debounce(SEARCH_DEBOUNCING_TIME)
+                .filter { it.isNotEmpty() }
+                .collect { query ->
+                    loadContent(query)
+                }
+        }
     }
 
     fun onUIEvent(event: WooPosItemsSearchUiEvent) {
@@ -60,9 +79,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
             is WooPosItemsSearchUiEvent.ItemClicked -> handleItemClicked(event.item)
             WooPosItemsSearchUiEvent.LoadingErrorRetryButtonClicked -> {
                 val currentState = _viewState.value as? WooPosItemsSearchViewState.Error ?: return
-                viewModelScope.launch {
-                    loadContent(currentState.searchQuery)
-                }
+                loadContent(currentState.searchQuery)
             }
 
             is WooPosItemsSearchUiEvent.OnRecentSearchClicked -> {
@@ -86,11 +103,15 @@ class WooPosItemsSearchViewModel @Inject constructor(
                     ParentToChildrenEvent.SearchEvent.Started -> Unit
                     ParentToChildrenEvent.SearchEvent.Finished -> Unit
                     is ParentToChildrenEvent.BackFromCheckoutToCartClicked -> Unit
-                    is ParentToChildrenEvent.ItemClickedInProductSelector -> Unit
                     is ParentToChildrenEvent.OrderSuccessfullyPaid -> Unit
                     is ParentToChildrenEvent.CheckoutClicked -> Unit
                     is ParentToChildrenEvent.SearchEvent.RecentSearchSelected -> Unit
                     is ParentToChildrenEvent.OrderCreated -> Unit
+                    is ParentToChildrenEvent.ItemClickedInProductSelector -> {
+                        if (event.itemData is ItemClickedData.Product.Variation && searchHelper.isSearchOpen()) {
+                            storeRecentSearch()
+                        }
+                    }
                 }
             }
         }
@@ -103,44 +124,42 @@ class WooPosItemsSearchViewModel @Inject constructor(
 
         if (event.query.isEmpty()) {
             setEmptySearchQueryState()
-        } else {
-            searchJob = viewModelScope.launch {
-                delay(SEARCH_DEBOUNCING_TIME)
-
-                loadContent(event.query)
-            }
         }
+        searchQueryFlow.value = event.query
     }
 
-    private suspend fun loadContent(searchQuery: String) {
-        childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Started)
+    private fun loadContent(searchQuery: String) {
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch {
+            childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Started)
 
-        dataSource.searchProducts(searchQuery).collect { result ->
-            when (result) {
-                is WooPosSearchProductsDataSource.ProductsResult.Cached -> {
-                    if (result.products.isEmpty()) {
-                        _viewState.value = WooPosItemsSearchViewState.Loading
-                    } else {
-                        _viewState.value = result.products.toContentState(
-                            searchQuery = searchQuery,
-                        )
-                    }
-                }
-
-                is WooPosSearchProductsDataSource.ProductsResult.Remote -> {
-                    if (result.productsResult.isSuccess) {
-                        val products = result.productsResult.getOrThrow()
-                        if (products.isEmpty()) {
-                            _viewState.value = WooPosItemsSearchViewState.Empty
+            dataSource.searchProducts(searchQuery).collect { result ->
+                when (result) {
+                    is WooPosSearchProductsDataSource.ProductsResult.Cached -> {
+                        if (result.products.isEmpty()) {
+                            _viewState.value = WooPosItemsSearchViewState.Loading
                         } else {
-                            _viewState.value = products.toContentState(
+                            _viewState.value = result.products.toContentState(
                                 searchQuery = searchQuery,
                             )
                         }
-                    } else {
-                        _viewState.value = WooPosItemsSearchViewState.Error(searchQuery = searchQuery)
                     }
-                    childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Finished)
+
+                    is WooPosSearchProductsDataSource.ProductsResult.Remote -> {
+                        if (result.productsResult.isSuccess) {
+                            val products = result.productsResult.getOrThrow()
+                            if (products.isEmpty()) {
+                                _viewState.value = WooPosItemsSearchViewState.Empty
+                            } else {
+                                _viewState.value = products.toContentState(
+                                    searchQuery = searchQuery,
+                                )
+                            }
+                        } else {
+                            _viewState.value = WooPosItemsSearchViewState.Error(searchQuery = searchQuery)
+                        }
+                        childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Finished)
+                    }
                 }
             }
         }
@@ -199,7 +218,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
                 }
             }
 
-            is WooPosItemSelectionViewState.Variation -> {
+            is WooPosItemSelectionViewState.Product.Variation -> {
                 error("Variation item click is not supported")
             }
         }

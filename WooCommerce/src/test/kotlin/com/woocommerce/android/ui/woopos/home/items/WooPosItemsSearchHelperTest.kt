@@ -21,6 +21,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+
 @ExperimentalCoroutinesApi
 class WooPosItemsSearchHelperTest {
     @Rule
@@ -56,8 +57,8 @@ class WooPosItemsSearchHelperTest {
         val result = searchHelper.getInitialSearchState(isProductsSearchEnabled)
 
         // THEN
-        assertThat(result).isInstanceOf(WooPosItemsViewState.Content.SearchState.Visible::class.java)
-        val visibleState = result as WooPosItemsViewState.Content.SearchState.Visible
+        assertThat(result).isInstanceOf(WooPosItemsViewState.SearchState.Visible::class.java)
+        val visibleState = result as WooPosItemsViewState.SearchState.Visible
         assertThat(visibleState.state).isInstanceOf(WooPosSearchInputState.Closed::class.java)
     }
 
@@ -70,7 +71,7 @@ class WooPosItemsSearchHelperTest {
         val result = searchHelper.getInitialSearchState(isProductsSearchEnabled)
 
         // THEN
-        assertThat(result).isInstanceOf(WooPosItemsViewState.Content.SearchState.Hidden::class.java)
+        assertThat(result).isInstanceOf(WooPosItemsViewState.SearchState.Hidden::class.java)
     }
 
     @Test
@@ -101,8 +102,8 @@ class WooPosItemsSearchHelperTest {
         searchHelper.onSearchChanged(searchQuery, cursorPosition)
 
         // THEN
-        val currentState = viewStateFlow.value as WooPosItemsViewState.Content
-        val searchState = currentState.search as WooPosItemsViewState.Content.SearchState.Visible
+        val currentState = viewStateFlow.value as WooPosItemsViewState.ProductList
+        val searchState = currentState.search as WooPosItemsViewState.SearchState.Visible
         val openState = searchState.state as WooPosSearchInputState.Open
         assertThat(openState.input).isInstanceOf(WooPosSearchInputState.Open.Input.Query::class.java)
         val queryInput = openState.input as WooPosSearchInputState.Open.Input.Query
@@ -121,8 +122,8 @@ class WooPosItemsSearchHelperTest {
         searchHelper.onSearchChanged(emptyQuery, cursorPosition)
 
         // THEN
-        val currentState = viewStateFlow.value as WooPosItemsViewState.Content
-        val searchState = currentState.search as WooPosItemsViewState.Content.SearchState.Visible
+        val currentState = viewStateFlow.value as WooPosItemsViewState.ProductList
+        val searchState = currentState.search as WooPosItemsViewState.SearchState.Visible
         val openState = searchState.state as WooPosSearchInputState.Open
         assertThat(openState.input).isInstanceOf(WooPosSearchInputState.Open.Input.Hint::class.java)
     }
@@ -137,8 +138,8 @@ class WooPosItemsSearchHelperTest {
         searchHelper.onCloseSearchClicked()
 
         // THEN
-        val currentState = viewStateFlow.value as WooPosItemsViewState.Content
-        val searchState = currentState.search as WooPosItemsViewState.Content.SearchState.Visible
+        val currentState = viewStateFlow.value as WooPosItemsViewState.ProductList
+        val searchState = currentState.search as WooPosItemsViewState.SearchState.Visible
         assertThat(searchState.state).isInstanceOf(WooPosSearchInputState.Closed::class.java)
     }
 
@@ -153,8 +154,8 @@ class WooPosItemsSearchHelperTest {
             searchHelper.onClearSearchClicked()
 
             // THEN
-            val currentState = viewStateFlow.value as WooPosItemsViewState.Content
-            val searchState = currentState.search as WooPosItemsViewState.Content.SearchState.Visible
+            val currentState = viewStateFlow.value as WooPosItemsViewState.ProductList
+            val searchState = currentState.search as WooPosItemsViewState.SearchState.Visible
             val openState = searchState.state as WooPosSearchInputState.Open
             assertThat(openState.input).isInstanceOf(WooPosSearchInputState.Open.Input.Hint::class.java)
         }
@@ -171,8 +172,8 @@ class WooPosItemsSearchHelperTest {
         advanceUntilIdle()
 
         // THEN
-        val currentState = viewStateFlow.value as WooPosItemsViewState.Content
-        val searchState = currentState.search as WooPosItemsViewState.Content.SearchState.Visible
+        val currentState = viewStateFlow.value as WooPosItemsViewState.ProductList
+        val searchState = currentState.search as WooPosItemsViewState.SearchState.Visible
         val openState = searchState.state as WooPosSearchInputState.Open
         assertThat(openState.isLoading).isTrue
     }
@@ -188,73 +189,10 @@ class WooPosItemsSearchHelperTest {
         searchHelper.initialize(this, viewStateFlow)
 
         // THEN
-        val currentState = viewStateFlow.value as WooPosItemsViewState.Content
-        val searchState = currentState.search as WooPosItemsViewState.Content.SearchState.Visible
+        val currentState = viewStateFlow.value as WooPosItemsViewState.ProductList
+        val searchState = currentState.search as WooPosItemsViewState.SearchState.Visible
         val openState = searchState.state as WooPosSearchInputState.Open
         assertThat(openState.isLoading).isFalse
-    }
-
-    private fun createContentState(): WooPosItemsViewState.Content {
-        return WooPosItemsViewState.Content(
-            search = WooPosItemsViewState.Content.SearchState.Visible(
-                state = WooPosSearchInputState.Open(
-                    input = WooPosSearchInputState.Open.Input.Hint("Search products"),
-                    isLoading = false
-                )
-            ),
-            items = emptyList(),
-            bannerState = WooPosItemsViewState.Content.BannerState(
-                isBannerHiddenByUser = false,
-                title = R.string.app_name,
-                message = R.string.app_name,
-                icon = R.drawable.ic_woo
-            ),
-            paginationState = WooPosPaginationState.None,
-            pullToRefreshState = WooPosPullToRefreshState.Enabled,
-            couponsEnabled = false
-        )
-    }
-
-    @Test
-    fun `when closed search, then pull to refresh is enabled`() = runTest {
-        // GIVEN
-        searchHelper.initialize(this, viewStateFlow)
-
-        // WHEN
-        searchHelper.onCloseSearchClicked()
-
-        // THEN
-        val currentState = viewStateFlow.value as WooPosItemsViewState.Content
-        assertThat(currentState.pullToRefreshState).isEqualTo(WooPosPullToRefreshState.Enabled)
-    }
-
-    @Test
-    fun `when search changed, then pull to refresh is disabled`() = runTest {
-        // GIVEN
-        searchHelper.initialize(this, viewStateFlow)
-
-        // WHEN
-        searchHelper.onSearchChanged("test query", "test query".length)
-
-        // THEN
-        val currentState = viewStateFlow.value as WooPosItemsViewState.Content
-        assertThat(currentState.pullToRefreshState).isEqualTo(WooPosPullToRefreshState.Disabled)
-    }
-
-    @Test
-    fun `when hidden search state, then pull to refresh is enabled`() = runTest {
-        // GIVEN
-        searchHelper.initialize(this, viewStateFlow)
-        val contentState = createContentState().copy(
-            search = WooPosItemsViewState.Content.SearchState.Hidden
-        )
-
-        // WHEN
-        viewStateFlow.value = contentState
-
-        // THEN
-        val currentState = viewStateFlow.value as WooPosItemsViewState.Content
-        assertThat(currentState.pullToRefreshState).isEqualTo(WooPosPullToRefreshState.Enabled)
     }
 
     @Test
@@ -266,8 +204,8 @@ class WooPosItemsSearchHelperTest {
         searchHelper.onAnimationComplete()
 
         // THEN
-        val currentState = viewStateFlow.value as WooPosItemsViewState.Content
-        val searchState = currentState.search as WooPosItemsViewState.Content.SearchState.Visible
+        val currentState = viewStateFlow.value as WooPosItemsViewState.ProductList
+        val searchState = currentState.search as WooPosItemsViewState.SearchState.Visible
         val openState = searchState.state as WooPosSearchInputState.Open
         assertThat(openState.hasAnimationPlayed).isTrue
     }
@@ -284,8 +222,8 @@ class WooPosItemsSearchHelperTest {
         advanceUntilIdle()
 
         // THEN
-        val afterReopenState = viewStateFlow.value as WooPosItemsViewState.Content
-        val afterReopenSearchState = afterReopenState.search as WooPosItemsViewState.Content.SearchState.Visible
+        val afterReopenState = viewStateFlow.value as WooPosItemsViewState.ProductList
+        val afterReopenSearchState = afterReopenState.search as WooPosItemsViewState.SearchState.Visible
         assertThat(afterReopenSearchState.state).isInstanceOf(WooPosSearchInputState.Open::class.java)
 
         val openState = afterReopenSearchState.state as WooPosSearchInputState.Open
@@ -303,8 +241,8 @@ class WooPosItemsSearchHelperTest {
         searchHelper.onClearSearchClicked()
 
         // THEN
-        val currentState = viewStateFlow.value as WooPosItemsViewState.Content
-        val searchState = currentState.search as WooPosItemsViewState.Content.SearchState.Visible
+        val currentState = viewStateFlow.value as WooPosItemsViewState.ProductList
+        val searchState = currentState.search as WooPosItemsViewState.SearchState.Visible
         val openState = searchState.state as WooPosSearchInputState.Open
         assertThat(openState.hasAnimationPlayed).isFalse
     }
@@ -327,8 +265,30 @@ class WooPosItemsSearchHelperTest {
         advanceUntilIdle()
 
         // THEN
-        val currentState = viewStateFlow.value as WooPosItemsViewState.Content
-        val searchState = currentState.search as WooPosItemsViewState.Content.SearchState.Visible
+        val currentState = viewStateFlow.value as WooPosItemsViewState.ProductList
+        val searchState = currentState.search as WooPosItemsViewState.SearchState.Visible
         assertThat(searchState.state).isInstanceOf(WooPosSearchInputState.Closed::class.java)
+    }
+
+    private fun createContentState(): WooPosItemsViewState.ProductList {
+        return WooPosItemsViewState.ProductList(
+            search = WooPosItemsViewState.SearchState.Visible(
+                state = WooPosSearchInputState.Open(
+                    input = WooPosSearchInputState.Open.Input.Hint("Search products"),
+                    isLoading = false
+                )
+            ),
+            banner = WooPosItemsViewState.BannerState.Hidden,
+            tabs = listOf(
+                WooPosItemsViewState.Tab(
+                    R.string.woopos_products_screen_title,
+                    highlightLevel = WooPosItemsViewState.Tab.HighlightLevel.Full
+                ),
+                WooPosItemsViewState.Tab(
+                    R.string.woopos_coupons_screen_title,
+                    highlightLevel = WooPosItemsViewState.Tab.HighlightLevel.Normal
+                )
+            )
+        )
     }
 }

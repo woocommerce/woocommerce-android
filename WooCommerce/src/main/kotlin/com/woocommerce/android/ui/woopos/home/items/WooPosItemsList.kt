@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.home.items
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -60,12 +59,9 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState.Product
-import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState.Variation
-import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState.Content.BannerState
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun WooPosItemList(
     state: WooPosContentViewState,
@@ -100,7 +96,7 @@ fun WooPosItemList(
                     )
                 }
 
-                is Variation -> {
+                is Product.Variation -> {
                     VariationItem(
                         modifier = Modifier.animateItem(),
                         item = product,
@@ -148,7 +144,7 @@ private fun ProductItem(
         item.name,
         item.price
     )
-    WooPosItemCard(modifier, itemContentDescription, onItemClicked, item)
+    WooPosProductCard(modifier, itemContentDescription, onItemClicked, item)
 }
 
 @Composable
@@ -162,13 +158,13 @@ private fun VariableProductItem(
         item.name,
         item.price
     )
-    WooPosItemCard(modifier, itemContentDescription, onItemClicked, item)
+    WooPosProductCard(modifier, itemContentDescription, onItemClicked, item)
 }
 
 @Composable
 private fun VariationItem(
     modifier: Modifier = Modifier,
-    item: Variation,
+    item: Product.Variation,
     onItemClicked: (item: WooPosItemSelectionViewState) -> Unit
 ) {
     val itemContentDescription = stringResource(
@@ -176,15 +172,15 @@ private fun VariationItem(
         item.name,
         item.price
     )
-    WooPosItemCard(modifier, itemContentDescription, onItemClicked, item)
+    WooPosProductCard(modifier, itemContentDescription, onItemClicked, item)
 }
 
 @Composable
-fun WooPosItemCard(
+fun WooPosProductCard(
     modifier: Modifier,
     itemContentDescription: String,
     onItemClicked: (item: WooPosItemSelectionViewState) -> Unit,
-    item: WooPosItemSelectionViewState
+    item: Product
 ) {
     WooPosCard(
         modifier = modifier
@@ -233,18 +229,13 @@ private fun ProductInfo(item: WooPosItemSelectionViewState) {
         when (item) {
             is Product.Simple -> SimpleProductDetails(item = item)
             is Product.Variable -> VariableProductDetails()
-            is Variation -> VariationProductDetails(item = item)
+            is Product.Variation -> VariationProductDetails(item = item)
         }
     }
 }
 
 @Composable
-private fun ProductImage(item: WooPosItemSelectionViewState) {
-    val imageUrl = when (item) {
-        is Product.Simple -> item.imageUrl
-        is Product.Variable -> item.imageUrl
-        is Variation -> item.imageUrl
-    }
+private fun ProductImage(item: Product) {
     Box(
         modifier = Modifier
             .size(112.dp)
@@ -255,11 +246,11 @@ private fun ProductImage(item: WooPosItemSelectionViewState) {
             painter = painterResource(R.drawable.ic_box),
             contentDescription = null,
             colorFilter = ColorFilter.tint(WooPosTheme.colors.onSurfaceVariantLowest),
-            modifier = Modifier.size(38.dp, 32.dp)
+            modifier = Modifier.size(36.dp, 36.dp)
         )
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
-                .data(imageUrl)
+                .data(item.imageUrl)
                 .crossfade(true)
                 .build(),
             contentDescription = null,
@@ -288,7 +279,7 @@ private fun VariableProductDetails() {
 }
 
 @Composable
-fun VariationProductDetails(item: Variation) {
+fun VariationProductDetails(item: Product.Variation) {
     WooPosText(
         text = item.price,
         style = WooPosTypography.BodyLarge,
@@ -437,8 +428,7 @@ private fun InfiniteListHandler(
 fun ItemListPreview() {
     WooPosTheme {
         WooPosItemList(
-            WooPosItemsViewState.Content(
-                WooPosItemsViewState.Content.SearchState.Hidden,
+            WooPosProductsViewState.Content(
                 listOf(
                     Product.Simple(
                         id = 1,
@@ -448,13 +438,7 @@ fun ItemListPreview() {
                         imageUrl = ""
                     ),
                     Product.Variable(id = 2, name = "Variable Product", price = "$10.00", "", 1, listOf()),
-                    Variation(3, "Variation", 0, "$10", ""),
-                ),
-                BannerState(
-                    false,
-                    R.string.woopos_banner_simple_products_only_title,
-                    R.string.woopos_banner_simple_products_only_message,
-                    R.drawable.info
+                    Product.Variation(3, "Variation", "$10", "", 0),
                 ),
             ),
             listState = LazyListState(),
