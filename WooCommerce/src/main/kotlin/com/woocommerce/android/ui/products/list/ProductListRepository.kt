@@ -20,6 +20,7 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -28,7 +29,6 @@ import org.wordpress.android.fluxc.action.WCProductAction
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.store.WCProductStore
-import org.wordpress.android.fluxc.store.WCProductStore.SkuSearchOptions
 import javax.inject.Inject
 
 class ProductListRepository @Inject constructor(
@@ -54,7 +54,7 @@ class ProductListRepository @Inject constructor(
     var lastSearchQuery: String? = null
         private set
 
-    var lastIsSkuSearch = SkuSearchOptions.Disabled
+    var lastIsSkuSearch = WCProductStore.SkuSearchOptions.Disabled
         private set
 
     var productSortingChoice: WCProductStore.ProductSorting
@@ -212,12 +212,14 @@ class ProductListRepository @Inject constructor(
     ): List<Product> {
         val excludedIds = excludedProductIds?.takeIf { it.isNotEmpty() }
         return if (selectedSite.exists()) {
-            val wcProducts = productStore.getProducts(
-                selectedSite.get(),
-                filterOptions = productFilterOptions,
-                sortType = sortType ?: productSortingChoice,
-                excludedProductIds = excludedIds
-            )
+            val wcProducts = runBlocking {
+                productStore.getProducts(
+                    selectedSite.get(),
+                    filterOptions = productFilterOptions,
+                    sortType = sortType ?: productSortingChoice,
+                    excludedProductIds = excludedIds.orEmpty()
+                )
+            }
             wcProducts.map { it.toAppModel() }
         } else {
             WooLog.w(WooLog.T.PRODUCTS, "No site selected - unable to load products")
@@ -292,9 +294,7 @@ class ProductListRepository @Inject constructor(
             site = selectedSite.get(),
             remoteProductIds = productsIds.toList()
         ).map {
-            it.apply {
-                status = newStatus.toString()
-            }
+            it.copy(status = newStatus.toString())
         }
 
         bulkUpdateProducts(updatedProducts)
@@ -308,9 +308,7 @@ class ProductListRepository @Inject constructor(
             site = selectedSite.get(),
             remoteProductIds = productsIds
         ).map {
-            it.apply {
-                regularPrice = newRegularPrice
-            }
+            it.copy(regularPrice = newRegularPrice)
         }
 
         bulkUpdateProducts(updatedProducts)
@@ -355,7 +353,7 @@ class ProductListRepository @Inject constructor(
 
             val productsToUpdate =
                 allProducts.filterNot { it.manageStock || ProductType.fromString(it.type).isVariableProduct() }.map {
-                    it.apply { stockStatus = ProductStockStatus.fromStockStatus(newStatus) }
+                    it.copy(stockStatus = ProductStockStatus.fromStockStatus(newStatus))
                 }
 
             if (productsToUpdate.isEmpty() && allProducts.isNotEmpty()) {

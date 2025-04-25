@@ -18,111 +18,111 @@ class ProductDtoMapper @Inject constructor(
         } ?: emptyList()
         val metaData = stripProductMetaData(fatMetaDataList)
 
-        val model = WCProductModel().apply {
-            this.localSiteId = localSiteId.value
-            remoteProductId = dto.id ?: 0
-            name = dto.name ?: ""
-            slug = dto.slug ?: ""
-            permalink = dto.permalink ?: ""
+        val dimensions = dto.dimensions?.asJsonObject
 
-            dateCreated = dto.date_created ?: ""
-            dateModified = dto.date_modified ?: ""
+        val model = WCProductModel(
+            localSiteId = localSiteId,
+            remoteId = LocalOrRemoteId.RemoteId(dto.id ?: 0),
+            name = dto.name ?: "",
+            slug = dto.slug ?: "",
+            permalink = dto.permalink ?: "",
 
-            dateOnSaleFrom = dto.date_on_sale_from ?: ""
-            dateOnSaleTo = dto.date_on_sale_to ?: ""
-            dateOnSaleFromGmt = dto.date_on_sale_from_gmt ?: ""
-            dateOnSaleToGmt = dto.date_on_sale_to_gmt ?: ""
+            dateCreated = dto.date_created ?: "",
+            dateModified = dto.date_modified ?: "",
 
-            type = dto.type ?: ""
-            status = dto.status ?: ""
-            featured = dto.featured
-            catalogVisibility = dto.catalog_visibility ?: ""
-            description = dto.description ?: ""
-            shortDescription = dto.short_description ?: ""
-            sku = dto.sku ?: ""
-            globalUniqueId = dto.global_unique_id ?: ""
+            dateOnSaleFrom = dto.date_on_sale_from ?: "",
+            dateOnSaleTo = dto.date_on_sale_to ?: "",
+            dateOnSaleFromGmt = dto.date_on_sale_from_gmt ?: "",
+            dateOnSaleToGmt = dto.date_on_sale_to_gmt ?: "",
 
-            price = dto.price ?: ""
-            regularPrice = dto.regular_price ?: ""
-            salePrice = dto.sale_price ?: ""
-            onSale = dto.on_sale
-            totalSales = dto.total_sales
-            purchasable = dto.purchasable
+            type = dto.type ?: "",
+            status = dto.status ?: "",
+            featured = dto.featured,
+            catalogVisibility = dto.catalog_visibility ?: "",
+            description = dto.description ?: "",
+            shortDescription = dto.short_description ?: "",
+            sku = dto.sku ?: "",
+            globalUniqueId = dto.global_unique_id ?: "",
 
-            virtual = dto.virtual
-            downloadable = dto.downloadable
-            downloadLimit = dto.download_limit
-            downloadExpiry = dto.download_expiry
+            price = dto.price ?: "",
+            regularPrice = dto.regular_price ?: "",
+            salePrice = dto.sale_price ?: "",
+            onSale = dto.on_sale,
+            totalSales = dto.total_sales,
+            purchasable = dto.purchasable,
 
-            externalUrl = dto.external_url ?: ""
-            buttonText = dto.button_text ?: ""
+            virtual = dto.virtual,
+            downloadable = dto.downloadable,
+            downloadLimit = dto.download_limit,
+            downloadExpiry = dto.download_expiry,
 
-            taxStatus = dto.tax_status ?: ""
-            taxClass = dto.tax_class ?: ""
+            externalUrl = dto.external_url ?: "",
+            buttonText = dto.button_text ?: "",
 
-            // variations may have "parent" here if inventory is enabled for the parent but not the variation
+            taxStatus = dto.tax_status ?: "",
+            taxClass = dto.tax_class ?: "",
+
+            // variations may have "parent" here if inventory is enabled for the parent but not the variation,
             manageStock = dto.manage_stock?.let {
                 it == "true" || it == "parent"
-            } ?: false
+            } ?: false,
 
-            stockQuantity = dto.stock_quantity ?: 0.0
+            stockQuantity = dto.stock_quantity ?: 0.0,
 
-            stockStatus = dto.stock_status ?: ""
+            stockStatus = dto.stock_status ?: "",
 
-            backorders = dto.backorders ?: ""
-            backordersAllowed = dto.backorders_allowed
-            backordered = dto.backordered
-            soldIndividually = dto.sold_individually
-            weight = dto.weight ?: ""
+            backorders = dto.backorders ?: "",
+            backordersAllowed = dto.backorders_allowed,
+            backordered = dto.backordered,
+            soldIndividually = dto.sold_individually,
+            weight = dto.weight ?: "",
 
-            shippingRequired = dto.shipping_required
-            shippingTaxable = dto.shipping_taxable
-            shippingClass = dto.shipping_class ?: ""
-            shippingClassId = dto.shipping_class_id
+            shippingRequired = dto.shipping_required,
+            shippingTaxable = dto.shipping_taxable,
+            shippingClass = dto.shipping_class ?: "",
+            shippingClassId = dto.shipping_class_id,
 
-            reviewsAllowed = dto.reviews_allowed
-            averageRating = dto.average_rating ?: ""
-            ratingCount = dto.rating_count
+            reviewsAllowed = dto.reviews_allowed,
+            averageRating = dto.average_rating ?: "",
+            ratingCount = dto.rating_count,
 
-            parentId = dto.parent_id
-            menuOrder = dto.menu_order
-            purchaseNote = dto.purchase_note ?: ""
+            parentId = dto.parent_id,
+            menuOrder = dto.menu_order,
+            purchaseNote = dto.purchase_note ?: "",
 
-            categories = dto.categories?.toString() ?: ""
-            tags = dto.tags?.toString() ?: ""
-            images = dto.images?.toString() ?: ""
-            attributes = dto.attributes?.toString() ?: ""
-            variations = dto.variations?.toString() ?: ""
-            downloads = dto.downloads?.toString() ?: ""
-            relatedIds = dto.related_ids?.toString() ?: ""
-            crossSellIds = dto.cross_sell_ids?.toString() ?: ""
-            upsellIds = dto.upsell_ids?.toString() ?: ""
-            groupedProductIds = dto.grouped_products?.toString() ?: ""
-            bundledItems = dto.bundled_items?.toString() ?: ""
-            compositeComponents = dto.composite_components?.toString() ?: ""
-            minAllowedQuantity = dto.min_quantity?.toInt() ?: -1
-            maxAllowedQuantity = dto.max_quantity?.let { it.ifEmpty { "0" } }?.toInt() ?: -1
-            groupOfQuantity = dto.group_of_quantity?.toInt() ?: -1
+            categories = dto.categories?.toString() ?: "",
+            tags = dto.tags?.toString() ?: "",
+            images = dto.images?.toString() ?: "",
+            attributes = dto.attributes?.toString() ?: "",
+            variations = dto.variations?.toString() ?: "",
+            downloads = dto.downloads?.toString() ?: "",
+            relatedIds = dto.related_ids?.toString() ?: "",
+            crossSellIds = dto.cross_sell_ids?.toString() ?: "",
+            upsellIds = dto.upsell_ids?.toString() ?: "",
+            groupedProductIds = dto.grouped_products?.toString() ?: "",
+            bundledItems = dto.bundled_items?.toString() ?: "",
+            compositeComponents = dto.composite_components?.toString() ?: "",
+            minAllowedQuantity = dto.min_quantity?.toInt() ?: -1,
+            maxAllowedQuantity = dto.max_quantity?.let { it.ifEmpty { "0" } }?.toInt() ?: -1,
+            groupOfQuantity = dto.group_of_quantity?.toInt() ?: -1,
 
             combineVariationQuantities = dto.combine_variations?.let {
                 it == "yes"
-            } ?: false
+            } ?: false,
 
-            password = dto.password
+            password = dto.password,
 
             isSampleProduct = dto.metadata?.any {
                 val metaDataEntry = WCMetaData.fromJson(it.asJsonObject)
                 metaDataEntry?.let { json ->
                     json.key == "_headstart_post" && json.valueAsString == "_hs_extra"
                 } ?: false
-            } ?: false
+            } ?: false,
 
-            dto.dimensions?.asJsonObject?.let { json ->
-                length = json.getString("length") ?: ""
-                width = json.getString("width") ?: ""
-                height = json.getString("height") ?: ""
-            }
-        }
+            length = dimensions?.getString("length").orEmpty(),
+            width = dimensions?.getString("width").orEmpty(),
+            height = dimensions?.getString("height").orEmpty()
+        )
 
         return ProductWithMetaData(
             product = model.applyBundledProductChanges(dto),
@@ -130,14 +130,20 @@ class ProductDtoMapper @Inject constructor(
         )
     }
 
-    private fun WCProductModel.applyBundledProductChanges(dto: ProductApiResponse) = apply {
-        if (this.type == CoreProductType.BUNDLE.value) {
-            if (dto.bundle_stock_status !in CoreProductStockStatus.ALL_VALUES) {
-                specialStockStatus = dto.bundle_stock_status ?: ""
-            }
-
-            bundleMaxSize = dto.bundle_max_size?.toFloatOrNull()
-            bundleMinSize = dto.bundle_min_size?.toFloatOrNull()
+    private fun WCProductModel.applyBundledProductChanges(dto: ProductApiResponse): WCProductModel {
+        return if (this.type == CoreProductType.BUNDLE.value) {
+            copy(
+                specialStockStatus = if (dto.bundle_stock_status !in CoreProductStockStatus.ALL_VALUES) {
+                    dto.bundle_stock_status ?: ""
+                } else {
+                    this.specialStockStatus
+                },
+                bundleMaxSize = dto.bundle_max_size?.toFloatOrNull(),
+                bundleMinSize = dto.bundle_min_size?.toFloatOrNull(),
+            )
+        } else {
+            this
         }
     }
+
 }
