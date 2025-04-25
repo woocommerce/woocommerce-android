@@ -91,7 +91,7 @@ class WooPosProductsDataSourceTest {
     private val productsTypesFilterConfig = WooPosProductsTypesFilterConfig()
 
     @Test
-    fun `given force refresh, when loadProducts called, then should clear cache`() = runTest {
+    fun `given force refresh, when loadProducts called, then should clear cache and insert products again`() = runTest {
         // GIVEN
         whenever(productsIndex.getProductList()).thenReturn(emptyList(), sampleProducts)
 
@@ -117,14 +117,13 @@ class WooPosProductsDataSourceTest {
         sut.loadProducts(forceRefreshProducts = true).first()
 
         // THEN
-        verify(productsCache).clear()
+        verify(productsCache).setAll(any())
         verify(productsIndex).clearCache()
     }
 
     @Test
     fun `given cached products, when loadProducts called, then should emit cached products first`() = runTest {
         // GIVEN
-
         whenever(productsCache.getAll()).thenReturn(sampleProducts)
         whenever(
             productStore.fetchProducts(
@@ -152,6 +151,36 @@ class WooPosProductsDataSourceTest {
         assertThat(result).isInstanceOf(WooPosProductsDataSource.ProductsResult.Cached::class.java)
         val cachedResult = result as WooPosProductsDataSource.ProductsResult.Cached
         assertThat(cachedResult.products).containsExactlyElementsOf(sampleProducts)
+    }
+
+    @Test
+    fun `given cached products, when loadProducts called with forceRefresh, then should not emit cached products`() = runTest {
+        // GIVEN
+        whenever(productsCache.getAll()).thenReturn(sampleProducts)
+        whenever(
+            productStore.fetchProducts(
+                site = eq(siteModel),
+                offset = any(),
+                pageSize = any(),
+                sortType = any(),
+                filterOptions = any(),
+                includeTypes = any()
+            )
+        ).thenReturn(WooResult(listOf<WCProductModel>()))
+        whenever(productsIndex.getProductList()).thenReturn(sampleProducts)
+        val sut = WooPosProductsDataSource(
+            productStore,
+            selectedSite,
+            productsCache,
+            productsIndex,
+            productsTypesFilterConfig
+        )
+
+        // WHEN
+        val result = sut.loadProducts(forceRefreshProducts = true).first()
+
+        // THEN
+        assertThat(result).isInstanceOf(WooPosProductsDataSource.ProductsResult.Remote::class.java)
     }
 
     @Test
