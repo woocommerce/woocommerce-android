@@ -91,7 +91,7 @@ class WooPosToolbarViewModel @Inject constructor(
         when (event.menuItem.title) {
             R.string.woopos_product_limitations_title -> {
                 viewModelScope.launch {
-                    childrenToParentEventSender.sendToParent(ChildToParentEvent.ProductInfoMenuItemClicked)
+                    childrenToParentEventSender.sendToParent(ChildToParentEvent.SimpleProductExplanationMenuItemClicked)
                 }
             }
             R.string.woopos_get_support_title -> {

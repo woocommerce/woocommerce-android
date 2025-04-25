@@ -102,6 +102,9 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
         data object ViewDocsTapped : Event() {
             override val name: String = "view_docs_tapped"
         }
+        data object SimpleProductExplanationDialogShown : Event() {
+            override val name: String = "pos_simple_products_explanation_dialog_shown"
+        }
     }
 
     sealed class PaymentFlowTrackerEvent : WooPosAnalyticsEvent() {

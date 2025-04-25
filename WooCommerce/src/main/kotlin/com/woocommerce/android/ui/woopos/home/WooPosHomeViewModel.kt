@@ -166,10 +166,11 @@ class WooPosHomeViewModel @Inject constructor(
                         )
                     }
 
-                    ChildToParentEvent.ProductInfoMenuItemClicked -> {
+                    ChildToParentEvent.SimpleProductExplanationMenuItemClicked -> {
                         _state.value = _state.value.copy(
                             productsInfoDialog = ProductsInfoDialog(isVisible = true)
                         )
+                        analyticsTracker.track(WooPosAnalyticsEvent.Event.SimpleProductExplanationDialogShown)
                     }
 
                     is ChildToParentEvent.ToastMessageDisplayed -> {
