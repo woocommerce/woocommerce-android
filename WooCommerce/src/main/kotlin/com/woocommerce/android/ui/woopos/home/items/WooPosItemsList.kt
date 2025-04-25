@@ -128,9 +128,7 @@ fun WooPosItemList(
             Spacer(modifier = Modifier.height(104.dp))
         }
     }
-    InfiniteListHandler(listState, state) {
-        onEndOfProductsListReached()
-    }
+    InfiniteListHandler(listState, state, onEndOfProductsListReached)
 }
 
 @Composable
