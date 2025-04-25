@@ -103,7 +103,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "view_docs_tapped"
         }
         data object SimpleProductExplanationDialogShown : Event() {
-            override val name: String = "pos_simple_products_explanation_dialog_shown"
+            override val name: String = "simple_products_explanation_dialog_shown"
         }
     }
 
