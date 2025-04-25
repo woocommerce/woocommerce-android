@@ -89,6 +89,11 @@ class WooPosToolbarViewModel @Inject constructor(
         hideMenu()
 
         when (event.menuItem.title) {
+            R.string.woopos_product_limitations_title -> {
+                viewModelScope.launch {
+                    childrenToParentEventSender.sendToParent(ChildToParentEvent.ProductInfoMenuItemClicked)
+                }
+            }
             R.string.woopos_get_support_title -> {
                 getSupportFacade.openSupportForm()
                 viewModelScope.launch {
@@ -145,6 +150,10 @@ class WooPosToolbarViewModel @Inject constructor(
 
     private companion object {
         val toolbarMenuItems = listOf(
+            WooPosToolbarState.Menu.MenuItem(
+                title = R.string.woopos_product_limitations_title,
+                icon = R.drawable.ic_not_found,
+            ),
             WooPosToolbarState.Menu.MenuItem(
                 title = R.string.woopos_documentation_title,
                 icon = R.drawable.woo_pos_info_ic,

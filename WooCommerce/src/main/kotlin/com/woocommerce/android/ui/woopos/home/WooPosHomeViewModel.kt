@@ -166,7 +166,7 @@ class WooPosHomeViewModel @Inject constructor(
                         )
                     }
 
-                    ChildToParentEvent.ProductsDialogInfoIconClicked -> {
+                    ChildToParentEvent.ProductInfoMenuItemClicked -> {
                         _state.value = _state.value.copy(
                             productsInfoDialog = ProductsInfoDialog(isVisible = true)
                         )
