@@ -65,9 +65,11 @@ class WooPosCouponsListViewStateManager @Inject constructor() {
         }
     }
 
+    @Suppress("EmptyFunctionBlock")
     fun fetchCoupons() {
     }
 
+    @Suppress("EmptyFunctionBlock")
     fun loadMore() {
     }
 }

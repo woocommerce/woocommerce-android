@@ -81,8 +81,8 @@ class WooPosCouponsViewModel @Inject constructor(
     private fun onEndOfListReached() {
         viewModelScope.launch(Dispatchers.IO) {
             val currentState = _viewState.value
-            if (currentState is WooPosCouponsViewState.Content
-                && currentState.paginationState == WooPosPaginationState.None
+            if (currentState is WooPosCouponsViewState.Content &&
+                currentState.paginationState == WooPosPaginationState.None
             ) {
                 listViewStateManager.loadMore()
             }
