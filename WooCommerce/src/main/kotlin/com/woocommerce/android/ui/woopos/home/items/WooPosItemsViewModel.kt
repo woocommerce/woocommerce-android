@@ -5,12 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.featureflags.WooPosIsProductsSearchEnabled
-import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
-import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState.Tab
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent
-import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -22,8 +19,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WooPosItemsViewModel @Inject constructor(
-    private val fromChildToParentEventSender: WooPosChildrenToParentEventSender,
-    private val preferencesRepository: WooPosPreferencesRepository,
     private val navigator: WooPosItemsNavigator,
     private val searchHelper: WooPosItemsSearchHelper,
     private val isProductsSearchEnabled: WooPosIsProductsSearchEnabled,
@@ -52,18 +47,6 @@ class WooPosItemsViewModel @Inject constructor(
 
     fun onUIEvent(event: WooPosItemsUIEvent) {
         when (event) {
-            WooPosItemsUIEvent.SimpleProductsBannerClosed -> {
-                onSimpleProductsOnlyBannerClosed()
-            }
-
-            WooPosItemsUIEvent.SimpleProductsBannerLearnMoreClicked -> {
-                onSimpleProductsOnlyBannerLearnMoreClicked()
-            }
-
-            WooPosItemsUIEvent.SimpleProductsDialogInfoIconClicked -> {
-                onSimpleProductsDialogInfoClicked()
-            }
-
             WooPosItemsUIEvent.BackButtonClicked -> {
                 navigateBackToItemListScreen()
             }
@@ -86,24 +69,6 @@ class WooPosItemsViewModel @Inject constructor(
             navigator.sendNavigationEvent(
                 WooPosItemsScreenNavigationEvent.NavigateBackToItemListScreen
             )
-        }
-    }
-
-    private fun onSimpleProductsOnlyBannerLearnMoreClicked() {
-        onSimpleProductsDialogInfoClicked()
-    }
-
-    private fun onSimpleProductsDialogInfoClicked() {
-        viewModelScope.launch {
-            fromChildToParentEventSender.sendToParent(ChildToParentEvent.ProductsDialogInfoIconClicked)
-        }
-    }
-
-    private fun onSimpleProductsOnlyBannerClosed() {
-        viewModelScope.launch {
-            val currentState = _viewState.value as WooPosItemsViewState.ProductList
-            preferencesRepository.setSimpleProductsOnlyBannerWasHiddenByUser(true)
-            _viewState.value = currentState.copy(banner = WooPosItemsViewState.BannerState.Hidden)
         }
     }
 
