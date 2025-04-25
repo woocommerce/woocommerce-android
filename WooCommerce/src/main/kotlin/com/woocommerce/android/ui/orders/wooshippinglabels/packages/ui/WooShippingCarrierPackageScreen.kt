@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui
 import android.content.res.Configuration
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -255,7 +256,9 @@ private fun PackageListSection(
         Divider()
         packages.forEach { packageData ->
             WooShippingPackageListItem(
-                modifier = Modifier.padding(start = 16.dp),
+                modifier = Modifier
+                    .clickable { onPackageSelected(packageData, packageData.isSelected.not()) }
+                    .padding(start = 16.dp),
                 packageData = packageData,
                 onPackageSelected = onPackageSelected
             )
