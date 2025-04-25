@@ -52,13 +52,13 @@ object ProductTestUtils {
         status: String = "publish",
         stockQuantity: Double = 0.0
     ): WCProductVariationModel {
-        return WCProductVariationModel().apply {
-            remoteProductId = remoteId
-            remoteVariationId = variationId
-            localSiteId = siteId
-            this.status = status
-            this.stockQuantity = stockQuantity
-        }
+        return WCProductVariationModel(
+            remoteProductId = remoteId,
+            remoteVariationId = variationId,
+            localSiteId = siteId,
+            status = status,
+            stockQuantity = stockQuantity
+        )
     }
 
     fun generateSampleVariations(number: Int, productId: Long, siteId: Int): List<WCProductVariationModel> {
