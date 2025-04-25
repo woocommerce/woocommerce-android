@@ -106,7 +106,7 @@ internal class BluetoothReaderListenerImpl(
     }
 
     override fun onDisconnect(reason: DisconnectReason) {
-        logWrapper.d(LOG_TAG, "onUnexpectedReaderDisconnect")
+        logWrapper.d(LOG_TAG, "onDisconnect")
     }
 
     fun resetConnectionState() {

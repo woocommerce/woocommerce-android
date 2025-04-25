@@ -11,7 +11,7 @@ class TapToPayReaderListenerImpl(
     private val logWrapper: LogWrapper
 ) : TapToPayReaderListener {
     override fun onDisconnect(reason: DisconnectReason) {
-        logWrapper.d(LOG_TAG, "onUnexpectedReaderDisconnect")
+        logWrapper.d(LOG_TAG, "onDisconnect")
     }
 
     override fun onReaderReconnectFailed(reader: Reader) {
