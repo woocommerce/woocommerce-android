@@ -44,10 +44,10 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.BatchProductVar
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStockStatus
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductVariationApiResponse
-import org.wordpress.android.fluxc.persistence.ProductSqlUtils
 import org.wordpress.android.fluxc.persistence.ProductStorageHelper
 import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
+import org.wordpress.android.fluxc.persistence.dao.ProductVariationsDao
 import org.wordpress.android.fluxc.persistence.dao.ProductsDao
 import org.wordpress.android.fluxc.store.WCProductStore.BatchGenerateVariationsPayload
 import org.wordpress.android.fluxc.store.WCProductStore.BatchUpdateProductsPayload
@@ -75,6 +75,7 @@ class WCProductStoreTest {
     private val productRestClient: ProductRestClient = mock()
     private lateinit var productStore: WCProductStore
     private lateinit var productsDao: ProductsDao
+    private lateinit var productsVariationsDao: ProductVariationsDao
 
     @Before
     fun setUp() {
@@ -82,7 +83,6 @@ class WCProductStoreTest {
         val config = SingleStoreWellSqlConfigForTests(
             appContext,
             listOf(
-                WCProductVariationModel::class.java,
                 WCProductCategoryModel::class.java,
                 WCProductReviewModel::class.java,
                 SiteModel::class.java,
@@ -98,6 +98,7 @@ class WCProductStoreTest {
             .build()
 
         productsDao = roomDb.productsDao
+        productsVariationsDao = roomDb.productVariationsDao
 
         val productStorageHelper = ProductStorageHelper(
             productsDao = productsDao,
@@ -110,7 +111,8 @@ class WCProductStoreTest {
             logger = mock(),
             productStorageHelper = productStorageHelper,
             coroutineEngine = initCoroutineEngine(),
-            productsDao = productsDao
+            productsDao = productsDao,
+            productVariationsDao = productsVariationsDao
         )
     }
 
@@ -189,9 +191,9 @@ class WCProductStoreTest {
 
     @Test
     fun testUpdateVariation() = runTest {
-        val variationModel = ProductTestUtils.generateSampleVariation(42, 24).apply {
+        val variationModel = ProductTestUtils.generateSampleVariation(42, 24).copy(
             description = "test description"
-        }
+        )
         val site = SiteModel().apply { id = variationModel.localSiteId }
         whenever(productRestClient.updateVariation(site, null, variationModel))
             .thenReturn(RemoteUpdateVariationPayload(site, variationModel))
@@ -342,23 +344,23 @@ class WCProductStoreTest {
         val variation = ProductTestUtils.generateSampleVariation(
             remoteId = 0,
             variationId = 1
-        ).apply {
+        ).copy (
             description = "test new description"
-        }
+        )
         val site = SiteModel().apply { id = variation.localSiteId }
         val variations = ProductTestUtils.generateSampleVariations(
             number = 5,
             productId = variation.remoteProductId,
             siteId = site.id
         )
-        ProductSqlUtils.insertOrUpdateProductVariations(variations)
+        productsVariationsDao.upsertProductVariations(variations)
 
         var observedVariations = productStore.observeVariations(site, variation.remoteProductId)
             .first()
         assertThat(observedVariations).isEqualTo(variations)
 
         // when
-        ProductSqlUtils.insertOrUpdateProductVariation(variation)
+        productsVariationsDao.upsertProductVariation(variation)
         observedVariations = productStore.observeVariations(site, variation.remoteProductId).first()
 
         // then
@@ -470,7 +472,7 @@ class WCProductStoreTest {
                 productId = product.remoteProductId,
                 siteId = site.id
             )
-            ProductSqlUtils.insertOrUpdateProductVariations(variations)
+            productsVariationsDao.upsertProductVariations(variations)
 
             // when
             val variationsIds = variations.map { it.remoteVariationId }
@@ -503,7 +505,7 @@ class WCProductStoreTest {
             // then
             assertThat(result.isError).isFalse
             assertThat(result.model).isNotNull
-            with(ProductSqlUtils.getVariationsForProduct(site, product.remoteProductId)) {
+            with(productsVariationsDao.getVariations(site.localId(), product.remoteId)) {
                 forEach { variation ->
                     assertThat(variation.regularPrice).isEqualTo(newRegularPrice)
                     assertThat(variation.salePrice).isEqualTo(newSalePrice)
@@ -523,7 +525,7 @@ class WCProductStoreTest {
                 productId = product.remoteProductId,
                 siteId = site.id
             )
-            ProductSqlUtils.insertOrUpdateProductVariations(variations)
+            productsVariationsDao.upsertProductVariations(variations)
 
             // when
             val variationsIds = variations.map { it.remoteVariationId }
@@ -548,7 +550,7 @@ class WCProductStoreTest {
 
             // then
             assertThat(result.isError).isTrue
-            with(ProductSqlUtils.getVariationsForProduct(site, product.remoteProductId)) {
+            with(productsVariationsDao.getVariations(site.localId(), product.remoteId)) {
                 forEach { variation ->
                     assertThat(variation.regularPrice).isNotEqualTo(newRegularPrice)
                     assertThat(variation.salePrice).isNotEqualTo(newSalePrice)
@@ -666,7 +668,7 @@ class WCProductStoreTest {
             assertThat(result.model).isNotNull
 
             // then result is saved in DB
-            with(ProductSqlUtils.getVariationsForProduct(site, productId)) {
+            with(productsVariationsDao.getVariations(site.localId(), RemoteId(productId))) {
                 assertThat(this.size).isEqualTo(createdVariationsResponse.size)
             }
         }
@@ -711,7 +713,7 @@ class WCProductStoreTest {
             assertThat(result.isError).isTrue
 
             // then result is NOT saved in DB
-            with(ProductSqlUtils.getVariationsForProduct(site, productId)) {
+            with(productsVariationsDao.getVariations(site.localId(), RemoteId(productId))) {
                 assertThat(this.size).isEqualTo(0)
             }
         }
@@ -760,8 +762,8 @@ class WCProductStoreTest {
             val site = SiteModel()
             val productId = RemoteId(123)
             val variationsToCreate = listOf(
-                WCProductVariationModel(5).apply { description = "test$id" },
-                WCProductVariationModel(6).apply { description = "test$id" }
+                WCProductVariationModel(5).let { original -> original.copy(description = "test$original.id") },
+                WCProductVariationModel(6).let { original -> original.copy(description = "test$original.id") }
             )
             whenever(productRestClient.createVariations(any(), any(), any())) doReturn WooPayload()
 
@@ -799,7 +801,7 @@ class WCProductStoreTest {
             )
 
             // then
-            val storedVariations = ProductSqlUtils.getVariationsForProduct(site, productId.value)
+            val storedVariations = productsVariationsDao.getVariations(site.localId(), productId)
             assertThat(storedVariations).hasSize(2).anyMatch {
                 it.remoteVariationId == 5L
             }.anyMatch {
