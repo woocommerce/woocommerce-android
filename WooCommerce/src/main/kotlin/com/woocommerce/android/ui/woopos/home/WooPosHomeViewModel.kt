@@ -37,7 +37,7 @@ class WooPosHomeViewModel @Inject constructor(
         scope = viewModelScope,
         key = "home_state",
         initialValue = WooPosHomeState(
-            screenPositionState = ScreenPositionState.Cart.Visible,
+            screenPositionState = ScreenPositionState.Cart,
             productsInfoDialog = ProductsInfoDialog(isVisible = false),
             exitConfirmationDialog = ExitConfirmationDialog(isVisible = false),
         )
@@ -60,7 +60,7 @@ class WooPosHomeViewModel @Inject constructor(
                 when (_state.value.screenPositionState) {
                     ScreenPositionState.Checkout.CartWithTotals -> {
                         _state.value = _state.value.copy(
-                            screenPositionState = ScreenPositionState.Cart.Visible
+                            screenPositionState = ScreenPositionState.Cart
                         )
                         sendEventToChildren(ParentToChildrenEvent.BackFromCheckoutToCartClicked)
                         viewModelScope.launch {
@@ -70,7 +70,7 @@ class WooPosHomeViewModel @Inject constructor(
 
                     ScreenPositionState.Checkout.FullScreenTotals -> {
                         _state.value = _state.value.copy(
-                            screenPositionState = ScreenPositionState.Cart.Visible
+                            screenPositionState = ScreenPositionState.Cart
                         )
                     }
 
@@ -120,7 +120,7 @@ class WooPosHomeViewModel @Inject constructor(
 
                     is ChildToParentEvent.BackFromCheckoutToCartClicked -> {
                         _state.value = _state.value.copy(
-                            screenPositionState = ScreenPositionState.Cart.Visible
+                            screenPositionState = ScreenPositionState.Cart
                         )
                         sendEventToChildren(ParentToChildrenEvent.BackFromCheckoutToCartClicked)
                     }
@@ -133,7 +133,7 @@ class WooPosHomeViewModel @Inject constructor(
 
                     is ChildToParentEvent.NewTransactionClicked -> {
                         _state.value = _state.value.copy(
-                            screenPositionState = ScreenPositionState.Cart.Visible
+                            screenPositionState = ScreenPositionState.Cart
                         )
                     }
 
