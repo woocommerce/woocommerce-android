@@ -2,8 +2,11 @@ package com.woocommerce.android.ui.woopos.home.items.search
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -45,7 +48,7 @@ private fun WooPosItemsSearchScreen(
     onUIEvent: (WooPosItemsSearchUiEvent) -> Unit = {},
 ) {
     Box(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize().imePadding(),
     ) {
         when (state) {
             is WooPosItemsSearchViewState.EmptySearchQuery -> {
@@ -66,6 +69,7 @@ private fun WooPosItemsSearchScreen(
 
             is WooPosItemsSearchViewState.Error -> {
                 WooPosErrorScreen(
+                    modifier = Modifier.verticalScroll(rememberScrollState()),
                     message = stringResource(id = R.string.woopos_search_items_error_title),
                     reason = stringResource(id = R.string.woopos_search_items_error_description),
                     primaryButton = Button(
