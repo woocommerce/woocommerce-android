@@ -300,7 +300,7 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given payment flow and connected COTS reader, when vm init, then navigates to payment with built in`() =
+    fun `given payment flow and connected Tap To Pay reader, when vm init, then navigates to payment with built in`() =
         testBlocking {
             // GIVEN
             val orderId = 1L
