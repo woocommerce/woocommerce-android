@@ -89,6 +89,10 @@ class WooPosToolbarViewModelTest {
                 WooPosToolbarState.Menu.Visible(
                     listOf(
                         WooPosToolbarState.Menu.MenuItem(
+                            title = R.string.woopos_product_limitations_title,
+                            icon = R.drawable.ic_not_found,
+                        ),
+                        WooPosToolbarState.Menu.MenuItem(
                             title = R.string.woopos_documentation_title,
                             icon = R.drawable.woo_pos_info_ic,
                         ),
