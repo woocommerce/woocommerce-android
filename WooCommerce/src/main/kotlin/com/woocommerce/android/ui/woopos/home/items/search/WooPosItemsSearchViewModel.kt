@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.SearchEvent.RecentSearchSelected
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
@@ -76,7 +77,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
     fun onUIEvent(event: WooPosItemsSearchUiEvent) {
         when (event) {
             WooPosItemsSearchUiEvent.OnNextPageRequested -> onEndOfListReached()
-            is WooPosItemsSearchUiEvent.ItemClicked -> handleItemClicked(event.item)
+            is WooPosItemsSearchUiEvent.OnItemClicked -> handleItemClicked(event.item)
             WooPosItemsSearchUiEvent.LoadingErrorRetryButtonClicked -> {
                 val currentState = _viewState.value as? WooPosItemsSearchViewState.Error ?: return
                 loadContent(currentState.searchQuery)
@@ -85,10 +86,17 @@ class WooPosItemsSearchViewModel @Inject constructor(
             is WooPosItemsSearchUiEvent.OnRecentSearchClicked -> {
                 viewModelScope.launch {
                     childToParentEventSender.sendToParent(
-                        ChildToParentEvent.SearchEvent.RecentSearchSelected(
+                        RecentSearchSelected(
                             event.recentSearch
                         )
                     )
+                }
+            }
+
+            is WooPosItemsSearchUiEvent.OnPopularItemClicked -> {
+                viewModelScope.launch {
+                    emptyStateRepository.addPopularItemsToCache()
+                    handleItemClicked(event.item)
                 }
             }
         }

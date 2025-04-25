@@ -26,6 +26,10 @@ class WooPosPopularProductsProvider @Inject constructor(
 
     suspend fun getPopularProducts(): List<Product> = mutex.withLock { popularProductsCache }
 
+    suspend fun addPopularItemsToCache() = mutex.withLock {
+        productsCache.addAll(popularProductsCache)
+    }
+
     suspend fun fetchAndCachePopularProducts(): Result<Unit> = mutex.withLock {
         val result = productStore.fetchProducts(
             site = selectedSite.get(),
