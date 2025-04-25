@@ -207,7 +207,7 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
             val orderId = 1L
             val param = CardReaderFlowParam.PaymentOrRefund.Payment(orderId = orderId, paymentType = ORDER)
             val connectedReader: CardReader = mock {
-                on { type }.thenReturn(ReaderType.BuildInReader.CotsDevice.name)
+                on { type }.thenReturn(ReaderType.BuildInReader.TapToPayDevice.name)
             }
             whenever(appPrefsWrapper.isCardReaderWelcomeDialogShown()).thenReturn(true)
             whenever(cardReaderManager.readerStatus).thenReturn(
@@ -306,7 +306,7 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
             val orderId = 1L
             val param = CardReaderFlowParam.PaymentOrRefund.Payment(orderId = orderId, paymentType = ORDER)
             val connectedReader: CardReader = mock {
-                on { type }.thenReturn(ReaderType.BuildInReader.CotsDevice.name)
+                on { type }.thenReturn(ReaderType.BuildInReader.TapToPayDevice.name)
             }
             whenever(cardReaderManager.readerStatus).thenReturn(
                 MutableStateFlow(
