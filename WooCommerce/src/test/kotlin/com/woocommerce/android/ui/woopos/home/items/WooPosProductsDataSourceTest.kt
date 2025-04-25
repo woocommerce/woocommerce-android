@@ -22,6 +22,7 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
@@ -103,7 +104,7 @@ class WooPosProductsDataSourceTest {
                 filterOptions = any<Map<WCProductStore.ProductFilterOption, String>>(),
                 includeTypes = eq(productsTypesFilterConfig.includeTypes),
             )
-        ).thenReturn(WooResult(listOf<WCProductModel>()))
+        ).thenReturn(WooResult(listOf()))
         val sut = WooPosProductsDataSource(
             productStore,
             selectedSite,
@@ -134,7 +135,7 @@ class WooPosProductsDataSourceTest {
                 filterOptions = any(),
                 includeTypes = any()
             )
-        ).thenReturn(WooResult(listOf<WCProductModel>()))
+        ).thenReturn(WooResult(listOf()))
         whenever(productsIndex.getProductList()).thenReturn(sampleProducts)
         val sut = WooPosProductsDataSource(
             productStore,
@@ -166,7 +167,7 @@ class WooPosProductsDataSourceTest {
                 filterOptions = any(),
                 includeTypes = any()
             )
-        ).thenReturn(WooResult(listOf<WCProductModel>()))
+        ).thenReturn(WooResult(listOf()))
         whenever(productsIndex.getProductList()).thenReturn(emptyList())
         val sut = WooPosProductsDataSource(
             productStore,
@@ -203,22 +204,22 @@ class WooPosProductsDataSourceTest {
                 )
             ).thenReturn(
                 WooResult(
-                    listOf<WCProductModel>(
-                        WCProductModel().apply {
-                            remoteProductId = 1
-                            attributes = "[]"
-                            status = "draft"
-                        },
-                        WCProductModel().apply {
-                            remoteProductId = 2
-                            attributes = "[]"
-                            status = "draft"
-                        },
-                        WCProductModel().apply {
-                            remoteProductId = 3
-                            attributes = "[]"
-                            status = "draft"
-                        }
+                    listOf(
+                        WCProductModel().copy(
+                            remoteId = RemoteId(1),
+                            attributes = "[]",
+                            status = "draft",
+                        ),
+                        WCProductModel().copy(
+                            remoteId = RemoteId(2),
+                            attributes = "[]",
+                            status = "draft",
+                        ),
+                        WCProductModel().copy(
+                            remoteId = RemoteId(3),
+                            attributes = "[]",
+                            status = "draft",
+                        )
                     )
                 )
             )
@@ -301,11 +302,11 @@ class WooPosProductsDataSourceTest {
             ).thenReturn(
                 WooResult(
                     List(25) {
-                        WCProductModel().apply {
-                            remoteProductId = it.toLong()
-                            attributes = "[]"
-                            status = "draft"
-                        }
+                        WCProductModel().copy(
+                            remoteId = RemoteId(it.toLong()),
+                            attributes = "[]",
+                            status = "draft",
+                        )
                     }
                 )
             )
@@ -357,13 +358,13 @@ class WooPosProductsDataSourceTest {
                     includeTypes = any()
                 )
             ).thenReturn(
-                WooResult<List<WCProductModel>>(
+                WooResult(
                     List(25) {
-                        WCProductModel().apply {
-                            remoteProductId = it.toLong()
-                            attributes = "[]"
-                            status = "draft"
-                        }
+                        WCProductModel().copy(
+                            remoteId = RemoteId(it.toLong()),
+                            attributes = "[]",
+                            status = "draft",
+                        )
                     }
                 ),
                 WooResult(wooError)
@@ -500,7 +501,7 @@ class WooPosProductsDataSourceTest {
                 filterOptions = any(),
                 includeTypes = any()
             )
-        ).thenReturn(WooResult(listOf<WCProductModel>()))
+        ).thenReturn(WooResult(listOf()))
 
         val sut = WooPosProductsDataSource(
             productStore,
@@ -527,19 +528,19 @@ class WooPosProductsDataSourceTest {
     fun `given successful fetch on both pages, when prepopulateProductsCache called, then add all products`() = runTest {
         // GIVEN
         val firstPageProducts = List(100) {
-            WCProductModel().apply {
-                remoteProductId = it.toLong()
-                attributes = "[]"
+            WCProductModel().copy(
+                remoteId = RemoteId(it.toLong()),
+                attributes = "[]",
                 status = "draft"
-            }
+            )
         }
 
         val secondPageProducts = List(100) {
-            WCProductModel().apply {
-                remoteProductId = (it + 100).toLong()
-                attributes = "[]"
+            WCProductModel().copy(
+                remoteId = RemoteId((it + 100).toLong()),
+                attributes = "[]",
                 status = "draft"
-            }
+            )
         }
 
         whenever(
@@ -585,11 +586,11 @@ class WooPosProductsDataSourceTest {
     fun `given first fetch success but second fetch fails, when prepopulateProductsCache called, then should add first page products`() = runTest {
         // GIVEN
         val firstPageProducts = List(100) {
-            WCProductModel().apply {
-                remoteProductId = it.toLong()
-                attributes = "[]"
+            WCProductModel().copy(
+                remoteId = RemoteId(it.toLong()),
+                attributes = "[]",
                 status = "draft"
-            }
+            )
         }
 
         val wooError = WooError(
@@ -679,19 +680,19 @@ class WooPosProductsDataSourceTest {
     fun `given both pages return products, when prepopulateProductsCache called, then should add all products to cache`() = runTest {
         // GIVEN
         val firstPageProducts = List(100) {
-            WCProductModel().apply {
-                remoteProductId = it.toLong()
-                attributes = "[]"
+            WCProductModel().copy(
+                remoteId = RemoteId(it.toLong()),
+                attributes = "[]",
                 status = "draft"
-            }
+            )
         }
 
         val secondPageProducts = List(50) {
-            WCProductModel().apply {
-                remoteProductId = (it + 100).toLong()
-                attributes = "[]"
+            WCProductModel().copy(
+                remoteId = RemoteId((it + 100).toLong()),
+                attributes = "[]",
                 status = "draft"
-            }
+            )
         }
 
         whenever(

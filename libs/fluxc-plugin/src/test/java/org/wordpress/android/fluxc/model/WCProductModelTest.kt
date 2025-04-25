@@ -12,13 +12,13 @@ class WCProductModelTest {
     fun `empty attributes json array return empty array`() {
         val attributes = JsonArray()
 
-        val sut = WCProductModel().apply {
-            this.attributes = attributes.toString()
-        }
+        val sut = WCProductModel().copy(
+            attributes = attributes.toString()
+        )
 
         val result = sut.getAttributeList()
 
-        Assertions.assertThat(result).isEmpty()
+        assertThat(result).isEmpty()
     }
 
     @Test
@@ -33,9 +33,9 @@ class WCProductModelTest {
             add(attribute)
         }
 
-        val sut = WCProductModel().apply {
-            this.attributes = attributes.toString()
-        }
+        val sut = WCProductModel().copy(
+            attributes = attributes.toString()
+        )
 
         val result = sut.getAttributeList()
 
@@ -44,10 +44,10 @@ class WCProductModelTest {
 
     @Test
     fun `isConfigurable should return false when bundledItems is malformed JSON`() {
-        val sut = WCProductModel().apply {
-            type = CoreProductType.BUNDLE.value
-            this.bundledItems = "malformed: [#ˆ%*(!@*#ˆ%(*!#ˆ(%*!]"
-        }
+        val sut = WCProductModel().copy (
+            type = CoreProductType.BUNDLE.value,
+            bundledItems = "malformed: [#ˆ%*(!@*#ˆ%(*!#ˆ(%*!]"
+        )
 
         val result = sut.isConfigurable
 

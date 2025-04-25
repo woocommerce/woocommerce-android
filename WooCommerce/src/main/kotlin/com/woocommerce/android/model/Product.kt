@@ -18,6 +18,7 @@ import com.woocommerce.android.ui.products.ProductTaxStatus
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.model.WCProductFileModel
 import org.wordpress.android.fluxc.model.WCProductModel
@@ -413,77 +414,78 @@ fun Product.toDataModel(storedProductModel: WCProductModel? = null): WCProductMo
         return jsonArray.toString()
     }
 
-    return (storedProductModel ?: WCProductModel()).also {
-        it.remoteProductId = remoteId
-        it.description = description
-        it.shortDescription = shortDescription
-        it.name = name
-        it.sku = sku
-        it.globalUniqueId = globalUniqueId
-        it.slug = slug
-        it.status = status.toString()
-        it.catalogVisibility = catalogVisibility.toString()
-        it.featured = isFeatured
-        it.manageStock = isStockManaged
-        it.stockStatus = ProductStockStatus.fromStockStatus(stockStatus)
-        it.stockQuantity = stockQuantity
-        it.soldIndividually = isSoldIndividually
-        it.backorders = ProductBackorderStatus.fromBackorderStatus(backorderStatus)
-        it.regularPrice = if (regularPrice.isNotSet()) "" else regularPrice.toString()
-        it.salePrice = if (salePrice.isNotSet()) "" else salePrice.toString()
-        it.length = if (length == 0f) "" else length.formatToString()
-        it.width = if (width == 0f) "" else width.formatToString()
-        it.weight = if (weight == 0f) "" else weight.formatToString()
-        it.height = if (height == 0f) "" else height.formatToString()
-        it.shippingClass = shippingClass
-        it.taxStatus = ProductTaxStatus.fromTaxStatus(taxStatus)
-        it.taxClass = taxClass
-        it.images = imagesToJson()
-        it.reviewsAllowed = reviewsAllowed
-        it.virtual = isVirtual
-        if (isSaleScheduled) {
-            saleStartDateGmt?.let { dateOnSaleFrom ->
-                it.dateOnSaleFromGmt = dateOnSaleFrom.formatToYYYYmmDDhhmmss()
-            }
-            it.dateOnSaleToGmt = saleEndDateGmt?.formatToYYYYmmDDhhmmss() ?: ""
+    return (storedProductModel ?: WCProductModel()).copy(
+        remoteId = LocalOrRemoteId.RemoteId(remoteId),
+        description = description,
+        shortDescription = shortDescription,
+        name = name,
+        sku = sku,
+        globalUniqueId = globalUniqueId,
+        slug = slug,
+        status = status.toString(),
+        catalogVisibility = catalogVisibility.toString(),
+        featured = isFeatured,
+        manageStock = isStockManaged,
+        stockStatus = ProductStockStatus.fromStockStatus(stockStatus),
+        stockQuantity = stockQuantity,
+        soldIndividually = isSoldIndividually,
+        backorders = ProductBackorderStatus.fromBackorderStatus(backorderStatus),
+        regularPrice = if (regularPrice.isNotSet()) "" else regularPrice.toString(),
+        salePrice = if (salePrice.isNotSet()) "" else salePrice.toString(),
+        length = if (length == 0f) "" else length.formatToString(),
+        width = if (width == 0f) "" else width.formatToString(),
+        weight = if (weight == 0f) "" else weight.formatToString(),
+        height = if (height == 0f) "" else height.formatToString(),
+        shippingClass = shippingClass,
+        taxStatus = ProductTaxStatus.fromTaxStatus(taxStatus),
+        taxClass = taxClass,
+        images = imagesToJson(),
+        reviewsAllowed = reviewsAllowed,
+        virtual = isVirtual,
+        dateOnSaleFromGmt = if (isSaleScheduled) {
+            saleStartDateGmt?.formatToYYYYmmDDhhmmss() ?: ""
         } else {
-            it.dateOnSaleFromGmt = ""
-            it.dateOnSaleToGmt = ""
-        }
-        it.purchaseNote = purchaseNote
-        it.externalUrl = externalUrl
-        it.buttonText = buttonText
-        it.menuOrder = menuOrder
-        it.categories = categoriesToJson()
-        it.tags = tagsToJson()
-        it.type = type
-        it.groupedProductIds = groupedProductIds.joinToString(
+            ""
+        },
+        dateOnSaleToGmt = if (isSaleScheduled) {
+            saleEndDateGmt?.formatToYYYYmmDDhhmmss() ?: ""
+        } else {
+            ""
+        },
+        purchaseNote = purchaseNote,
+        externalUrl = externalUrl,
+        buttonText = buttonText,
+        menuOrder = menuOrder,
+        categories = categoriesToJson(),
+        tags = tagsToJson(),
+        type = type,
+        groupedProductIds = groupedProductIds.joinToString(
             separator = ",",
             prefix = "[",
             postfix = "]"
-        )
-        it.crossSellIds = crossSellProductIds.joinToString(
+        ),
+        crossSellIds = crossSellProductIds.joinToString(
             separator = ",",
             prefix = "[",
             postfix = "]"
-        )
-        it.upsellIds = upsellProductIds.joinToString(
+        ),
+        upsellIds = upsellProductIds.joinToString(
             separator = ",",
             prefix = "[",
             postfix = "]"
-        )
-        it.downloads = downloadsToJson()
-        it.downloadLimit = downloadLimit
-        it.downloadExpiry = downloadExpiry
-        it.downloadable = isDownloadable
-        it.attributes = attributesToJson()
-        it.purchasable = isPurchasable
-        it.minAllowedQuantity = minAllowedQuantity ?: -1
-        it.maxAllowedQuantity = maxAllowedQuantity ?: -1
-        it.groupOfQuantity = groupOfQuantity ?: -1
-        it.combineVariationQuantities = combineVariationQuantities ?: false
-        it.password = password
-    }
+        ),
+        downloads = downloadsToJson(),
+        downloadLimit = downloadLimit,
+        downloadExpiry = downloadExpiry,
+        downloadable = isDownloadable,
+        attributes = attributesToJson(),
+        purchasable = isPurchasable,
+        minAllowedQuantity = minAllowedQuantity ?: -1,
+        maxAllowedQuantity = maxAllowedQuantity ?: -1,
+        groupOfQuantity = groupOfQuantity ?: -1,
+        combineVariationQuantities = combineVariationQuantities ?: false,
+        password = password
+    )
 }
 
 fun WCProductModel.toAppModel(): Product {
