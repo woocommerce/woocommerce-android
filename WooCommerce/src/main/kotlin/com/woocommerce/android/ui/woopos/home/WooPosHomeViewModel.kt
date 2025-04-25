@@ -170,7 +170,6 @@ class WooPosHomeViewModel @Inject constructor(
                         _state.value = _state.value.copy(
                             productsInfoDialog = ProductsInfoDialog(isVisible = true)
                         )
-                        analyticsTracker.track(WooPosAnalyticsEvent.Event.SimpleProductExplanationDialogShown)
                     }
 
                     is ChildToParentEvent.ToastMessageDisplayed -> {

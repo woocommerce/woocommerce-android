@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarUIEvent.OnOut
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarUIEvent.OnToolbarMenuClicked
 import com.woocommerce.android.ui.woopos.support.WooPosGetSupportFacade
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ExitTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.GetSupportTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ViewDocsTapped
@@ -92,6 +93,7 @@ class WooPosToolbarViewModel @Inject constructor(
             R.string.woopos_product_limitations_title -> {
                 viewModelScope.launch {
                     childrenToParentEventSender.sendToParent(ChildToParentEvent.SimpleProductExplanationMenuItemClicked)
+                    analyticsTracker.track(WooPosAnalyticsEvent.Event.SimpleProductExplanationDialogShown)
                 }
             }
             R.string.woopos_get_support_title -> {

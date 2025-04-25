@@ -9,7 +9,6 @@ import com.woocommerce.android.ui.woopos.home.WooPosHomeUIEvent.SystemBackClicke
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCartTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ExitConfirmed
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
@@ -160,18 +159,6 @@ class WooPosHomeViewModelTest {
         assertThat(viewModel.state.value.productsInfoDialog).isEqualTo(
             WooPosHomeState.ProductsInfoDialog(isVisible = true)
         )
-    }
-
-    @Test
-    fun `when where are my products clicked, then track event`() = runTest {
-        // WHEN
-        whenever(childrenToParentEventReceiver.events).thenReturn(
-            flowOf(ChildToParentEvent.SimpleProductExplanationMenuItemClicked)
-        )
-        createViewModel()
-
-        // THEN
-        verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.SimpleProductExplanationDialogShown)
     }
 
     @Test
