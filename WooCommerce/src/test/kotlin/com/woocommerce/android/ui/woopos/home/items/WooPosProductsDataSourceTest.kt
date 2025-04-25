@@ -30,7 +30,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCProductStore
-import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
 import kotlin.test.Test
 
 @ExperimentalCoroutinesApi
@@ -526,242 +525,220 @@ class WooPosProductsDataSourceTest {
     }
 
     @Test
-    fun `given successful fetch, when prepopulateProductsCache called, then should clear cache and add products`() =
-        runTest {
-            // GIVEN
-            whenever(
-                productStore.fetchProducts(
-                    site = eq(siteModel),
-                    offset = eq(0),
-                    pageSize = eq(100),
-                    sortType = eq(ProductSorting.TITLE_ASC),
-                    filterOptions = any(),
-                    includeTypes = any()
-                )
-            ).thenReturn(WooResult(emptyList()))
-            val sut = WooPosProductsDataSource(
-                productStore,
-                selectedSite,
-                productsCache,
-                productsIndex,
-                productsTypesFilterConfig
+    fun `given successful fetch on both pages, when prepopulateProductsCache called, then add all products`() = runTest {
+        // GIVEN
+        val firstPageProducts = List(100) {
+            WCProductModel().copy(
+                remoteId = RemoteId(it.toLong()),
+                attributes = "[]",
+                status = "draft"
             )
-
-            // WHEN
-            val result = sut.prepopulateProductsCache()
-
-            // THEN
-            verify(productsCache).clear()
-            verify(productsCache).addAll(any())
-            assertThat(result.isSuccess).isTrue()
         }
 
-    @Test
-    fun `given multiple pages of products, when prepopulateProductsCache called, then should fetch all pages up to limit`() =
-        runTest {
-            // GIVEN
-            val firstPageWcProducts = List(100) {
-                WCProductModel().copy(
-                    attributes = "[]",
-                    status = "draft"
-                )
-            }
-            val secondPageWcProducts = List(50) {
-                WCProductModel().copy(
-                    attributes = "[]",
-                    status = "draft"
-                )
-            }
-
-            whenever(
-                productStore.fetchProducts(
-                    site = eq(siteModel),
-                    offset = eq(0),
-                    pageSize = eq(100),
-                    sortType = eq(ProductSorting.TITLE_ASC),
-                    filterOptions = any(),
-                    includeTypes = any()
-                )
-            ).thenReturn(WooResult(firstPageWcProducts))
-
-            whenever(
-                productStore.fetchProducts(
-                    site = eq(siteModel),
-                    offset = eq(100),
-                    pageSize = eq(100),
-                    sortType = eq(ProductSorting.TITLE_ASC),
-                    filterOptions = any(),
-                    includeTypes = any()
-                )
-            ).thenReturn(WooResult(secondPageWcProducts))
-
-            val sut = WooPosProductsDataSource(
-                productStore,
-                selectedSite,
-                productsCache,
-                productsIndex,
-                productsTypesFilterConfig
+        val secondPageProducts = List(100) {
+            WCProductModel().copy(
+                remoteId = RemoteId((it + 100).toLong()),
+                attributes = "[]",
+                status = "draft"
             )
+        }
 
-            // WHEN
-            val result = sut.prepopulateProductsCache()
-
-            // THEN
-            verify(productsCache).clear()
-            verify(productsCache).addAll(any())
-            assertThat(result.isSuccess).isTrue()
-            verify(productStore, times(2)).fetchProducts(
-                site = any(),
-                offset = any(),
-                pageSize = any(),
+        whenever(
+            productStore.fetchProducts(
+                site = eq(siteModel),
+                offset = eq(0),
+                pageSize = eq(100),
                 sortType = any(),
                 filterOptions = any(),
                 includeTypes = any()
             )
-        }
+        ).thenReturn(WooResult(firstPageProducts))
 
-    @Test
-    fun `given error when fetching products, when prepopulateProductsCache called, then should return failure`() =
-        runTest {
-            // GIVEN
-
-            val wooError = WooError(
-                WooErrorType.GENERIC_ERROR,
-                GenericErrorType.UNKNOWN,
-                "Failed to fetch products"
-            )
-            whenever(
-                productStore.fetchProducts(
-                    site = eq(siteModel),
-                    offset = any(),
-                    pageSize = any(),
-                    sortType = eq(ProductSorting.TITLE_ASC),
-                    filterOptions = any(),
-                    includeTypes = any()
-                )
-            ).thenReturn(WooResult(wooError))
-
-            val sut = WooPosProductsDataSource(
-                productStore,
-                selectedSite,
-                productsCache,
-                productsIndex,
-                productsTypesFilterConfig
-            )
-
-            // WHEN
-            val result = sut.prepopulateProductsCache()
-
-            // THEN
-            verify(productsCache).clear()
-            verify(productsCache, never()).addAll(any())
-            assertThat(result.isFailure).isTrue()
-            assertThat(result.exceptionOrNull()).isInstanceOf(WooException::class.java)
-        }
-
-    @Test
-    fun `given full product list returned but under max pages, when prepopulateProductsCache called, then should stop fetching`() =
-        runTest {
-            // GIVEN
-            val firstPageProducts = List(100) {
-                WCProductModel().copy(
-                    attributes = "[]",
-                    status = "draft"
-                )
-            }
-            val emptySecondPage = emptyList<WCProductModel>()
-
-            whenever(
-                productStore.fetchProducts(
-                    site = eq(siteModel),
-                    offset = eq(0),
-                    pageSize = eq(100),
-                    sortType = eq(ProductSorting.TITLE_ASC),
-                    filterOptions = any(),
-                    includeTypes = any()
-                )
-            ).thenReturn(WooResult(firstPageProducts))
-
-            whenever(
-                productStore.fetchProducts(
-                    site = eq(siteModel),
-                    offset = eq(100),
-                    pageSize = eq(100),
-                    sortType = eq(ProductSorting.TITLE_ASC),
-                    filterOptions = any(),
-                    includeTypes = any()
-                )
-            ).thenReturn(WooResult(emptySecondPage))
-
-            val sut = WooPosProductsDataSource(
-                productStore,
-                selectedSite,
-                productsCache,
-                productsIndex,
-                productsTypesFilterConfig
-            )
-
-            // WHEN
-            val result = sut.prepopulateProductsCache()
-
-            // THEN
-            verify(productsCache).clear()
-            verify(productsCache).addAll(any())
-            assertThat(result.isSuccess).isTrue()
-            verify(productStore, times(2)).fetchProducts(
-                site = any(),
-                offset = any(),
-                pageSize = any(),
+        whenever(
+            productStore.fetchProducts(
+                site = eq(siteModel),
+                offset = eq(100),
+                pageSize = eq(100),
                 sortType = any(),
                 filterOptions = any(),
                 includeTypes = any()
             )
-        }
+        ).thenReturn(WooResult(secondPageProducts))
+
+        val sut = WooPosProductsDataSource(
+            productStore,
+            selectedSite,
+            productsCache,
+            productsIndex,
+            productsTypesFilterConfig
+        )
+
+        // WHEN
+        val result = sut.prepopulateProductsCache()
+
+        // THEN
+        verify(productsCache).clear()
+        verify(productsCache).addAll(any())
+        assertThat(result.isSuccess).isTrue()
+    }
 
     @Test
-    fun `given max pages reached, when prepopulateProductsCache called, then should stop fetching and return success`() =
-        runTest {
-            // GIVEN
-            val pageProducts = List(100) {
-                WCProductModel().copy(
-                    attributes = "[]",
-                    status = "draft"
-                )
-            }
-
-            whenever(
-                productStore.fetchProducts(
-                    site = eq(siteModel),
-                    offset = any(),
-                    pageSize = eq(100),
-                    sortType = eq(ProductSorting.TITLE_ASC),
-                    filterOptions = any(),
-                    includeTypes = any()
-                )
-            ).thenReturn(WooResult(pageProducts))
-
-            val sut = WooPosProductsDataSource(
-                productStore,
-                selectedSite,
-                productsCache,
-                productsIndex,
-                productsTypesFilterConfig
+    fun `given first fetch success but second fetch fails, when prepopulateProductsCache called, then should add first page products`() = runTest {
+        // GIVEN
+        val firstPageProducts = List(100) {
+            WCProductModel().copy(
+                remoteId = RemoteId(it.toLong()),
+                attributes = "[]",
+                status = "draft"
             )
+        }
 
-            // WHEN
-            val result = sut.prepopulateProductsCache()
+        val wooError = WooError(
+            WooErrorType.GENERIC_ERROR,
+            GenericErrorType.UNKNOWN,
+            "Failed to fetch products on second page"
+        )
 
-            // THEN
-            verify(productsCache).clear()
-            verify(productsCache).addAll(any())
-            assertThat(result.isSuccess).isTrue()
-            verify(productStore, times(2)).fetchProducts(
-                site = any(),
-                offset = any(),
-                pageSize = any(),
+        whenever(
+            productStore.fetchProducts(
+                site = eq(siteModel),
+                offset = eq(0),
+                pageSize = eq(100),
                 sortType = any(),
                 filterOptions = any(),
                 includeTypes = any()
             )
+        ).thenReturn(WooResult(firstPageProducts))
+
+        whenever(
+            productStore.fetchProducts(
+                site = eq(siteModel),
+                offset = eq(100),
+                pageSize = eq(100),
+                sortType = any(),
+                filterOptions = any(),
+                includeTypes = any()
+            )
+        ).thenReturn(WooResult(wooError))
+
+        val sut = WooPosProductsDataSource(
+            productStore,
+            selectedSite,
+            productsCache,
+            productsIndex,
+            productsTypesFilterConfig
+        )
+
+        // WHEN
+        val result = sut.prepopulateProductsCache()
+
+        // THEN
+        verify(productsCache).clear()
+        verify(productsCache).addAll(any())
+        assertThat(result.isSuccess).isTrue()
+    }
+
+    @Test
+    fun `given first fetch fails, when prepopulateProductsCache called, then should return failure`() = runTest {
+        // GIVEN
+        val wooError = WooError(
+            WooErrorType.GENERIC_ERROR,
+            GenericErrorType.UNKNOWN,
+            "Failed to fetch products on first page"
+        )
+
+        whenever(
+            productStore.fetchProducts(
+                site = eq(siteModel),
+                offset = eq(0),
+                pageSize = eq(100),
+                sortType = any(),
+                filterOptions = any(),
+                includeTypes = any()
+            )
+        ).thenReturn(WooResult(wooError))
+
+        val sut = WooPosProductsDataSource(
+            productStore,
+            selectedSite,
+            productsCache,
+            productsIndex,
+            productsTypesFilterConfig
+        )
+
+        // WHEN
+        val result = sut.prepopulateProductsCache()
+
+        // THEN
+        verify(productsCache).clear()
+        verify(productsCache, never()).addAll(any())
+        assertThat(result.isFailure).isTrue()
+        assertThat(result.exceptionOrNull()).isInstanceOf(WooException::class.java)
+    }
+
+    @Test
+    fun `given both pages return products, when prepopulateProductsCache called, then should add all products to cache`() = runTest {
+        // GIVEN
+        val firstPageProducts = List(100) {
+            WCProductModel().copy(
+                remoteId = RemoteId(it.toLong()),
+                attributes = "[]",
+                status = "draft"
+            )
         }
+
+        val secondPageProducts = List(50) {
+            WCProductModel().copy(
+                remoteId = RemoteId((it + 100).toLong()),
+                attributes = "[]",
+                status = "draft"
+            )
+        }
+
+        whenever(
+            productStore.fetchProducts(
+                site = eq(siteModel),
+                offset = eq(0),
+                pageSize = eq(100),
+                sortType = any(),
+                filterOptions = any(),
+                includeTypes = any()
+            )
+        ).thenReturn(WooResult(firstPageProducts))
+
+        whenever(
+            productStore.fetchProducts(
+                site = eq(siteModel),
+                offset = eq(100),
+                pageSize = eq(100),
+                sortType = any(),
+                filterOptions = any(),
+                includeTypes = any()
+            )
+        ).thenReturn(WooResult(secondPageProducts))
+
+        val sut = WooPosProductsDataSource(
+            productStore,
+            selectedSite,
+            productsCache,
+            productsIndex,
+            productsTypesFilterConfig
+        )
+
+        // WHEN
+        val result = sut.prepopulateProductsCache()
+
+        // THEN
+        verify(productsCache).clear()
+        verify(productsCache).addAll(any())
+        assertThat(result.isSuccess).isTrue()
+        verify(productStore, times(2)).fetchProducts(
+            site = any(),
+            offset = any(),
+            pageSize = any(),
+            sortType = any(),
+            filterOptions = any(),
+            includeTypes = any()
+        )
+    }
 }

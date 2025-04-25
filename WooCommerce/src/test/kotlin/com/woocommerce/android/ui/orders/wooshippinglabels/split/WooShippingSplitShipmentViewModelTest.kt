@@ -24,7 +24,11 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
     lateinit var sut: WooShippingSplitShipmentViewModel
 
     private fun createViewModel(
-        shipmentArgs: SplitShipmentArgs
+        shipmentArgs: SplitShipmentArgs = SplitShipmentArgs(
+            orderId = 1L,
+            storeOptions = StoreOptionsModel.EMPTY,
+            shipments = defaultShipment
+        )
     ) {
         val savedState = WooShippingSplitShipmentFragmentArgs(shipmentArgs).toSavedStateHandle()
         sut = WooShippingSplitShipmentViewModel(
@@ -36,19 +40,13 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when split shipments is opened, then display the correct number of expandable products`() = testBlocking {
-        val shipmentArgs = SplitShipmentArgs(
-            orderId = 1L,
-            storeOptions = StoreOptionsModel.EMPTY,
-            shipments = defaultShipment
-        )
-
-        createViewModel(shipmentArgs)
+        createViewModel()
 
         sut.viewState.observeForTesting { }
 
         val state = sut.viewState.value!!
 
-        val selectableItems = state.selectableItems.getValue(1)
+        val selectableItems = state.selectableItems[0]!!
         val expandableProducts = selectableItems.shippableItems
             .filterIsInstance<SelectableShippableItemUI.ExpandableSelectableShippableItemUI>()
         assertThat(expandableProducts.size).isEqualTo(2)
@@ -69,7 +67,7 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
 
             val state = sut.viewState.value!!
 
-            val selectableItems = state.selectableItems.getValue(1)
+            val selectableItems = state.selectableItems[0]!!
             val expandableProducts = selectableItems.shippableItems
                 .filterIsInstance<SelectableShippableItemUI.SingleSelectableShippableItemUI>()
             assertThat(expandableProducts.size).isEqualTo(1)
@@ -78,13 +76,8 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
     @Test
     fun `when an expandable product inner selection changes, then the product is updated`() = testBlocking {
         val shippableItemIndex = 2
-        val shipmentArgs = SplitShipmentArgs(
-            orderId = 1L,
-            storeOptions = StoreOptionsModel.EMPTY,
-            shipments = defaultShipment
-        )
 
-        createViewModel(shipmentArgs)
+        createViewModel()
 
         sut.onUpdateSelection(shippableItemIndex, List(3) { it }.toSet())
 
@@ -92,7 +85,7 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
 
         val state = sut.viewState.value!!
 
-        val selectableItems = state.selectableItems.getValue(1)
+        val selectableItems = state.selectableItems[0]!!
         val expandableProducts = selectableItems.shippableItems.filter {
             it is SelectableShippableItemUI.ExpandableSelectableShippableItemUI &&
                 it.isSelected
@@ -103,13 +96,8 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
     @Test
     fun `when an expandable product selection changes, then the product is updated`() = testBlocking {
         val shippableItemIndex = 2
-        val shipmentArgs = SplitShipmentArgs(
-            orderId = 1L,
-            storeOptions = StoreOptionsModel.EMPTY,
-            shipments = defaultShipment
-        )
 
-        createViewModel(shipmentArgs)
+        createViewModel()
 
         sut.onUpdateSelection(shippableItemIndex, null)
 
@@ -117,7 +105,7 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
 
         val state = sut.viewState.value!!
 
-        val selectableItems = state.selectableItems.getValue(1)
+        val selectableItems = state.selectableItems[0]!!
         val expandableProducts = selectableItems.shippableItems.filter {
             it is SelectableShippableItemUI.ExpandableSelectableShippableItemUI &&
                 it.isSelected
@@ -128,13 +116,8 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
     @Test
     fun `when a single product selection changes, then the product is updated`() = testBlocking {
         val shippableItemIndex = 0
-        val shipmentArgs = SplitShipmentArgs(
-            orderId = 1L,
-            storeOptions = StoreOptionsModel.EMPTY,
-            shipments = defaultShipment
-        )
 
-        createViewModel(shipmentArgs)
+        createViewModel()
 
         sut.onUpdateSelection(shippableItemIndex, null)
 
@@ -142,7 +125,7 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
 
         val state = sut.viewState.value!!
 
-        val selectableItems = state.selectableItems.getValue(1)
+        val selectableItems = state.selectableItems[0]!!
         val expandableProducts = selectableItems.shippableItems.filter {
             it is SelectableShippableItemUI.SingleSelectableShippableItemUI &&
                 it.isSelected
@@ -152,22 +135,17 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when moving a shippable item to a new shipment, then a new shipment is created`() = testBlocking {
-        val shipmentArgs = SplitShipmentArgs(
-            orderId = 1L,
-            storeOptions = StoreOptionsModel.EMPTY,
-            shipments = defaultShipment
-        )
-        val updatedCurrentShipmentItems = defaultShipment.getValue(1).subList(fromIndex = 1, toIndex = 3)
-        val updatedShipmentItems = defaultShipment.getValue(1).subList(fromIndex = 0, toIndex = 1)
+        val updatedCurrentShipmentItems = defaultShipment[0]!!.subList(fromIndex = 1, toIndex = 3)
+        val updatedShipmentItems = defaultShipment[0]!!.subList(fromIndex = 0, toIndex = 1)
 
         val movement = SplitMovement(
-            currentShipment = 1,
-            updatedCurrentShipmentItems = updatedCurrentShipmentItems,
-            updatedShipment = 2,
-            updatedShipmentItems = updatedShipmentItems
+            sourceShipmentKey = 0,
+            updatedSourceShipmentItems = updatedCurrentShipmentItems,
+            destinationShipmentKey = 1,
+            movingShipmentItems = updatedShipmentItems
         )
 
-        createViewModel(shipmentArgs)
+        createViewModel()
 
         sut.onUpdateShipment(movement)
 
@@ -177,8 +155,8 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
 
         val selectableItems = state.selectableItems
         assertThat(selectableItems.size).isEqualTo(2)
-        assertThat(selectableItems.getValue(1).shippableItems.size).isEqualTo(updatedCurrentShipmentItems.size)
-        assertThat(selectableItems.getValue(2).shippableItems.size).isEqualTo(updatedShipmentItems.size)
+        assertThat(selectableItems[0]!!.shippableItems.size).isEqualTo(updatedCurrentShipmentItems.size)
+        assertThat(selectableItems[1]!!.shippableItems.size).isEqualTo(updatedShipmentItems.size)
     }
 
     @Test
@@ -187,9 +165,9 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
             val shipmentArgs = SplitShipmentArgs(
                 orderId = 1L,
                 storeOptions = StoreOptionsModel.EMPTY,
-                shipments = twoShipment
+                shipments = twoShipments
             )
-            val updatedCurrentShipmentItems = defaultShipment.getValue(1)
+            val updatedCurrentShipmentItems = defaultShipment[0]!!
             val updatedShipmentItems = listOf(
                 ShippableItemModel(
                     itemId = 3L,
@@ -207,10 +185,10 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
             )
 
             val movement = SplitMovement(
-                currentShipment = 1,
-                updatedCurrentShipmentItems = updatedCurrentShipmentItems,
-                updatedShipment = 2,
-                updatedShipmentItems = updatedShipmentItems
+                sourceShipmentKey = 0,
+                updatedSourceShipmentItems = updatedCurrentShipmentItems,
+                destinationShipmentKey = 1,
+                movingShipmentItems = updatedShipmentItems
             )
 
             createViewModel(shipmentArgs)
@@ -223,10 +201,8 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
 
             val selectableItems = state.selectableItems
             assertThat(selectableItems.size).isEqualTo(2)
-            assertThat(selectableItems.getValue(2).shippableItems.size).isEqualTo(1)
-            val item = selectableItems
-                .getValue(2)
-                .shippableItems
+            assertThat(selectableItems[1]!!.shippableItems.size).isEqualTo(1)
+            val item = selectableItems[1]!!.shippableItems
                 .first() as SelectableShippableItemUI.ExpandableSelectableShippableItemUI
             // Assert that quantity is combined 3f + 3f
             assertThat(item.shippableItem.quantity).isEqualTo(6f)
@@ -234,22 +210,17 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when moving a shippable item to new shipment, then show singular snackbar`() = testBlocking {
-        val shipmentArgs = SplitShipmentArgs(
-            orderId = 1L,
-            storeOptions = StoreOptionsModel.EMPTY,
-            shipments = defaultShipment
-        )
-        val updatedCurrentShipmentItems = defaultShipment.getValue(1).subList(fromIndex = 1, toIndex = 3)
-        val updatedShipmentItems = defaultShipment.getValue(1).subList(fromIndex = 0, toIndex = 1)
+        val updatedCurrentShipmentItems = defaultShipment[0]!!.subList(fromIndex = 1, toIndex = 3)
+        val updatedShipmentItems = defaultShipment[0]!!.subList(fromIndex = 0, toIndex = 1)
 
         val movement = SplitMovement(
-            currentShipment = 0,
-            updatedCurrentShipmentItems = updatedCurrentShipmentItems,
-            updatedShipment = 1,
-            updatedShipmentItems = updatedShipmentItems
+            sourceShipmentKey = 0,
+            updatedSourceShipmentItems = updatedCurrentShipmentItems,
+            destinationShipmentKey = 1,
+            movingShipmentItems = updatedShipmentItems
         )
 
-        createViewModel(shipmentArgs)
+        createViewModel()
 
         sut.onUpdateShipment(movement)
 
@@ -266,22 +237,17 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when moving shippable items to new shipment, then show plural snackbar`() = testBlocking {
-        val shipmentArgs = SplitShipmentArgs(
-            orderId = 1L,
-            storeOptions = StoreOptionsModel.EMPTY,
-            shipments = defaultShipment
-        )
-        val updatedCurrentShipmentItems = defaultShipment.getValue(1).subList(fromIndex = 0, toIndex = 1)
-        val updatedShipmentItems = defaultShipment.getValue(1).subList(fromIndex = 1, toIndex = 2)
+        val updatedCurrentShipmentItems = defaultShipment[0]!!.subList(fromIndex = 0, toIndex = 1)
+        val updatedShipmentItems = defaultShipment[0]!!.subList(fromIndex = 1, toIndex = 2)
 
         val movement = SplitMovement(
-            currentShipment = 0,
-            updatedCurrentShipmentItems = updatedCurrentShipmentItems,
-            updatedShipment = 1,
-            updatedShipmentItems = updatedShipmentItems
+            sourceShipmentKey = 0,
+            updatedSourceShipmentItems = updatedCurrentShipmentItems,
+            destinationShipmentKey = 1,
+            movingShipmentItems = updatedShipmentItems
         )
 
-        createViewModel(shipmentArgs)
+        createViewModel()
 
         sut.onUpdateShipment(movement)
 
@@ -301,7 +267,7 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
         val shipmentArgs = SplitShipmentArgs(
             orderId = 1L,
             storeOptions = StoreOptionsModel.EMPTY,
-            shipments = twoShipment
+            shipments = twoShipments
         )
 
         val expectedQuantity = 6 // Total single items in the Shipment 1 from `twoShipment`
@@ -312,12 +278,130 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
 
         val state = sut.viewState.value!!
 
-        val selectableItems = state.selectableItems.getValue(1)
+        val selectableItems = state.selectableItems[0]!!
         assertThat(selectableItems.totalItemQuantity).isEqualTo(expectedQuantity)
     }
 
+    @Test
+    fun `when removing a shipment, then the total shipment count is reduced by 1`() = testBlocking {
+        val movingItems = twoShipments[1]!!
+
+        // Removing "Shipment 2"
+        val movement = SplitMovement(
+            sourceShipmentKey = 1,
+            updatedSourceShipmentItems = emptyList(),
+            destinationShipmentKey = 0,
+            movingShipmentItems = movingItems
+        )
+
+        createViewModel()
+
+        sut.onUpdateShipment(movement)
+
+        sut.viewState.observeForTesting { }
+
+        val state = sut.viewState.value!!
+
+        assertThat(state.selectableItems.size).isEqualTo(1)
+    }
+
+    @Test
+    fun `when removing a shipment, then all items are moved to destination shipment`() = testBlocking {
+        val shipmentArgs = SplitShipmentArgs(
+            orderId = 1L,
+            storeOptions = StoreOptionsModel.EMPTY,
+            shipments = twoShipments
+        )
+        val movingItems = twoShipments[1]!!
+
+        // Removing "Shipment 2"
+        val movement = SplitMovement(
+            sourceShipmentKey = 1,
+            updatedSourceShipmentItems = emptyList(),
+            destinationShipmentKey = 0,
+            movingShipmentItems = movingItems
+        )
+        val expectedItemCount = twoShipments[0]!!.size + twoShipments[1]!!.size
+
+        createViewModel(shipmentArgs)
+
+        sut.onUpdateShipment(movement)
+
+        sut.viewState.observeForTesting { }
+
+        val state = sut.viewState.value!!
+
+        val modifiedShipment = state.selectableItems.values.first()
+        assertThat(modifiedShipment.shippableItems.size).isEqualTo(expectedItemCount)
+    }
+
+    @Test
+    fun `when there are 2 shipments, then do not display the Merge all unfulfilled option`() = testBlocking {
+        val shipmentArgs = SplitShipmentArgs(
+            orderId = 1L,
+            storeOptions = StoreOptionsModel.EMPTY,
+            shipments = twoShipments
+        )
+
+        createViewModel(shipmentArgs)
+
+        sut.viewState.observeForTesting { }
+
+        val state = sut.viewState.value!!
+
+        assertThat(state.overflowMenuItems.size).isEqualTo(2)
+    }
+
+    @Test
+    fun `when there are 3 shipments, then display the Merge all unfulfilled option`() = testBlocking {
+        val shipmentArgs = SplitShipmentArgs(
+            orderId = 1L,
+            storeOptions = StoreOptionsModel.EMPTY,
+            shipments = threeShipments
+        )
+
+        createViewModel(shipmentArgs)
+
+        sut.viewState.observeForTesting { }
+
+        val state = sut.viewState.value!!
+        val lastMenuItem = state.overflowMenuItems.last()
+        val expectedShipmentCountToBeMerged = threeShipments.size
+        val expectedMenuItemCount = expectedShipmentCountToBeMerged + 1
+
+        assertThat(state.overflowMenuItems.size).isEqualTo(expectedMenuItemCount)
+
+        // Verifying if the last item is "Merge all unfulfilled"
+        assertThat(lastMenuItem.size).isEqualTo(expectedShipmentCountToBeMerged)
+    }
+
+    @Test
+    fun `when merging unfulfilled shipments, a single unfulfilled shipment contains all items`() = testBlocking {
+        val shipmentArgs = SplitShipmentArgs(
+            orderId = 1L,
+            storeOptions = StoreOptionsModel.EMPTY,
+            shipments = threeShipments
+        )
+
+        createViewModel(shipmentArgs)
+
+        // Trigger merging all shipments
+        sut.onRemoveShipments(removingShipmentKeys = threeShipments.keys.toList(), destinationShipmentKey = null)
+
+        sut.viewState.observeForTesting { }
+
+        val state = sut.viewState.value!!
+        val currentShipments = state.selectableItems
+        val expectedItemQuantity = 10 // All items from `threeShipments`
+
+        // Verify there is only one shipment
+        assertThat(currentShipments.size).isEqualTo(1)
+
+        assertThat(currentShipments.values.first().totalItemQuantity).isEqualTo(expectedItemQuantity)
+    }
+
     private val defaultShipment = mapOf(
-        1 to listOf(
+        0 to listOf(
             ShippableItemModel(
                 itemId = 1L,
                 productId = 1L,
@@ -359,8 +443,8 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
             )
         )
     )
-    private val twoShipment = mapOf(
-        1 to listOf(
+    private val twoShipments = mapOf(
+        0 to listOf(
             ShippableItemModel(
                 itemId = 1L,
                 productId = 1L,
@@ -388,13 +472,73 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
                 weight = 8f
             )
         ),
-        2 to listOf(
+        1 to listOf(
             ShippableItemModel(
                 itemId = 3L,
                 productId = 3L,
                 title = "Another product with quantity 3",
                 price = BigDecimal(10),
                 quantity = 3f,
+                imageUrl = null,
+                currency = "USD",
+                length = 3f,
+                width = 3f,
+                height = 3f,
+                weight = 8f
+            )
+        )
+    )
+    private val threeShipments = mapOf(
+        0 to listOf(
+            ShippableItemModel(
+                itemId = 1L,
+                productId = 1L,
+                title = "A product with quantity 1",
+                price = BigDecimal(30),
+                quantity = 1f,
+                imageUrl = null,
+                currency = "USD",
+                length = 3f,
+                width = 3f,
+                height = 3f,
+                weight = 8f
+            ),
+            ShippableItemModel(
+                itemId = 2L,
+                productId = 2L,
+                title = "A product with quantity 5",
+                price = BigDecimal(10),
+                quantity = 5f,
+                imageUrl = null,
+                currency = "USD",
+                length = 3f,
+                width = 3f,
+                height = 3f,
+                weight = 8f
+            )
+        ),
+        1 to listOf(
+            ShippableItemModel(
+                itemId = 3L,
+                productId = 3L,
+                title = "Another product with quantity 3",
+                price = BigDecimal(10),
+                quantity = 3f,
+                imageUrl = null,
+                currency = "USD",
+                length = 3f,
+                width = 3f,
+                height = 3f,
+                weight = 8f
+            )
+        ),
+        2 to listOf(
+            ShippableItemModel(
+                itemId = 3L,
+                productId = 3L,
+                title = "Another product with quantity 3",
+                price = BigDecimal(10),
+                quantity = 1f,
                 imageUrl = null,
                 currency = "USD",
                 length = 3f,

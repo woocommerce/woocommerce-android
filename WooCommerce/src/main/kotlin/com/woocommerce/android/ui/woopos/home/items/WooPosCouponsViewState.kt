@@ -1,23 +1,22 @@
 package com.woocommerce.android.ui.woopos.home.items
 
-sealed class WooPosVariationsViewState(
-    open val pullToRefreshState: WooPosPullToRefreshState
+sealed class WooPosCouponsViewState(
+    open val pullToRefreshState: WooPosPullToRefreshState,
 ) {
     data class Content(
-        override val items: List<WooPosItemSelectionViewState.Product.Variation>,
+        val coupons: List<WooPosItemSelectionViewState>,
+        val paginationState: WooPosPaginationState = WooPosPaginationState.None,
         override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Enabled,
-        override val paginationState: WooPosPaginationState = WooPosPaginationState.None,
-    ) : WooPosVariationsViewState(pullToRefreshState), WooPosContentViewState
-
+    ) : WooPosCouponsViewState(pullToRefreshState)
     data class Loading(
         override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Enabled,
-    ) : WooPosVariationsViewState(pullToRefreshState)
+    ) : WooPosCouponsViewState(pullToRefreshState)
 
     data class Error(
         override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Disabled,
-    ) : WooPosVariationsViewState(pullToRefreshState)
+    ) : WooPosCouponsViewState(pullToRefreshState)
 
     data class Empty(
         override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Enabled,
-    ) : WooPosVariationsViewState(pullToRefreshState)
+    ) : WooPosCouponsViewState(pullToRefreshState)
 }
