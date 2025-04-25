@@ -81,17 +81,6 @@ data class WCProductVariationModel(
     val attributeList
         get() = gson.fromJson(attributes, Array<ProductVariantOption>::class.java)
 
-    fun addVariant(newAttribute: ProductVariantOption) =
-        mutableListOf<ProductVariantOption>()
-            .apply {
-                attributeList
-                    ?.takeIf { it.isNotEmpty() }
-                    ?.let { addAll(it) }
-                add(newAttribute)
-            }
-    //TODO: fix
-//            .also { attributes = gson.toJson(it) }
-
     /**
      * Parses the images json array into a list of product images
      */
