@@ -63,7 +63,7 @@ data class PackageData(
         fun fromPackageDAO(
             dao: PackageDAO,
             isSelected: Boolean = false,
-            isPredefined: Boolean = true
+            isPredefined: Boolean = false
         ): PackageData = PackageData(
             id = dao.id,
             name = dao.name,
