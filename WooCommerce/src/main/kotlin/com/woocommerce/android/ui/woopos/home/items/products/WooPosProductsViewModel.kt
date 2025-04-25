@@ -35,6 +35,8 @@ class WooPosProductsViewModel @Inject constructor(
     private val analyticsTracker: WooPosAnalyticsTracker,
 ) : ViewModel() {
     private var loadMoreProductsJob: Job? = null
+    private var loadProductsJob: Job? = null
+    private var loadMoreAfterLoadCompletes = false
 
     private val _viewState = MutableStateFlow<WooPosProductsViewState>(
         WooPosProductsViewState.Loading()
@@ -113,7 +115,9 @@ class WooPosProductsViewModel @Inject constructor(
         forceRefreshProducts: Boolean,
         withPullToRefresh: Boolean,
     ) {
-        viewModelScope.launch {
+        loadProductsJob?.cancel()
+        loadMoreProductsJob?.cancel()
+        loadProductsJob = viewModelScope.launch {
             _viewState.value = if (withPullToRefresh) {
                 buildProductsReloadingState()
             } else {
@@ -157,8 +161,21 @@ class WooPosProductsViewModel @Inject constructor(
 
                             else -> WooPosProductsViewState.Error()
                         }
+
+                        if (loadMoreAfterLoadCompletes) {
+                            queueLoadMoreAfterLoadCompletes()
+                        }
                     }
                 }
+            }
+        }
+    }
+
+    private fun queueLoadMoreAfterLoadCompletes() {
+        loadProductsJob?.invokeOnCompletion { throwable ->
+            if (throwable == null && _viewState.value is WooPosProductsViewState.Content) {
+                loadMoreAfterLoadCompletes = false
+                onEndOfProductsListReached()
             }
         }
     }
@@ -199,9 +216,20 @@ class WooPosProductsViewModel @Inject constructor(
         }
     }
 
+    @Suppress("ReturnCount")
     private fun onEndOfProductsListReached() {
         val currentState = _viewState.value
         if (currentState !is WooPosProductsViewState.Content) {
+            return
+        }
+
+        if (loadProductsJob?.isActive == true) {
+            loadMoreAfterLoadCompletes = true
+            _viewState.value = currentState.copy(paginationState = WooPosPaginationState.Loading)
+            return
+        }
+
+        if (loadMoreProductsJob?.isActive == true) {
             return
         }
 
