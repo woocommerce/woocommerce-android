@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.woopos.home.WooPosHomeUIEvent.SystemBackClicke
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCartTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ExitConfirmed
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
@@ -151,7 +152,7 @@ class WooPosHomeViewModelTest {
     fun `when where are my products clicked, then display products info dialog`() {
         // WHEN
         whenever(childrenToParentEventReceiver.events).thenReturn(
-            flowOf(ChildToParentEvent.ProductInfoMenuItemClicked)
+            flowOf(ChildToParentEvent.SimpleProductExplanationMenuItemClicked)
         )
         val viewModel = createViewModel()
 
@@ -162,10 +163,22 @@ class WooPosHomeViewModelTest {
     }
 
     @Test
+    fun `when where are my products clicked, then track event`() = runTest {
+        // WHEN
+        whenever(childrenToParentEventReceiver.events).thenReturn(
+            flowOf(ChildToParentEvent.SimpleProductExplanationMenuItemClicked)
+        )
+        createViewModel()
+
+        // THEN
+        verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.SimpleProductExplanationDialogShown)
+    }
+
+    @Test
     fun `given product info dialog is displayed, then ensure dialog heading is correct`() {
         // GIVEN
         whenever(childrenToParentEventReceiver.events).thenReturn(
-            flowOf(ChildToParentEvent.ProductInfoMenuItemClicked)
+            flowOf(ChildToParentEvent.SimpleProductExplanationMenuItemClicked)
         )
         val viewModel = createViewModel()
 
@@ -181,7 +194,7 @@ class WooPosHomeViewModelTest {
     fun `given product info dialog is displayed, then ensure dialog primary message is correct`() {
         // GIVEN
         whenever(childrenToParentEventReceiver.events).thenReturn(
-            flowOf(ChildToParentEvent.ProductInfoMenuItemClicked)
+            flowOf(ChildToParentEvent.SimpleProductExplanationMenuItemClicked)
         )
         val viewModel = createViewModel()
 
@@ -197,7 +210,7 @@ class WooPosHomeViewModelTest {
     fun `when where are my products clicked, then ensure dialog secondary message is correct`() {
         // WHEN
         whenever(childrenToParentEventReceiver.events).thenReturn(
-            flowOf(ChildToParentEvent.ProductInfoMenuItemClicked)
+            flowOf(ChildToParentEvent.SimpleProductExplanationMenuItemClicked)
         )
         val viewModel = createViewModel()
 
@@ -213,7 +226,7 @@ class WooPosHomeViewModelTest {
     fun `when where are my products clicked, then ensure dialog tertiary message is correct`() {
         // WHEN
         whenever(childrenToParentEventReceiver.events).thenReturn(
-            flowOf(ChildToParentEvent.ProductInfoMenuItemClicked)
+            flowOf(ChildToParentEvent.SimpleProductExplanationMenuItemClicked)
         )
         val viewModel = createViewModel()
 
@@ -229,7 +242,7 @@ class WooPosHomeViewModelTest {
     fun `when where are my products clicked, then ensure dialog primary button label is correct`() {
         // GIVEN
         whenever(childrenToParentEventReceiver.events).thenReturn(
-            flowOf(ChildToParentEvent.ProductInfoMenuItemClicked)
+            flowOf(ChildToParentEvent.SimpleProductExplanationMenuItemClicked)
         )
 
         // WHEN
@@ -247,7 +260,7 @@ class WooPosHomeViewModelTest {
     fun `given product info is displayed, when dialog is dismissed, then ensure the state is updated`() {
         // GIVEN
         whenever(childrenToParentEventReceiver.events).thenReturn(
-            flowOf(ChildToParentEvent.ProductInfoMenuItemClicked)
+            flowOf(ChildToParentEvent.SimpleProductExplanationMenuItemClicked)
         )
         val viewModel = createViewModel()
 
