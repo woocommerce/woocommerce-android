@@ -4,7 +4,8 @@ import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
-import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.WCProductVariationModel
 
 @Dao
@@ -20,10 +21,10 @@ abstract class ProductVariationsDao {
     }
 
     @Query(DEFAULT_SELECT_QUERY)
-    abstract suspend fun getVariations(localSiteId: Long, remoteProductId: Long): List<WCProductVariationModel>
+    abstract suspend fun getVariations(localSiteId: LocalId, remoteProductId: RemoteId): List<WCProductVariationModel>
 
     @Query(DEFAULT_SELECT_QUERY)
-    abstract fun observeVariations(localSiteId: Long, remoteProductId: Long): Flow<List<WCProductVariationModel>>
+    abstract fun observeVariations(localSiteId: LocalId, remoteProductId: RemoteId): Flow<List<WCProductVariationModel>>
 
     @Query(
         """
@@ -34,8 +35,8 @@ abstract class ProductVariationsDao {
         """
     )
     abstract suspend fun getVariation(
-        localSiteId: Long,
-        remoteProductId: Long,
+        localSiteId: LocalId,
+        remoteProductId: RemoteId,
         remoteVariationId: Long
     ): WCProductVariationModel?
 
@@ -52,7 +53,7 @@ abstract class ProductVariationsDao {
         AND remoteProductId = :remoteProductId
         """
     )
-    abstract suspend fun deleteVariationsForProduct(localSiteId: Long, remoteProductId: Long)
+    abstract suspend fun deleteVariationsForProduct(localSiteId: LocalId, remoteProductId: RemoteId)
 
 
 }

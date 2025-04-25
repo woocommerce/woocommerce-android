@@ -831,8 +831,8 @@ class WCProductStore @Inject internal constructor(
         remoteVariationId: Long
     ): WCProductVariationModel? =
         productVariationsDao.getVariation(
-            localSiteId = site.siteId,
-            remoteProductId = remoteProductId,
+            localSiteId = site.localId(),
+            remoteProductId = RemoteId(remoteProductId),
             remoteVariationId = remoteVariationId
         )
 
@@ -844,7 +844,7 @@ class WCProductStore @Inject internal constructor(
      * returns a list of variations for a specific product in the database
      */
     suspend fun getVariationsForProduct(site: SiteModel, remoteProductId: Long): List<WCProductVariationModel> =
-        productVariationsDao.getVariations(localSiteId = site.siteId, remoteProductId = remoteProductId)
+        productVariationsDao.getVariations(localSiteId = site.localId(), remoteProductId = RemoteId(remoteProductId))
 
     /**
      * returns a list of shipping classes for a specific site in the database
@@ -1096,7 +1096,7 @@ class WCProductStore @Inject internal constructor(
     )
 
     fun observeVariations(site: SiteModel, productId: Long): Flow<List<WCProductVariationModel>> =
-        productVariationsDao.observeVariations(localSiteId = site.siteId, remoteProductId = productId)
+        productVariationsDao.observeVariations(localSiteId = site.localId(), remoteProductId = RemoteId(productId))
 
     fun observeCategories(
         site: SiteModel,
@@ -1176,8 +1176,8 @@ class WCProductStore @Inject internal constructor(
                 .model?.asProductVariationModel()
                 ?.apply {
                     productVariationsDao.deleteVariationsForProduct(
-                        localSiteId = site.siteId,
-                        remoteProductId = productId
+                        localSiteId = site.localId(),
+                        remoteProductId = RemoteId(productId)
                     )
                 }
                 ?.let { WooResult(it) }
@@ -1325,8 +1325,8 @@ class WCProductStore @Inject internal constructor(
                 // product variations deleted outside of the app will persist
                 if (result.offset == 0) {
                     productVariationsDao.deleteVariationsForProduct(
-                        localSiteId = result.site.siteId,
-                        remoteProductId = payload.remoteProductId
+                        localSiteId = result.site.localId(),
+                        remoteProductId = RemoteId(payload.remoteProductId)
                     )
                 }
 
@@ -1864,8 +1864,8 @@ class WCProductStore @Inject internal constructor(
                         excludedVariationIds.isEmpty()
                     ) {
                         productVariationsDao.deleteVariationsForProduct(
-                            localSiteId = site.siteId,
-                            remoteProductId = productId
+                            localSiteId = site.localId(),
+                            remoteProductId = RemoteId(productId)
                         )
                     }
 
