@@ -41,7 +41,7 @@ open class WellSqlConfig : DefaultWellConfig {
     annotation class AddOn
 
     override fun getDbVersion(): Int {
-        return 207
+        return 208
     }
 
     override fun getDbName(): String {
@@ -2121,6 +2121,10 @@ open class WellSqlConfig : DefaultWellConfig {
 
                 206 -> migrate(version) {
                     db.execSQL("ALTER TABLE SiteModel ADD JETPACK_MODULES TEXT")
+                }
+
+                207 -> migrateAddOn(ADDON_WOOCOMMERCE, version) {
+                    db.execSQL("DROP TABLE IF EXISTS WCProductModel")
                 }
             }
         }

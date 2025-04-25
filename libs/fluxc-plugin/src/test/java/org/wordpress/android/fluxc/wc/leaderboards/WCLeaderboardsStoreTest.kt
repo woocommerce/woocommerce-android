@@ -1,9 +1,12 @@
 package org.wordpress.android.fluxc.wc.leaderboards
 
+import androidx.room.Room
 import com.yarolegovich.wellsql.WellSql
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.After
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mockito
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.eq
@@ -19,7 +22,6 @@ import org.wordpress.android.fluxc.SingleStoreWellSqlConfigForTests
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.leaderboards.WCProductLeaderboardsMapper
 import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
@@ -29,6 +31,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.leaderboards.Leaderboar
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.leaderboards.LeaderboardsRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.reports.ReportsProductApiResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.reports.ReportsRestClient
+import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.fluxc.persistence.dao.TopPerformerProductsDao
 import org.wordpress.android.fluxc.persistence.entity.TopPerformerProductEntity
@@ -40,20 +43,36 @@ import org.wordpress.android.fluxc.tools.initCoroutineEngine
 import org.wordpress.android.fluxc.wc.leaderboards.WCLeaderboardsTestFixtures.generateSampleLeaderboardsApiResponse
 import org.wordpress.android.fluxc.wc.leaderboards.WCLeaderboardsTestFixtures.generateSampleTopPerformerApiResponse
 import org.wordpress.android.fluxc.wc.leaderboards.WCLeaderboardsTestFixtures.stubSite
+import java.io.IOException
 
 @Config(manifest = Config.NONE)
 @RunWith(RobolectricTestRunner::class)
 class WCLeaderboardsStoreTest {
     private val leaderboardsRestClient: LeaderboardsRestClient = mock()
     private val reportsRestClient: ReportsRestClient = mock()
-    private val productStore: WCProductStore = mock()
-    private var mapper: WCProductLeaderboardsMapper = spy { WCProductLeaderboardsMapper() }
+    private lateinit var database: WCAndroidDatabase
+    private lateinit var productStore: WCProductStore
+    private var mapper: WCProductLeaderboardsMapper = spy()
     private val topPerformersDao: TopPerformerProductsDao = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
 
     private lateinit var storeUnderTest: WCLeaderboardsStore
 
     fun setup(prepareMocks: () -> Unit = {}) {
+        database = Room.inMemoryDatabaseBuilder(RuntimeEnvironment.application.applicationContext, WCAndroidDatabase::class.java)
+            .allowMainThreadQueries()
+            .build()
+        productStore = Mockito.spy(
+            WCProductStore(
+                mock(),
+                mock(),
+                mock(),
+                mock(),
+                mock(),
+                mock(),
+                productsDao = database.productsDao
+            )
+        )
         prepareMocks()
         createStoreUnderTest()
         val appContext = RuntimeEnvironment.application.applicationContext
@@ -62,7 +81,6 @@ class WCLeaderboardsStoreTest {
             listOf(
                 SiteModel::class.java,
                 WCTopPerformerProductModel::class.java,
-                WCProductModel::class.java
             ),
             WellSqlConfig.ADDON_WOOCOMMERCE
         )
@@ -227,6 +245,13 @@ class WCLeaderboardsStoreTest {
                     INVALIDATED_TOP_PERFORMER_ENTITY_LIST
                 )
         }
+
+    @After
+    @Throws(IOException::class)
+    fun closeDb() {
+        database.close()
+        WellSql.closeDb()
+    }
 
     private suspend fun givenCachedTopPerformers() {
         whenever(

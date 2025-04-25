@@ -59,7 +59,9 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
-import coil.compose.AsyncImage
+import coil.compose.AsyncImagePainter
+import coil.compose.rememberAsyncImagePainter
+import coil.imageLoader
 import coil.request.ImageRequest
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.isNotNullOrEmpty
@@ -410,23 +412,38 @@ private fun ProductItem(
         ) {
             Box(
                 modifier = Modifier
-                    .background(MaterialTheme.colorScheme.surfaceDim),
+                    .background(MaterialTheme.colorScheme.surfaceDim)
+                    .size(96.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Image(
-                    painter = painterResource(R.drawable.ic_box),
-                    contentDescription = null,
-                    colorFilter = ColorFilter.tint(WooPosTheme.colors.onSurfaceVariantLowest),
-                    modifier = Modifier.size(36.dp, 36.dp)
-                )
-                AsyncImage(
+                val asyncImagePainter = rememberAsyncImagePainter(
                     model = ImageRequest.Builder(LocalContext.current)
                         .data(item.imageUrl)
                         .crossfade(true)
                         .build(),
+                    imageLoader = LocalContext.current.imageLoader,
+                    contentScale = ContentScale.Crop
+                )
+
+                val isNotLoaded = asyncImagePainter.state !is AsyncImagePainter.State.Success
+
+                if (isNotLoaded) {
+                    Image(
+                        painter = painterResource(R.drawable.ic_box),
+                        contentDescription = null,
+                        colorFilter = ColorFilter.tint(WooPosTheme.colors.onSurfaceVariantLowest),
+                        modifier = Modifier.alpha(if (item.productDoesNotExist) 0.5f else 1f)
+                            .size(36.dp)
+                    )
+                }
+
+                Image(
+                    painter = asyncImagePainter,
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier.size(96.dp).alpha(if (item.productDoesNotExist) 0.5f else 1f)
+                    modifier = Modifier
+                        .size(96.dp)
+                        .alpha(if (item.productDoesNotExist) 0.5f else 1f)
                 )
             }
 
@@ -444,7 +461,8 @@ private fun ProductItem(
                     fontWeight = FontWeight.Bold,
                     overflow = TextOverflow.Ellipsis,
                     color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.clearAndSetSemantics { }
+                    modifier = Modifier
+                        .clearAndSetSemantics { }
                         .alpha(if (item.productDoesNotExist) 0.2f else 1f)
                 )
                 Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value.toAdaptivePadding()))
@@ -455,7 +473,8 @@ private fun ProductItem(
                         color = WooPosTheme.colors.onSurfaceVariantHighest,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.clearAndSetSemantics { }
+                        modifier = Modifier
+                            .clearAndSetSemantics { }
                             .alpha(if (item.productDoesNotExist) 0.5f else 1f)
                     )
                     Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value.toAdaptivePadding()))
@@ -464,7 +483,8 @@ private fun ProductItem(
                     text = item.price,
                     style = WooPosTypography.BodySmall,
                     color = WooPosTheme.colors.onSurfaceVariantHighest,
-                    modifier = Modifier.clearAndSetSemantics { }
+                    modifier = Modifier
+                        .clearAndSetSemantics { }
                         .alpha(if (item.productDoesNotExist) 0.5f else 1f)
                 )
             }
