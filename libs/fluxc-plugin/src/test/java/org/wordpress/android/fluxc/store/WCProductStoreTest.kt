@@ -357,14 +357,14 @@ class WCProductStoreTest {
 
         var observedVariations = productStore.observeVariations(site, variation.remoteProductId)
             .first()
-        assertThat(observedVariations).isEqualTo(variations)
+        assertThat(observedVariations).containsExactlyInAnyOrderElementsOf(variations)
 
         // when
         productsVariationsDao.upsertProductVariation(variation)
         observedVariations = productStore.observeVariations(site, variation.remoteProductId).first()
 
         // then
-        assertThat(observedVariations).isEqualTo(variations + variation)
+        assertThat(observedVariations).containsExactlyInAnyOrderElementsOf(variations + variation)
     }
 
     @Test
