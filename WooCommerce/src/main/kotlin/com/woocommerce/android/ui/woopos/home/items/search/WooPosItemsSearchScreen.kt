@@ -105,7 +105,7 @@ private fun WooPosItemsSearchContent(
     WooPosItemList(
         state = state,
         listState = listState,
-        onItemClicked = { onUIEvent(WooPosItemsSearchUiEvent.ItemClicked(it)) },
+        onItemClicked = { onUIEvent(WooPosItemsSearchUiEvent.OnItemClicked(it)) },
         onEndOfProductsListReached = { onUIEvent(WooPosItemsSearchUiEvent.OnNextPageRequested) },
         onErrorWhilePaginating = {
             WooPosPaginationErrorIndicator(

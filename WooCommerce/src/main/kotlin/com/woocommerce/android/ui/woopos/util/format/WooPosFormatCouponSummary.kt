@@ -7,7 +7,7 @@ import javax.inject.Inject
 class WooPosFormatCouponSummary @Inject constructor(
     private val couponUtils: CouponUtils
 ) {
-    fun formatCouponSummary(coupon: Coupon, currencyCode: String): String {
+    operator fun invoke(coupon: Coupon, currencyCode: String): String {
         return couponUtils.generateSummary(coupon, currencyCode)
     }
 }

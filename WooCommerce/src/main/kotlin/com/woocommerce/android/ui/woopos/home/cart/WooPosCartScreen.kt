@@ -457,7 +457,7 @@ private fun ProductItem(
                 WooPosText(
                     text = item.name,
                     maxLines = 1,
-                    style = WooPosTypography.BodyLarge,
+                    style = WooPosTypography.BodySmall,
                     fontWeight = FontWeight.Bold,
                     overflow = TextOverflow.Ellipsis,
                     color = MaterialTheme.colorScheme.onSurface,
@@ -546,7 +546,7 @@ private fun CouponItem(
                 WooPosText(
                     text = item.name,
                     maxLines = 1,
-                    style = WooPosTypography.BodyLarge,
+                    style = WooPosTypography.BodySmall,
                     fontWeight = FontWeight.Bold,
                     overflow = TextOverflow.Ellipsis,
                     color = MaterialTheme.colorScheme.onSurface,

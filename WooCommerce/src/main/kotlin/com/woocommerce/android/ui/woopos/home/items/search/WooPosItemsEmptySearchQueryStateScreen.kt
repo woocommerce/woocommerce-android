@@ -67,7 +67,7 @@ fun WooPosItemsEmptySearchQueryStateScreen(
                         PopularItemsSection(
                             popularItems = state.popularItems,
                             onPopularItemClicked = { popularItem ->
-                                onUIEvent(WooPosItemsSearchUiEvent.ItemClicked(popularItem))
+                                onUIEvent(WooPosItemsSearchUiEvent.OnPopularItemClicked(popularItem))
                             }
                         )
                     }
