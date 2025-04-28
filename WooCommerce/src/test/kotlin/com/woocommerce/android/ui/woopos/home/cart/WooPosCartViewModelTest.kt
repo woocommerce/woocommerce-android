@@ -12,8 +12,8 @@ import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
-import com.woocommerce.android.ui.woopos.util.GetCachedStoreCurrency
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import com.woocommerce.android.ui.woopos.util.WooPosGetCachedStoreCurrency
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCartTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.CheckoutTapped
@@ -72,7 +72,7 @@ class WooPosCartViewModelTest {
             .thenReturn("100% off everything")
     }
 
-    private val getCachedStoreCurrency: GetCachedStoreCurrency = mock {
+    private val getCachedStoreCurrency: WooPosGetCachedStoreCurrency = mock {
         onBlocking { invoke() }.thenReturn("USD")
     }
 

@@ -6,7 +6,7 @@ import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
-class GetCachedStoreCurrency @Inject constructor(
+class WooPosGetCachedStoreCurrency @Inject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val selectedSite: SelectedSite,
 ) {

@@ -15,7 +15,7 @@ import org.wordpress.android.fluxc.model.WCSettingsModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
 @ExperimentalCoroutinesApi
-class GetCachedStoreCurrencyTest {
+class WooPosGetCachedStoreCurrencyTest {
     @Rule
     @JvmField
     val coroutinesTestRule = WooPosCoroutineTestRule()
@@ -28,7 +28,7 @@ class GetCachedStoreCurrencyTest {
         on { get() }.thenReturn(mock())
     }
 
-    private val getCachedStoreCurrency = GetCachedStoreCurrency(wooCommerceStore, selectedSite)
+    private val getCachedStoreCurrency = WooPosGetCachedStoreCurrency(wooCommerceStore, selectedSite)
 
     @Test
     fun `given USD site, when invoked, then returns USD`() = runTest {
