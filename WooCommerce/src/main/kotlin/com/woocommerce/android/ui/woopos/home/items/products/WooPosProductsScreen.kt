@@ -110,6 +110,7 @@ private fun ProductsList(
                 is WooPosProductsViewState.Loading -> WooPosItemsLoadingIndicator()
 
                 is WooPosProductsViewState.Empty -> WooPosItemsEmptyList(
+                    modifier = Modifier.fillMaxSize(),
                     title = stringResource(id = R.string.woopos_products_empty_list_title),
                     message = stringResource(id = R.string.woopos_products_empty_list_message),
                     contentDescription = stringResource(id = R.string.woopos_products_empty_list_image_description),

@@ -352,14 +352,13 @@ private fun ItemsLoadingItem() {
 
 @Composable
 fun WooPosItemsEmptyList(
+    modifier: Modifier = Modifier,
     title: String,
     message: String,
     contentDescription: String,
 ) {
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
+        modifier = modifier.verticalScroll(rememberScrollState()),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -451,7 +450,7 @@ fun ItemListPreview() {
 @Composable
 fun EmptyListPreview() {
     WooPosTheme {
-        WooPosItemsEmptyList("Empty List", "This list is empty", "")
+        WooPosItemsEmptyList(modifier = Modifier.fillMaxSize(), title = "Empty List", message = "This list is empty", contentDescription = "")
     }
 }
 
