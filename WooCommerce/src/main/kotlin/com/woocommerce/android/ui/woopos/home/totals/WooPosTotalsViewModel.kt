@@ -466,7 +466,16 @@ class WooPosTotalsViewModel @Inject constructor(
                                 )
                             }
                         }
-                    }
+                    },
+                    updatedCoupons = order.couponLines
+                        .filter { coupon -> coupon.id != null && !coupon.discount.isNullOrEmpty() }
+                        .map { coupon ->
+                            ChildToParentEvent.OrderCreated.CouponLine(
+                                id = requireNotNull(coupon.id),
+                                code = coupon.code,
+                                discountAmount = requireNotNull(coupon.discount)
+                            )
+                        }
                 )
             )
         }
