@@ -184,12 +184,12 @@ private fun AnimatedSearchInput(
                 WooPosText(
                     text = hint,
                     modifier = Modifier.alpha(iconAlpha),
-                    style = WooPosTypography.BodyLarge,
+                    style = WooPosTypography.BodyMedium,
                     fontWeight = FontWeight.Bold,
                     color = WooPosTheme.colors.onSurfaceVariantLowest,
                 )
             },
-            textStyle = WooPosTypography.BodyLarge.style
+            textStyle = WooPosTypography.BodyMedium.style
                 .copy(fontWeight = FontWeight.Bold),
             singleLine = true,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
