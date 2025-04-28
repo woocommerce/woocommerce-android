@@ -82,22 +82,6 @@ fun WooPosSearchInput(
     ) {
         when (state) {
             is WooPosSearchInputState.Open -> {
-                IconButton(
-                    onClick = { onEvent(WooPosSearchUIEvent.Close) }
-                ) {
-                    Icon(
-                        modifier = Modifier
-                            .size(28.dp),
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = stringResource(
-                            R.string.woopos_search_back_content_description
-                        ),
-                        tint = MaterialTheme.colorScheme.onSurface,
-                    )
-                }
-
-                Spacer(modifier = Modifier.width(WooPosSpacing.Small.value))
-
                 AnimatedSearchInput(
                     state = state,
                     onEvent = onEvent,
@@ -117,7 +101,6 @@ fun WooPosSearchInput(
         }
     }
 }
-
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 private fun AnimatedSearchInput(
@@ -125,11 +108,10 @@ private fun AnimatedSearchInput(
     onEvent: (WooPosSearchUIEvent) -> Unit,
 ) {
     BoxWithConstraints(
+        modifier = Modifier.fillMaxWidth(),
         contentAlignment = Alignment.CenterEnd,
     ) {
-        val maxWidthPx = maxWidth
         val focusRequester = remember { FocusRequester() }
-
         var isExpanded by remember { mutableStateOf(state.hasAnimationPlayed) }
         var isClosing by remember { mutableStateOf(false) }
 
@@ -137,121 +119,147 @@ private fun AnimatedSearchInput(
             targetState = if (isClosing) false else isExpanded,
             label = "searchTransition"
         )
-        val width = animateSearchWidth(transition, maxWidthPx)
+
+        val width = animateSearchWidth(transition, maxWidth)
         val height = animateSearchHeight(transition)
         val cornerRadius = animateCornerRadius(transition)
         val iconAlpha = animateIconAlpha(transition, isClosing)
+        val backButtonAlpha = animateIconAlpha(transition, isClosing)
 
-        val (hint, query) = when (state.input) {
-            is Input.Query -> "" to state.input.text
-            is Input.Hint -> state.input.text to ""
-        }
-
-        var textFieldValue by remember {
-            mutableStateOf(
-                TextFieldValue(
-                    text = query,
-                    selection = TextRange(state.input.cursorPosition)
-                )
-            )
-        }
-
-        LaunchedEffect(query) {
-            if (query != textFieldValue.text) {
-                textFieldValue = TextFieldValue(
-                    text = query,
-                    selection = TextRange(state.input.cursorPosition)
-                )
-            }
-        }
-
-        OutlinedTextField(
-            value = textFieldValue,
-            onValueChange = { newValue: TextFieldValue ->
-                textFieldValue = newValue
-                onEvent(
-                    WooPosSearchUIEvent.Search(
-                        newValue.text,
-                        newValue.selection.start
-                    )
-                )
-            },
-            modifier = Modifier
-                .width(width)
-                .height(height)
-                .focusRequester(focusRequester),
-            placeholder = {
-                WooPosText(
-                    text = hint,
-                    modifier = Modifier.alpha(iconAlpha),
-                    style = WooPosTypography.BodyMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = WooPosTheme.colors.onSurfaceVariantLowest,
-                )
-            },
-            textStyle = WooPosTypography.BodyMedium.style
-                .copy(fontWeight = FontWeight.Bold),
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-            shape = RoundedCornerShape(cornerRadius),
-            keyboardActions = KeyboardActions(
-                onSearch = {
-                    onEvent(
-                        WooPosSearchUIEvent.Search(
-                            textFieldValue.text,
-                            textFieldValue.selection.start
-                        )
-                    )
-                }
-            ),
-            colors = OutlinedTextFieldDefaults.colors(
-                unfocusedBorderColor = MaterialTheme.colorScheme.surface,
-                focusedBorderColor = MaterialTheme.colorScheme.primary,
-                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceBright,
-                focusedContainerColor = MaterialTheme.colorScheme.surfaceBright,
-                cursorColor = MaterialTheme.colorScheme.primary,
-                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
-                focusedTextColor = MaterialTheme.colorScheme.onSurface,
-            ),
-            leadingIcon = {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.End,
+            modifier = Modifier.width(width)
+        ) {
+            IconButton(
+                onClick = {
+                    isClosing = true
+                },
+                modifier = Modifier.alpha(backButtonAlpha)
+            ) {
                 Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .alpha(iconAlpha)
-                        .size(26.dp),
+                    modifier = Modifier.size(28.dp),
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = stringResource(
+                        R.string.woopos_search_back_content_description
+                    ),
                     tint = MaterialTheme.colorScheme.onSurface,
                 )
-            },
-            trailingIcon = {
-                when {
-                    state.isLoading -> {
-                        WooPosCircularLoadingIndicator(
-                            modifier = Modifier
-                                .size(24.dp)
-                                .alpha(iconAlpha)
+            }
+
+            Spacer(modifier = Modifier.width(WooPosSpacing.Small.value))
+
+            val (hint, query) = when (state.input) {
+                is Input.Query -> "" to state.input.text
+                is Input.Hint -> state.input.text to ""
+            }
+
+            var textFieldValue by remember {
+                mutableStateOf(
+                    TextFieldValue(
+                        text = query,
+                        selection = TextRange(state.input.cursorPosition)
+                    )
+                )
+            }
+
+            LaunchedEffect(query) {
+                if (query != textFieldValue.text) {
+                    textFieldValue = TextFieldValue(
+                        text = query,
+                        selection = TextRange(state.input.cursorPosition)
+                    )
+                }
+            }
+
+            OutlinedTextField(
+                value = textFieldValue,
+                onValueChange = { newValue: TextFieldValue ->
+                    textFieldValue = newValue
+                    onEvent(
+                        WooPosSearchUIEvent.Search(
+                            newValue.text,
+                            newValue.selection.start
+                        )
+                    )
+                },
+                modifier = Modifier
+                    .weight(1f)
+                    .height(height)
+                    .focusRequester(focusRequester),
+                placeholder = {
+                    WooPosText(
+                        text = hint,
+                        modifier = Modifier.alpha(iconAlpha),
+                        style = WooPosTypography.BodyMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                },
+                textStyle = WooPosTypography.BodyMedium.style
+                    .copy(fontWeight = FontWeight.Bold),
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                shape = RoundedCornerShape(cornerRadius),
+                keyboardActions = KeyboardActions(
+                    onSearch = {
+                        onEvent(
+                            WooPosSearchUIEvent.Search(
+                                textFieldValue.text,
+                                textFieldValue.selection.start
+                            )
                         )
                     }
-
-                    textFieldValue.text.isNotEmpty() -> {
-                        IconButton(
-                            onClick = { onEvent(WooPosSearchUIEvent.Clear) },
-                            modifier = Modifier
-                                .alpha(iconAlpha)
-                                .size(26.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Clear,
-                                contentDescription = stringResource(
-                                    R.string.woopos_search_clear_content_description
-                                ),
-                                tint = MaterialTheme.colorScheme.onSurface,
+                ),
+                colors = OutlinedTextFieldDefaults.colors(
+                    unfocusedBorderColor = MaterialTheme.colorScheme.surface,
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceBright,
+                    focusedContainerColor = MaterialTheme.colorScheme.surfaceBright,
+                    cursorColor = MaterialTheme.colorScheme.primary,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                ),
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .alpha(iconAlpha)
+                            .size(26.dp),
+                        tint = MaterialTheme.colorScheme.onSurface,
+                    )
+                },
+                trailingIcon = {
+                    when {
+                        state.isLoading -> {
+                            WooPosCircularLoadingIndicator(
+                                modifier = Modifier
+                                    .size(24.dp)
+                                    .alpha(iconAlpha)
                             )
                         }
+
+                        textFieldValue.text.isNotEmpty() -> {
+                            IconButton(
+                                onClick = { onEvent(WooPosSearchUIEvent.Clear) },
+                                modifier = Modifier
+                                    .alpha(iconAlpha)
+                                    .size(26.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Clear,
+                                    contentDescription = stringResource(
+                                        R.string.woopos_search_clear_content_description
+                                    ),
+                                    tint = MaterialTheme.colorScheme.onSurface,
+                                )
+                            }
+                        }
                     }
-                }
-            },
-        )
+                },
+            )
+        }
 
         LaunchedEffect(Unit) {
             if (!state.hasAnimationPlayed) {
