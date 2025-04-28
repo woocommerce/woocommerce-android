@@ -83,6 +83,6 @@ sealed class WooPosCartItemViewState(open val itemNumber: Int, open val name: St
         override val name: String,
         val summary: String,
         val id: Long,
-        val discount: String?,
+        val formattedDiscount: String?,
     ) : WooPosCartItemViewState(itemNumber, name), Parcelable
 }

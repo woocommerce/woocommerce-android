@@ -541,10 +541,10 @@ private fun CouponItem(
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.clearAndSetSemantics { }
                 )
-                if (item.discount.isNotNullOrEmpty()) {
+                if (item.formattedDiscount.isNotNullOrEmpty()) {
                     Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value.toAdaptivePadding()))
                     WooPosText(
-                        text = item.discount,
+                        text = item.formattedDiscount,
                         style = WooPosTypography.BodySmall,
                         color = WooPosTheme.colors.success,
                         modifier = Modifier.clearAndSetSemantics { }
@@ -602,7 +602,7 @@ fun WooPosCartScreenProductsPreview(modifier: Modifier = Modifier) {
                             name = "Test Coupon",
                             summary = "50% Off · All Products",
                             id = 1L,
-                            discount = "$10"
+                            formattedDiscount = "-$10"
                         ),
                         WooPosCartItemViewState.Product.Simple(
                             itemNumber = 2,
@@ -662,7 +662,7 @@ fun WooPosCartScreenCheckoutPreview(modifier: Modifier = Modifier) {
                                 "50% Off · 1 Product 50% Off · 1 Product 50% Off · 1 Product 50% Off · 1 Product " +
                                 "50% Off · 1 Product 50% Off · 1 Product 50% Off · 1 Product 50% Off · 1 Product",
                             id = 1L,
-                            discount = null
+                            formattedDiscount = null
                         ),
                         WooPosCartItemViewState.Product.Simple(
                             itemNumber = 2,

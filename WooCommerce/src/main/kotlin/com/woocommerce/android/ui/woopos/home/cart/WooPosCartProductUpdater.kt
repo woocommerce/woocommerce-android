@@ -7,6 +7,7 @@ import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
+import java.math.BigDecimal
 import javax.inject.Inject
 
 class WooPosCartProductUpdater @Inject constructor(
@@ -73,7 +74,7 @@ class WooPosCartProductUpdater @Inject constructor(
         return mutableCurrentBodyList
     }
 
-    private fun updateCouponDiscount(
+    private suspend fun updateCouponDiscount(
         updatedCoupons: List<ParentToChildrenEvent.OrderCreated.CouponLine>,
         item: WooPosCartItemViewState.Coupon,
         mutableCurrentBodyList: MutableList<WooPosCartItemViewState>,
@@ -82,7 +83,7 @@ class WooPosCartProductUpdater @Inject constructor(
         updatedCoupons.find { it.code == item.name }?.let {
             // ?? Do we need to update cache if the coupons summary changes?
             mutableCurrentBodyList[index] = item.copy(
-                discount = it.discountAmount,
+                formattedDiscount = "-${formatPrice(BigDecimal(it.discountAmount))}",
             )
         }
     }
