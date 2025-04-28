@@ -9,6 +9,7 @@ import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -74,6 +75,7 @@ import kotlin.test.assertEquals
 class WCProductStoreTest {
     private val productRestClient: ProductRestClient = mock()
     private lateinit var productStore: WCProductStore
+    private lateinit var roomDb: WCAndroidDatabase
     private lateinit var productsDao: ProductsDao
     private lateinit var productsVariationsDao: ProductVariationsDao
 
@@ -93,7 +95,7 @@ class WCProductStoreTest {
         WellSql.init(config)
         config.reset()
 
-        val roomDb = Room.inMemoryDatabaseBuilder(appContext, WCAndroidDatabase::class.java)
+        roomDb = Room.inMemoryDatabaseBuilder(appContext, WCAndroidDatabase::class.java)
             .allowMainThreadQueries()
             .build()
 
@@ -762,8 +764,8 @@ class WCProductStoreTest {
             val site = SiteModel()
             val productId = RemoteId(123)
             val variationsToCreate = listOf(
-                WCProductVariationModel(5).let { original -> original.copy(description = "test$original.id") },
-                WCProductVariationModel(6).let { original -> original.copy(description = "test$original.id") }
+                WCProductVariationModel(5).copy(description = "test1"),
+                WCProductVariationModel(6).copy(description = "test2")
             )
             whenever(productRestClient.createVariations(any(), any(), any())) doReturn WooPayload()
 
@@ -773,8 +775,8 @@ class WCProductStoreTest {
             // then
             verify(productRestClient).createVariations(
                 site = site, productId = productId, variations = listOf(
-                    mapOf("description" to "test5"),
-                    mapOf("description" to "test6")
+                    mapOf("description" to "test1"),
+                    mapOf("description" to "test2")
                 )
             )
         }
@@ -870,5 +872,10 @@ class WCProductStoreTest {
         assertThat(
             IncludeType.fromValue("invalid")
         ).isNull()
+    }
+
+    @After
+    fun tearDown() {
+        roomDb.close()
     }
 }
