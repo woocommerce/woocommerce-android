@@ -24,6 +24,7 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -81,7 +82,7 @@ class VariationListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Displays the product variation list view correctly`() {
+    fun `Displays the product variation list view correctly`() = runTest {
         doReturn(variations).whenever(variationRepository).getProductVariationList(productRemoteId)
 
         createViewModel()
