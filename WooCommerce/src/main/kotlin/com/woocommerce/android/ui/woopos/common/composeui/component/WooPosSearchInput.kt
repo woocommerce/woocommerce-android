@@ -194,7 +194,7 @@ private fun AnimatedSearchInput(
                         modifier = Modifier.alpha(iconAlpha),
                         style = WooPosTypography.BodyMedium,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface,
+                        color = WooPosTheme.colors.onSurfaceVariantLowest,
                     )
                 },
                 textStyle = WooPosTypography.BodyMedium.style

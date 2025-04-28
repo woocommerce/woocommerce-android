@@ -28,7 +28,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearch
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing.Medium
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState.Tab.HighlightLevel.Full
@@ -88,8 +87,6 @@ fun WooPosItemsToolbar(
                                 onEvent = onSearchEvent,
                                 modifier = Modifier.weight(1f)
                             )
-
-                            Spacer(modifier = Modifier.width(Medium.value))
                         }
                     }
                 }
