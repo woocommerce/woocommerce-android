@@ -49,11 +49,11 @@ private fun WooPosItemsSearchScreen(
     onUIEvent: (WooPosItemsSearchUiEvent) -> Unit = {},
 ) {
     Box(
-        modifier = modifier.fillMaxSize().imePadding(),
+        modifier = modifier.fillMaxSize(),
     ) {
         when (state) {
             is WooPosItemsSearchViewState.EmptySearchQuery -> {
-                WooPosItemsEmptySearchQueryStateScreen(state, onUIEvent)
+                WooPosItemsEmptySearchQueryStateScreen(modifier = Modifier.imePadding(), state, onUIEvent)
             }
 
             is WooPosItemsSearchViewState.Content -> {
@@ -71,7 +71,7 @@ private fun WooPosItemsSearchScreen(
 
             is WooPosItemsSearchViewState.Error -> {
                 WooPosErrorScreen(
-                    modifier = Modifier.verticalScroll(rememberScrollState()),
+                    modifier = Modifier.verticalScroll(rememberScrollState()).imePadding(),
                     message = stringResource(id = R.string.woopos_search_items_error_title),
                     reason = stringResource(id = R.string.woopos_search_items_error_description),
                     primaryButton = Button(
