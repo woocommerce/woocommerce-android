@@ -222,6 +222,13 @@ class WooPosHomeViewModel @Inject constructor(
                             )
                         }
                     }
+                },
+                updatedCoupons = event.updatedCoupons.map {
+                    OrderCreated.CouponLine(
+                        id = it.id,
+                        code = it.code,
+                        discountAmount = it.discountAmount
+                    )
                 }
             )
         )
