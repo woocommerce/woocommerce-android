@@ -440,7 +440,7 @@ private fun ProductItem(
                         } else {
                             ColorFilter.tint(WooPosTheme.colors.onDisabledContainer)
                         },
-                        modifier = Modifier .size(36.dp)
+                        modifier = Modifier.size(36.dp)
                     )
                 }
 
@@ -484,7 +484,6 @@ private fun ProductItem(
                             WooPosTheme.colors.onDisabledContainer
                         } else {
                             WooPosTheme.colors.onSurfaceVariantHighest
-
                         },
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
