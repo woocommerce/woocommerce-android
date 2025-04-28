@@ -541,6 +541,15 @@ private fun CouponItem(
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.clearAndSetSemantics { }
                 )
+                if (item.discount.isNotNullOrEmpty()) {
+                    Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value.toAdaptivePadding()))
+                    WooPosText(
+                        text = item.discount,
+                        style = WooPosTypography.BodySmall,
+                        color = WooPosTheme.colors.success,
+                        modifier = Modifier.clearAndSetSemantics { }
+                    )
+                }
             }
 
             if (canRemoveItems) {
@@ -592,7 +601,8 @@ fun WooPosCartScreenProductsPreview(modifier: Modifier = Modifier) {
                             itemNumber = 1,
                             name = "Test Coupon",
                             summary = "50% Off · All Products",
-                            id = 1L
+                            id = 1L,
+                            discount = "$10"
                         ),
                         WooPosCartItemViewState.Product.Simple(
                             itemNumber = 2,
@@ -651,7 +661,8 @@ fun WooPosCartScreenCheckoutPreview(modifier: Modifier = Modifier) {
                                 "50% Off · 1 Product 50% Off · 1 Product 50% Off · 1 Product 50% Off · 1 Product " +
                                 "50% Off · 1 Product 50% Off · 1 Product 50% Off · 1 Product 50% Off · 1 Product " +
                                 "50% Off · 1 Product 50% Off · 1 Product 50% Off · 1 Product 50% Off · 1 Product",
-                            id = 1L
+                            id = 1L,
+                            discount = null
                         ),
                         WooPosCartItemViewState.Product.Simple(
                             itemNumber = 2,
