@@ -71,7 +71,7 @@ class WooPosCartProductUpdaterTest {
         whenever(productsCache.getProductById(1L)).thenReturn(cachedProduct)
 
         // WHEN
-        val result = updater.invoke(itemsInCart, listOf(updatedInfo))
+        val result = updater.invoke(itemsInCart, listOf(updatedInfo), emptyList())
 
         // THEN
         assertThat(result).hasSize(1)
@@ -111,7 +111,7 @@ class WooPosCartProductUpdaterTest {
         whenever(productsCache.getProductById(1L)).thenReturn(cachedProduct)
 
         // WHEN
-        val result = updater.invoke(itemsInCart, listOf(updatedInfo))
+        val result = updater.invoke(itemsInCart, listOf(updatedInfo), emptyList())
 
         // THEN
         assertThat(result).hasSize(1)
@@ -141,7 +141,7 @@ class WooPosCartProductUpdaterTest {
         val itemsInCart = listOf(simpleProduct)
 
         // WHEN
-        val result = updater.invoke(itemsInCart, emptyList())
+        val result = updater.invoke(itemsInCart, emptyList(), emptyList())
 
         // THEN
         assertThat(result).hasSize(1)
@@ -181,7 +181,7 @@ class WooPosCartProductUpdaterTest {
         whenever(productsCache.getProductById(1L)).thenReturn(cachedProduct)
 
         // WHEN
-        val result = updater.invoke(itemsInCart, listOf(updatedInfo))
+        val result = updater.invoke(itemsInCart, listOf(updatedInfo), emptyList())
 
         // THEN
         assertThat(result).hasSize(2)
@@ -225,7 +225,7 @@ class WooPosCartProductUpdaterTest {
         whenever(productsCache.getProductById(1L)).thenReturn(cachedProduct)
 
         // WHEN
-        val result = updater.invoke(itemsInCart, listOf(updatedInfo))
+        val result = updater.invoke(itemsInCart, listOf(updatedInfo), emptyList())
 
         // THEN
         assertThat(result).hasSize(2)
@@ -268,7 +268,7 @@ class WooPosCartProductUpdaterTest {
         )
 
         // WHEN
-        val result = updater.invoke(itemsInCart, listOf(updatedInfo))
+        val result = updater.invoke(itemsInCart, listOf(updatedInfo), emptyList())
 
         // THEN
         assertThat(result).hasSize(1)
@@ -290,7 +290,7 @@ class WooPosCartProductUpdaterTest {
         val itemsInCart = listOf(simpleProduct)
 
         // WHEN
-        updater.invoke(itemsInCart, emptyList())
+        updater.invoke(itemsInCart, emptyList(), emptyList())
 
         // THEN
         verify(productsCache).deleteProduct(1L)
@@ -318,7 +318,7 @@ class WooPosCartProductUpdaterTest {
         whenever(productsCache.getProductById(1L)).thenReturn(cachedProduct)
 
         // WHEN
-        updater.invoke(itemsInCart, listOf(updatedInfo))
+        updater.invoke(itemsInCart, listOf(updatedInfo), emptyList())
 
         // THEN
         verify(productsCache).updateProduct(

@@ -61,13 +61,7 @@ class WooPosCartProductUpdater @Inject constructor(
                 }
 
                 is WooPosCartItemViewState.Coupon -> {
-                    updatedCoupons.find { it.code == item.name }?.let {
-                        // ?? Do we need to update cache if the coupons summary changes?
-                        mutableCurrentBodyList[index] = item.copy(
-                            discount = it.discountAmount,
-                        )
-                    }
-
+                    updateCouponDiscount(updatedCoupons, item, mutableCurrentBodyList, index)
                 }
             }
         }
@@ -77,6 +71,20 @@ class WooPosCartProductUpdater @Inject constructor(
         }
 
         return mutableCurrentBodyList
+    }
+
+    private fun updateCouponDiscount(
+        updatedCoupons: List<ParentToChildrenEvent.OrderCreated.CouponLine>,
+        item: WooPosCartItemViewState.Coupon,
+        mutableCurrentBodyList: MutableList<WooPosCartItemViewState>,
+        index: Int
+    ) {
+        updatedCoupons.find { it.code == item.name }?.let {
+            // ?? Do we need to update cache if the coupons summary changes?
+            mutableCurrentBodyList[index] = item.copy(
+                discount = it.discountAmount,
+            )
+        }
     }
 
     private suspend fun notifyParentAboutChanges() {
