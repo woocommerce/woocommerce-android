@@ -4278,13 +4278,6 @@
     <string name="woopos_cart_changes_in_the_cart">There are changes in the cart</string>
     <string name="woopos_clear_cart_button">Clear</string>
 
-    <string name="woopos_banner_simple_products_only_title">Showing simple, variable and virtual products only</string>
-    <string name="woopos_banner_simple_products_only_message">Only simple physical, variable and virtual products are compatible with POS right now. Other product types will become available in future updates. </string>
-    <string name="woopos_banner_simple_products_only_message_learn_more">Learn\u00A0more</string>
-    <string name="woopos_banner_simple_products_close_content_description">Close</string>
-    <string name="woopos_banner_simple_products_info_content_description">Info</string>
-    <string name="woopos_banner_simple_products_content_description">Simple, variable and virtual products only banner</string>
-    <string name="woopos_banner_simple_products_learn_more_content_description">Double tap to learn more</string>
     <string name="woopos_banner_simple_products_dialog_content_description">Simple, variable and virtual products only dialog</string>
     <string name="woopos_banner_simple_products_dialog_primary_button_content_description">Double tap to dismiss the dialog</string>
 
