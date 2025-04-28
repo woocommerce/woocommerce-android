@@ -19,8 +19,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -34,6 +32,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.mockito.kotlin.wheneverBlocking
 import java.math.BigDecimal
 
 @ExperimentalCoroutinesApi
@@ -95,6 +94,7 @@ class WooPosItemsSearchViewModelTest {
     @Test
     fun `given empty popular items and recent searches, when view model created, then empty lists are shown`() =
         runTest {
+            // GIVEN
             // WHEN
             val viewModel = createViewModel()
 
@@ -111,6 +111,7 @@ class WooPosItemsSearchViewModelTest {
 
     @Test
     fun `given view model initialization, when view model created, then initial state is EmptySearchQuery`() = runTest {
+        // GIVEN
         // WHEN
         val viewModel = createViewModel()
 
@@ -161,12 +162,10 @@ class WooPosItemsSearchViewModelTest {
 
             // WHEN
             val viewModel = createViewModel()
+            advanceTimeBy(600)
 
             // THEN
             viewModel.viewState.test {
-                val initialState = awaitItem()
-                assertThat(initialState).isInstanceOf(WooPosItemsSearchViewState.EmptySearchQuery::class.java)
-
                 val contentState = awaitItem()
                 assertThat(contentState).isInstanceOf(WooPosItemsSearchViewState.Content::class.java)
 
@@ -390,8 +389,6 @@ class WooPosItemsSearchViewModelTest {
 
         // THEN
         viewModel.viewState.test {
-            awaitItem() as WooPosItemsSearchViewState.EmptySearchQuery
-
             val cachedState = awaitItem() as WooPosItemsSearchViewState.Content
             assertThat(cachedState.items).hasSize(1)
             assertThat((cachedState.items[0] as Product.Simple).name).isEqualTo("Cached Product")
@@ -423,21 +420,11 @@ class WooPosItemsSearchViewModelTest {
             )
         )
 
-        whenever(mockDataSource.searchProducts(query1)).thenReturn(
-            flowOf(
-                WooPosSearchProductsDataSource.ProductsResult.Remote(
-                    Result.success(emptyList())
-                )
-            )
-        )
+        whenever(mockDataSource.searchLocalProducts(query1)).thenReturn(emptyList())
+        whenever(mockDataSource.searchRemoteProducts(query1)).thenReturn(Result.success(emptyList()))
 
-        whenever(mockDataSource.searchProducts(query2)).thenReturn(
-            flowOf(
-                WooPosSearchProductsDataSource.ProductsResult.Remote(
-                    Result.success(products)
-                )
-            )
-        )
+        whenever(mockDataSource.searchLocalProducts(query2)).thenReturn(emptyList())
+        whenever(mockDataSource.searchRemoteProducts(query2)).thenReturn(Result.success(products))
 
         whenever(mockPriceFormat(BigDecimal("10.0"))).thenReturn("$10.0")
 
@@ -479,13 +466,8 @@ class WooPosItemsSearchViewModelTest {
         whenever(mockEmptyStateProvider.getPopularItems()).thenReturn(emptyList())
         whenever(mockEmptyStateProvider.getLastSearches()).thenReturn(emptyList())
 
-        whenever(mockDataSource.searchProducts(query)).thenReturn(
-            flow {
-                emit(WooPosSearchProductsDataSource.ProductsResult.Cached(emptyList()))
-                delay(100)
-                emit(WooPosSearchProductsDataSource.ProductsResult.Remote(Result.success(products)))
-            }.flowOn(UnconfinedTestDispatcher())
-        )
+        whenever(mockDataSource.searchLocalProducts(query)).thenReturn(emptyList())
+        whenever(mockDataSource.searchRemoteProducts(query)).thenReturn(Result.success(products))
 
         whenever(mockPriceFormat(BigDecimal("10.0"))).thenReturn("$10.0")
         whenever(mockParentToChildrenEventReceiver.events).thenReturn(
@@ -497,8 +479,6 @@ class WooPosItemsSearchViewModelTest {
 
         // THEN
         viewModel.viewState.test {
-            awaitItem() as WooPosItemsSearchViewState.EmptySearchQuery
-
             val loadingState = awaitItem()
             assertThat(loadingState).isInstanceOf(WooPosItemsSearchViewState.Loading::class.java)
 
@@ -524,13 +504,8 @@ class WooPosItemsSearchViewModelTest {
             whenever(mockEmptyStateProvider.getPopularItems()).thenReturn(emptyList())
             whenever(mockEmptyStateProvider.getLastSearches()).thenReturn(emptyList())
 
-            whenever(mockDataSource.searchProducts(query)).thenReturn(
-                flowOf(
-                    WooPosSearchProductsDataSource.ProductsResult.Remote(
-                        Result.success(products)
-                    )
-                )
-            )
+            whenever(mockDataSource.searchLocalProducts(query)).thenReturn(emptyList())
+            whenever(mockDataSource.searchRemoteProducts(query)).thenReturn(Result.success(products))
 
             whenever(mockDataSource.hasMorePages).thenReturn(false)
 
@@ -569,26 +544,11 @@ class WooPosItemsSearchViewModelTest {
         whenever(mockEmptyStateProvider.getPopularItems()).thenReturn(emptyList())
         whenever(mockEmptyStateProvider.getLastSearches()).thenReturn(emptyList())
 
-        var searchAttempt = 0
-        whenever(mockDataSource.searchProducts(query)).thenAnswer {
-            if (searchAttempt++ == 0) {
-                flow {
-                    emit(
-                        WooPosSearchProductsDataSource.ProductsResult.Remote(
-                            Result.failure(Exception("Search failed"))
-                        )
-                    )
-                }
-            } else {
-                flow {
-                    emit(
-                        WooPosSearchProductsDataSource.ProductsResult.Remote(
-                            Result.success(products)
-                        )
-                    )
-                }
-            }
-        }
+        whenever(mockDataSource.searchLocalProducts(query)).thenReturn(emptyList())
+        whenever(mockDataSource.searchRemoteProducts(query)).thenReturn(
+            Result.failure(Exception("Search failed")),
+            Result.success(products)
+        )
 
         whenever(mockPriceFormat(BigDecimal("10.0"))).thenReturn("$10.0")
         whenever(mockParentToChildrenEventReceiver.events).thenReturn(
@@ -606,6 +566,8 @@ class WooPosItemsSearchViewModelTest {
             assertThat((errorState as WooPosItemsSearchViewState.Error).searchQuery).isEqualTo(query)
 
             viewModel.onUIEvent(WooPosItemsSearchUiEvent.LoadingErrorRetryButtonClicked)
+
+            skipItems(1)
 
             val contentState = awaitItem() as WooPosItemsSearchViewState.Content
             assertThat(contentState.searchQuery).isEqualTo(query)
@@ -751,32 +713,16 @@ class WooPosItemsSearchViewModelTest {
         }
 
     private fun mockSuccessfulSearch(query: String, products: List<com.woocommerce.android.model.Product>) {
-        whenever(mockDataSource.searchProducts(query)).thenReturn(
-            flow {
-                emit(WooPosSearchProductsDataSource.ProductsResult.Cached(emptyList()))
-                emit(
-                    WooPosSearchProductsDataSource.ProductsResult.Remote(
-                        Result.success(products)
-                    )
-                )
-            }
-        )
+        wheneverBlocking { mockDataSource.searchLocalProducts(query) }.thenReturn(emptyList())
+        wheneverBlocking { mockDataSource.searchRemoteProducts(query) }.thenReturn(Result.success(products))
         whenever(mockParentToChildrenEventReceiver.events).thenReturn(
             flowOf(ParentToChildrenEvent.SearchEvent.ChangedQuery(query))
         )
     }
 
     private fun mockFailedSearch(query: String, error: Exception) {
-        whenever(mockDataSource.searchProducts(query)).thenReturn(
-            flow {
-                emit(WooPosSearchProductsDataSource.ProductsResult.Cached(emptyList()))
-                emit(
-                    WooPosSearchProductsDataSource.ProductsResult.Remote(
-                        Result.failure(error)
-                    )
-                )
-            }
-        )
+        wheneverBlocking { mockDataSource.searchLocalProducts(query) }.thenReturn(emptyList())
+        wheneverBlocking { mockDataSource.searchRemoteProducts(query) }.thenReturn(Result.failure(error))
         whenever(mockParentToChildrenEventReceiver.events).thenReturn(
             flowOf(ParentToChildrenEvent.SearchEvent.ChangedQuery(query))
         )
@@ -801,12 +747,9 @@ class WooPosItemsSearchViewModelTest {
         cachedProduct: com.woocommerce.android.model.Product,
         remoteProduct: com.woocommerce.android.model.Product
     ) {
-        whenever(mockDataSource.searchProducts(query)).thenReturn(
-            flow {
-                emit(WooPosSearchProductsDataSource.ProductsResult.Cached(listOf(cachedProduct)))
-                delay(1)
-                emit(WooPosSearchProductsDataSource.ProductsResult.Remote(Result.success(listOf(remoteProduct))))
-            }.flowOn(coroutinesTestRule.testDispatcher)
+        wheneverBlocking { mockDataSource.searchLocalProducts(query) }.thenReturn(listOf(cachedProduct))
+        wheneverBlocking { mockDataSource.searchRemoteProducts(query) }.thenReturn(
+            Result.success(listOf(remoteProduct))
         )
         whenever(mockParentToChildrenEventReceiver.events).thenReturn(
             flowOf(ParentToChildrenEvent.SearchEvent.ChangedQuery(query))
