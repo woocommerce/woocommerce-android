@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -43,6 +44,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.Dp
@@ -76,10 +78,26 @@ fun WooPosSearchInput(
             .fillMaxWidth()
             .height(INPUT_FIELD_HEIGHT),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.End,
+        horizontalArrangement = Arrangement.Start,
     ) {
         when (state) {
             is WooPosSearchInputState.Open -> {
+                IconButton(
+                    onClick = { onEvent(WooPosSearchUIEvent.Close) }
+                ) {
+                    Icon(
+                        modifier = Modifier
+                            .size(28.dp),
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = stringResource(
+                            R.string.woopos_search_back_content_description
+                        ),
+                        tint = MaterialTheme.colorScheme.onSurface,
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(WooPosSpacing.Small.value))
+
                 AnimatedSearchInput(
                     state = state,
                     onEvent = onEvent,
@@ -87,6 +105,7 @@ fun WooPosSearchInput(
             }
 
             WooPosSearchInputState.Closed -> {
+                Spacer(modifier = Modifier.weight(1f))
                 WooPosCircularIconButton(
                     icon = Icons.Default.Search,
                     contentDescription = stringResource(
@@ -106,7 +125,6 @@ private fun AnimatedSearchInput(
     onEvent: (WooPosSearchUIEvent) -> Unit,
 ) {
     BoxWithConstraints(
-        modifier = Modifier.fillMaxWidth(),
         contentAlignment = Alignment.CenterEnd,
     ) {
         val maxWidthPx = maxWidth
@@ -149,7 +167,7 @@ private fun AnimatedSearchInput(
 
         OutlinedTextField(
             value = textFieldValue,
-            onValueChange = { newValue ->
+            onValueChange = { newValue: TextFieldValue ->
                 textFieldValue = newValue
                 onEvent(
                     WooPosSearchUIEvent.Search(
@@ -166,9 +184,13 @@ private fun AnimatedSearchInput(
                 WooPosText(
                     text = hint,
                     modifier = Modifier.alpha(iconAlpha),
-                    style = WooPosTypography.BodyMedium,
+                    style = WooPosTypography.BodyLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = WooPosTheme.colors.onSurfaceVariantLowest,
                 )
             },
+            textStyle = WooPosTypography.BodyLarge.style
+                .copy(fontWeight = FontWeight.Bold),
             singleLine = true,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
             shape = RoundedCornerShape(cornerRadius),
@@ -183,22 +205,23 @@ private fun AnimatedSearchInput(
                 }
             ),
             colors = OutlinedTextFieldDefaults.colors(
-                unfocusedBorderColor = MaterialTheme.colorScheme.outline,
-                focusedBorderColor = MaterialTheme.colorScheme.outline,
-                cursorColor = MaterialTheme.colorScheme.onBackground,
+                unfocusedBorderColor = MaterialTheme.colorScheme.surface,
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceBright,
+                focusedContainerColor = MaterialTheme.colorScheme.surfaceBright,
+                cursorColor = MaterialTheme.colorScheme.primary,
+                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                focusedTextColor = MaterialTheme.colorScheme.onSurface,
             ),
             leadingIcon = {
-                IconButton(
-                    onClick = { isClosing = true },
-                    modifier = Modifier.alpha(iconAlpha)
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = stringResource(
-                            R.string.woopos_search_back_content_description
-                        ),
-                    )
-                }
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .alpha(iconAlpha)
+                        .size(26.dp),
+                    tint = MaterialTheme.colorScheme.onSurface,
+                )
             },
             trailingIcon = {
                 when {
@@ -213,18 +236,21 @@ private fun AnimatedSearchInput(
                     textFieldValue.text.isNotEmpty() -> {
                         IconButton(
                             onClick = { onEvent(WooPosSearchUIEvent.Clear) },
-                            modifier = Modifier.alpha(iconAlpha)
+                            modifier = Modifier
+                                .alpha(iconAlpha)
+                                .size(26.dp)
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Clear,
                                 contentDescription = stringResource(
-                                    R.string.woopos_search_back_content_description
+                                    R.string.woopos_search_clear_content_description
                                 ),
+                                tint = MaterialTheme.colorScheme.onSurface,
                             )
                         }
                     }
                 }
-            }
+            },
         )
 
         LaunchedEffect(Unit) {
