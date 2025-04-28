@@ -157,7 +157,8 @@ class WooPosCartViewModel @Inject constructor(
                         val body = _state.value.body as? WooPosCartState.Body.WithItems ?: return@collect
                         val updateCartItems = updateCartItemsWithChanges(
                             itemsInCart = body.itemsInCart,
-                            updatedProducts = event.updatedProducts
+                            updatedProducts = event.updatedProducts,
+                            updatedCoupons = event.updatedCoupons,
                         )
                         _state.value = _state.value.copy(
                             body = body.copy(
@@ -228,6 +229,7 @@ class WooPosCartViewModel @Inject constructor(
             id = couponId,
             name = coupon.code ?: "",
             summary = formatCouponSummary(coupon, getCachedStoreCurrency()),
+            discount = null,
         )
     }
 

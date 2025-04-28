@@ -258,6 +258,7 @@ class WooPosCartViewModelTest {
                         itemNumber = 1,
                         name = "coupon_code",
                         summary = "100% off everything",
+                        discount = null,
                     )
                 )
             )

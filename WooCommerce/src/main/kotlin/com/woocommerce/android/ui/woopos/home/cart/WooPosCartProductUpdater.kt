@@ -18,6 +18,7 @@ class WooPosCartProductUpdater @Inject constructor(
     suspend operator fun invoke(
         itemsInCart: List<WooPosCartItemViewState>,
         updatedProducts: List<ParentToChildrenEvent.OrderCreated.ProductInfo>,
+        updatedCoupons: List<ParentToChildrenEvent.OrderCreated.CouponLine>,
     ): List<WooPosCartItemViewState> {
         val mutableCurrentBodyList = itemsInCart.toMutableList()
         var changesDone = false
@@ -60,7 +61,13 @@ class WooPosCartProductUpdater @Inject constructor(
                 }
 
                 is WooPosCartItemViewState.Coupon -> {
-                    // We may need to update the coupon in the future
+                    updatedCoupons.find { it.code == item.name }?.let {
+                        // ?? Do we need to update cache if the coupons summary changes?
+                        mutableCurrentBodyList[index] = item.copy(
+                            discount = it.discountAmount,
+                        )
+                    }
+
                 }
             }
         }
