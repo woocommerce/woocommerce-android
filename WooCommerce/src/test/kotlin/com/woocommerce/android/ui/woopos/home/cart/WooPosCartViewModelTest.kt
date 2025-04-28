@@ -68,7 +68,7 @@ class WooPosCartViewModelTest {
         )
     }
     private val formatCouponSummary: WooPosFormatCouponSummary = mock {
-        on { formatCouponSummary(any(), any()) }
+        on { invoke(any(), any()) }
             .thenReturn("100% off everything")
     }
 

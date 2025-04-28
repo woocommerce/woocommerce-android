@@ -21,6 +21,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.LocalOffer
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -58,6 +60,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState.Coupon
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState.Product
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
@@ -78,12 +81,12 @@ fun WooPosItemList(
         items(
             state.items,
             key = { product -> product.id }
-        ) { product ->
-            when (product) {
+        ) { posItem ->
+            when (posItem) {
                 is Product.Simple -> {
                     ProductItem(
                         modifier = Modifier.animateItem(),
-                        item = product,
+                        item = posItem,
                         onItemClicked = onItemClicked
                     )
                 }
@@ -91,7 +94,7 @@ fun WooPosItemList(
                 is Product.Variable -> {
                     VariableProductItem(
                         modifier = Modifier.animateItem(),
-                        item = product,
+                        item = posItem,
                         onItemClicked = onItemClicked
                     )
                 }
@@ -99,10 +102,16 @@ fun WooPosItemList(
                 is Product.Variation -> {
                     VariationItem(
                         modifier = Modifier.animateItem(),
-                        item = product,
+                        item = posItem,
                         onItemClicked = onItemClicked
                     )
                 }
+
+                is Coupon -> CouponItem(
+                    modifier = Modifier.animateItem(),
+                    item = posItem,
+                    onItemClicked = onItemClicked
+                )
             }
         }
 
@@ -176,6 +185,19 @@ private fun VariationItem(
 }
 
 @Composable
+private fun CouponItem(
+    modifier: Modifier = Modifier,
+    item: Coupon,
+    onItemClicked: (item: WooPosItemSelectionViewState) -> Unit
+) {
+    val itemContentDescription = stringResource(
+        id = R.string.woopos_coupon_item_content_description,
+        item.name,
+    )
+    WooPosCouponCard(modifier, itemContentDescription, onItemClicked, item)
+}
+
+@Composable
 fun WooPosProductCard(
     modifier: Modifier,
     itemContentDescription: String,
@@ -207,7 +229,7 @@ fun WooPosProductCard(
 }
 
 @Composable
-private fun ProductInfo(item: WooPosItemSelectionViewState) {
+private fun ProductInfo(item: Product) {
     Column(
         modifier = Modifier
             .fillMaxHeight()
@@ -260,6 +282,78 @@ private fun ProductImage(item: Product) {
 }
 
 @Composable
+fun WooPosCouponCard(
+    modifier: Modifier,
+    itemContentDescription: String,
+    onItemClicked: (item: WooPosItemSelectionViewState) -> Unit,
+    item: Coupon
+) {
+    WooPosCard(
+        modifier = modifier
+            .semantics { contentDescription = itemContentDescription },
+        shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
+        backgroundColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+        elevation = WooPosElevation.Medium,
+        shadowType = ShadowType.Soft,
+    ) {
+        Row(
+            modifier = Modifier
+                .clickable { onItemClicked(item) }
+                .height(112.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            CouponImage()
+
+            Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
+
+            CouponInfo(item)
+        }
+    }
+}
+
+@Composable
+private fun CouponInfo(item: Coupon) {
+    Column(
+        modifier = Modifier
+            .fillMaxHeight()
+            .padding(
+                top = WooPosSpacing.Medium.value,
+                bottom = WooPosSpacing.Medium.value,
+                end = WooPosSpacing.Medium.value
+            ),
+        verticalArrangement = Arrangement.Center
+    ) {
+        WooPosText(
+            text = item.name,
+            style = WooPosTypography.BodyLarge,
+            fontWeight = FontWeight.Bold,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+        Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
+        CouponDetails(item)
+    }
+}
+
+@Composable
+private fun CouponImage() {
+    Box(
+        modifier = Modifier
+            .size(112.dp)
+            .background(MaterialTheme.colorScheme.surfaceDim),
+        contentAlignment = Alignment.Center
+    ) {
+        Image(
+            imageVector = Icons.Outlined.LocalOffer,
+            contentDescription = null,
+            colorFilter = ColorFilter.tint(WooPosTheme.colors.onSurfaceVariantLowest),
+            modifier = Modifier.size(36.dp, 36.dp)
+        )
+    }
+}
+
+@Composable
 private fun SimpleProductDetails(item: Product.Simple) {
     WooPosText(
         text = item.price,
@@ -282,6 +376,16 @@ private fun VariableProductDetails() {
 fun VariationProductDetails(item: Product.Variation) {
     WooPosText(
         text = item.price,
+        style = WooPosTypography.BodyLarge,
+        color = WooPosTheme.colors.onSurfaceVariantHighest,
+    )
+}
+
+@Composable
+fun CouponDetails(item: Coupon) {
+    WooPosText(
+        text = item.summary,
+        maxLines = 1,
         style = WooPosTypography.BodyLarge,
         color = WooPosTheme.colors.onSurfaceVariantHighest,
     )
@@ -439,6 +543,7 @@ fun ItemListPreview() {
                     ),
                     Product.Variable(id = 2, name = "Variable Product", price = "$10.00", "", 1, listOf()),
                     Product.Variation(3, "Variation", "$10", "", 0),
+                    Coupon(id = 4, name = "Coupon", summary = "10% off everything"),
                 ),
             ),
             listState = LazyListState(),

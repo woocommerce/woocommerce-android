@@ -6,9 +6,17 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.WooPosCouponsViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
+import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
+import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsUIEvent.BackButtonClicked
+import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsUIEvent.CouponClicked
+import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsUIEvent.EndOfListReached
+import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsUIEvent.PullToRefreshTriggered
+import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsUIEvent.RetryLoadMoreTriggered
+import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsUIEvent.RetryTriggered
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -18,6 +26,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WooPosCouponsViewModel @Inject constructor(
+    private val listViewStateManager: WooPosCouponsListViewStateManager,
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender,
     private val navigator: WooPosItemsNavigator,
 ) : ViewModel() {
@@ -32,30 +41,57 @@ class WooPosCouponsViewModel @Inject constructor(
         )
 
     init {
-        // CouponsProject: load initial coupons
+        viewModelScope.launch {
+            listViewStateManager.viewState.collect { newState ->
+                _viewState.value = newState
+            }
+        }
     }
 
     fun onUIEvent(event: WooPosCouponsUIEvent) {
         when (event) {
-            is WooPosCouponsUIEvent.CouponClicked -> {
+            is CouponClicked -> {
                 handleCouponClicked(event)
             }
 
-            WooPosCouponsUIEvent.PullToRefreshTriggered -> {
-                // CouponsProject: PTR Action
+            PullToRefreshTriggered -> fetchCoupons()
+
+            is EndOfListReached -> {
+                onEndOfListReached()
             }
 
-            is WooPosCouponsUIEvent.EndOfItemsListReached -> {
-                onEndOfProductsListReached()
+            RetryLoadMoreTriggered -> {
+                retryLoadMore()
             }
 
-            WooPosCouponsUIEvent.RetryLoadMoreTriggered -> {
-                // CouponsProject: retry load more action
-            }
-
-            WooPosCouponsUIEvent.BackButtonClicked -> {
+            BackButtonClicked -> {
                 navigateBackToItemListScreen()
             }
+
+            RetryTriggered -> fetchCoupons()
+        }
+    }
+
+    private fun fetchCoupons() {
+        viewModelScope.launch(Dispatchers.IO) {
+            listViewStateManager.fetchCoupons()
+        }
+    }
+
+    private fun onEndOfListReached() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val currentState = _viewState.value
+            if (currentState is WooPosCouponsViewState.Content &&
+                currentState.paginationState == WooPosPaginationState.None
+            ) {
+                listViewStateManager.loadMore()
+            }
+        }
+    }
+
+    private fun retryLoadMore() {
+        viewModelScope.launch(Dispatchers.IO) {
+            listViewStateManager.loadMore()
         }
     }
 
@@ -67,16 +103,12 @@ class WooPosCouponsViewModel @Inject constructor(
         }
     }
 
-    private fun handleCouponClicked(event: WooPosCouponsUIEvent.CouponClicked) {
+    private fun handleCouponClicked(event: CouponClicked) {
         viewModelScope.launch {
             fromChildToParentEventSender.sendToParent(
                 // CouponsProject: rename ItemClickedInProductSelector to ItemClicked
                 ChildToParentEvent.ItemClickedInProductSelector(ItemClickedData.Coupon(event.couponId))
             )
         }
-    }
-
-    private fun onEndOfProductsListReached() {
-        // CouponsProject: Load More
     }
 }

@@ -227,7 +227,7 @@ class WooPosCartViewModel @Inject constructor(
             itemNumber = getItemNumber(),
             id = couponId,
             name = coupon.code ?: "",
-            summary = formatCouponSummary.formatCouponSummary(coupon, getCachedStoreCurrency()),
+            summary = formatCouponSummary(coupon, getCachedStoreCurrency()),
         )
     }
 

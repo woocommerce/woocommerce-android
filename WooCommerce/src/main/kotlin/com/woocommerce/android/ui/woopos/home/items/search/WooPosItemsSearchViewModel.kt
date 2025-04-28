@@ -229,6 +229,10 @@ class WooPosItemsSearchViewModel @Inject constructor(
             is WooPosItemSelectionViewState.Product.Variation -> {
                 error("Variation item click is not supported")
             }
+
+            is WooPosItemSelectionViewState.Coupon -> {
+                error("Coupon item click is not supported")
+            }
         }
     }
 
