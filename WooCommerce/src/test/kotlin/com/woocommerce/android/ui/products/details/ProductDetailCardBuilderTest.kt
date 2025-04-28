@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.models.ProductProperty
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
+import com.woocommerce.android.ui.products.variations.VariationRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -61,6 +62,10 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
             on { get() } doReturn SiteModel()
         }
 
+        val variationRepository: VariationRepository = mock {
+            onBlocking { getProductVariationList(any()) } doReturn emptyList()
+        }
+
         sut = ProductDetailCardBuilder(
             viewModel = viewModel,
             selectedSite = selectedSite,
@@ -68,7 +73,7 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
             currencyFormatter = mock(),
             parameters = mock(),
             addonRepository = addonRepo,
-            variationRepository = mock(),
+            variationRepository = variationRepository,
             appPrefsWrapper = mock(),
             isBlazeEnabled = isBlazeEnabled,
             isProductCurrentlyPromoted = mock(),

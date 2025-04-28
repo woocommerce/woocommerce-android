@@ -98,6 +98,9 @@ class VariationListViewModelTest : BaseUnitTest() {
     fun `Do not fetch product variations from api when not connected`() =
         testBlocking {
             doReturn(false).whenever(networkStatus).isConnected()
+            doReturn(
+                emptyList<ProductVariation>()
+            ).whenever(variationRepository).getProductVariationList(productRemoteId)
 
             createViewModel()
 
@@ -210,6 +213,7 @@ class VariationListViewModelTest : BaseUnitTest() {
     @Test
     fun `Refresh variations list and hide progress bar if variation generation is successful`() = testBlocking {
         // given
+        doReturn(emptyList<ProductVariation>()).whenever(variationRepository).getProductVariationList(productRemoteId)
         val variationCandidates = List(5) { id ->
             listOf(VariantOption(id.toLong(), "Number", id.toString()))
         }
@@ -248,6 +252,7 @@ class VariationListViewModelTest : BaseUnitTest() {
         // given
         variationRepository.stub {
             onBlocking { bulkCreateVariations(any(), any()) } doReturn RequestResult.ERROR
+            onBlocking { getProductVariationList(productRemoteId) } doReturn emptyList()
         }
         val variationCandidates = List(5) { id ->
             listOf(VariantOption(id.toLong(), "Number", id.toString()))
