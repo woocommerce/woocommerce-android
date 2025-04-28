@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.home.items.search
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -61,6 +62,7 @@ private fun WooPosItemsSearchScreen(
 
             WooPosItemsSearchViewState.Empty -> {
                 WooPosItemsEmptyList(
+                    modifier = Modifier.fillMaxWidth(),
                     title = stringResource(id = R.string.woopos_search_items_empty_title),
                     message = stringResource(id = R.string.woopos_search_empty_description),
                     contentDescription = stringResource(id = R.string.woopos_search_empty_image_content_description),

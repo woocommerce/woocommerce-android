@@ -45,12 +45,13 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosProductCard
 
 @Composable
 fun WooPosItemsEmptySearchQueryStateScreen(
+    modifier: Modifier = Modifier,
     state: WooPosItemsSearchViewState.EmptySearchQuery,
     onUIEvent: (WooPosItemsSearchUiEvent) -> Unit
 ) {
     val scrollState = rememberScrollState()
     Column(
-        Modifier
+        modifier
             .fillMaxHeight()
             .verticalScroll(scrollState)
             .padding(WooPosSpacing.None.value.toAdaptivePadding())
