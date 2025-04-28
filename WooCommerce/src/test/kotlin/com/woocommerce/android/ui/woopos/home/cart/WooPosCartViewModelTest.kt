@@ -4,7 +4,6 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Coupon
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetCouponById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
@@ -14,6 +13,7 @@ import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import com.woocommerce.android.ui.woopos.util.WooPosGetCachedStoreCurrency
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCartTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.CheckoutTapped
@@ -37,8 +37,6 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.model.WCSettingsModel
-import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import kotlin.test.Test
 
@@ -73,16 +71,9 @@ class WooPosCartViewModelTest {
         on { formatCouponSummary(any(), any()) }
             .thenReturn("100% off everything")
     }
-    private val siteSettings: WCSettingsModel = mock {
-        on { currencyCode }.thenReturn("USD")
-    }
 
-    private val wooCommerceStore: WooCommerceStore = mock {
-        on { getSiteSettings(any()) }.thenReturn(siteSettings)
-    }
-
-    private val selectedSite: SelectedSite = mock {
-        on { get() }.thenReturn(mock())
+    private val getCachedStoreCurrency: WooPosGetCachedStoreCurrency = mock {
+        onBlocking { invoke() }.thenReturn("USD")
     }
 
     private val getVariationsById: WooPosGetVariationById = mock()
@@ -821,8 +812,7 @@ class WooPosCartViewModelTest {
             analyticsTracker,
             trackerData,
             cartProductUpdater,
-            wooCommerceStore,
-            selectedSite,
+            getCachedStoreCurrency,
             savedState
         )
     }
