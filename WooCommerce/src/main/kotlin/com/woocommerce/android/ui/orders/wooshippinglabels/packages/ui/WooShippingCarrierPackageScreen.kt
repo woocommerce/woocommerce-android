@@ -260,7 +260,8 @@ private fun PackageListSection(
                     .clickable { onPackageSelected(packageData, packageData.isSelected.not()) }
                     .padding(start = 16.dp),
                 packageData = packageData,
-                onPackageSelected = onPackageSelected
+                onPackageSelected = onPackageSelected,
+                packageItemSupportsStarring = true
             )
         }
     }

@@ -31,7 +31,8 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageDa
 fun WooShippingPackageListItem(
     modifier: Modifier,
     packageData: PackageData,
-    onPackageSelected: (PackageData, Boolean) -> Unit
+    onPackageSelected: (PackageData, Boolean) -> Unit,
+    packageItemSupportsStarring: Boolean
 ) {
     Column(
         modifier = modifier,
@@ -67,15 +68,17 @@ fun WooShippingPackageListItem(
                     style = MaterialTheme.typography.body2
                 )
             }
-            Icon(
-                modifier = Modifier.padding(end = 16.dp),
-                tint = colorResource(id = R.color.color_on_surface_disabled),
-                imageVector = when (packageData.isPredefined) {
-                    true -> Icons.Filled.Star
-                    false -> Icons.Outlined.Star
-                },
-                contentDescription = "Star",
-            )
+            if(packageItemSupportsStarring) {
+                Icon(
+                    modifier = Modifier.padding(end = 16.dp),
+                    tint = colorResource(id = R.color.color_on_surface_disabled),
+                    imageVector = when (packageData.isPredefined) {
+                        true -> Icons.Filled.Star
+                        false -> Icons.Outlined.Star
+                    },
+                    contentDescription = "Star",
+                )
+            }
         }
         Divider()
     }
@@ -134,7 +137,8 @@ fun WooSavedPackageListItemPreview() {
                 isSelected = false,
                 id = "1",
             ),
-            onPackageSelected = { _, _ -> }
+            onPackageSelected = { _, _ -> },
+            packageItemSupportsStarring = true
         )
     }
 }
