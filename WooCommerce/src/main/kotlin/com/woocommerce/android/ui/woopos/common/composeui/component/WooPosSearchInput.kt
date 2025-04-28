@@ -353,7 +353,8 @@ fun WooPosSearchInputOpenSearchPreview() {
                         "Search products...",
                         cursorPosition = 0
                     ),
-                    false
+                    isLoading = false,
+                    hasAnimationPlayed = true
                 ),
                 onEvent = {}
             )
