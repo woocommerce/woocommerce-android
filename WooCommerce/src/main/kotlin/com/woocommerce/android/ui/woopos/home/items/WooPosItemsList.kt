@@ -450,7 +450,12 @@ fun ItemListPreview() {
 @Composable
 fun EmptyListPreview() {
     WooPosTheme {
-        WooPosItemsEmptyList(modifier = Modifier.fillMaxSize(), title = "Empty List", message = "This list is empty", contentDescription = "")
+        WooPosItemsEmptyList(
+            modifier = Modifier.fillMaxSize(),
+            title = "Empty List",
+            message = "This list is empty",
+            contentDescription = ""
+        )
     }
 }
 
