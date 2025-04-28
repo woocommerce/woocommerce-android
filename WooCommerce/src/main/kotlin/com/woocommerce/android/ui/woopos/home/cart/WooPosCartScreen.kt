@@ -401,7 +401,11 @@ private fun ProductItem(
         modifier = modifier
             .height(96.dp)
             .semantics { contentDescription = itemContentDescription },
-        backgroundColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+        backgroundColor = if (item.productDoesNotExist) {
+            WooPosTheme.colors.disabledContainer
+        } else {
+            MaterialTheme.colorScheme.surfaceContainerLowest
+        },
         elevation = WooPosElevation.Medium,
         shadowType = ShadowType.Soft,
         shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
@@ -431,9 +435,12 @@ private fun ProductItem(
                     Image(
                         painter = painterResource(R.drawable.ic_box),
                         contentDescription = null,
-                        colorFilter = ColorFilter.tint(WooPosTheme.colors.onSurfaceVariantLowest),
-                        modifier = Modifier.alpha(if (item.productDoesNotExist) 0.5f else 1f)
-                            .size(36.dp)
+                        colorFilter = if (item.productDoesNotExist) {
+                            ColorFilter.tint(WooPosTheme.colors.onSurfaceVariantLowest)
+                        } else {
+                            ColorFilter.tint(WooPosTheme.colors.onDisabledContainer)
+                        },
+                        modifier = Modifier .size(36.dp)
                     )
                 }
 
@@ -460,32 +467,42 @@ private fun ProductItem(
                     style = WooPosTypography.BodySmall,
                     fontWeight = FontWeight.Bold,
                     overflow = TextOverflow.Ellipsis,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    color = if (item.productDoesNotExist) {
+                        WooPosTheme.colors.onDisabledContainer
+                    } else {
+                        MaterialTheme.colorScheme.onSurface
+                    },
                     modifier = Modifier
                         .clearAndSetSemantics { }
-                        .alpha(if (item.productDoesNotExist) 0.2f else 1f)
                 )
                 Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value.toAdaptivePadding()))
                 if (item.description.isNotNullOrEmpty()) {
                     WooPosText(
                         text = item.description ?: "",
                         style = WooPosTypography.BodySmall,
-                        color = WooPosTheme.colors.onSurfaceVariantHighest,
+                        color = if (item.productDoesNotExist) {
+                            WooPosTheme.colors.onDisabledContainer
+                        } else {
+                            WooPosTheme.colors.onSurfaceVariantHighest
+
+                        },
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier
                             .clearAndSetSemantics { }
-                            .alpha(if (item.productDoesNotExist) 0.5f else 1f)
                     )
                     Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value.toAdaptivePadding()))
                 }
                 WooPosText(
                     text = item.price,
                     style = WooPosTypography.BodySmall,
-                    color = WooPosTheme.colors.onSurfaceVariantHighest,
+                    color = if (item.productDoesNotExist) {
+                        WooPosTheme.colors.onDisabledContainer
+                    } else {
+                        WooPosTheme.colors.onSurfaceVariantHighest
+                    },
                     modifier = Modifier
                         .clearAndSetSemantics { }
-                        .alpha(if (item.productDoesNotExist) 0.5f else 1f)
                 )
             }
 
