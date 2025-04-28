@@ -63,6 +63,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule
 import org.mockito.kotlin.any
+import org.mockito.kotlin.argThat
 import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -1379,6 +1380,16 @@ class WooPosTotalsViewModelTest {
         // THEN
         verify(childrenToParentEventSender).sendToParent(ReturnedFromCardReaderPaymentToCheckout)
     }
+
+    @Test
+    fun `given valid order, when order created, then emits ChildToParentEvent-OrderCreated`() =
+        runTest {
+            // WHEN
+            createViewModelAndSetupForSuccessfulOrderCreation()
+
+            // THEN
+            verify(childrenToParentEventSender).sendToParent(argThat { this is ChildToParentEvent.OrderCreated })
+        }
 
     private fun mockPaymentFailedTexts() {
         whenever(resourceProvider.getString(R.string.woopos_success_totals_payment_processing_title))
