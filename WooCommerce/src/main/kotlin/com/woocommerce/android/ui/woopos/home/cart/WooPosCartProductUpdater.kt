@@ -21,7 +21,7 @@ class WooPosCartProductUpdater @Inject constructor(
         updatedCoupons: List<ParentToChildrenEvent.OrderCreated.CouponLine>,
     ): List<WooPosCartItemViewState> {
         val mutableCurrentBodyList = itemsInCart.toMutableList()
-        var changesDone = false
+        var productsChanged = false
 
         val availableProductsMap = createAvailableProductsMap(updatedProducts)
 
@@ -44,7 +44,7 @@ class WooPosCartProductUpdater @Inject constructor(
                             }
 
                             mutableCurrentBodyList[index] = updatedItem
-                            changesDone = changesDone || itemChanged
+                            productsChanged = productsChanged || itemChanged
                         }
                     } else {
                         val updatedItem = markProductAsNotExisting(item)
@@ -56,7 +56,7 @@ class WooPosCartProductUpdater @Inject constructor(
                         if (itemChanged) {
                             deleteProductFromCache(updatedItem.id)
                         }
-                        changesDone = changesDone || itemChanged
+                        productsChanged = productsChanged || itemChanged
                     }
                 }
 
@@ -66,7 +66,7 @@ class WooPosCartProductUpdater @Inject constructor(
             }
         }
 
-        if (changesDone) {
+        if (productsChanged) {
             notifyParentAboutChanges()
         }
 
