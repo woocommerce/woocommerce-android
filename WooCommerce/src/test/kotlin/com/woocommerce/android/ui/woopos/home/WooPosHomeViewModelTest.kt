@@ -53,7 +53,7 @@ class WooPosHomeViewModelTest {
             // THEN
             verify(parentToChildrenEventSender).sendToChildren(ParentToChildrenEvent.BackFromCheckoutToCartClicked)
             assertThat(viewModel.state.value.screenPositionState)
-                .isEqualTo(WooPosHomeState.ScreenPositionState.Cart.Visible)
+                .isEqualTo(WooPosHomeState.ScreenPositionState.Cart)
         }
 
     @Test
@@ -93,7 +93,7 @@ class WooPosHomeViewModelTest {
                 )
             )
             assertThat(viewModel.state.value.screenPositionState)
-                .isEqualTo(WooPosHomeState.ScreenPositionState.Cart.Visible)
+                .isEqualTo(WooPosHomeState.ScreenPositionState.Cart)
         }
 
     @Test
