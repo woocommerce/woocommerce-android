@@ -101,6 +101,7 @@ fun WooPosSearchInput(
         }
     }
 }
+
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 private fun AnimatedSearchInput(
