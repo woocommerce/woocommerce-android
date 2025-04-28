@@ -202,11 +202,13 @@ class WCProductStoreTest {
 
         productStore.updateVariation(UpdateVariationPayload(site, variationModel))
 
-        with(productStore.getVariationByRemoteId(
+        with(
+            productStore.getVariationByRemoteId(
                 site,
                 variationModel.remoteProductId,
                 variationModel.remoteVariationId
-        )) {
+            )
+        ) {
             // The version of the product model in the database should have the updated description
             assertEquals(variationModel.description, this?.description)
             // Other fields should not be altered by the update
@@ -217,7 +219,7 @@ class WCProductStoreTest {
     @Test
     fun testVerifySkuExistsLocally() = runTest {
         val sku = "woo-cap"
-        val productModel = ProductTestUtils.generateSampleProduct(42).copy (
+        val productModel = ProductTestUtils.generateSampleProduct(42).copy(
             name = "test product",
             description = "test description",
             sku = sku,
@@ -236,10 +238,10 @@ class WCProductStoreTest {
     @Test
     fun testGetProductsWithFilterOptions() = runTest {
         val filterOptions = mapOf(
-                ProductFilterOption.TYPE to "simple",
-                ProductFilterOption.STOCK_STATUS to "instock",
-                ProductFilterOption.STATUS to "publish",
-                ProductFilterOption.CATEGORY to "1337"
+            ProductFilterOption.TYPE to "simple",
+            ProductFilterOption.STOCK_STATUS to "instock",
+            ProductFilterOption.STATUS to "publish",
+            ProductFilterOption.CATEGORY to "1337"
         )
         val product1 = ProductTestUtils.generateSampleProduct(3)
         val product2 = ProductTestUtils.generateSampleProduct(
@@ -273,7 +275,14 @@ class WCProductStoreTest {
             categories = "[{\"id\":1337,\"name\":\"Clothing\",\"slug\":\"clothing\"}]"
         )
 
-        productsDao.upsertProducts(listOf(differentSiteProduct1, differentSiteProduct2, differentSiteProduct3, differentSiteProduct4))
+        productsDao.upsertProducts(
+            listOf(
+                differentSiteProduct1,
+                differentSiteProduct2,
+                differentSiteProduct3,
+                differentSiteProduct4
+            )
+        )
 
         // verify that the products for the first site is still 1
         assertEquals(1, productStore.getProducts(site, filterOptions).size)
@@ -346,7 +355,7 @@ class WCProductStoreTest {
         val variation = ProductTestUtils.generateSampleVariation(
             remoteId = 0,
             variationId = 1
-        ).copy (
+        ).copy(
             description = "test new description"
         )
         val site = SiteModel().apply { id = variation.localSiteId }
@@ -372,7 +381,7 @@ class WCProductStoreTest {
     @Test
     fun `given product review exists, when fetch product review, then local database updated`() = runTest {
         val site = SiteTestUtils.insertTestAccountAndSiteIntoDb()
-        val productModel = ProductTestUtils.generateSampleProduct(remoteId = 1).copy (
+        val productModel = ProductTestUtils.generateSampleProduct(remoteId = 1).copy(
             localSiteId = site.localId()
         )
         productsDao.upsertProduct(productModel)
@@ -383,7 +392,7 @@ class WCProductStoreTest {
             site.id
         )
         whenever(productRestClient.fetchProductReviewById(site, reviewModel.remoteProductReviewId))
-                .thenReturn(RemoteProductReviewPayload(site, reviewModel))
+            .thenReturn(RemoteProductReviewPayload(site, reviewModel))
 
         productStore.fetchSingleProductReview(FetchSingleProductReviewPayload(site, reviewModel.remoteProductReviewId))
 
@@ -629,14 +638,14 @@ class WCProductStoreTest {
             val site = SiteModel()
             val firstVariationAttributes = listOf(
                 ProductVariantOption(id = 1, name = "Size", option = "L"),
-                ProductVariantOption( id = 2, name = "Color", option = "Blue"),
+                ProductVariantOption(id = 2, name = "Color", option = "Blue"),
             )
             val secondVariationAttributes = listOf(
-                ProductVariantOption( id = 1, name = "Size", option = "L"),
-                ProductVariantOption( id = 2, name = "Color", option = "Red"),
+                ProductVariantOption(id = 1, name = "Size", option = "L"),
+                ProductVariantOption(id = 2, name = "Color", option = "Red"),
             )
 
-            val variations = listOf(firstVariationAttributes,secondVariationAttributes)
+            val variations = listOf(firstVariationAttributes, secondVariationAttributes)
 
             // when API call succeed
             val variationsPayload = BatchGenerateVariationsPayload(
@@ -682,14 +691,14 @@ class WCProductStoreTest {
             val productId = 6L
             val site = SiteModel()
             val firstVariationAttributes = listOf(
-                ProductVariantOption( id = 1, name = "Size", option = "L"),
-                ProductVariantOption( id = 2, name = "Color", option = "Blue"),
+                ProductVariantOption(id = 1, name = "Size", option = "L"),
+                ProductVariantOption(id = 2, name = "Color", option = "Blue"),
             )
             val secondVariationAttributes = listOf(
-                ProductVariantOption( id = 1, name = "Size", option = "L"),
-                ProductVariantOption( id = 2, name = "Color", option = "Red"),
+                ProductVariantOption(id = 1, name = "Size", option = "L"),
+                ProductVariantOption(id = 2, name = "Color", option = "Red"),
             )
-            val variations = listOf(firstVariationAttributes,secondVariationAttributes)
+            val variations = listOf(firstVariationAttributes, secondVariationAttributes)
 
             // when API call failed
             val variationsPayload = BatchGenerateVariationsPayload(
@@ -752,7 +761,7 @@ class WCProductStoreTest {
             // then
             assertThat(argumentCaptor.allValues).hasSize(1)
             assertThat(argumentCaptor.allValues.first()).hasSize(4)
-            argumentCaptor.allValues.first().onEach {(existing, updated) ->
+            argumentCaptor.allValues.first().onEach { (existing, updated) ->
                 assertThat(existing.remoteProductId).isEqualTo(updated.remoteProductId)
             }
         }
@@ -821,7 +830,7 @@ class WCProductStoreTest {
             WCMetaData(1, "key2", "value2"),
         )
         whenever(productRestClient.fetchSingleProduct(site, product.remoteProductId)).thenReturn(
-           RemoteProductPayload(ProductWithMetaData(product, metadata), site)
+            RemoteProductPayload(ProductWithMetaData(product, metadata), site)
         )
 
         // when
@@ -835,40 +844,40 @@ class WCProductStoreTest {
     }
 
     @Test
-    fun `given include_type simple, then return type Simple` () {
+    fun `given include_type simple, then return type Simple`() {
         assertThat(IncludeType.fromValue("simple")).isEqualTo(IncludeType.Simple)
     }
 
     @Test
-    fun `given include_type variable, then return type Variable` () {
+    fun `given include_type variable, then return type Variable`() {
         assertThat(
             IncludeType.fromValue("variable")
         ).isEqualTo(IncludeType.Variable)
     }
 
     @Test
-    fun `given include_type external, then return type External` () {
+    fun `given include_type external, then return type External`() {
         assertThat(
             IncludeType.fromValue("external")
         ).isEqualTo(IncludeType.External)
     }
 
     @Test
-    fun `given include_type grouped, then return type Grouped` () {
+    fun `given include_type grouped, then return type Grouped`() {
         assertThat(
             IncludeType.fromValue("grouped")
         ).isEqualTo(IncludeType.Grouped)
     }
 
     @Test
-    fun `given include_type empty, then return type null` () {
+    fun `given include_type empty, then return type null`() {
         assertThat(
             IncludeType.fromValue("")
         ).isNull()
     }
 
     @Test
-    fun `given include_type invalid, then return type null` () {
+    fun `given include_type invalid, then return type null`() {
         assertThat(
             IncludeType.fromValue("invalid")
         ).isNull()
