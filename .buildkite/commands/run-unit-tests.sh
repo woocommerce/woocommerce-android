@@ -10,7 +10,7 @@ bundle exec fastlane run configure_apply
 
 echo "--- 🧪 Testing"
 set +e
-./gradlew testJalapenoDebugUnitTest testDebugUnitTest
+./gradlew testJalapenoDebugUnitTest testDebugUnitTest jacocoTestReport
 TESTS_EXIT_STATUS=$?
 set -e
 
@@ -18,8 +18,10 @@ if [[ "$TESTS_EXIT_STATUS" -ne 0 ]]; then
   # Keep the (otherwise collapsed) current "Testing" section open in Buildkite logs on error. See https://buildkite.com/docs/pipelines/managing-log-output#collapsing-output
   echo "^^^ +++"
   echo "Unit Tests failed!"
+else
+  echo "--- ⚒️ Uploading code coverage"
+  .buildkite/commands/upload-code-coverage.sh
 fi
-
 
 echo "--- 🚦 Report Tests Status"
 results_file="WooCommerce/build/test-results/merged-test-results.xml"
@@ -35,9 +37,5 @@ fi
 
 echo "--- 🧪 Copying test logs for test collector"
 mkdir WooCommerce/build/buildkite-test-analytics && cp "$results_file" WooCommerce/build/buildkite-test-analytics
-
-echo "--- ⚒️ Generating and uploading code coverage"
-./gradlew jacocoTestReport
-.buildkite/commands/upload-code-coverage.sh
 
 exit $TESTS_EXIT_STATUS
