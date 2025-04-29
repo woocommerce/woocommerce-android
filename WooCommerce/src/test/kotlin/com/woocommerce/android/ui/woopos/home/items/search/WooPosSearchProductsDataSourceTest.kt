@@ -64,7 +64,7 @@ class WooPosSearchProductsDataSourceTest {
     fun `given cached products, when searchLocalProducts called, then should return filtered products`() = runTest {
         // GIVEN
         val query = "test"
-        whenever(wooPosProductsCache.getAll()).thenReturn(products)
+        whenever(wooPosProductsCache.getAll()).thenReturn(emptyList())
 
         // WHEN
         val result = sut.searchLocalProducts(query)
