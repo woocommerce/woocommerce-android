@@ -20,6 +20,7 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToCashPayment
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToEmailReceipt
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NewTransactionClicked
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OrderCreated.CouponLine
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OrderSuccessfullyPaidByCard
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.ToastMessageDisplayed
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
@@ -35,6 +36,8 @@ import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.UiStringParser
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
+import com.woocommerce.android.util.WooLog.T.POS
+import com.woocommerce.android.util.WooLogWrapper
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -60,6 +63,7 @@ class WooPosTotalsViewModel @Inject constructor(
     private val uiStringParser: UiStringParser,
     private val isCouponsEnabled: WooPosIsCouponsEnabled,
     private val totalsAnalyticsTracker: WooPosTotalsAnalyticsTracker,
+    private val wooLogWrapper: WooLogWrapper,
     savedState: SavedStateHandle,
 ) : ViewModel() {
 
@@ -467,19 +471,34 @@ class WooPosTotalsViewModel @Inject constructor(
                             }
                         }
                     },
-                    updatedCoupons = order.couponLines
-                        .filter { coupon -> coupon.id != null && !coupon.discount.isNullOrEmpty() }
-                        .map { coupon ->
-                            ChildToParentEvent.OrderCreated.CouponLine(
-                                id = requireNotNull(coupon.id),
-                                code = coupon.code,
-                                discountAmount = requireNotNull(coupon.discount)
-                            )
-                        }
+                    updatedCoupons = mapCouponLines(order)
                 )
             )
         }
     }
+
+    private fun mapCouponLines(order: Order) = order.couponLines
+        .mapNotNull { coupon ->
+            coupon.takeIf { it.id != null && !it.discount.isNullOrEmpty() }?.let {
+                try {
+                    CouponLine(
+                        id = requireNotNull(it.id),
+                        code = it.code,
+                        discountAmount = BigDecimal(it.discount)
+                    )
+                } catch (e: NumberFormatException) {
+                    wooLogWrapper.e(
+                        POS, "Failed to parse coupon discount amount: ${it.discount}, " +
+                            "coupon code: ${it.code}, coupon id: ${it.id}"
+                    )
+                    null
+                }
+            } ?: null.also {
+                wooLogWrapper.e(
+                    POS, "Coupon line is null or empty: ${coupon.code}, coupon id: ${coupon.id}"
+                )
+            }
+        }
 
     private fun showSuccessfulPaymentState(paymentMethod: PaymentMethod) {
         viewModelScope.launch {
