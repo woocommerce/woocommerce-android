@@ -1,11 +1,14 @@
 package com.woocommerce.android.ui.woopos.home.cart
 
+import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
+import com.woocommerce.android.util.WooLog.T
+import com.woocommerce.android.util.WooLogWrapper
 import com.woocommerce.android.viewmodel.ResourceProvider
 import javax.inject.Inject
 
@@ -14,6 +17,8 @@ class WooPosCartItemsUpdater @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val formatPrice: WooPosFormatPrice,
     private val productsCache: WooPosProductsCache,
+    private val wooLogWrapper: WooLogWrapper,
+    private val crashLogger: CrashLogging,
 ) {
     suspend operator fun invoke(
         itemsInCart: List<WooPosCartItemViewState>,
@@ -61,7 +66,7 @@ class WooPosCartItemsUpdater @Inject constructor(
                 }
 
                 is WooPosCartItemViewState.Coupon -> {
-                    updateCouponDiscount(updatedCoupons, item, mutableCurrentBodyList, index)
+                    mutableCurrentBodyList[index] = updateCouponsWithFormattedDiscount(updatedCoupons, item)
                 }
             }
         }
@@ -73,18 +78,15 @@ class WooPosCartItemsUpdater @Inject constructor(
         return mutableCurrentBodyList
     }
 
-    private suspend fun updateCouponDiscount(
+    private suspend fun updateCouponsWithFormattedDiscount(
         updatedCoupons: List<ParentToChildrenEvent.OrderCreated.CouponLine>,
         item: WooPosCartItemViewState.Coupon,
-        mutableCurrentBodyList: MutableList<WooPosCartItemViewState>,
-        index: Int
-    ) {
-        updatedCoupons.find { it.code == item.name }?.let {
-            // ?? Do we need to update cache if the coupons summary changes?
-            mutableCurrentBodyList[index] = item.copy(
-                formattedDiscount = "-${formatPrice(it.discountAmount)}",
-            )
-        }
+    ) = updatedCoupons.find { it.code == item.name }?.let {
+        item.copy(formattedDiscount = "-${formatPrice(it.discountAmount)}")
+    } ?: item.also {
+        val message = "Coupon not found in the cart"
+        wooLogWrapper.e(T.POS, message)
+        crashLogger.sendReport(IllegalStateException(message))
     }
 
     private suspend fun notifyParentAboutChanges() {
