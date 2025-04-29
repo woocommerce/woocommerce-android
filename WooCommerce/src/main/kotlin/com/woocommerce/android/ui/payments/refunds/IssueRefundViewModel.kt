@@ -690,8 +690,6 @@ class IssueRefundViewModel @Inject constructor(
         }
     }
 
-    private fun isInputValid() = validateInput() == VALID
-
     fun onShippingRefundMainSwitchChanged(isChecked: Boolean) {
         if (isChecked) {
             val shippingRefund = calculatePartialShippingTotal(allShippingLineIds)

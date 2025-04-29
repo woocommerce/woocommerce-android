@@ -1184,8 +1184,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
                     on { totalTax }.thenReturn(BigDecimal.ZERO)
                     on { metaData }.thenReturn(null)
                 },
-
-                )
+            )
 
             val refund = WCRefundModel(
                 id = 1L,
