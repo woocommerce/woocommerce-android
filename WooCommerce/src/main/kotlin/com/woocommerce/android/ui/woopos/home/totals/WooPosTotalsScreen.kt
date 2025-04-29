@@ -242,6 +242,7 @@ private fun PreparingReader(title: String, subtitle: String) {
     WooPosText(
         text = title,
         style = WooPosTypography.BodyLarge,
+        color = WooPosTheme.colors.onSurfaceVariantHighest,
     )
     Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
     WooPosText(
@@ -264,6 +265,7 @@ private fun ReaderReadyForPayment(readerStatus: WooPosTotalsViewState.ReaderStat
     WooPosText(
         text = readerStatus.title,
         style = WooPosTypography.BodyLarge,
+        color = WooPosTheme.colors.onSurfaceVariantHighest,
     )
     Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
     WooPosText(
