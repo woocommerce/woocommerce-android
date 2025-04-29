@@ -426,7 +426,9 @@ private fun ProductItem(
                         .build(),
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier.size(96.dp).alpha(if (item.productDoesNotExist) 0.5f else 1f)
+                    modifier = Modifier
+                        .size(96.dp)
+                        .alpha(if (item.productDoesNotExist) 0.5f else 1f)
                 )
             }
 
@@ -444,7 +446,8 @@ private fun ProductItem(
                     fontWeight = FontWeight.Bold,
                     overflow = TextOverflow.Ellipsis,
                     color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.clearAndSetSemantics { }
+                    modifier = Modifier
+                        .clearAndSetSemantics { }
                         .alpha(if (item.productDoesNotExist) 0.2f else 1f)
                 )
                 Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value.toAdaptivePadding()))
@@ -455,7 +458,8 @@ private fun ProductItem(
                         color = WooPosTheme.colors.onSurfaceVariantHighest,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.clearAndSetSemantics { }
+                        modifier = Modifier
+                            .clearAndSetSemantics { }
                             .alpha(if (item.productDoesNotExist) 0.5f else 1f)
                     )
                     Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value.toAdaptivePadding()))
@@ -464,7 +468,8 @@ private fun ProductItem(
                     text = item.price,
                     style = WooPosTypography.BodySmall,
                     color = WooPosTheme.colors.onSurfaceVariantHighest,
-                    modifier = Modifier.clearAndSetSemantics { }
+                    modifier = Modifier
+                        .clearAndSetSemantics { }
                         .alpha(if (item.productDoesNotExist) 0.5f else 1f)
                 )
             }
@@ -507,12 +512,12 @@ private fun CouponItem(
             Box(
                 modifier = Modifier
                     .background(
-                        if (isDiscountCalculated)
+                        if (isDiscountCalculated) {
                             WooPosTheme.colors.success
-                        else
-                            MaterialTheme.colorScheme.surfaceDim,
-
-                        )
+                        } else {
+                            MaterialTheme.colorScheme.surfaceDim
+                        }
+                    )
                     .size(96.dp),
                 contentAlignment = Alignment.Center
             ) {
@@ -520,10 +525,11 @@ private fun CouponItem(
                     imageVector = Icons.Outlined.LocalOffer,
                     contentDescription = null,
                     colorFilter = ColorFilter.tint(
-                        if (isDiscountCalculated)
+                        if (isDiscountCalculated) {
                             WooPosTheme.colors.onSuccess
-                        else
+                        } else {
                             WooPosTheme.colors.onSurfaceVariantLowest
+                        }
                     ),
                     modifier = Modifier.size(36.dp, 36.dp)
                 )
