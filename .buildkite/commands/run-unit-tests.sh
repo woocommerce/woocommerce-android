@@ -8,19 +8,14 @@ install_gems
 echo "--- :closed_lock_with_key: Installing Secrets"
 bundle exec fastlane run configure_apply
 
-echo "--- 🧪 Testing"
+echo "+++ 🧪 Testing"
 set +e
 ./gradlew testJalapenoDebugUnitTest testDebugUnitTest jacocoTestReport
 TESTS_EXIT_STATUS=$?
 set -e
 
-if [[ "$TESTS_EXIT_STATUS" -ne 0 ]]; then
-  # Keep the (otherwise collapsed) current "Testing" section open in Buildkite logs on error. See https://buildkite.com/docs/pipelines/managing-log-output#collapsing-output
-  echo "^^^ +++"
-  echo "Unit Tests failed!"
-else
-  echo
-  echo "--- ⚒️ Uploading code coverage"
+if [[ "$TESTS_EXIT_STATUS" -eq 0 ]]; then
+  echo -e "--- ⚒️ Uploading code coverage"
   .buildkite/commands/upload-code-coverage.sh
 fi
 
