@@ -35,7 +35,6 @@ import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.UiStringParser
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooLog.T.POS
 import com.woocommerce.android.util.WooLogWrapper
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -424,7 +423,7 @@ class WooPosTotalsViewModel @Inject constructor(
                 .fold(
                     onSuccess = { order -> handleCreatedOrder(order) },
                     onFailure = { error ->
-                        WooLog.e(T.POS, "Order creation failed - $error")
+                        WooLog.e(POS, "Order creation failed - $error")
                         uiState.value = WooPosTotalsViewState.Error(
                             resourceProvider.getString(R.string.woopos_totals_order_creation_error)
                         )
@@ -488,8 +487,7 @@ class WooPosTotalsViewModel @Inject constructor(
                     )
                 } catch (e: NumberFormatException) {
                     wooLogWrapper.e(
-                        POS, "Failed to parse coupon discount amount: ${it.discount}, " +
-                            "coupon code: ${it.code}, coupon id: ${it.id}"
+                        POS, "Parsing coupon failed, discount: ${it.discount}, code: ${it.code}, id: ${it.id}"
                     )
                     null
                 }

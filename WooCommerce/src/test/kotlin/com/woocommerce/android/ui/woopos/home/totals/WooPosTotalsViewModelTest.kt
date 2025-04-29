@@ -753,7 +753,7 @@ class WooPosTotalsViewModelTest {
         val mockCardReaderPaymentController: CardReaderPaymentController = mock()
         val factory: WooPosCardReaderPaymentControllerFactory = mock()
         whenever(factory.create(any(), any(), any())).thenReturn(mockCardReaderPaymentController)
-        val vm = createViewModelAndSetupForSuccessfulOrderCreation(controllerFactory = factory)
+        createViewModelAndSetupForSuccessfulOrderCreation(controllerFactory = factory)
 
         // WHEN
         readerStatus.value = CardReaderStatus.NotConnected()
@@ -1044,7 +1044,7 @@ class WooPosTotalsViewModelTest {
         advanceUntilIdle()
 
         // THEN
-        verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.ReturnedFromCardReaderPaymentToCheckout)
+        verify(childrenToParentEventSender).sendToParent(ReturnedFromCardReaderPaymentToCheckout)
     }
 
     @Test
