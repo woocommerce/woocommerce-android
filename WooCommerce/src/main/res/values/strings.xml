@@ -4411,7 +4411,7 @@
     <string name="woopos_search_back_content_description">Back</string>
     <string name="woopos_clear_back_content_description">Clear</string>
     <string name="woopos_search_products">Search products…</string>
-    <string name="woopos_search_popular_items_title">Popular items</string>
+    <string name="woopos_search_popular_items_title">Popular products</string>
     <string name="woopos_search_recent_searches_title">Recent searches</string>
     <string name="woopos_search_items_empty_title">Nothing found</string>
     <string name="woopos_search_empty_description">We couldn\'t find anything matching your search.</string>
