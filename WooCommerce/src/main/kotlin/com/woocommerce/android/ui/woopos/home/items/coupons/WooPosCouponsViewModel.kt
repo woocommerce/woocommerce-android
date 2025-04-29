@@ -6,7 +6,6 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.WooPosCouponsViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
-import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsUIEvent.BackButtonClicked
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsUIEvent.CouponClicked
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsUIEvent.EndOfListReached
@@ -16,7 +15,6 @@ import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsUIEvent
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -46,6 +44,8 @@ class WooPosCouponsViewModel @Inject constructor(
                 _viewState.value = newState
             }
         }
+
+        listViewStateManager.fetchCoupons(viewModelScope)
     }
 
     fun onUIEvent(event: WooPosCouponsUIEvent) {
@@ -73,26 +73,15 @@ class WooPosCouponsViewModel @Inject constructor(
     }
 
     private fun fetchCoupons() {
-        viewModelScope.launch(Dispatchers.IO) {
-            listViewStateManager.fetchCoupons()
-        }
+        listViewStateManager.fetchCoupons(viewModelScope)
     }
 
     private fun onEndOfListReached() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val currentState = _viewState.value
-            if (currentState is WooPosCouponsViewState.Content &&
-                currentState.paginationState == WooPosPaginationState.None
-            ) {
-                listViewStateManager.loadMore()
-            }
-        }
+        listViewStateManager.endOfListReached(viewModelScope)
     }
 
     private fun retryLoadMore() {
-        viewModelScope.launch(Dispatchers.IO) {
-            listViewStateManager.loadMore()
-        }
+        listViewStateManager.retryLoadMore(viewModelScope)
     }
 
     private fun navigateBackToItemListScreen() {
