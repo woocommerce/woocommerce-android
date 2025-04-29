@@ -116,7 +116,6 @@ fun WooPosItemsToolbarPreview() {
             state = WooPosItemsViewState.ProductList(
                 tabs = tabs,
                 search = WooPosItemsViewState.SearchState.Hidden,
-                banner = WooPosItemsViewState.BannerState.Hidden,
             ),
             onTabClicked = {},
             onSearchEvent = {}

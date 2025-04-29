@@ -28,7 +28,6 @@ class WooPosItemsViewModel @Inject constructor(
         WooPosItemsViewState.ProductList(
             tabs = tabsHelper.defaultTabs,
             search = searchHelper.getInitialSearchState(isProductsSearchEnabled()),
-            banner = WooPosItemsViewState.BannerState.Hidden, // TODO Fix as part of the move to `More` menu.
         )
     )
     val viewState: StateFlow<WooPosItemsViewState> = _viewState
@@ -81,7 +80,6 @@ class WooPosItemsViewModel @Inject constructor(
             R.string.woopos_products_screen_title -> WooPosItemsViewState.ProductList(
                 tabs = tabsHelper.selectTab(state.tabs, selectedTab),
                 search = searchHelper.getInitialSearchState(isProductsSearchEnabled()),
-                banner = WooPosItemsViewState.BannerState.Hidden, // TODO Fix as part of the move to `More` menu.
             )
 
             R.string.woopos_coupons_screen_title -> WooPosItemsViewState.CouponList(
