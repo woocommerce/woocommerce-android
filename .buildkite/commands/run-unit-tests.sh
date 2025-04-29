@@ -33,11 +33,11 @@ else
     annotate_test_failures "$results_file"
 fi
 
+echo "--- 🧪 Copying test logs for test collector"
+mkdir WooCommerce/build/buildkite-test-analytics && cp "$results_file" WooCommerce/build/buildkite-test-analytics
+
 echo "--- ⚒️ Generating and uploading code coverage"
 ./gradlew jacocoTestReport
 .buildkite/commands/upload-code-coverage.sh
-
-echo "--- 🧪 Copying test logs for test collector"
-mkdir WooCommerce/build/buildkite-test-analytics && cp "$results_file" WooCommerce/build/buildkite-test-analytics
 
 exit $TESTS_EXIT_STATUS
