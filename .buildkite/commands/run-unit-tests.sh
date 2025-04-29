@@ -15,11 +15,11 @@ TESTS_EXIT_STATUS=$?
 set -e
 
 if [[ "$TESTS_EXIT_STATUS" -eq 0 ]]; then
-  echo -e "--- ⚒️ Uploading code coverage"
+  echo -e "\n--- ⚒️ Uploading code coverage"
   .buildkite/commands/upload-code-coverage.sh
 fi
 
-echo -e "--- 🚦 Report Tests Status"
+echo -e "\n--- 🚦 Report Tests Status"
 results_file="WooCommerce/build/test-results/merged-test-results.xml"
 # Merge JUnit results into a single file (for performance reasons with reporting)
 # See https://github.com/woocommerce/woocommerce-android/pull/12064
