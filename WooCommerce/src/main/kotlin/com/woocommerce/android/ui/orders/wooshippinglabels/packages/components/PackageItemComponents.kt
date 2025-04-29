@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.packages.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -32,7 +33,8 @@ fun WooShippingPackageListItem(
     modifier: Modifier,
     packageData: PackageData,
     onPackageSelected: (PackageData, Boolean) -> Unit,
-    packageItemSupportsStarring: Boolean
+    packageItemSupportsStarring: Boolean,
+    onPackageStarred: (PackageData, Boolean) -> Unit = { _, _ -> }
 ) {
     Column(
         modifier = modifier,
@@ -68,11 +70,13 @@ fun WooShippingPackageListItem(
                     style = MaterialTheme.typography.body2
                 )
             }
-            if(packageItemSupportsStarring) {
+            if (packageItemSupportsStarring) {
                 Icon(
-                    modifier = Modifier.padding(end = 16.dp),
+                    modifier = Modifier
+                        .padding(end = 16.dp)
+                        .clickable { onPackageStarred(packageData, !packageData.isStarred) },
                     tint = colorResource(id = R.color.color_on_surface_disabled),
-                    imageVector = when (packageData.isPredefined) {
+                    imageVector = when (packageData.isStarred) {
                         true -> Icons.Filled.Star
                         false -> Icons.Outlined.Star
                     },
