@@ -19,6 +19,7 @@ if [[ "$TESTS_EXIT_STATUS" -ne 0 ]]; then
   echo "^^^ +++"
   echo "Unit Tests failed!"
 else
+  echo
   echo "--- ⚒️ Uploading code coverage"
   .buildkite/commands/upload-code-coverage.sh
 fi
