@@ -24,7 +24,7 @@ import java.math.BigDecimal
 import kotlin.test.Test
 
 @ExperimentalCoroutinesApi
-class WooPosCartProductUpdaterTest {
+class WooPosCartItemsUpdaterTest {
     @Rule
     @JvmField
     val rule = InstantTaskExecutorRule()
@@ -42,7 +42,7 @@ class WooPosCartProductUpdaterTest {
     }
     private val productsCache: WooPosProductsCache = mock()
 
-    private val updater = WooPosCartProductUpdater(
+    private val updater = WooPosCartItemsUpdater(
         childrenToParentEventSender = childrenToParentEventSender,
         resourceProvider = resourceProvider,
         formatPrice = formatPrice,

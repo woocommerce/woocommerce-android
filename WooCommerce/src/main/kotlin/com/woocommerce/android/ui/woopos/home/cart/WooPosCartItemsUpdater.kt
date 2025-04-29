@@ -9,7 +9,7 @@ import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import javax.inject.Inject
 
-class WooPosCartProductUpdater @Inject constructor(
+class WooPosCartItemsUpdater @Inject constructor(
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
     private val resourceProvider: ResourceProvider,
     private val formatPrice: WooPosFormatPrice,

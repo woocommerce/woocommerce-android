@@ -53,7 +53,7 @@ class WooPosCartViewModel @Inject constructor(
     private val formatPrice: WooPosFormatPrice,
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val analyticsTrackingDataKeeper: WooPosAnalyticsTrackingDataKeeper,
-    private val updateCartItemsWithChanges: WooPosCartProductUpdater,
+    private val updateCartItemsWithChanges: WooPosCartItemsUpdater,
     private val getCachedStoreCurrency: GetCachedStoreCurrency,
     savedState: SavedStateHandle,
 ) : ViewModel() {
