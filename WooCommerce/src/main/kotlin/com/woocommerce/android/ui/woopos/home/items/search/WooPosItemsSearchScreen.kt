@@ -2,8 +2,8 @@ package com.woocommerce.android.ui.woopos.home.items.search
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
@@ -36,7 +36,7 @@ fun WooPosItemsSearchScreen(
     val viewModel = hiltViewModel<WooPosItemsSearchViewModel>()
     val state = viewModel.viewState.collectAsState().value
     WooPosItemsSearchScreen(
-        modifier = modifier,
+        modifier = modifier.imePadding(),
         state = state,
         onUIEvent = viewModel::onUIEvent,
     )

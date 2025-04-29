@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.compose.component
 
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
@@ -27,6 +28,7 @@ fun ToolbarWithHelpButton(
     onNavigationButtonClick: (() -> Unit)? = null,
     navigationIcon: ImageVector? = Icons.AutoMirrored.Filled.ArrowBack,
     navigationIconContentDescription: String = stringResource(id = string.back),
+    windowInsets: WindowInsets = WindowInsets(0),
     onHelpButtonClick: (() -> Unit)
 ) {
     Toolbar(
@@ -37,7 +39,8 @@ fun ToolbarWithHelpButton(
         navigationIconContentDescription = navigationIconContentDescription,
         actionButtonIcon = ImageVector.vectorResource(id = drawable.ic_help_24dp),
         onActionButtonClick = onHelpButtonClick,
-        actionIconContentDescription = stringResource(id = string.help)
+        actionIconContentDescription = stringResource(id = string.help),
+        windowInsets = windowInsets
     )
 }
 
@@ -47,7 +50,8 @@ fun Toolbar(
     title: String = "",
     onNavigationButtonClick: (() -> Unit),
     navigationIcon: ImageVector = Icons.AutoMirrored.Filled.ArrowBack,
-    navigationIconContentDescription: String = stringResource(id = string.back)
+    navigationIconContentDescription: String = stringResource(id = string.back),
+    windowInsets: WindowInsets = WindowInsets(0),
 ) {
     Toolbar(
         modifier = modifier,
@@ -55,6 +59,7 @@ fun Toolbar(
         onNavigationButtonClick = onNavigationButtonClick,
         navigationIcon = navigationIcon,
         navigationIconContentDescription = navigationIconContentDescription,
+        windowInsets = windowInsets,
     )
 }
 
@@ -65,6 +70,7 @@ fun Toolbar(
     onNavigationButtonClick: (() -> Unit)? = null,
     navigationIcon: ImageVector? = Icons.AutoMirrored.Filled.ArrowBack,
     navigationIconContentDescription: String = stringResource(id = string.back),
+    windowInsets: WindowInsets = WindowInsets(0),
     actionButtonIcon: ImageVector,
     onActionButtonClick: (() -> Unit),
     actionIconContentDescription: String
@@ -75,6 +81,7 @@ fun Toolbar(
         onNavigationButtonClick = onNavigationButtonClick,
         navigationIcon = navigationIcon,
         navigationIconContentDescription = navigationIconContentDescription,
+        windowInsets = windowInsets,
         actions = {
             IconButton(onClick = onActionButtonClick) {
                 Icon(
@@ -93,6 +100,7 @@ fun Toolbar(
     onNavigationButtonClick: (() -> Unit)? = null,
     navigationIcon: ImageVector? = Icons.AutoMirrored.Filled.ArrowBack,
     navigationIconContentDescription: String = stringResource(id = string.back),
+    windowInsets: WindowInsets = WindowInsets(0),
     actions: @Composable RowScope.() -> Unit = {}
 ) {
     Toolbar(
@@ -101,6 +109,7 @@ fun Toolbar(
         onNavigationButtonClick = onNavigationButtonClick,
         navigationIcon = navigationIcon,
         navigationIconContentDescription = navigationIconContentDescription,
+        windowInsets = windowInsets,
         actions = actions
     )
 }
@@ -112,6 +121,7 @@ fun Toolbar(
     onNavigationButtonClick: (() -> Unit)? = null,
     navigationIcon: ImageVector? = Icons.AutoMirrored.Filled.ArrowBack,
     navigationIconContentDescription: String = stringResource(id = string.back),
+    windowInsets: WindowInsets = WindowInsets(0),
     onActionButtonClick: (() -> Unit),
     actionButtonText: String
 ) {
@@ -121,6 +131,7 @@ fun Toolbar(
         onNavigationButtonClick = onNavigationButtonClick,
         navigationIcon = navigationIcon,
         navigationIconContentDescription = navigationIconContentDescription,
+        windowInsets = windowInsets,
         actions = {
             TextButton(onClick = onActionButtonClick) {
                 Text(text = actionButtonText)
@@ -136,9 +147,11 @@ fun Toolbar(
     onNavigationButtonClick: (() -> Unit)? = null,
     navigationIcon: ImageVector? = null,
     navigationIconContentDescription: String = stringResource(id = string.back),
+    windowInsets: WindowInsets = WindowInsets(0),
     actions: @Composable RowScope.() -> Unit = {}
 ) {
     TopAppBar(
+        windowInsets = windowInsets,
         backgroundColor = colorResource(id = R.color.color_toolbar),
         title = title,
         navigationIcon = {

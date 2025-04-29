@@ -13,7 +13,7 @@ import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsListVie
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsListViewStateManager.FetchingCouponsState.FETCHING_FIRST_PAGE
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsListViewStateManager.FetchingCouponsState.FETCHING_MORE
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsListViewStateManager.FetchingCouponsState.IDLE
-import com.woocommerce.android.ui.woopos.util.GetCachedStoreCurrency
+import com.woocommerce.android.ui.woopos.util.WooPosGetCachedStoreCurrency
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatCouponSummary
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -32,7 +32,7 @@ private const val AVOID_UI_FLICKERING_DELAY = 500L
 class WooPosCouponsListViewStateManager @Inject constructor(
     private val couponsDataSource: WooPosCouponsDataSource,
     private val formatCouponSummary: WooPosFormatCouponSummary,
-    private val getCachedStoreCurrency: GetCachedStoreCurrency,
+    private val getCachedStoreCurrency: WooPosGetCachedStoreCurrency,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) {
     private val fetchingState: MutableStateFlow<FetchingCouponsState> = MutableStateFlow(IDLE)

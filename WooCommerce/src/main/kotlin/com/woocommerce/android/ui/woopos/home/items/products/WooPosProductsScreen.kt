@@ -326,46 +326,6 @@ fun WooPosProductsScreenErrorPreview() {
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 @WooPosPreview
-fun WooPosHomeScreenItemsWithSimpleProductsOnlyBannerPreview() {
-    val productState = MutableStateFlow(
-        WooPosProductsViewState.Content(
-            items = listOf(
-                Product.Simple(
-                    1,
-                    name = "Product 1, Product 1, Product 1, " +
-                        "Product 1, Product 1, Product 1, Product 1, Product 1" +
-                        "Product 1, Product 1, Product 1, Product 1, Product 1",
-                    price = "10.0$",
-                    imageUrl = null,
-                ),
-                Product.Simple(
-                    2,
-                    name = "Product 2",
-                    price = "2000.00$",
-                    imageUrl = null,
-                ),
-                Product.Simple(
-                    3,
-                    name = "Product 3",
-                    price = "1.0$",
-                    imageUrl = null,
-                ),
-            ),
-            pullToRefreshState = WooPosPullToRefreshState.Refreshing,
-        )
-    )
-    WooPosTheme {
-        WooPosProductsScreen(
-            itemsStateFlow = productState,
-            listState = rememberLazyListState(),
-            onUIEvent = {},
-        )
-    }
-}
-
-@OptIn(ExperimentalMaterialApi::class)
-@Composable
-@WooPosPreview
 fun WooPosHomeScreenItemsWithInfoIconInToolbarPreview() {
     val productState = MutableStateFlow(
         WooPosProductsViewState.Content(

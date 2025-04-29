@@ -12,7 +12,7 @@
     </style>
 
     <style name="Theme.Woo" parent="Theme.WooBase">
-        <item name="android:statusBarColor">@color/color_status_bar</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">?attr/isLightTheme</item>
     </style>
     <style name="Theme.WooBase" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
@@ -38,7 +38,7 @@
         <item name="colorControlNormal">@color/color_primary</item>
         <item name="android:colorControlActivated">@color/color_primary</item>
         <item name="scrimBackground">@color/color_scrim_background</item>
-        <item name="android:navigationBarColor">@color/nav_bar</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="elevationOverlayEnabled">true</item>
         <item name="elevationOverlayColor">@color/woo_white</item>
         <item name="android:textColorLink">@color/color_primary</item>
@@ -144,13 +144,6 @@
     <style name="Theme.Woo.NumberPicker" parent="Theme.Woo.DayNight">
         <item name="colorControlNormal">@android:color/transparent</item>
         <item name="android:textAppearance">@style/TextAppearance.Woo.Headline6</item>
-    </style>
-
-    <style name="Theme.Woo.DayNight.Zendesk">
-        <item name="colorPrimary">@color/color_primary_surface</item>
-        <item name="colorPrimaryDark">@color/color_primary</item>
-        <item name="colorAccent">@color/color_primary</item>
-        <item name="android:colorForeground">@color/woo_black_90</item>
     </style>
 
     <style name="MediaPicker.Button.Colored" parent="Woo.Button.Colored" />
