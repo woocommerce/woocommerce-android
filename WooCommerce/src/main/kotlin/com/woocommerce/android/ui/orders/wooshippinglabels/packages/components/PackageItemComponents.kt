@@ -14,7 +14,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.outlined.Star
+import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -78,7 +78,7 @@ fun WooShippingPackageListItem(
                     tint = colorResource(id = R.color.color_on_surface_disabled),
                     imageVector = when (packageData.isStarred) {
                         true -> Icons.Filled.Star
-                        false -> Icons.Outlined.Star
+                        false -> Icons.Outlined.StarOutline
                     },
                     contentDescription = "Star",
                 )
