@@ -41,7 +41,7 @@ fun WooPosItemsToolbar(
 ) {
     val isSearchExpanded = state is WooPosItemsViewState.ProductList &&
         state.search is WooPosItemsViewState.SearchState.Visible &&
-        (state.search as WooPosItemsViewState.SearchState.Visible).state is WooPosSearchInputState.Open
+        state.search.state is WooPosSearchInputState.Open
 
     Row(
         modifier = Modifier
