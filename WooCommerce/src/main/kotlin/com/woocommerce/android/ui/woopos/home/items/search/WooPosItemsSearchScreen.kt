@@ -1,8 +1,10 @@
 package com.woocommerce.android.ui.woopos.home.items.search
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -12,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -62,7 +65,7 @@ private fun WooPosItemsSearchScreen(
 
             WooPosItemsSearchViewState.Empty -> {
                 WooPosItemsEmptyList(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxSize().imePadding(),
                     title = stringResource(id = R.string.woopos_search_items_empty_title),
                     message = stringResource(id = R.string.woopos_search_empty_description),
                     contentDescription = stringResource(id = R.string.woopos_search_empty_image_content_description),
@@ -71,7 +74,7 @@ private fun WooPosItemsSearchScreen(
 
             is WooPosItemsSearchViewState.Error -> {
                 WooPosErrorScreen(
-                    modifier = Modifier.verticalScroll(rememberScrollState()).imePadding(),
+                    modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).imePadding(),
                     message = stringResource(id = R.string.woopos_search_items_error_title),
                     reason = stringResource(id = R.string.woopos_search_items_error_description),
                     primaryButton = Button(
