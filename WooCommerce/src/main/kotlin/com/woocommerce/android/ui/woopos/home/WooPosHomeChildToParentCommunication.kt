@@ -80,7 +80,7 @@ sealed class ChildToParentEvent {
         data class CouponLine(
             val id: Long,
             val code: String,
-            val discountAmount: String,
+            val discountAmount: BigDecimal,
         )
     }
 }
