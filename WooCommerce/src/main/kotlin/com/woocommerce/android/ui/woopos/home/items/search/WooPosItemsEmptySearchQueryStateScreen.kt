@@ -56,6 +56,7 @@ fun WooPosItemsEmptySearchQueryStateScreen(
             .verticalScroll(scrollState)
             .padding(WooPosSpacing.None.value.toAdaptivePadding())
     ) {
+        Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
         if (state.popularItems.isNotEmpty() || state.recentSearches.isNotEmpty()) {
             Row(
                 modifier = Modifier.fillMaxWidth()

@@ -1,10 +1,7 @@
 package com.woocommerce.android.ui.woopos.home.items.search
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -14,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -85,7 +81,10 @@ private fun WooPosItemsSearchScreen(
             }
 
             WooPosItemsSearchViewState.Loading -> {
-                WooPosItemsLoadingIndicator(itemsCount = 5)
+                WooPosItemsLoadingIndicator(
+                    modifier = Modifier.padding(top = WooPosSpacing.Large.value),
+                    itemsCount = 5
+                )
             }
         }
     }
@@ -104,8 +103,8 @@ private fun WooPosItemsSearchContent(
             focusManager.clearFocus()
         }
     }
-
     WooPosItemList(
+        modifier = Modifier.padding(top = WooPosSpacing.Large.value),
         state = state,
         listState = listState,
         onItemClicked = { onUIEvent(WooPosItemsSearchUiEvent.OnItemClicked(it)) },
