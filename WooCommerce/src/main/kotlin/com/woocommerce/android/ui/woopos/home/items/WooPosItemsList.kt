@@ -22,6 +22,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.LocalOffer
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -223,7 +224,18 @@ fun WooPosProductCard(
 
             Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
 
-            ProductInfo(item)
+            Box(modifier = Modifier.weight(1f)) {
+                ProductInfo(item)
+            }
+
+            if(item is Product.Variable) {
+                Image(
+                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                    contentDescription = null,
+                    colorFilter = ColorFilter.tint(WooPosTheme.colors.onSurfaceVariantHighest),
+                    modifier = Modifier.padding(end = WooPosSpacing.Medium.value)
+                )
+            }
         }
     }
 }
@@ -541,7 +553,14 @@ fun ItemListPreview() {
                         price = "$10.00",
                         imageUrl = ""
                     ),
-                    Product.Variable(id = 2, name = "Variable Product", price = "$10.00", "", 1, listOf()),
+                    Product.Variable(
+                        id = 2,
+                        name = "Variable Product with very loooooooooooooooooooooooooooooooooong",
+                        price = "$10.00",
+                        "",
+                        1,
+                        listOf()
+                    ),
                     Product.Variation(3, "Variation", "$10", "", 0),
                     Coupon(id = 4, name = "Coupon", summary = "10% off everything"),
                 ),
