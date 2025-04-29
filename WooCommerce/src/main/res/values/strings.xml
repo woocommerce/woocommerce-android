@@ -1129,7 +1129,7 @@
     <string name="print_receipt_label_info_step_count_5" translatable="false">5</string>
     <string name="print_receipt_label_info_step_count_6" translatable="false">6</string>
     <string name="print_receipt_label_info_step_count_7" translatable="false">7</string>
-    <string name="print_receipt_label_info_step_1">Make sure the Print Service Plugin for yor printer is installed.</string>
+    <string name="print_receipt_label_info_step_1">Make sure the Print Service Plugin for your printer is installed.</string>
     <string name="print_receipt_label_info_step_2">Enable bluetooth or Wifi connection on your printer.</string>
     <string name="print_receipt_label_info_step_3">When selecting "Print receipt" after accepting payment, replace "Save as PDF" with "All printers", and search for new printer.</string>
     <string name="print_receipt_label_info_step_4">Pair and connect the printer to your mobile when prompted.</string>
@@ -4409,8 +4409,8 @@
     <string name="woopos_email_receipt_send_error">Error trying to send this email. Try again</string>
 
     <string name="woopos_search_back_content_description">Back</string>
-    <string name="woopos_clear_back_content_description">Clear</string>
-    <string name="woopos_search_products">Search products…</string>
+    <string name="woopos_search_clear_content_description">Clear</string>
+    <string name="woopos_search_products">Search products</string>
     <string name="woopos_search_popular_items_title">Popular items</string>
     <string name="woopos_search_recent_searches_title">Recent searches</string>
     <string name="woopos_search_items_empty_title">Nothing found</string>
@@ -4620,4 +4620,8 @@
     <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_one">Choose where to move the %d item in this shipment to.</string>
     <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_plural">Choose where to move the %d items in this shipment to.</string>
     <string name="woo_shipping_split_shipment_bottom_sheet_remove_button">Remove Shipment</string>
+    <string name="woo_shipping_split_shipment_merge_unfulfilled_menu">Merge all unfulfilled</string>
+    <string name="woo_shipping_split_shipment_merge_unfulfilled_title">Merge all unfulfilled shipments</string>
+    <string name="woo_shipping_split_shipment_merge_unfulfilled_desc">This will remove all unfulfilled split shipments and move all items into one shipment.</string>
+    <string name="woo_shipping_split_shipment_merge_unfulfilled_button">Merge all shipments</string>
 </resources>

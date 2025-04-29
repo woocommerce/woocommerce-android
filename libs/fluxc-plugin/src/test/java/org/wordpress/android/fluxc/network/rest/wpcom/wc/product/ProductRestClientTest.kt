@@ -14,6 +14,8 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.generated.endpoint.WOOCOMMERCE
+import org.wordpress.android.fluxc.model.LocalOrRemoteId
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
@@ -44,10 +46,10 @@ class ProductRestClientTest {
     @Test
     fun `send only updated parameters with id if products differ`() = runBlockingTest {
         // given
-        val product = WCProductModel(productId.toInt()).apply {
-            remoteProductId = productId
+        val product = WCProductModel().copy(
+            remoteId = RemoteId(productId),
             status = "unchanged status"
-        }
+        )
         val bodyCaptor = argumentCaptor<Map<String, Any>> { }
 
         // when
@@ -80,14 +82,14 @@ class ProductRestClientTest {
     @Test
     fun `do not send any properties if entities do not differ`() = runBlockingTest {
         // given
-        val productA = WCProductModel(2).apply {
-            remoteProductId = 2
+        val productA = WCProductModel().copy(
+            remoteId = RemoteId(2),
             status = "unchanged status"
-        }
-        val productB = WCProductModel(3).apply {
-            remoteProductId = 3
+        )
+        val productB = WCProductModel().copy(
+            remoteId = RemoteId(3),
             status = "other, unchanged status"
-        }
+        )
         val bodyCaptor = argumentCaptor<Map<String, Any>> { }
 
         // when
@@ -194,8 +196,8 @@ class ProductRestClientTest {
     }
 
     private fun WCProductModel.withRegularPrice(newRegularPrice: String): WCProductModel =
-        copy().apply {
-            remoteProductId = this@withRegularPrice.remoteProductId
+        copy(
+            remoteId = RemoteId(this@withRegularPrice.remoteProductId),
             regularPrice = newRegularPrice
-        }
+        )
 }

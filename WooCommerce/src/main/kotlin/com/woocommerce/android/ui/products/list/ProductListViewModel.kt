@@ -47,6 +47,7 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 @HiltViewModel
+@Suppress("LargeClass")
 class ProductListViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val productRepository: ProductListRepository,
@@ -275,21 +276,23 @@ class ProductListViewModel @Inject constructor(
     }
 
     fun reloadProductsFromDb(excludeProductId: Long? = null) {
-        val excludedProductIds: List<Long>? = excludeProductId?.let { id ->
-            ArrayList<Long>().also { it.add(id) }
+        launch {
+            val excludedProductIds: List<Long>? = excludeProductId?.let { id ->
+                ArrayList<Long>().also { it.add(id) }
+            }
+            val products = productRepository.getProductList(productFilterOptions, excludedProductIds.orEmpty())
+
+            resetOpenProductIfNotInList(products)
+
+            _productList.value = products
+
+            viewState = viewState.copy(
+                isEmptyViewVisible = products.isEmpty() && viewState.isSkeletonShown != true,
+                /* if there are no products, hide Add Product button and use the empty view's button instead. */
+                isAddProductButtonVisible = products.isNotEmpty() && !isSelecting(),
+                displaySortAndFilterCard = products.isNotEmpty() || productFilterOptions.isNotEmpty()
+            )
         }
-        val products = productRepository.getProductList(productFilterOptions, excludedProductIds)
-
-        resetOpenProductIfNotInList(products)
-
-        _productList.value = products
-
-        viewState = viewState.copy(
-            isEmptyViewVisible = products.isEmpty() && viewState.isSkeletonShown != true,
-            /* if there are no products, hide Add Product button and use the empty view's button instead. */
-            isAddProductButtonVisible = products.isNotEmpty() && !isSelecting(),
-            displaySortAndFilterCard = products.isNotEmpty() || productFilterOptions.isNotEmpty()
-        )
     }
 
     private fun resetOpenProductIfNotInList(products: List<Product>) {

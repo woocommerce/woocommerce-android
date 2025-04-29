@@ -16,7 +16,10 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -24,6 +27,8 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
@@ -383,6 +388,79 @@ class WooPosProductsViewModelTest {
                 assertThat(value.items.filterIsInstance<Product.Variable>().size).isEqualTo(1)
             }
         }
+
+    @Test
+    @OptIn(ExperimentalCoroutinesApi::class)
+    fun `given initial load in progress, when end of list reached, then pagination state set to loading and queue load more`() = runTest {
+        // GIVEN
+        whenever(productsDataSource.hasMorePages).thenReturn(true)
+        whenever(productsDataSource.loadMore()).thenReturn(
+            Result.success(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 2,
+                        productName = "Product 2",
+                        amount = "20.0",
+                        productType = "simple"
+                    )
+                )
+            )
+        )
+
+        val productsFlow = flow {
+            emit(
+                WooPosProductsDataSource.ProductsResult.Remote(
+                    Result.success(
+                        listOf(
+                            ProductTestUtils.generateProduct(
+                                productId = 1,
+                                productName = "Product 1",
+                                amount = "10.0",
+                                productType = "simple"
+                            )
+                        )
+                    )
+                )
+            )
+        }
+
+        whenever(productsDataSource.loadProducts(any())).thenReturn(productsFlow)
+
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosProductsUIEvent.EndOfItemsListReached)
+        advanceUntilIdle()
+
+        // THEN
+        verify(productsDataSource, times(1)).loadMore()
+    }
+
+    @Test
+    @OptIn(ExperimentalCoroutinesApi::class)
+    fun `given load more queued, when initial load fails, then load more is not triggered`() = runTest {
+        // GIVEN
+        whenever(productsDataSource.hasMorePages).thenReturn(true)
+
+        val productsFlow = MutableSharedFlow<WooPosProductsDataSource.ProductsResult>()
+        whenever(productsDataSource.loadProducts(any())).thenReturn(productsFlow)
+
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosProductsUIEvent.EndOfItemsListReached)
+
+        // Then
+        productsFlow.emit(
+            WooPosProductsDataSource.ProductsResult.Remote(
+                Result.failure(Exception("Test error"))
+            )
+        )
+        advanceUntilIdle()
+
+        // THEN
+        verify(productsDataSource, never()).loadMore()
+    }
 
     private fun createViewModel(): WooPosProductsViewModel {
         return WooPosProductsViewModel(

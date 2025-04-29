@@ -9,11 +9,11 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState.None
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState.Enabled
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState.Refreshing
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsListViewStateManager.FetchingCouponsState.ERROR_FETCHING_FIRST_PAGE
-import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsListViewStateManager.FetchingCouponsState.ERROR_LOADING_MORE
+import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsListViewStateManager.FetchingCouponsState.ERROR_FETCHING_MORE
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsListViewStateManager.FetchingCouponsState.FETCHING_FIRST_PAGE
+import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsListViewStateManager.FetchingCouponsState.FETCHING_MORE
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsListViewStateManager.FetchingCouponsState.IDLE
-import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsListViewStateManager.FetchingCouponsState.LOADING_MORE
-import com.woocommerce.android.ui.woopos.util.GetCachedStoreCurrency
+import com.woocommerce.android.ui.woopos.util.WooPosGetCachedStoreCurrency
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatCouponSummary
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -32,7 +32,7 @@ private const val AVOID_UI_FLICKERING_DELAY = 500L
 class WooPosCouponsListViewStateManager @Inject constructor(
     private val couponsDataSource: WooPosCouponsDataSource,
     private val formatCouponSummary: WooPosFormatCouponSummary,
-    private val getCachedStoreCurrency: GetCachedStoreCurrency,
+    private val getCachedStoreCurrency: WooPosGetCachedStoreCurrency,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) {
     private val fetchingState: MutableStateFlow<FetchingCouponsState> = MutableStateFlow(IDLE)
@@ -42,26 +42,31 @@ class WooPosCouponsListViewStateManager @Inject constructor(
     private var canLoadMore: Boolean = false
 
     enum class FetchingCouponsState {
-        IDLE, LOADING_MORE, FETCHING_FIRST_PAGE, ERROR_LOADING_MORE, ERROR_FETCHING_FIRST_PAGE
+        IDLE, FETCHING_FIRST_PAGE, FETCHING_MORE, ERROR_FETCHING_FIRST_PAGE, ERROR_FETCHING_MORE
     }
 
     private val contentFlow = couponsDataSource.couponsFlow.combine(fetchingState) { coupons, fetchingState ->
-        if (fetchingState == FETCHING_FIRST_PAGE) {
-            WooPosCouponsViewState.Loading()
-        } else if (fetchingState == ERROR_FETCHING_FIRST_PAGE) {
-            WooPosCouponsViewState.Error()
-        } else if (coupons.isEmpty()) {
-            return@combine if (fetchingState == IDLE) {
-                WooPosCouponsViewState.Empty()
-            } else {
+        when (fetchingState) {
+            FETCHING_FIRST_PAGE -> {
                 WooPosCouponsViewState.Loading()
             }
-        } else {
-            WooPosCouponsViewState.Content(
-                items = mapCouponsToSelectionState(coupons),
-                paginationState = getPaginationState(fetchingState),
-                pullToRefreshState = getPullToRefreshState(fetchingState)
-            )
+
+            ERROR_FETCHING_FIRST_PAGE -> {
+                WooPosCouponsViewState.Error()
+            }
+
+            IDLE, FETCHING_MORE, ERROR_FETCHING_MORE -> {
+                when {
+                    coupons.isEmpty() -> WooPosCouponsViewState.Empty()
+                    else -> {
+                        WooPosCouponsViewState.Content(
+                            items = mapCouponsToSelectionState(coupons),
+                            paginationState = getPaginationState(fetchingState),
+                            pullToRefreshState = getPullToRefreshState(fetchingState)
+                        )
+                    }
+                }
+            }
         }
     }
 
@@ -87,7 +92,7 @@ class WooPosCouponsListViewStateManager @Inject constructor(
     }
 
     fun endOfListReached(viewModelScope: CoroutineScope) {
-        if (fetchingState.value == ERROR_LOADING_MORE) return
+        if (fetchingState.value == ERROR_FETCHING_MORE) return
 
         fetchingFirstPageJob?.invokeOnCompletion {
             retryLoadMore(viewModelScope)
@@ -100,11 +105,11 @@ class WooPosCouponsListViewStateManager @Inject constructor(
         }
 
         loadingMoreJob = viewModelScope.launch(dispatcher) {
-            fetchingState.emit(LOADING_MORE)
+            fetchingState.emit(FETCHING_MORE)
             val result = couponsDataSource.loadMore()
             if (!result.isSuccess) {
                 delay(AVOID_UI_FLICKERING_DELAY)
-                fetchingState.emit(ERROR_LOADING_MORE)
+                fetchingState.emit(ERROR_FETCHING_MORE)
             } else {
                 canLoadMore = result.getOrNull() ?: false
                 fetchingState.emit(IDLE)
@@ -124,14 +129,14 @@ class WooPosCouponsListViewStateManager @Inject constructor(
 
     private fun getPaginationState(fetchingState: FetchingCouponsState) =
         when (fetchingState) {
-            IDLE, FETCHING_FIRST_PAGE, LOADING_MORE -> if (canLoadMore) Loading else None
-            ERROR_LOADING_MORE -> Error
+            IDLE, FETCHING_FIRST_PAGE, FETCHING_MORE -> if (canLoadMore) Loading else None
+            ERROR_FETCHING_MORE -> Error
             ERROR_FETCHING_FIRST_PAGE -> error("Full screen error should be displayed")
         }
 
     private fun getPullToRefreshState(fetchingState: FetchingCouponsState) =
         when (fetchingState) {
-            ERROR_LOADING_MORE, IDLE, LOADING_MORE -> Enabled
+            ERROR_FETCHING_MORE, IDLE, FETCHING_MORE -> Enabled
             FETCHING_FIRST_PAGE -> Refreshing
             ERROR_FETCHING_FIRST_PAGE -> error("Full screen error should be displayed")
         }

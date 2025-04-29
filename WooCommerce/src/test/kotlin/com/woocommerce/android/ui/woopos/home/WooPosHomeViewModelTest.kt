@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.home
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.common.util.WooPosSoundHelper
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccessfullyPaid.PaymentMethod
 import com.woocommerce.android.ui.woopos.home.WooPosHomeUIEvent.ExitPosClicked
 import com.woocommerce.android.ui.woopos.home.WooPosHomeUIEvent.SystemBackClicked
@@ -38,6 +39,7 @@ class WooPosHomeViewModelTest {
     private val parentToChildrenEventSender: WooPosParentToChildrenEventSender = mock()
     private val wooPosItemsNavigator: WooPosItemsNavigator = mock()
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
+    private val soundHelper: WooPosSoundHelper = mock()
 
     @Test
     fun `when order created, then pass event to cart`() =
@@ -73,7 +75,7 @@ class WooPosHomeViewModelTest {
             // THEN
             verify(parentToChildrenEventSender).sendToChildren(ParentToChildrenEvent.BackFromCheckoutToCartClicked)
             assertThat(viewModel.state.value.screenPositionState)
-                .isEqualTo(WooPosHomeState.ScreenPositionState.Cart.Visible)
+                .isEqualTo(WooPosHomeState.ScreenPositionState.Cart)
         }
 
     @Test
@@ -113,7 +115,7 @@ class WooPosHomeViewModelTest {
                 )
             )
             assertThat(viewModel.state.value.screenPositionState)
-                .isEqualTo(WooPosHomeState.ScreenPositionState.Cart.Visible)
+                .isEqualTo(WooPosHomeState.ScreenPositionState.Cart)
         }
 
     @Test
@@ -434,6 +436,7 @@ class WooPosHomeViewModelTest {
             verify(wooPosItemsNavigator).sendNavigationEvent(
                 WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateBackToItemListScreen
             )
+            verify(soundHelper).playChaChing()
         }
 
     @Test
@@ -460,6 +463,7 @@ class WooPosHomeViewModelTest {
         parentToChildrenEventSender,
         wooPosItemsNavigator,
         analyticsTracker,
+        soundHelper,
         SavedStateHandle()
     )
 }
