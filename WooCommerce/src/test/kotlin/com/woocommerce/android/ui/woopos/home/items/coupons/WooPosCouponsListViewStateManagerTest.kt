@@ -5,8 +5,8 @@ import com.woocommerce.android.ui.coupons.CouponTestUtils
 import com.woocommerce.android.ui.woopos.home.items.WooPosCouponsViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosCouponsViewState.Content
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
-import com.woocommerce.android.ui.woopos.util.GetCachedStoreCurrency
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import com.woocommerce.android.ui.woopos.util.WooPosGetCachedStoreCurrency
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatCouponSummary
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -36,7 +36,7 @@ class WooPosCouponsListViewStateManagerTest {
     val coroutinesTestRule = WooPosCoroutineTestRule()
 
     private val formatCouponSummary: WooPosFormatCouponSummary = mock()
-    private val getCachedStoreCurrency: GetCachedStoreCurrency = mock()
+    private val getCachedStoreCurrency: WooPosGetCachedStoreCurrency = mock()
     private val couponsDataFlow = MutableStateFlow<List<CouponDBModel>>(emptyList())
 
     private val couponsDataSource: WooPosCouponsDataSource = mock {
