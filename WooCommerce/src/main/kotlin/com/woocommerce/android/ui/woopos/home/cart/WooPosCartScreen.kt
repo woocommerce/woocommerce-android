@@ -149,6 +149,7 @@ private fun WooPosCartScreen(
                     items = state.body.itemsInCart,
                     areItemsRemovable = state.areItemsRemovable,
                     isCheckoutButtonVisible = state.isCheckoutButtonVisible,
+                    isCheckoutCartStatus = state.cartStatus == WooPosCartStatus.CHECKOUT,
                     onUIEvent = onUIEvent
                 )
             }
@@ -209,6 +210,7 @@ private fun CartBodyWithItems(
     items: List<WooPosCartItemViewState>,
     areItemsRemovable: Boolean,
     isCheckoutButtonVisible: Boolean,
+    isCheckoutCartStatus: Boolean,
     onUIEvent: (WooPosCartUIEvent) -> Unit,
 ) {
     val listState = rememberLazyListState()
@@ -247,6 +249,7 @@ private fun CartBodyWithItems(
                     modifier = Modifier.animateItem(),
                     item = item,
                     canRemoveItems = areItemsRemovable,
+                    isCheckoutCartStatus = isCheckoutCartStatus,
                     onUIEvent = onUIEvent,
                 )
             }
@@ -482,6 +485,7 @@ private fun CouponItem(
     modifier: Modifier = Modifier,
     item: WooPosCartItemViewState.Coupon,
     canRemoveItems: Boolean,
+    isCheckoutCartStatus: Boolean,
     onUIEvent: (WooPosCartUIEvent) -> Unit,
 ) {
     val itemContentDescription = stringResource(
@@ -504,14 +508,25 @@ private fun CouponItem(
         ) {
             Box(
                 modifier = Modifier
-                    .background(MaterialTheme.colorScheme.surfaceDim)
+                    .background(
+                        if (isCheckoutCartStatus)
+                            WooPosTheme.colors.onSuccess
+                        else
+                            MaterialTheme.colorScheme.surfaceDim,
+
+                    )
                     .size(96.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Image(
                     imageVector = Icons.Outlined.LocalOffer,
                     contentDescription = null,
-                    colorFilter = ColorFilter.tint(WooPosTheme.colors.onSurfaceVariantLowest),
+                    colorFilter = ColorFilter.tint(
+                        if (isCheckoutCartStatus)
+                            WooPosTheme.colors.onSuccess
+                        else
+                            WooPosTheme.colors.onSurfaceVariantLowest
+                    ),
                     modifier = Modifier.size(36.dp, 36.dp)
                 )
             }
@@ -541,7 +556,7 @@ private fun CouponItem(
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.clearAndSetSemantics { }
                 )
-                if (item.formattedDiscount.isNotNullOrEmpty()) {
+                if (isCheckoutCartStatus && item.formattedDiscount.isNotNullOrEmpty()) {
                     Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value.toAdaptivePadding()))
                     WooPosText(
                         text = item.formattedDiscount,
