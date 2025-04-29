@@ -24,8 +24,8 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -137,14 +137,15 @@ private fun AnimatedSearchInput(
                     isClosing = true
                 },
                 modifier = Modifier.alpha(backButtonAlpha)
+                    .size(48.dp)
             ) {
                 Icon(
-                    modifier = Modifier.size(28.dp),
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = stringResource(
                         R.string.woopos_search_back_content_description
                     ),
                     tint = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.size(28.dp)
                 )
             }
 
@@ -222,14 +223,16 @@ private fun AnimatedSearchInput(
                     focusedTextColor = MaterialTheme.colorScheme.onSurface,
                 ),
                 leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .alpha(iconAlpha)
-                            .size(26.dp),
-                        tint = MaterialTheme.colorScheme.onSurface,
-                    )
+                    IconButton(
+                        onClick = {},
+                        modifier = Modifier.size(32.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurface,
+                        )
+                    }
                 },
                 trailingIcon = {
                     when {
@@ -246,10 +249,10 @@ private fun AnimatedSearchInput(
                                 onClick = { onEvent(WooPosSearchUIEvent.Clear) },
                                 modifier = Modifier
                                     .alpha(iconAlpha)
-                                    .size(26.dp)
+                                    .size(32.dp)
                             ) {
                                 Icon(
-                                    imageVector = Icons.Default.Clear,
+                                    imageVector = Icons.Outlined.Cancel,
                                     contentDescription = stringResource(
                                         R.string.woopos_search_clear_content_description
                                     ),
