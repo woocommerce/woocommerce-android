@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -53,7 +54,9 @@ private fun WooPosItemsSearchScreen(
             }
 
             is WooPosItemsSearchViewState.Content -> {
-                WooPosItemsSearchContent(state, onUIEvent)
+                key(state.searchQuery) {
+                    WooPosItemsSearchContent(state, onUIEvent)
+                }
             }
 
             WooPosItemsSearchViewState.Empty -> {
