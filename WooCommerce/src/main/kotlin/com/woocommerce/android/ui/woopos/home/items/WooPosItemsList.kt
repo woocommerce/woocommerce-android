@@ -231,7 +231,7 @@ fun WooPosProductCard(
                 Image(
                     modifier = Modifier
                         .size(32.dp)
-                        .padding(end = WooPosSpacing.Medium.value),
+                        .padding(end = WooPosSpacing.XLarge.value),
                     imageVector = ImageVector.vectorResource(id = R.drawable.ic_chevron),
                     contentDescription = null,
                     colorFilter = ColorFilter.tint(WooPosTheme.colors.onSurfaceVariantHighest),
