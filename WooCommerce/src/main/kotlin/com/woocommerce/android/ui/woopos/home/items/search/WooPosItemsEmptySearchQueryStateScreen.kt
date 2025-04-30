@@ -45,16 +45,18 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosProductCard
 
 @Composable
 fun WooPosItemsEmptySearchQueryStateScreen(
+    modifier: Modifier = Modifier,
     state: WooPosItemsSearchViewState.EmptySearchQuery,
     onUIEvent: (WooPosItemsSearchUiEvent) -> Unit
 ) {
     val scrollState = rememberScrollState()
     Column(
-        Modifier
+        modifier
             .fillMaxHeight()
             .verticalScroll(scrollState)
             .padding(WooPosSpacing.None.value.toAdaptivePadding())
     ) {
+        Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
         if (state.popularItems.isNotEmpty() || state.recentSearches.isNotEmpty()) {
             Row(
                 modifier = Modifier.fillMaxWidth()
