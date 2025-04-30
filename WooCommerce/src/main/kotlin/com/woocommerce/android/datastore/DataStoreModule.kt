@@ -14,8 +14,8 @@ import com.woocommerce.android.datastore.DataStoreType.ANALYTICS_UI_CACHE
 import com.woocommerce.android.datastore.DataStoreType.COUPONS
 import com.woocommerce.android.datastore.DataStoreType.DASHBOARD_STATS
 import com.woocommerce.android.datastore.DataStoreType.LAST_UPDATE
-import com.woocommerce.android.datastore.DataStoreType.SHIPPING_LABEL_CONFIG
 import com.woocommerce.android.datastore.DataStoreType.SHIPPING_LABEL_ADDRESS
+import com.woocommerce.android.datastore.DataStoreType.SHIPPING_LABEL_CONFIG
 import com.woocommerce.android.datastore.DataStoreType.SHIPPING_LABEL_STORE_OPTIONS
 import com.woocommerce.android.datastore.DataStoreType.SITE_PICKER_WOO_VISIBLE_SITES
 import com.woocommerce.android.datastore.DataStoreType.TOP_PERFORMER_PRODUCTS

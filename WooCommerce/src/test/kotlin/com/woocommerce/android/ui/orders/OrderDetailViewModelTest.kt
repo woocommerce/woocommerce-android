@@ -2486,7 +2486,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         assertThat(observedViewState!!.orderInfo!!.isPaymentCollectableWithCardReader).isFalse()
     }
 
-
     @Test
     fun `when view model is initialized then fetchConfig is called`() = testBlocking {
         viewModel.start()
