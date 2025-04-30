@@ -227,7 +227,7 @@ fun WooPosProductCard(
                 ProductInfo(item)
             }
 
-            if(item is Product.Variable) {
+            if (item is Product.Variable) {
                 Image(
                     modifier = Modifier
                         .size(32.dp)
