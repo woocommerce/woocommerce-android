@@ -63,7 +63,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
     fun onUIEvent(event: WooPosItemsSearchUiEvent) {
         when (event) {
             WooPosItemsSearchUiEvent.OnNextPageRequested -> onEndOfListReached()
-            is WooPosItemsSearchUiEvent.OnItemClicked -> handleItemClicked(event.item)
+            is WooPosItemsSearchUiEvent.OnItemClicked -> handleItemClicked(event.item, WooPosItemSource.SEARCH_RESULT)
             WooPosItemsSearchUiEvent.LoadingErrorRetryButtonClicked -> {
                 val currentState = _viewState.value as? WooPosItemsSearchViewState.Error ?: return
                 performSearch(currentState.searchQuery)
@@ -82,7 +82,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
             is WooPosItemsSearchUiEvent.OnPopularItemClicked -> {
                 viewModelScope.launch {
                     emptyStateRepository.addPopularItemsToCache()
-                    handleItemClicked(event.item)
+                    handleItemClicked(event.item, WooPosItemSource.POPULAR_PRODUCTS)
                 }
             }
         }
@@ -199,14 +199,14 @@ class WooPosItemsSearchViewModel @Inject constructor(
         }
     }
 
-    private fun handleItemClicked(item: WooPosItemSelectionViewState) {
+    private fun handleItemClicked(item: WooPosItemSelectionViewState, source: WooPosItemSource) {
         when (item) {
             is WooPosItemSelectionViewState.Product.Simple -> {
                 viewModelScope.launch {
                     childToParentEventSender.sendToParent(
                         ChildToParentEvent.ItemClickedInProductSelector(
                             itemData = ItemClickedData.Product.Simple(id = item.id),
-                            source = WooPosItemSource.SEARCH_RESULT
+                            source = source,
                         )
                     )
                 }
@@ -225,6 +225,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
                             )
                         )
                     )
+                    // TODO: @samiuelson track item clicked on variations list
                 }
             }
 
