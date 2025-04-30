@@ -16,8 +16,6 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
-import com.woocommerce.android.ui.woopos.home.cart.WooPosCartState.Body.Empty
-import com.woocommerce.android.ui.woopos.home.cart.WooPosCartState.Body.WithItems
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartStatus.CHECKOUT
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartStatus.EDITABLE
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartStatus.EMPTY
@@ -85,7 +83,7 @@ class WooPosCartViewModel @Inject constructor(
             }
 
             is WooPosCartUIEvent.ItemRemovedFromCart -> {
-                removeItemsFromCart(event.item)
+                removeItemsFromCart(setOf(event.item))
             }
 
             WooPosCartUIEvent.BackClicked -> {
@@ -111,14 +109,14 @@ class WooPosCartViewModel @Inject constructor(
         }
     }
 
-    private fun removeItemsFromCart(item: WooPosCartItemViewState) {
+    private fun removeItemsFromCart(items: Set<WooPosCartItemViewState>) {
         val currentState = _state.value
-        _state.value = if (currentState.body.amountOfItems == 1) {
-            currentState.copy(body = Empty)
+        _state.value = if (currentState.body.amountOfItems == items.size) {
+            currentState.copy(body = WooPosCartState.Body.Empty)
         } else {
             currentState.copy(
-                body = (currentState.body as WithItems)
-                    .copy(itemsInCart = currentState.body.itemsInCart - item)
+                body = (currentState.body as WooPosCartState.Body.WithItems)
+                    .copy(itemsInCart = currentState.body.itemsInCart - items)
             )
         }
         viewModelScope.launch {
