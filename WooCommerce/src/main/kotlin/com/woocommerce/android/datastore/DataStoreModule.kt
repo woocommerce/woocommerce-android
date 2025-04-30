@@ -14,7 +14,7 @@ import com.woocommerce.android.datastore.DataStoreType.ANALYTICS_UI_CACHE
 import com.woocommerce.android.datastore.DataStoreType.COUPONS
 import com.woocommerce.android.datastore.DataStoreType.DASHBOARD_STATS
 import com.woocommerce.android.datastore.DataStoreType.LAST_UPDATE
-import com.woocommerce.android.datastore.DataStoreType.SHIPPING_CONFIG
+import com.woocommerce.android.datastore.DataStoreType.SHIPPING_LABEL_CONFIG
 import com.woocommerce.android.datastore.DataStoreType.SHIPPING_LABEL_ADDRESS
 import com.woocommerce.android.datastore.DataStoreType.SHIPPING_LABEL_STORE_OPTIONS
 import com.woocommerce.android.datastore.DataStoreType.SITE_PICKER_WOO_VISIBLE_SITES
@@ -183,7 +183,7 @@ class DataStoreModule {
 
     @Provides
     @Singleton
-    @DataStoreQualifier(SHIPPING_CONFIG)
+    @DataStoreQualifier(SHIPPING_LABEL_CONFIG)
     fun provideShippingLabelConfigDataStore(
         appContext: Context,
         crashLogging: CrashLogging,
@@ -192,7 +192,7 @@ class DataStoreModule {
         produceFile = { appContext.preferencesDataStoreFile("shipping_label_config") },
         corruptionHandler = ReplaceFileCorruptionHandler {
             crashLogging.recordEvent(
-                "Corrupted data store. DataStore Type: ${SHIPPING_CONFIG.name}"
+                "Corrupted data store. DataStore Type: ${SHIPPING_LABEL_CONFIG.name}"
             )
             emptyPreferences()
         },
