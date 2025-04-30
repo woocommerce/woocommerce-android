@@ -1,17 +1,8 @@
 package com.woocommerce.android.ui.woopos.common.composeui.component
 
-import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.core.CubicBezierEasing
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.Transition
-import androidx.compose.animation.core.animateDp
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -39,7 +30,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
@@ -47,7 +37,6 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
@@ -56,11 +45,8 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCor
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import kotlinx.coroutines.delay
 
-private val BUTTON_SIZE = 40.dp
 private val INPUT_FIELD_HEIGHT = 56.dp
-private const val ANIMATION_TIME = 300L
 
 @Composable
 fun WooPosSearchInput(
@@ -82,7 +68,7 @@ fun WooPosSearchInput(
     ) {
         when (state) {
             is WooPosSearchInputState.Open -> {
-                AnimatedSearchInput(
+                SearchInput(
                     state = state,
                     onEvent = onEvent,
                 )
@@ -102,256 +88,148 @@ fun WooPosSearchInput(
     }
 }
 
-@SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
-private fun AnimatedSearchInput(
+private fun SearchInput(
     state: WooPosSearchInputState.Open,
     onEvent: (WooPosSearchUIEvent) -> Unit,
 ) {
-    BoxWithConstraints(
-        modifier = Modifier.fillMaxWidth(),
-        contentAlignment = Alignment.CenterEnd,
+    val focusRequester = remember { FocusRequester() }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.End,
+        modifier = Modifier.fillMaxWidth()
     ) {
-        val focusRequester = remember { FocusRequester() }
-        var isExpanded by remember { mutableStateOf(state.hasAnimationPlayed) }
-        var isClosing by remember { mutableStateOf(false) }
-
-        val transition = updateTransition(
-            targetState = if (isClosing) false else isExpanded,
-            label = "searchTransition"
-        )
-
-        val width = animateSearchWidth(transition, maxWidth)
-        val height = animateSearchHeight(transition)
-        val cornerRadius = animateCornerRadius(transition)
-        val iconAlpha = animateIconAlpha(transition, isClosing)
-        val backButtonAlpha = animateIconAlpha(transition, isClosing)
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.End,
-            modifier = Modifier.width(width)
+        IconButton(
+            onClick = { onEvent(WooPosSearchUIEvent.Close) },
+            modifier = Modifier.size(48.dp)
         ) {
-            IconButton(
-                onClick = {
-                    isClosing = true
-                },
-                modifier = Modifier.alpha(backButtonAlpha)
-                    .size(48.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = stringResource(
-                        R.string.woopos_search_back_content_description
-                    ),
-                    tint = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.size(28.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.width(WooPosSpacing.Small.value))
-
-            val (hint, query) = when (state.input) {
-                is Input.Query -> "" to state.input.text
-                is Input.Hint -> state.input.text to ""
-            }
-
-            var textFieldValue by remember {
-                mutableStateOf(
-                    TextFieldValue(
-                        text = query,
-                        selection = TextRange(state.input.cursorPosition)
-                    )
-                )
-            }
-
-            LaunchedEffect(query) {
-                if (query != textFieldValue.text) {
-                    textFieldValue = TextFieldValue(
-                        text = query,
-                        selection = TextRange(state.input.cursorPosition)
-                    )
-                }
-            }
-
-            OutlinedTextField(
-                value = textFieldValue,
-                onValueChange = { newValue: TextFieldValue ->
-                    textFieldValue = newValue
-                    onEvent(
-                        WooPosSearchUIEvent.Search(
-                            newValue.text,
-                            newValue.selection.start
-                        )
-                    )
-                },
-                modifier = Modifier
-                    .weight(1f)
-                    .height(height)
-                    .focusRequester(focusRequester),
-                placeholder = {
-                    WooPosText(
-                        text = hint,
-                        modifier = Modifier.alpha(iconAlpha),
-                        style = WooPosTypography.BodyMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = WooPosTheme.colors.onSurfaceVariantLowest,
-                    )
-                },
-                textStyle = WooPosTypography.BodyMedium.style
-                    .copy(fontWeight = FontWeight.Bold),
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                shape = RoundedCornerShape(cornerRadius),
-                keyboardActions = KeyboardActions(
-                    onSearch = {
-                        onEvent(
-                            WooPosSearchUIEvent.Search(
-                                textFieldValue.text,
-                                textFieldValue.selection.start
-                            )
-                        )
-                    }
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = stringResource(
+                    R.string.woopos_search_back_content_description
                 ),
-                colors = OutlinedTextFieldDefaults.colors(
-                    unfocusedBorderColor = MaterialTheme.colorScheme.surface,
-                    focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceBright,
-                    focusedContainerColor = MaterialTheme.colorScheme.surfaceBright,
-                    cursorColor = MaterialTheme.colorScheme.primary,
-                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
-                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
-                ),
-                leadingIcon = {
-                    IconButton(
-                        onClick = {},
-                        modifier = Modifier.size(32.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Search,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurface,
-                        )
-                    }
-                },
-                trailingIcon = {
-                    when {
-                        state.isLoading -> {
-                            WooPosCircularLoadingIndicator(
-                                modifier = Modifier
-                                    .size(24.dp)
-                                    .alpha(iconAlpha)
-                            )
-                        }
-
-                        textFieldValue.text.isNotEmpty() -> {
-                            IconButton(
-                                onClick = { onEvent(WooPosSearchUIEvent.Clear) },
-                                modifier = Modifier
-                                    .alpha(iconAlpha)
-                                    .size(32.dp)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Outlined.Cancel,
-                                    contentDescription = stringResource(
-                                        R.string.woopos_search_clear_content_description
-                                    ),
-                                    tint = MaterialTheme.colorScheme.onSurface,
-                                )
-                            }
-                        }
-                    }
-                },
+                tint = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.size(28.dp)
             )
+        }
+
+        Spacer(modifier = Modifier.width(WooPosSpacing.Small.value))
+
+        val (hint, query) = when (state.input) {
+            is Input.Query -> "" to state.input.text
+            is Input.Hint -> state.input.text to ""
+        }
+
+        var textFieldValue by remember {
+            mutableStateOf(
+                TextFieldValue(
+                    text = query,
+                    selection = TextRange(state.input.cursorPosition)
+                )
+            )
+        }
+
+        LaunchedEffect(query) {
+            if (query != textFieldValue.text) {
+                textFieldValue = TextFieldValue(
+                    text = query,
+                    selection = TextRange(state.input.cursorPosition)
+                )
+            }
         }
 
         LaunchedEffect(Unit) {
             if (!state.hasAnimationPlayed) {
-                isExpanded = true
-                delay(ANIMATION_TIME)
                 focusRequester.requestFocus()
                 onEvent(WooPosSearchUIEvent.AnimationComplete)
             }
         }
 
-        LaunchedEffect(isClosing) {
-            if (isClosing) {
-                delay(ANIMATION_TIME)
-                onEvent(WooPosSearchUIEvent.Close)
-            }
-        }
+        OutlinedTextField(
+            value = textFieldValue,
+            onValueChange = { newValue: TextFieldValue ->
+                textFieldValue = newValue
+                onEvent(
+                    WooPosSearchUIEvent.Search(
+                        newValue.text,
+                        newValue.selection.start
+                    )
+                )
+            },
+            modifier = Modifier
+                .weight(1f)
+                .height(INPUT_FIELD_HEIGHT)
+                .focusRequester(focusRequester),
+            placeholder = {
+                WooPosText(
+                    text = hint,
+                    style = WooPosTypography.BodyMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = WooPosTheme.colors.onSurfaceVariantLowest,
+                )
+            },
+            textStyle = WooPosTypography.BodyMedium.style
+                .copy(fontWeight = FontWeight.Bold),
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+            shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
+            keyboardActions = KeyboardActions(
+                onSearch = {
+                    onEvent(
+                        WooPosSearchUIEvent.Search(
+                            textFieldValue.text,
+                            textFieldValue.selection.start
+                        )
+                    )
+                }
+            ),
+            colors = OutlinedTextFieldDefaults.colors(
+                unfocusedBorderColor = MaterialTheme.colorScheme.surface,
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceBright,
+                focusedContainerColor = MaterialTheme.colorScheme.surfaceBright,
+                cursorColor = MaterialTheme.colorScheme.primary,
+                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+            ),
+            leadingIcon = {
+                IconButton(
+                    onClick = {},
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurface,
+                    )
+                }
+            },
+            trailingIcon = {
+                when {
+                    state.isLoading -> {
+                        WooPosCircularLoadingIndicator(
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                    textFieldValue.text.isNotEmpty() -> {
+                        IconButton(
+                            onClick = { onEvent(WooPosSearchUIEvent.Clear) },
+                            modifier = Modifier.size(32.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.Cancel,
+                                contentDescription = stringResource(
+                                    R.string.woopos_search_clear_content_description
+                                ),
+                                tint = MaterialTheme.colorScheme.onSurface,
+                            )
+                        }
+                    }
+                }
+            },
+        )
     }
-}
-
-@Composable
-private fun animateSearchWidth(
-    transition: Transition<Boolean>,
-    maxWidth: Dp,
-): Dp {
-    val width by transition.animateDp(
-        label = "width",
-        transitionSpec = {
-            tween(
-                durationMillis = ANIMATION_TIME.toInt(),
-                easing = CubicBezierEasing(0.2f, 0.0f, 0.0f, 1.0f)
-            )
-        }
-    ) { expanded ->
-        if (expanded) maxWidth else BUTTON_SIZE
-    }
-    return width
-}
-
-@Composable
-private fun animateSearchHeight(transition: Transition<Boolean>): Dp {
-    val height by transition.animateDp(
-        label = "height",
-        transitionSpec = {
-            tween(
-                durationMillis = ANIMATION_TIME.toInt(),
-                easing = CubicBezierEasing(0.2f, 0.0f, 0.2f, 1.0f)
-            )
-        }
-    ) { expanded ->
-        if (expanded) INPUT_FIELD_HEIGHT else BUTTON_SIZE
-    }
-    return height
-}
-
-@Composable
-private fun animateCornerRadius(transition: Transition<Boolean>): Dp {
-    val cornerRadius by transition.animateDp(
-        label = "cornerRadius",
-        transitionSpec = {
-            tween(
-                durationMillis = ANIMATION_TIME.toInt(),
-                easing = CubicBezierEasing(0.2f, 0.0f, 0.2f, 1.0f)
-            )
-        }
-    ) { expanded ->
-        if (expanded) WooPosCornerRadius.Medium.value else BUTTON_SIZE / 2
-    }
-    return cornerRadius
-}
-
-@Composable
-private fun animateIconAlpha(
-    transition: Transition<Boolean>,
-    isClosing: Boolean
-): Float {
-    val iconAlpha by transition.animateFloat(
-        label = "iconAlpha",
-        transitionSpec = {
-            tween(
-                durationMillis = (ANIMATION_TIME * 0.7).toInt(),
-                easing = FastOutSlowInEasing,
-                delayMillis = if (isClosing) 0 else (ANIMATION_TIME * 0.3).toInt()
-            )
-        }
-    ) { expanded ->
-        if (expanded) 1f else 0f
-    }
-    return iconAlpha
 }
 
 sealed class WooPosSearchInputState {
