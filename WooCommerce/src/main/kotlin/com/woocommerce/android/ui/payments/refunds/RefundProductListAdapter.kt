@@ -24,9 +24,9 @@ import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.payments.refunds.RefundProductListAdapter.RefundViewHolder
-import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.model.refunds.WCRefundModel.WCRefundItem
+import org.wordpress.android.fluxc.model.refunds.RefundRequestItem
+import org.wordpress.android.fluxc.model.refunds.RefundRequestTax
 import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
 import java.math.RoundingMode.HALF_UP
@@ -183,16 +183,21 @@ class RefundProductListAdapter(
         val subtotal: String? = null,
         val taxes: String? = null
     ) : Parcelable {
-        @IgnoredOnParcel
         val availableRefundQuantity
             get() = maxQuantity.toInt()
-        fun toDataModel(): WCRefundItem {
-            return WCRefundItem(
-                orderItem.itemId,
-                quantity,
-                quantity.toBigDecimal().times(orderItem.price),
-                orderItem.totalTax.divide(orderItem.quantity.toBigDecimal(), 2, HALF_UP)
-                    .times(quantity.toBigDecimal())
+
+        fun toDataModel(): RefundRequestItem {
+            return RefundRequestItem(
+                itemId = orderItem.itemId,
+                quantity = quantity,
+                refundTotal = quantity.toBigDecimal().times(orderItem.price),
+                refundTax = listOf(
+                    RefundRequestTax(
+                        taxRateId = 0L,
+                        refundTotal = orderItem.totalTax.divide(orderItem.quantity.toBigDecimal(), 2, HALF_UP)
+                            .times(quantity.toBigDecimal())
+                    )
+                )
             )
         }
     }

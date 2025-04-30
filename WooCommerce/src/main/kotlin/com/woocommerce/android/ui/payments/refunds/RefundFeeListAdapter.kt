@@ -11,7 +11,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.model.Order
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.model.refunds.WCRefundModel.WCRefundItem
+import org.wordpress.android.fluxc.model.refunds.RefundRequestItem
+import org.wordpress.android.fluxc.model.refunds.RefundRequestTax
 import java.math.BigDecimal
 
 class RefundFeeListAdapter(
@@ -76,12 +77,17 @@ class RefundFeeListAdapter(
     data class FeeRefundListItem(
         val feeLine: Order.FeeLine
     ) : Parcelable {
-        fun toDataModel(): WCRefundItem {
-            return WCRefundItem(
+        fun toDataModel(): RefundRequestItem {
+            return RefundRequestItem(
                 feeLine.id,
                 quantity = 1, /* Hardcoded because a fee line always has a quantity of 1 */
-                subtotal = feeLine.total,
-                totalTax = feeLine.totalTax
+                refundTotal = feeLine.total,
+                refundTax = listOf(
+                    RefundRequestTax(
+                        taxRateId = 0L,
+                        refundTotal = feeLine.totalTax,
+                    )
+                )
             )
         }
     }
