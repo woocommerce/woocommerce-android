@@ -45,6 +45,7 @@ import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.util.AppThemeUtils
+import com.woocommerce.android.util.ApplicationEdgeToEdgeEnabler
 import com.woocommerce.android.util.ApplicationLifecycleMonitor
 import com.woocommerce.android.util.ApplicationLifecycleMonitor.ApplicationLifecycleListener
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
@@ -160,6 +161,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
     @Inject lateinit var backgroundUpdatesDisabled: BackgroundUpdatesDisabled
 
+    @Inject lateinit var edgeToEdgeEnabler: ApplicationEdgeToEdgeEnabler
+
     private var connectionReceiverRegistered = false
 
     private lateinit var application: Application
@@ -219,6 +222,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         val lifecycleMonitor = ApplicationLifecycleMonitor(this)
         application.registerActivityLifecycleCallbacks(lifecycleMonitor)
         application.registerComponentCallbacks(lifecycleMonitor)
+        application.registerActivityLifecycleCallbacks(edgeToEdgeEnabler)
 
         trackStartupAnalytics()
 
