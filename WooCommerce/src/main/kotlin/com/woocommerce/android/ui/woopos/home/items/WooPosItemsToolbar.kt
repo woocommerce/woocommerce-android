@@ -36,7 +36,7 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState.SearchS
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState.Tab.HighlightLevel.Full
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState.Tab.HighlightLevel.Normal
 
-private const val ANIMATION_DURATION = 200
+private const val ANIMATION_DURATION = 300
 
 @Composable
 fun WooPosItemsToolbar(
@@ -44,7 +44,7 @@ fun WooPosItemsToolbar(
     onTabClicked: (WooPosItemsViewState.Tab) -> Unit,
     onSearchEvent: (WooPosSearchUIEvent) -> Unit,
 ) {
-    val isSearchExpanded = (state.search as? SearchState.Visible)?.let {
+    val isSearchOpen = (state.search as? SearchState.Visible)?.let {
         it.state is WooPosSearchInputState.Open
     } == true
 
@@ -54,16 +54,15 @@ fun WooPosItemsToolbar(
             .height(56.dp),
         contentAlignment = Alignment.CenterStart
     ) {
-        AnimatedVisibility(
-            visible = !isSearchExpanded,
-            enter = fadeIn(animationSpec = tween(ANIMATION_DURATION)),
-            exit = fadeOut(animationSpec = tween(ANIMATION_DURATION)),
-            modifier = Modifier.fillMaxWidth()
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+            AnimatedVisibility(
+                visible = !isSearchOpen,
+                enter = fadeIn(animationSpec = tween(ANIMATION_DURATION)),
+                exit = fadeOut(animationSpec = tween(ANIMATION_DURATION)),
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     state.tabs.forEach { tab ->
@@ -84,27 +83,14 @@ fun WooPosItemsToolbar(
             }
         }
 
-        val isSearchVisible = state.search is SearchState.Visible
-        AnimatedVisibility(
-            visible = isSearchVisible,
-            enter = fadeIn(animationSpec = tween(ANIMATION_DURATION)),
-            exit = fadeOut(animationSpec = tween(ANIMATION_DURATION)),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            when (state) {
-                is WooPosItemsViewState.ProductList -> {
-                    when (val searchState = state.search) {
-                        SearchState.Hidden -> Unit
-                        is SearchState.Visible -> {
-                            WooPosSearchInput(
-                                state = searchState.state,
-                                onEvent = onSearchEvent,
-                            )
-                        }
-                    }
-                }
-
-                is WooPosItemsViewState.CouponList -> Unit
+        when (val searchState = state.search) {
+            SearchState.Hidden -> Unit
+            is SearchState.Visible -> {
+                WooPosSearchInput(
+                    state = searchState.state,
+                    animationDuration = ANIMATION_DURATION,
+                    onEvent = onSearchEvent,
+                )
             }
         }
     }
