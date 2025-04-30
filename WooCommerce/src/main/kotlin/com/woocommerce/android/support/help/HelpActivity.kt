@@ -8,6 +8,7 @@ import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.updatePadding
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
@@ -17,6 +18,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HELP_CON
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE_FLOW
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE_STEP
 import com.woocommerce.android.databinding.ActivityHelpBinding
+import com.woocommerce.android.extensions.doOnApplyWindowInsets
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.serializable
 import com.woocommerce.android.extensions.show
@@ -68,6 +70,17 @@ class HelpActivity : AppCompatActivity() {
 
         binding = ActivityHelpBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        binding.root.doOnApplyWindowInsets(consumeInsets = true) {
+            binding.root.updatePadding(
+                left = it.left,
+                right = it.right,
+                bottom = it.bottom
+            )
+            binding.appBarLayout.updatePadding(
+                top = it.top
+            )
+        }
 
         setSupportActionBar(binding.toolbar.toolbar as Toolbar)
         supportActionBar?.setHomeButtonEnabled(true)

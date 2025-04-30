@@ -139,7 +139,6 @@ private fun MainItemsList(
 fun WooPosItemsScreenSearchVisiblePreview(modifier: Modifier = Modifier) {
     val productState = MutableStateFlow(
         WooPosItemsViewState.ProductList(
-            banner = WooPosItemsViewState.BannerState.Hidden,
             search = WooPosItemsViewState.SearchState.Visible(
                 state = WooPosSearchInputState.Open(
                     input = WooPosSearchInputState.Open.Input.Query("", 0),
@@ -165,7 +164,6 @@ fun WooPosItemsScreenSearchVisiblePreview(modifier: Modifier = Modifier) {
 fun WooPosItemsScreenSearchHiddenPreview(modifier: Modifier = Modifier) {
     val productState = MutableStateFlow(
         WooPosItemsViewState.ProductList(
-            banner = WooPosItemsViewState.BannerState.Hidden,
             search = WooPosItemsViewState.SearchState.Visible(
                 state = WooPosSearchInputState.Open(
                     input = WooPosSearchInputState.Open.Input.Query("", 0),

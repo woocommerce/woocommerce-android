@@ -4,12 +4,9 @@ import app.cash.turbine.test
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.featureflags.WooPosIsProductsSearchEnabled
-import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
-import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -38,8 +35,6 @@ class WooPosItemsViewModelTest {
         )
     )
 
-    private val fromChildToParentEventSender: WooPosChildrenToParentEventSender = mock()
-    private val posPreferencesRepository: WooPosPreferencesRepository = mock()
     private val wooPosItemsNavigator: WooPosItemsNavigator = mock()
 
     private val isProductsSearchEnabled: WooPosIsProductsSearchEnabled = mock()
@@ -50,10 +45,6 @@ class WooPosItemsViewModelTest {
 
     @Before
     fun setup() {
-        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerWasHiddenByUser).thenReturn(
-            flowOf(false)
-        )
-
         whenever(searchHelper.getInitialSearchState(any())).thenReturn(
             WooPosItemsViewState.SearchState.Visible(
                 state = WooPosSearchInputState.Closed
@@ -191,8 +182,6 @@ class WooPosItemsViewModelTest {
     }
     private fun createViewModel() =
         WooPosItemsViewModel(
-            fromChildToParentEventSender,
-            posPreferencesRepository,
             wooPosItemsNavigator,
             searchHelper,
             isProductsSearchEnabled,

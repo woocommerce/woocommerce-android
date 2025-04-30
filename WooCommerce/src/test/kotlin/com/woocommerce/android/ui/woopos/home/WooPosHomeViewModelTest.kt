@@ -170,13 +170,11 @@ class WooPosHomeViewModelTest {
         }
 
     @Test
-    fun `when info icon is clicked in products, then display products info dialog`() {
-        // GIVEN
-        whenever(childrenToParentEventReceiver.events).thenReturn(
-            flowOf(ChildToParentEvent.ProductsDialogInfoIconClicked)
-        )
-
+    fun `when where are my products clicked, then display products info dialog`() {
         // WHEN
+        whenever(childrenToParentEventReceiver.events).thenReturn(
+            flowOf(ChildToParentEvent.SimpleProductExplanationMenuItemClicked)
+        )
         val viewModel = createViewModel()
 
         // THEN
@@ -186,13 +184,11 @@ class WooPosHomeViewModelTest {
     }
 
     @Test
-    fun `given info icon is clicked in products screen, when product info dialog is displayed, then ensure dialog heading is correct`() {
+    fun `given product info dialog is displayed, then ensure dialog heading is correct`() {
         // GIVEN
         whenever(childrenToParentEventReceiver.events).thenReturn(
-            flowOf(ChildToParentEvent.ProductsDialogInfoIconClicked)
+            flowOf(ChildToParentEvent.SimpleProductExplanationMenuItemClicked)
         )
-
-        // WHEN
         val viewModel = createViewModel()
 
         // THEN
@@ -204,13 +200,11 @@ class WooPosHomeViewModelTest {
     }
 
     @Test
-    fun `given info icon is clicked in products screen, when product info dialog is displayed, then ensure dialog primary message is correct`() {
+    fun `given product info dialog is displayed, then ensure dialog primary message is correct`() {
         // GIVEN
         whenever(childrenToParentEventReceiver.events).thenReturn(
-            flowOf(ChildToParentEvent.ProductsDialogInfoIconClicked)
+            flowOf(ChildToParentEvent.SimpleProductExplanationMenuItemClicked)
         )
-
-        // WHEN
         val viewModel = createViewModel()
 
         // THEN
@@ -222,13 +216,11 @@ class WooPosHomeViewModelTest {
     }
 
     @Test
-    fun `given info icon is clicked in products screen, when product info dialog is displayed, then ensure dialog secondary message is correct`() {
-        // GIVEN
-        whenever(childrenToParentEventReceiver.events).thenReturn(
-            flowOf(ChildToParentEvent.ProductsDialogInfoIconClicked)
-        )
-
+    fun `when where are my products clicked, then ensure dialog secondary message is correct`() {
         // WHEN
+        whenever(childrenToParentEventReceiver.events).thenReturn(
+            flowOf(ChildToParentEvent.SimpleProductExplanationMenuItemClicked)
+        )
         val viewModel = createViewModel()
 
         // THEN
@@ -240,13 +232,11 @@ class WooPosHomeViewModelTest {
     }
 
     @Test
-    fun `given info icon is clicked in products screen, when product info dialog is displayed, then ensure dialog tertiary message is correct`() {
-        // GIVEN
-        whenever(childrenToParentEventReceiver.events).thenReturn(
-            flowOf(ChildToParentEvent.ProductsDialogInfoIconClicked)
-        )
-
+    fun `when where are my products clicked, then ensure dialog tertiary message is correct`() {
         // WHEN
+        whenever(childrenToParentEventReceiver.events).thenReturn(
+            flowOf(ChildToParentEvent.SimpleProductExplanationMenuItemClicked)
+        )
         val viewModel = createViewModel()
 
         // THEN
@@ -258,10 +248,10 @@ class WooPosHomeViewModelTest {
     }
 
     @Test
-    fun `given info icon is clicked in products screen, when product info dialog is displayed, then ensure dialog primary button label is correct`() {
+    fun `when where are my products clicked, then ensure dialog primary button label is correct`() {
         // GIVEN
         whenever(childrenToParentEventReceiver.events).thenReturn(
-            flowOf(ChildToParentEvent.ProductsDialogInfoIconClicked)
+            flowOf(ChildToParentEvent.SimpleProductExplanationMenuItemClicked)
         )
 
         // WHEN
@@ -279,7 +269,7 @@ class WooPosHomeViewModelTest {
     fun `given product info is displayed, when dialog is dismissed, then ensure the state is updated`() {
         // GIVEN
         whenever(childrenToParentEventReceiver.events).thenReturn(
-            flowOf(ChildToParentEvent.ProductsDialogInfoIconClicked)
+            flowOf(ChildToParentEvent.SimpleProductExplanationMenuItemClicked)
         )
         val viewModel = createViewModel()
 
