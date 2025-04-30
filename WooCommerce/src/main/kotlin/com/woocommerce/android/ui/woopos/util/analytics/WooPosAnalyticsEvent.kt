@@ -77,8 +77,22 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
         data object InteractionWithCustomerStarted : Event() {
             override val name: String = "interaction_with_customer_started"
         }
-        data object ItemAddedToCart : Event() {
+        data class ItemAddedToCart(val source: String = "list") : Event() {
             override val name: String = "item_added_to_cart"
+
+            init {
+                addProperties(mapOf("source" to source))
+            }
+
+            enum class WooPosItemSource(val value: String) {
+                PRODUCT_LIST("list"),
+                SEARCH_RESULT("search_result"),
+                COUPON_LIST("coupons");
+
+                companion object {
+                    fun toAnalyticsString(source: WooPosItemSource): String = source.value
+                }
+            }
         }
         data object ItemRemovedFromCart : Event() {
             override val name: String = "item_removed_from_cart"

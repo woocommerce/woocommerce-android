@@ -16,6 +16,7 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemCli
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateToVariationsScreen
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart.WooPosItemSource
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -204,7 +205,8 @@ class WooPosItemsSearchViewModel @Inject constructor(
                 viewModelScope.launch {
                     childToParentEventSender.sendToParent(
                         ChildToParentEvent.ItemClickedInProductSelector(
-                            ItemClickedData.Product.Simple(id = item.id)
+                            itemData = ItemClickedData.Product.Simple(id = item.id),
+                            source = WooPosItemSource.SEARCH_RESULT
                         )
                     )
                 }
