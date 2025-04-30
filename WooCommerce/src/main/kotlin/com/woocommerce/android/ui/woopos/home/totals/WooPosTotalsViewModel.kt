@@ -162,6 +162,10 @@ class WooPosTotalsViewModel @Inject constructor(
             WooPosTotalsUIEvent.ConnectReaderClicked -> cardReaderFacade.connectToReader()
 
             WooPosTotalsUIEvent.OnBackClicked -> handleBackPress()
+
+            WooPosTotalsUIEvent.GoBackToCheckoutAfterFailedCouponValidation -> TODO()
+
+            WooPosTotalsUIEvent.OnRemoveCouponsClicked -> TODO()
         }
     }
 
