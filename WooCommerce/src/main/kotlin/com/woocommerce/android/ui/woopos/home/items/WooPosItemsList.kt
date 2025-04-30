@@ -22,7 +22,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.LocalOffer
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -230,10 +229,12 @@ fun WooPosProductCard(
 
             if(item is Product.Variable) {
                 Image(
-                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                    modifier = Modifier
+                        .size(32.dp)
+                        .padding(end = WooPosSpacing.Medium.value),
+                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_chevron),
                     contentDescription = null,
                     colorFilter = ColorFilter.tint(WooPosTheme.colors.onSurfaceVariantHighest),
-                    modifier = Modifier.padding(end = WooPosSpacing.Medium.value)
                 )
             }
         }
@@ -442,7 +443,8 @@ private fun ItemsLoadingItem() {
             Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
 
             Column(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .weight(1f),
                 verticalArrangement = Arrangement.Center,
             ) {
