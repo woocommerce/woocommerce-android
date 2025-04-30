@@ -1,14 +1,7 @@
 package com.woocommerce.android.ui.woopos.home.items
 
 sealed class WooPosItemsUIEvent {
-    data class ItemClicked(val item: WooPosItemSelectionViewState) : WooPosItemsUIEvent()
-    data object EndOfItemsListReached : WooPosItemsUIEvent()
-    data object PullToRefreshTriggered : WooPosItemsUIEvent()
-    data object ProductsLoadingErrorRetryButtonClicked : WooPosItemsUIEvent()
-    data object SimpleProductsBannerClosed : WooPosItemsUIEvent()
-    data object SimpleProductsBannerLearnMoreClicked : WooPosItemsUIEvent()
-    data object SimpleProductsDialogInfoIconClicked : WooPosItemsUIEvent()
-    data object CouponsButtonClicked : WooPosItemsUIEvent()
+    data class OnTabClicked(val tab: WooPosItemsViewState.Tab) : WooPosItemsUIEvent()
     data object BackButtonClicked : WooPosItemsUIEvent()
 
     data object ClearSearchClicked : WooPosItemsUIEvent()
@@ -17,5 +10,5 @@ sealed class WooPosItemsUIEvent {
         val cursorPosition: Int,
     ) : WooPosItemsUIEvent()
     data object CloseSearchClicked : WooPosItemsUIEvent()
-    object SearchAnimationComplete : WooPosItemsUIEvent()
+    data object SearchAnimationComplete : WooPosItemsUIEvent()
 }

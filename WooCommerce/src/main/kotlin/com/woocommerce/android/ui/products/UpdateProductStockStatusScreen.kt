@@ -6,10 +6,14 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Divider
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -21,9 +25,10 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.ProgressDialog
-import com.woocommerce.android.ui.compose.component.Toolbar
+import com.woocommerce.android.ui.compose.component.TopAppBarEdgeToEdge
 import com.woocommerce.android.ui.compose.component.WcExposedDropDown
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.products.UpdateProductStockStatusViewModel.Companion.AVAILABLE_STOCK_STATUSES
@@ -56,9 +61,17 @@ fun UpdateProductStockStatusScreen(
 
     Scaffold(
         topBar = {
-            Toolbar(
-                title = stringResource(id = R.string.product_update_stock_status_title),
-                onNavigationButtonClick = onNavigationUpClicked,
+            TopAppBarEdgeToEdge(
+                title = { Text(stringResource(id = R.string.product_update_stock_status_title)) },
+                backgroundColor = colorResource(id = R.color.color_toolbar),
+                navigationIcon = {
+                    IconButton(onClick = onNavigationUpClicked) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(id = R.string.back)
+                        )
+                    }
+                },
                 actions = {
                     TextButton(onClick = onUpdateClicked) {
                         Text(
@@ -66,7 +79,8 @@ fun UpdateProductStockStatusScreen(
                             color = MaterialTheme.colors.primary
                         )
                     }
-                }
+                },
+                elevation = 0.dp
             )
         },
         backgroundColor = MaterialTheme.colors.surface

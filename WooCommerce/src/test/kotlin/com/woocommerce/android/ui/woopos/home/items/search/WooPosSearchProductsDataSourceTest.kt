@@ -1,9 +1,9 @@
 package com.woocommerce.android.ui.woopos.home.items.search
 
-import app.cash.turbine.test
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
+import com.woocommerce.android.ui.woopos.common.data.WooPosProductsTypesFilterConfig
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -24,7 +24,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSearchResult
-import java.util.concurrent.atomic.AtomicBoolean
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooPosSearchProductsDataSourceTest {
@@ -35,7 +34,7 @@ class WooPosSearchProductsDataSourceTest {
     private val wooPosProductsCache: WooPosProductsCache = mock()
     private val searchResultsIndex: WooPosSearchResultsIndex = mock()
     private val selectedSite: SelectedSite = mock()
-    private val searchPredicate: ProductSearchPredicate = mock()
+    private val searchPredicate: WooPosProductSearchPredicate = mock()
     private val siteModel: SiteModel = mock()
 
     private lateinit var sut: WooPosSearchProductsDataSource
@@ -44,6 +43,7 @@ class WooPosSearchProductsDataSourceTest {
     private val product2 = ProductTestUtils.generateProduct(productId = 2)
     private val product3 = ProductTestUtils.generateProduct(productId = 3)
     private val products = listOf(product1, product2, product3)
+    private val productsTypesFilterConfig = WooPosProductsTypesFilterConfig()
 
     @Before
     fun setup() {
@@ -55,104 +55,69 @@ class WooPosSearchProductsDataSourceTest {
             selectedSite = selectedSite,
             productsCache = wooPosProductsCache,
             searchResultsIndex = searchResultsIndex,
-            searchPredicate = searchPredicate
+            searchPredicate = searchPredicate,
+            productsTypesFilterConfig = productsTypesFilterConfig,
         )
     }
 
     @Test
-    fun `given cached search results, when search products called, then should emit cached results`() = runTest {
+    fun `given cached products, when searchLocalProducts called, then should return filtered products`() = runTest {
         // GIVEN
         val query = "test"
-        whenever(searchResultsIndex.hasSearchResults(query)).thenReturn(true)
-        whenever(searchResultsIndex.getSearchResults(query)).thenReturn(emptyList())
         whenever(wooPosProductsCache.getAll()).thenReturn(products)
-        whenever(
-            productStore.searchProducts(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull())
-        ).thenReturn(WooResult(ProductSearchResult(emptyList(), false)))
 
         // WHEN
-        sut.searchProducts(query).test {
-            // THEN
-            val result = awaitItem()
-            assertThat(result).isInstanceOf(WooPosSearchProductsDataSource.ProductsResult.Cached::class.java)
-            assertThat((result as WooPosSearchProductsDataSource.ProductsResult.Cached).products).isEqualTo(products)
+        val result = sut.searchLocalProducts(query)
 
-            verify(searchResultsIndex).clearCache()
-
-            verify(searchResultsIndex).storeSearchResults(query, emptyList())
-            cancelAndIgnoreRemainingEvents()
-        }
+        // THEN
+        assertThat(result).isEqualTo(products)
     }
 
     @Test
-    fun `given more products than page size, when search products called, then should limit local results to page size`() =
+    fun `given more products than page size, when searchLocalProducts called, then should limit results to page size`() =
         runTest {
             // GIVEN
             val query = "test"
             val manyProducts = (1..20).map { ProductTestUtils.generateProduct(productId = it.toLong()) }
             whenever(wooPosProductsCache.getAll()).thenReturn(manyProducts)
-            whenever(searchResultsIndex.getSearchResults(query)).thenReturn(manyProducts)
-            whenever(
-                productStore.searchProducts(
-                    anyOrNull(),
-                    anyOrNull(),
-                    anyOrNull(),
-                    anyOrNull(),
-                    anyOrNull(),
-                    anyOrNull()
-                )
-            ).thenReturn(WooResult(ProductSearchResult(emptyList(), false)))
 
             // WHEN
-            sut.searchProducts(query).test {
-                // THEN
-                val result = awaitItem()
-                assertThat(result).isInstanceOf(WooPosSearchProductsDataSource.ProductsResult.Cached::class.java)
-                assertThat((result as WooPosSearchProductsDataSource.ProductsResult.Cached).products.size).isEqualTo(15)
-                cancelAndIgnoreRemainingEvents()
-            }
+            val result = sut.searchLocalProducts(query)
+
+            // THEN
+            assertThat(result.size).isEqualTo(15)
         }
 
     @Test
-    fun `given remote search products success, when search products called, then should emit cached and remote results`() =
+    fun `given remote search products success, when searchRemoteProducts called, then should return success result`() =
         runTest {
             // GIVEN
             val query = "test"
-            whenever(wooPosProductsCache.getAll()).thenReturn(products)
-            whenever(searchResultsIndex.getSearchResults(query)).thenReturn(emptyList())
+            whenever(searchResultsIndex.getSearchResults(query)).thenReturn(products)
             whenever(
                 productStore.searchProducts(
-                    anyOrNull(),
-                    anyOrNull(),
-                    anyOrNull(),
-                    anyOrNull(),
-                    anyOrNull(),
-                    anyOrNull()
+                    site = anyOrNull(),
+                    searchString = anyOrNull(),
+                    skuSearchOptions = anyOrNull(),
+                    offset = anyOrNull(),
+                    pageSize = anyOrNull(),
+                    filterOptions = anyOrNull(),
+                    includeTypes = anyOrNull(),
+                    orderCurrency = anyOrNull(),
                 )
             ).thenReturn(WooResult(ProductSearchResult(emptyList(), true)))
 
             // WHEN
-            val result = sut.searchProducts(query)
+            val result = sut.searchRemoteProducts(query)
 
             // THEN
-            result.test {
-                val cachedResult = awaitItem()
-                assertThat(cachedResult).isInstanceOf(WooPosSearchProductsDataSource.ProductsResult.Cached::class.java)
-
-                val remoteResult = awaitItem()
-                assertThat(remoteResult).isInstanceOf(WooPosSearchProductsDataSource.ProductsResult.Remote::class.java)
-                val remoteResultSuccess = (remoteResult as WooPosSearchProductsDataSource.ProductsResult.Remote)
-                    .productsResult.isSuccess
-                assertThat(remoteResultSuccess).isTrue()
-
-                assertThat(sut.hasMorePages).isTrue()
-
-                cancelAndIgnoreRemainingEvents()
-            }
+            assertThat(result.isSuccess).isTrue()
+            verify(searchResultsIndex).clearCache()
+            assertThat(sut.hasMorePages).isTrue()
         }
 
     @Test
-    fun `given remote search products fail, when search products called, then should emit failure result`() = runTest {
+    fun `given remote search products fail, when searchRemoteProducts called, then should return failure result`() = runTest {
         // GIVEN
         val query = "test"
         val error = WooError(
@@ -160,25 +125,24 @@ class WooPosSearchProductsDataSourceTest {
             message = "Error fetching products",
             original = BaseRequest.GenericErrorType.UNKNOWN
         )
-        whenever(wooPosProductsCache.getAll()).thenReturn(products)
         whenever(
-            productStore.searchProducts(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull())
+            productStore.searchProducts(
+                site = anyOrNull(),
+                searchString = anyOrNull(),
+                skuSearchOptions = anyOrNull(),
+                offset = anyOrNull(),
+                pageSize = anyOrNull(),
+                filterOptions = anyOrNull(),
+                includeTypes = anyOrNull(),
+                orderCurrency = anyOrNull(),
+            )
         ).thenReturn(WooResult(error))
 
         // WHEN
-        sut.searchProducts(query).test {
-            // THEN
-            val cachedResult = awaitItem()
-            assertThat(cachedResult).isInstanceOf(WooPosSearchProductsDataSource.ProductsResult.Cached::class.java)
+        val result = sut.searchRemoteProducts(query)
 
-            val remoteResult = awaitItem()
-            assertThat(remoteResult).isInstanceOf(WooPosSearchProductsDataSource.ProductsResult.Remote::class.java)
-            val remoteResultFailed = (remoteResult as WooPosSearchProductsDataSource.ProductsResult.Remote)
-                .productsResult.isFailure
-            assertThat(remoteResultFailed).isTrue()
-
-            cancelAndIgnoreRemainingEvents()
-        }
+        // THEN
+        assertThat(result.isFailure).isTrue()
     }
 
     @Test
@@ -188,11 +152,6 @@ class WooPosSearchProductsDataSourceTest {
             val query = "test"
             whenever(searchResultsIndex.getSearchResults(query)).thenReturn(products)
 
-            val canLoadMoreField = WooPosSearchProductsDataSource::class.java.getDeclaredField("canLoadMore")
-            canLoadMoreField.isAccessible = true
-            val canLoadMore = canLoadMoreField.get(sut) as AtomicBoolean
-            canLoadMore.set(false)
-
             // WHEN
             val result = sut.loadMore(query)
 
@@ -200,12 +159,14 @@ class WooPosSearchProductsDataSourceTest {
             assertThat(result.isSuccess).isTrue()
             assertThat(result.getOrNull()).isEqualTo(products)
             verify(productStore, never()).searchProducts(
-                anyOrNull(),
-                anyOrNull(),
-                anyOrNull(),
-                anyOrNull(),
-                anyOrNull(),
-                anyOrNull()
+                site = anyOrNull(),
+                searchString = anyOrNull(),
+                skuSearchOptions = anyOrNull(),
+                offset = anyOrNull(),
+                pageSize = anyOrNull(),
+                filterOptions = anyOrNull(),
+                includeTypes = anyOrNull(),
+                orderCurrency = anyOrNull(),
             )
         }
 }
