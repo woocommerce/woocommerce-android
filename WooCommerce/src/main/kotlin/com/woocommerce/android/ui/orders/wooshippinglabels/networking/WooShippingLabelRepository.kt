@@ -4,6 +4,7 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingAddressDataStore
+import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigurationDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.AddressNormalizationModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShippingAddress
@@ -22,6 +23,7 @@ import javax.inject.Inject
 class WooShippingLabelRepository @Inject constructor(
     private val restClient: WooShippingLabelRestClient,
     private val mapper: WooShippingNetworkingMapper,
+    private val configDataStore: WooShippingConfigDataStore,
     private val configurationDataStore: WooShippingConfigurationDataStore,
     private val addressDataStore: WooShippingAddressDataStore
 ) {
@@ -46,6 +48,11 @@ class WooShippingLabelRepository @Inject constructor(
                 ?.let {
                     configurationDataStore.saveStoreOptions(it)
                 }
+        }
+
+    suspend fun fetchConfig(site: SiteModel, orderId: Long) = restClient.fetchConfig(site, orderId).asWooResult()
+        .also { response ->
+            response.model?.takeIf { !response.isError }?.let { configDataStore.saveConfig(orderId, it.config) }
         }
 
     suspend fun fetchPurchasedShippingLabels(
