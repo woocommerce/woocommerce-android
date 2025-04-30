@@ -57,6 +57,7 @@ class OrderDetailsTransactionLauncherTest : BaseUnitTest() {
         sut.onOrderFetched()
         sut.onShippingLabelFetchingCompleted()
         sut.onNotesFetched()
+        sut.onShipmentsFetchingCompleted()
         sut.onRefundsFetched()
         sut.onShipmentTrackingFetchingCompleted()
         sut.onPackageCreationEligibleFetched()
