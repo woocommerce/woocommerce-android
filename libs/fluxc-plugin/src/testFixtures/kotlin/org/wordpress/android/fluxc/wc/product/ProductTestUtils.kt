@@ -3,6 +3,7 @@ package org.wordpress.android.fluxc.wc.product
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import org.wordpress.android.fluxc.UnitTestUtils
+import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.WCProductCategoryModel
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.WCProductReviewModel
@@ -14,6 +15,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductCategory
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductReviewApiResponse
 import kotlin.random.Random
 
+@Suppress("MagicNumber")
 object ProductTestUtils {
     fun generateSampleProduct(
         remoteId: Long,
@@ -28,19 +30,19 @@ object ProductTestUtils {
         description: String = "",
         shortDescription: String = "",
     ): WCProductModel {
-        return WCProductModel().apply {
-            remoteProductId = remoteId
-            localSiteId = siteId
-            this.type = type
-            this.name = name
-            this.virtual = virtual
-            this.stockStatus = stockStatus
-            this.status = status
-            this.stockQuantity = stockQuantity
-            this.categories = categories
-            this.description = description
-            this.shortDescription = shortDescription
-        }
+        return WCProductModel().copy(
+            remoteId = LocalOrRemoteId.RemoteId(remoteId),
+            localSiteId = LocalOrRemoteId.LocalId(siteId),
+            type = type,
+            name = name,
+            virtual = virtual,
+            stockStatus = stockStatus,
+            status = status,
+            stockQuantity = stockQuantity,
+            categories = categories,
+            description = description,
+            shortDescription = shortDescription,
+        )
     }
 
     fun generateSampleVariation(
@@ -148,7 +150,8 @@ object ProductTestUtils {
     }
 
     fun getProductCategories(siteId: Int): List<WCProductCategoryModel> {
-        val categoryJson = UnitTestUtils.getStringFromResourceFile(this.javaClass, "wc/product-categories.json")
+        val categoryJson =
+            UnitTestUtils.getStringFromResourceFile(this.javaClass, "wc/product-categories.json")
         val responseType = object : TypeToken<List<ProductCategoryApiResponse>>() {}.type
         val converted = Gson().fromJson(categoryJson, responseType) as? List<ProductCategoryApiResponse> ?: emptyList()
         return converted.map {
@@ -183,13 +186,15 @@ object ProductTestUtils {
     fun generateProductTags(siteId: Int = 6): List<WCProductTagModel> {
         val tagList = mutableListOf<WCProductTagModel>()
         for (i in 0 until 5) {
-            tagList.add(generateSampleProductTag(
+            tagList.add(
+                generateSampleProductTag(
                     i.toLong(),
                     siteId = siteId,
                     name = "$i",
                     slug = "$i",
                     description = "$i"
-            ))
+            )
+            )
         }
         return tagList
     }

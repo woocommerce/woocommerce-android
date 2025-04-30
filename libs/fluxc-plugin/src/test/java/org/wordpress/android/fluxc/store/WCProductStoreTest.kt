@@ -1,10 +1,13 @@
-package org.wordpress.android.fluxc.wc.product
+package org.wordpress.android.fluxc.store
 
 import androidx.room.Room
 import com.google.gson.JsonObject
 import com.yarolegovich.wellsql.WellSql
+import junit.framework.TestCase.assertFalse
+import junit.framework.TestCase.assertNotNull
+import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -27,12 +30,12 @@ import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.ProductWithMetaData
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.metadata.WCMetaData
 import org.wordpress.android.fluxc.model.WCProductCategoryModel
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.WCProductReviewModel
 import org.wordpress.android.fluxc.model.WCProductVariationModel
 import org.wordpress.android.fluxc.model.WCProductVariationModel.ProductVariantOption
+import org.wordpress.android.fluxc.model.metadata.WCMetaData
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.NETWORK_ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.GENERIC_ERROR
@@ -45,25 +48,25 @@ import org.wordpress.android.fluxc.persistence.ProductSqlUtils
 import org.wordpress.android.fluxc.persistence.ProductStorageHelper
 import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
-import org.wordpress.android.fluxc.store.WCProductStore
+import org.wordpress.android.fluxc.persistence.dao.ProductsDao
 import org.wordpress.android.fluxc.store.WCProductStore.BatchGenerateVariationsPayload
 import org.wordpress.android.fluxc.store.WCProductStore.BatchUpdateProductsPayload
 import org.wordpress.android.fluxc.store.WCProductStore.BatchUpdateVariationsPayload
+import org.wordpress.android.fluxc.store.WCProductStore.FetchSingleProductPayload
 import org.wordpress.android.fluxc.store.WCProductStore.FetchSingleProductReviewPayload
+import org.wordpress.android.fluxc.store.WCProductStore.IncludeType
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 import org.wordpress.android.fluxc.store.WCProductStore.RemoteAddProductPayload
+import org.wordpress.android.fluxc.store.WCProductStore.RemoteProductPayload
 import org.wordpress.android.fluxc.store.WCProductStore.RemoteProductReviewPayload
 import org.wordpress.android.fluxc.store.WCProductStore.RemoteUpdateProductPayload
 import org.wordpress.android.fluxc.store.WCProductStore.RemoteUpdateVariationPayload
 import org.wordpress.android.fluxc.store.WCProductStore.UpdateVariationPayload
-import org.wordpress.android.fluxc.test
-import org.wordpress.android.fluxc.tools.initCoroutineEngine
+import org.wordpress.android.fluxc.utils.initCoroutineEngine
+import org.wordpress.android.fluxc.wc.product.ProductTestUtils
 import org.wordpress.android.fluxc.wc.utils.SiteTestUtils
 import kotlin.random.Random
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
 
 @Config(manifest = Config.NONE)
 @RunWith(RobolectricTestRunner::class)
@@ -71,21 +74,21 @@ import kotlin.test.assertTrue
 class WCProductStoreTest {
     private val productRestClient: ProductRestClient = mock()
     private lateinit var productStore: WCProductStore
+    private lateinit var productsDao: ProductsDao
 
     @Before
     fun setUp() {
         val appContext = RuntimeEnvironment.application.applicationContext
         val config = SingleStoreWellSqlConfigForTests(
-                appContext,
-                listOf(
-                        WCProductModel::class.java,
-                        WCProductVariationModel::class.java,
-                        WCProductCategoryModel::class.java,
-                        WCProductReviewModel::class.java,
-                        SiteModel::class.java,
-                        AccountModel::class.java
-                ),
-                WellSqlConfig.ADDON_WOOCOMMERCE
+            appContext,
+            listOf(
+                WCProductVariationModel::class.java,
+                WCProductCategoryModel::class.java,
+                WCProductReviewModel::class.java,
+                SiteModel::class.java,
+                AccountModel::class.java
+            ),
+            WellSqlConfig.ADDON_WOOCOMMERCE
         )
         WellSql.init(config)
         config.reset()
@@ -94,8 +97,10 @@ class WCProductStoreTest {
             .allowMainThreadQueries()
             .build()
 
+        productsDao = roomDb.productsDao
+
         val productStorageHelper = ProductStorageHelper(
-            productSqlUtils = ProductSqlUtils,
+            productsDao = productsDao,
             metaDataDao = roomDb.metaDataDao
         )
         productStore = WCProductStore(
@@ -104,16 +109,17 @@ class WCProductStoreTest {
             addonsDao = mock(),
             logger = mock(),
             productStorageHelper = productStorageHelper,
-            coroutineEngine = initCoroutineEngine()
+            coroutineEngine = initCoroutineEngine(),
+            productsDao = productsDao
         )
     }
 
     @Test
-    fun testSimpleInsertionAndRetrieval() {
+    fun testSimpleInsertionAndRetrieval() = runTest {
         val productModel = ProductTestUtils.generateSampleProduct(42)
-        val site = SiteModel().apply { id = productModel.localSiteId }
+        val site = SiteModel().apply { id = productModel.localSiteId.value }
 
-        ProductSqlUtils.insertOrUpdateProduct(productModel)
+        productsDao.upsertProduct(productModel)
 
         val storedProduct = productStore.getProductByRemoteId(site, productModel.remoteProductId)
         assertEquals(42, storedProduct?.remoteProductId)
@@ -121,18 +127,16 @@ class WCProductStoreTest {
     }
 
     @Test
-    fun testGetProductsBySiteAndProductIds() {
+    fun testGetProductsBySiteAndProductIds() = runTest {
         val productIds = listOf<Long>(30, 31, 2)
 
         val product1 = ProductTestUtils.generateSampleProduct(30)
         val product2 = ProductTestUtils.generateSampleProduct(31)
         val product3 = ProductTestUtils.generateSampleProduct(42)
 
-        ProductSqlUtils.insertOrUpdateProduct(product1)
-        ProductSqlUtils.insertOrUpdateProduct(product2)
-        ProductSqlUtils.insertOrUpdateProduct(product3)
+        productsDao.upsertProducts(listOf(product1, product2, product3))
 
-        val site = SiteModel().apply { id = product1.localSiteId }
+        val site = SiteModel().apply { id = product1.localSiteId.value }
         val products = productStore.getProductsByRemoteIds(site, productIds)
         assertEquals(2, products.size)
 
@@ -141,51 +145,50 @@ class WCProductStoreTest {
         val differentSiteProduct2 = ProductTestUtils.generateSampleProduct(11, siteId = 10)
         val differentSiteProduct3 = ProductTestUtils.generateSampleProduct(2, siteId = 10)
 
-        ProductSqlUtils.insertOrUpdateProduct(differentSiteProduct1)
-        ProductSqlUtils.insertOrUpdateProduct(differentSiteProduct2)
-        ProductSqlUtils.insertOrUpdateProduct(differentSiteProduct3)
+        productsDao.upsertProducts(listOf(differentSiteProduct1, differentSiteProduct2, differentSiteProduct3))
 
         // verify that the products for the first site is still 2
         assertEquals(2, productStore.getProductsByRemoteIds(site, productIds).size)
 
         // verify that the products for the second site is 3
-        val site2 = SiteModel().apply { id = differentSiteProduct1.localSiteId }
+        val site2 = SiteModel().apply { id = differentSiteProduct1.localSiteId.value }
         val differentSiteProducts = productStore.getProductsByRemoteIds(site2, listOf(10, 11, 2))
-        assertEquals(3, differentSiteProducts.size)
-        assertEquals(differentSiteProduct1.remoteProductId, differentSiteProducts[0].remoteProductId)
-        assertEquals(differentSiteProduct2.remoteProductId, differentSiteProducts[1].remoteProductId)
-        assertEquals(differentSiteProduct3.remoteProductId, differentSiteProducts[2].remoteProductId)
+
+        assertThat(differentSiteProducts.map { it.remoteProductId })
+            .containsExactlyInAnyOrder(
+                differentSiteProduct1.remoteProductId,
+                differentSiteProduct2.remoteProductId,
+                differentSiteProduct3.remoteProductId
+            )
     }
 
     @Test
-    fun testUpdateProduct() {
-        val productModel = ProductTestUtils.generateSampleProduct(42).apply {
-            name = "test product"
+    fun testUpdateProduct() = runTest {
+        val updatedDescription = "Updated description"
+        val productModel = ProductTestUtils.generateSampleProduct(42).copy(
+            name = "test product",
             description = "test description"
-        }
-        val site = SiteModel().apply { id = productModel.localSiteId }
-        ProductSqlUtils.insertOrUpdateProduct(productModel)
+        )
+        val site = SiteModel().apply { id = productModel.localSiteId.value }
+        productsDao.upsertProduct(productModel)
 
         // Simulate incoming action with updated product model
-        val payload = RemoteUpdateProductPayload(site,
-            ProductWithMetaData(
-                productModel.apply {
-                    description = "Updated description"
-                }
-            )
+        val payload = RemoteUpdateProductPayload(
+            site,
+            ProductWithMetaData(productModel.copy(description = updatedDescription))
         )
         productStore.onAction(WCProductActionBuilder.newUpdatedProductAction(payload))
 
         with(productStore.getProductByRemoteId(site, productModel.remoteProductId)) {
             // The version of the product model in the database should have the updated description
-            assertEquals(productModel.description, this?.description)
+            assertEquals(updatedDescription, this?.description)
             // Other fields should not be altered by the update
             assertEquals(productModel.name, this?.name)
         }
     }
 
     @Test
-    fun testUpdateVariation() = runBlocking {
+    fun testUpdateVariation() = runTest {
         val variationModel = ProductTestUtils.generateSampleVariation(42, 24).apply {
             description = "test description"
         }
@@ -208,27 +211,27 @@ class WCProductStoreTest {
     }
 
     @Test
-    fun testVerifySkuExistsLocally() {
+    fun testVerifySkuExistsLocally() = runTest {
         val sku = "woo-cap"
-        val productModel = ProductTestUtils.generateSampleProduct(42).apply {
-            name = "test product"
-            description = "test description"
-            this.sku = sku
-        }
-        val site = SiteModel().apply { id = productModel.localSiteId }
-        ProductSqlUtils.insertOrUpdateProduct(productModel)
+        val productModel = ProductTestUtils.generateSampleProduct(42).copy (
+            name = "test product",
+            description = "test description",
+            sku = sku,
+        )
+        val site = SiteModel().apply { id = productModel.localSiteId.value }
+        productsDao.upsertProduct(productModel)
 
         // verify if product with sku: woo-cap exists in local cache
-        val skuAvailable = ProductSqlUtils.getProductExistsBySku(site, sku)
+        val skuAvailable = productStore.isProductExists(site, sku)
         assertTrue(skuAvailable)
 
         // verify if product with non existent sku returns false
-        assertFalse(ProductSqlUtils.getProductExistsBySku(site, "woooo"))
+        assertFalse(productStore.isProductExists(site, "woooo"))
     }
 
     @Test
-    fun testGetProductsWithFilterOptions() {
-        val filterOptions = mapOf<ProductFilterOption, String>(
+    fun testGetProductsWithFilterOptions() = runTest {
+        val filterOptions = mapOf(
                 ProductFilterOption.TYPE to "simple",
                 ProductFilterOption.STOCK_STATUS to "instock",
                 ProductFilterOption.STATUS to "publish",
@@ -236,45 +239,43 @@ class WCProductStoreTest {
         )
         val product1 = ProductTestUtils.generateSampleProduct(3)
         val product2 = ProductTestUtils.generateSampleProduct(
-                31, type = "variable", status = "draft"
+            31, type = "variable", status = "draft"
         )
         val product3 = ProductTestUtils.generateSampleProduct(
-                42, stockStatus = "onbackorder", status = "pending"
-                )
+            42, stockStatus = "onbackorder", status = "pending"
+        )
 
         val product4 = ProductTestUtils.generateSampleProduct(
-                43, categories = "[{\"id\":1337,\"name\":\"Clothing\",\"slug\":\"clothing\"}]")
+            43, categories = "[{\"id\":1337,\"name\":\"Clothing\",\"slug\":\"clothing\"}]"
+        )
 
-        ProductSqlUtils.insertOrUpdateProduct(product1)
-        ProductSqlUtils.insertOrUpdateProduct(product2)
-        ProductSqlUtils.insertOrUpdateProduct(product3)
-        ProductSqlUtils.insertOrUpdateProduct(product4)
+        productsDao.upsertProducts(listOf(product1, product2, product3, product4))
 
-        val site = SiteModel().apply { id = product1.localSiteId }
+        val site = SiteModel().apply { id = product1.localSiteId.value }
         val products = productStore.getProducts(site, filterOptions)
         assertEquals(1, products.size)
 
         // insert products with the same product options but for a different site
         val differentSiteProduct1 = ProductTestUtils.generateSampleProduct(10, siteId = 10)
         val differentSiteProduct2 = ProductTestUtils.generateSampleProduct(
-                11, siteId = 10, type = "variable", status = "draft"
+            11, siteId = 10, type = "variable", status = "draft"
         )
         val differentSiteProduct3 = ProductTestUtils.generateSampleProduct(
-                12, siteId = 10, stockStatus = "onbackorder", status = "pending"
+            12, siteId = 10, stockStatus = "onbackorder", status = "pending"
         )
         val differentSiteProduct4 = ProductTestUtils.generateSampleProduct(
-                13, siteId = 10, categories = "[{\"id\":1337,\"name\":\"Clothing\",\"slug\":\"clothing\"}]")
+            13,
+            siteId = 10,
+            categories = "[{\"id\":1337,\"name\":\"Clothing\",\"slug\":\"clothing\"}]"
+        )
 
-        ProductSqlUtils.insertOrUpdateProduct(differentSiteProduct1)
-        ProductSqlUtils.insertOrUpdateProduct(differentSiteProduct2)
-        ProductSqlUtils.insertOrUpdateProduct(differentSiteProduct3)
-        ProductSqlUtils.insertOrUpdateProduct(differentSiteProduct4)
+        productsDao.upsertProducts(listOf(differentSiteProduct1, differentSiteProduct2, differentSiteProduct3, differentSiteProduct4))
 
         // verify that the products for the first site is still 1
         assertEquals(1, productStore.getProducts(site, filterOptions).size)
 
         // verify that the products for the second site is 3
-        val site2 = SiteModel().apply { id = differentSiteProduct1.localSiteId }
+        val site2 = SiteModel().apply { id = differentSiteProduct1.localSiteId.value }
         val filterOptions2 = mapOf(ProductFilterOption.STATUS to "draft")
         val differentSiteProducts = productStore.getProducts(site2, filterOptions2)
         assertEquals(1, differentSiteProducts.size)
@@ -292,43 +293,43 @@ class WCProductStoreTest {
     }
 
     @Test
-    fun `test AddProduct Action triggered correctly`() {
+    fun `test AddProduct Action triggered correctly`() = runTest {
         // given
-        val productModel = ProductTestUtils.generateSampleProduct(remoteId = 0).apply {
-            name = "test new product"
+        val productModel = ProductTestUtils.generateSampleProduct(remoteId = 0).copy(
+            name = "test new product",
             description = "test new description"
-        }
-        val site = SiteModel().apply { id = productModel.localSiteId }
+        )
+        val site = SiteModel().apply { id = productModel.localSiteId.value }
 
         // when
-        ProductSqlUtils.insertOrUpdateProduct(productModel)
+        productsDao.upsertProduct(productModel)
         val payload = RemoteAddProductPayload(site, ProductWithMetaData(productModel))
         productStore.onAction(WCProductActionBuilder.newAddedProductAction(payload))
 
         // then
         with(productStore.getProductByRemoteId(site, productModel.remoteProductId)) {
             assertNotNull(this)
-            assertEquals(productModel.description, this.description)
-            assertEquals(productModel.name, this.name)
+            assertEquals(productModel.description, this?.description)
+            assertEquals(productModel.name, this?.name)
         }
     }
 
     @Test
-    fun `test that product insert emits a flow event`() = test {
+    fun `test that product insert emits a flow event`() = runTest {
         // given
-        val productModel = ProductTestUtils.generateSampleProduct(remoteId = 0).apply {
-            name = "test new product"
+        val productModel = ProductTestUtils.generateSampleProduct(remoteId = 0).copy(
+            name = "test new product",
             description = "test new description"
-        }
+        )
         val productList = ProductTestUtils.generateProductList()
-        ProductSqlUtils.insertOrUpdateProducts(productList)
-        val site = SiteModel().apply { id = productModel.localSiteId }
+        productsDao.upsertProducts(productList)
+        val site = SiteModel().apply { id = productModel.localSiteId.value }
 
         var observedProducts = productStore.observeProducts(site).first()
         assertThat(observedProducts).isEqualTo(productList)
 
         // when
-        ProductSqlUtils.insertOrUpdateProduct(productModel)
+        productsDao.upsertProduct(productModel)
         observedProducts = productStore.observeProducts(site).first()
 
         // then
@@ -336,7 +337,7 @@ class WCProductStoreTest {
     }
 
     @Test
-    fun `test that variation insert emits a flow event`() = test {
+    fun `test that variation insert emits a flow event`() = runTest {
         // given
         val variation = ProductTestUtils.generateSampleVariation(
             remoteId = 0,
@@ -365,17 +366,17 @@ class WCProductStoreTest {
     }
 
     @Test
-    fun `given product review exists, when fetch product review, then local database updated`() = runBlocking {
+    fun `given product review exists, when fetch product review, then local database updated`() = runTest {
         val site = SiteTestUtils.insertTestAccountAndSiteIntoDb()
-        val productModel = ProductTestUtils.generateSampleProduct(remoteId = 1).apply {
-            localSiteId = site.id
-        }
-        ProductSqlUtils.insertOrUpdateProduct(productModel)
+        val productModel = ProductTestUtils.generateSampleProduct(remoteId = 1).copy (
+            localSiteId = site.localId()
+        )
+        productsDao.upsertProduct(productModel)
 
         val reviewModel = ProductTestUtils.generateSampleProductReview(
-                productModel.remoteProductId,
-                123L,
-                site.id
+            productModel.remoteProductId,
+            123L,
+            site.id
         )
         whenever(productRestClient.fetchProductReviewById(site, reviewModel.remoteProductReviewId))
                 .thenReturn(RemoteProductReviewPayload(site, reviewModel))
@@ -388,10 +389,10 @@ class WCProductStoreTest {
 
     @Test
     fun `batch variations update should return positive result on successful backend request`() =
-        runBlocking {
+        runTest {
             // given
             val product = ProductTestUtils.generateSampleProduct(Random.nextLong())
-            val site = SiteModel().apply { id = product.localSiteId }
+            val site = SiteModel().apply { id = product.localSiteId.value }
             val variations = ProductTestUtils.generateSampleVariations(
                 number = 64,
                 productId = product.remoteProductId,
@@ -425,10 +426,10 @@ class WCProductStoreTest {
 
     @Test
     fun `batch variations update should return negative result on failed backend request`() =
-        runBlocking {
+        runTest {
             // given
             val product = ProductTestUtils.generateSampleProduct(Random.nextLong())
-            val site = SiteModel().apply { id = product.localSiteId }
+            val site = SiteModel().apply { id = product.localSiteId.value }
             val variations = ProductTestUtils.generateSampleVariations(
                 number = 64,
                 productId = product.remoteProductId,
@@ -459,10 +460,10 @@ class WCProductStoreTest {
 
     @Test
     fun `batch variations update should update variations locally after successful backend request`() =
-        runBlocking {
+        runTest {
             // given
             val product = ProductTestUtils.generateSampleProduct(Random.nextLong())
-            ProductSqlUtils.insertOrUpdateProduct(product)
+            productsDao.upsertProduct(product)
             val site = SiteTestUtils.insertTestAccountAndSiteIntoDb()
             val variations = ProductTestUtils.generateSampleVariations(
                 number = 64,
@@ -508,15 +509,14 @@ class WCProductStoreTest {
                     assertThat(variation.salePrice).isEqualTo(newSalePrice)
                 }
             }
-            Unit
         }
 
     @Test
     fun `batch variations update should not update variations locally after failed backend request`() =
-        runBlocking {
+        runTest {
             // given
             val product = ProductTestUtils.generateSampleProduct(Random.nextLong())
-            ProductSqlUtils.insertOrUpdateProduct(product)
+            productsDao.upsertProduct(product)
             val site = SiteTestUtils.insertTestAccountAndSiteIntoDb()
             val variations = ProductTestUtils.generateSampleVariations(
                 number = 64,
@@ -554,7 +554,6 @@ class WCProductStoreTest {
                     assertThat(variation.salePrice).isNotEqualTo(newSalePrice)
                 }
             }
-            Unit
         }
 
     @Test
@@ -620,12 +619,12 @@ class WCProductStoreTest {
 
     @Test
     fun `when variation generation succeed, result is received`() =
-        test {
+        runTest {
             // given
             val productId = 6L
             val site = SiteModel()
             val firstVariationAttributes = listOf(
-                ProductVariantOption( id = 1, name = "Size", option = "L"),
+                ProductVariantOption(id = 1, name = "Size", option = "L"),
                 ProductVariantOption( id = 2, name = "Color", option = "Blue"),
             )
             val secondVariationAttributes = listOf(
@@ -674,7 +673,7 @@ class WCProductStoreTest {
 
     @Test
     fun `when variation generation fails, error is received`() =
-        test {
+        runTest {
             // given
             val productId = 6L
             val site = SiteModel()
@@ -719,7 +718,7 @@ class WCProductStoreTest {
 
     @Test
     fun `when products bulk update is requested, correct existing and updated products are matched`(): Unit =
-        runBlocking {
+        runTest {
             // given
             val existingProducts = listOf(
                 ProductTestUtils.generateSampleProduct(42),
@@ -727,8 +726,8 @@ class WCProductStoreTest {
                 ProductTestUtils.generateSampleProduct(45),
                 ProductTestUtils.generateSampleProduct(48),
             )
-            ProductSqlUtils.insertOrUpdateProducts(existingProducts)
-            val site = SiteModel().apply { id = existingProducts.first().localSiteId }
+            productsDao.upsertProducts(existingProducts)
+            val site = SiteModel().apply { id = existingProducts.first().localSiteId.value }
             val updatedProductsInDifferentOrder = existingProducts.sortedByDescending(WCProductModel::remoteProductId)
             val argumentCaptor = argumentCaptor<Map<WCProductModel, WCProductModel>>()
             whenever(
@@ -756,7 +755,7 @@ class WCProductStoreTest {
 
     @Test
     fun `when variation bulk creation, request creation on core`(): Unit =
-        runBlocking {
+        runTest {
             // given
             val site = SiteModel()
             val productId = RemoteId(123)
@@ -772,15 +771,15 @@ class WCProductStoreTest {
             // then
             verify(productRestClient).createVariations(
                 site = site, productId = productId, variations = listOf(
-                mapOf("description" to "test5"),
-                mapOf("description" to "test6")
-            )
+                    mapOf("description" to "test5"),
+                    mapOf("description" to "test6")
+                )
             )
         }
 
     @Test
     fun `when product variation bulk creation is successful, save results to database`(): Unit =
-        runBlocking {
+        runTest {
             // given
             val site = SiteModel()
             val productId = RemoteId(123)
@@ -809,7 +808,7 @@ class WCProductStoreTest {
         }
 
     @Test
-    fun `when fetching product with metadata, then save results to database`(): Unit = runBlocking {
+    fun `when fetching product with metadata, then save results to database`(): Unit = runTest {
         // given
         val site = SiteModel().apply { id = 1 }
         val product = ProductTestUtils.generateSampleProduct(remoteId = 123, siteId = site.id)
@@ -818,11 +817,11 @@ class WCProductStoreTest {
             WCMetaData(1, "key2", "value2"),
         )
         whenever(productRestClient.fetchSingleProduct(site, product.remoteProductId)).thenReturn(
-            WCProductStore.RemoteProductPayload(ProductWithMetaData(product, metadata), site)
+           RemoteProductPayload(ProductWithMetaData(product, metadata), site)
         )
 
         // when
-        productStore.fetchSingleProduct(WCProductStore.FetchSingleProductPayload(site, product.remoteProductId))
+        productStore.fetchSingleProduct(FetchSingleProductPayload(site, product.remoteProductId))
 
         // then
         val storedProduct = productStore.getProductWithMetaData(site, product.remoteProductId)
@@ -833,41 +832,41 @@ class WCProductStoreTest {
 
     @Test
     fun `given include_type simple, then return type Simple` () {
-        assertThat(WCProductStore.IncludeType.fromValue("simple")).isEqualTo(WCProductStore.IncludeType.Simple)
+        assertThat(IncludeType.fromValue("simple")).isEqualTo(IncludeType.Simple)
     }
 
     @Test
     fun `given include_type variable, then return type Variable` () {
         assertThat(
-            WCProductStore.IncludeType.fromValue("variable")
-        ).isEqualTo(WCProductStore.IncludeType.Variable)
+            IncludeType.fromValue("variable")
+        ).isEqualTo(IncludeType.Variable)
     }
 
     @Test
     fun `given include_type external, then return type External` () {
         assertThat(
-            WCProductStore.IncludeType.fromValue("external")
-        ).isEqualTo(WCProductStore.IncludeType.External)
+            IncludeType.fromValue("external")
+        ).isEqualTo(IncludeType.External)
     }
 
     @Test
     fun `given include_type grouped, then return type Grouped` () {
         assertThat(
-            WCProductStore.IncludeType.fromValue("grouped")
-        ).isEqualTo(WCProductStore.IncludeType.Grouped)
+            IncludeType.fromValue("grouped")
+        ).isEqualTo(IncludeType.Grouped)
     }
 
     @Test
     fun `given include_type empty, then return type null` () {
         assertThat(
-            WCProductStore.IncludeType.fromValue("")
+            IncludeType.fromValue("")
         ).isNull()
     }
 
     @Test
     fun `given include_type invalid, then return type null` () {
         assertThat(
-            WCProductStore.IncludeType.fromValue("invalid")
+            IncludeType.fromValue("invalid")
         ).isNull()
     }
 }

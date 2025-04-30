@@ -38,7 +38,7 @@ class WooPosVariationsViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _viewState =
-        MutableStateFlow<WooPosVariationsViewState>(WooPosVariationsViewState.Loading(withCart = true))
+        MutableStateFlow<WooPosVariationsViewState>(WooPosVariationsViewState.Loading())
     val viewState: StateFlow<WooPosVariationsViewState> = _viewState
         .stateIn(
             viewModelScope,
@@ -58,7 +58,6 @@ class WooPosVariationsViewModel @Inject constructor(
         loadVariations(
             productId = productId,
             withPullToRefresh = false,
-            withCart = true,
             forceRefresh = false
         )
     }
@@ -67,14 +66,13 @@ class WooPosVariationsViewModel @Inject constructor(
         productId: Long,
         forceRefresh: Boolean,
         withPullToRefresh: Boolean,
-        withCart: Boolean,
     ) {
         fetchJob?.cancel()
         fetchJob = viewModelScope.launch {
             _viewState.value = if (withPullToRefresh) {
                 buildProductsReloadingState()
             } else {
-                WooPosVariationsViewState.Loading(withCart = withCart)
+                WooPosVariationsViewState.Loading()
             }
 
             variationsDataSource.fetchFirstPage(productId, forceRefresh = forceRefresh).collect { result ->
@@ -92,7 +90,7 @@ class WooPosVariationsViewModel @Inject constructor(
                                 if (variations.isNotEmpty()) {
                                     WooPosVariationsViewState.Content(
                                         items = variations.map {
-                                            WooPosItemSelectionViewState.Variation(
+                                            WooPosItemSelectionViewState.Product.Variation(
                                                 id = it.remoteVariationId,
                                                 name = it.getNameForPOS(getProductById(productId), resourceProvider),
                                                 productId = it.remoteProductId,
@@ -125,7 +123,7 @@ class WooPosVariationsViewModel @Inject constructor(
         } else {
             _viewState.value = WooPosVariationsViewState.Content(
                 items = variations.map {
-                    WooPosItemSelectionViewState.Variation(
+                    WooPosItemSelectionViewState.Product.Variation(
                         id = it.remoteVariationId,
                         name = it.getNameForPOS(getProductById(productId), resourceProvider),
                         productId = it.remoteProductId,
@@ -171,7 +169,7 @@ class WooPosVariationsViewModel @Inject constructor(
             _viewState.value = if (result.isSuccess) {
                 WooPosVariationsViewState.Content(
                     items = result.getOrThrow().map {
-                        WooPosItemSelectionViewState.Variation(
+                        WooPosItemSelectionViewState.Product.Variation(
                             id = it.remoteVariationId,
                             name = it.getNameForPOS(getProductById(productId), resourceProvider),
                             productId = it.remoteProductId,
@@ -193,12 +191,12 @@ class WooPosVariationsViewModel @Inject constructor(
             }
 
             is WooPosVariationsUIEvents.PullToRefreshTriggered -> {
-                loadVariations(event.productId, forceRefresh = true, withPullToRefresh = true, withCart = false)
+                loadVariations(event.productId, forceRefresh = true, withPullToRefresh = true)
                 viewModelScope.launch { analyticsTracker.track(VariationsPullToRefreshTriggered) }
             }
 
             is WooPosVariationsUIEvents.VariationsLoadingErrorRetryButtonClicked -> {
-                loadVariations(event.productId, forceRefresh = true, withPullToRefresh = false, withCart = false)
+                loadVariations(event.productId, forceRefresh = true, withPullToRefresh = false)
             }
 
             is WooPosVariationsUIEvents.OnItemClicked -> {

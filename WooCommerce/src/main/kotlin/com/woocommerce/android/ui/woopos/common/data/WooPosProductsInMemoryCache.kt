@@ -19,12 +19,16 @@ class WooPosProductsInMemoryCache @Inject constructor() : WooPosProductsCache {
     private val productsCache = LinkedHashMap<Long, Product>(INITIAL_CAPACITY, LOAD_FACTOR, true)
 
     override suspend fun addAll(products: List<Product>) = mutex.withLock {
-        products.forEach { product ->
-            productsCache[product.remoteId] = product
-            if (productsCache.size > MAX_CACHE_SIZE) {
-                val keysToRemove = productsCache.keys.take(productsCache.size - MAX_CACHE_SIZE)
-                keysToRemove.forEach { productsCache.remove(it) }
-            }
+        addAllInternal(products)
+    }
+
+    override suspend fun updateProduct(product: Product) = mutex.withLock {
+        productsCache[product.remoteId] = product
+    }
+
+    override suspend fun deleteProduct(productId: Long) {
+        mutex.withLock {
+            productsCache.remove(productId)
         }
     }
 
@@ -38,5 +42,20 @@ class WooPosProductsInMemoryCache @Inject constructor() : WooPosProductsCache {
 
     override suspend fun clear() = mutex.withLock {
         productsCache.clear()
+    }
+
+    override suspend fun setAll(products: List<Product>) = mutex.withLock {
+        productsCache.clear()
+        addAllInternal(products)
+    }
+
+    private fun addAllInternal(products: List<Product>) {
+        products.forEach { product ->
+            productsCache[product.remoteId] = product
+            if (productsCache.size > MAX_CACHE_SIZE) {
+                val keysToRemove = productsCache.keys.take(productsCache.size - MAX_CACHE_SIZE)
+                keysToRemove.forEach { productsCache.remove(it) }
+            }
+        }
     }
 }

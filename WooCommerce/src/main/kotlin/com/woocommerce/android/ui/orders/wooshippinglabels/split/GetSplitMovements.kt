@@ -6,54 +6,54 @@ import javax.inject.Inject
 
 class GetSplitMovements @Inject constructor() {
     operator fun invoke(
-        currentShipment: Int,
+        sourceShipmentKey: Int,
         shipments: Map<Int, List<ShippableItemModel>>,
         selection: Map<Int, SelectableShippableItemsUI>
     ): List<SplitMovement> {
-        val currentShipmentItems = mutableListOf<ShippableItemModel>()
+        val sourceShipmentItems = mutableListOf<ShippableItemModel>()
         val nextShipmentItems = mutableListOf<ShippableItemModel>()
 
-        selection[currentShipment]?.shippableItems?.forEachIndexed { index, item ->
+        selection[sourceShipmentKey]?.shippableItems?.forEachIndexed { index, item ->
             when {
                 item is SelectableShippableItemUI.SingleSelectableShippableItemUI && item.isSelected -> {
-                    nextShipmentItems.add(shipments.getValue(currentShipment)[index])
+                    nextShipmentItems.add(shipments.getValue(sourceShipmentKey)[index])
                 }
 
                 item is SelectableShippableItemUI.SingleSelectableShippableItemUI && !item.isSelected -> {
-                    currentShipmentItems.add(shipments.getValue(currentShipment)[index])
+                    sourceShipmentItems.add(shipments.getValue(sourceShipmentKey)[index])
                 }
 
                 item is SelectableShippableItemUI.ExpandableSelectableShippableItemUI && item.isSelected -> {
-                    nextShipmentItems.add(shipments.getValue(currentShipment)[index])
+                    nextShipmentItems.add(shipments.getValue(sourceShipmentKey)[index])
                 }
 
                 item is SelectableShippableItemUI.ExpandableSelectableShippableItemUI &&
                     !item.isSelected &&
                     item.selectedIndexes.isNotEmpty() -> {
                     val selected = item.selectedIndexes.size
-                    val currentItem = shipments.getValue(currentShipment)[index]
+                    val sourceItem = shipments.getValue(sourceShipmentKey)[index]
 
-                    currentShipmentItems.add(currentItem.copy(quantity = currentItem.quantity - selected))
-                    nextShipmentItems.add(currentItem.copy(quantity = selected.toFloat()))
+                    sourceShipmentItems.add(sourceItem.copy(quantity = sourceItem.quantity - selected))
+                    nextShipmentItems.add(sourceItem.copy(quantity = selected.toFloat()))
                 }
 
                 else -> {
-                    currentShipmentItems.add(shipments.getValue(currentShipment)[index])
+                    sourceShipmentItems.add(shipments.getValue(sourceShipmentKey)[index])
                 }
             }
         }
 
         return if (nextShipmentItems.isNotEmpty()) {
             getPossibleKeys(
-                currentShipment = currentShipment,
+                sourceShipmentKey = sourceShipmentKey,
                 items = shipments,
-                isRemoveMovement = currentShipmentItems.isEmpty()
+                isRemoveMovement = sourceShipmentItems.isEmpty()
             ).map { key ->
                 SplitMovement(
-                    currentShipment = currentShipment,
-                    updatedCurrentShipmentItems = currentShipmentItems,
-                    updatedShipment = key,
-                    updatedShipmentItems = nextShipmentItems
+                    sourceShipmentKey = sourceShipmentKey,
+                    updatedSourceShipmentItems = sourceShipmentItems,
+                    destinationShipmentKey = key,
+                    movingShipmentItems = nextShipmentItems
                 )
             }
         } else {
@@ -62,27 +62,27 @@ class GetSplitMovements @Inject constructor() {
     }
 
     private fun getPossibleKeys(
-        currentShipment: Int,
+        sourceShipmentKey: Int,
         items: Map<Int, List<ShippableItemModel>>,
         isRemoveMovement: Boolean
     ): List<Int> {
-        val otherKeys = items.keys.filter { it != currentShipment }
+        val otherKeys = items.keys.filter { it != sourceShipmentKey }
         if (isRemoveMovement) return otherKeys
 
-        var nextKey = (otherKeys.maxOrNull() ?: currentShipment) + 1
-        if (nextKey == currentShipment) nextKey++
+        var nextKey = (otherKeys.maxOrNull() ?: sourceShipmentKey) + 1
+        if (nextKey == sourceShipmentKey) nextKey++
         return otherKeys + nextKey
     }
 }
 
 data class SplitMovement(
-    val currentShipment: Int,
-    val updatedCurrentShipmentItems: List<ShippableItemModel>,
-    val updatedShipment: Int,
-    val updatedShipmentItems: List<ShippableItemModel>
+    val sourceShipmentKey: Int,
+    val updatedSourceShipmentItems: List<ShippableItemModel>,
+    val destinationShipmentKey: Int,
+    val movingShipmentItems: List<ShippableItemModel>
 ) {
     val totalItemsToMove: Int
-        get() = updatedShipmentItems.sumByFloat { it.quantity }.toInt()
+        get() = movingShipmentItems.sumByFloat { it.quantity }.toInt()
     val isRemoveMovement: Boolean
-        get() = updatedCurrentShipmentItems.isEmpty()
+        get() = updatedSourceShipmentItems.isEmpty()
 }

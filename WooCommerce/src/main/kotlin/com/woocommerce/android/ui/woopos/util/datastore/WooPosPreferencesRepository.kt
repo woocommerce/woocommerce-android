@@ -10,17 +10,6 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class WooPosPreferencesRepository @Inject constructor(private val dataStore: DataStore<Preferences>) {
-    val isSimpleProductsOnlyBannerWasHiddenByUser: Flow<Boolean> = dataStore.data
-        .map { preferences ->
-            preferences[SIMPLE_PRODUCTS_ONLY_BANNER_HIDDEN_BY_USER] ?: false
-        }
-
-    suspend fun setSimpleProductsOnlyBannerWasHiddenByUser(shown: Boolean) {
-        dataStore.edit { preferences ->
-            preferences[SIMPLE_PRODUCTS_ONLY_BANNER_HIDDEN_BY_USER] = shown
-        }
-    }
-
     val recentProductSearches: Flow<List<String>> = dataStore.data
         .map { preferences ->
             val searchesString = preferences[RECENT_PRODUCT_SEARCHES] ?: ""

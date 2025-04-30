@@ -4,6 +4,7 @@
 22.3
 -----
 - [Internal] Fixed a bug where site changes weren't reflected in the app until the next restart [https://github.com/woocommerce/woocommerce-android/pull/13949]
+- [*] Move info about available product types in the POS to the POS menu [https://github.com/woocommerce/woocommerce-android/pull/13977]
 
 22.2
 -----

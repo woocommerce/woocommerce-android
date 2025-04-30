@@ -1,4 +1,4 @@
-package org.wordpress.android.fluxc.wc.product
+package org.wordpress.android.fluxc.persistence
 
 import com.yarolegovich.wellsql.WellSql
 import org.junit.Before
@@ -12,13 +12,10 @@ import org.wordpress.android.fluxc.TestSiteSqlUtils
 import org.wordpress.android.fluxc.UnitTestUtils
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCProductCategoryModel
-import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.WCProductReviewModel
 import org.wordpress.android.fluxc.model.WCProductShippingClassModel
 import org.wordpress.android.fluxc.model.WCProductTagModel
-import org.wordpress.android.fluxc.persistence.ProductSqlUtils
-import org.wordpress.android.fluxc.persistence.WellSqlConfig
-import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
+import org.wordpress.android.fluxc.wc.product.ProductTestUtils
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
@@ -40,7 +37,6 @@ class ProductSqlUtilsTest {
         val config = SingleStoreWellSqlConfigForTests(
                 appContext,
                 listOf(
-                        WCProductModel::class.java,
                         WCProductReviewModel::class.java,
                         WCProductCategoryModel::class.java,
                         WCProductShippingClassModel::class.java,
@@ -53,192 +49,6 @@ class ProductSqlUtilsTest {
         // Insert the site into the db so it's available later for product
         // reviews
         TestSiteSqlUtils.siteSqlUtils.insertOrUpdateSite(site)
-    }
-
-    @Test
-    fun testInsertOrUpdateProduct() {
-        val productModel = ProductTestUtils.generateSampleProduct(40)
-        val site = SiteModel().apply { id = productModel.localSiteId }
-
-        // Test inserting product
-        ProductSqlUtils.insertOrUpdateProduct(productModel)
-        val storedProductsCount = ProductSqlUtils.getProductCountForSite(site)
-        assertEquals(1, storedProductsCount)
-
-        // Test updating product
-        val storedProduct = ProductSqlUtils.getProductByRemoteId(site, productModel.remoteProductId)
-        storedProduct?.apply {
-            name = "Anitaa Test"
-            virtual = true
-        }
-        storedProduct?.also {
-            ProductSqlUtils.insertOrUpdateProduct(it)
-        }
-
-        val updatedProductsCount = ProductSqlUtils.getProductCountForSite(site)
-        assertEquals(1, updatedProductsCount)
-
-        val updatedProduct = ProductSqlUtils.getProductByRemoteId(site, productModel.remoteProductId)
-        assertEquals(storedProduct?.id, updatedProduct?.id)
-        assertEquals(storedProduct?.name, updatedProduct?.name)
-        assertEquals(storedProduct?.virtual, updatedProduct?.virtual)
-    }
-
-    @Test
-    fun testInsertOrUpdateProductWithDecimalQuantity() {
-        val productModel = ProductTestUtils.generateSampleProduct(
-                remoteId = 42,
-                stockQuantity = 4.2
-        )
-        val site = SiteModel().apply { id = productModel.localSiteId }
-
-        // Test inserting product
-        ProductSqlUtils.insertOrUpdateProduct(productModel)
-        val storedProductsCount = ProductSqlUtils.getProductCountForSite(site)
-        assertEquals(1, storedProductsCount)
-
-        // Test updating product
-        val storedProduct = ProductSqlUtils.getProductByRemoteId(site, productModel.remoteProductId)
-        storedProduct?.apply {
-            stockQuantity = 4.0
-        }
-        storedProduct?.also {
-            ProductSqlUtils.insertOrUpdateProduct(it)
-        }
-
-        val updatedProductsCount = ProductSqlUtils.getProductCountForSite(site)
-        assertEquals(1, updatedProductsCount)
-
-        val updatedProduct = ProductSqlUtils.getProductByRemoteId(site, productModel.remoteProductId)
-        assertEquals(storedProduct?.id, updatedProduct?.id)
-        assertEquals(storedProduct?.name, updatedProduct?.name)
-        assertEquals(storedProduct?.virtual, updatedProduct?.virtual)
-    }
-
-    @Test
-    fun testInsertOrUpdateProducts() {
-        val site = SiteModel().apply { id = 2 }
-        val products = ArrayList<WCProductModel>().apply {
-            this.add(ProductTestUtils.generateSampleProduct(40, siteId = site.id))
-            this.add(ProductTestUtils.generateSampleProduct(41, siteId = site.id))
-            this.add(ProductTestUtils.generateSampleProduct(42, siteId = site.id))
-        }
-
-        // Delete all products for this site, then test inserting the above products
-        ProductSqlUtils.deleteProductsForSite(site)
-        val insertedProductCount = ProductSqlUtils.insertOrUpdateProducts(products)
-        assertEquals(3, insertedProductCount)
-        val storedProductsCount = ProductSqlUtils.getProductCountForSite(site)
-        assertEquals(3, storedProductsCount)
-    }
-
-    @Test
-    fun testGetProductsForSite() {
-        // insert products for one site
-        val site1 = SiteModel().apply { id = 2 }
-        val product1 = ProductTestUtils.generateSampleProduct(40, siteId = site1.id)
-        ProductSqlUtils.insertOrUpdateProduct(product1)
-
-        // verify that it is stored
-        val storedProduct = ProductSqlUtils.getProductByRemoteId(site1, product1.remoteProductId)
-        assertEquals(product1.id, storedProduct?.id)
-        assertEquals(product1.name, storedProduct?.name)
-        assertEquals(product1.virtual, storedProduct?.virtual)
-
-        // insert products for another site
-        val site2 = SiteModel().apply { id = 10 }
-        val product2 = ProductTestUtils.generateSampleProduct(43, siteId = site2.id)
-        ProductSqlUtils.insertOrUpdateProduct(product2)
-
-        // verify that it is stored
-        val storedProduct2 = ProductSqlUtils.getProductByRemoteId(site2, product2.remoteProductId)
-        assertEquals(product2.id, storedProduct2?.id)
-        assertEquals(product2.name, storedProduct2?.name)
-        assertEquals(product2.virtual, storedProduct2?.virtual)
-
-        // add another product for site 1
-        val product3 = ProductTestUtils.generateSampleProduct(43, siteId = site1.id)
-        ProductSqlUtils.insertOrUpdateProduct(product3)
-
-        // verify that the site 2 product size is still the same
-        val storedProductForSite2Count = ProductSqlUtils.getProductCountForSite(site2)
-        assertEquals(1, storedProductForSite2Count)
-
-        // verify that the site 1 product is increases by 1
-        val storedProductForSite1Count = ProductSqlUtils.getProductCountForSite(site1)
-        assertEquals(2, storedProductForSite1Count)
-    }
-
-    @Test
-    fun testGetVirtualProductsForSite() {
-        // insert products for one site
-        val site1 = SiteModel().apply { id = 2 }
-        val products = ArrayList<WCProductModel>().apply {
-            this.add(ProductTestUtils.generateSampleProduct(40, siteId = site1.id, virtual = true))
-            this.add(ProductTestUtils.generateSampleProduct(41, siteId = site1.id, virtual = false))
-            this.add(ProductTestUtils.generateSampleProduct(42, siteId = site1.id, virtual = true))
-        }
-
-        ProductSqlUtils.insertOrUpdateProducts(products)
-
-        // verify that the product list exists locally
-        val remoteProductIds = products.map { it.remoteProductId }.toList()
-        val storedProductCountForSite1 = ProductSqlUtils.getProductCountByRemoteIds(site1, remoteProductIds)
-        assertEquals(remoteProductIds.size, storedProductCountForSite1)
-
-        // verify that only 2 of the products are virtual
-        assertEquals(2, ProductSqlUtils.getVirtualProductCountByRemoteIds(site1, remoteProductIds))
-
-        // insert products for another site
-        val site2 = SiteModel().apply { id = 10 }
-        val products2 = ArrayList<WCProductModel>().apply {
-            this.add(ProductTestUtils.generateSampleProduct(40, siteId = site2.id, virtual = true))
-            this.add(ProductTestUtils.generateSampleProduct(41, siteId = site2.id, virtual = true))
-            this.add(ProductTestUtils.generateSampleProduct(42, siteId = site2.id, virtual = true))
-        }
-        ProductSqlUtils.insertOrUpdateProducts(products2)
-
-        // verify that it is stored
-        val remoteProductIds2 = products2.map { it.remoteProductId }.toList()
-        val storedProductCountForSite2 = ProductSqlUtils.getProductCountByRemoteIds(site2, remoteProductIds2)
-        assertEquals(remoteProductIds2.size, storedProductCountForSite2)
-
-        // verify that all of the products are virtual
-        assertEquals(3, ProductSqlUtils.getVirtualProductCountByRemoteIds(site2, remoteProductIds2))
-
-        // insert products for another site
-        val site3 = SiteModel().apply { id = 11 }
-        val products3 = ArrayList<WCProductModel>().apply {
-            this.add(ProductTestUtils.generateSampleProduct(40, siteId = site3.id))
-            this.add(ProductTestUtils.generateSampleProduct(41, siteId = site3.id))
-            this.add(ProductTestUtils.generateSampleProduct(42, siteId = site3.id))
-        }
-        ProductSqlUtils.insertOrUpdateProducts(products3)
-
-        // verify that it is stored
-        val remoteProductIds3 = products3.map { it.remoteProductId }.toList()
-        val storedProductCountForSite3 = ProductSqlUtils.getProductCountByRemoteIds(site3, remoteProductIds3)
-        assertEquals(remoteProductIds3.size, storedProductCountForSite3)
-
-        // verify that none of the products are virtual
-        assertEquals(0, ProductSqlUtils.getVirtualProductCountByRemoteIds(site3, remoteProductIds3))
-    }
-
-    @Test
-    fun testDeleteProduct() {
-        val remoteProductId = 40L
-        val productModel = ProductTestUtils.generateSampleProduct(remoteProductId)
-        val site = SiteModel().apply { id = productModel.localSiteId }
-
-        // Test inserting product
-        ProductSqlUtils.insertOrUpdateProduct(productModel)
-        val storedProductsCount = ProductSqlUtils.getProductCountForSite(site)
-        assertEquals(1, storedProductsCount)
-
-        // Test deleting product
-        val rowsAffected = ProductSqlUtils.deleteProduct(site, remoteProductId)
-        assertEquals(1, rowsAffected)
-        assertNull(ProductSqlUtils.getProductByRemoteId(site, remoteProductId))
     }
 
     @Test
@@ -305,7 +115,7 @@ class ProductSqlUtilsTest {
     @Test
     fun testGetProductShippingClassByRemoteShippingId() {
         val shippingClass = ProductTestUtils.generateSampleProductShippingClass(
-                remoteId = 40, siteId = site.id
+            remoteId = 40, siteId = site.id
         )
 
         // Insert product shipping class list
@@ -371,190 +181,6 @@ class ProductSqlUtilsTest {
         TestSiteSqlUtils.siteSqlUtils.deleteSite(site)
         savedShippingClassList = ProductSqlUtils.getProductShippingClassListForSite(site.id)
         assertEquals(0, savedShippingClassList.size)
-    }
-
-    @Test
-    fun testGetProductsForSiteAndProductIds() {
-        val productIds = listOf<Long>(40, 41, 2)
-
-        val product1 = ProductTestUtils.generateSampleProduct(40)
-        val product2 = ProductTestUtils.generateSampleProduct(41)
-        val product3 = ProductTestUtils.generateSampleProduct(42)
-
-        ProductSqlUtils.insertOrUpdateProduct(product1)
-        ProductSqlUtils.insertOrUpdateProduct(product2)
-        ProductSqlUtils.insertOrUpdateProduct(product3)
-
-        val site = SiteModel().apply { id = product1.localSiteId }
-        val products = ProductSqlUtils.getProductsByRemoteIds(site, productIds)
-        assertEquals(2, products.size)
-
-        // insert products with the same productId but for a different site
-        val differentSiteProduct1 = ProductTestUtils.generateSampleProduct(40, siteId = 10)
-        val differentSiteProduct2 = ProductTestUtils.generateSampleProduct(41, siteId = 10)
-        val differentSiteProduct3 = ProductTestUtils.generateSampleProduct(2, siteId = 10)
-
-        ProductSqlUtils.insertOrUpdateProduct(differentSiteProduct1)
-        ProductSqlUtils.insertOrUpdateProduct(differentSiteProduct2)
-        ProductSqlUtils.insertOrUpdateProduct(differentSiteProduct3)
-
-        // verify that the products for the first site is still 2
-        assertEquals(2, ProductSqlUtils.getProductsByRemoteIds(site, productIds).size)
-
-        // verify that the products for the second site is 3
-        val site2 = SiteModel().apply { id = differentSiteProduct1.localSiteId }
-        val differentSiteProducts = ProductSqlUtils.getProductsByRemoteIds(site2, productIds)
-        assertEquals(3, differentSiteProducts.size)
-    }
-
-    @Test
-    fun testGetProductsWithFilterOptions() {
-        val productFilterOptions = mapOf(
-                ProductFilterOption.STOCK_STATUS to "instock",
-                ProductFilterOption.STATUS to "publish",
-                ProductFilterOption.TYPE to "simple"
-        )
-
-        val product1 = ProductTestUtils.generateSampleProduct(40)
-        val product2 = ProductTestUtils.generateSampleProduct(41)
-        val product3 = ProductTestUtils.generateSampleProduct(42, stockStatus = "onbackorder")
-
-        ProductSqlUtils.insertOrUpdateProduct(product1)
-        ProductSqlUtils.insertOrUpdateProduct(product2)
-        ProductSqlUtils.insertOrUpdateProduct(product3)
-
-        val site = SiteModel().apply { id = product1.localSiteId }
-        val products = ProductSqlUtils.getProducts(site, productFilterOptions)
-        assertEquals(2, products.size)
-
-        // insert products with the same productId but for a different site
-        val differentSiteProduct1 = ProductTestUtils.generateSampleProduct(40, siteId = 10)
-        val differentSiteProduct2 = ProductTestUtils.generateSampleProduct(
-                41, siteId = 10, type = "grouped"
-        )
-        val differentSiteProduct3 = ProductTestUtils.generateSampleProduct(
-                2, siteId = 10, status = "pending"
-        )
-
-        ProductSqlUtils.insertOrUpdateProduct(differentSiteProduct1)
-        ProductSqlUtils.insertOrUpdateProduct(differentSiteProduct2)
-        ProductSqlUtils.insertOrUpdateProduct(differentSiteProduct3)
-
-        // verify that the products for the first site is still 2
-        assertEquals(2, ProductSqlUtils.getProducts(site, productFilterOptions).size)
-
-        // verify that the products for the second site is 3
-        val site2 = SiteModel().apply { id = differentSiteProduct1.localSiteId }
-        val differentSiteProducts = ProductSqlUtils.getProducts(site2, productFilterOptions)
-        assertEquals(1, differentSiteProducts.size)
-    }
-
-    @Test
-    fun testGetProductsWithSearchQuery() {
-        val product1 = ProductTestUtils.generateSampleProduct(40, name = "a",
-                description = "1", shortDescription = "+")
-        val product2 = ProductTestUtils.generateSampleProduct(41, name = "b",
-                description = "2", shortDescription = "-")
-        val product3 = ProductTestUtils.generateSampleProduct(42, name = "xyz ab piu",
-                description = "xyz 12 piu", shortDescription = "xyz +- piu", stockStatus = "onbackorder")
-
-        ProductSqlUtils.insertOrUpdateProduct(product1)
-        ProductSqlUtils.insertOrUpdateProduct(product2)
-        ProductSqlUtils.insertOrUpdateProduct(product3)
-
-        val site = SiteModel().apply { id = product1.localSiteId }
-
-        // Test search in name
-        var products = ProductSqlUtils.getProducts(site, emptyMap(), searchQuery = "a")
-        // Products 1 and 3
-        assertEquals(2, products.size)
-
-        products = ProductSqlUtils.getProducts(site, emptyMap(), searchQuery = "b")
-        // Products 2 and 3
-        assertEquals(2, products.size)
-
-        // Product 3
-        products = ProductSqlUtils.getProducts(site, emptyMap(), searchQuery = "ab")
-        assertEquals(1, products.size)
-
-        // Test search in description
-        products = ProductSqlUtils.getProducts(site, emptyMap(), searchQuery = "1")
-        // Products 1 and 3
-        assertEquals(2, products.size)
-
-        products = ProductSqlUtils.getProducts(site, emptyMap(), searchQuery = "2")
-        // Products 2 and 3
-        assertEquals(2, products.size)
-
-        products = ProductSqlUtils.getProducts(site, emptyMap(), searchQuery = "12")
-        // Product 3
-        assertEquals(1, products.size)
-
-        // Test search in short description
-        products = ProductSqlUtils.getProducts(site, emptyMap(), searchQuery = "+")
-        // Products 1 and 3
-        assertEquals(2, products.size)
-
-        products = ProductSqlUtils.getProducts(site, emptyMap(), searchQuery = "-")
-        // Products 2 and 3
-        assertEquals(2, products.size)
-
-        products = ProductSqlUtils.getProducts(site, emptyMap(), searchQuery = "+-")
-        // Product 3
-        assertEquals(1, products.size)
-
-        // Test search with filter options
-        products = ProductSqlUtils.getProducts(site, mapOf(ProductFilterOption.STOCK_STATUS to "instock"),
-                searchQuery = "a")
-        // Product 1
-        assertEquals(1, products.size)
-    }
-
-    @Test
-    fun testGetProductsForSiteWithExcludedProductIds() {
-        val excludedProductIds = listOf(40L)
-
-        val product1 = ProductTestUtils.generateSampleProduct(40)
-        val product2 = ProductTestUtils.generateSampleProduct(41)
-        val product3 = ProductTestUtils.generateSampleProduct(42)
-
-        ProductSqlUtils.insertOrUpdateProduct(product1)
-        ProductSqlUtils.insertOrUpdateProduct(product2)
-        ProductSqlUtils.insertOrUpdateProduct(product3)
-
-        val site = SiteModel().apply { id = product1.localSiteId }
-        val products = ProductSqlUtils.getProducts(
-                site, filterOptions = emptyMap(), excludedProductIds = excludedProductIds
-        )
-        assertEquals(2, products.size)
-        assertEquals(41, products.first().remoteProductId)
-        assertEquals(42, products.last().remoteProductId)
-
-        // insert products with the same productId but for a different site
-        val differentSiteProduct1 = ProductTestUtils.generateSampleProduct(40, siteId = 10)
-        val differentSiteProduct2 = ProductTestUtils.generateSampleProduct(
-                41, siteId = 10
-        )
-        val differentSiteProduct3 = ProductTestUtils.generateSampleProduct(
-                42, siteId = 10
-        )
-
-        ProductSqlUtils.insertOrUpdateProduct(differentSiteProduct1)
-        ProductSqlUtils.insertOrUpdateProduct(differentSiteProduct2)
-        ProductSqlUtils.insertOrUpdateProduct(differentSiteProduct3)
-
-        // verify that the products for the first site is still 2
-        assertEquals(2, ProductSqlUtils.getProducts(
-                site, emptyMap(), excludedProductIds = excludedProductIds
-        ).size)
-
-        // verify that the products for the second site is also 2
-        val site2 = SiteModel().apply { id = differentSiteProduct1.localSiteId }
-        val differentSiteProducts = ProductSqlUtils.getProducts(
-                site2, emptyMap(), excludedProductIds = listOf(40, 41)
-        )
-        assertEquals(1, differentSiteProducts.size)
-        assertEquals(42, differentSiteProducts.first().remoteProductId)
     }
 
     @Test

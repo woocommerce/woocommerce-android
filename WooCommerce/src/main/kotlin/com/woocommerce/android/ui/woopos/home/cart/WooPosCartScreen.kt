@@ -59,7 +59,9 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
-import coil.compose.AsyncImage
+import coil.compose.AsyncImagePainter
+import coil.compose.rememberAsyncImagePainter
+import coil.imageLoader
 import coil.request.ImageRequest
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.isNotNullOrEmpty
@@ -399,7 +401,11 @@ private fun ProductItem(
         modifier = modifier
             .height(96.dp)
             .semantics { contentDescription = itemContentDescription },
-        backgroundColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+        backgroundColor = if (item.productDoesNotExist) {
+            WooPosTheme.colors.disabledContainer
+        } else {
+            MaterialTheme.colorScheme.surfaceContainerLowest
+        },
         elevation = WooPosElevation.Medium,
         shadowType = ShadowType.Soft,
         shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
@@ -410,23 +416,41 @@ private fun ProductItem(
         ) {
             Box(
                 modifier = Modifier
-                    .background(MaterialTheme.colorScheme.surfaceDim),
+                    .background(MaterialTheme.colorScheme.surfaceDim)
+                    .size(96.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Image(
-                    painter = painterResource(R.drawable.ic_box),
-                    contentDescription = null,
-                    colorFilter = ColorFilter.tint(WooPosTheme.colors.onSurfaceVariantLowest),
-                    modifier = Modifier.size(36.dp, 36.dp)
-                )
-                AsyncImage(
+                val asyncImagePainter = rememberAsyncImagePainter(
                     model = ImageRequest.Builder(LocalContext.current)
                         .data(item.imageUrl)
                         .crossfade(true)
                         .build(),
+                    imageLoader = LocalContext.current.imageLoader,
+                    contentScale = ContentScale.Crop
+                )
+
+                val isNotLoaded = asyncImagePainter.state !is AsyncImagePainter.State.Success
+
+                if (isNotLoaded) {
+                    Image(
+                        painter = painterResource(R.drawable.ic_box),
+                        contentDescription = null,
+                        colorFilter = if (item.productDoesNotExist) {
+                            ColorFilter.tint(WooPosTheme.colors.onSurfaceVariantLowest)
+                        } else {
+                            ColorFilter.tint(WooPosTheme.colors.onDisabledContainer)
+                        },
+                        modifier = Modifier.size(36.dp)
+                    )
+                }
+
+                Image(
+                    painter = asyncImagePainter,
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier.size(96.dp).alpha(if (item.productDoesNotExist) 0.5f else 1f)
+                    modifier = Modifier
+                        .size(96.dp)
+                        .alpha(if (item.productDoesNotExist) 0.5f else 1f)
                 )
             }
 
@@ -440,32 +464,44 @@ private fun ProductItem(
                 WooPosText(
                     text = item.name,
                     maxLines = 1,
-                    style = WooPosTypography.BodyLarge,
+                    style = WooPosTypography.BodySmall,
                     fontWeight = FontWeight.Bold,
                     overflow = TextOverflow.Ellipsis,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.clearAndSetSemantics { }
-                        .alpha(if (item.productDoesNotExist) 0.2f else 1f)
+                    color = if (item.productDoesNotExist) {
+                        WooPosTheme.colors.onDisabledContainer
+                    } else {
+                        MaterialTheme.colorScheme.onSurface
+                    },
+                    modifier = Modifier
+                        .clearAndSetSemantics { }
                 )
                 Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value.toAdaptivePadding()))
                 if (item.description.isNotNullOrEmpty()) {
                     WooPosText(
                         text = item.description ?: "",
                         style = WooPosTypography.BodySmall,
-                        color = WooPosTheme.colors.onSurfaceVariantHighest,
+                        color = if (item.productDoesNotExist) {
+                            WooPosTheme.colors.onDisabledContainer
+                        } else {
+                            WooPosTheme.colors.onSurfaceVariantHighest
+                        },
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.clearAndSetSemantics { }
-                            .alpha(if (item.productDoesNotExist) 0.5f else 1f)
+                        modifier = Modifier
+                            .clearAndSetSemantics { }
                     )
                     Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value.toAdaptivePadding()))
                 }
                 WooPosText(
                     text = item.price,
                     style = WooPosTypography.BodySmall,
-                    color = WooPosTheme.colors.onSurfaceVariantHighest,
-                    modifier = Modifier.clearAndSetSemantics { }
-                        .alpha(if (item.productDoesNotExist) 0.5f else 1f)
+                    color = if (item.productDoesNotExist) {
+                        WooPosTheme.colors.onDisabledContainer
+                    } else {
+                        WooPosTheme.colors.onSurfaceVariantHighest
+                    },
+                    modifier = Modifier
+                        .clearAndSetSemantics { }
                 )
             }
 
@@ -526,7 +562,7 @@ private fun CouponItem(
                 WooPosText(
                     text = item.name,
                     maxLines = 1,
-                    style = WooPosTypography.BodyLarge,
+                    style = WooPosTypography.BodySmall,
                     fontWeight = FontWeight.Bold,
                     overflow = TextOverflow.Ellipsis,
                     color = MaterialTheme.colorScheme.onSurface,
