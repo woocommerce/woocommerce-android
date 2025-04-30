@@ -2,6 +2,7 @@ package org.wordpress.android.fluxc.store
 
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.refunds.RefundMapper
+import org.wordpress.android.fluxc.model.refunds.RefundRequestItem
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.UNKNOWN
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
@@ -56,7 +57,7 @@ class WCRefundStore @Inject constructor(
         reason: String = "",
         restockItems: Boolean = true,
         autoRefund: Boolean = false,
-        items: List<WCRefundModel.WCRefundItem>
+        items: List<RefundRequestItem>
     ): WooResult<WCRefundModel> {
         return coroutineEngine.withDefaultContext(AppLog.T.API, this, "createItemsRefund") {
             val response = restClient.createRefundByItems(

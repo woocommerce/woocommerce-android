@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 import org.wordpress.android.fluxc.generated.endpoint.WOOCOMMERCE
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.order.LineItem
-import org.wordpress.android.fluxc.model.refunds.WCRefundModel
+import org.wordpress.android.fluxc.model.refunds.RefundRequestItem
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel.WCRefundFeeLine
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel.WCRefundShippingLine
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooNetwork
@@ -35,14 +35,14 @@ class RefundRestClient @Inject constructor(private val wooNetwork: WooNetwork) {
         orderId: Long,
         reason: String,
         automaticRefund: Boolean,
-        items: List<WCRefundModel.WCRefundItem>,
+        items: List<RefundRequestItem>,
         restockItems: Boolean
     ): WooPayload<RefundResponse> {
         val body = mapOf(
                 "reason" to reason,
-                "amount" to items.sumBy { it.subtotal + it.totalTax }.toString(),
+                "amount" to items.sumBy { it.total }.toString(),
                 "api_refund" to automaticRefund.toString(),
-                "line_items" to items.associateBy { it.itemId },
+                "line_items" to items,
                 "restock_items" to restockItems
         )
         return createRefund(site, orderId, body)
