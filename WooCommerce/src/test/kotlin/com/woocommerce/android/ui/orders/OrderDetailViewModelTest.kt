@@ -44,6 +44,7 @@ import com.woocommerce.android.ui.orders.details.OrderProduct
 import com.woocommerce.android.ui.orders.details.OrderProductMapper
 import com.woocommerce.android.ui.orders.details.ShippingLabelOnboardingRepository
 import com.woocommerce.android.ui.orders.details.ShippingLabelOnboardingRepository.ShippingLabelSupport
+import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingLabelRepository
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
@@ -125,6 +126,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val shippingLabelOnboardingRepository: ShippingLabelOnboardingRepository = mock {
         doReturn(ShippingLabelSupport.WCS_SUPPORTED).whenever(it).shippingPluginSupport
     }
+    private val shippingLabelRepository: WooShippingLabelRepository = mock()
 
     private val savedState = OrderDetailFragmentArgs(
         orderId = ORDER_ID,
@@ -205,7 +207,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 paymentsFlowTracker,
                 orderDetailTracker,
                 shippingLabelOnboardingRepository,
-                mock(),
+                shippingLabelRepository,
                 orderDetailsTransactionLauncher,
                 getOrderSubscriptions,
                 giftCardRepository,
@@ -2482,5 +2484,13 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         // THEN
         assertThat(observedViewState!!.orderInfo!!.order).isEqualTo(newOrder)
         assertThat(observedViewState!!.orderInfo!!.isPaymentCollectableWithCardReader).isFalse()
+    }
+
+
+    @Test
+    fun `when view model is initialized then fetchConfig is called`() = testBlocking {
+        viewModel.start()
+
+        verify(shippingLabelRepository).fetchConfig(selectedSite.get(), ORDER_ID)
     }
 }
