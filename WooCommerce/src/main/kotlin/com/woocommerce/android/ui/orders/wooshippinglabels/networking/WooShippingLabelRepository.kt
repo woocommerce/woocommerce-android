@@ -5,7 +5,7 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHa
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingAddressDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigDataStore
-import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigurationDataStore
+import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingStoreOptionsDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.AddressNormalizationModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
@@ -24,7 +24,7 @@ class WooShippingLabelRepository @Inject constructor(
     private val restClient: WooShippingLabelRestClient,
     private val mapper: WooShippingNetworkingMapper,
     private val configDataStore: WooShippingConfigDataStore,
-    private val configurationDataStore: WooShippingConfigurationDataStore,
+    private val configurationDataStore: WooShippingStoreOptionsDataStore,
     private val addressDataStore: WooShippingAddressDataStore
 ) {
     suspend fun fetchShippingLabelPrinting(

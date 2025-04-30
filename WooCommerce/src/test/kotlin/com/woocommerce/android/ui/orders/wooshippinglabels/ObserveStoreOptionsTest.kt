@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels
 
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigurationDataStore
+import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingStoreOptionsDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.StoreOptionsModel
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import junit.framework.TestCase.assertTrue
@@ -19,7 +19,7 @@ import kotlin.test.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ObserveStoreOptionsTest : BaseUnitTest() {
-    private val dataStore: WooShippingConfigurationDataStore = mock()
+    private val dataStore: WooShippingStoreOptionsDataStore = mock()
     private val fetchAccountSettings: FetchAccountSettings = mock()
     private val wooStore: WooCommerceStore = mock()
     private val defaultStoreOptions = StoreOptionsModel(
