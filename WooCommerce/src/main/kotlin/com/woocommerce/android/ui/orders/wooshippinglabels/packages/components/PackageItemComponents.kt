@@ -80,7 +80,12 @@ fun WooShippingPackageListItem(
                         true -> Icons.Filled.Star
                         false -> Icons.Outlined.StarOutline
                     },
-                    contentDescription = "Star",
+                    contentDescription = stringResource(
+                        id = when (packageData.isStarred) {
+                            true -> R.string.woo_shipping_labels_package_creation_unstarred
+                            else -> R.string.woo_shipping_labels_package_creation_starred
+                        }
+                    )
                 )
             }
         }
