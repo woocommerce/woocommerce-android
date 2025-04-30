@@ -3,7 +3,7 @@
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 22.3
 -----
-
+- [*] Move info about available product types in the POS to the POS menu [https://github.com/woocommerce/woocommerce-android/pull/13977]
 
 22.2
 -----
