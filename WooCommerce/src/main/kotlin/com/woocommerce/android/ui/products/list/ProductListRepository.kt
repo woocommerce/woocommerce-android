@@ -243,7 +243,7 @@ class ProductListRepository @Inject constructor(
 
     fun observeProductsCount(
         filterOptions: Map<WCProductStore.ProductFilterOption, String>,
-        excludeSampleProducts: Boolean
+        excludeSampleProducts: Boolean = false
     ): Flow<Long> = productStore.observeProductsCount(
         selectedSite.get(),
         filterOptions = filterOptions,

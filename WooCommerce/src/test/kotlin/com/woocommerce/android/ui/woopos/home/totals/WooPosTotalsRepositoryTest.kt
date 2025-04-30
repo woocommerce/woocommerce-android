@@ -6,6 +6,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditRepository
 import com.woocommerce.android.ui.products.ProductHelper
 import com.woocommerce.android.ui.products.ProductType
+import com.woocommerce.android.ui.woopos.common.data.WooPosGetCouponById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetVariationById
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
@@ -26,6 +27,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 class WooPosTotalsRepositoryTest {
     private val orderCreateEditRepository: OrderCreateEditRepository = mock()
     private val getProductById: WooPosGetProductById = mock()
+    private val getCouponById: WooPosGetCouponById = mock()
     private val getVariationById: WooPosGetVariationById = mock()
     private val dateUtils: DateUtils = mock()
     private val orderStore: WCOrderStore = mock()
@@ -189,10 +191,12 @@ class WooPosTotalsRepositoryTest {
     fun `given item list contains coupon, when createOrderFromCartItems, then coupon lines present`() = runTest {
         // GIVEN
         repository = createRepository()
+        whenever(getCouponById.invoke(1L)).thenReturn(
+            mock()
+        )
         val itemClickedData = listOf(
             WooPosItemsViewModel.ItemClickedData.Coupon(
                 id = 1L,
-                couponCode = "coupon"
             )
         )
 
@@ -213,6 +217,7 @@ class WooPosTotalsRepositoryTest {
         orderCreateEditRepository,
         dateUtils,
         getProductById,
+        getCouponById,
         getVariationById,
         orderStore,
         selectedSite,

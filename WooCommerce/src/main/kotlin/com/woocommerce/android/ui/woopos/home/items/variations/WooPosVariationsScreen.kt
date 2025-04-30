@@ -140,7 +140,7 @@ private fun WooPosVariationsScreens(
                         listState = listState,
                         onItemClicked = {
                             onItemClicked(
-                                (it as WooPosItemSelectionViewState.Variation).productId,
+                                (it as WooPosItemSelectionViewState.Product.Variation).productId,
                                 it.id
                             )
                         },
@@ -166,6 +166,7 @@ private fun WooPosVariationsScreens(
 
                 is WooPosVariationsViewState.Empty -> {
                     WooPosItemsEmptyList(
+                        modifier = Modifier.fillMaxSize(),
                         title = stringResource(id = R.string.woopos_variations_empty_list_title),
                         message = stringResource(id = R.string.woopos_variations_empty_list_message),
                         contentDescription = stringResource(
@@ -258,7 +259,7 @@ fun WooPosVariationsScreenPreview() {
     val productState = MutableStateFlow(
         WooPosVariationsViewState.Content(
             items = listOf(
-                WooPosItemSelectionViewState.Variation(
+                WooPosItemSelectionViewState.Product.Variation(
                     1,
                     name = "Product 1, Product 1, Product 1, " +
                         "Product 1, Product 1, Product 1, Product 1, Product 1" +
@@ -267,14 +268,14 @@ fun WooPosVariationsScreenPreview() {
                     price = "10.0$",
                     imageUrl = null,
                 ),
-                WooPosItemSelectionViewState.Variation(
+                WooPosItemSelectionViewState.Product.Variation(
                     2,
                     name = "Product 2",
                     productId = 1,
                     price = "2000.00$",
                     imageUrl = null,
                 ),
-                WooPosItemSelectionViewState.Variation(
+                WooPosItemSelectionViewState.Product.Variation(
                     3,
                     name = "Product 3",
                     productId = 1,

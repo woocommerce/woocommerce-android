@@ -8,29 +8,36 @@ sealed class WooPosItemSelectionViewState(
         override val id: Long,
         override val name: String,
         open val price: String,
+        open val imageUrl: String?,
     ) : WooPosItemSelectionViewState(id, name) {
         data class Simple(
             override val id: Long,
             override val name: String,
             override val price: String,
-            val imageUrl: String?,
-        ) : Product(id, name, price)
+            override val imageUrl: String?,
+        ) : Product(id, name, price, imageUrl)
 
         data class Variable(
             override val id: Long,
             override val name: String,
             override val price: String,
-            val imageUrl: String?,
+            override val imageUrl: String?,
             val numOfVariations: Int,
             val variationIds: List<Long>,
-        ) : Product(id, name, price)
+        ) : Product(id, name, price, imageUrl)
+
+        data class Variation(
+            override val id: Long,
+            override val name: String,
+            override val price: String,
+            override val imageUrl: String?,
+            val productId: Long,
+        ) : Product(id, name, price, imageUrl)
     }
 
-    data class Variation(
+    data class Coupon(
         override val id: Long,
         override val name: String,
-        val productId: Long,
-        val price: String,
-        val imageUrl: String?,
+        val summary: String,
     ) : WooPosItemSelectionViewState(id, name)
 }

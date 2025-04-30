@@ -34,11 +34,7 @@ sealed class ChildToParentEvent {
     data object GoBackToCheckoutAfterFailedPayment : ChildToParentEvent()
     data object OrderSuccessfullyPaidByCard : ChildToParentEvent()
     data object ExitPosClicked : ChildToParentEvent()
-    data object ProductsDialogInfoIconClicked : ChildToParentEvent()
-    sealed class ProductsStatusChanged : ChildToParentEvent() {
-        data object FullScreen : ProductsStatusChanged()
-        data object WithCart : ProductsStatusChanged()
-    }
+    data object SimpleProductExplanationMenuItemClicked : ChildToParentEvent()
 
     data class ToastMessageDisplayed(val message: String) : ChildToParentEvent()
     sealed class NavigationEvent : ChildToParentEvent() {

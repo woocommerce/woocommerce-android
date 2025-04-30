@@ -40,21 +40,23 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
-import com.woocommerce.android.ui.woopos.home.items.WooPosItemCard
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
+import com.woocommerce.android.ui.woopos.home.items.WooPosProductCard
 
 @Composable
 fun WooPosItemsEmptySearchQueryStateScreen(
+    modifier: Modifier = Modifier,
     state: WooPosItemsSearchViewState.EmptySearchQuery,
     onUIEvent: (WooPosItemsSearchUiEvent) -> Unit
 ) {
     val scrollState = rememberScrollState()
     Column(
-        Modifier
+        modifier
             .fillMaxHeight()
             .verticalScroll(scrollState)
             .padding(WooPosSpacing.None.value.toAdaptivePadding())
     ) {
+        Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
         if (state.popularItems.isNotEmpty() || state.recentSearches.isNotEmpty()) {
             Row(
                 modifier = Modifier.fillMaxWidth()
@@ -66,7 +68,7 @@ fun WooPosItemsEmptySearchQueryStateScreen(
                         PopularItemsSection(
                             popularItems = state.popularItems,
                             onPopularItemClicked = { popularItem ->
-                                onUIEvent(WooPosItemsSearchUiEvent.ItemClicked(popularItem))
+                                onUIEvent(WooPosItemsSearchUiEvent.OnPopularItemClicked(popularItem))
                             }
                         )
                     }
@@ -115,7 +117,7 @@ private fun PopularItemsSection(
             popularItem.price
         )
 
-        WooPosItemCard(
+        WooPosProductCard(
             modifier = Modifier,
             itemContentDescription = itemContentDescription,
             onItemClicked = { onPopularItemClicked(popularItem) },

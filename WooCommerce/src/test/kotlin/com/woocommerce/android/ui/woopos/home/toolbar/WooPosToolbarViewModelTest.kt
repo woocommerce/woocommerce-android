@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ExitTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.GetSupportTapped
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SimpleProductExplanationDialogShown
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ViewDocsTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -87,6 +88,10 @@ class WooPosToolbarViewModelTest {
             .isEqualTo(
                 WooPosToolbarState.Menu.Visible(
                     listOf(
+                        WooPosToolbarState.Menu.MenuItem(
+                            title = R.string.woopos_product_limitations_title,
+                            icon = R.drawable.ic_not_found,
+                        ),
                         WooPosToolbarState.Menu.MenuItem(
                             title = R.string.woopos_documentation_title,
                             icon = R.drawable.woo_pos_info_ic,
@@ -214,19 +219,20 @@ class WooPosToolbarViewModelTest {
     }
 
     @Test
-    fun `given there is no internet, when trying to connect card reader, then connect card reader method is not called`() = runTest {
-        // GIVEN
-        whenever(networkStatus.isConnected()).thenReturn(false)
-        whenever(cardReaderFacade.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
-        whenever(resourceProvider.getString(R.string.woopos_no_internet_message)).thenReturn("No internet")
+    fun `given there is no internet, when trying to connect card reader, then connect card reader method is not called`() =
+        runTest {
+            // GIVEN
+            whenever(networkStatus.isConnected()).thenReturn(false)
+            whenever(cardReaderFacade.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
+            whenever(resourceProvider.getString(R.string.woopos_no_internet_message)).thenReturn("No internet")
 
-        // WHEN
-        val viewModel = createViewModel()
-        viewModel.onUiEvent(WooPosToolbarUIEvent.OnCardReaderStatusClicked)
+            // WHEN
+            val viewModel = createViewModel()
+            viewModel.onUiEvent(WooPosToolbarUIEvent.OnCardReaderStatusClicked)
 
-        // THEN
-        verify(cardReaderFacade, never()).connectToReader()
-    }
+            // THEN
+            verify(cardReaderFacade, never()).connectToReader()
+        }
 
     @Test
     fun `when Documentation MenuItemClicked, then openUrlEvent should be emitted with proper url`() = runTest {
@@ -247,6 +253,36 @@ class WooPosToolbarViewModelTest {
 
             cancelAndConsumeRemainingEvents()
         }
+    }
+
+    @Test
+    fun `when where are my products clicked, then should open product explanation dialog`() = runTest {
+        val viewModel = createViewModel()
+
+        viewModel.onUiEvent(
+            WooPosToolbarUIEvent.MenuItemClicked(
+                WooPosToolbarState.Menu.MenuItem(
+                    title = R.string.woopos_product_limitations_title,
+                    icon = R.drawable.ic_not_found,
+                )
+            )
+        )
+
+        verify(childrenToParentEventSender).sendToParent(
+            ChildToParentEvent.SimpleProductExplanationMenuItemClicked
+        )
+    }
+
+    @Test
+    fun `when where are my products is clicked, then should track analytics event`() = runTest {
+        val viewModel = createViewModel()
+        val menuItem = WooPosToolbarState.Menu.MenuItem(
+            title = R.string.woopos_product_limitations_title,
+            icon = R.drawable.ic_not_found,
+        )
+        viewModel.onUiEvent(WooPosToolbarUIEvent.MenuItemClicked(menuItem))
+
+        verify(analyticsTracker).track(SimpleProductExplanationDialogShown)
     }
 
     @Test

@@ -5,18 +5,19 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.SearchEvent.RecentSearchSelected
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemNavigationData.VariableProductData
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsSearchHelper
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateToVariationsScreen
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
@@ -25,6 +26,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.util.concurrent.atomic.AtomicReference
 import javax.inject.Inject
 
 @HiltViewModel
@@ -35,6 +37,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
     private val childToParentEventSender: WooPosChildrenToParentEventSender,
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
     private val navigator: WooPosItemsNavigator,
+    private val searchHelper: WooPosItemsSearchHelper,
 ) : ViewModel() {
     private val _viewState =
         MutableStateFlow<WooPosItemsSearchViewState>(WooPosItemsSearchViewState.Empty)
@@ -45,35 +48,105 @@ class WooPosItemsSearchViewModel @Inject constructor(
             initialValue = _viewState.value,
         )
 
-    private var searchJob: Job? = null
     private var loadMoreJob: Job? = null
+    private var localSearchJob: Job? = null
+    private var remoteSearchJob: Job? = null
+
+    private val currentQuery = AtomicReference("")
 
     init {
-        viewModelScope.launch { setEmptySearchQueryState() }
-
+        setEmptySearchQueryState()
         listenEventsFromParent()
     }
 
     fun onUIEvent(event: WooPosItemsSearchUiEvent) {
         when (event) {
             WooPosItemsSearchUiEvent.OnNextPageRequested -> onEndOfListReached()
-            is WooPosItemsSearchUiEvent.ItemClicked -> handleItemClicked(event.item)
+            is WooPosItemsSearchUiEvent.OnItemClicked -> handleItemClicked(event.item)
             WooPosItemsSearchUiEvent.LoadingErrorRetryButtonClicked -> {
                 val currentState = _viewState.value as? WooPosItemsSearchViewState.Error ?: return
-                viewModelScope.launch {
-                    loadContent(currentState.searchQuery)
-                }
+                performSearch(currentState.searchQuery)
             }
 
             is WooPosItemsSearchUiEvent.OnRecentSearchClicked -> {
                 viewModelScope.launch {
                     childToParentEventSender.sendToParent(
-                        ChildToParentEvent.SearchEvent.RecentSearchSelected(
+                        RecentSearchSelected(
                             event.recentSearch
                         )
                     )
                 }
             }
+
+            is WooPosItemsSearchUiEvent.OnPopularItemClicked -> {
+                viewModelScope.launch {
+                    emptyStateRepository.addPopularItemsToCache()
+                    handleItemClicked(event.item)
+                }
+            }
+        }
+    }
+
+    private fun performSearch(query: String) {
+        localSearchJob?.cancel()
+        remoteSearchJob?.cancel()
+
+        currentQuery.set(query)
+
+        if (query.isEmpty()) {
+            setEmptySearchQueryState()
+        } else {
+            performLocalSearch(query)
+            performRemoteSearch(query)
+        }
+    }
+
+    private fun performLocalSearch(query: String) {
+        localSearchJob?.cancel()
+        localSearchJob = viewModelScope.launch {
+            val localProducts = dataSource.searchLocalProducts(query)
+
+            if (query != currentQuery.get()) return@launch
+
+            if (localProducts.isEmpty()) {
+                _viewState.value = WooPosItemsSearchViewState.Loading
+            } else {
+                _viewState.value = localProducts.toContentState(
+                    searchQuery = query,
+                )
+            }
+        }
+    }
+
+    private fun performRemoteSearch(query: String) {
+        remoteSearchJob?.cancel()
+        remoteSearchJob = viewModelScope.launch {
+            delay(SEARCH_DEBOUNCING_TIME)
+
+            if (query != currentQuery.get()) {
+                return@launch
+            }
+
+            childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Started)
+            val result = dataSource.searchRemoteProducts(query)
+
+            if (query != currentQuery.get()) {
+                childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Finished)
+                return@launch
+            }
+
+            if (result.isSuccess) {
+                val products = result.getOrThrow()
+                if (products.isEmpty()) {
+                    _viewState.value = WooPosItemsSearchViewState.Empty
+                } else {
+                    _viewState.value = products.toContentState(searchQuery = query)
+                }
+            } else {
+                _viewState.value = WooPosItemsSearchViewState.Error(searchQuery = query)
+            }
+
+            childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Finished)
         }
     }
 
@@ -81,66 +154,20 @@ class WooPosItemsSearchViewModel @Inject constructor(
         viewModelScope.launch {
             parentToChildrenEventReceiver.events.collect { event ->
                 when (event) {
-                    is ParentToChildrenEvent.SearchEvent.ChangedQuery -> handleChangedSearchQuery(event)
+                    is ParentToChildrenEvent.SearchEvent.ChangedQuery -> performSearch(event.query)
 
                     ParentToChildrenEvent.SearchEvent.Started -> Unit
                     ParentToChildrenEvent.SearchEvent.Finished -> Unit
                     is ParentToChildrenEvent.BackFromCheckoutToCartClicked -> Unit
-                    is ParentToChildrenEvent.ItemClickedInProductSelector -> Unit
                     is ParentToChildrenEvent.OrderSuccessfullyPaid -> Unit
                     is ParentToChildrenEvent.CheckoutClicked -> Unit
                     is ParentToChildrenEvent.SearchEvent.RecentSearchSelected -> Unit
                     is ParentToChildrenEvent.OrderCreated -> Unit
-                }
-            }
-        }
-    }
-
-    private suspend fun CoroutineScope.handleChangedSearchQuery(
-        event: ParentToChildrenEvent.SearchEvent.ChangedQuery
-    ) {
-        searchJob?.cancel()
-
-        if (event.query.isEmpty()) {
-            setEmptySearchQueryState()
-        } else {
-            searchJob = viewModelScope.launch {
-                delay(SEARCH_DEBOUNCING_TIME)
-
-                loadContent(event.query)
-            }
-        }
-    }
-
-    private suspend fun loadContent(searchQuery: String) {
-        childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Started)
-
-        dataSource.searchProducts(searchQuery).collect { result ->
-            when (result) {
-                is WooPosSearchProductsDataSource.ProductsResult.Cached -> {
-                    if (result.products.isEmpty()) {
-                        _viewState.value = WooPosItemsSearchViewState.Loading
-                    } else {
-                        _viewState.value = result.products.toContentState(
-                            searchQuery = searchQuery,
-                        )
-                    }
-                }
-
-                is WooPosSearchProductsDataSource.ProductsResult.Remote -> {
-                    if (result.productsResult.isSuccess) {
-                        val products = result.productsResult.getOrThrow()
-                        if (products.isEmpty()) {
-                            _viewState.value = WooPosItemsSearchViewState.Empty
-                        } else {
-                            _viewState.value = products.toContentState(
-                                searchQuery = searchQuery,
-                            )
+                    is ParentToChildrenEvent.ItemClickedInProductSelector -> {
+                        if (event.itemData is ItemClickedData.Product.Variation && searchHelper.isSearchOpen()) {
+                            storeRecentSearch()
                         }
-                    } else {
-                        _viewState.value = WooPosItemsSearchViewState.Error(searchQuery = searchQuery)
                     }
-                    childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Finished)
                 }
             }
         }
@@ -199,8 +226,12 @@ class WooPosItemsSearchViewModel @Inject constructor(
                 }
             }
 
-            is WooPosItemSelectionViewState.Variation -> {
+            is WooPosItemSelectionViewState.Product.Variation -> {
                 error("Variation item click is not supported")
+            }
+
+            is WooPosItemSelectionViewState.Coupon -> {
+                error("Coupon item click is not supported")
             }
         }
     }
@@ -241,15 +272,17 @@ class WooPosItemsSearchViewModel @Inject constructor(
             )
         }
 
-    private suspend fun CoroutineScope.setEmptySearchQueryState() {
-        val lastSearchesDeferred = async { emptyStateRepository.getLastSearches() }
-        val popularItemsDeferred = async { emptyStateRepository.getPopularItems() }
+    private fun setEmptySearchQueryState() {
+        viewModelScope.launch {
+            val lastSearchesDeferred = async { emptyStateRepository.getLastSearches() }
+            val popularItemsDeferred = async { emptyStateRepository.getPopularItems() }
 
-        _viewState.value = WooPosItemsSearchViewState.EmptySearchQuery(
-            popularItems = popularItemsDeferred.await().let { it.take(minOf(MAX_ITEMS_COUNT, it.size)) }
-                .map { it.toViewModelProduct() },
-            recentSearches = lastSearchesDeferred.await().let { it.take(minOf(MAX_ITEMS_COUNT, it.size)) },
-        )
+            _viewState.value = WooPosItemsSearchViewState.EmptySearchQuery(
+                popularItems = popularItemsDeferred.await().let { it.take(minOf(MAX_ITEMS_COUNT, it.size)) }
+                    .map { it.toViewModelProduct() },
+                recentSearches = lastSearchesDeferred.await().let { it.take(minOf(MAX_ITEMS_COUNT, it.size)) },
+            )
+        }
     }
 
     private companion object {

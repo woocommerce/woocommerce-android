@@ -3,7 +3,9 @@ package com.woocommerce.android.ui.woopos.home.cart
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.ui.products.ProductTestUtils
+import com.woocommerce.android.ui.woopos.common.data.WooPosGetCouponById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetVariationById
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
@@ -11,6 +13,7 @@ import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import com.woocommerce.android.ui.woopos.util.WooPosGetCachedStoreCurrency
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCartTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.CheckoutTapped
@@ -19,6 +22,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTrackingDataKeeper
+import com.woocommerce.android.ui.woopos.util.format.WooPosFormatCouponSummary
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -51,6 +55,27 @@ class WooPosCartViewModelTest {
         on { events }.thenReturn(MutableSharedFlow())
     }
     private val getProductById: WooPosGetProductById = mock()
+
+    private val getCouponById: WooPosGetCouponById = mock {
+        onBlocking { invoke(any()) }.thenReturn(
+            Coupon(
+                1L,
+                "coupon_code",
+                productIds = emptyList(),
+                categoryIds = emptyList(),
+                restrictions = mock()
+            )
+        )
+    }
+    private val formatCouponSummary: WooPosFormatCouponSummary = mock {
+        on { invoke(any(), any()) }
+            .thenReturn("100% off everything")
+    }
+
+    private val getCachedStoreCurrency: WooPosGetCachedStoreCurrency = mock {
+        onBlocking { invoke() }.thenReturn("USD")
+    }
+
     private val getVariationsById: WooPosGetVariationById = mock()
     private val resourceProvider: ResourceProvider = mock {
         on {
@@ -155,7 +180,6 @@ class WooPosCartViewModelTest {
             ParentToChildrenEvent.ItemClickedInProductSelector(
                 WooPosItemsViewModel.ItemClickedData.Coupon(
                     id = 1L,
-                    couponCode = "coupon_code"
                 )
             )
         )
@@ -222,7 +246,6 @@ class WooPosCartViewModelTest {
                 ParentToChildrenEvent.ItemClickedInProductSelector(
                     WooPosItemsViewModel.ItemClickedData.Coupon(
                         id = 1L,
-                        couponCode = "coupon_code"
                     )
                 )
             )
@@ -233,7 +256,8 @@ class WooPosCartViewModelTest {
                     WooPosCartItemViewState.Coupon(
                         id = 1L,
                         itemNumber = 1,
-                        name = "coupon_code"
+                        name = "coupon_code",
+                        summary = "100% off everything",
                     )
                 )
             )
@@ -503,7 +527,6 @@ class WooPosCartViewModelTest {
             ParentToChildrenEvent.ItemClickedInProductSelector(
                 WooPosItemsViewModel.ItemClickedData.Coupon(
                     id = 1L,
-                    couponCode = "coupon_code"
                 )
             )
         )
@@ -530,7 +553,7 @@ class WooPosCartViewModelTest {
     @Test
     fun `given non-empty cart, when all items removed, then should track event`() = runTest {
         // GIVEN
-        val (sut, states) = createSutWithItemsInCart()
+        val (sut, _) = createSutWithItemsInCart()
 
         // WHEN
         sut.onUIEvent(WooPosCartUIEvent.ClearAllClicked)
@@ -640,7 +663,6 @@ class WooPosCartViewModelTest {
             ParentToChildrenEvent.ItemClickedInProductSelector(
                 WooPosItemsViewModel.ItemClickedData.Coupon(
                     id = 1L,
-                    couponCode = "coupon_code"
                 )
             )
         )
@@ -740,7 +762,6 @@ class WooPosCartViewModelTest {
             ParentToChildrenEvent.ItemClickedInProductSelector(
                 WooPosItemsViewModel.ItemClickedData.Coupon(
                     id = 1L,
-                    couponCode = "coupon_code"
                 )
             )
         )
@@ -783,12 +804,15 @@ class WooPosCartViewModelTest {
             childrenToParentEventSender,
             parentToChildrenEventReceiver,
             getProductById,
+            getCouponById,
+            formatCouponSummary,
             getVariationsById,
             resourceProvider,
             formatPrice,
             analyticsTracker,
             trackerData,
             cartProductUpdater,
+            getCachedStoreCurrency,
             savedState
         )
     }

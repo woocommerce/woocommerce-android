@@ -9,7 +9,7 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.WCProductVariationModel
 
 @Dao
-abstract class ProductVariationsDao {
+internal abstract class ProductVariationsDao {
 
     companion object {
         private const val DEFAULT_SELECT_QUERY = """
@@ -54,6 +54,4 @@ abstract class ProductVariationsDao {
         """
     )
     abstract suspend fun deleteVariationsForProduct(localSiteId: LocalId, remoteProductId: RemoteId)
-
-
 }

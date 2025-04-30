@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 22.2
+We've made important improvements in this update! Crashes related to currency formatting, the "Add custom amount" screen, and the Jetpack Installation screen have all been resolved for a smoother and more reliable experience. Enjoy the enhanced stability in your WooCommerce mobile app!
+
 ## 22.1
 This update brings several improvements to the WooCommerce app, including the removal of the "Collect Payment" flow, replaced by a custom order creation process. We've enhanced the display of disabled products in completed orders, fixed crashes in POS and custom amount dialogs, and improved the visibility of order count badges. The Woo upgrade dialog has been redesigned, and currency codes now appear in the Custom Amounts screen.
 
