@@ -1,7 +1,10 @@
 package com.woocommerce.android.ui.woopos.common.composeui.component
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -59,31 +62,38 @@ fun WooPosSearchInput(
         onBack = { onEvent(WooPosSearchUIEvent.Close) }
     )
 
-    Row(
+    Box(
         modifier = modifier
             .fillMaxWidth()
             .height(INPUT_FIELD_HEIGHT),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Start,
+        contentAlignment = Alignment.CenterEnd
     ) {
-        when (state) {
-            is WooPosSearchInputState.Open -> {
+        AnimatedVisibility(
+            visible = state is WooPosSearchInputState.Open,
+            enter = fadeIn(animationSpec = tween(300)),
+            exit = fadeOut(animationSpec = tween(300)),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            if (state is WooPosSearchInputState.Open) {
                 SearchInput(
                     state = state,
                     onEvent = onEvent,
                 )
             }
+        }
 
-            WooPosSearchInputState.Closed -> {
-                Spacer(modifier = Modifier.weight(1f))
-                WooPosCircularIconButton(
-                    icon = Icons.Default.Search,
-                    contentDescription = stringResource(
-                        id = R.string.woopos_search_products,
-                    ),
-                    onClick = { onEvent(WooPosSearchUIEvent.Search("", 0)) }
-                )
-            }
+        AnimatedVisibility(
+            visible = state is WooPosSearchInputState.Closed,
+            enter = fadeIn(animationSpec = tween(300)),
+            exit = fadeOut(animationSpec = tween(300))
+        ) {
+            WooPosCircularIconButton(
+                icon = Icons.Default.Search,
+                contentDescription = stringResource(
+                    id = R.string.woopos_search_products,
+                ),
+                onClick = { onEvent(WooPosSearchUIEvent.Search("", 0)) }
+            )
         }
     }
 }
@@ -97,7 +107,6 @@ private fun SearchInput(
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.End,
         modifier = Modifier.fillMaxWidth()
     ) {
         IconButton(
@@ -128,22 +137,6 @@ private fun SearchInput(
                     selection = TextRange(state.input.cursorPosition)
                 )
             )
-        }
-
-        LaunchedEffect(query) {
-            if (query != textFieldValue.text) {
-                textFieldValue = TextFieldValue(
-                    text = query,
-                    selection = TextRange(state.input.cursorPosition)
-                )
-            }
-        }
-
-        LaunchedEffect(Unit) {
-            if (!state.hasAnimationPlayed) {
-                focusRequester.requestFocus()
-                onEvent(WooPosSearchUIEvent.AnimationComplete)
-            }
         }
 
         OutlinedTextField(
@@ -212,6 +205,7 @@ private fun SearchInput(
                             modifier = Modifier.size(24.dp)
                         )
                     }
+
                     textFieldValue.text.isNotEmpty() -> {
                         IconButton(
                             onClick = { onEvent(WooPosSearchUIEvent.Clear) },
@@ -229,6 +223,22 @@ private fun SearchInput(
                 }
             },
         )
+
+        LaunchedEffect(query) {
+            if (query != textFieldValue.text) {
+                textFieldValue = TextFieldValue(
+                    text = query,
+                    selection = TextRange(state.input.cursorPosition)
+                )
+            }
+        }
+
+        LaunchedEffect(Unit) {
+            if (!state.hasAnimationPlayed) {
+                focusRequester.requestFocus()
+                onEvent(WooPosSearchUIEvent.AnimationComplete)
+            }
+        }
     }
 }
 
