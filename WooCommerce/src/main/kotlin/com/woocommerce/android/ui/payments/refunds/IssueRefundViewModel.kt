@@ -135,18 +135,9 @@ class IssueRefundViewModel @Inject constructor(
         }
     )
 
-    /**
-     * Saving more data than necessary into the SavedState has associated risks which were not known at the time this
-     * field was implemented - after we ensure we don't save unnecessary data, we can replace @Suppress("OPT_IN_USAGE")
-     * with @OptIn(LiveDelegateSavedStateAPI::class).
-     */
-    @Suppress("OPT_IN_USAGE")
-    private val productsRefundLiveData = LiveDataDelegate(savedState, ProductsRefundViewState())
-
     private var commonState by commonStateLiveData
     private var refundByItemsState by refundByItemsStateLiveData
     private var refundSummaryState by refundSummaryStateLiveData
-    private var productsRefundState by productsRefundLiveData
 
     private val order: Order
     private val refunds: List<Refund>
@@ -270,16 +261,6 @@ class IssueRefundViewModel @Inject constructor(
             refundByItemsState = refundByItemsState.copy(
                 isFeesMainSwitchChecked = true,
                 isFeesRefundAvailable = true
-            )
-        }
-
-        if (productsRefundLiveData.hasInitialValue) {
-            val decimals = wooStore.getSiteSettings(selectedSite.get())?.currencyDecimalNumber
-                ?: DEFAULT_DECIMAL_PRECISION
-
-            productsRefundState = productsRefundState.copy(
-                currency = order.currency,
-                decimals = decimals
             )
         }
     }
@@ -807,12 +788,6 @@ class IssueRefundViewModel @Inject constructor(
         AnalyticsTracker.KEY_ERROR_TYPE to exception.error.type.toString(),
         AnalyticsTracker.KEY_ERROR_DESC to exception.error.message
     )
-
-    @Parcelize
-    data class ProductsRefundViewState(
-        val currency: String? = null,
-        val decimals: Int = DEFAULT_DECIMAL_PRECISION
-    ) : Parcelable
 
     @Parcelize
     @Suppress("ForbiddenComment")
