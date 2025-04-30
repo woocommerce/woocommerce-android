@@ -205,6 +205,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 paymentsFlowTracker,
                 orderDetailTracker,
                 shippingLabelOnboardingRepository,
+                mock(),
                 orderDetailsTransactionLauncher,
                 getOrderSubscriptions,
                 giftCardRepository,
