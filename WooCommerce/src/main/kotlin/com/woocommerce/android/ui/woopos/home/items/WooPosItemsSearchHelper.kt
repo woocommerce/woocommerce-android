@@ -38,16 +38,7 @@ class WooPosItemsSearchHelper @Inject constructor(
         this.coroutineScope = coroutineScope
         this.viewStateFlow = viewStateFlow
         listenEventsFromParent()
-        viewStateFlow
-            .map { it.search }
-            .distinctUntilChanged()
-            .map { it is SearchState.Visible && it.state is WooPosSearchInputState.Open }
-            .distinctUntilChanged()
-            .filter { it }
-            .onEach {
-                analyticsTracker.track(SearchButtonTapped)
-            }
-            .launchIn(coroutineScope)
+        observeAndTrackSearchInputStateOpen(viewStateFlow, coroutineScope)
     }
 
     private fun listenEventsFromParent() {
@@ -181,6 +172,25 @@ class WooPosItemsSearchHelper @Inject constructor(
                 )
             )
         )
+    }
+
+    private fun observeAndTrackSearchInputStateOpen(
+        viewStateFlow: MutableStateFlow<WooPosItemsViewState>,
+        coroutineScope: CoroutineScope
+    ) {
+        viewStateFlow
+            .map { it.search }
+            .distinctUntilChanged()
+            .map { it is SearchState.Visible && it.state is WooPosSearchInputState.Open }
+            .distinctUntilChanged()
+            .filter { it }
+            .onEach {
+                val event = SearchButtonTapped.apply {
+                    addProperties(mapOf("item_list_type" to "products"))
+                }
+                analyticsTracker.track(event)
+            }
+            .launchIn(coroutineScope)
     }
 
     private fun getCurrentContentState(): WooPosItemsViewState {
