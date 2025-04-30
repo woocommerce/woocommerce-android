@@ -35,6 +35,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.core.text.HtmlCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieClipSpec
@@ -110,6 +111,17 @@ private fun WooPosTotalsScreen(
                 LocalContext.current.announceForAccessibility(state.message)
                 TotalsErrorScreen(
                     errorMessage = state.message,
+                    onUIEvent = onUIEvent
+                )
+            }
+        }
+
+        StateChangeAnimated(visible = state is WooPosTotalsViewState.InvalidCouponError) {
+            if (state is WooPosTotalsViewState.InvalidCouponError) {
+                LocalContext.current.announceForAccessibility("${state.message} reason: ${state.reason}")
+                TotalsInvalidCouponsErrorScreen(
+                    errorMessage = state.message,
+                    errorReason = state.reason,
                     onUIEvent = onUIEvent
                 )
             }
@@ -439,6 +451,27 @@ private fun TotalsErrorScreen(
         primaryButton = Button(
             text = stringResource(R.string.retry),
             click = { onUIEvent(WooPosTotalsUIEvent.RetryOrderCreationClicked) }
+        )
+    )
+}
+
+
+@Composable
+private fun TotalsInvalidCouponsErrorScreen(
+    errorMessage: String,
+    errorReason: String,
+    onUIEvent: (WooPosTotalsUIEvent) -> Unit
+) {
+    return WooPosErrorScreen(
+        message = errorMessage,
+        reason = HtmlCompat.fromHtml(errorReason, HtmlCompat.FROM_HTML_MODE_COMPACT).toString(),
+        primaryButton = Button(
+            text = stringResource(R.string.woopos_totals_coupons_validation_failed_edit_order),
+            click = { onUIEvent(WooPosTotalsUIEvent.GoBackToCheckoutAfterFailedCouponValidation) }
+        ),
+        secondaryButton = Button(
+            text = stringResource(R.string.woopos_totals_coupons_validation_failed_remove_coupons),
+            click = { onUIEvent(WooPosTotalsUIEvent.OnRemoveCouponsClicked) }
         )
     )
 }

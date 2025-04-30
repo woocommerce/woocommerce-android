@@ -4327,6 +4327,8 @@
     <string name="woopos_products_empty_list">No products</string>
     <string name="woopos_reader_connect_now_button">Connect now</string>
     <string name="woopos_totals_main_error_label">Couldn\'t load totals</string>
+    <string name="woopos_totals_coupons_validation_failed_edit_order">Edit order</string>
+    <string name="woopos_totals_coupons_validation_failed_remove_coupons">Remove coupons</string>
     <string name="woopos_cart_empty_subtitle">Tap on a product to\nadd it to the cart</string>
     <string name="woopos_cart_empty_content_description">Cart is empty</string>
     <string name="woopos_products_empty_list_image_description">No products</string>
@@ -4347,6 +4349,7 @@
     <string name="woopos_reader_not_connected_description">Please make sure a card reader is connected.</string>
     <string name="woopos_products_loading_error_retry_button">Retry</string>
     <string name="woopos_totals_order_creation_error">Couldn\'t create order</string>
+    <string name="woopos_totals_invalid_coupon_error">Couldn\'t apply coupons</string>
     <string name="woopos_totals_success_payment_cash">A cash payment of %1$s was successfully made.</string>
     <string name="woopos_totals_success_payment_card">A card payment of %1$s was successfully made.</string>
 
