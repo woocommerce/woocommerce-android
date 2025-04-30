@@ -105,6 +105,18 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
         data object SimpleProductExplanationDialogShown : Event() {
             override val name: String = "simple_products_explanation_dialog_shown"
         }
+        data object SearchButtonTapped : Event() {
+            override val name: String = "search_button_tapped"
+        }
+        data object PreSearchRecentTermTapped : Event() {
+            override val name: String = "pre_search_recent_term_tapped"
+        }
+        data object KeyboardDismissedInSearch : Event() {
+            override val name: String = "keyboard_dismissed_in_search"
+        }
+        data object ItemsNextPageLoaded : Event() {
+            override val name: String = "items_next_page_loaded"
+        }
     }
 
     sealed class PaymentFlowTrackerEvent : WooPosAnalyticsEvent() {
