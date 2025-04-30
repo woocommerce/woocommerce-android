@@ -39,7 +39,6 @@ import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.fluxc.store.WCGatewayStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCRefundStore
-import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.util.Date
 import kotlin.test.assertEquals
@@ -53,7 +52,6 @@ class IssueRefundViewModelTest : BaseUnitTest() {
     }
 
     private val orderStore: WCOrderStore = mock()
-    private val wooStore: WooCommerceStore = mock()
     private val selectedSite: SelectedSite = mock()
     private val networkStatus: NetworkStatus = mock()
     private val orderDetailRepository: OrderDetailRepository = mock()
@@ -88,19 +86,18 @@ class IssueRefundViewModelTest : BaseUnitTest() {
         whenever(currencyFormatter.buildBigDecimalFormatter(any())).thenReturn { "" }
 
         viewModel = IssueRefundViewModel(
-            savedState,
-            currencyFormatter,
-            orderStore,
-            wooStore,
-            selectedSite,
-            networkStatus,
-            resourceProvider,
-            orderDetailRepository,
-            gatewayStore,
-            refundStore,
-            paymentChargeRepository,
-            orderMapper,
-            analyticsTrackerWrapper,
+            savedState = savedState,
+            currencyFormatter = currencyFormatter,
+            orderStore = orderStore,
+            selectedSite = selectedSite,
+            networkStatus = networkStatus,
+            resourceProvider = resourceProvider,
+            orderDetailRepository = orderDetailRepository,
+            gatewayStore = gatewayStore,
+            refundStore = refundStore,
+            paymentChargeRepository = paymentChargeRepository,
+            orderMapper = orderMapper,
+            analyticsTrackerWrapper = analyticsTrackerWrapper,
         )
     }
 
