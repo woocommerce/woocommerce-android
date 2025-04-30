@@ -76,7 +76,6 @@ class IssueRefundViewModel @Inject constructor(
     savedState: SavedStateHandle,
     currencyFormatter: CurrencyFormatter,
     private val orderStore: WCOrderStore,
-    private val wooStore: WooCommerceStore,
     private val selectedSite: SelectedSite,
     private val networkStatus: NetworkStatus,
     private val resourceProvider: ResourceProvider,
@@ -88,7 +87,6 @@ class IssueRefundViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedState) {
     companion object {
-        private const val DEFAULT_DECIMAL_PRECISION = 2
         private const val REFUND_METHOD_MANUAL = "manual"
         private const val SELECTED_QUANTITIES_KEY = "selected_quantities_key"
     }
