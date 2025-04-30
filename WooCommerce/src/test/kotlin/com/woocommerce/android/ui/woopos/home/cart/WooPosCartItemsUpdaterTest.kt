@@ -17,6 +17,7 @@ import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
@@ -384,7 +385,7 @@ class WooPosCartItemsUpdaterTest {
             updater.invoke(itemsInCart, emptyList(), updatedCoupons = emptyList())
 
             // THEN
-            verify(crashLogger).sendReport(any(), any(), any())
+            verify(crashLogger).sendReport(any(), anyOrNull(), anyOrNull())
         }
 
     @Test
