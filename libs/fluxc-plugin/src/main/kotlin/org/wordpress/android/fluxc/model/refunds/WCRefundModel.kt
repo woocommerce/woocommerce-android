@@ -26,11 +26,8 @@ data class WCRefundModel(
 ) {
     data class WCRefundItem(
         val itemId: Long,
-        @SerializedName("qty")
         val quantity: Int,
-        @SerializedName("refund_total")
         val subtotal: BigDecimal,
-        @SerializedName("refund_tax")
         val totalTax: BigDecimal,
         val name: String? = null,
         val productId: Long? = null,
@@ -38,7 +35,6 @@ data class WCRefundModel(
         val total: BigDecimal? = null,
         val sku: String? = null,
         val price: BigDecimal? = null,
-        @SerializedName("meta_data")
         val metaData: List<WCMetaData>? = null
     )
 
