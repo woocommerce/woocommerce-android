@@ -220,43 +220,6 @@ internal object ProductSqlUtils {
         }
     }
 
-    fun insertOrUpdateProductCategories(productCategories: List<WCProductCategoryModel>): Int {
-        var rowsAffected = 0
-        executeInTransaction {
-            productCategories.forEach {
-                rowsAffected += insertOrUpdateProductCategory(it)
-            }
-        }
-        return rowsAffected
-    }
-
-    fun insertOrUpdateProductCategory(productCategory: WCProductCategoryModel): Int {
-        val result = WellSql.select(WCProductCategoryModel::class.java)
-            .where().beginGroup()
-            .equals(WCProductCategoryModelTable.ID, productCategory.id)
-            .or()
-            .beginGroup()
-            .equals(WCProductCategoryModelTable.REMOTE_CATEGORY_ID, productCategory.remoteCategoryId)
-            .equals(WCProductCategoryModelTable.LOCAL_SITE_ID, productCategory.localSiteId)
-            .endGroup()
-            .endGroup().endWhere()
-            .asModel.firstOrNull()
-
-        return if (result == null) {
-            // Insert
-            WellSql.insert(productCategory).execute()
-            categoriesUpdatesTrigger.tryEmit(Unit)
-            1
-        } else {
-            // Update
-            val oldId = result.id
-            WellSql.update(WCProductCategoryModel::class.java).whereId(oldId)
-                .put(productCategory, UpdateAllExceptId(WCProductCategoryModel::class.java))
-                .execute()
-                .also(::triggerCategoriesUpdateIfNeeded)
-        }
-    }
-
     fun deleteProductCategory(productCategory: WCProductCategoryModel) =
         WellSql.delete(WCProductCategoryModel::class.java)
             .where()

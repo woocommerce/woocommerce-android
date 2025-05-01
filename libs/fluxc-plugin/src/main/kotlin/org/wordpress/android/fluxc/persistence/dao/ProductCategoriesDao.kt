@@ -2,6 +2,7 @@ package org.wordpress.android.fluxc.persistence.dao
 
 import androidx.room.Dao
 import androidx.room.Query
+import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 import org.wordpress.android.fluxc.model.WCProductCategoryModel
 import org.wordpress.android.fluxc.store.WCProductStore
@@ -56,4 +57,9 @@ internal abstract class ProductCategoriesDao {
         categoryIds: List<Long>
     ): List<WCProductCategoryModel>
 
+    @Upsert
+    abstract suspend fun upsertProductCategory(productCategory: WCProductCategoryModel)
+
+    @Upsert
+    abstract suspend fun upsertProductCategories(productCategories: List<WCProductCategoryModel>)
 }

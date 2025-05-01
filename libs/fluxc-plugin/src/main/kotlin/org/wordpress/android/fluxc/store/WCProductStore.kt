@@ -799,7 +799,6 @@ class WCProductStore @Inject internal constructor(
     }
 
     class OnProductCategoryChanged(
-        var rowsAffected: Int,
         var canLoadMore: Boolean = false
     ) : OnChanged<ProductError>() {
         var causeOfChange: WCProductAction? = null
@@ -1275,7 +1274,7 @@ class WCProductStore @Inject internal constructor(
                 includedCategoryIds = categoryIds
             ).result
         }?.also {
-            ProductSqlUtils.insertOrUpdateProductCategories(it)
+            productCategoriesDao.upsertProductCategories(it)
         }
     }
 
@@ -1439,9 +1438,7 @@ class WCProductStore @Inject internal constructor(
                 )
             }
 
-            addedCategories.forEach { category ->
-                ProductSqlUtils.insertOrUpdateProductCategory(category)
-            }
+            productCategoriesDao.upsertProductCategories(addedCategories)
         }
 
         return@withDefaultContext result.asWooResult()
@@ -1457,7 +1454,7 @@ class WCProductStore @Inject internal constructor(
         )
         if (!result.isError) {
             val updatedCategory = result.result!!
-            ProductSqlUtils.insertOrUpdateProductCategory(updatedCategory)
+            productCategoriesDao.upsertProductCategory(updatedCategory)
         }
         return@withDefaultContext result.asWooResult()
     }
@@ -1472,7 +1469,7 @@ class WCProductStore @Inject internal constructor(
         )
         if (!result.isError) {
             val updatedCategory = result.result!!
-            ProductSqlUtils.insertOrUpdateProductCategory(updatedCategory)
+            productCategoriesDao.upsertProductCategory(updatedCategory)
         }
         return@withDefaultContext result.asWooResult()
     }
@@ -1658,7 +1655,7 @@ class WCProductStore @Inject internal constructor(
                     if (offset == 0 && includedCategoryIds.isEmpty() && excludedCategoryIds.isEmpty()) {
                         ProductSqlUtils.deleteAllProductCategories()
                     }
-                    ProductSqlUtils.insertOrUpdateProductCategories(response.result)
+                    productCategoriesDao.upsertProductCategories(response.result)
                     val canLoadMore = response.result.size == pageSize
                     WooResult(canLoadMore)
                 }
@@ -1815,7 +1812,7 @@ class WCProductStore @Inject internal constructor(
             when {
                 response.isError -> WooResult(response.error)
                 response.result != null -> {
-                    ProductSqlUtils.insertOrUpdateProductCategories(response.result)
+                    productCategoriesDao.upsertProductCategories(response.result)
                     val categoryIds = response.result.map { it.remoteCategoryId }
                     val categories = if (categoryIds.isNotEmpty()) {
                         productCategoriesDao.getProductCategories(site.localId().value, categoryIds)
@@ -2147,7 +2144,7 @@ class WCProductStore @Inject internal constructor(
             val onProductCategoryChanged: OnProductCategoryChanged
 
             if (payload.isError) {
-                onProductCategoryChanged = OnProductCategoryChanged(0).also { it.error = payload.error }
+                onProductCategoryChanged = OnProductCategoryChanged().also { it.error = payload.error }
             } else {
                 // Clear existing product categories if this is a fresh fetch (loadMore = false).
                 // This is the simplest way to keep our local categories in sync with remote categories
@@ -2155,11 +2152,8 @@ class WCProductStore @Inject internal constructor(
                 if (!payload.loadedMore) {
                     ProductSqlUtils.deleteAllProductCategoriesForSite(payload.site)
                 }
-                val rowsAffected = ProductSqlUtils.insertOrUpdateProductCategories(
-                    payload.categories
-                )
+                productCategoriesDao.upsertProductCategories(payload.categories)
                 onProductCategoryChanged = OnProductCategoryChanged(
-                    rowsAffected,
                     canLoadMore = payload.canLoadMore
                 )
             }
@@ -2174,12 +2168,12 @@ class WCProductStore @Inject internal constructor(
             val onProductCategoryChanged: OnProductCategoryChanged
 
             if (payload.isError) {
-                onProductCategoryChanged = OnProductCategoryChanged(0).also { it.error = payload.error }
+                onProductCategoryChanged = OnProductCategoryChanged().also { it.error = payload.error }
             } else {
-                val rowsAffected = payload.category?.let {
-                    ProductSqlUtils.insertOrUpdateProductCategory(it)
-                } ?: 0
-                onProductCategoryChanged = OnProductCategoryChanged(rowsAffected)
+                payload.category?.let {
+                    productCategoriesDao.upsertProductCategory(it)
+                }
+                onProductCategoryChanged = OnProductCategoryChanged()
             }
 
             onProductCategoryChanged.causeOfChange = WCProductAction.ADDED_PRODUCT_CATEGORY
