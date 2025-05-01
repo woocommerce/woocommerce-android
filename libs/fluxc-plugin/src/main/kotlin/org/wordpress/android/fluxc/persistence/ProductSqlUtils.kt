@@ -22,7 +22,6 @@ import org.wordpress.android.fluxc.model.WCProductReviewModel
 import org.wordpress.android.fluxc.model.WCProductShippingClassModel
 import org.wordpress.android.fluxc.model.WCProductTagModel
 import org.wordpress.android.fluxc.persistence.dao.ProductsDao
-import java.util.Locale
 
 @Suppress("LargeClass")
 internal object ProductSqlUtils {
@@ -219,44 +218,6 @@ internal object ProductSqlUtils {
             WellSql.update(WCProductShippingClassModel::class.java).whereId(oldId)
                 .put(shippingClass, UpdateAllExceptId(WCProductShippingClassModel::class.java)).execute()
         }
-    }
-
-    private fun sortCategoriesByName(
-        categories: List<WCProductCategoryModel>,
-        descending: Boolean
-    ): List<WCProductCategoryModel> {
-        return if (descending) {
-            categories.sortedByDescending { it.name.lowercase(Locale.getDefault()) }
-        } else {
-            categories.sortedBy { it.name.lowercase(Locale.getDefault()) }
-        }
-    }
-
-    fun getProductCategoryByRemoteId(
-        localSiteId: Int,
-        categoryId: Long
-    ): WCProductCategoryModel? {
-        return WellSql.select(WCProductCategoryModel::class.java)
-            .where()
-            .beginGroup()
-            .equals(WCProductCategoryModelTable.LOCAL_SITE_ID, localSiteId)
-            .equals(WCProductCategoryModelTable.REMOTE_CATEGORY_ID, categoryId)
-            .endGroup()
-            .endWhere()
-            .asModel.firstOrNull()
-    }
-
-    fun getProductCategoriesByRemoteIds(
-        site: SiteModel,
-        categoryIds: List<Long>
-    ): List<WCProductCategoryModel> {
-        return WellSql.select(WCProductCategoryModel::class.java)
-            .where()
-            .beginGroup()
-            .isIn(WCProductCategoryModelTable.REMOTE_CATEGORY_ID, categoryIds)
-            .equals(WCProductCategoryModelTable.LOCAL_SITE_ID, site.id)
-            .endGroup().endWhere()
-            .asModel
     }
 
     fun getProductCategoryByNameAndParentId(

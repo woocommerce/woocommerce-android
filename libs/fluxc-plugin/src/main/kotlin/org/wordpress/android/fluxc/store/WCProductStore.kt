@@ -956,8 +956,8 @@ class WCProductStore @Inject internal constructor(
     suspend fun getProductCategoriesForSite(site: SiteModel, sortType: ProductCategorySorting = DEFAULT_CATEGORY_SORTING) =
         productCategoriesDao.getProductCategories(site.localId().value, sortType)
 
-    fun getProductCategoryByRemoteId(site: SiteModel, remoteId: Long) =
-        ProductSqlUtils.getProductCategoryByRemoteId(site.id, remoteId)
+    suspend fun getProductCategoryByRemoteId(site: SiteModel, remoteId: Long) =
+        productCategoriesDao.getProductCategory(site.localId().value, remoteId)
 
     fun getProductCategoryByNameAndParentId(
         site: SiteModel,
@@ -1824,7 +1824,7 @@ class WCProductStore @Inject internal constructor(
                     ProductSqlUtils.insertOrUpdateProductCategories(response.result)
                     val categoryIds = response.result.map { it.remoteCategoryId }
                     val categories = if (categoryIds.isNotEmpty()) {
-                        ProductSqlUtils.getProductCategoriesByRemoteIds(site, categoryIds)
+                        productCategoriesDao.getProductCategories(site.localId().value, categoryIds)
                     } else {
                         emptyList()
                     }

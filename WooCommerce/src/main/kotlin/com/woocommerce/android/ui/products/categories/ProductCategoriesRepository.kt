@@ -81,7 +81,7 @@ class ProductCategoriesRepository @Inject constructor(
             .map { it.toProductCategory() }
     }
 
-    fun getProductCategoryByRemoteId(remoteId: Long) =
+    suspend fun getProductCategoryByRemoteId(remoteId: Long) =
         productStore.getProductCategoryByRemoteId(selectedSite.get(), remoteId)
 
     fun getProductCategoryByNameAndParentId(categoryName: String, parentId: Long): ProductCategory? =
