@@ -72,7 +72,7 @@ import javax.inject.Inject
 class WooShippingLabelCreationViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val orderDetailRepository: OrderDetailRepository,
-    private val getShippableItems: GetShippableItems,
+    private val getShipments: GetShipments,
     private val currencyFormatter: CurrencyFormatter,
     private val observeOriginAddresses: ObserveOriginAddresses,
     private val fetchOriginAddresses: FetchOriginAddresses,
@@ -396,7 +396,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                 return@combine WooShippingViewState.Error
             }
 
-            val items = getShippableItems(order)
+            val items = getShipments(order)
 
             val destinationStatus = when {
                 addressValidationHelper.isMissingDestinationAddress(addresses.shipTo.address) -> {

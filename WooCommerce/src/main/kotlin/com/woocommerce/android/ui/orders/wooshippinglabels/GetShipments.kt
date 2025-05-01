@@ -9,7 +9,7 @@ import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
-class GetShippableItems @Inject constructor(
+class GetShipments @Inject constructor(
     private val orderDetailRepository: OrderDetailRepository,
     private val productDetailRepository: ProductDetailRepository,
     private val configDataStore: WooShippingConfigDataStore,

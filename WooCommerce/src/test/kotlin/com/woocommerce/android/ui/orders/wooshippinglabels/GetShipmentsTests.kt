@@ -22,14 +22,14 @@ import org.mockito.kotlin.whenever
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class GetShippableItemsTests : BaseUnitTest() {
+class GetShipmentsTests : BaseUnitTest() {
     private val orderDetailRepository: OrderDetailRepository = mock()
     private val productDetailRepository: ProductDetailRepository = mock()
     private val configDataStore: WooShippingConfigDataStore = mock {
         doReturn(flowOf(null)).whenever(it).observeConfig(any())
     }
 
-    private val sut = GetShippableItems(orderDetailRepository, productDetailRepository, configDataStore)
+    private val sut = GetShipments(orderDetailRepository, productDetailRepository, configDataStore)
 
     @Test
     fun `when order only contains refunded products then should return empty list`() = testBlocking {
