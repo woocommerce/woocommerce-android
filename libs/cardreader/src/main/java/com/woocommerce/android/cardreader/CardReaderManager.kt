@@ -1,5 +1,6 @@
 package com.woocommerce.android.cardreader
 
+import androidx.annotation.ColorRes
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
@@ -42,6 +43,8 @@ interface CardReaderManager {
         cardReaderTypesToDiscover: CardReaderTypesToDiscover,
     ): Flow<CardReaderDiscoveryEvents>
 
+    fun setupTapToPayUx(config: TapToPayUxConfig)
+
     fun startConnectionToReader(cardReader: CardReader, locationId: String)
     suspend fun disconnectReader(): Boolean
 
@@ -65,4 +68,11 @@ interface CardReaderManager {
         LOW_BATTERY_SUCCEED_CONNECT,
         RANDOM
     }
+
+    data class TapToPayUxConfig(
+        @ColorRes val primaryColor: Int,
+        @ColorRes val successColor: Int,
+        @ColorRes val errorColor: Int,
+        val isDarkMode: Boolean,
+    )
 }
