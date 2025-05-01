@@ -36,6 +36,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.Should
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PurchasedLabelData
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.StoreOptionsModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
@@ -97,6 +98,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     private val loadTrigger = MutableSharedFlow<Unit>()
     private val storeOptions = MutableStateFlow<StoreOptionsModel?>(StoreOptionsModel.EMPTY)
 
+    private val shipments = MutableStateFlow<List<ShipmentUIModel>>(emptyList())
     private val shippableItems = MutableStateFlow<List<ShippableItemModel>>(emptyList())
 
     private val packageSelected = MutableStateFlow<PackageData?>(null)
@@ -396,7 +398,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                 return@combine WooShippingViewState.Error
             }
 
-            val items = getShipments(order).values.flatten() // TODO add support for multiple shipments
+            shipments.value = getShipments(order)
 
             val destinationStatus = when {
                 addressValidationHelper.isMissingDestinationAddress(addresses.shipTo.address) -> {
@@ -407,10 +409,10 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                 else -> AddressStatus.UNVERIFIED
             }
 
-            shippableItems.value = items
+            shippableItems.value = shipments.value.map { it.items }.flatten()
 
             val shippingLineSummary = order.getShippingLinesSummary(currencyFormatter)
-            val shippableItemsUI = items.toUIModel(
+            val shippableItemsUI = shippableItems.value.toUIModel(
                 currencyFormatter,
                 storeOptions.dimensionUnit,
                 storeOptions.weightUnit
@@ -578,7 +580,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                     SplitShipmentArgs(
                         orderId = navArgs.orderId,
                         storeOptions = currentStoreOptions,
-                        shipments = mapOf(0 to currentShippableItems)
+                        shipments = shipments.value
                     )
                 )
             )
@@ -726,7 +728,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     @Parcelize
     data class SplitShipmentArgs(
         val orderId: Long,
-        val shipments: Map<Int, List<ShippableItemModel>>,
+        val shipments: List<ShipmentUIModel>,
         val storeOptions: StoreOptionsModel
     ) : Parcelable
 
