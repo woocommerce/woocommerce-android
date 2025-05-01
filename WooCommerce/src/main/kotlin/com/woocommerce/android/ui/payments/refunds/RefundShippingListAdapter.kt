@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.payments.refunds
 
-import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,10 +8,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.hide
-import com.woocommerce.android.model.Order
-import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.model.refunds.RefundRequestItem
-import org.wordpress.android.fluxc.model.refunds.RefundRequestTax
 import java.math.BigDecimal
 
 class RefundShippingListAdapter(
@@ -71,25 +66,5 @@ class RefundShippingListAdapter(
         val name: TextView = view.findViewById(R.id.issueRefund_shippingName)
         val switch: SwitchMaterial = view.findViewById(R.id.issueRefund_shippingLineSwitch)
         val divider: View = view.findViewById(R.id.issueRefund_shippingDivider)
-    }
-
-
-    @Parcelize
-    data class ShippingRefundListItem(
-        val shippingLine: Order.ShippingLine
-    ) : Parcelable {
-        fun toDataModel(): RefundRequestItem {
-            return RefundRequestItem(
-                shippingLine.itemId,
-                quantity = 1, /* Hardcoded because a shipping line always has a quantity of 1 */
-                refundTotal = shippingLine.total,
-                refundTax = listOf(
-                    RefundRequestTax(
-                        taxRateId = 0L,
-                        refundTotal = shippingLine.totalTax
-                    )
-                )
-            )
-        }
     }
 }
