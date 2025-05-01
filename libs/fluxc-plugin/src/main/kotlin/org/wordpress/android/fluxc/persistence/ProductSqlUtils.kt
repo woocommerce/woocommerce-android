@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.mapLatest
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCBundledProduct
-import org.wordpress.android.fluxc.model.WCProductCategoryModel
 import org.wordpress.android.fluxc.model.WCProductComponent
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.WCProductReviewModel
@@ -220,27 +219,6 @@ internal object ProductSqlUtils {
         }
     }
 
-    fun deleteProductCategory(productCategory: WCProductCategoryModel) =
-        WellSql.delete(WCProductCategoryModel::class.java)
-            .where()
-            .equals(WCProductCategoryModelTable.REMOTE_CATEGORY_ID, productCategory.remoteCategoryId)
-            .endWhere().execute()
-
-    fun deleteAllProductCategoriesForSite(site: SiteModel): Int {
-        return WellSql.delete(WCProductCategoryModel::class.java)
-            .where()
-            .equals(WCProductCategoryModelTable.LOCAL_SITE_ID, site.id)
-            .or()
-            .equals(WCProductCategoryModelTable.LOCAL_SITE_ID, 0) // Should never happen, but sanity cleanup
-            .endWhere()
-            .execute()
-            .also(::triggerCategoriesUpdateIfNeeded)
-    }
-
-    fun deleteAllProductCategories() = WellSql.delete(WCProductCategoryModel::class.java)
-        .execute()
-        .also(::triggerCategoriesUpdateIfNeeded)
-
     fun getProductTagsForSite(
         localSiteId: Int
     ): List<WCProductTagModel> {
@@ -326,9 +304,5 @@ internal object ProductSqlUtils {
         } finally {
             db.endTransaction()
         }
-    }
-
-    private fun triggerCategoriesUpdateIfNeeded(affectedRows: Int) {
-        if (affectedRows != 0) categoriesUpdatesTrigger.tryEmit(Unit)
     }
 }

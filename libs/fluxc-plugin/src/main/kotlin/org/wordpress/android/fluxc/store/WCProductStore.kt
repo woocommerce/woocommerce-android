@@ -1482,7 +1482,7 @@ class WCProductStore @Inject internal constructor(
             )
             if (!result.isError) {
                 val deletedCategory = result.result!!
-                ProductSqlUtils.deleteProductCategory(deletedCategory)
+                productCategoriesDao.deleteProductCategory(deletedCategory)
             }
             return@withDefaultContext result.asWooResult()
         }
@@ -1653,7 +1653,7 @@ class WCProductStore @Inject internal constructor(
                 response.isError -> WooResult(response.error)
                 response.result != null -> {
                     if (offset == 0 && includedCategoryIds.isEmpty() && excludedCategoryIds.isEmpty()) {
-                        ProductSqlUtils.deleteAllProductCategories()
+                        productCategoriesDao.deleteAllProductCategories()
                     }
                     productCategoriesDao.upsertProductCategories(response.result)
                     val canLoadMore = response.result.size == pageSize
@@ -2150,7 +2150,7 @@ class WCProductStore @Inject internal constructor(
                 // This is the simplest way to keep our local categories in sync with remote categories
                 // in case of deletions.
                 if (!payload.loadedMore) {
-                    ProductSqlUtils.deleteAllProductCategoriesForSite(payload.site)
+                    productCategoriesDao.deleteProductCategoriesForSite(payload.site.localId().value)
                 }
                 productCategoriesDao.upsertProductCategories(payload.categories)
                 onProductCategoryChanged = OnProductCategoryChanged(
