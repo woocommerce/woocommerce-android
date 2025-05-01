@@ -17,15 +17,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
-import androidx.compose.material.icons.automirrored.outlined.TrendingUp
-import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -50,6 +49,12 @@ fun WooPosItemsEmptySearchQueryStateScreen(
     onUIEvent: (WooPosItemsSearchUiEvent) -> Unit
 ) {
     val scrollState = rememberScrollState()
+    val focusManager = LocalFocusManager.current
+    LaunchedEffect(scrollState.isScrollInProgress) {
+        if (scrollState.isScrollInProgress) {
+            focusManager.clearFocus()
+        }
+    }
     Column(
         modifier
             .fillMaxHeight()
@@ -104,11 +109,10 @@ private fun PopularItemsSection(
     onPopularItemClicked: (WooPosItemSelectionViewState.Product) -> Unit,
 ) {
     SectionHeader(
-        icon = Icons.AutoMirrored.Outlined.TrendingUp,
         title = stringResource(R.string.woopos_search_popular_items_title)
     )
 
-    Spacer(modifier = Modifier.height(WooPosSpacing.Small.value.toAdaptivePadding()))
+    Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
 
     popularItems.forEach { popularItem ->
         val itemContentDescription = stringResource(
@@ -134,11 +138,10 @@ private fun RecentSearchesSection(
     onRecentSearchClicked: (String) -> Unit,
 ) {
     SectionHeader(
-        icon = Icons.Filled.History,
         title = stringResource(R.string.woopos_search_recent_searches_title)
     )
 
-    Spacer(modifier = Modifier.height(WooPosSpacing.Small.value.toAdaptivePadding()))
+    Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
 
     state.recentSearches.forEach { recentSearch ->
         WooPosCard(
@@ -189,29 +192,13 @@ private fun RecentSearchesSection(
 }
 
 @Composable
-private fun SectionHeader(
-    icon: ImageVector,
-    title: String
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.size(24.dp)
-        )
-
-        Spacer(modifier = Modifier.width(WooPosSpacing.Small.value.toAdaptivePadding()))
-
-        WooPosText(
-            text = title,
-            style = WooPosTypography.BodyMedium,
-            color = MaterialTheme.colorScheme.onSurface,
-            fontWeight = FontWeight.Bold,
-        )
-    }
+private fun SectionHeader(title: String) {
+    WooPosText(
+        text = title,
+        style = WooPosTypography.BodyMedium,
+        color = MaterialTheme.colorScheme.onSurface,
+        fontWeight = FontWeight.Bold,
+    )
 }
 
 @WooPosPreview
