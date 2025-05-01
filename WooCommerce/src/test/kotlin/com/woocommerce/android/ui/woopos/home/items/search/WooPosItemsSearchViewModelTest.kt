@@ -589,7 +589,8 @@ class WooPosItemsSearchViewModelTest {
         // THEN
         verify(mockChildToParentEventSender).sendToParent(
             ChildToParentEvent.ItemClickedInProductSelector(
-                ItemClickedData.Product.Simple(id = 1)
+                itemData = ItemClickedData.Product.Simple(id = 1),
+                source = WooPosItemSource.SEARCH_RESULT
             )
         )
     }
@@ -710,7 +711,8 @@ class WooPosItemsSearchViewModelTest {
             verify(mockEmptyStateProvider).addPopularItemsToCache()
             verify(mockChildToParentEventSender).sendToParent(
                 ChildToParentEvent.ItemClickedInProductSelector(
-                    ItemClickedData.Product.Simple(id = simpleProduct.id)
+                    ItemClickedData.Product.Simple(id = simpleProduct.id),
+                    source = WooPosItemSource.POPULAR_PRODUCTS
                 )
             )
         }
