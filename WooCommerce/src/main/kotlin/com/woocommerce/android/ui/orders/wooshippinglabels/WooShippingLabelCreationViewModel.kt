@@ -396,7 +396,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                 return@combine WooShippingViewState.Error
             }
 
-            val items = getShipments(order)
+            val items = getShipments(order).values.flatten() // TODO add support for multiple shipments
 
             val destinationStatus = when {
                 addressValidationHelper.isMissingDestinationAddress(addresses.shipTo.address) -> {

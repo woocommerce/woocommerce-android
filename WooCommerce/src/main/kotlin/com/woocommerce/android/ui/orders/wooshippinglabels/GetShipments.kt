@@ -14,13 +14,13 @@ class GetShipments @Inject constructor(
     private val productDetailRepository: ProductDetailRepository,
     private val configDataStore: WooShippingConfigDataStore,
 ) {
-    suspend operator fun invoke(order: Order): List<ShippableItemModel> {
+    suspend operator fun invoke(order: Order): Map<String, List<ShippableItemModel>> {
         val refunds = orderDetailRepository.getOrderRefunds(order.id)
         val noRefundedProducts = refunds.getNonRefundedProducts(order.items)
 
-        val shipments = configDataStore.observeConfig(order.id).first()?.shipments
+        val shipments = configDataStore.observeConfig(order.id).first()?.shipments ?: emptyMap()
 
-        return noRefundedProducts.mapNotNull { item ->
+        val orderItems = noRefundedProducts.mapNotNull { item ->
             val product = productDetailRepository.getProductAsync(item.productId)
             if (product != null && !product.isSampleProduct && !product.isVirtual) {
                 ShippableItemModel(
@@ -38,6 +38,16 @@ class GetShipments @Inject constructor(
                 )
             } else {
                 null
+            }
+        }
+
+        // Return a map by matching each shipment key to its corresponding items in orderItems and adjusting quantity by
+        // subItems count
+        return shipments.mapValues { (_, shipmentItems) ->
+            shipmentItems.mapNotNull { (id, subItems) ->
+                orderItems.firstOrNull { it.itemId == id }?.let { item ->
+                    if (subItems.isNullOrEmpty()) item else item.copy(quantity = subItems.size.toFloat())
+                }
             }
         }
     }
