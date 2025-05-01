@@ -53,30 +53,30 @@ fun WooPosItemsToolbar(
             .height(56.dp),
         contentAlignment = Alignment.CenterStart
     ) {
-        Box(modifier = Modifier.fillMaxWidth()) {
-            AnimatedVisibility(
-                visible = !isSearchOpen,
-                enter = fadeIn(animationSpec = tween(ANIMATION_DURATION)),
-                exit = fadeOut(animationSpec = tween(ANIMATION_DURATION)),
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    state.tabs.forEach { tab ->
-                        WooPosText(
-                            text = stringResource(id = tab.stringId),
-                            style = WooPosTypography.Heading,
-                            fontWeight = FontWeight.Bold,
-                            color = tab.highlightLevel.titleColor(),
-                            modifier = Modifier.clickable(
-                                interactionSource = remember { MutableInteractionSource() },
-                                indication = null,
-                                onClick = { onTabClicked(tab) }
-                            )
+        AnimatedVisibility(
+            visible = !isSearchOpen,
+            enter = fadeIn(animationSpec = tween(ANIMATION_DURATION)),
+            exit = fadeOut(animationSpec = tween(ANIMATION_DURATION)),
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                state.tabs.forEach { tab ->
+                    WooPosText(
+                        text = stringResource(id = tab.stringId),
+                        style = WooPosTypography.Heading,
+                        fontWeight = FontWeight.Bold,
+                        color = tab.highlightLevel.titleColor(),
+                        modifier = Modifier.clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null,
+                            onClick = { onTabClicked(tab) }
                         )
-                        Spacer(modifier = Modifier.width(WooPosSpacing.Large.value))
-                    }
+                    )
+                    Spacer(modifier = Modifier.width(WooPosSpacing.Large.value))
                 }
             }
         }
+
+        println("state.search: ${state.search}")
 
         when (val search = state.search) {
             SearchState.Hidden -> Unit
