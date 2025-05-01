@@ -118,7 +118,7 @@ private fun MainItemsList(
             ) { screenState ->
                 when (screenState) {
                     ScreenState.PRODUCTS -> WooPosProductsScreen(modifier = Modifier, listState = listState)
-                    ScreenState.SEARCH -> WooPosItemsSearchScreen()
+                    ScreenState.PRODUCTS_SEARCH -> WooPosItemsSearchScreen()
                     ScreenState.COUPONS -> WooPosCouponsScreen(modifier = Modifier)
                 }
             }
@@ -127,7 +127,7 @@ private fun MainItemsList(
 }
 
 private enum class ScreenState {
-    PRODUCTS, SEARCH, COUPONS
+    PRODUCTS, PRODUCTS_SEARCH, COUPONS
 }
 
 private fun getScreenState(state: WooPosItemsViewState): ScreenState {
@@ -138,7 +138,7 @@ private fun getScreenState(state: WooPosItemsViewState): ScreenState {
                 is WooPosItemsViewState.SearchState.Visible -> {
                     when (searchState.state) {
                         WooPosSearchInputState.Closed -> ScreenState.PRODUCTS
-                        is WooPosSearchInputState.Open -> ScreenState.SEARCH
+                        is WooPosSearchInputState.Open -> ScreenState.PRODUCTS_SEARCH
                     }
                 }
             }
