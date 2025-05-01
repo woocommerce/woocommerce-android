@@ -4,6 +4,8 @@ import com.woocommerce.android.model.Refund
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigDataStore
+import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ConfigDTO
+import com.woocommerce.android.ui.orders.wooshippinglabels.networking.Item
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -123,5 +125,56 @@ class GetShipmentsTests : BaseUnitTest() {
             it.productId == virtualProductId || it.productId == sampleProductId
         }
         assertTrue(expectedFilteredProducts.isEmpty())
+    }
+
+    @Test
+    fun `when there are multiple shipments, then should return shipments with correct quantities`() = testBlocking {
+        val itemsSize = 1
+        val quantity = 10f
+        val refunds = emptyList<Refund>()
+        val item = OrderTestUtils.generateTestOrderItems(count = itemsSize, quantity = quantity).first()
+
+        val order = OrderTestUtils.generateTestOrder().copy(items = listOf(item))
+        whenever(orderDetailRepository.getOrderRefunds(eq(order.id))) doReturn refunds
+        whenever(productDetailRepository.getProductAsync(any())).thenAnswer { invocation ->
+            val productId = invocation.arguments[0] as Long
+            ProductTestUtils.generateProduct(productId = productId, productName = "Product $productId")
+        }
+
+        // When total order quantity is 10 and each shipment has 5 items
+        val shipments = mapOf(
+            "0" to listOf(
+                Item(
+                    id = item.itemId,
+                    subItems = listOf(
+                        "${item.itemId}-sub-0",
+                        "${item.itemId}-sub-1",
+                        "${item.itemId}-sub-2",
+                        "${item.itemId}-sub-3",
+                        "${item.itemId}-sub-4"
+                    )
+                )
+            ),
+            "1" to listOf(
+                Item(
+                    id = item.itemId,
+                    subItems = listOf(
+                        "${item.itemId}-sub-0",
+                        "${item.itemId}-sub-1",
+                        "${item.itemId}-sub-2",
+                        "${item.itemId}-sub-3",
+                        "${item.itemId}-sub-4"
+                    )
+                )
+            )
+        )
+        whenever(configDataStore.observeConfig(eq(order.id))) doReturn flowOf(ConfigDTO(shipments))
+
+        val result = sut.invoke(order)
+        val shipment1 = result.first()
+        val shipment2 = result[1]
+
+        assertEquals(shipment1.items.first().quantity, 5f)
+        assertEquals(shipment2.items.first().quantity, 5f)
     }
 }
