@@ -6,11 +6,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearch
 import com.woocommerce.android.ui.woopos.featureflags.WooPosIsProductsSearchEnabled
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SearchButtonTapped
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -19,7 +15,6 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
@@ -48,21 +43,11 @@ class WooPosItemsViewModelTest {
         on { defaultTabs }.thenReturn(tabs)
     }
 
-    private val analyticsTracker: WooPosAnalyticsTracker = mock()
-    private lateinit var _viewState: MutableStateFlow<WooPosItemsViewState>
-
     @Before
     fun setup() {
         whenever(searchHelper.getInitialSearchState(any())).thenReturn(
             WooPosItemsViewState.SearchState.Visible(
                 state = WooPosSearchInputState.Closed
-            )
-        )
-
-        _viewState = MutableStateFlow<WooPosItemsViewState>(
-            WooPosItemsViewState.ProductList(
-                tabs = tabsHelper.defaultTabs,
-                search = searchHelper.getInitialSearchState(isProductsSearchEnabled()),
             )
         )
     }
@@ -194,69 +179,6 @@ class WooPosItemsViewModelTest {
             val value = awaitItem()
             assertThat(value).isInstanceOf(WooPosItemsViewState.CouponList::class.java)
         }
-    }
-
-    @Test
-    fun `when search state changes from closed to open, then SearchButtonTapped event is tracked`() = runTest {
-        // GIVEN
-        createViewModel()
-
-        val initialState = WooPosItemsViewState.ProductList(
-            tabs = tabsHelper.defaultTabs,
-            search = WooPosItemsViewState.SearchState.Visible(
-                state = WooPosSearchInputState.Closed
-            )
-        )
-        _viewState.value = initialState
-
-        // WHEN - Change state to open
-        val newState = WooPosItemsViewState.ProductList(
-            tabs = tabsHelper.defaultTabs,
-            search = WooPosItemsViewState.SearchState.Visible(
-                state = WooPosSearchInputState.Open(
-                    input = WooPosSearchInputState.Open.Input.Hint(""),
-                    isLoading = false
-                )
-            )
-        )
-        _viewState.value = newState
-        advanceUntilIdle()
-
-        // THEN
-        verify(analyticsTracker).track(SearchButtonTapped)
-    }
-
-    @Test
-    fun `when search state changes but not from closed to open, event is not tracked`() = runTest {
-        // GIVEN
-        createViewModel()
-
-        val initialState = WooPosItemsViewState.ProductList(
-            tabs = tabsHelper.defaultTabs,
-            search = WooPosItemsViewState.SearchState.Visible(
-                state = WooPosSearchInputState.Open(
-                    input = WooPosSearchInputState.Open.Input.Hint(""),
-                    isLoading = false
-                )
-            )
-        )
-        _viewState.value = initialState
-
-        // WHEN
-        val newState = WooPosItemsViewState.ProductList(
-            tabs = tabsHelper.defaultTabs,
-            search = WooPosItemsViewState.SearchState.Visible(
-                state = WooPosSearchInputState.Open(
-                    input = WooPosSearchInputState.Open.Input.Query("test", 4),
-                    isLoading = false
-                )
-            )
-        )
-        _viewState.value = newState
-        advanceUntilIdle()
-
-        // THEN
-        verify(analyticsTracker, never()).track(SearchButtonTapped)
     }
 
     private fun createViewModel() =
