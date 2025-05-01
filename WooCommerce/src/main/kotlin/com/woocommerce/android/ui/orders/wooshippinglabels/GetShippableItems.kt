@@ -21,26 +21,24 @@ class GetShippableItems @Inject constructor(
         val shipments = configDataStore.observeConfig(order.id).first()?.shipments
 
         return noRefundedProducts.mapNotNull { item ->
-            productDetailRepository.getProductAsync(item.productId)?.let {
-                Pair(it, item)
+            val product = productDetailRepository.getProductAsync(item.productId)
+            if (product != null && !product.isSampleProduct && !product.isVirtual) {
+                ShippableItemModel(
+                    itemId = item.itemId,
+                    productId = product.remoteId,
+                    height = product.height,
+                    width = product.width,
+                    length = product.length,
+                    weight = product.weight,
+                    title = product.name,
+                    imageUrl = product.firstImageUrl,
+                    quantity = item.quantity,
+                    price = item.price,
+                    currency = order.currency
+                )
+            } else {
+                null
             }
-        }.filter { product ->
-            product.first.isSampleProduct.not() && product.first.isVirtual.not()
-        }.map {
-            val (product, item) = it
-            ShippableItemModel(
-                itemId = item.itemId,
-                productId = product.remoteId,
-                height = product.height,
-                width = product.width,
-                length = product.length,
-                weight = product.weight,
-                title = product.name,
-                imageUrl = product.firstImageUrl,
-                quantity = item.quantity,
-                price = item.price,
-                currency = order.currency
-            )
         }
     }
 }
