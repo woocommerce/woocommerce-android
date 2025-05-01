@@ -18,7 +18,7 @@ class GetShippableItems @Inject constructor(
         val refunds = orderDetailRepository.getOrderRefunds(order.id)
         val noRefundedProducts = refunds.getNonRefundedProducts(order.items)
 
-        val shipments = configDataStore.observeConfig(order.id).first()?.shipments // TODO Use this in the UI
+        val shipments = configDataStore.observeConfig(order.id).first()?.shipments
 
         return noRefundedProducts.mapNotNull { item ->
             productDetailRepository.getProductAsync(item.productId)?.let {
