@@ -14,12 +14,12 @@ class ProductCategoryApiResponse : Response {
 
     fun asProductCategoryModel(): WCProductCategoryModel {
         val response = this
-        return WCProductCategoryModel().apply {
-            remoteCategoryId = response.id
-            name = response.name ?: ""
-            slug = response.slug ?: ""
-            parent = response.parent ?: 0L
-        }
+        return WCProductCategoryModel(
+            remoteCategoryId = response.id,
+            name = response.name ?: "",
+            slug = response.slug ?: "",
+            parent = response.parent ?: 0L,
+        )
     }
 }
 

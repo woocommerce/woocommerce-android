@@ -51,6 +51,7 @@ import org.wordpress.android.fluxc.persistence.ProductSqlUtils.getCompositeProdu
 import org.wordpress.android.fluxc.persistence.ProductSqlUtils.observeBundledProducts
 import org.wordpress.android.fluxc.persistence.ProductStorageHelper
 import org.wordpress.android.fluxc.persistence.dao.AddonsDao
+import org.wordpress.android.fluxc.persistence.dao.ProductCategoriesDao
 import org.wordpress.android.fluxc.persistence.dao.ProductVariationsDao
 import org.wordpress.android.fluxc.persistence.dao.ProductsDao
 import org.wordpress.android.fluxc.store.WCProductStore.ProductCategorySorting.NAME_ASC
@@ -78,7 +79,8 @@ class WCProductStore @Inject internal constructor(
     private val productStorageHelper: ProductStorageHelper,
     private val logger: AppLogWrapper,
     private val productsDao: ProductsDao,
-    private val productVariationsDao: ProductVariationsDao
+    private val productVariationsDao: ProductVariationsDao,
+    private val productCategoriesDao: ProductCategoriesDao,
 ) : Store(dispatcher) {
     companion object {
         const val NUM_REVIEWS_PER_FETCH = 25
@@ -951,8 +953,8 @@ class WCProductStore @Inject internal constructor(
     ): WCProductReviewModel? = ProductSqlUtils
         .getProductReviewByRemoteId(localSiteId, remoteReviewId)
 
-    fun getProductCategoriesForSite(site: SiteModel, sortType: ProductCategorySorting = DEFAULT_CATEGORY_SORTING) =
-        ProductSqlUtils.getProductCategoriesForSite(site, sortType)
+    suspend fun getProductCategoriesForSite(site: SiteModel, sortType: ProductCategorySorting = DEFAULT_CATEGORY_SORTING) =
+        productCategoriesDao.getProductCategories(site.localId().value, sortType)
 
     fun getProductCategoryByRemoteId(site: SiteModel, remoteId: Long) =
         ProductSqlUtils.getProductCategoryByRemoteId(site.id, remoteId)
@@ -1101,8 +1103,7 @@ class WCProductStore @Inject internal constructor(
     fun observeCategories(
         site: SiteModel,
         sortType: ProductCategorySorting = DEFAULT_CATEGORY_SORTING
-    ): Flow<List<WCProductCategoryModel>> =
-        ProductSqlUtils.observeCategories(site, sortType)
+    ): Flow<List<WCProductCategoryModel>> = productCategoriesDao.observeProductCategories(site.localId().value, sortType)
 
     fun observeBundledProducts(
         site: SiteModel,

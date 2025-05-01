@@ -4,20 +4,15 @@ package org.wordpress.android.fluxc.persistence
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.wellsql.generated.WCProductCategoryModelTable
 import com.wellsql.generated.WCProductReviewModelTable
 import com.wellsql.generated.WCProductShippingClassModelTable
 import com.wellsql.generated.WCProductTagModelTable
 import com.yarolegovich.wellsql.SelectQuery
 import com.yarolegovich.wellsql.WellSql
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.mapLatest
-import kotlinx.coroutines.flow.onStart
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCBundledProduct
 import org.wordpress.android.fluxc.model.WCProductCategoryModel
@@ -27,28 +22,13 @@ import org.wordpress.android.fluxc.model.WCProductReviewModel
 import org.wordpress.android.fluxc.model.WCProductShippingClassModel
 import org.wordpress.android.fluxc.model.WCProductTagModel
 import org.wordpress.android.fluxc.persistence.dao.ProductsDao
-import org.wordpress.android.fluxc.store.WCProductStore.Companion.DEFAULT_CATEGORY_SORTING
-import org.wordpress.android.fluxc.store.WCProductStore.ProductCategorySorting
-import org.wordpress.android.fluxc.store.WCProductStore.ProductCategorySorting.NAME_ASC
-import org.wordpress.android.fluxc.store.WCProductStore.ProductCategorySorting.NAME_DESC
 import java.util.Locale
 
 @Suppress("LargeClass")
 internal object ProductSqlUtils {
-    private const val DEBOUNCE_DELAY_FOR_OBSERVERS = 50L
     private val categoriesUpdatesTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
     private val gson by lazy { Gson() }
-
-    fun observeCategories(site: SiteModel, sortType: ProductCategorySorting): Flow<List<WCProductCategoryModel>> {
-        return categoriesUpdatesTrigger
-            .onStart { emit(Unit) }
-            .debounce(DEBOUNCE_DELAY_FOR_OBSERVERS)
-            .mapLatest {
-                getProductCategoriesForSite(site, sortType)
-            }
-            .flowOn(Dispatchers.IO)
-    }
 
     suspend fun ProductsDao.getCompositeProducts(site: SiteModel, remoteProductId: Long): List<WCProductComponent> {
         val productModel = getProduct(site.id, remoteProductId)
@@ -249,31 +229,6 @@ internal object ProductSqlUtils {
             categories.sortedByDescending { it.name.lowercase(Locale.getDefault()) }
         } else {
             categories.sortedBy { it.name.lowercase(Locale.getDefault()) }
-        }
-    }
-
-    fun getProductCategoriesForSite(
-        site: SiteModel,
-        sortType: ProductCategorySorting = DEFAULT_CATEGORY_SORTING
-    ): List<WCProductCategoryModel> {
-        val sortOrder = when (sortType) {
-            NAME_ASC -> SelectQuery.ORDER_ASCENDING
-            NAME_DESC -> SelectQuery.ORDER_DESCENDING
-        }
-        val sortField = when (sortType) {
-            NAME_ASC, NAME_DESC -> WCProductCategoryModelTable.NAME
-        }
-        val categories = WellSql.select(WCProductCategoryModel::class.java)
-            .where()
-            .equals(WCProductCategoryModelTable.LOCAL_SITE_ID, site.id)
-            .endWhere()
-            .orderBy(sortField, sortOrder)
-            .asModel
-
-        return if (sortType == NAME_ASC || sortType == NAME_DESC) {
-            sortCategoriesByName(categories, descending = sortType == NAME_DESC)
-        } else {
-            categories
         }
     }
 

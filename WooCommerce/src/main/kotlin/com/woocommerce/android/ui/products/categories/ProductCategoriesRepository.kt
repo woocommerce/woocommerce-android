@@ -76,7 +76,7 @@ class ProductCategoriesRepository @Inject constructor(
     /**
      * Returns all product categories for the current site that are in the database
      */
-    fun getProductCategoriesList(): List<ProductCategory> {
+    suspend fun getProductCategoriesList(): List<ProductCategory> {
         return productStore.getProductCategoriesForSite(selectedSite.get())
             .map { it.toProductCategory() }
     }
