@@ -24,8 +24,6 @@ import org.wordpress.android.fluxc.persistence.dao.ProductsDao
 
 @Suppress("LargeClass")
 internal object ProductSqlUtils {
-    private val categoriesUpdatesTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
-
     private val gson by lazy { Gson() }
 
     suspend fun ProductsDao.getCompositeProducts(site: SiteModel, remoteProductId: Long): List<WCProductComponent> {

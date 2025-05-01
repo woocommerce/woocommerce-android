@@ -3,19 +3,20 @@ package org.wordpress.android.fluxc.persistence.dao
 import android.app.Application
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
+import java.io.IOException
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
 import org.junit.After
-import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
+import org.wordpress.android.fluxc.store.WCProductStore.ProductCategorySorting.NAME_ASC
 import org.wordpress.android.fluxc.wc.product.ProductTestUtils
-import java.io.IOException
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 
 @RunWith(RobolectricTestRunner::class)
 class ProductCategoriesDaoTest {
@@ -62,69 +63,73 @@ class ProductCategoriesDaoTest {
         assertEquals(updated.name, savedCategory.name)
     }
 
-//    @Test
-//    fun testInsertOrUpdateProductCategories() {
-//        val productCategories = ProductTestUtils.getProductCategories(site.id)
-//        kotlin.test.assertTrue(productCategories.isNotEmpty())
-//
-//        // Insert all product categories
-//        val rowsAffected = ProductSqlUtils.insertOrUpdateProductCategories(productCategories)
-//        kotlin.test.assertEquals(productCategories.size, rowsAffected)
-//    }
-//
-//    @Test
-//    fun testGetProductCategoriesForSite() {
-//        val categories = ProductTestUtils.getProductCategories(site.id)
-//        kotlin.test.assertTrue(categories.isNotEmpty())
-//
-//        // Insert all product categories
-//        val rowsAffected = ProductSqlUtils.insertOrUpdateProductCategories(categories)
-//        kotlin.test.assertEquals(categories.size, rowsAffected)
-//
-//        // Get all product categories for site and verify
-//        val savedCategoriesExist = ProductSqlUtils.getProductCategoriesForSite(site)
-//        kotlin.test.assertEquals(categories.size, savedCategoriesExist.size)
-//
-//        // Get all product categories for a site that do not exist
-//        val savedCategories = ProductSqlUtils.getProductCategoriesForSite(SiteModel().apply { id = 400 })
-//        kotlin.test.assertEquals(0, savedCategories.size)
-//    }
-//
-//    @Test
-//    fun testDeleteAllProductCategories() {
-//        val categories = ProductTestUtils.getProductCategories(site.id)
-//        kotlin.test.assertTrue(categories.isNotEmpty())
-//        var rowsAffected = ProductSqlUtils.insertOrUpdateProductCategories(categories)
-//        kotlin.test.assertEquals(categories.size, rowsAffected)
-//
-//        // Verify categories inserted
-//        var savedCategories = ProductSqlUtils.getProductCategoriesForSite(site)
-//        kotlin.test.assertEquals(categories.size, savedCategories.size)
-//
-//        // Delete all categories and verify
-//        rowsAffected = ProductSqlUtils.deleteAllProductCategories()
-//        kotlin.test.assertEquals(categories.size, rowsAffected)
-//        savedCategories = ProductSqlUtils.getProductCategoriesForSite(site)
-//        kotlin.test.assertEquals(0, savedCategories.size)
-//    }
-//
-//    @Test
-//    fun testDeleteProductCategoriesForSite() {
-//        val categories = ProductTestUtils.getProductCategories(site.id)
-//
-//        var rowsAffected = ProductSqlUtils.insertOrUpdateProductCategories(categories)
-//        kotlin.test.assertEquals(categories.size, rowsAffected)
-//
-//        // Verify categories inserted
-//        var savedCategories = ProductSqlUtils.getProductCategoriesForSite(site)
-//        kotlin.test.assertEquals(categories.size, savedCategories.size)
-//
-//        // Delete categories for site and verify
-//        rowsAffected = ProductSqlUtils.deleteAllProductCategoriesForSite(site)
-//        kotlin.test.assertEquals(categories.size, rowsAffected)
-//        savedCategories = ProductSqlUtils.getProductCategoriesForSite(site)
-//        kotlin.test.assertEquals(0, savedCategories.size)
-//    }
+    @Test
+    fun testInsertOrUpdateProductCategories() = runTest {
+        val productCategories = ProductTestUtils.getProductCategories(site.id)
+        assertTrue(productCategories.isNotEmpty())
+
+        // Insert all product categories
+        sut.upsertProductCategories(productCategories)
+
+        assertEquals(
+            productCategories,
+            sut.getProductCategories(
+                localSiteId = site.id,
+                sortType = NAME_ASC
+            )
+        )
+    }
+
+    @Test
+    fun testGetProductCategoriesForSite() = runTest {
+        val categories = ProductTestUtils.getProductCategories(site.id)
+        assertTrue(categories.isNotEmpty())
+
+        // Insert all product categories
+        sut.upsertProductCategories(categories)
+
+        // Get all product categories for site and verify
+        val savedCategoriesExist = sut.getProductCategories(site.id, NAME_ASC)
+        assertEquals(categories.size, savedCategoriesExist.size)
+
+        // Get all product categories for a site that do not exist
+        val savedCategories = sut.getProductCategories(localSiteId = 400, NAME_ASC)
+        assertEquals(0, savedCategories.size)
+    }
+
+    @Test
+    fun testDeleteAllProductCategories() = runTest{
+        val categories = ProductTestUtils.getProductCategories(site.id)
+        assertTrue(categories.isNotEmpty())
+        sut.upsertProductCategories(categories)
+
+        // Verify categories inserted
+        var savedCategories = sut.getProductCategories(site.localId().value, NAME_ASC)
+        assertEquals(categories.size, savedCategories.size)
+
+        // Delete all categories and verify
+        sut.deleteAllProductCategories()
+        savedCategories = sut.getProductCategories(site.localId().value, NAME_ASC)
+        assertEquals(0, savedCategories.size)
+    }
+
+    @Test
+    fun testDeleteProductCategoriesForSite() = runTest {
+        val localSiteId = site.id
+        val categories = ProductTestUtils.getProductCategories(localSiteId)
+
+        sut.upsertProductCategories(categories)
+
+        // Verify categories inserted
+        var savedCategories = sut.getProductCategories(localSiteId, NAME_ASC)
+
+        assertEquals(categories.size, savedCategories.size)
+
+        // Delete categories for site and verify
+        sut.deleteProductCategoriesForSite(localSiteId)
+        savedCategories = sut.getProductCategories(localSiteId, NAME_ASC)
+        assertEquals(0, savedCategories.size)
+    }
 
     @After
     @Throws(IOException::class)
