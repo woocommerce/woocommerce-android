@@ -7,6 +7,7 @@ import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,6 +32,7 @@ class WooPosItemsSearchHelperTest {
     private val mockResourceProvider: ResourceProvider = mock()
     private val mockChildToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val mockParentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock()
+    private val mockAnalyticsTracker: WooPosAnalyticsTracker = mock()
 
     private lateinit var viewStateFlow: MutableStateFlow<WooPosItemsViewState>
     private lateinit var searchHelper: WooPosItemsSearchHelper
@@ -44,7 +46,8 @@ class WooPosItemsSearchHelperTest {
         searchHelper = WooPosItemsSearchHelper(
             resourceProvider = mockResourceProvider,
             childToParentEventSender = mockChildToParentEventSender,
-            parentToChildrenEventReceiver = mockParentToChildrenEventReceiver
+            parentToChildrenEventReceiver = mockParentToChildrenEventReceiver,
+            analyticsTracker = mockAnalyticsTracker,
         )
     }
 

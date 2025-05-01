@@ -7,12 +7,14 @@ import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemNavigationData.VariableProductData
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState.Product
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateToVariationsScreen
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart.WooPosItemSource
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -615,7 +617,8 @@ class WooPosItemsSearchViewModelTest {
                 VariableProductData(
                     id = 1,
                     name = "Variable Product",
-                    numOfVariations = 3
+                    numOfVariations = 3,
+                    source = WooPosItemSource.SEARCH_RESULT,
                 )
             )
         )
@@ -711,6 +714,35 @@ class WooPosItemsSearchViewModelTest {
                 )
             )
         }
+
+    @Test
+    fun `when variable product is clicked from search, then navigation event uses search source`() = runTest {
+        // GIVEN
+        val viewModel = createViewModel()
+        val item = WooPosItemSelectionViewState.Product.Variable(
+            id = 1,
+            name = "Product",
+            price = "$10",
+            imageUrl = null,
+            numOfVariations = 2,
+            variationIds = emptyList()
+        )
+
+        // WHEN
+        viewModel.onUIEvent(WooPosItemsSearchUiEvent.OnItemClicked(item))
+
+        // THEN
+        verify(mockNavigator).sendNavigationEvent(
+            NavigateToVariationsScreen(
+                VariableProductData(
+                    id = 1L,
+                    name = "Product",
+                    numOfVariations = 2,
+                    source = WooPosItemSource.SEARCH_RESULT
+                )
+            )
+        )
+    }
 
     private fun mockSuccessfulSearch(query: String, products: List<com.woocommerce.android.model.Product>) {
         wheneverBlocking { mockDataSource.searchLocalProducts(query) }.thenReturn(emptyList())

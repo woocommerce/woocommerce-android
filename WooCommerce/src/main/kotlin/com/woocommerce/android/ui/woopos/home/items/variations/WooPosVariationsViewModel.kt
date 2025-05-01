@@ -48,11 +48,13 @@ class WooPosVariationsViewModel @Inject constructor(
         )
 
     private var fetchJob: Job? = null
+    private var variationsSource: WooPosItemSource = WooPosItemSource.PRODUCT_LIST
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     internal var loadMoreJob: Job? = null
 
-    fun init(productId: Long) {
+    fun init(productId: Long, source: WooPosItemSource) {
+        this.variationsSource = source
         viewModelScope.launch {
             variationsDataSource.resetState()
         }
@@ -210,7 +212,7 @@ class WooPosVariationsViewModel @Inject constructor(
         sendEventToParent(
             ChildToParentEvent.ItemClickedInProductSelector(
                 itemData = WooPosItemsViewModel.ItemClickedData.Product.Variation(productId, variationId),
-                source = WooPosItemSource.PRODUCT_LIST
+                source = variationsSource
             )
         )
     }

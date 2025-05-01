@@ -222,10 +222,10 @@ class WooPosItemsSearchViewModel @Inject constructor(
                                 id = item.id,
                                 name = item.name,
                                 numOfVariations = item.numOfVariations,
+                                source = WooPosItemSource.SEARCH_RESULT
                             )
                         )
                     )
-                    // TODO: @samiuelson track item clicked on variations list
                 }
             }
 
