@@ -220,22 +220,6 @@ internal object ProductSqlUtils {
         }
     }
 
-    fun getProductCategoryByNameAndParentId(
-        localSiteId: Int,
-        categoryName: String,
-        parentId: Long
-    ): WCProductCategoryModel? {
-        return WellSql.select(WCProductCategoryModel::class.java)
-            .where()
-            .beginGroup()
-            .equals(WCProductCategoryModelTable.LOCAL_SITE_ID, localSiteId)
-            .equals(WCProductCategoryModelTable.NAME, categoryName)
-            .equals(WCProductCategoryModelTable.PARENT, parentId)
-            .endGroup()
-            .endWhere()
-            .asModel.firstOrNull()
-    }
-
     fun insertOrUpdateProductCategories(productCategories: List<WCProductCategoryModel>): Int {
         var rowsAffected = 0
         executeInTransaction {

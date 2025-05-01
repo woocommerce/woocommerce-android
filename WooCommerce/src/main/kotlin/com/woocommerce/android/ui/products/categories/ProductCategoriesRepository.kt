@@ -84,10 +84,6 @@ class ProductCategoriesRepository @Inject constructor(
     suspend fun getProductCategoryByRemoteId(remoteId: Long) =
         productStore.getProductCategoryByRemoteId(selectedSite.get(), remoteId)
 
-    fun getProductCategoryByNameAndParentId(categoryName: String, parentId: Long): ProductCategory? =
-        productStore.getProductCategoryByNameAndParentId(selectedSite.get(), categoryName, parentId)
-            ?.toProductCategory()
-
     suspend fun addProductCategories(categories: List<ProductCategory>): Result<List<ProductCategory>> {
         val result = productStore.addProductCategories(
             site = selectedSite.get(),

@@ -959,12 +959,6 @@ class WCProductStore @Inject internal constructor(
     suspend fun getProductCategoryByRemoteId(site: SiteModel, remoteId: Long) =
         productCategoriesDao.getProductCategory(site.localId().value, remoteId)
 
-    fun getProductCategoryByNameAndParentId(
-        site: SiteModel,
-        categoryName: String,
-        parentId: Long = 0L
-    ) = ProductSqlUtils.getProductCategoryByNameAndParentId(site.id, categoryName, parentId)
-
     @Suppress("LongMethod", "ComplexMethod")
     @Subscribe(threadMode = ThreadMode.ASYNC)
     override fun onAction(action: Action<*>) {
