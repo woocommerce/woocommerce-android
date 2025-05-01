@@ -27,7 +27,9 @@ class BluetoothReaderListenerImplTest {
     private val logWrapper: LogWrapper = mock()
     private val additionalInfoMapper: AdditionalInfoMapper = mock()
     private val updateErrorMapper: UpdateErrorMapper = mock()
-    private val listener = BluetoothReaderListenerImpl(logWrapper, additionalInfoMapper, updateErrorMapper)
+    private val terminalListenerImpl: TerminalListenerImpl = mock()
+    private val listener =
+        BluetoothReaderListenerImpl(logWrapper, additionalInfoMapper, updateErrorMapper, terminalListenerImpl)
 
     @Test
     fun `when finishes installing update with error, then failed emitted`() {
