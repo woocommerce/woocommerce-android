@@ -129,23 +129,23 @@ object ProductTestUtils {
     }
 
     fun generateCategory(siteId: Int, remoteId: Long) =
-        WCProductCategoryModel().apply {
-            localSiteId = siteId
-            remoteCategoryId = remoteId
-            name = "Category $remoteId"
-            slug = "category$remoteId"
-            parent = 0L
-        }
+        WCProductCategoryModel().copy(
+            localSiteId = siteId,
+            remoteCategoryId = remoteId,
+            name = "Category $remoteId",
+            slug = "category$remoteId",
+            parent = 0L,
+        )
 
     fun generateCategoryList(siteId: Int): List<WCProductCategoryModel> {
         return List(5) {
-            WCProductCategoryModel().apply {
-                localSiteId = siteId
-                remoteCategoryId = it.toLong()
-                name = "Category $it"
-                slug = "category$it"
-                parent = 0L
-            }
+            WCProductCategoryModel().copy(
+                localSiteId = siteId,
+                remoteCategoryId = it.toLong(),
+                name = "Category $it",
+                slug = "category$it",
+                parent = 0L,
+            )
         }
     }
 
@@ -155,13 +155,13 @@ object ProductTestUtils {
         val responseType = object : TypeToken<List<ProductCategoryApiResponse>>() {}.type
         val converted = Gson().fromJson(categoryJson, responseType) as? List<ProductCategoryApiResponse> ?: emptyList()
         return converted.map {
-            WCProductCategoryModel().apply {
-                localSiteId = siteId
-                remoteCategoryId = it.id
-                name = it.name ?: ""
-                slug = it.slug ?: ""
-                parent = it.parent ?: 0L
-            }
+            WCProductCategoryModel().copy(
+                localSiteId = siteId,
+                remoteCategoryId = it.id,
+                name = it.name ?: "",
+                slug = it.slug ?: "",
+                parent = it.parent ?: 0L,
+            )
         }
     }
 
@@ -193,7 +193,7 @@ object ProductTestUtils {
                     name = "$i",
                     slug = "$i",
                     description = "$i"
-            )
+                )
             )
         }
         return tagList
