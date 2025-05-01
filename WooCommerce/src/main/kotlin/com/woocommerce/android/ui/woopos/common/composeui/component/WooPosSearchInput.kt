@@ -151,7 +151,7 @@ private fun SearchInput(
 
     val borderColor by animateFloatAsState(
         targetValue = if (isFocused) 1f else 0f,
-        animationSpec = tween(durationMillis = 150, easing = FastOutSlowInEasing),
+        animationSpec = tween(durationMillis = 200, easing = FastOutSlowInEasing),
         label = "borderColorAnimation"
     )
 
