@@ -59,7 +59,7 @@ fun WooPosItemsToolbar(
             enter = fadeIn(
                 animationSpec = tween(
                     durationMillis = ANIMATION_DURATION,
-                    delayMillis = ANIMATION_DURATION / 3,
+                    delayMillis = ANIMATION_DURATION / 2,
                     easing = FastOutSlowInEasing
                 )
             ),

@@ -97,7 +97,8 @@ fun WooPosSearchInput(
             ),
             exit = fadeOut(
                 animationSpec = tween(
-                    durationMillis = animationDuration / 2
+                    durationMillis = animationDuration / 2,
+                    easing = FastOutSlowInEasing,
                 )
             ),
         ) {
