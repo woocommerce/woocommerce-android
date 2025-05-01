@@ -21,10 +21,6 @@ internal class TerminalListenerImpl(
 
     override fun onConnectionStatusChange(status: ConnectionStatus) {
         logWrapper.d(LOG_TAG, "onConnectionStatusChange: ${status.name}")
-
-        if (status == ConnectionStatus.NOT_CONNECTED) {
-            _readerStatus.value = CardReaderStatus.NotConnected()
-        }
     }
 
     override fun onPaymentStatusChange(status: PaymentStatus) {

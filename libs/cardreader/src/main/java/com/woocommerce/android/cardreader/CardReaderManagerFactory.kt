@@ -34,14 +34,15 @@ object CardReaderManagerFactory {
         logWrapper: LogWrapper
     ): CardReaderManager {
         val terminal = TerminalWrapper()
+        val terminalListener = TerminalListenerImpl(logWrapper)
         val batteryLevelProvider = { terminal.getConnectedReader()?.currentBatteryLevel }
         val bluetoothReaderListener = BluetoothReaderListenerImpl(
             logWrapper,
             AdditionalInfoMapper(),
-            UpdateErrorMapper(batteryLevelProvider)
+            UpdateErrorMapper(batteryLevelProvider),
+            terminalListener
         )
         val tapToPayReaderListener = TapToPayReaderListenerImpl(logWrapper)
-        val terminalListener = TerminalListenerImpl(logWrapper)
         val cardReaderConfigFactory = CardReaderConfigFactory()
         val paymentUtils = PaymentUtils(logWrapper)
 

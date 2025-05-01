@@ -10,6 +10,7 @@ import com.stripe.stripeterminal.external.models.ReaderInputOptions
 import com.stripe.stripeterminal.external.models.ReaderSoftwareUpdate
 import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.LogWrapper
+import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.event.BluetoothCardReaderMessages
 import com.woocommerce.android.cardreader.connection.event.BluetoothCardReaderMessages.CardReaderNoMessage
 import com.woocommerce.android.cardreader.connection.event.CardReaderBatteryStatus
@@ -28,6 +29,7 @@ internal class BluetoothReaderListenerImpl(
     private val logWrapper: LogWrapper,
     private val additionalInfoMapper: AdditionalInfoMapper,
     private val updateErrorMapper: UpdateErrorMapper,
+    private val terminalListenerImpl: TerminalListenerImpl
 ) : MobileReaderListener {
     private val _updateStatusEvents = MutableStateFlow<SoftwareUpdateStatus>(SoftwareUpdateStatus.Unknown)
     val updateStatusEvents = _updateStatusEvents.asStateFlow()
@@ -107,6 +109,7 @@ internal class BluetoothReaderListenerImpl(
 
     override fun onDisconnect(reason: DisconnectReason) {
         logWrapper.d(LOG_TAG, "onDisconnect")
+        terminalListenerImpl.updateReaderStatus(CardReaderStatus.NotConnected())
     }
 
     fun resetConnectionState() {
