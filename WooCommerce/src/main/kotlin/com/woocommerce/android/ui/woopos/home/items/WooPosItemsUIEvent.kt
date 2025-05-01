@@ -1,9 +1,6 @@
 package com.woocommerce.android.ui.woopos.home.items
 
 sealed class WooPosItemsUIEvent {
-    data object SimpleProductsBannerClosed : WooPosItemsUIEvent()
-    data object SimpleProductsBannerLearnMoreClicked : WooPosItemsUIEvent()
-    data object SimpleProductsDialogInfoIconClicked : WooPosItemsUIEvent()
     data class OnTabClicked(val tab: WooPosItemsViewState.Tab) : WooPosItemsUIEvent()
     data object BackButtonClicked : WooPosItemsUIEvent()
 

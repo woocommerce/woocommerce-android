@@ -278,7 +278,6 @@ class WooPosItemsSearchHelperTest {
                     isLoading = false
                 )
             ),
-            banner = WooPosItemsViewState.BannerState.Hidden,
             tabs = listOf(
                 WooPosItemsViewState.Tab(
                     R.string.woopos_products_screen_title,

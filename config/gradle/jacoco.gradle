@@ -16,6 +16,8 @@ rootProject.afterEvaluate {
                 ':libs:fluxc-plugin:testDebugUnitTest',
                 ':libs:fluxc-tests:testDebugUnitTest',
                 ':libs:login:testDebugUnitTest',
+                ':libs:apifaker:testDebugUnitTest',
+                ':libs:commons:testDebugUnitTest',
         )
 
         group = "Reporting"

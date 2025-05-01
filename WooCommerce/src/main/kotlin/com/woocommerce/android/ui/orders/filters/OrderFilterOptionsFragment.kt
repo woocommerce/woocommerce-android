@@ -3,12 +3,14 @@ package com.woocommerce.android.ui.orders.filters
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.view.WindowCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderFilterListBinding
+import com.woocommerce.android.extensions.edgeToEdgeHandlingForNavigationAndStatusBar
 import com.woocommerce.android.extensions.isTwoPanesShouldBeUsed
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.navigateBackWithResult
@@ -32,7 +34,6 @@ class OrderFilterOptionsFragment :
     private var _binding: FragmentOrderFilterListBinding? = null
     private val binding get() = _binding!!
     private companion object {
-        const val DATE_PICKER_FRAGMENT_TAG = "DateRangePicker"
         const val TABLET_LANDSCAPE_WIDTH_RATIO = 0.55f
         const val TABLET_LANDSCAPE_HEIGHT_RATIO = 0.6f
     }
@@ -55,6 +56,7 @@ class OrderFilterOptionsFragment :
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentOrderFilterListBinding.bind(view)
+        binding.root.edgeToEdgeHandlingForNavigationAndStatusBar(binding.appBarLayout)
         setupToolbar(binding)
         setUpObservers(viewModel)
         setUpFilterOptionsRecyclerView(binding)
@@ -70,6 +72,9 @@ class OrderFilterOptionsFragment :
                 (DisplayUtils.getWindowPixelWidth(requireContext()) * TABLET_LANDSCAPE_WIDTH_RATIO).toInt(),
                 (DisplayUtils.getWindowPixelHeight(requireContext()) * TABLET_LANDSCAPE_HEIGHT_RATIO).toInt()
             )
+        }
+        dialog?.window?.let {
+            WindowCompat.setDecorFitsSystemWindows(it, false)
         }
     }
 

@@ -68,7 +68,7 @@ fun JetpackActivationWPComEmailScreen(
                 .background(MaterialTheme.colors.surface)
                 .padding(paddingValues)
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState()),
+                .verticalScroll(rememberScrollState())
         ) {
             Column(
                 modifier = Modifier
@@ -98,6 +98,7 @@ fun JetpackActivationWPComEmailScreen(
                     )
                 )
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+
                 WCOutlinedTextField(
                     value = viewState.emailOrUsername,
                     onValueChange = onEmailChanged,
@@ -118,6 +119,7 @@ fun JetpackActivationWPComEmailScreen(
                     )
                 )
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+
                 if (!viewState.usernameOnly) {
                     Text(
                         style = MaterialTheme.typography.body2,

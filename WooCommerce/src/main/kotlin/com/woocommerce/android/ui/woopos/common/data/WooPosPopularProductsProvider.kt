@@ -18,13 +18,17 @@ class WooPosPopularProductsProvider @Inject constructor(
     private val productsTypesFilterConfig: WooPosProductsTypesFilterConfig,
 ) {
     companion object {
-        private const val MAX_POPULAR_PRODUCTS = 3
+        private const val MAX_POPULAR_PRODUCTS = 10
     }
 
     private val mutex = Mutex()
     private val popularProductsCache = mutableListOf<Product>()
 
     suspend fun getPopularProducts(): List<Product> = mutex.withLock { popularProductsCache }
+
+    suspend fun addPopularItemsToCache() = mutex.withLock {
+        productsCache.addAll(popularProductsCache)
+    }
 
     suspend fun fetchAndCachePopularProducts(): Result<Unit> = mutex.withLock {
         val result = productStore.fetchProducts(

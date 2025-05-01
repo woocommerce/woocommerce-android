@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.home
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.ui.woopos.common.util.WooPosSoundHelper
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.CheckoutClicked
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.ItemClickedInProductSelector
@@ -31,13 +32,14 @@ class WooPosHomeViewModel @Inject constructor(
     private val parentToChildrenEventSender: WooPosParentToChildrenEventSender,
     private val wooPosItemsNavigator: WooPosItemsNavigator,
     private val analyticsTracker: WooPosAnalyticsTracker,
+    private val soundHelper: WooPosSoundHelper,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     private val _state = savedStateHandle.getStateFlow(
         scope = viewModelScope,
         key = "home_state",
         initialValue = WooPosHomeState(
-            screenPositionState = ScreenPositionState.Cart.Visible,
+            screenPositionState = ScreenPositionState.Cart,
             productsInfoDialog = ProductsInfoDialog(isVisible = false),
             exitConfirmationDialog = ExitConfirmationDialog(isVisible = false),
         )
@@ -60,7 +62,7 @@ class WooPosHomeViewModel @Inject constructor(
                 when (_state.value.screenPositionState) {
                     ScreenPositionState.Checkout.CartWithTotals -> {
                         _state.value = _state.value.copy(
-                            screenPositionState = ScreenPositionState.Cart.Visible
+                            screenPositionState = ScreenPositionState.Cart
                         )
                         sendEventToChildren(ParentToChildrenEvent.BackFromCheckoutToCartClicked)
                         viewModelScope.launch {
@@ -70,7 +72,7 @@ class WooPosHomeViewModel @Inject constructor(
 
                     ScreenPositionState.Checkout.FullScreenTotals -> {
                         _state.value = _state.value.copy(
-                            screenPositionState = ScreenPositionState.Cart.Visible
+                            screenPositionState = ScreenPositionState.Cart
                         )
                     }
 
@@ -120,7 +122,7 @@ class WooPosHomeViewModel @Inject constructor(
 
                     is ChildToParentEvent.BackFromCheckoutToCartClicked -> {
                         _state.value = _state.value.copy(
-                            screenPositionState = ScreenPositionState.Cart.Visible
+                            screenPositionState = ScreenPositionState.Cart
                         )
                         sendEventToChildren(ParentToChildrenEvent.BackFromCheckoutToCartClicked)
                     }
@@ -133,7 +135,7 @@ class WooPosHomeViewModel @Inject constructor(
 
                     is ChildToParentEvent.NewTransactionClicked -> {
                         _state.value = _state.value.copy(
-                            screenPositionState = ScreenPositionState.Cart.Visible
+                            screenPositionState = ScreenPositionState.Cart
                         )
                     }
 
@@ -166,7 +168,7 @@ class WooPosHomeViewModel @Inject constructor(
                         )
                     }
 
-                    ChildToParentEvent.ProductsDialogInfoIconClicked -> {
+                    ChildToParentEvent.SimpleProductExplanationMenuItemClicked -> {
                         _state.value = _state.value.copy(
                             productsInfoDialog = ProductsInfoDialog(isVisible = true)
                         )
@@ -235,6 +237,8 @@ class WooPosHomeViewModel @Inject constructor(
 
     private fun onOrderSuccessfullyPaid(paymentMethod: PaymentMethod) {
         viewModelScope.launch {
+            soundHelper.playChaChing()
+
             wooPosItemsNavigator.sendNavigationEvent(
                 WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateBackToItemListScreen
             )
