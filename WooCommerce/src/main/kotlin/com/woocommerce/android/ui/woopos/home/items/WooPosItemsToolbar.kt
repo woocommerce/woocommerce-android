@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.home.items
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -55,8 +56,19 @@ fun WooPosItemsToolbar(
     ) {
         AnimatedVisibility(
             visible = !isSearchOpen,
-            enter = fadeIn(animationSpec = tween(ANIMATION_DURATION)),
-            exit = fadeOut(animationSpec = tween(ANIMATION_DURATION)),
+            enter = fadeIn(
+                animationSpec = tween(
+                    durationMillis = ANIMATION_DURATION,
+                    delayMillis = ANIMATION_DURATION / 3,
+                    easing = FastOutSlowInEasing
+                )
+            ),
+            exit = fadeOut(
+                animationSpec = tween(
+                    durationMillis = ANIMATION_DURATION / 2,
+                    easing = FastOutSlowInEasing
+                )
+            ),
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 state.tabs.forEach { tab ->
@@ -75,8 +87,6 @@ fun WooPosItemsToolbar(
                 }
             }
         }
-
-        println("state.search: ${state.search}")
 
         when (val search = state.search) {
             SearchState.Hidden -> Unit

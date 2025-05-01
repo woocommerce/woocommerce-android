@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.common.composeui.component
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -88,8 +89,17 @@ fun WooPosSearchInput(
     ) {
         AnimatedVisibility(
             visibleState = inputVisibleState,
-            enter = fadeIn(animationSpec = tween(animationDuration)),
-            exit = fadeOut(animationSpec = tween(animationDuration)),
+            enter = fadeIn(
+                animationSpec = tween(
+                    durationMillis = animationDuration,
+                    easing = FastOutSlowInEasing
+                )
+            ),
+            exit = fadeOut(
+                animationSpec = tween(
+                    durationMillis = animationDuration / 2
+                )
+            ),
         ) {
             lastOpenState?.let {
                 SearchInput(
@@ -102,8 +112,18 @@ fun WooPosSearchInput(
 
         AnimatedVisibility(
             visibleState = searchVisibleState,
-            enter = fadeIn(animationSpec = tween(animationDuration)),
-            exit = fadeOut(animationSpec = tween(animationDuration))
+            enter = fadeIn(
+                animationSpec = tween(
+                    durationMillis = animationDuration,
+                    delayMillis = animationDuration / 3,
+                    easing = FastOutSlowInEasing
+                )
+            ),
+            exit = fadeOut(
+                animationSpec = tween(
+                    durationMillis = animationDuration / 3
+                )
+            )
         ) {
             WooPosCircularIconButton(
                 icon = Icons.Default.Search,
