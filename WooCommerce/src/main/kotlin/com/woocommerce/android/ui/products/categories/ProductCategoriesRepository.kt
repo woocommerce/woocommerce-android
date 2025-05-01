@@ -88,10 +88,10 @@ class ProductCategoriesRepository @Inject constructor(
         val result = productStore.addProductCategories(
             site = selectedSite.get(),
             categories = categories.map {
-                WCProductCategoryModel().apply {
-                    name = it.name
+                WCProductCategoryModel().copy(
+                    name = it.name,
                     parent = it.parentId
-                }
+                )
             }
         )
 
@@ -111,10 +111,10 @@ class ProductCategoriesRepository @Inject constructor(
     suspend fun addProductCategory(categoryName: String, parentId: Long): Result<ProductCategory> {
         val result = productStore.addProductCategory(
             site = selectedSite.get(),
-            category = WCProductCategoryModel().apply {
-                name = categoryName
+            category = WCProductCategoryModel().copy(
+                name = categoryName,
                 parent = parentId
-            }
+            )
         )
         return when {
             result.isError -> {
@@ -132,11 +132,11 @@ class ProductCategoriesRepository @Inject constructor(
     suspend fun updateProductCategory(remoteId: Long, categoryName: String, parentId: Long): Result<ProductCategory> {
         val result = productStore.updateProductCategory(
             site = selectedSite.get(),
-            category = WCProductCategoryModel().apply {
-                remoteCategoryId = remoteId
-                name = categoryName
+            category = WCProductCategoryModel().copy(
+                remoteCategoryId = remoteId,
+                name = categoryName,
                 parent = parentId
-            }
+            )
         )
         return when {
             result.isError -> {
