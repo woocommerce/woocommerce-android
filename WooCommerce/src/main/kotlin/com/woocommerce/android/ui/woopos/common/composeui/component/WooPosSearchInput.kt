@@ -4,6 +4,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -38,6 +39,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontWeight
@@ -144,6 +147,24 @@ private fun SearchInput(
     onEvent: (WooPosSearchUIEvent) -> Unit
 ) {
     val focusRequester = remember { FocusRequester() }
+    var isFocused by remember { mutableStateOf(false) }
+
+    val borderColor by animateFloatAsState(
+        targetValue = if (isFocused) 1f else 0f,
+        animationSpec = tween(durationMillis = 150, easing = FastOutSlowInEasing),
+        label = "borderColorAnimation"
+    )
+
+    val colorSurface = MaterialTheme.colorScheme.surface
+    val colorPrimary = MaterialTheme.colorScheme.primary
+
+    val animatedFocusedBorderColor = remember(borderColor) {
+        lerp(
+            colorSurface,
+            colorPrimary,
+            borderColor
+        )
+    }
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -193,7 +214,10 @@ private fun SearchInput(
             modifier = Modifier
                 .weight(1f)
                 .height(INPUT_FIELD_HEIGHT)
-                .focusRequester(focusRequester),
+                .focusRequester(focusRequester)
+                .onFocusChanged { focusState ->
+                    isFocused = focusState.isFocused
+                },
             placeholder = {
                 WooPosText(
                     text = hint,
@@ -219,7 +243,7 @@ private fun SearchInput(
             ),
             colors = OutlinedTextFieldDefaults.colors(
                 unfocusedBorderColor = MaterialTheme.colorScheme.surface,
-                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                focusedBorderColor = animatedFocusedBorderColor,
                 unfocusedContainerColor = MaterialTheme.colorScheme.surfaceBright,
                 focusedContainerColor = MaterialTheme.colorScheme.surfaceBright,
                 cursorColor = MaterialTheme.colorScheme.primary,
