@@ -455,7 +455,6 @@ private fun TotalsErrorScreen(
     )
 }
 
-
 @Composable
 private fun TotalsInvalidCouponsErrorScreen(
     errorMessage: String,

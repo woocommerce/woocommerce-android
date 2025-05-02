@@ -245,8 +245,6 @@ class WooPosTotalsViewModel @Inject constructor(
         }
     }
 
-
-
     private suspend fun retryPaymentCollectionFromScratch() {
         cancelPaymentAction()
         val order = totalsRepository.getOrderById(dataState.value.orderId)

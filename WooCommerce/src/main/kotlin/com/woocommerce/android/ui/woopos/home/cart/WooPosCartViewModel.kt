@@ -185,7 +185,7 @@ class WooPosCartViewModel @Inject constructor(
                     is ParentToChildrenEvent.SearchEvent.ChangedQuery,
                     ParentToChildrenEvent.SearchEvent.Finished,
                     ParentToChildrenEvent.SearchEvent.Started,
-                    is ParentToChildrenEvent.CouponsRemoved-> Unit
+                    is ParentToChildrenEvent.CouponsRemoved -> Unit
                     is ParentToChildrenEvent.RemoveCouponsClicked -> {
                         val cartBody = _state.value.body as? WooPosCartState.Body.WithItems
                         cartBody?.itemsInCart
