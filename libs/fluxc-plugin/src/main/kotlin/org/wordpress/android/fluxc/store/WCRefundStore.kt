@@ -116,6 +116,7 @@ class WCRefundStore @Inject constructor(
             return@withDefaultContext when {
                 response.isError -> WooResult(response.error)
                 response.result != null -> {
+                    WCRefundSqlUtils.deleteRefunds(site, orderId)
                     WCRefundSqlUtils.insertOrUpdate(site, orderId, response.result.toList())
                     WooResult(response.result.map { refundsMapper.map(it) })
                 }
