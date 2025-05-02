@@ -125,20 +125,25 @@ class WooPosCartViewModel @Inject constructor(
     }
 
     private fun goToTotals() {
-        val itemClickedDataList = (_state.value.body as WooPosCartState.Body.WithItems).itemsInCart.map {
+        val itemClickedDataList = getCartItemsDataList()
+        sendEventToParent(ChildToParentEvent.CheckoutClicked(itemClickedDataList))
+        _state.value = _state.value.copy(cartStatus = CHECKOUT)
+        trackCheckoutTapped(itemClickedDataList.size)
+    }
+
+    private fun getCartItemsDataList(): List<ItemClickedData> {
+        val itemClickedDataList = (_state.value.body as WithItems).itemsInCart.map {
             when (it) {
-                is WooPosCartItemViewState.Product.Simple -> WooPosItemsViewModel.ItemClickedData.Product.Simple(it.id)
-                is WooPosCartItemViewState.Product.Variation -> WooPosItemsViewModel.ItemClickedData.Product.Variation(
+                is Simple -> ItemClickedData.Product.Simple(it.id)
+                is Variation -> ItemClickedData.Product.Variation(
                     productId = it.id,
                     id = it.variationId
                 )
 
-                is WooPosCartItemViewState.Coupon -> WooPosItemsViewModel.ItemClickedData.Coupon(it.id)
+                is Coupon -> ItemClickedData.Coupon(it.id)
             }
         }
-        sendEventToParent(ChildToParentEvent.CheckoutClicked(itemClickedDataList))
-        _state.value = _state.value.copy(cartStatus = CHECKOUT)
-        trackCheckoutTapped(itemClickedDataList.size)
+        return itemClickedDataList
     }
 
     private fun trackCheckoutTapped(itemsInCart: Int) {
