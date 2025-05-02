@@ -45,8 +45,9 @@ class GetShipmentsTests : BaseUnitTest() {
         whenever(orderDetailRepository.getOrderRefunds(eq(order.id))) doReturn refunds
 
         val result = sut.invoke(order)
+        val items = result.first().items
 
-        assertTrue(result.isEmpty())
+        assertTrue(items.isEmpty())
         verify(productDetailRepository, never()).getProductAsync(any())
     }
 
