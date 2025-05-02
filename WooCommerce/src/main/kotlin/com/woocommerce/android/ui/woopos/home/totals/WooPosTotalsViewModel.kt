@@ -20,7 +20,7 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToCashPayment
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToEmailReceipt
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NewTransactionClicked
-import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OrderCreated.CouponLine
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OrderCreated.CouponInfo
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OrderSuccessfullyPaidByCard
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.ToastMessageDisplayed
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
@@ -480,7 +480,7 @@ class WooPosTotalsViewModel @Inject constructor(
         .mapNotNull { coupon ->
             coupon.takeIf { it.id != null && !it.discount.isNullOrEmpty() }?.let {
                 try {
-                    CouponLine(
+                    CouponInfo(
                         id = requireNotNull(it.id),
                         code = it.code,
                         discountAmount = BigDecimal(it.discount)

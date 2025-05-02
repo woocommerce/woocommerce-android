@@ -226,7 +226,7 @@ class WooPosHomeViewModel @Inject constructor(
                     }
                 },
                 updatedCoupons = event.updatedCoupons.map {
-                    OrderCreated.CouponLine(
+                    OrderCreated.CouponInfo(
                         id = it.id,
                         code = it.code,
                         discountAmount = it.discountAmount
