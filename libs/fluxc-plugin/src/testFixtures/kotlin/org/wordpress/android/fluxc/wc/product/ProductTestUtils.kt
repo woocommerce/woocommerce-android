@@ -128,34 +128,13 @@ object ProductTestUtils {
         }
     }
 
-    fun generateCategory(siteId: Int, remoteId: Long) =
-        WCProductCategoryModel().copy(
-            localSiteId = siteId,
-            remoteCategoryId = remoteId,
-            name = "Category $remoteId",
-            slug = "category$remoteId",
-            parent = 0L,
-        )
-
-    fun generateCategoryList(siteId: Int): List<WCProductCategoryModel> {
-        return List(5) {
-            WCProductCategoryModel().copy(
-                localSiteId = siteId,
-                remoteCategoryId = it.toLong(),
-                name = "Category $it",
-                slug = "category$it",
-                parent = 0L,
-            )
-        }
-    }
-
     fun getProductCategories(siteId: Int): List<WCProductCategoryModel> {
         val categoryJson =
             UnitTestUtils.getStringFromResourceFile(this.javaClass, "wc/product-categories.json")
         val responseType = object : TypeToken<List<ProductCategoryApiResponse>>() {}.type
         val converted = Gson().fromJson(categoryJson, responseType) as? List<ProductCategoryApiResponse> ?: emptyList()
         return converted.map {
-            WCProductCategoryModel().copy(
+            WCProductCategoryModel(
                 localSiteId = siteId,
                 remoteCategoryId = it.id,
                 name = it.name ?: "",
@@ -165,7 +144,7 @@ object ProductTestUtils {
         }
     }
 
-    fun generateSampleProductTag(
+    private fun generateSampleProductTag(
         remoteId: Long = 1L,
         name: String = "",
         slug: String = "",

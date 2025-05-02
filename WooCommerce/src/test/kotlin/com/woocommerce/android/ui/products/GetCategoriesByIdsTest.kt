@@ -54,11 +54,11 @@ class GetCategoriesByIdsTest : BaseUnitTest() {
     }
 
     private val databaseCategories = List(3) { n ->
-        WCProductCategoryModel().apply {
-            localSiteId = 3
-            remoteCategoryId = n.toLong()
-            name = "category $n"
-        }
+        WCProductCategoryModel(
+            localSiteId = 3,
+            remoteCategoryId = n.toLong(),
+            name = "category $n",
+        )
     }
 
     private var productCategories = databaseCategories.map { it.toProductCategory() }
