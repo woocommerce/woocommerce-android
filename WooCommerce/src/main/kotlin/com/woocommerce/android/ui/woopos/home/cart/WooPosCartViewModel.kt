@@ -17,12 +17,11 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.CouponsRemoved
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
-import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState.Coupon
+import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState.Coupon.CouponValidationState
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartStatus.CHECKOUT
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartStatus.EDITABLE
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartStatus.EMPTY
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
-import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
 import com.woocommerce.android.ui.woopos.home.items.variations.getNameForPOS
 import com.woocommerce.android.ui.woopos.util.WooPosGetCachedStoreCurrency
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
@@ -134,16 +133,16 @@ class WooPosCartViewModel @Inject constructor(
         trackCheckoutTapped(itemClickedDataList.size)
     }
 
-    private fun getCartItemsDataList(): List<ItemClickedData> {
+    private fun getCartItemsDataList(): List<WooPosItemsViewModel.ItemClickedData> {
         val itemClickedDataList = (_state.value.body as WooPosCartState.Body.WithItems).itemsInCart.map {
             when (it) {
-                is WooPosCartItemViewState.Product.Simple -> ItemClickedData.Product.Simple(it.id)
-                is WooPosCartItemViewState.Product.Variation -> ItemClickedData.Product.Variation(
+                is WooPosCartItemViewState.Product.Simple -> WooPosItemsViewModel.ItemClickedData.Product.Simple(it.id)
+                is WooPosCartItemViewState.Product.Variation -> WooPosItemsViewModel.ItemClickedData.Product.Variation(
                     productId = it.id,
                     id = it.variationId
                 )
 
-                is WooPosCartItemViewState.Coupon -> ItemClickedData.Coupon(it.id)
+                is WooPosCartItemViewState.Coupon -> WooPosItemsViewModel.ItemClickedData.Coupon(it.id)
             }
         }
         return itemClickedDataList
@@ -201,8 +200,8 @@ class WooPosCartViewModel @Inject constructor(
         val body = currentState.body as? WooPosCartState.Body.WithItems ?: return
 
         val updatedItems = body.itemsInCart.map { item ->
-            if (item is Coupon) {
-                item.copy(validationState = Coupon.ValidationState.INVALID)
+            if (item is WooPosCartItemViewState.Coupon) {
+                item.copy(validationState = CouponValidationState.Invalid)
             } else {
                 item
             }
@@ -216,7 +215,7 @@ class WooPosCartViewModel @Inject constructor(
     private fun removeCouponsFromCart() {
         val cartBody = _state.value.body as? WooPosCartState.Body.WithItems
         cartBody?.itemsInCart
-            ?.filterIsInstance<Coupon>()
+            ?.filterIsInstance<WooPosCartItemViewState.Coupon>()
             ?.toSet()?.let { couponsToRemove ->
                 removeItemsFromCart(couponsToRemove)
             }
@@ -286,7 +285,7 @@ class WooPosCartViewModel @Inject constructor(
             id = couponId,
             name = coupon.code ?: "",
             summary = formatCouponSummary(coupon, getCachedStoreCurrency()),
-            formattedDiscount = null,
+            validationState = CouponValidationState.Unknown
         )
     }
 
@@ -384,7 +383,7 @@ class WooPosCartViewModel @Inject constructor(
     private fun removeFormattedDiscountFromCoupons(body: WooPosCartState.Body.WithItems) = body.itemsInCart
         .map { item ->
             when (item) {
-                is WooPosCartItemViewState.Coupon -> item.copy(formattedDiscount = null)
+                is WooPosCartItemViewState.Coupon -> item.copy(validationState = CouponValidationState.Unknown)
                 is WooPosCartItemViewState.Product -> item
             }
         }

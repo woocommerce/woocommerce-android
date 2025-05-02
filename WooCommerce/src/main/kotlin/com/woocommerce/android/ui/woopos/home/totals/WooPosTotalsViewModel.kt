@@ -310,7 +310,8 @@ class WooPosTotalsViewModel @Inject constructor(
                     ParentToChildrenEvent.SearchEvent.Finished,
                     is ParentToChildrenEvent.OrderCreated,
                     ParentToChildrenEvent.SearchEvent.Started,
-                    ParentToChildrenEvent.RemoveCouponsClicked -> Unit
+                    ParentToChildrenEvent.RemoveCouponsClicked,
+                    ParentToChildrenEvent.CouponsValidationFailed -> Unit
                 }
             }
         }

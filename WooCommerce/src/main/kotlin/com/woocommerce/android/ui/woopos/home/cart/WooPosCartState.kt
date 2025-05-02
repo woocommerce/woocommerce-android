@@ -83,13 +83,16 @@ sealed class WooPosCartItemViewState(open val itemNumber: Int, open val name: St
         override val name: String,
         val summary: String,
         val id: Long,
-        val formattedDiscount: String?,
-        val validationState: ValidationState = ValidationState.UNKNOWN,
+        val validationState: CouponValidationState = CouponValidationState.Unknown,
     ) : WooPosCartItemViewState(itemNumber, name), Parcelable {
-        enum class ValidationState {
-            VALID,
-            INVALID,
-            UNKNOWN,
+        @Parcelize
+        sealed class CouponValidationState: Parcelable {
+            @Parcelize
+            data class Valid(val formattedDiscount: String) : CouponValidationState(), Parcelable
+            @Parcelize
+            data object Invalid: CouponValidationState(), Parcelable
+            @Parcelize
+            data object Unknown: CouponValidationState(), Parcelable
         }
     }
 }

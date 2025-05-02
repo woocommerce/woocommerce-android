@@ -78,6 +78,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
+import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState.Coupon.CouponValidationState
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartUIEvent.ItemRemovedFromCart
 
 @Composable
@@ -525,8 +526,6 @@ private fun CouponItem(
         item.name
     )
 
-    val isDiscountCalculated = item.formattedDiscount.isNotNullOrEmpty()
-
     WooPosCard(
         modifier = modifier
             .height(96.dp)
@@ -543,10 +542,10 @@ private fun CouponItem(
             Box(
                 modifier = Modifier
                     .background(
-                        if (isDiscountCalculated) {
-                            WooPosTheme.colors.success
-                        } else {
-                            MaterialTheme.colorScheme.surfaceDim
+                        when (item.validationState) {
+                            CouponValidationState.Invalid -> MaterialTheme.colorScheme.error
+                            CouponValidationState.Unknown -> MaterialTheme.colorScheme.surfaceDim
+                            is CouponValidationState.Valid -> WooPosTheme.colors.success
                         }
                     )
                     .size(96.dp),
@@ -556,10 +555,10 @@ private fun CouponItem(
                     imageVector = Icons.Outlined.LocalOffer,
                     contentDescription = null,
                     colorFilter = ColorFilter.tint(
-                        if (isDiscountCalculated) {
-                            WooPosTheme.colors.onSuccess
-                        } else {
-                            WooPosTheme.colors.onSurfaceVariantLowest
+                        when (item.validationState){
+                            CouponValidationState.Invalid -> MaterialTheme.colorScheme.onError
+                            CouponValidationState.Unknown -> WooPosTheme.colors.onSurfaceVariantLowest
+                            is CouponValidationState.Valid -> WooPosTheme.colors.onSuccess
                         }
                     ),
                     modifier = Modifier.size(36.dp, 36.dp)
@@ -591,14 +590,26 @@ private fun CouponItem(
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.clearAndSetSemantics { }
                 )
-                if (isDiscountCalculated) {
-                    Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value.toAdaptivePadding()))
-                    WooPosText(
-                        text = requireNotNull(item.formattedDiscount) { "Can't be null" },
-                        style = WooPosTypography.BodySmall,
-                        color = WooPosTheme.colors.success,
-                        modifier = Modifier.clearAndSetSemantics { }
-                    )
+                when(item.validationState){
+                    CouponValidationState.Unknown -> Unit
+                    CouponValidationState.Invalid -> {
+                        Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value.toAdaptivePadding()))
+                        WooPosText(
+                            text = stringResource(R.string.woopos_cart_coupon_invalid_subtitle),
+                            style = WooPosTypography.BodySmall,
+                            color = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.clearAndSetSemantics { }
+                        )
+                    }
+                    is CouponValidationState.Valid -> {
+                        Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value.toAdaptivePadding()))
+                        WooPosText(
+                            text = item.validationState.formattedDiscount,
+                            style = WooPosTypography.BodySmall,
+                            color = WooPosTheme.colors.success,
+                            modifier = Modifier.clearAndSetSemantics { }
+                        )
+                    }
                 }
             }
 
@@ -652,7 +663,14 @@ fun WooPosCartScreenProductsPreview(modifier: Modifier = Modifier) {
                             name = "Test Coupon",
                             summary = "50% Off · All Products",
                             id = 1L,
-                            formattedDiscount = "-$10"
+                            validationState = CouponValidationState.Valid("-$10")
+                        ),
+                        WooPosCartItemViewState.Coupon(
+                            itemNumber = 1,
+                            name = "Test Coupon",
+                            summary = "10$ off * All Products",
+                            id = 1L,
+                            validationState = CouponValidationState.Invalid
                         ),
                         WooPosCartItemViewState.Product.Simple(
                             itemNumber = 2,
@@ -712,7 +730,14 @@ fun WooPosCartScreenCheckoutPreview(modifier: Modifier = Modifier) {
                                 "50% Off · 1 Product 50% Off · 1 Product 50% Off · 1 Product 50% Off · 1 Product " +
                                 "50% Off · 1 Product 50% Off · 1 Product 50% Off · 1 Product 50% Off · 1 Product",
                             id = 1L,
-                            formattedDiscount = null
+                            validationState = CouponValidationState.Valid("-$10")
+                        ),
+                        WooPosCartItemViewState.Coupon(
+                            itemNumber = 1,
+                            name = "Test Coupon",
+                            summary = "10$ off * All Products",
+                            id = 1L,
+                            validationState = CouponValidationState.Invalid
                         ),
                         WooPosCartItemViewState.Product.Simple(
                             itemNumber = 2,

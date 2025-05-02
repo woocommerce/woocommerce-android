@@ -4313,6 +4313,7 @@
     <string name="woopos_products_screen_title">Products</string>
     <string name="woopos_coupons_screen_title">Coupons</string>
     <string name="woopos_cart_back_content_description">Cart icon</string>
+    <string name="woopos_cart_coupon_invalid_subtitle">Coupon not applied</string>
     <string name="woopos_payment_failed_please_try_again">Payment failed. Please try again.</string>
     <string name="woopos_payment_successful_label">Payment successful</string>
     <string name="woopos_payment_successful_checkmark_icon_content_description">Payment successful checkmark icon</string>

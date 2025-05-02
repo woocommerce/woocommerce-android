@@ -6,6 +6,7 @@ import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
+import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState.Coupon.CouponValidationState
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooLogWrapper
@@ -82,7 +83,7 @@ class WooPosCartItemsUpdater @Inject constructor(
         updatedCoupons: List<ParentToChildrenEvent.OrderCreated.CouponLine>,
         item: WooPosCartItemViewState.Coupon,
     ) = updatedCoupons.find { it.code == item.name }?.let {
-        item.copy(formattedDiscount = "-${formatPrice(it.discountAmount)}")
+        item.copy(validationState = CouponValidationState.Valid("-${formatPrice(it.discountAmount)}"))
     } ?: item.also {
         val message = "Coupon not found in the cart"
         wooLogWrapper.e(T.POS, message)
