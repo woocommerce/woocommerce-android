@@ -19,11 +19,15 @@ import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.extensions.withOldValue
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.FeesRefundSection
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.OpenUrl
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.ShowNumberPicker
+import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.ProductsRefundSection
+import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.ShippingRefundSection
 import com.woocommerce.android.ui.payments.refunds.RefundFeeListAdapter.OnFeeLineCheckedChangeListener
 import com.woocommerce.android.ui.payments.refunds.RefundShippingListAdapter.OnCheckedChangeListener
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -58,6 +62,7 @@ class RefundByItemsFragment :
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
+
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
@@ -114,8 +119,8 @@ class RefundByItemsFragment :
     }
 
     private fun setupObservers() {
-        viewModel.refundByItemsStateLiveData.observe(viewLifecycleOwner) { old, new ->
-            new.currency?.takeIfNotEqualTo(old?.currency) {
+        viewModel.refundByItemsStateLiveData.withOldValue().observe(viewLifecycleOwner) { (old, new) ->
+            new.currency.takeIfNotEqualTo(old?.currency) {
                 productsBinding.issueRefundProducts.adapter = RefundProductListAdapter(
                     currencyFormatter.buildBigDecimalFormatter(new.currency),
                     imageMap,
@@ -134,63 +139,11 @@ class RefundByItemsFragment :
             new.isNextButtonEnabled.takeIfNotEqualTo(old?.isNextButtonEnabled) {
                 binding.issueRefundBtnNextFromItems.isEnabled = it
             }
-            new.formattedProductsRefund?.takeIfNotEqualTo(old?.formattedProductsRefund) {
-                productsBinding.issueRefundProductsTotal.text = it
-            }
-            new.shippingSubtotal?.takeIfNotEqualTo(old?.shippingSubtotal) {
-                shippingLinesBinding.issueRefundShippingSubtotal.text = it
-            }
-            new.shippingTaxes?.takeIfNotEqualTo(old?.shippingTaxes) {
-                shippingLinesBinding.issueRefundShippingTax.text = it
-            }
-            new.feesSubtotal?.takeIfNotEqualTo(old?.feesSubtotal) {
-                feeLinesBinding.issueRefundFeesSubtotal.text = it
-            }
-            new.feesTaxes?.takeIfNotEqualTo(old?.feesTaxes) {
-                feeLinesBinding.issueRefundFeesTax.text = it
-            }
-            new.selectedItemsHeader?.takeIfNotEqualTo(old?.selectedItemsHeader) {
-                binding.issueRefundSelectedItems.text = it
-            }
-            new.selectButtonTitle?.takeIfNotEqualTo(old?.selectButtonTitle) {
-                binding.issueRefundSelectButton.text = it
-            }
-            new.isShippingMainSwitchChecked.takeIfNotEqualTo(old?.isShippingMainSwitchChecked) { checked ->
-                binding.issueRefundShippingMainSwitch.isChecked = checked
-            }
-            new.selectedShippingLines?.takeIfNotEqualTo(old?.selectedShippingLines) { shippingLines ->
-                val adapter = shippingLinesBinding.issueRefundShippingLines.adapter as RefundShippingListAdapter
-                adapter.updateToggleStates(shippingLines)
 
-                if (shippingLines.isEmpty()) {
-                    viewModel.onShippingRefundMainSwitchChanged(isChecked = false)
-                    binding.issueRefundShippingSection.root.hide()
-                }
-            }
-            new.isShippingRefundAvailable?.takeIfNotEqualTo(old?.isShippingRefundAvailable) { isVisible ->
-                binding.issueRefundShippingContainer.isVisible = isVisible
-            }
-            new.formattedShippingRefundTotal?.takeIfNotEqualTo(old?.formattedShippingRefundTotal) {
-                shippingLinesBinding.issueRefundShippingTotal.text = it
-            }
-            new.isFeesMainSwitchChecked.takeIfNotEqualTo(old?.isFeesMainSwitchChecked) { checked ->
-                binding.issueRefundFeesMainSwitch.isChecked = checked
-            }
-            new.selectedFeeLines?.takeIfNotEqualTo(old?.selectedFeeLines) { feeLines ->
-                val adapter = feeLinesBinding.issueRefundFeeLines.adapter as RefundFeeListAdapter
-                adapter.updateToggleStates(feeLines)
+            updateProductsSection(old?.productsSection, new.productsSection)
+            updateShippingSection(old?.shippingSection, new.shippingSection)
+            updateFeesSection(old?.feesSection, new.feesSection)
 
-                if (feeLines.isEmpty()) {
-                    viewModel.onFeesRefundMainSwitchChanged(isChecked = false)
-                    binding.issueRefundFeesSection.root.hide()
-                }
-            }
-            new.isFeesRefundAvailable?.takeIfNotEqualTo(old?.isFeesRefundAvailable) { isVisible ->
-                binding.issueRefundFeesContainer.isVisible = isVisible
-            }
-            new.formattedFeesRefundTotal?.takeIfNotEqualTo(old?.formattedFeesRefundTotal) {
-                feeLinesBinding.issueRefundFeesTotal.text = it
-            }
             new.isRefundNoticeVisible.takeIfNotEqualTo(old?.isRefundNoticeVisible) { isVisible ->
                 if (isVisible) {
                     productsBinding.issueRefundRefundNotice.show()
@@ -205,21 +158,6 @@ class RefundByItemsFragment :
             }
         }
 
-        viewModel.refundItems.observe(viewLifecycleOwner) { list ->
-            val adapter = productsBinding.issueRefundProducts.adapter as RefundProductListAdapter
-            adapter.update(list)
-        }
-
-        viewModel.refundShippingLines.observe(viewLifecycleOwner) { list ->
-            val adapter = shippingLinesBinding.issueRefundShippingLines.adapter as RefundShippingListAdapter
-            adapter.update(list)
-        }
-
-        viewModel.refundFeeLines.observe(viewLifecycleOwner) { list ->
-            val adapter = feeLinesBinding.issueRefundFeeLines.adapter as RefundFeeListAdapter
-            adapter.update(list)
-        }
-
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ShowNumberPicker -> {
@@ -231,11 +169,79 @@ class RefundByItemsFragment :
                     )
                     findNavController().navigateSafely(action)
                 }
+
                 is OpenUrl -> {
                     ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 }
+
                 else -> event.isHandled = false
             }
+        }
+    }
+
+    private fun updateProductsSection(old: ProductsRefundSection?, new: ProductsRefundSection) {
+        new.refundItems.takeIfNotEqualTo(old?.refundItems) { list ->
+            val adapter = productsBinding.issueRefundProducts.adapter as RefundProductListAdapter
+            adapter.update(list)
+        }
+        new.formattedProductsRefund.takeIfNotEqualTo(old?.formattedProductsRefund) {
+            productsBinding.issueRefundProductsTotal.text = it
+        }
+        new.selectedItemsHeader.takeIfNotEqualTo(old?.selectedItemsHeader) {
+            binding.issueRefundSelectedItems.text = it
+        }
+        new.selectButtonTitle.takeIfNotEqualTo(old?.selectButtonTitle) {
+            binding.issueRefundSelectButton.text = it
+        }
+    }
+
+    private fun updateShippingSection(old: ShippingRefundSection?, new: ShippingRefundSection) {
+        new.shippingRefundLines.takeIfNotEqualTo(old?.shippingRefundLines) { list ->
+            val adapter = shippingLinesBinding.issueRefundShippingLines.adapter as RefundShippingListAdapter
+            adapter.update(list)
+
+            // TODO improve this
+            adapter.updateToggleStates(list.filter { it.isSelected }.map { it.itemId })
+        }
+        new.shippingSubtotalFormatted.takeIfNotEqualTo(old?.shippingSubtotalFormatted) {
+            shippingLinesBinding.issueRefundShippingSubtotal.text = it
+        }
+        new.shippingTaxesFormatted.takeIfNotEqualTo(old?.shippingTaxesFormatted) {
+            shippingLinesBinding.issueRefundShippingTax.text = it
+        }
+        new.isShippingMainSwitchChecked.takeIfNotEqualTo(old?.isShippingMainSwitchChecked) { checked ->
+            binding.issueRefundShippingMainSwitch.isChecked = checked
+        }
+        new.isShippingRefundAvailable.takeIfNotEqualTo(old?.isShippingRefundAvailable) { isVisible ->
+            binding.issueRefundShippingContainer.isVisible = isVisible
+        }
+        new.shippingRefundTotalFormatted.takeIfNotEqualTo(old?.shippingRefundTotalFormatted) {
+            shippingLinesBinding.issueRefundShippingTotal.text = it
+        }
+    }
+
+    private fun updateFeesSection(old: FeesRefundSection?, new: FeesRefundSection) {
+        new.feeRefundLines.takeIfNotEqualTo(old?.feeRefundLines) { list ->
+            val adapter = feeLinesBinding.issueRefundFeeLines.adapter as RefundFeeListAdapter
+            adapter.update(list)
+
+            // TODO improve this
+            adapter.updateToggleStates(list.filter { it.isSelected }.map { it.itemId })
+        }
+        new.feesSubtotalFormatted.takeIfNotEqualTo(old?.feesSubtotalFormatted) {
+            feeLinesBinding.issueRefundFeesSubtotal.text = it
+        }
+        new.feesTaxesFormatted.takeIfNotEqualTo(old?.feesTaxesFormatted) {
+            feeLinesBinding.issueRefundFeesTax.text = it
+        }
+        new.isFeesMainSwitchChecked.takeIfNotEqualTo(old?.isFeesMainSwitchChecked) { checked ->
+            binding.issueRefundFeesMainSwitch.isChecked = checked
+        }
+        new.isFeesRefundAvailable.takeIfNotEqualTo(old?.isFeesRefundAvailable) { isVisible ->
+            binding.issueRefundFeesContainer.isVisible = isVisible
+        }
+        new.feesRefundTotalFormatted.takeIfNotEqualTo(old?.feesRefundTotalFormatted) {
+            feeLinesBinding.issueRefundFeesTotal.text = it
         }
     }
 

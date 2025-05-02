@@ -54,7 +54,8 @@ data class ProductRefundListItem(
 
 @Parcelize
 data class ShippingRefundListItem(
-    val shippingLine: Order.ShippingLine
+    val shippingLine: Order.ShippingLine,
+    val isSelected: Boolean = false
 ) : RefundItem() {
     override val itemId: Long
         get() = shippingLine.itemId
@@ -73,7 +74,8 @@ data class ShippingRefundListItem(
 
 @Parcelize
 data class FeeRefundListItem(
-    val feeLine: Order.FeeLine
+    val feeLine: Order.FeeLine,
+    val isSelected: Boolean = false
 ) : RefundItem() {
     override val itemId: Long
         get() = feeLine.id

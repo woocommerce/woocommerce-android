@@ -23,6 +23,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
@@ -62,9 +63,10 @@ class IssueRefundViewModelTest : BaseUnitTest() {
     private val currencyFormatter: CurrencyFormatter = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val resourceProvider: ResourceProvider = mock {
-        on(it.getString(R.string.multiple_shipping)).thenAnswer { "Multiple shipping lines" }
-        on(it.getString(R.string.and)).thenAnswer { "and" }
-        on(it.getString(any(), any())).thenAnswer { i ->
+        on { getString(any()) } doAnswer { it.arguments[0].toString() }
+        on { getString(R.string.multiple_shipping) } doAnswer { "Multiple shipping lines" }
+        on { getString(R.string.and) } doAnswer { "and" }
+        on { getString(any(), any()) } doAnswer { i ->
             "You can refund " + i.arguments[1].toString()
         }
     }
@@ -112,10 +114,10 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             initViewModel()
 
             var viewState: RefundByItemsViewState? = null
-            viewModel.refundByItemsStateLiveData.observeForever { _, new -> viewState = new }
+            viewModel.refundByItemsStateLiveData.observeForever { new -> viewState = new }
 
-            viewState!!.isFeesRefundAvailable?.let { assertTrue(it) }
-            assertTrue(viewState!!.isFeesMainSwitchChecked)
+            viewState!!.feesSection.isFeesRefundAvailable.let { assertTrue(it) }
+            assertTrue(viewState!!.feesSection.isFeesMainSwitchChecked)
         }
     }
 
@@ -127,7 +129,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             initViewModel()
 
             var viewState: RefundByItemsViewState? = null
-            viewModel.refundByItemsStateLiveData.observeForever { _, new -> viewState = new }
+            viewModel.refundByItemsStateLiveData.observeForever { new -> viewState = new }
 
             assertFalse(viewState!!.isRefundNoticeVisible)
         }
@@ -142,7 +144,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             initViewModel()
 
             var viewState: RefundByItemsViewState? = null
-            viewModel.refundByItemsStateLiveData.observeForever { _, new -> viewState = new }
+            viewModel.refundByItemsStateLiveData.observeForever { new -> viewState = new }
 
             assertFalse(viewState!!.isRefundNoticeVisible)
         }
@@ -157,7 +159,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             initViewModel()
 
             var viewState: RefundByItemsViewState? = null
-            viewModel.refundByItemsStateLiveData.observeForever { _, new -> viewState = new }
+            viewModel.refundByItemsStateLiveData.observeForever { new -> viewState = new }
 
             assertTrue(viewState!!.isRefundNoticeVisible)
             assertEquals("You can refund multiple shipping lines", viewState!!.refundNotice)
@@ -951,8 +953,6 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             on { this.total }.thenReturn(BigDecimal.TEN)
             on { this.refundTotal }.thenReturn(BigDecimal.ZERO)
             on { this.currency }.thenReturn("USD")
-            on { this.shippingTotal }.thenReturn(BigDecimal.ZERO)
-            on { this.feesTotal }.thenReturn(BigDecimal.ZERO)
             on { this.paymentMethod }.thenReturn("cod")
         }
         val orderEntity = mock<OrderEntity>()
@@ -966,7 +966,8 @@ class IssueRefundViewModelTest : BaseUnitTest() {
         initViewModel(orderMapper)
 
         // THEN
-        assertThat(viewModel.refundItems.value).hasSize(3)
+        val viewState = viewModel.refundByItemsStateLiveData.getOrAwaitValue()
+        assertThat(viewState.productsSection.refundItems).hasSize(3)
     }
 
     @Test
@@ -994,8 +995,6 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             on { this.total }.thenReturn(BigDecimal.TEN)
             on { this.refundTotal }.thenReturn(BigDecimal.ZERO)
             on { this.currency }.thenReturn("USD")
-            on { this.shippingTotal }.thenReturn(BigDecimal.ZERO)
-            on { this.feesTotal }.thenReturn(BigDecimal.ZERO)
             on { this.paymentMethod }.thenReturn("cod")
         }
         val orderEntity = mock<OrderEntity>()
@@ -1031,7 +1030,8 @@ class IssueRefundViewModelTest : BaseUnitTest() {
         initViewModel(orderMapper)
 
         // THEN
-        assertThat(viewModel.refundItems.value).hasSize(2)
+        val viewState = viewModel.refundByItemsStateLiveData.getOrAwaitValue()
+        assertThat(viewState.productsSection.refundItems).hasSize(2)
     }
 
     @Test
@@ -1061,8 +1061,6 @@ class IssueRefundViewModelTest : BaseUnitTest() {
                 on { this.total }.thenReturn(BigDecimal.TEN)
                 on { this.refundTotal }.thenReturn(BigDecimal.ZERO)
                 on { this.currency }.thenReturn("USD")
-                on { this.shippingTotal }.thenReturn(BigDecimal.ZERO)
-                on { this.feesTotal }.thenReturn(BigDecimal.ZERO)
                 on { this.paymentMethod }.thenReturn("cod")
             }
             val orderEntity = mock<OrderEntity>()
@@ -1108,8 +1106,9 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             initViewModel(orderMapper)
 
             // THEN
-            assertThat(viewModel.refundItems.value).hasSize(1)
-            assertThat(viewModel.refundItems.value!!.first().maxQuantity).isEqualTo(2.0F)
+            val viewState = viewModel.refundByItemsStateLiveData.getOrAwaitValue()
+            assertThat(viewState.productsSection.refundItems).hasSize(1)
+            assertThat(viewState.productsSection.refundItems.first().maxQuantity).isEqualTo(2.0F)
         }
 
     @Test
@@ -1149,8 +1148,6 @@ class IssueRefundViewModelTest : BaseUnitTest() {
                 on { this.total }.thenReturn(BigDecimal.TEN)
                 on { this.refundTotal }.thenReturn(BigDecimal.ZERO)
                 on { this.currency }.thenReturn("USD")
-                on { this.shippingTotal }.thenReturn(BigDecimal.ZERO)
-                on { this.feesTotal }.thenReturn(BigDecimal.ZERO)
                 on { this.paymentMethod }.thenReturn("cod")
             }
             val orderEntity = mock<OrderEntity>()
@@ -1208,10 +1205,11 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             initViewModel(orderMapper)
 
             // THEN
-            assertThat(viewModel.refundItems.value).hasSize(3)
-            assertThat(viewModel.refundItems.value!![0].maxQuantity).isEqualTo(1.0F)
-            assertThat(viewModel.refundItems.value!![1].maxQuantity).isEqualTo(2.0F)
-            assertThat(viewModel.refundItems.value!![2].maxQuantity).isEqualTo(2.0F)
+            val viewState = viewModel.refundByItemsStateLiveData.getOrAwaitValue()
+            assertThat(viewState.productsSection.refundItems).hasSize(3)
+            assertThat(viewState.productsSection.refundItems[0].maxQuantity).isEqualTo(1.0F)
+            assertThat(viewState.productsSection.refundItems[1].maxQuantity).isEqualTo(2.0F)
+            assertThat(viewState.productsSection.refundItems[2].maxQuantity).isEqualTo(2.0F)
         }
 
     @Test
