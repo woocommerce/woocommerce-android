@@ -1129,7 +1129,7 @@
     <string name="print_receipt_label_info_step_count_5" translatable="false">5</string>
     <string name="print_receipt_label_info_step_count_6" translatable="false">6</string>
     <string name="print_receipt_label_info_step_count_7" translatable="false">7</string>
-    <string name="print_receipt_label_info_step_1">Make sure the Print Service Plugin for yor printer is installed.</string>
+    <string name="print_receipt_label_info_step_1">Make sure the Print Service Plugin for your printer is installed.</string>
     <string name="print_receipt_label_info_step_2">Enable bluetooth or Wifi connection on your printer.</string>
     <string name="print_receipt_label_info_step_3">When selecting "Print receipt" after accepting payment, replace "Save as PDF" with "All printers", and search for new printer.</string>
     <string name="print_receipt_label_info_step_4">Pair and connect the printer to your mobile when prompted.</string>
@@ -4273,18 +4273,12 @@
     <string name="woopos_variable_product_item_content_description">Variable Product %s, Price %s</string>
     <string name="woopos_variation_item_content_description">Variation %s, Price %s</string>
     <string name="woopos_cart_item_product_content_description">Product in cart %s, Price %s</string>
+    <string name="woopos_coupon_item_content_description">Coupon %s</string>
     <string name="woopos_cart_item_coupon_content_description">Coupon in cart %s</string>
     <string name="woopos_cart_title">Cart</string>
     <string name="woopos_cart_changes_in_the_cart">There are changes in the cart</string>
     <string name="woopos_clear_cart_button">Clear</string>
 
-    <string name="woopos_banner_simple_products_only_title">Showing simple, variable and virtual products only</string>
-    <string name="woopos_banner_simple_products_only_message">Only simple physical, variable and virtual products are compatible with POS right now. Other product types will become available in future updates. </string>
-    <string name="woopos_banner_simple_products_only_message_learn_more">Learn\u00A0more</string>
-    <string name="woopos_banner_simple_products_close_content_description">Close</string>
-    <string name="woopos_banner_simple_products_info_content_description">Info</string>
-    <string name="woopos_banner_simple_products_content_description">Simple, variable and virtual products only banner</string>
-    <string name="woopos_banner_simple_products_learn_more_content_description">Double tap to learn more</string>
     <string name="woopos_banner_simple_products_dialog_content_description">Simple, variable and virtual products only dialog</string>
     <string name="woopos_banner_simple_products_dialog_primary_button_content_description">Double tap to dismiss the dialog</string>
 
@@ -4298,6 +4292,7 @@
 
     <string name="woopos_exit_confirmation_title">Exit POS</string>
     <string name="woopos_get_support_title">Get Support</string>
+    <string name="woopos_product_limitations_title">Where are my products?</string>
     <string name="woopos_documentation_title">Documentation</string>
     <string name="woopos_exit_dialog_confirmation_close_content_description">Close</string>
     <string name="woopos_exit_dialog_confirmation_title">Exit Point of Sale mode?</string>
@@ -4310,6 +4305,7 @@
     <string name="woopos_items_in_cart_multiple">%d items</string>
     <string name="woopos_remove_cart_item_content_description">Remove this item from the cart</string>
     <string name="woopos_products_screen_title">Products</string>
+    <string name="woopos_coupons_screen_title">Coupons</string>
     <string name="woopos_cart_back_content_description">Cart icon</string>
     <string name="woopos_payment_failed_please_try_again">Payment failed. Please try again.</string>
     <string name="woopos_payment_successful_label">Payment successful</string>
@@ -4333,6 +4329,14 @@
     <string name="woopos_products_empty_list_message_two">POS currently only supports simple products</string>
     <string name="woopos_products_loading_error_title">Error loading products</string>
     <string name="woopos_products_loading_error_message">Give it another go?</string>
+
+    <string name="woopos_coupons_empty_list_image_description">No coupons</string>
+    <string name="woopos_coupons_empty_list_title">No coupons found</string>
+    <string name="woopos_coupons_empty_list_message">Boost your business by sending customers special offers and discounts.</string>
+    <string name="woopos_coupons_loading_error_title">Error loading coupons</string>
+    <string name="woopos_coupons_loading_error_message">Give it another go?</string>
+    <string name="woopos_coupons_loading_error_retry_button">Retry</string>
+
     <string name="woopos_error_icon_content_description">Error indication icon</string>
     <string name="woopos_reader_not_connected_description">Please make sure a card reader is connected.</string>
     <string name="woopos_products_loading_error_retry_button">Retry</string>
@@ -4380,6 +4384,11 @@
     <string name="woopos_variations_loading_error_title">Error loading variations</string>
     <string name="woopos_variations_options_available_text">Options available</string>
 
+    <string name="woopos_coupons_pagination_try_again_label">Try again</string>
+    <string name="woopos_coupons_pagination_error_title">Failed to load more items"</string>
+    <string name="woopos_coupons_pagination_error_description">"An error occurred while loading coupons."</string>
+    <string name="woopos_coupons_pagination_error_content_description">"Failed to load more coupons. Double tap to try again."</string>
+
     <string name="woopos_cash_payment_title">Cash payment</string>
     <string name="woopos_complete_cash_order_button">Mark payment as complete</string>
     <string name="woopos_cash_payment_total">Total: %s</string>
@@ -4394,9 +4403,9 @@
     <string name="woopos_email_receipt_send_error">Error trying to send this email. Try again</string>
 
     <string name="woopos_search_back_content_description">Back</string>
-    <string name="woopos_clear_back_content_description">Clear</string>
-    <string name="woopos_search_products">Search products…</string>
-    <string name="woopos_search_popular_items_title">Popular items</string>
+    <string name="woopos_search_clear_content_description">Clear</string>
+    <string name="woopos_search_products">Search products</string>
+    <string name="woopos_search_popular_items_title">Popular products</string>
     <string name="woopos_search_recent_searches_title">Recent searches</string>
     <string name="woopos_search_items_empty_title">Nothing found</string>
     <string name="woopos_search_empty_description">We couldn\'t find anything matching your search.</string>
@@ -4478,6 +4487,8 @@
     <string name="woo_shipping_labels_package_creation_carrier_loading_error">We are unable to load carrier packages.</string>
     <string name="woo_shipping_labels_package_creation_saved_loading_error">We are unable to load saved packages.</string>
     <string name="woo_shipping_labels_package_creation_shipping_rates_loading_error">We are unable to load shipping rates.</string>
+    <string name="woo_shipping_labels_package_creation_starred">Star this item</string>
+    <string name="woo_shipping_labels_package_creation_unstarred">Unstar this item</string>
     <string name="woo_shipping_labels_shipping_rates_missing_destination">Add a destination address to get shipping rates</string>
     <string name="woo_shipping_labels_shipping_rates_missing_destination_desc">We need to know where this package is going before we can show the available shipping rates.</string>
     <string name="woo_shipping_labels_shipping_rates_missing_weight">Add shipment weight to get shipping rates</string>
@@ -4605,4 +4616,8 @@
     <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_one">Choose where to move the %d item in this shipment to.</string>
     <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_plural">Choose where to move the %d items in this shipment to.</string>
     <string name="woo_shipping_split_shipment_bottom_sheet_remove_button">Remove Shipment</string>
+    <string name="woo_shipping_split_shipment_merge_unfulfilled_menu">Merge all unfulfilled</string>
+    <string name="woo_shipping_split_shipment_merge_unfulfilled_title">Merge all unfulfilled shipments</string>
+    <string name="woo_shipping_split_shipment_merge_unfulfilled_desc">This will remove all unfulfilled split shipments and move all items into one shipment.</string>
+    <string name="woo_shipping_split_shipment_merge_unfulfilled_button">Merge all shipments</string>
 </resources>

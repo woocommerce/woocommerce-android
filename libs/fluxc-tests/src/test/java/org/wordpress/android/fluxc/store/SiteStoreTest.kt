@@ -172,8 +172,8 @@ class SiteStoreTest {
     fun `fetchSites saves fetched sites to DB and removes absent sites`() = test {
         val payload = FetchSitesPayload(listOf(WPCOM))
         val sitesModel = SitesModel()
-        val siteA = SiteModel()
-        val siteB = SiteModel()
+        val siteA = SiteModel().apply { url = "siteA.com" }
+        val siteB = SiteModel().apply { url = "siteB.com" }
         sitesModel.sites = listOf(siteA, siteB)
         whenever(siteRestClient.fetchSites(payload.filters, false)).thenReturn(sitesModel)
         whenever(siteSqlUtils.insertOrUpdateSite(siteA)).thenReturn(1)

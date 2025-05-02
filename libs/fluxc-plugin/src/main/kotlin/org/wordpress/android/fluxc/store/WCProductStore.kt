@@ -4,6 +4,8 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.runBlocking
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
@@ -45,11 +47,17 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStoc
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductVariationMapper
 import org.wordpress.android.fluxc.persistence.ProductSqlUtils
+import org.wordpress.android.fluxc.persistence.ProductSqlUtils.getCompositeProducts
+import org.wordpress.android.fluxc.persistence.ProductSqlUtils.observeBundledProducts
 import org.wordpress.android.fluxc.persistence.ProductStorageHelper
 import org.wordpress.android.fluxc.persistence.dao.AddonsDao
+import org.wordpress.android.fluxc.persistence.dao.ProductsDao
 import org.wordpress.android.fluxc.store.WCProductStore.ProductCategorySorting.NAME_ASC
 import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_ASC
+import org.wordpress.android.fluxc.store.WCProductStore.SkuSearchOptions.Disabled
+import org.wordpress.android.fluxc.store.WCProductStore.SkuSearchOptions.ExactSearch
+import org.wordpress.android.fluxc.store.WCProductStore.SkuSearchOptions.PartialMatch
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.fluxc.utils.AppLogWrapper
 import org.wordpress.android.util.AppLog
@@ -61,13 +69,14 @@ import javax.inject.Singleton
 
 @Suppress("LargeClass")
 @Singleton
-class WCProductStore @Inject constructor(
+class WCProductStore @Inject internal constructor(
     dispatcher: Dispatcher,
     private val wcProductRestClient: ProductRestClient,
     private val coroutineEngine: CoroutineEngine,
     private val addonsDao: AddonsDao,
     private val productStorageHelper: ProductStorageHelper,
-    private val logger: AppLogWrapper
+    private val logger: AppLogWrapper,
+    private val productsDao: ProductsDao,
 ) : Store(dispatcher) {
     companion object {
         const val NUM_REVIEWS_PER_FETCH = 25
@@ -79,6 +88,13 @@ class WCProductStore @Inject constructor(
         val DEFAULT_PRODUCT_SORTING = TITLE_ASC
         val DEFAULT_CATEGORY_SORTING = NAME_ASC
         const val VARIATIONS_CREATION_LIMIT = 100
+
+        fun categoryFilter(jsonCategory: String): String {
+            // Building a custom filter, because in the table a product's categories are saved as JSON string, e.g:
+            // [{"id":1377,"name":"Decor","slug":"decor"},{"id":1374,"name":"Hoodies","slug":"hoodies"}]
+            return "\"id\":${jsonCategory},"
+        }
+
     }
 
     sealed class IncludeType(val value: String) {
@@ -712,7 +728,6 @@ class WCProductStore @Inject constructor(
 
     // OnChanged events
     class OnProductChanged(
-        var rowsAffected: Int,
         var remoteProductId: Long = 0L, // only set for fetching or deleting a single product
         var canLoadMore: Boolean = false
     ) : OnChanged<ProductError>() {
@@ -754,7 +769,6 @@ class WCProductStore @Inject constructor(
     }
 
     class OnProductImagesChanged(
-        var rowsAffected: Int,
         var remoteProductId: Long
     ) : OnChanged<ProductError>() {
         var causeOfChange: WCProductAction? = null
@@ -768,7 +782,6 @@ class WCProductStore @Inject constructor(
     }
 
     class OnProductUpdated(
-        var rowsAffected: Int,
         var remoteProductId: Long
     ) : OnChanged<ProductError>() {
         var causeOfChange: WCProductAction? = null
@@ -797,7 +810,6 @@ class WCProductStore @Inject constructor(
     }
 
     class OnProductCreated(
-        var rowsAffected: Int,
         var remoteProductId: Long = 0L
     ) : OnChanged<ProductError>() {
         var causeOfChange: WCProductAction? = null
@@ -807,7 +819,7 @@ class WCProductStore @Inject constructor(
      * returns the corresponding product from the database as a [WCProductModel].
      */
     fun getProductByRemoteId(site: SiteModel, remoteProductId: Long): WCProductModel? =
-        ProductSqlUtils.getProductByRemoteId(site, remoteProductId)
+        runBlocking { productsDao.getProduct(site.id, remoteProductId) }
 
     /**
      * returns the corresponding variation from the database as a [WCProductVariationModel].
@@ -819,11 +831,9 @@ class WCProductStore @Inject constructor(
     ): WCProductVariationModel? =
         ProductSqlUtils.getVariationByRemoteId(site, remoteProductId, remoteVariationId)
 
-    /**
-     * @return true if the product exists with this [sku] in the database.
-     */
-    fun isProductExists(site: SiteModel, sku: String) =
-        ProductSqlUtils.getProductExistsBySku(site, sku)
+    suspend fun isProductExists(site: SiteModel, sku: String): Boolean {
+        return productsDao.getProduct(site.id, sku = sku) != null
+    }
 
     /**
      * returns a list of variations for a specific product in the database
@@ -847,27 +857,53 @@ class WCProductStore @Inject constructor(
      * returns a list of [WCProductModel] for the give [SiteModel] and [remoteProductIds]
      * if it exists in the database
      */
-    fun getProductsByRemoteIds(site: SiteModel, remoteProductIds: List<Long>): List<WCProductModel> =
-        ProductSqlUtils.getProductsByRemoteIds(site, remoteProductIds)
+    suspend fun getProductsByRemoteIds(site: SiteModel, remoteProductIds: List<Long>): List<WCProductModel> =
+        productsDao.getProducts(localSiteId = site.id, remoteProductIds = remoteProductIds)
 
     /**
-     * Returns a list of [WCProductModel] for the given [SiteModel], [filterOptions] and [searchQuery].
+     * Returns a list of [WCProductModel] for the given [SiteModel] and [filterOptions].
      * To filter by category, make sure the [filterOptions] value is the category ID in String.
      */
-    fun getProducts(
+    suspend fun getProducts(
         site: SiteModel,
         filterOptions: Map<ProductFilterOption, String>,
         sortType: ProductSorting = DEFAULT_PRODUCT_SORTING,
-        excludedProductIds: List<Long>? = null,
-        searchQuery: String? = null,
-        skuSearchOptions: SkuSearchOptions = SkuSearchOptions.Disabled,
-    ): List<WCProductModel> =
-        ProductSqlUtils.getProducts(site, filterOptions, sortType, excludedProductIds, searchQuery, skuSearchOptions)
+        excludedProductIds: List<Long> = emptyList(),
+    ): List<WCProductModel> {
+        return productsDao.getProducts(
+            localSiteId = site.id,
+            status = filterOptions[ProductFilterOption.STATUS],
+            stockStatus = filterOptions[ProductFilterOption.STOCK_STATUS],
+            type = filterOptions[ProductFilterOption.TYPE],
+            category = filterOptions[ProductFilterOption.CATEGORY]?.let { categoryFilter(it) },
+            excludeSampleProducts = false,
+            limit = null,
+            excludedProductIds = excludedProductIds,
+            sortType = sortType
+        )
+    }
 
-    fun getProductsForSite(site: SiteModel, sortType: ProductSorting = DEFAULT_PRODUCT_SORTING) =
-        ProductSqlUtils.getProductsForSite(site, sortType)
+    suspend fun searchCachedProducts(
+        site: SiteModel,
+        searchQuery: String,
+        skuSearchOptions: SkuSearchOptions
+    ): List<WCProductModel> {
+        return with(productsDao) {
+            when (skuSearchOptions) {
+                Disabled -> searchProductsByQuery(site.id, searchQuery)
+                ExactSearch -> searchProductsBySkuExactMatch(site.id, searchQuery)
+                PartialMatch -> searchProductsBySkuPartialMatch(site.id, searchQuery)
+            }
+        }
+    }
 
-    fun deleteProductsForSite(site: SiteModel) = ProductSqlUtils.deleteProductsForSite(site)
+    suspend fun getProduct(site: SiteModel, remoteProductId: Long): WCProductModel? {
+        return productsDao.getProduct(site.id, remoteProductId)
+    }
+
+    suspend fun getProductExistsByRemoteId(site: SiteModel, remoteProductId: Long): Boolean {
+        return productsDao.getProduct(site.id, remoteProductId) != null
+    }
 
     fun getProductReviewsForSite(site: SiteModel): List<WCProductReviewModel> =
         ProductSqlUtils.getProductReviewsForSite(site)
@@ -882,15 +918,15 @@ class WCProductStore @Inject constructor(
      * returns the count of products for the given [SiteModel] and [remoteProductIds]
      * if it exists in the database
      */
-    fun getProductCountByRemoteIds(site: SiteModel, remoteProductIds: List<Long>): Int =
-        ProductSqlUtils.getProductCountByRemoteIds(site, remoteProductIds)
+    suspend fun getProductCountByRemoteIds(site: SiteModel, remoteProductIds: List<Long>): Int =
+        productsDao.getProducts(localSiteId = site.id, remoteProductIds = remoteProductIds).size
 
     /**
      * returns the count of virtual products for the given [SiteModel] and [remoteProductIds]
      * if it exists in the database
      */
-    fun getVirtualProductCountByRemoteIds(site: SiteModel, remoteProductIds: List<Long>): Int =
-        ProductSqlUtils.getVirtualProductCountByRemoteIds(site, remoteProductIds)
+    suspend fun getVirtualProductCountByRemoteIds(site: SiteModel, remoteProductIds: List<Long>): Int =
+        productsDao.getProducts(localSiteId = site.id, remoteProductIds = remoteProductIds, virtual = true).size
 
     /**
      * returns a list of tags for a specific site in the database
@@ -909,13 +945,6 @@ class WCProductStore @Inject constructor(
         remoteReviewId: Long
     ): WCProductReviewModel? = ProductSqlUtils
         .getProductReviewByRemoteId(localSiteId, remoteReviewId)
-
-    fun deleteProductReviewsForSite(site: SiteModel) = ProductSqlUtils.deleteAllProductReviewsForSite(site)
-
-    fun deleteAllProductReviews() = ProductSqlUtils.deleteAllProductReviews()
-
-    fun deleteProductImage(site: SiteModel, remoteProductId: Long, remoteMediaId: Long) =
-        ProductSqlUtils.deleteProductImage(site, remoteProductId, remoteMediaId)
 
     fun getProductCategoriesForSite(site: SiteModel, sortType: ProductCategorySorting = DEFAULT_CATEGORY_SORTING) =
         ProductSqlUtils.getProductCategoriesForSite(site, sortType)
@@ -1034,22 +1063,31 @@ class WCProductStore @Inject constructor(
         filterOptions: Map<ProductFilterOption, String> = emptyMap(),
         excludeSampleProducts: Boolean = false,
         limit: Int? = null
-    ): Flow<List<WCProductModel>> = ProductSqlUtils.observeProducts(
-        site = site,
-        sortType = sortType,
-        filterOptions = filterOptions,
-        excludeSampleProducts = excludeSampleProducts,
-        limit = limit
-    )
+    ): Flow<List<WCProductModel>> {
+        return productsDao.observeProducts(
+            localSiteId = site.id,
+            status = filterOptions[ProductFilterOption.STATUS],
+            stockStatus = filterOptions[ProductFilterOption.STOCK_STATUS],
+            type = filterOptions[ProductFilterOption.TYPE],
+            category = filterOptions[ProductFilterOption.CATEGORY]?.let { categoryFilter(it) },
+            excludeSampleProducts = excludeSampleProducts,
+            excludedProductIds = emptyList(),
+            limit = limit,
+            sortType = sortType
+        )
+    }
 
     fun observeProductsCount(
         site: SiteModel,
-        filterOptions: Map<ProductFilterOption, String> = emptyMap(),
-        excludeSampleProducts: Boolean = false
-    ): Flow<Long> = ProductSqlUtils.observeProductsCount(
-        site = site,
-        filterOptions = filterOptions,
-        excludeSampleProducts = excludeSampleProducts
+        filterOptions: Map<ProductFilterOption, String>,
+        excludeSampleProducts: Boolean
+    ): Flow<Long> = productsDao.observeProductsCount(
+        localSiteId = site.id,
+        status = filterOptions[ProductFilterOption.STATUS],
+        stockStatus = filterOptions[ProductFilterOption.STOCK_STATUS],
+        type = filterOptions[ProductFilterOption.TYPE],
+        category = filterOptions[ProductFilterOption.CATEGORY]?.let { categoryFilter(it) },
+        excludeSampleProducts = excludeSampleProducts,
     )
 
     fun observeVariations(site: SiteModel, productId: Long): Flow<List<WCProductVariationModel>> =
@@ -1064,14 +1102,14 @@ class WCProductStore @Inject constructor(
     fun observeBundledProducts(
         site: SiteModel,
         remoteProductId: Long
-    ) = ProductSqlUtils.observeBundledProducts(site, remoteProductId)
+    ) = productsDao.observeBundledProducts(site, remoteProductId)
 
     suspend fun getBundledProductsCount(site: SiteModel, remoteProductId: Long): Int {
-        return ProductSqlUtils.getBundledProductsCount(site, remoteProductId)
+        return productsDao.observeBundledProducts(site, remoteProductId).firstOrNull()?.size ?: 0
     }
 
     suspend fun getCompositeProducts(site: SiteModel, remoteProductId: Long): List<WCProductComponent> {
-        return ProductSqlUtils.getCompositeProducts(site, remoteProductId)
+        return productsDao.getCompositeProducts(site, remoteProductId)
     }
 
     suspend fun submitProductAttributeChanges(
@@ -1146,12 +1184,12 @@ class WCProductStore @Inject constructor(
             val result = with(payload) { wcProductRestClient.fetchSingleProduct(site, remoteProductId) }
 
             return@withDefaultContext if (result.isError) {
-                OnProductChanged(0).also {
+                OnProductChanged().also {
                     it.error = result.error
                     it.remoteProductId = result.productWithMetaData.product.remoteProductId
                 }
             } else {
-                val rowsAffected = productStorageHelper.upsertProduct(result.productWithMetaData)
+                productStorageHelper.upsertProduct(result.productWithMetaData)
 
                 // TODO: 18/08/2021 @wzieba add tests
                 coroutineEngine.launch(T.DB, this, "cacheProductAddons") {
@@ -1164,7 +1202,7 @@ class WCProductStore @Inject constructor(
                     )
                 }
 
-                OnProductChanged(rowsAffected).also {
+                OnProductChanged().also {
                     it.remoteProductId = result.productWithMetaData.product.remoteProductId
                 }
             }
@@ -1273,7 +1311,7 @@ class WCProductStore @Inject constructor(
                 wcProductRestClient.fetchProductVariations(site, remoteProductId, pageSize, offset)
             }
             return@withDefaultContext if (result.isError) {
-                OnProductChanged(0, payload.remoteProductId).also { it.error = result.error }
+                OnProductChanged(payload.remoteProductId).also { it.error = result.error }
             } else {
                 // delete product variations for site if this is the first page of results, otherwise
                 // product variations deleted outside of the app will persist
@@ -1281,10 +1319,8 @@ class WCProductStore @Inject constructor(
                     ProductSqlUtils.deleteVariationsForProduct(result.site, result.remoteProductId)
                 }
 
-                val rowsAffected = ProductSqlUtils.insertOrUpdateProductVariations(
-                    result.variations
-                )
-                OnProductChanged(rowsAffected, payload.remoteProductId, canLoadMore = result.canLoadMore)
+                ProductSqlUtils.insertOrUpdateProductVariations(result.variations)
+                OnProductChanged(payload.remoteProductId, canLoadMore = result.canLoadMore)
             }
         }
     }
@@ -1498,8 +1534,8 @@ class WCProductStore @Inject constructor(
 
     suspend fun batchUpdateProducts(payload: BatchUpdateProductsPayload): WooResult<List<WCProductModel>> =
         coroutineEngine.withDefaultContext(API, this, "batchUpdateProducts") {
-            val existingProducts = ProductSqlUtils.getProductsByRemoteIds(
-                site = payload.site,
+            val existingProducts = productsDao.getProducts(
+                localSiteId = payload.site.id,
                 remoteProductIds = payload.updatedProducts.map(WCProductModel::remoteProductId)
             )
 
@@ -1723,6 +1759,8 @@ class WCProductStore @Inject constructor(
         skuSearchOptions: SkuSearchOptions = SkuSearchOptions.Disabled,
         offset: Int = 0,
         pageSize: Int = DEFAULT_PRODUCT_PAGE_SIZE,
+        filterOptions: Map<ProductFilterOption, String> = emptyMap(),
+        includeTypes: List<IncludeType> = emptyList(),
         orderCurrency: String? = null,
     ): WooResult<ProductSearchResult> {
         return coroutineEngine.withDefaultContext(API, this, "searchProducts") {
@@ -1732,6 +1770,8 @@ class WCProductStore @Inject constructor(
                 pageSize = pageSize,
                 searchQuery = searchString,
                 skuSearchOptions = skuSearchOptions,
+                filterOptions = filterOptions,
+                includeTypes = includeTypes,
                 orderCurrency = orderCurrency
             )
             when {
@@ -1740,7 +1780,7 @@ class WCProductStore @Inject constructor(
                     productStorageHelper.upsertProducts(response.result)
                     val productIds = response.result.map { it.product.remoteProductId }
                     val products = if (productIds.isNotEmpty()) {
-                        ProductSqlUtils.getProductsByRemoteIds(site, productIds)
+                        productsDao.getProducts(localSiteId = site.id, remoteProductIds = productIds)
                     } else {
                         emptyList()
                     }
@@ -1954,7 +1994,7 @@ class WCProductStore @Inject constructor(
             val onProductChanged: OnProductChanged
 
             if (payload.isError) {
-                onProductChanged = OnProductChanged(0).also { it.error = payload.error }
+                onProductChanged = OnProductChanged().also { it.error = payload.error }
             } else {
                 // remove the existing products for this site if this is the first page of results
                 // or if the remoteProductIds or excludedProductIds are null, otherwise
@@ -1963,8 +2003,8 @@ class WCProductStore @Inject constructor(
                     productStorageHelper.deleteProductsForSite(payload.site)
                 }
 
-                val rowsAffected = productStorageHelper.upsertProducts(payload.productsWithMetaData)
-                onProductChanged = OnProductChanged(rowsAffected, canLoadMore = payload.canLoadMore)
+                productStorageHelper.upsertProducts(payload.productsWithMetaData)
+                onProductChanged = OnProductChanged(canLoadMore = payload.canLoadMore)
 
                 // TODO: 18/08/2021 @wzieba add tests
                 coroutineEngine.launch(T.DB, this, "cacheProductsAddons") {
@@ -2064,15 +2104,13 @@ class WCProductStore @Inject constructor(
 
             if (payload.isError) {
                 onProductImagesChanged = OnProductImagesChanged(
-                    0,
                     payload.productWithMetaData.product.remoteProductId
                 ).also {
                     it.error = payload.error
                 }
             } else {
-                val rowsAffected = productStorageHelper.upsertProduct(payload.productWithMetaData)
+                productStorageHelper.upsertProduct(payload.productWithMetaData)
                 onProductImagesChanged = OnProductImagesChanged(
-                    rowsAffected,
                     payload.productWithMetaData.product.remoteProductId
                 )
             }
@@ -2087,11 +2125,11 @@ class WCProductStore @Inject constructor(
             val onProductUpdated: OnProductUpdated
 
             if (payload.isError) {
-                onProductUpdated = OnProductUpdated(0, payload.productWithMetaData.product.remoteProductId)
+                onProductUpdated = OnProductUpdated(payload.productWithMetaData.product.remoteProductId)
                     .also { it.error = payload.error }
             } else {
-                val rowsAffected = productStorageHelper.upsertProduct(payload.productWithMetaData)
-                onProductUpdated = OnProductUpdated(rowsAffected, payload.productWithMetaData.product.remoteProductId)
+                productStorageHelper.upsertProduct(payload.productWithMetaData)
+                onProductUpdated = OnProductUpdated(payload.productWithMetaData.product.remoteProductId)
             }
 
             onProductUpdated.causeOfChange = WCProductAction.UPDATED_PRODUCT
@@ -2180,12 +2218,11 @@ class WCProductStore @Inject constructor(
 
             if (payload.isError) {
                 onProductCreated = OnProductCreated(
-                    0,
                     payload.productWithMetaData.product.remoteProductId
                 ).also { it.error = payload.error }
             } else {
-                val rowsAffected = productStorageHelper.upsertProduct(payload.productWithMetaData)
-                onProductCreated = OnProductCreated(rowsAffected, payload.productWithMetaData.product.remoteProductId)
+                productStorageHelper.upsertProduct(payload.productWithMetaData)
+                onProductCreated = OnProductCreated(payload.productWithMetaData.product.remoteProductId)
             }
 
             onProductCreated.causeOfChange = WCProductAction.ADDED_PRODUCT
@@ -2198,13 +2235,13 @@ class WCProductStore @Inject constructor(
             val onProductChanged: OnProductChanged
 
             if (payload.isError) {
-                onProductChanged = OnProductChanged(0).also { it.error = payload.error }
+                onProductChanged = OnProductChanged().also { it.error = payload.error }
             } else {
-                val rowsAffected = productStorageHelper.deleteProduct(
+                productStorageHelper.deleteProduct(
                     payload.site,
                     payload.remoteProductId
                 )
-                onProductChanged = OnProductChanged(rowsAffected, payload.remoteProductId)
+                onProductChanged = OnProductChanged(payload.remoteProductId)
             }
 
             onProductChanged.causeOfChange = WCProductAction.DELETED_PRODUCT

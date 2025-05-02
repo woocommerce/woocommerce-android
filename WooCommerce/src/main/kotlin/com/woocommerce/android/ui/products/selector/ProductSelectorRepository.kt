@@ -15,15 +15,14 @@ class ProductSelectorRepository @Inject constructor(
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite
 ) {
-    fun searchProductsInCache(
+    suspend fun searchProductsInCache(
         offset: Int,
         pageSize: Int,
         searchQuery: String,
         skuSearchOptions: WCProductStore.SkuSearchOptions,
     ): List<Product> {
-        return productStore.getProducts(
+        return productStore.searchCachedProducts(
             selectedSite.get(),
-            emptyMap(),
             searchQuery = searchQuery,
             skuSearchOptions = skuSearchOptions,
         ).let {

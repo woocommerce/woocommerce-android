@@ -52,6 +52,12 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
                         weightUnit = storeOptions.weightUnit
                     )
                 }
+
+                if (shipments.size == 1) {
+                    // The shipments row was removed. Since the pager can no longer manage the selected shipment,
+                    // update it manually.
+                    shipmentSelected.update { shipments.keys.first() }
+                }
             }
         }
     }
@@ -65,8 +71,9 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
         SplitShipmentViewState(
             shipmentSelected = shipmentSelected,
             selectableItems = selectableItems,
+            overflowMenuItems = getOverflowMenuItems(selectableItems.keys.toList()),
             splitMovements = getSplitMovements(
-                currentShipment = shipmentSelected,
+                sourceShipmentKey = shipmentSelected,
                 shipments = currentShipments.value,
                 selection = selectableItems
             ),
@@ -74,6 +81,19 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
             splitMessage = message
         )
     }.asLiveData()
+
+    private fun getOverflowMenuItems(shipmentKeys: List<Int>) = buildList {
+        if (shipmentKeys.size >= 2) {
+            // Remove shipment 1, Remove shipment 2...
+            shipmentKeys.forEach { key -> add(listOf(key)) }
+            if (shipmentKeys.size > 2) {
+                // Adding "Merge all unfulfilled shipments" option if there are at least 3 shipments.
+                // For example, this will return {{1}, {2}, {3}, {1, 2, 3}}
+                add(shipmentKeys)
+            }
+        }
+        // Empty list if there is only one shipment
+    }
 
     fun onNavigateBack() {
         triggerEvent(MultiLiveEvent.Event.Exit)
@@ -87,18 +107,38 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
         shipmentSelected.update { shipmentKey }
     }
 
-    fun onRemoveShipmentMenuTapped(shipmentKey: Int) {
-        val shipmentsMap = shipmentsUIMap.value?.toMutableMap() ?: return
+    fun onRemoveShipmentMenuTapped(shipmentKeys: List<Int>) {
+        val shipmentsMap = shipmentsUIMap.value ?: return
         removeShipmentSheet.value = RemoveShipmentSheet(
-            removingShipmentKey = shipmentKey,
-            removingShipment = shipmentsMap.getValue(shipmentKey),
-            otherShipments = shipmentsMap.minus(shipmentKey),
+            removingShipments = shipmentsMap.filter { it.key in shipmentKeys },
+            otherShipments = shipmentsMap.filter { it.key !in shipmentKeys },
         )
     }
 
-    @Suppress("UnusedParameter")
-    fun onRemoveShipment(removingShipmentKey: Int, movingToShipmentKey: Int) {
-        // TODO handle removing shipment
+    fun onRemoveShipments(removingShipmentKeys: List<Int>, destinationShipmentKey: Int?) {
+        if (destinationShipmentKey != null && removingShipmentKeys.size == 1) {
+            val removingShipmentKey = removingShipmentKeys.first()
+            val movingShipmentItems = currentShipments.value[removingShipmentKey] ?: return
+            onUpdateShipment(
+                SplitMovement(
+                    sourceShipmentKey = removingShipmentKey,
+                    updatedSourceShipmentItems = emptyList(),
+                    destinationShipmentKey = destinationShipmentKey,
+                    movingShipmentItems = movingShipmentItems
+                )
+            )
+        } else {
+            mergeUnfulfilledShipments()
+        }
+        removeShipmentSheet.value = null
+    }
+
+    private fun mergeUnfulfilledShipments() {
+        currentShipments.value = currentShipments.value.run {
+            // TODO Once the purchasing shipments feature is implemented, exclude purchased shipments from the merging
+            //  action.
+            mapOf(keys.first() to values.reduce(List<ShippableItemModel>::combine))
+        }
     }
 
     fun onDismissRemoveSheet() {
@@ -133,16 +173,16 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
         val currentShipmentBackup = currentShipments.value
         currentShipments.update {
             val shipments = it.toMutableMap()
-            if (splitMovement.updatedCurrentShipmentItems.isEmpty()) {
-                shipments.remove(splitMovement.currentShipment)
+            if (splitMovement.updatedSourceShipmentItems.isEmpty()) {
+                shipments.remove(splitMovement.sourceShipmentKey)
             } else {
-                shipments[splitMovement.currentShipment] = splitMovement.updatedCurrentShipmentItems
+                shipments[splitMovement.sourceShipmentKey] = splitMovement.updatedSourceShipmentItems
             }
-            shipments[splitMovement.updatedShipment] = shipments[splitMovement.updatedShipment]
+            shipments[splitMovement.destinationShipmentKey] = shipments[splitMovement.destinationShipmentKey]
                 ?.takeIf { it.isNotEmpty() }
-                ?.combine(splitMovement.updatedShipmentItems)
-                ?: splitMovement.updatedShipmentItems
-            shipments
+                ?.combine(splitMovement.movingShipmentItems)
+                ?: splitMovement.movingShipmentItems
+            reindexShipments(shipments)
         }
 
         val undoAction = {
@@ -157,6 +197,15 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
         showUndoSnackbar(splitMovement, undoAction)
     }
 
+    /**
+     * Reindexes the keys of the given shipments so that they form a consecutive sequence starting from 0. For example,
+     * if "Shipment 1" was removed from "Shipment 0, Shipment 1, Shipment 2", the remaining shipments will be reindexed
+     * as "Shipment 0, Shipment 1".
+     */
+    private fun reindexShipments(
+        shipments: Map<Int, List<ShippableItemModel>>
+    ) = shipments.values.mapIndexed { index, items -> index to items }.toMap()
+
     private fun showUndoSnackbar(splitMovement: SplitMovement, undoAction: () -> Unit) {
         val snackbarMessage = if (splitMovement.totalItemsToMove > 1) {
             R.string.woo_shipping_split_shipment_moved_notice_plural
@@ -167,7 +216,10 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
         splitMessage.value = SplitShipmentMessage.Success(
             ShippingLabelsSnackbarData(
                 message = snackbarMessage,
-                messageParameters = listOf(splitMovement.totalItemsToMove, splitMovement.updatedShipment + 1),
+                messageParameters = listOf(
+                    splitMovement.totalItemsToMove,
+                    splitMovement.destinationShipmentKey + 1
+                ),
                 actionLabel = R.string.undo,
                 dismissAction = { splitMessage.value = null },
                 action = undoAction
@@ -178,6 +230,7 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
     data class SplitShipmentViewState(
         val shipmentSelected: Int,
         val selectableItems: Map<Int, SelectableShippableItemsUI>,
+        val overflowMenuItems: List<List<Int>> = emptyList(), // Each item represents shipments to be removed.
         val splitMovements: List<SplitMovement> = emptyList(),
         val removeShipmentSheet: RemoveShipmentSheet? = null,
         val splitMessage: SplitShipmentMessage? = null
@@ -222,11 +275,12 @@ sealed class SplitShipmentMessage {
 }
 
 data class RemoveShipmentSheet(
-    val removingShipmentKey: Int,
-    val removingShipment: SelectableShippableItemsUI,
-    val otherShipments: Map<Int, SelectableShippableItemsUI>
+    val removingShipments: Map<Int, SelectableShippableItemsUI>,
+    val otherShipments: Map<Int, SelectableShippableItemsUI> = emptyMap()
 )
 
 private fun List<ShippableItemModel>.combine(other: List<ShippableItemModel>) = (this + other)
     .groupBy { it.itemId }
-    .map { (_, itemsWithSameId) -> itemsWithSameId.first().copy(quantity = itemsWithSameId.sumByFloat { it.quantity }) }
+    .map { (_, itemsWithSameId) ->
+        itemsWithSameId.first().copy(quantity = itemsWithSameId.sumByFloat { it.quantity })
+    }

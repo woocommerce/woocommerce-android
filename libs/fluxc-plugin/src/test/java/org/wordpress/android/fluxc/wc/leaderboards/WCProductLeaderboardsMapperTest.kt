@@ -1,10 +1,13 @@
 package org.wordpress.android.fluxc.wc.leaderboards
 
+import androidx.room.Room
 import com.yarolegovich.wellsql.WellSql
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mockito.spy
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
@@ -12,9 +15,9 @@ import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import org.wordpress.android.fluxc.SingleStoreWellSqlConfigForTests
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.leaderboards.WCProductLeaderboardsMapper
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.leaderboards.LeaderboardsApiResponse.Type.PRODUCTS
+import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.test
@@ -22,6 +25,7 @@ import org.wordpress.android.fluxc.wc.leaderboards.WCLeaderboardsTestFixtures.ge
 import org.wordpress.android.fluxc.wc.leaderboards.WCLeaderboardsTestFixtures.generateSampleProductList
 import org.wordpress.android.fluxc.wc.leaderboards.WCLeaderboardsTestFixtures.generateStubbedProductIdList
 import org.wordpress.android.fluxc.wc.leaderboards.WCLeaderboardsTestFixtures.stubSite
+import java.io.IOException
 
 @Config(manifest = Config.NONE)
 @RunWith(RobolectricTestRunner::class)
@@ -37,19 +41,35 @@ class WCProductLeaderboardsMapperTest {
     private val productApiResponse = generateSampleLeaderboardsApiResponse()
             ?.firstOrNull { it.type == PRODUCTS }
 
+    private lateinit var database: WCAndroidDatabase
+
     @Before
     fun setUp() {
         SingleStoreWellSqlConfigForTests(
                 RuntimeEnvironment.application.applicationContext,
-                listOf(SiteModel::class.java, WCProductModel::class.java),
+                listOf(SiteModel::class.java),
                 WellSqlConfig.ADDON_WOOCOMMERCE
         ).let {
             WellSql.init(it)
             it.reset()
         }
 
+        database = Room.inMemoryDatabaseBuilder(RuntimeEnvironment.application.applicationContext, WCAndroidDatabase::class.java)
+            .allowMainThreadQueries()
+            .build()
+
         mapperUnderTest = WCProductLeaderboardsMapper()
-        productStore = mock()
+        productStore = spy(
+            WCProductStore(
+                mock(),
+                mock(),
+                mock(),
+                mock(),
+                mock(),
+                mock(),
+                productsDao = database.productsDao
+            )
+        )
     }
 
     @Test
@@ -92,20 +112,19 @@ class WCProductLeaderboardsMapperTest {
         assertThat(result).isEmpty()
     }
 
+    @After
+    @Throws(IOException::class)
+    fun closeDb() {
+        database.close()
+        WellSql.closeDb()
+    }
+
     private suspend fun configureProductStoreMock() {
-        generateStubbedProductIdList
-                .let {
-                    whenever(productStore.fetchProductListSynced(stubSite, it))
-                            .thenReturn(expectedProducts)
-                }
+        whenever(productStore.fetchProductListSynced(stubSite, generateStubbedProductIdList)).thenReturn(expectedProducts)
     }
 
     private suspend fun configureFailingProductStoreMock() {
-        generateStubbedProductIdList
-                .let {
-                    whenever(productStore.fetchProductListSynced(stubSite, it))
-                            .thenReturn(null)
-                }
+        whenever(productStore.fetchProductListSynced(stubSite, generateStubbedProductIdList)).thenReturn(null)
     }
 
     private suspend fun configureExactFailingProductStoreMock(productId: Long) {

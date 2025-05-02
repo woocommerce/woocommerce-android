@@ -6,7 +6,6 @@ import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesReposit
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
-@Suppress("MagicNumber")
 class WooPosItemsSearchEmptyStateRepository @Inject constructor(
     private val preferencesRepository: WooPosPreferencesRepository,
     private val popularProductsProvider: WooPosPopularProductsProvider,
@@ -17,5 +16,9 @@ class WooPosItemsSearchEmptyStateRepository @Inject constructor(
 
     suspend fun addRecentSearch(search: String) {
         preferencesRepository.addRecentProductSearch(search)
+    }
+
+    suspend fun addPopularItemsToCache() {
+        popularProductsProvider.addPopularItemsToCache()
     }
 }

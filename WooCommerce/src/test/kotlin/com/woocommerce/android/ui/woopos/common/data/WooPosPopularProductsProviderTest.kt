@@ -8,6 +8,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
@@ -30,27 +31,27 @@ class WooPosPopularProductsProviderTest {
     }
 
     private val sampleProducts = listOf(
-        WCProductModel().apply {
-            remoteProductId = 1
-            name = "Product 1"
-            price = "10.0"
-            attributes = "[]"
-            status = "publish"
-        },
-        WCProductModel().apply {
-            remoteProductId = 2
-            name = "Product 2"
-            price = "20.0"
-            attributes = "[]"
-            status = "publish"
-        },
-        WCProductModel().apply {
-            remoteProductId = 3
-            name = "Product 3"
-            price = "30.0"
-            attributes = "[]"
-            status = "publish"
-        }
+        WCProductModel().copy(
+            remoteId = RemoteId(1),
+            name = "Product 1",
+            price = "10.0",
+            attributes = "[]",
+            status = "publish",
+        ),
+        WCProductModel().copy(
+            remoteId = RemoteId(2),
+            name = "Product 2",
+            price = "20.0",
+            attributes = "[]",
+            status = "publish",
+        ),
+        WCProductModel().copy(
+            remoteId = RemoteId(3),
+            name = "Product 3",
+            price = "30.0",
+            attributes = "[]",
+            status = "publish",
+        )
     )
 
     @Test
@@ -62,7 +63,7 @@ class WooPosPopularProductsProviderTest {
             productStore.fetchProducts(
                 site = siteModel,
                 offset = 0,
-                pageSize = 3,
+                pageSize = 10,
                 filterOptions = emptyMap(),
                 includeTypes = emptyList(),
                 sortType = ProductSorting.POPULARITY_DESC
@@ -87,7 +88,7 @@ class WooPosPopularProductsProviderTest {
             productStore.fetchProducts(
                 site = siteModel,
                 offset = 0,
-                pageSize = 3,
+                pageSize = 10,
                 filterOptions = emptyMap(),
                 includeTypes = emptyList(),
                 sortType = ProductSorting.POPULARITY_DESC
@@ -121,7 +122,7 @@ class WooPosPopularProductsProviderTest {
             productStore.fetchProducts(
                 site = siteModel,
                 offset = 0,
-                pageSize = 3,
+                pageSize = 10,
                 filterOptions = emptyMap(),
                 includeTypes = emptyList(),
                 sortType = ProductSorting.POPULARITY_DESC
@@ -148,7 +149,7 @@ class WooPosPopularProductsProviderTest {
                 productStore.fetchProducts(
                     site = siteModel,
                     offset = 0,
-                    pageSize = 3,
+                    pageSize = 10,
                     filterOptions = emptyMap(),
                     includeTypes = emptyList(),
                     sortType = ProductSorting.POPULARITY_DESC
@@ -174,7 +175,7 @@ class WooPosPopularProductsProviderTest {
                 productStore.fetchProducts(
                     site = siteModel,
                     offset = 0,
-                    pageSize = 3,
+                    pageSize = 10,
                     filterOptions = emptyMap(),
                     includeTypes = emptyList(),
                     sortType = ProductSorting.POPULARITY_DESC

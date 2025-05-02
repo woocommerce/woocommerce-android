@@ -1,22 +1,19 @@
 package org.wordpress.android.fluxc.model
 
+import androidx.room.Entity
+import androidx.room.Ignore
+import androidx.room.Index
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonParseException
-import com.yarolegovich.wellsql.core.Identifiable
-import com.yarolegovich.wellsql.core.annotation.Column
-import com.yarolegovich.wellsql.core.annotation.PrimaryKey
-import com.yarolegovich.wellsql.core.annotation.Table
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
-import org.wordpress.android.fluxc.model.WCProductVariationModel.ProductVariantOption
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductType
 import org.wordpress.android.fluxc.network.utils.getBoolean
 import org.wordpress.android.fluxc.network.utils.getLong
 import org.wordpress.android.fluxc.network.utils.getString
-import org.wordpress.android.fluxc.persistence.WCGlobalAttributeSqlUtils
-import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.AppLog.T
 
@@ -24,103 +21,106 @@ import org.wordpress.android.util.AppLog.T
  * Single Woo product - see http://woocommerce.github.io/woocommerce-rest-api-docs/#product-properties
  * Note that products have more properties than we support below
  */
-@Table(addOn = WellSqlConfig.ADDON_WOOCOMMERCE)
-data class WCProductModel(@PrimaryKey @Column private var id: Int = 0) : Identifiable {
-    @Column var localSiteId = 0
-    @Column var remoteProductId = 0L // The unique identifier for this product on the server
-    val remoteId
-        get() = RemoteId(remoteProductId)
-    @Column var name = ""
-    @Column var slug = ""
-    @Column var permalink = ""
+@Entity(
+    tableName = "ProductEntity",
+    primaryKeys = ["localSiteId", "remoteId"],
+)
+data class WCProductModel(
+    val localSiteId: LocalId = LocalId(0),
+    val remoteId: RemoteId = RemoteId(0),
+    val name: String = "",
+    val slug: String = "",
+    val permalink: String = "",
 
-    @Column var dateCreated = ""
-    @Column var dateModified = ""
+    val dateCreated: String = "",
+    val dateModified: String = "",
 
-    @Column var type = "" // simple, grouped, external, variable
-    @Column var status = ""
-    @Column var featured = false
-    @Column var catalogVisibility = "" // visible, catalog, search, hidden
-    @Column var description = ""
-    @Column var shortDescription = ""
-    @Column var sku = ""
-    @Column var globalUniqueId = ""
+    val type: String = "",
+    val status: String = "",
+    val featured: Boolean = false,
+    val catalogVisibility: String = "",
+    val description: String = "",
+    val shortDescription: String = "",
+    val sku: String = "",
+    val globalUniqueId: String = "",
 
-    @Column var price = ""
-    @Column var regularPrice = ""
-    @Column var salePrice = ""
-    @Column var onSale = false
-    @Column var totalSales = 0L
-    @Column var purchasable = false
+    val price: String = "",
+    val regularPrice: String = "",
+    val salePrice: String = "",
+    val onSale: Boolean = false,
+    val totalSales: Long = 0L,
+    val purchasable: Boolean = false,
 
-    @Column var dateOnSaleFrom = ""
-    @Column var dateOnSaleTo = ""
-    @Column var dateOnSaleFromGmt = ""
-    @Column var dateOnSaleToGmt = ""
+    val dateOnSaleFrom: String = "",
+    val dateOnSaleTo: String = "",
+    val dateOnSaleFromGmt: String = "",
+    val dateOnSaleToGmt: String = "",
 
-    @Column var virtual = false
-    @Column var downloadable = false
-    @Column var downloadLimit = -1L
-    @Column var downloadExpiry = -1
-    @Column var soldIndividually = false
+    val virtual: Boolean = false,
+    val downloadable: Boolean = false,
+    val downloadLimit: Long = -1L,
+    val downloadExpiry: Int = -1,
+    val soldIndividually: Boolean = false,
 
-    @Column var externalUrl = ""
-    @Column var buttonText = ""
+    val externalUrl: String = "",
+    val buttonText: String = "",
 
-    @Column var taxStatus = "" // taxable, shipping, none
-    @Column var taxClass = ""
+    val taxStatus: String = "",
+    val taxClass: String = "",
 
-    @Column var manageStock = false
-    @Column var stockQuantity = 0.0
-    @Column var stockStatus = "" // instock, outofstock, onbackorder
+    val manageStock: Boolean = false,
+    val stockQuantity: Double = 0.0,
+    val stockStatus: String = "",
 
-    @Column var backorders = "" // no, notify, yes
-    @Column var backordersAllowed = false
-    @Column var backordered = false
+    val backorders: String = "",
+    val backordersAllowed: Boolean = false,
+    val backordered: Boolean = false,
 
-    @Column var shippingRequired = false
-    @Column var shippingTaxable = false
-    @Column var shippingClass = ""
-    @Column var shippingClassId = 0
+    val shippingRequired: Boolean = false,
+    val shippingTaxable: Boolean = false,
+    val shippingClass: String = "",
+    val shippingClassId: Int = 0,
 
-    @Column var reviewsAllowed = true
-    @Column var averageRating = ""
-    @Column var ratingCount = 0
+    val reviewsAllowed: Boolean = true,
+    val averageRating: String = "",
+    val ratingCount: Int = 0,
 
-    @Column var parentId = 0L
-    @Column var purchaseNote = ""
-    @Column var menuOrder = 0
+    val parentId: Long = 0L,
+    val purchaseNote: String = "",
+    val menuOrder: Int = 0,
 
-    @Column var categories = "" // array of categories
-    @Column var tags = "" // array of tags
-    @Column var images = "" // array of images
-    @Column var attributes = "" // array of attributes
-    @Column var variations = "" // array of variation IDs
-    @Column var downloads = "" // array of downloadable files
-    @Column var relatedIds = "" // array of related product IDs
-    @Column var crossSellIds = "" // array of cross-sell product IDs
-    @Column var upsellIds = "" // array of up-sell product IDs
-    @Column var groupedProductIds = "" // array of grouped product IDs
+    val categories: String = "",
+    val tags: String = "",
+    val images: String = "",
+    val attributes: String = "",
+    val variations: String = "",
+    val downloads: String = "",
+    val relatedIds: String = "",
+    val crossSellIds: String = "",
+    val upsellIds: String = "",
+    val groupedProductIds: String = "",
 
-    @Column var weight = ""
-    @Column var length = ""
-    @Column var width = ""
-    @Column var height = ""
+    val weight: String = "",
+    val length: String = "",
+    val width: String = "",
+    val height: String = "",
 
-    @Column var bundledItems = ""
-    @Column var compositeComponents = ""
-    @Column var specialStockStatus = ""
-    @Column var bundleMinSize: Float? = null
-    @Column var bundleMaxSize: Float? = null
-    @Column var minAllowedQuantity = -1
-    @Column var maxAllowedQuantity = -1
-    @Column var groupOfQuantity = -1
-    @Column var combineVariationQuantities = false
-    @Column var password: String? = null
+    val bundledItems: String = "",
+    val compositeComponents: String = "",
+    val specialStockStatus: String = "",
+    val bundleMinSize: Float? = null,
+    val bundleMaxSize: Float? = null,
+    val minAllowedQuantity: Int = -1,
+    val maxAllowedQuantity: Int = -1,
+    val groupOfQuantity: Int = -1,
+    val combineVariationQuantities: Boolean = false,
+    val password: String? = null,
 
-    @Column var isSampleProduct = false
-        @JvmName("setIsSampleProduct")
-        set
+    val isSampleProduct: Boolean = false
+) {
+
+    @Ignore
+    val remoteProductId: Long = remoteId.value
 
     val attributeList: Array<ProductAttribute>
         get() = Gson().fromJson(attributes, Array<ProductAttribute>::class.java) ?: emptyArray()
@@ -156,19 +156,6 @@ data class WCProductModel(@PrimaryKey @Column private var id: Int = 0) : Identif
     ) {
         val options: MutableList<String> = options.toMutableList()
 
-        fun getCommaSeparatedOptions(): String {
-            if (options.isEmpty()) return ""
-            var commaSeparatedOptions = ""
-            options.forEach { option ->
-                if (commaSeparatedOptions.isEmpty()) {
-                    commaSeparatedOptions = option
-                } else {
-                    commaSeparatedOptions += ", $option"
-                }
-            }
-            return commaSeparatedOptions
-        }
-
         fun isSameAttribute(other: ProductAttribute): Boolean {
             return id == other.id &&
                     name == other.name &&
@@ -176,18 +163,6 @@ data class WCProductModel(@PrimaryKey @Column private var id: Int = 0) : Identif
                     visible == other.visible &&
                     options == other.options
         }
-
-        fun asGlobalAttribute(siteID: Int) =
-                WCGlobalAttributeSqlUtils.fetchSingleStoredAttribute(id.toInt(), siteID)
-
-        fun generateProductVariantOption(selectedOption: String) =
-                takeIf { options.contains(selectedOption) }?.let {
-                    ProductVariantOption(
-                            id = id,
-                            name = name,
-                            option = selectedOption
-                    )
-                }
 
         fun toJson(): JsonObject {
             val jsonOptions = JsonArray().also {
@@ -203,46 +178,6 @@ data class WCProductModel(@PrimaryKey @Column private var id: Int = 0) : Identif
                 json.add("options", jsonOptions)
             }
         }
-    }
-
-    override fun getId() = id
-
-    override fun setId(id: Int) {
-        this.id = id
-    }
-
-    fun addAttribute(newAttribute: ProductAttribute) {
-        mutableListOf<ProductAttribute>()
-                .apply {
-                    attributeList
-                            .takeIf {
-                                it.find { currentAttribute ->
-                                    currentAttribute.id == newAttribute.id
-                                } == null
-                            }?.let { currentAttributes ->
-                                add(newAttribute)
-                                currentAttributes
-                                        .takeIf { it.isNotEmpty() }
-                                        ?.let { addAll(it) }
-                            }
-                }.also { attributes = Gson().toJson(it) }
-    }
-
-    fun removeAttribute(attributeID: Int) =
-            mutableListOf<ProductAttribute>().apply {
-                attributeList
-                        .takeIf { it.isNotEmpty() }
-                        ?.filter { attributeID != it.id.toInt() }
-                        ?.let { addAll(it) }
-            }.also { attributes = Gson().toJson(it) }
-
-    fun getAttribute(attributeID: Int) =
-        attributeList.find { it.id == attributeID.toLong() }
-
-    fun updateAttribute(updatedAttribute: ProductAttribute) = apply {
-        getAttribute(updatedAttribute.id.toInt())
-                ?.let { removeAttribute(it.id.toInt()) }
-        addAttribute(updatedAttribute)
     }
 
     /**
@@ -448,24 +383,7 @@ data class WCProductModel(@PrimaryKey @Column private var id: Int = 0) : Identif
 
     fun getCategoryList() = getTripletsOrEmpty(categories)
 
-    fun getCommaSeparatedCategoryNames() = getCommaSeparatedTripletNames(getCategoryList())
-
     fun getTagList() = getTripletsOrEmpty(tags)
-
-    fun getCommaSeparatedTagNames() = getCommaSeparatedTripletNames(getTagList())
-
-    private fun getCommaSeparatedTripletNames(triplets: List<ProductTriplet>): String {
-        if (triplets.isEmpty()) return ""
-        var commaSeparatedNames = ""
-        triplets.forEach {
-            if (commaSeparatedNames.isEmpty()) {
-                commaSeparatedNames = it.name
-            } else {
-                commaSeparatedNames += ", ${it.name}"
-            }
-        }
-        return commaSeparatedNames
-    }
 
     private fun getTripletsOrEmpty(jsonStr: String): List<ProductTriplet> {
         return if (jsonStr.isNotEmpty()) {

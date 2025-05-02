@@ -181,6 +181,8 @@ class MainActivity :
 
     @Inject lateinit var animatorHelper: MainAnimatorHelper
 
+    @Inject lateinit var edgeToEdgeHelper: MainActivityEdgeToEdgeHelper
+
     private val viewModel: MainActivityViewModel by viewModels()
 
     private var unfilledOrderCount: Int = 0
@@ -264,7 +266,10 @@ class MainActivity :
                     binding.appBarDivider.isVisible = appBarStatus.hasDivider
                 }
 
-                AppBarStatus.Hidden -> hideToolbar(animate = f is TopLevelFragment)
+                AppBarStatus.Hidden -> {
+                    hideToolbar(animate = f is TopLevelFragment)
+                    binding.appBarLayout.targetElevation = 0f
+                }
             }
 
             if (f is TopLevelFragment) {
@@ -302,7 +307,10 @@ class MainActivity :
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        edgeToEdgeHelper.applyEdgeToEdgeSettings(binding)
+
         toolbar = binding.toolbar.toolbar
+
         setSupportActionBar(toolbar)
         toolbar.navigationIcon = null
 

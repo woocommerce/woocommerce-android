@@ -49,11 +49,7 @@ object AddonTestFixtures {
     }
 
     val defaultWCProductModel by lazy {
-        WCProductModel()
-            .apply {
-                attributes = "[]"
-                status = "draft"
-            }
+        WCProductModel().copy(attributes = "[]", status = "draft")
     }
 
     val defaultProductAddonList by lazy {

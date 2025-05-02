@@ -5,13 +5,10 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
+import com.woocommerce.android.ui.woopos.common.data.WooPosProductsTypesFilterConfig
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.store.WCProductStore
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
@@ -23,7 +20,8 @@ class WooPosSearchProductsDataSource @Inject constructor(
     private val selectedSite: SelectedSite,
     private val productsCache: WooPosProductsCache,
     private val searchResultsIndex: WooPosSearchResultsIndex,
-    private val searchPredicate: ProductSearchPredicate,
+    private val searchPredicate: WooPosProductSearchPredicate,
+    private val productsTypesFilterConfig: WooPosProductsTypesFilterConfig
 ) {
     companion object {
         private const val PAGE_SIZE = 15
@@ -34,31 +32,17 @@ class WooPosSearchProductsDataSource @Inject constructor(
     val hasMorePages: Boolean
         get() = canLoadMore.get()
 
-    fun searchProducts(query: String): Flow<ProductsResult> = flow {
-        coroutineScope {
-            searchResultsIndex.clearCache()
+    suspend fun searchLocalProducts(query: String): List<Product> = withContext(Dispatchers.IO) {
+        sortProducts(productsCache.getAll().filter(searchPredicate(query))).take(PAGE_SIZE)
+    }
 
-            val localSearchDeferred = async {
-                sortProducts(productsCache.getAll().filter(searchPredicate(query))).take(PAGE_SIZE)
-            }
-            val remoteSearchDeferred = async { remoteSearch(query) }
+    suspend fun searchRemoteProducts(query: String): Result<List<Product>> = withContext(Dispatchers.IO) {
+        searchResultsIndex.clearCache()
 
-            emit(ProductsResult.Cached(localSearchDeferred.await()))
-
-            val remoteResults = remoteSearchDeferred.await()
-            remoteResults.fold(
-                onSuccess = { result ->
-                    emit(ProductsResult.Remote(Result.success(result.products)))
-                },
-                onFailure = { error ->
-                    emit(ProductsResult.Remote(Result.failure(error)))
-                }
-            )
-        }
-    }.flowOn(Dispatchers.IO)
-
-    private fun sortProducts(products: List<Product>): List<Product> {
-        return products.sortedBy { it.name.lowercase() }
+        performRemoteSearch(query).fold(
+            onSuccess = { result -> Result.success(result.products) },
+            onFailure = { error -> Result.failure(error) }
+        )
     }
 
     suspend fun loadMore(query: String): Result<List<Product>> {
@@ -69,7 +53,7 @@ class WooPosSearchProductsDataSource @Inject constructor(
         val currentResults = searchResultsIndex.getSearchResults(query)
         val offset = currentResults.size
 
-        return remoteSearch(query, offset).fold(
+        return performRemoteSearch(query, offset).fold(
             onSuccess = { result ->
                 Result.success(result.products)
             },
@@ -79,7 +63,7 @@ class WooPosSearchProductsDataSource @Inject constructor(
         )
     }
 
-    private suspend fun remoteSearch(
+    private suspend fun performRemoteSearch(
         searchQuery: String,
         offset: Int = 0
     ): Result<SearchResult> {
@@ -88,6 +72,8 @@ class WooPosSearchProductsDataSource @Inject constructor(
             searchString = searchQuery,
             offset = offset,
             pageSize = PAGE_SIZE,
+            filterOptions = productsTypesFilterConfig.filters,
+            includeTypes = productsTypesFilterConfig.includeTypes,
         ).let { result ->
             if (result.isError) {
                 WooLog.w(
@@ -115,6 +101,10 @@ class WooPosSearchProductsDataSource @Inject constructor(
                 Result.success(searchResults)
             }
         }
+    }
+
+    private fun sortProducts(products: List<Product>): List<Product> {
+        return products.sortedBy { it.name.lowercase() }
     }
 
     sealed class ProductsResult {
