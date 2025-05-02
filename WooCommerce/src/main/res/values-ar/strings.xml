@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-04-07 18:54:04+0000
+Translation-Revision-Date: 2025-04-21 13:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_split_shipment_bottom_sheet_remove_button">إزالة الشحنة</string>
+    <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_plural">اختر المكان الذي يتم نقل العناصر %d إليه في هذه الشحنة.</string>
+    <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_one">اختر المكان الذي يتم نقل العنصر %d إليه في هذه الشحنة.</string>
+    <string name="woo_shipping_split_shipment_bottom_sheet_desc">سيتم دمج جميع العناصر مع %s.</string>
+    <string name="woo_shipping_split_shipment_bottom_sheet_title">إزالة الشحنة</string>
+    <string name="woo_shipping_split_shipment_shipment_remove">إزالة %s</string>
+    <string name="woo_shipping_split_shipment_moved_notice_plural">تم نقل العناصر ⁦%1$d⁩ إلى الشحنة ⁦%2$d⁩</string>
+    <string name="woo_shipping_split_shipment_moved_notice_one">تم نقل العنصر ⁦%1$d⁩ إلى الشحنة ⁦%2$d⁩</string>
+    <string name="woo_shipping_labels_package_creation_empty_saved_message">لا توجد طرود محفوظة حتى الآن</string>
+    <string name="woo_shipping_labels_package_creation_empty_carrier_message">لم يتم العثور على معلومات شركة النقل</string>
+    <string name="woo_shipping_labels_package_creation_empty_button">إنشاء طرد مخصص</string>
+    <string name="woopos_cart_changes_in_the_cart">هناك تغييرات في عربة التسوق</string>
     <string name="woo_shipping_split_shipment_shipment_new">شحنة جديدة</string>
     <string name="woo_shipping_split_shipment_shipment_name">الشحنة %s</string>
     <string name="woo_shipping_split_move_to">انتقال إلى</string>
