@@ -369,8 +369,7 @@ class WooPosTotalsViewModel @Inject constructor(
         val totalsState = uiState.value
         if (totalsState is WooPosTotalsViewState.Checkout) {
             uiState.value = totalsState.copy(
-                readerStatus =
-                WooPosTotalsViewState.ReaderStatus.Preparing(
+                readerStatus = WooPosTotalsViewState.ReaderStatus.Preparing(
                     title = resourceProvider.getString(R.string.woopos_totals_reader_getting_ready),
                     subtitle = resourceProvider.getString(R.string.woopos_totals_reader_preparing_reader_for_payment)
                 )
@@ -535,8 +534,11 @@ class WooPosTotalsViewModel @Inject constructor(
         }
         return WooPosTotalsViewState.Checkout(
             totals = Totals.Visible(
-                orderDiscountText =
-                    if (isCouponsEnabled() && discountAmount > BigDecimal.ZERO) "-${priceFormat(discountAmount)}" else null,
+                orderDiscountText = if (isCouponsEnabled() && discountAmount > BigDecimal.ZERO) {
+                    "-${priceFormat(discountAmount)}"
+                } else {
+                    null
+                },
                 orderSubtotalText = priceFormat(subtotalAmount),
                 orderTaxText = priceFormat(taxAmount),
                 orderTotalText = priceFormat(totalAmount),
