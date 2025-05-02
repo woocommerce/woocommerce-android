@@ -166,6 +166,7 @@ private fun WooPosVariationsScreens(
 
                 is WooPosVariationsViewState.Empty -> {
                     WooPosItemsEmptyList(
+                        modifier = Modifier.fillMaxSize(),
                         title = stringResource(id = R.string.woopos_variations_empty_list_title),
                         message = stringResource(id = R.string.woopos_variations_empty_list_message),
                         contentDescription = stringResource(

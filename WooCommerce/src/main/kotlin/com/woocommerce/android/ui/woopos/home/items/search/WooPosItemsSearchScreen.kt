@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -51,7 +53,7 @@ private fun WooPosItemsSearchScreen(
     ) {
         when (state) {
             is WooPosItemsSearchViewState.EmptySearchQuery -> {
-                WooPosItemsEmptySearchQueryStateScreen(state, onUIEvent)
+                WooPosItemsEmptySearchQueryStateScreen(modifier = Modifier.imePadding(), state, onUIEvent)
             }
 
             is WooPosItemsSearchViewState.Content -> {
@@ -62,6 +64,7 @@ private fun WooPosItemsSearchScreen(
 
             WooPosItemsSearchViewState.Empty -> {
                 WooPosItemsEmptyList(
+                    modifier = Modifier.fillMaxSize().imePadding(),
                     title = stringResource(id = R.string.woopos_search_items_empty_title),
                     message = stringResource(id = R.string.woopos_search_empty_description),
                     contentDescription = stringResource(id = R.string.woopos_search_empty_image_content_description),
@@ -70,6 +73,7 @@ private fun WooPosItemsSearchScreen(
 
             is WooPosItemsSearchViewState.Error -> {
                 WooPosErrorScreen(
+                    modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).imePadding(),
                     message = stringResource(id = R.string.woopos_search_items_error_title),
                     reason = stringResource(id = R.string.woopos_search_items_error_description),
                     primaryButton = Button(
@@ -80,7 +84,10 @@ private fun WooPosItemsSearchScreen(
             }
 
             WooPosItemsSearchViewState.Loading -> {
-                WooPosItemsLoadingIndicator(itemsCount = 5)
+                WooPosItemsLoadingIndicator(
+                    modifier = Modifier.padding(top = WooPosSpacing.Large.value),
+                    itemsCount = 5
+                )
             }
         }
     }
@@ -99,8 +106,8 @@ private fun WooPosItemsSearchContent(
             focusManager.clearFocus()
         }
     }
-
     WooPosItemList(
+        modifier = Modifier.padding(top = WooPosSpacing.Large.value),
         state = state,
         listState = listState,
         onItemClicked = { onUIEvent(WooPosItemsSearchUiEvent.OnItemClicked(it)) },

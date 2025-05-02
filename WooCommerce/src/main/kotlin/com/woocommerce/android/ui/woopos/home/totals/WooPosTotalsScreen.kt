@@ -327,6 +327,13 @@ private fun TotalsGrid(totals: Totals.Visible) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
+        TotalsGridRow(
+            textOne = stringResource(R.string.woopos_payment_subtotal_label),
+            textTwo = totals.orderSubtotalText,
+        )
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
+
         totals.orderDiscountText?.let {
             TotalsGridRow(
                 textOne = stringResource(R.string.woopos_payment_discount_label),

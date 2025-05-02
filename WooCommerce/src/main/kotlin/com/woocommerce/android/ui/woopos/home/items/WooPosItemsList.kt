@@ -67,6 +67,7 @@ import kotlinx.coroutines.flow.filter
 
 @Composable
 fun WooPosItemList(
+    modifier: Modifier = Modifier,
     state: WooPosContentViewState,
     listState: LazyListState,
     onItemClicked: (item: WooPosItemSelectionViewState) -> Unit,
@@ -74,6 +75,7 @@ fun WooPosItemList(
     onErrorWhilePaginating: @Composable () -> Unit,
 ) {
     WooPosLazyColumn(
+        modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value),
         contentPadding = PaddingValues(2.dp),
         state = listState,
@@ -137,9 +139,7 @@ fun WooPosItemList(
             Spacer(modifier = Modifier.height(104.dp))
         }
     }
-    InfiniteListHandler(listState, state) {
-        onEndOfProductsListReached()
-    }
+    InfiniteListHandler(listState, state, onEndOfProductsListReached)
 }
 
 @Composable
@@ -405,8 +405,12 @@ fun CouponDetails(item: Coupon) {
 }
 
 @Composable
-fun WooPosItemsLoadingIndicator(itemsCount: Int = 10) {
+fun WooPosItemsLoadingIndicator(
+    modifier: Modifier = Modifier,
+    itemsCount: Int = 10
+) {
     WooPosLazyColumn(
+        modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value),
         contentPadding = PaddingValues(2.dp),
     ) {
@@ -472,14 +476,13 @@ private fun ItemsLoadingItem() {
 
 @Composable
 fun WooPosItemsEmptyList(
+    modifier: Modifier = Modifier,
     title: String,
     message: String,
     contentDescription: String,
 ) {
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
+        modifier = modifier.verticalScroll(rememberScrollState()),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -546,6 +549,7 @@ private fun InfiniteListHandler(
 fun ItemListPreview() {
     WooPosTheme {
         WooPosItemList(
+            Modifier,
             WooPosProductsViewState.Content(
                 listOf(
                     Product.Simple(
@@ -579,7 +583,12 @@ fun ItemListPreview() {
 @Composable
 fun EmptyListPreview() {
     WooPosTheme {
-        WooPosItemsEmptyList("Empty List", "This list is empty", "")
+        WooPosItemsEmptyList(
+            modifier = Modifier.fillMaxSize(),
+            title = "Empty List",
+            message = "This list is empty",
+            contentDescription = ""
+        )
     }
 }
 
@@ -587,6 +596,6 @@ fun EmptyListPreview() {
 @Composable
 fun LoadingListPreview() {
     WooPosTheme {
-        WooPosItemsLoadingIndicator(10)
+        WooPosItemsLoadingIndicator(itemsCount = 10)
     }
 }
