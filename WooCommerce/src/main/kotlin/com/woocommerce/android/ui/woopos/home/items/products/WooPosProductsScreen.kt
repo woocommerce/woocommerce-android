@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ExperimentalMaterialApi
@@ -22,6 +23,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.Button
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreen
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosPaginationErrorIndicator
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemList
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
@@ -107,9 +109,12 @@ private fun ProductsList(
                     Content(itemsState, listState, onItemClicked, onEndOfItemListReached)
                 }
 
-                is WooPosProductsViewState.Loading -> WooPosItemsLoadingIndicator()
+                is WooPosProductsViewState.Loading -> WooPosItemsLoadingIndicator(
+                    modifier = Modifier.padding(top = WooPosSpacing.Large.value)
+                )
 
                 is WooPosProductsViewState.Empty -> WooPosItemsEmptyList(
+                    modifier = Modifier.fillMaxSize(),
                     title = stringResource(id = R.string.woopos_products_empty_list_title),
                     message = stringResource(id = R.string.woopos_products_empty_list_message),
                     contentDescription = stringResource(id = R.string.woopos_products_empty_list_image_description),
@@ -134,10 +139,11 @@ private fun Content(
     onEndOfItemListReached: () -> Unit
 ) {
     WooPosItemList(
-        itemsState,
-        listState,
-        onItemClicked,
-        onEndOfItemListReached,
+        modifier = Modifier.padding(top = WooPosSpacing.Large.value),
+        state = itemsState,
+        listState = listState,
+        onItemClicked = onItemClicked,
+        onEndOfProductsListReached = onEndOfItemListReached,
     ) {
         ProductsPaginationError(
             onRetryClicked = {

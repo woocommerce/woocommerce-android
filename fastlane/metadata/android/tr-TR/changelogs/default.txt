@@ -1,0 +1,2 @@
+22.2:
+Bu güncellemede önemli iyileştirmeler yaptık! Para birimi biçimlendirmesi, "Özel tutar ekle" ekranı ve Jetpack Yükleme ekranının tümü daha sorunsuz ve daha güvenilir bir deneyim için çözüldü. WooCommerce mobil uygulamanızda gelişmiş kararlılığın keyfini çıkarın!

@@ -24,6 +24,7 @@ import java.lang.annotation.Retention;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.Objects;
 
 @Table
 @RawConstraints({"UNIQUE (SITE_ID, URL)"})
@@ -1087,7 +1088,8 @@ public class SiteModel extends Payload<BaseNetworkError> implements Identifiable
     }
 
     public boolean isApplicationPasswordsSupported() {
-        return mApplicationPasswordsAuthorizeUrl != null && !mApplicationPasswordsAuthorizeUrl.isEmpty();
+        return mApplicationPasswordsAuthorizeUrl != null &&
+!mApplicationPasswordsAuthorizeUrl.isEmpty();
     }
 
     public int getPublishedStatus() {
@@ -1132,5 +1134,207 @@ public class SiteModel extends Payload<BaseNetworkError> implements Identifiable
 
     public void setIsSingleUserSite(Boolean isSingleUserSite) {
         mIsSingleUserSite = isSingleUserSite;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof SiteModel)) return false;
+        SiteModel siteModel = (SiteModel) o;
+        return mId == siteModel.mId &&
+                mSiteId == siteModel.mSiteId &&
+                mIsWPCom == siteModel.mIsWPCom &&
+                mIsWPComAtomic == siteModel.mIsWPComAtomic &&
+                mPublishedStatus == siteModel.mPublishedStatus &&
+                mIsFeaturedImageSupported == siteModel.mIsFeaturedImageSupported &&
+                mIsWpForTeamsSite == siteModel.mIsWpForTeamsSite &&
+                mMaxUploadSize == siteModel.mMaxUploadSize &&
+                mMemoryLimit == siteModel.mMemoryLimit &&
+                mOrigin == siteModel.mOrigin &&
+                mOrganizationId == siteModel.mOrganizationId &&
+                mPageOnFront == siteModel.mPageOnFront &&
+                mPageForPosts == siteModel.mPageForPosts &&
+                mSelfHostedSiteId == siteModel.mSelfHostedSiteId &&
+                mIsSelfHostedAdmin == siteModel.mIsSelfHostedAdmin &&
+                mIsJetpackInstalled == siteModel.mIsJetpackInstalled &&
+                mIsJetpackConnected == siteModel.mIsJetpackConnected &&
+                mIsJetpackCPConnected == siteModel.mIsJetpackCPConnected &&
+                mIsAutomatedTransfer == siteModel.mIsAutomatedTransfer &&
+                mIsWpComStore == siteModel.mIsWpComStore &&
+                mHasWooCommerce == siteModel.mHasWooCommerce &&
+                mIsVisible == siteModel.mIsVisible &&
+                mIsPrivate == siteModel.mIsPrivate &&
+                mIsComingSoon == siteModel.mIsComingSoon &&
+                mIsVideoPressSupported == siteModel.mIsVideoPressSupported &&
+                mPlanId == siteModel.mPlanId &&
+                mHasFreePlan == siteModel.mHasFreePlan &&
+                mHasCapabilityEditPages == siteModel.mHasCapabilityEditPages &&
+                mHasCapabilityEditPosts == siteModel.mHasCapabilityEditPosts &&
+                mHasCapabilityEditOthersPosts == siteModel.mHasCapabilityEditOthersPosts &&
+                mHasCapabilityEditOthersPages == siteModel.mHasCapabilityEditOthersPages &&
+                mHasCapabilityDeletePosts == siteModel.mHasCapabilityDeletePosts &&
+                mHasCapabilityDeleteOthersPosts == siteModel.mHasCapabilityDeleteOthersPosts &&
+                mHasCapabilityEditThemeOptions == siteModel.mHasCapabilityEditThemeOptions &&
+                mHasCapabilityEditUsers == siteModel.mHasCapabilityEditUsers &&
+                mHasCapabilityListUsers == siteModel.mHasCapabilityListUsers &&
+                mHasCapabilityManageCategories == siteModel.mHasCapabilityManageCategories &&
+                mHasCapabilityManageOptions == siteModel.mHasCapabilityManageOptions &&
+                mHasCapabilityActivateWordads == siteModel.mHasCapabilityActivateWordads &&
+                mHasCapabilityPromoteUsers == siteModel.mHasCapabilityPromoteUsers &&
+                mHasCapabilityPublishPosts == siteModel.mHasCapabilityPublishPosts &&
+                mHasCapabilityUploadFiles == siteModel.mHasCapabilityUploadFiles &&
+                mHasCapabilityDeleteUser == siteModel.mHasCapabilityDeleteUser &&
+                mHasCapabilityRemoveUsers == siteModel.mHasCapabilityRemoveUsers &&
+                mHasCapabilityViewStats == siteModel.mHasCapabilityViewStats &&
+                mSpaceAvailable == siteModel.mSpaceAvailable &&
+                mSpaceAllowed == siteModel.mSpaceAllowed &&
+                mSpaceUsed == siteModel.mSpaceUsed &&
+                Double.compare(mSpacePercentUsed, siteModel.mSpacePercentUsed) == 0 &&
+                mIsPublicizePermanentlyDisabled == siteModel.mIsPublicizePermanentlyDisabled &&
+                mIsBloggingPromptsOptedIn == siteModel.mIsBloggingPromptsOptedIn &&
+                mIsBloggingPromptsCardOptedIn == siteModel.mIsBloggingPromptsCardOptedIn &&
+                mIsPotentialBloggingSite == siteModel.mIsPotentialBloggingSite &&
+                mIsBloggingReminderOnMonday == siteModel.mIsBloggingReminderOnMonday &&
+                mIsBloggingReminderOnTuesday == siteModel.mIsBloggingReminderOnTuesday &&
+                mIsBloggingReminderOnWednesday == siteModel.mIsBloggingReminderOnWednesday &&
+                mIsBloggingReminderOnThursday == siteModel.mIsBloggingReminderOnThursday &&
+                mIsBloggingReminderOnFriday == siteModel.mIsBloggingReminderOnFriday &&
+                mIsBloggingReminderOnSaturday == siteModel.mIsBloggingReminderOnSaturday &&
+                mIsBloggingReminderOnSunday == siteModel.mIsBloggingReminderOnSunday &&
+                mBloggingReminderHour == siteModel.mBloggingReminderHour &&
+                mBloggingReminderMinute == siteModel.mBloggingReminderMinute &&
+                Objects.equals(mUrl, siteModel.mUrl) &&
+                Objects.equals(mAdminUrl, siteModel.mAdminUrl) &&
+                Objects.equals(mLoginUrl, siteModel.mLoginUrl) &&
+                Objects.equals(mName, siteModel.mName) &&
+                Objects.equals(mDescription, siteModel.mDescription) &&
+                Objects.equals(mDefaultCommentStatus, siteModel.mDefaultCommentStatus) &&
+                Objects.equals(mTimezone, siteModel.mTimezone) &&
+                Objects.equals(mFrameNonce, siteModel.mFrameNonce) &&
+                Objects.equals(mShowOnFront, siteModel.mShowOnFront) &&
+                Objects.equals(mUsername, siteModel.mUsername) &&
+                Objects.equals(mPassword, siteModel.mPassword) &&
+                Objects.equals(mXmlRpcUrl, siteModel.mXmlRpcUrl) &&
+                Objects.equals(mWpApiRestUrl, siteModel.mWpApiRestUrl) &&
+                Objects.equals(mSoftwareVersion, siteModel.mSoftwareVersion) &&
+                Objects.equals(mEmail, siteModel.mEmail) &&
+                Objects.equals(mDisplayName, siteModel.mDisplayName) &&
+                Objects.equals(mJetpackVersion, siteModel.mJetpackVersion) &&
+                Objects.equals(mJetpackUserEmail, siteModel.mJetpackUserEmail) &&
+                Objects.equals(mPlanShortName, siteModel.mPlanShortName) &&
+                Objects.equals(mPlanProductSlug, siteModel.mPlanProductSlug) &&
+                Objects.equals(mIconUrl, siteModel.mIconUrl) &&
+                Objects.equals(mUnmappedUrl, siteModel.mUnmappedUrl) &&
+                Objects.equals(mWebEditor, siteModel.mWebEditor) &&
+                Objects.equals(mMobileEditor, siteModel.mMobileEditor) &&
+                Objects.equals(mActiveModules, siteModel.mActiveModules) &&
+                Objects.equals(mActiveJetpackConnectionPlugins, siteModel.mActiveJetpackConnectionPlugins) &&
+                Objects.equals(mJetpackModules, siteModel.mJetpackModules) &&
+                Objects.equals(mZendeskPlan, siteModel.mZendeskPlan) &&
+                Objects.equals(mZendeskAddOns, siteModel.mZendeskAddOns) &&
+                Objects.equals(mApplicationPasswordsAuthorizeUrl, siteModel.mApplicationPasswordsAuthorizeUrl) &&
+                Objects.equals(mCanBlaze, siteModel.mCanBlaze) &&
+                Objects.equals(mPlanActiveFeatures, siteModel.mPlanActiveFeatures) &&
+                Objects.equals(mWasEcommerceTrial, siteModel.mWasEcommerceTrial) &&
+                Objects.equals(mIsSingleUserSite, siteModel.mIsSingleUserSite);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(mId,
+                mSiteId,
+                mUrl,
+                mAdminUrl,
+                mLoginUrl,
+                mName,
+                mDescription,
+                mIsWPCom,
+                mIsWPComAtomic,
+                mPublishedStatus,
+                mIsFeaturedImageSupported,
+                mIsWpForTeamsSite,
+                mDefaultCommentStatus,
+                mTimezone,
+                mFrameNonce,
+                mMaxUploadSize,
+                mMemoryLimit,
+                mOrigin,
+                mOrganizationId,
+                mShowOnFront,
+                mPageOnFront,
+                mPageForPosts,
+                mSelfHostedSiteId,
+                mUsername,
+                mPassword,
+                mXmlRpcUrl,
+                mWpApiRestUrl,
+                mSoftwareVersion,
+                mIsSelfHostedAdmin,
+                mEmail,
+                mDisplayName,
+                mIsJetpackInstalled,
+                mIsJetpackConnected,
+                mIsJetpackCPConnected,
+                mJetpackVersion,
+                mJetpackUserEmail,
+                mIsAutomatedTransfer,
+                mIsWpComStore,
+                mHasWooCommerce,
+                mIsVisible,
+                mIsPrivate,
+                mIsComingSoon,
+                mIsVideoPressSupported,
+                mPlanId,
+                mPlanShortName,
+                mPlanProductSlug,
+                mIconUrl,
+                mHasFreePlan,
+                mUnmappedUrl,
+                mWebEditor,
+                mMobileEditor,
+                mHasCapabilityEditPages,
+                mHasCapabilityEditPosts,
+                mHasCapabilityEditOthersPosts,
+                mHasCapabilityEditOthersPages,
+                mHasCapabilityDeletePosts,
+                mHasCapabilityDeleteOthersPosts,
+                mHasCapabilityEditThemeOptions,
+                mHasCapabilityEditUsers,
+                mHasCapabilityListUsers,
+                mHasCapabilityManageCategories,
+                mHasCapabilityManageOptions,
+                mHasCapabilityActivateWordads,
+                mHasCapabilityPromoteUsers,
+                mHasCapabilityPublishPosts,
+                mHasCapabilityUploadFiles,
+                mHasCapabilityDeleteUser,
+                mHasCapabilityRemoveUsers,
+                mHasCapabilityViewStats,
+                mSpaceAvailable,
+                mSpaceAllowed,
+                mSpaceUsed,
+                mSpacePercentUsed,
+                mActiveModules,
+                mIsPublicizePermanentlyDisabled,
+                mActiveJetpackConnectionPlugins,
+                mJetpackModules,
+                mZendeskPlan,
+                mZendeskAddOns,
+                mIsBloggingPromptsOptedIn,
+                mIsBloggingPromptsCardOptedIn,
+                mIsPotentialBloggingSite,
+                mIsBloggingReminderOnMonday,
+                mIsBloggingReminderOnTuesday,
+                mIsBloggingReminderOnWednesday,
+                mIsBloggingReminderOnThursday,
+                mIsBloggingReminderOnFriday,
+                mIsBloggingReminderOnSaturday,
+                mIsBloggingReminderOnSunday,
+                mBloggingReminderHour,
+                mBloggingReminderMinute,
+                mApplicationPasswordsAuthorizeUrl,
+                mCanBlaze,
+                mPlanActiveFeatures,
+                mWasEcommerceTrial,
+                mIsSingleUserSite);
     }
 }

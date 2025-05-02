@@ -318,7 +318,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
     }
 
     private companion object {
-        const val MAX_ITEMS_COUNT = 3
+        const val MAX_ITEMS_COUNT = 10
         const val SEARCH_DEBOUNCING_TIME = 500L
     }
 }

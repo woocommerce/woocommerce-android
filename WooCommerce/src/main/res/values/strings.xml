@@ -4312,7 +4312,7 @@
     <string name="woopos_payment_successful_checkmark_icon_content_description">Payment successful checkmark icon</string>
     <string name="woopos_new_order_button">New order</string>
     <string name="woopos_receipt_button">Email receipt</string>
-    <string name="woopos_payment_discount_label">Discount</string>
+    <string name="woopos_payment_discount_label">Discount total</string>
     <string name="woopos_payment_subtotal_label">Subtotal</string>
     <string name="woopos_payment_tax_label">Taxes</string>
     <string name="woopos_payment_total_label">Total</string>
@@ -4405,7 +4405,7 @@
     <string name="woopos_search_back_content_description">Back</string>
     <string name="woopos_search_clear_content_description">Clear</string>
     <string name="woopos_search_products">Search products</string>
-    <string name="woopos_search_popular_items_title">Popular items</string>
+    <string name="woopos_search_popular_items_title">Popular products</string>
     <string name="woopos_search_recent_searches_title">Recent searches</string>
     <string name="woopos_search_items_empty_title">Nothing found</string>
     <string name="woopos_search_empty_description">We couldn\'t find anything matching your search.</string>
@@ -4487,6 +4487,8 @@
     <string name="woo_shipping_labels_package_creation_carrier_loading_error">We are unable to load carrier packages.</string>
     <string name="woo_shipping_labels_package_creation_saved_loading_error">We are unable to load saved packages.</string>
     <string name="woo_shipping_labels_package_creation_shipping_rates_loading_error">We are unable to load shipping rates.</string>
+    <string name="woo_shipping_labels_package_creation_starred">Star this item</string>
+    <string name="woo_shipping_labels_package_creation_unstarred">Unstar this item</string>
     <string name="woo_shipping_labels_shipping_rates_missing_destination">Add a destination address to get shipping rates</string>
     <string name="woo_shipping_labels_shipping_rates_missing_destination_desc">We need to know where this package is going before we can show the available shipping rates.</string>
     <string name="woo_shipping_labels_shipping_rates_missing_weight">Add shipment weight to get shipping rates</string>

@@ -54,7 +54,7 @@ class WooPosCartViewModel @Inject constructor(
     private val formatPrice: WooPosFormatPrice,
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val analyticsTrackingDataKeeper: WooPosAnalyticsTrackingDataKeeper,
-    private val updateCartItemsWithChanges: WooPosCartProductUpdater,
+    private val updateCartItemsWithChanges: WooPosCartItemsUpdater,
     private val getCachedStoreCurrency: WooPosGetCachedStoreCurrency,
     savedState: SavedStateHandle,
 ) : ViewModel() {
@@ -158,7 +158,8 @@ class WooPosCartViewModel @Inject constructor(
                         val body = _state.value.body as? WooPosCartState.Body.WithItems ?: return@collect
                         val updateCartItems = updateCartItemsWithChanges(
                             itemsInCart = body.itemsInCart,
-                            updatedProducts = event.updatedProducts
+                            updatedProducts = event.updatedProducts,
+                            updatedCoupons = event.updatedCoupons,
                         )
                         _state.value = _state.value.copy(
                             body = body.copy(
@@ -178,7 +179,18 @@ class WooPosCartViewModel @Inject constructor(
     }
 
     private fun handleBackFromCheckoutToCartClicked() {
-        _state.value = _state.value.copy(cartStatus = EDITABLE)
+        val currentState = _state.value
+        val newCartStatus = EDITABLE
+        when (val body = currentState.body) {
+            is WooPosCartState.Body.WithItems -> {
+                _state.value = currentState.copy(
+                    cartStatus = newCartStatus,
+                    body = body.copy(itemsInCart = removeFormattedDiscountFromCoupons(body))
+                )
+            }
+
+            else -> _state.value = currentState.copy(cartStatus = newCartStatus)
+        }
     }
 
     private fun handleItemClickedInItemsSelector(event: ParentToChildrenEvent.ItemClickedInProductSelector) {
@@ -231,6 +243,7 @@ class WooPosCartViewModel @Inject constructor(
             id = couponId,
             name = coupon.code ?: "",
             summary = formatCouponSummary(coupon, getCachedStoreCurrency()),
+            formattedDiscount = null,
         )
     }
 
@@ -325,6 +338,14 @@ class WooPosCartViewModel @Inject constructor(
         }
     }
 
+    private fun removeFormattedDiscountFromCoupons(body: WooPosCartState.Body.WithItems) = body.itemsInCart
+        .map { item ->
+            when (item) {
+                is WooPosCartItemViewState.Coupon -> item.copy(formattedDiscount = null)
+                is WooPosCartItemViewState.Product -> item
+            }
+        }
+
     private suspend fun Product.toCartListItem(itemNumber: Int): WooPosCartItemViewState.Product.Simple =
         WooPosCartItemViewState.Product.Simple(
             itemNumber = itemNumber,
@@ -348,7 +369,6 @@ class WooPosCartViewModel @Inject constructor(
             price = formatPrice(price),
             imageUrl = image?.source,
         )
-
     private fun getInitialValueOrHighestUsedItemNumberAfterProcessDeath() =
         (_state.value.body as? WooPosCartState.Body.WithItems)?.itemsInCart?.maxOfOrNull { it.itemNumber } ?: 1
 }

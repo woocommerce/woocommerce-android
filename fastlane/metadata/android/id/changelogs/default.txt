@@ -1,0 +1,2 @@
+22.2:
+Kami menghadirkan peningkatan penting dalam pembaruan ini! Crash terkait format mata uang, layar "Tambahkan jumlah kustom", dan layar Instalasi Jetpack telah diperbaiki untuk memberikan pengalaman yang lebih lancar dan andal. Nikmati peningkatan stabilitas di aplikasi seluler WooCommerce!

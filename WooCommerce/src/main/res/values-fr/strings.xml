@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-04-09 09:54:03+0000
+Translation-Revision-Date: 2025-04-22 11:54:05+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_split_shipment_bottom_sheet_remove_button">Supprimer l’expédition</string>
+    <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_plural">Choisissez où déplacer les %d articles de cette expédition.</string>
+    <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_one">Choisissez où déplacer %d article de cette expédition.</string>
+    <string name="woo_shipping_split_shipment_bottom_sheet_desc">Tous les articles seront fusionnés avec %s.</string>
+    <string name="woo_shipping_split_shipment_bottom_sheet_title">Supprimer l’expédition</string>
+    <string name="woo_shipping_split_shipment_shipment_remove">Retirer %s</string>
+    <string name="woo_shipping_split_shipment_moved_notice_plural">%1$d articles déplacés vers l’expédition %2$d</string>
+    <string name="woo_shipping_split_shipment_moved_notice_one">%1$d article déplacé vers l’expédition %2$d</string>
+    <string name="woo_shipping_labels_package_creation_empty_saved_message">Aucun colis enregistré pour l’instant</string>
+    <string name="woo_shipping_labels_package_creation_empty_carrier_message">Aucune information sur le transporteur trouvée</string>
+    <string name="woo_shipping_labels_package_creation_empty_button">Créer un colis personnalisé</string>
+    <string name="woopos_cart_changes_in_the_cart">Le panier a été modifié</string>
     <string name="woo_shipping_split_shipment_shipment_new">Nouvelle expédition</string>
     <string name="woo_shipping_split_shipment_shipment_name">Envoi %s</string>
     <string name="woo_shipping_split_move_to">Déplacer vers</string>

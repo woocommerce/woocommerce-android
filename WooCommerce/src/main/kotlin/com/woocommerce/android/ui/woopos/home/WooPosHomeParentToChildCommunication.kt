@@ -45,7 +45,10 @@ sealed class ParentToChildrenEvent {
         object Started : SearchEvent()
     }
 
-    data class OrderCreated(val updatedProducts: List<ProductInfo>) : ParentToChildrenEvent() {
+    data class OrderCreated(
+        val updatedProducts: List<ProductInfo>,
+        val updatedCoupons: List<CouponInfo>,
+    ) : ParentToChildrenEvent() {
         sealed class ProductInfo(
             open val id: Long,
             open val name: String,
@@ -67,6 +70,12 @@ sealed class ParentToChildrenEvent {
                 val variationId: Long,
             ) : ProductInfo(id, name, price, quantity)
         }
+
+        data class CouponInfo(
+            val id: Long,
+            val code: String,
+            val discountAmount: BigDecimal,
+        )
     }
 }
 
