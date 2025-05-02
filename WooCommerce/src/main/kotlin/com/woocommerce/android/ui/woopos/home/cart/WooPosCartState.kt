@@ -84,5 +84,12 @@ sealed class WooPosCartItemViewState(open val itemNumber: Int, open val name: St
         val summary: String,
         val id: Long,
         val formattedDiscount: String?,
-    ) : WooPosCartItemViewState(itemNumber, name), Parcelable
+        val validationState: ValidationState = ValidationState.UNKNOWN,
+    ) : WooPosCartItemViewState(itemNumber, name), Parcelable {
+        enum class ValidationState {
+            VALID,
+            INVALID,
+            UNKNOWN,
+        }
+    }
 }

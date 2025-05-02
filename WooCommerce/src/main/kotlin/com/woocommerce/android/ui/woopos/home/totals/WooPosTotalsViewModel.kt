@@ -465,6 +465,7 @@ class WooPosTotalsViewModel @Inject constructor(
                 message = resourceProvider.getString(R.string.woopos_totals_invalid_coupon_error),
                 reason = wooError.message ?: ""
             )
+            childrenToParentEventSender.sendToParent(ChildToParentEvent.CouponsValidationFailed)
         } else {
             uiState.value = WooPosTotalsViewState.Error(
                 resourceProvider.getString(R.string.woopos_totals_order_creation_error)

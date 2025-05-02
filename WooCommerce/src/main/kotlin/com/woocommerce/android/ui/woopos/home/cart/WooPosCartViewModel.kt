@@ -13,9 +13,11 @@ import com.woocommerce.android.ui.woopos.common.data.WooPosGetCouponById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetVariationById
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.CouponsRemoved
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
+import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState.Coupon
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartStatus.CHECKOUT
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartStatus.EDITABLE
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartStatus.EMPTY
@@ -183,18 +185,42 @@ class WooPosCartViewModel @Inject constructor(
                     ParentToChildrenEvent.SearchEvent.Finished,
                     ParentToChildrenEvent.SearchEvent.Started,
                     is ParentToChildrenEvent.CouponsRemoved -> Unit
+                    is ParentToChildrenEvent.CouponsValidationFailed -> {
+                        onCouponsValidationFails()
+                    }
                     is ParentToChildrenEvent.RemoveCouponsClicked -> {
-                        val cartBody = _state.value.body as? WooPosCartState.Body.WithItems
-                        cartBody?.itemsInCart
-                            ?.filterIsInstance<WooPosCartItemViewState.Coupon>()
-                            ?.toSet()?.let { couponsToRemove ->
-                                removeItemsFromCart(couponsToRemove)
-                            }
-                        sendEventToParent(ChildToParentEvent.CouponsRemoved(getCartItemsDataList()))
+                        removeCouponsFromCart()
                     }
                 }
             }
         }
+    }
+
+    private fun onCouponsValidationFails() {
+        val currentState = _state.value
+        val body = currentState.body as? WooPosCartState.Body.WithItems ?: return
+
+        val updatedItems = body.itemsInCart.map { item ->
+            if (item is Coupon) {
+                item.copy(validationState = Coupon.ValidationState.INVALID)
+            } else {
+                item
+            }
+        }
+
+        _state.value = currentState.copy(
+            body = body.copy(itemsInCart = updatedItems)
+        )
+    }
+
+    private fun removeCouponsFromCart() {
+        val cartBody = _state.value.body as? WooPosCartState.Body.WithItems
+        cartBody?.itemsInCart
+            ?.filterIsInstance<Coupon>()
+            ?.toSet()?.let { couponsToRemove ->
+                removeItemsFromCart(couponsToRemove)
+            }
+        sendEventToParent(CouponsRemoved(getCartItemsDataList()))
     }
 
     private fun handleBackFromCheckoutToCartClicked() {
