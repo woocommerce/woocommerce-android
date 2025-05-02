@@ -228,8 +228,8 @@ class IssueRefundViewModel @Inject constructor(
                 orderItem = it,
                 maxQuantity = maxQuantity,
                 quantity = selectedQuantity,
-                subtotal = formatCurrency(BigDecimal.ZERO),
-                taxes = formatCurrency(BigDecimal.ZERO)
+                subtotal = BigDecimal.ZERO,
+                taxes = emptyList()
             )
         }
         updateRefundItems(items)
@@ -538,8 +538,8 @@ class IssueRefundViewModel @Inject constructor(
                 var newItem = it.copy(quantity = newQuantity, maxQuantity = maxQuantities[uniqueId] ?: 0f)
 
                 // Update the subtotal and taxes based on the new quantity
-                val subtotal = formatCurrency(newItem.calculateTotalSubtotal())
-                val taxes = formatCurrency(newItem.calculateTotalTaxes())
+                val subtotal = newItem.calculateTotalSubtotal()
+                val taxes = listOf(TaxRefund(0L, newItem.calculateTotalTaxes()))
                 newItem = newItem.copy(subtotal = subtotal, taxes = taxes)
 
                 newItems.add(newItem)

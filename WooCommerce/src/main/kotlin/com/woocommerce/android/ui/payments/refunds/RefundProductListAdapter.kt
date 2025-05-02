@@ -164,9 +164,8 @@ class RefundProductListAdapter(
                     .into(productImageView)
             } ?: productImageView.setImageResource(R.drawable.ic_product)
 
-            subtotalTextView.text = item.subtotal
-
-            taxesTextView.text = item.taxes
+            subtotalTextView.text = formatCurrency(item.subtotal)
+            taxesTextView.text = formatCurrency(item.taxesTotal)
         }
     }
 
