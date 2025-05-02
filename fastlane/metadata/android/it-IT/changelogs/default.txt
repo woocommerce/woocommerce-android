@@ -1,2 +1,0 @@
-22.2:
-Con questo aggiornamento abbiamo apportato importanti miglioramenti. Gli arresti anomali relativi alla formattazione della valuta, alla schermata "Aggiungi importo personalizzato" e alla schermata di installazione di Jetpack sono stati risolti per garantire un'esperienza più fluida e affidabile. Approfitta della stabilità migliorata nella tua app WooCommerce per dispositivi mobili.
