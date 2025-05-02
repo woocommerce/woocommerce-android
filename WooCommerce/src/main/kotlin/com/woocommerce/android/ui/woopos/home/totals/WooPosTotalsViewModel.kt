@@ -448,31 +448,33 @@ class WooPosTotalsViewModel @Inject constructor(
         viewModelScope.launch {
             childrenToParentEventSender.sendToParent(
                 ChildToParentEvent.OrderCreated(
-                    updatedProducts = order.items.map {
-                        when {
-                            (it.variationId == 0L) -> {
-                                ChildToParentEvent.OrderCreated.ProductInfo.Simple(
-                                    id = it.productId,
-                                    name = it.name,
-                                    price = it.price,
-                                    quantity = it.quantity
-                                )
-                            }
-
-                            else -> {
-                                ChildToParentEvent.OrderCreated.ProductInfo.Variation(
-                                    id = it.productId,
-                                    name = it.name,
-                                    price = it.price,
-                                    quantity = it.quantity,
-                                    variationId = it.variationId
-                                )
-                            }
-                        }
-                    },
+                    updatedProducts = mapItemLines(order),
                     updatedCoupons = mapCouponLines(order)
                 )
             )
+        }
+    }
+
+    private fun mapItemLines(order: Order) = order.items.map {
+        when {
+            it.variationId == 0L -> {
+                ChildToParentEvent.OrderCreated.ProductInfo.Simple(
+                    id = it.productId,
+                    name = it.name,
+                    price = it.price,
+                    quantity = it.quantity
+                )
+            }
+
+            else -> {
+                ChildToParentEvent.OrderCreated.ProductInfo.Variation(
+                    id = it.productId,
+                    name = it.name,
+                    price = it.price,
+                    quantity = it.quantity,
+                    variationId = it.variationId
+                )
+            }
         }
     }
 
@@ -532,7 +534,7 @@ class WooPosTotalsViewModel @Inject constructor(
         return WooPosTotalsViewState.Checkout(
             totals = Totals.Visible(
                 orderDiscountText =
-                if (isCouponsEnabled() && discountAmount > BigDecimal.ZERO) "-${priceFormat(discountAmount)}" else null,
+                    if (isCouponsEnabled() && discountAmount > BigDecimal.ZERO) "-${priceFormat(discountAmount)}" else null,
                 orderSubtotalText = priceFormat(subtotalAmount),
                 orderTaxText = priceFormat(taxAmount),
                 orderTotalText = priceFormat(totalAmount),
