@@ -16,10 +16,14 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
+import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState.Coupon
+import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState.Product.Simple
+import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState.Product.Variation
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartStatus.CHECKOUT
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartStatus.EDITABLE
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartStatus.EMPTY
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
 import com.woocommerce.android.ui.woopos.home.items.variations.getNameForPOS
 import com.woocommerce.android.ui.woopos.util.WooPosGetCachedStoreCurrency
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
@@ -132,7 +136,7 @@ class WooPosCartViewModel @Inject constructor(
     }
 
     private fun getCartItemsDataList(): List<ItemClickedData> {
-        val itemClickedDataList = (_state.value.body as WithItems).itemsInCart.map {
+        val itemClickedDataList = (_state.value.body as WooPosCartState.Body.WithItems).itemsInCart.map {
             when (it) {
                 is Simple -> ItemClickedData.Product.Simple(it.id)
                 is Variation -> ItemClickedData.Product.Variation(
@@ -180,7 +184,8 @@ class WooPosCartViewModel @Inject constructor(
                     is ParentToChildrenEvent.CheckoutClicked,
                     is ParentToChildrenEvent.SearchEvent.ChangedQuery,
                     ParentToChildrenEvent.SearchEvent.Finished,
-                    ParentToChildrenEvent.SearchEvent.Started -> Unit
+                    ParentToChildrenEvent.SearchEvent.Started,
+                    is ParentToChildrenEvent.CouponsRemoved-> Unit
                     is ParentToChildrenEvent.RemoveCouponsClicked -> {
                         val cartBody = _state.value.body as? WooPosCartState.Body.WithItems
                         cartBody?.itemsInCart
@@ -188,7 +193,7 @@ class WooPosCartViewModel @Inject constructor(
                             ?.toSet()?.let { couponsToRemove ->
                                 removeItemsFromCart(couponsToRemove)
                             }
-                        // TODO send recreate order event back to Totals
+                        sendEventToParent(ChildToParentEvent.CouponsRemoved(getCartItemsDataList()))
                     }
                 }
             }

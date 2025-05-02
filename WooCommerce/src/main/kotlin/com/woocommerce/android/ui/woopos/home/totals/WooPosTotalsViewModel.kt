@@ -29,6 +29,7 @@ import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccess
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState.PaymentFailed
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState.PaymentInProgress
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState.Totals
@@ -285,8 +286,7 @@ class WooPosTotalsViewModel @Inject constructor(
             parentToChildrenEventReceiver.events.collect { event ->
                 when (event) {
                     is ParentToChildrenEvent.CheckoutClicked -> {
-                        dataState.value = dataState.value.copy(itemClickedDataList = event.itemClickedDataList)
-                        createOrderDraft(dataState.value.itemClickedDataList)
+                        onCartDataReceived(event.itemClickedDataList)
                         totalsAnalyticsTracker.incrementCheckoutButtonTaps()
                     }
 
@@ -303,6 +303,10 @@ class WooPosTotalsViewModel @Inject constructor(
                         showSuccessfulPaymentState(event.paymentMethod)
                     }
 
+                    is ParentToChildrenEvent.CouponsRemoved -> {
+                        onCartDataReceived(event.cartDataList)
+                    }
+
                     is ParentToChildrenEvent.SearchEvent.RecentSearchSelected,
                     is ParentToChildrenEvent.ItemClickedInProductSelector,
                     is ParentToChildrenEvent.SearchEvent.ChangedQuery,
@@ -313,6 +317,11 @@ class WooPosTotalsViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private fun onCartDataReceived(newCartData: List<ItemClickedData>) {
+        dataState.value = dataState.value.copy(itemClickedDataList = newCartData)
+        createOrderDraft(dataState.value.itemClickedDataList)
     }
 
     private fun listenToPaymentState() {

@@ -57,6 +57,8 @@ class WooPosItemsSearchHelper @Inject constructor(
                     is ParentToChildrenEvent.CheckoutClicked -> Unit
                     is ParentToChildrenEvent.SearchEvent.ChangedQuery -> Unit
                     is ParentToChildrenEvent.OrderCreated -> Unit
+                    is ParentToChildrenEvent.CouponsRemoved -> Unit
+                    is ParentToChildrenEvent.RemoveCouponsClicked -> Unit
                 }
             }
         }

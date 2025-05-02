@@ -163,6 +163,8 @@ class WooPosItemsSearchViewModel @Inject constructor(
                     is ParentToChildrenEvent.CheckoutClicked -> Unit
                     is ParentToChildrenEvent.SearchEvent.RecentSearchSelected -> Unit
                     is ParentToChildrenEvent.OrderCreated -> Unit
+                    is ParentToChildrenEvent.RemoveCouponsClicked -> Unit
+                    is ParentToChildrenEvent.CouponsRemoved -> Unit
                     is ParentToChildrenEvent.ItemClickedInProductSelector -> {
                         if (event.itemData is ItemClickedData.Product.Variation && searchHelper.isSearchOpen()) {
                             storeRecentSearch()
