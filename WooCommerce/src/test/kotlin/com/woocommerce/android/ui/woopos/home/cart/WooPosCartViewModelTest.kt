@@ -664,7 +664,9 @@ class WooPosCartViewModelTest {
 
         // THEN
         verify(analyticsTracker)
-            .track(WooPosAnalyticsEvent.Event.ItemAddedToCart(source = toAnalyticsString(WooPosItemSource.PRODUCT_LIST)))
+            .track(
+                WooPosAnalyticsEvent.Event.ItemAddedToCart(source = toAnalyticsString(WooPosItemSource.PRODUCT_LIST))
+            )
     }
 
     @Test

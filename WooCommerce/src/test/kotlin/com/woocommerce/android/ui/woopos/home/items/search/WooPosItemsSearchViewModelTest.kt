@@ -370,8 +370,8 @@ class WooPosItemsSearchViewModelTest {
         verify(mockAnalyticsTracker).track(
             argThat { event ->
                 event is ItemsNextPageLoaded &&
-                event.properties["item_list_type"] == "products" &&
-                event.properties["search"] == "true"
+                    event.properties["item_list_type"] == "products" &&
+                    event.properties["search"] == "true"
             }
         )
     }
