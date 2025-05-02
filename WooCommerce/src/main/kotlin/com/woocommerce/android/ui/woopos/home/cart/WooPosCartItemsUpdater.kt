@@ -105,7 +105,7 @@ class WooPosCartItemsUpdater @Inject constructor(
             productsCache.updateProduct(
                 product.copy(
                     name = updatedItem.name,
-                    price = updatedProduct.subtotalPrice,
+                    price = updatedProduct.subtotalPricePerItem(),
                 )
             )
         }
@@ -168,7 +168,7 @@ class WooPosCartItemsUpdater @Inject constructor(
                 if (updatedProduct is ParentToChildrenEvent.OrderCreated.ProductInfo.Simple) {
                     item.copy(
                         name = updatedProduct.name,
-                        price = formatPrice(updatedProduct.subtotalPrice)
+                        price = formatPrice(updatedProduct.subtotalPricePerItem()),
                     )
                 } else {
                     item
@@ -179,7 +179,7 @@ class WooPosCartItemsUpdater @Inject constructor(
                 if (updatedProduct is ParentToChildrenEvent.OrderCreated.ProductInfo.Variation) {
                     item.copy(
                         name = updatedProduct.name,
-                        price = formatPrice(updatedProduct.subtotalPrice)
+                        price = formatPrice(updatedProduct.subtotalPricePerItem())
                     )
                 } else {
                     item
@@ -196,4 +196,7 @@ class WooPosCartItemsUpdater @Inject constructor(
             is WooPosCartItemViewState.Product.Variation -> item.copy(productDoesNotExist = true)
         }
     }
+
+    private fun ParentToChildrenEvent.OrderCreated.ProductInfo.subtotalPricePerItem() =
+        subtotalPrice.div(quantity.toBigDecimal())
 }
