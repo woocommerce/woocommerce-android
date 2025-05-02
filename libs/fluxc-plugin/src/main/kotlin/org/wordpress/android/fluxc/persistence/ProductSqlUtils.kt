@@ -17,7 +17,6 @@ import org.wordpress.android.fluxc.model.WCProductComponent
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.WCProductReviewModel
 import org.wordpress.android.fluxc.model.WCProductShippingClassModel
-import org.wordpress.android.fluxc.model.WCProductTagModel
 import org.wordpress.android.fluxc.persistence.dao.ProductsDao
 
 @Suppress("LargeClass")
@@ -212,47 +211,6 @@ internal object ProductSqlUtils {
             val oldId = result.id
             WellSql.update(WCProductShippingClassModel::class.java).whereId(oldId)
                 .put(shippingClass, UpdateAllExceptId(WCProductShippingClassModel::class.java)).execute()
-        }
-    }
-
-    fun deleteProductTagsForSite(site: SiteModel): Int {
-        return WellSql.delete(WCProductTagModel::class.java)
-            .where()
-            .equals(WCProductTagModelTable.LOCAL_SITE_ID, site.id)
-            .or()
-            .equals(WCProductTagModelTable.LOCAL_SITE_ID, 0) // Should never happen, but sanity cleanup
-            .endWhere().execute()
-    }
-
-    fun insertOrUpdateProductTags(tags: List<WCProductTagModel>): Int {
-        var rowsAffected = 0
-        tags.forEach {
-            rowsAffected += insertOrUpdateProductTag(it)
-        }
-        return rowsAffected
-    }
-
-    fun insertOrUpdateProductTag(tag: WCProductTagModel): Int {
-        val result = WellSql.select(WCProductTagModel::class.java)
-            .where().beginGroup()
-            .equals(WCProductTagModelTable.ID, tag.id)
-            .or()
-            .beginGroup()
-            .equals(WCProductTagModelTable.LOCAL_SITE_ID, tag.localSiteId)
-            .equals(WCProductTagModelTable.REMOTE_TAG_ID, tag.remoteTagId)
-            .endGroup()
-            .endGroup().endWhere()
-            .asModel.firstOrNull()
-
-        return if (result == null) {
-            // Insert
-            WellSql.insert(tag).asSingleTransaction(true).execute()
-            1
-        } else {
-            // Update
-            val oldId = result.id
-            WellSql.update(WCProductTagModel::class.java).whereId(oldId)
-                .put(tag, UpdateAllExceptId(WCProductTagModel::class.java)).execute()
         }
     }
 

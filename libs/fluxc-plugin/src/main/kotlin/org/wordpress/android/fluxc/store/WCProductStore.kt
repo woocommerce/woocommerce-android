@@ -807,7 +807,6 @@ class WCProductStore @Inject internal constructor(
     }
 
     class OnProductTagChanged(
-        var rowsAffected: Int,
         var canLoadMore: Boolean = false
     ) : OnChanged<ProductError>() {
         var causeOfChange: WCProductAction? = null
@@ -954,7 +953,10 @@ class WCProductStore @Inject internal constructor(
     ): WCProductReviewModel? = ProductSqlUtils
         .getProductReviewByRemoteId(localSiteId, remoteReviewId)
 
-    suspend fun getProductCategoriesForSite(site: SiteModel, sortType: ProductCategorySorting = DEFAULT_CATEGORY_SORTING) =
+    suspend fun getProductCategoriesForSite(
+        site: SiteModel,
+        sortType: ProductCategorySorting = DEFAULT_CATEGORY_SORTING
+    ) =
         productCategoriesDao.getProductCategories(site.localId().value, sortType)
 
     suspend fun getProductCategoryByRemoteId(site: SiteModel, remoteId: Long) =
@@ -1098,7 +1100,8 @@ class WCProductStore @Inject internal constructor(
     fun observeCategories(
         site: SiteModel,
         sortType: ProductCategorySorting = DEFAULT_CATEGORY_SORTING
-    ): Flow<List<WCProductCategoryModel>> = productCategoriesDao.observeProductCategories(site.localId().value, sortType)
+    ): Flow<List<WCProductCategoryModel>> =
+        productCategoriesDao.observeProductCategories(site.localId().value, sortType)
 
     fun observeBundledProducts(
         site: SiteModel,
@@ -1436,7 +1439,7 @@ class WCProductStore @Inject internal constructor(
                 AppLog.w(
                     API,
                     "addProductCategories: not all categories were added. " +
-                            "Expected: ${categories.size}, added: ${addedCategories.size}"
+                        "Expected: ${categories.size}, added: ${addedCategories.size}"
                 )
             }
 
@@ -1569,7 +1572,7 @@ class WCProductStore @Inject internal constructor(
      * @param payload Instance of [BatchGenerateVariationsPayload].
      */
     suspend fun batchGenerateVariations(payload: BatchGenerateVariationsPayload):
-            WooResult<BatchProductVariationsApiResponse> =
+        WooResult<BatchProductVariationsApiResponse> =
         coroutineEngine.withDefaultContext(API, this, "batchCreateVariations") {
             val createVariations = payload.variations.map {
                 buildMap { put("attributes", it) }
@@ -1605,7 +1608,7 @@ class WCProductStore @Inject internal constructor(
      * [BatchUpdateVariationsPayload.Builder] class.
      */
     suspend fun batchUpdateVariations(payload: BatchUpdateVariationsPayload):
-            WooResult<BatchProductVariationsApiResponse> =
+        WooResult<BatchProductVariationsApiResponse> =
         coroutineEngine.withDefaultContext(API, this, "batchUpdateVariations") {
             with(payload) {
                 val updateVariations: List<Map<String, Any>> = remoteVariationsIds.map { variationId ->
@@ -1749,6 +1752,7 @@ class WCProductStore @Inject internal constructor(
                 response.result != null -> {
                     WooResult(response.result.map { it.product })
                 }
+
                 else -> WooResult(WooError(WooErrorType.GENERIC_ERROR, UNKNOWN))
             }
         }
@@ -2184,33 +2188,37 @@ class WCProductStore @Inject internal constructor(
     }
 
     private fun handleFetchProductTagsCompleted(payload: RemoteProductTagsPayload) {
-        val onProductTagsChanged = if (payload.isError) {
-            OnProductTagChanged(0).also { it.error = payload.error }
-        } else {
-            // delete product tags for site if this is the first page of results, otherwise
-            // tags deleted outside of the app will persist
-            if (payload.offset == 0 && payload.searchQuery.isNullOrEmpty()) {
-                ProductSqlUtils.deleteProductTagsForSite(payload.site)
-            }
+        coroutineEngine.launch(T.DB, this, "handleFetchProductTagsCompleted") {
+            val onProductTagsChanged = if (payload.isError) {
+                OnProductTagChanged().also { it.error = payload.error }
+            } else {
+                // delete product tags for site if this is the first page of results, otherwise
+                // tags deleted outside of the app will persist
+                if (payload.offset == 0 && payload.searchQuery.isNullOrEmpty()) {
+                    productTagsDao.deleteProductTagsForSite(payload.site.localId().value)
+                }
 
-            val rowsAffected = ProductSqlUtils.insertOrUpdateProductTags(payload.tags)
-            OnProductTagChanged(rowsAffected, canLoadMore = payload.canLoadMore)
+                productTagsDao.upsertProductTags(payload.tags)
+                OnProductTagChanged(canLoadMore = payload.canLoadMore)
+            }
+            onProductTagsChanged.causeOfChange = WCProductAction.FETCH_PRODUCT_TAGS
+            emitChange(onProductTagsChanged)
         }
-        onProductTagsChanged.causeOfChange = WCProductAction.FETCH_PRODUCT_TAGS
-        emitChange(onProductTagsChanged)
     }
 
     private fun handleAddProductTags(payload: RemoteAddProductTagsResponsePayload) {
-        val onProductTagsChanged: OnProductTagChanged
-        if (payload.isError) {
-            onProductTagsChanged = OnProductTagChanged(0).also { it.error = payload.error }
-        } else {
-            val rowsAffected = ProductSqlUtils.insertOrUpdateProductTags(payload.tags.filter { it.name.isNotEmpty() })
-            onProductTagsChanged = OnProductTagChanged(rowsAffected)
-        }
+        coroutineEngine.launch(T.DB, this, "handleAddProductTags") {
+            val onProductTagsChanged: OnProductTagChanged
+            if (payload.isError) {
+                onProductTagsChanged = OnProductTagChanged().also { it.error = payload.error }
+            } else {
+                productTagsDao.upsertProductTags(payload.tags.filter { it.name.isNotEmpty() })
+                onProductTagsChanged = OnProductTagChanged()
+            }
 
-        onProductTagsChanged.causeOfChange = WCProductAction.ADDED_PRODUCT_TAGS
-        emitChange(onProductTagsChanged)
+            onProductTagsChanged.causeOfChange = WCProductAction.ADDED_PRODUCT_TAGS
+            emitChange(onProductTagsChanged)
+        }
     }
 
     private fun handleAddNewProduct(payload: RemoteAddProductPayload) {
