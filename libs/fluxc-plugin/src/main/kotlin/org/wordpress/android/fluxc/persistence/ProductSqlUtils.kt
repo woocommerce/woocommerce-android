@@ -6,12 +6,10 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.wellsql.generated.WCProductReviewModelTable
 import com.wellsql.generated.WCProductShippingClassModelTable
-import com.wellsql.generated.WCProductTagModelTable
 import com.yarolegovich.wellsql.SelectQuery
 import com.yarolegovich.wellsql.WellSql
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.mapLatest
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCBundledProduct
@@ -215,40 +213,6 @@ internal object ProductSqlUtils {
             WellSql.update(WCProductShippingClassModel::class.java).whereId(oldId)
                 .put(shippingClass, UpdateAllExceptId(WCProductShippingClassModel::class.java)).execute()
         }
-    }
-
-    fun getProductTagsForSite(
-        localSiteId: Int
-    ): List<WCProductTagModel> {
-        return WellSql.select(WCProductTagModel::class.java)
-            .where().beginGroup()
-            .equals(WCProductTagModelTable.LOCAL_SITE_ID, localSiteId)
-            .endGroup().endWhere()
-            .asModel
-    }
-
-    fun getProductTagsByNames(
-        localSiteId: Int,
-        tags: List<String>
-    ): List<WCProductTagModel> {
-        return WellSql.select(WCProductTagModel::class.java)
-            .where().beginGroup()
-            .equals(WCProductTagModelTable.LOCAL_SITE_ID, localSiteId)
-            .isIn(WCProductTagModelTable.NAME, tags)
-            .endGroup().endWhere()
-            .asModel
-    }
-
-    fun getProductTagByName(
-        localSiteId: Int,
-        tagName: String
-    ): WCProductTagModel? {
-        return WellSql.select(WCProductTagModel::class.java)
-            .where().beginGroup()
-            .equals(WCProductTagModelTable.LOCAL_SITE_ID, localSiteId)
-            .equals(WCProductTagModelTable.NAME, tagName)
-            .endGroup().endWhere()
-            .asModel.firstOrNull()
     }
 
     fun deleteProductTagsForSite(site: SiteModel): Int {

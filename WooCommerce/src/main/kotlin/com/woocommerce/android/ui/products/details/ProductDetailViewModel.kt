@@ -133,6 +133,7 @@ import java.util.Collections
 import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
+import kotlinx.coroutines.runBlocking
 
 @Suppress("EmptyFunctionBlock")
 @OptIn(FlowPreview::class)
@@ -2404,7 +2405,7 @@ class ProductDetailViewModel @Inject constructor(
     fun onProductTagAdded(tagName: String) {
         // verify if the entered tagName exists for the site
         // It so, the tag should be added to the product directly
-        productTagsRepository.getProductTagByName(tagName)?.let {
+        runBlocking { productTagsRepository.getProductTagByName(tagName) }?.let {
             onProductTagSelected(it)
         } ?: run {
             // Since the tag does not exist for the site, add the tag to

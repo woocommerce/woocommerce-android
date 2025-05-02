@@ -68,6 +68,7 @@ import org.wordpress.android.util.AppLog.T.API
 import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
+import org.wordpress.android.fluxc.persistence.dao.ProductTagsDao
 
 @Suppress("LargeClass")
 @Singleton
@@ -81,6 +82,7 @@ class WCProductStore @Inject internal constructor(
     private val productsDao: ProductsDao,
     private val productVariationsDao: ProductVariationsDao,
     private val productCategoriesDao: ProductCategoriesDao,
+    private val productTagsDao: ProductTagsDao
 ) : Store(dispatcher) {
     companion object {
         const val NUM_REVIEWS_PER_FETCH = 25
@@ -937,14 +939,14 @@ class WCProductStore @Inject internal constructor(
     /**
      * returns a list of tags for a specific site in the database
      */
-    fun getTagsForSite(site: SiteModel): List<WCProductTagModel> =
-        ProductSqlUtils.getProductTagsForSite(site.id)
+    suspend fun getTagsForSite(site: SiteModel): List<WCProductTagModel> =
+        productTagsDao.getProductTags(site.localId().value)
 
-    fun getProductTagsByNames(site: SiteModel, tagNames: List<String>) =
-        ProductSqlUtils.getProductTagsByNames(site.id, tagNames)
+    suspend fun getProductTagsByNames(site: SiteModel, tagNames: List<String>) =
+        productTagsDao.getProductTags(site.localId().value, tagsNames = tagNames)
 
-    fun getProductTagByName(site: SiteModel, tagName: String) =
-        ProductSqlUtils.getProductTagByName(site.id, tagName)
+    suspend fun getProductTagByName(site: SiteModel, tagName: String) =
+        productTagsDao.getProductTag(localSiteId = site.localId().value, name = tagName)
 
     fun getProductReviewByRemoteId(
         localSiteId: Int,
