@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.home.items.search
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,10 +17,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -27,12 +28,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
-import com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
@@ -62,39 +60,27 @@ fun WooPosItemsEmptySearchQueryStateScreen(
             .padding(WooPosSpacing.None.value.toAdaptivePadding())
     ) {
         Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
-        if (state.popularItems.isNotEmpty() || state.recentSearches.isNotEmpty()) {
-            Row(
+
+        if (state.recentSearches.isNotEmpty()) {
+            RecentSearchesChips(
+                recentSearches = state.recentSearches,
+                onRecentSearchClicked = { recentSearch ->
+                    onUIEvent(WooPosItemsSearchUiEvent.OnRecentSearchClicked(recentSearch))
+                }
+            )
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+        }
+
+        if (state.popularItems.isNotEmpty()) {
+            Column(
                 modifier = Modifier.fillMaxWidth()
             ) {
-                if (state.popularItems.isNotEmpty()) {
-                    Column(
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        PopularItemsSection(
-                            popularItems = state.popularItems,
-                            onPopularItemClicked = { popularItem ->
-                                onUIEvent(WooPosItemsSearchUiEvent.OnPopularItemClicked(popularItem))
-                            }
-                        )
+                PopularItemsSection(
+                    popularItems = state.popularItems,
+                    onPopularItemClicked = { popularItem ->
+                        onUIEvent(WooPosItemsSearchUiEvent.OnPopularItemClicked(popularItem))
                     }
-                }
-
-                if (state.popularItems.isNotEmpty() && state.recentSearches.isNotEmpty()) {
-                    Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value.toAdaptivePadding()))
-                }
-
-                if (state.recentSearches.isNotEmpty()) {
-                    Column(
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        RecentSearchesSection(
-                            state = state,
-                            onRecentSearchClicked = { recentSearch ->
-                                onUIEvent(WooPosItemsSearchUiEvent.OnRecentSearchClicked(recentSearch))
-                            }
-                        )
-                    }
-                }
+                )
             }
         }
 
@@ -104,90 +90,107 @@ fun WooPosItemsEmptySearchQueryStateScreen(
 }
 
 @Composable
-private fun PopularItemsSection(
-    popularItems: List<WooPosItemSelectionViewState.Product>,
-    onPopularItemClicked: (WooPosItemSelectionViewState.Product) -> Unit,
+private fun RecentSearchesChips(
+    recentSearches: List<String>,
+    onRecentSearchClicked: (String) -> Unit,
 ) {
-    SectionHeader(
-        title = stringResource(R.string.woopos_search_popular_items_title)
-    )
-
-    Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
-
-    popularItems.forEach { popularItem ->
-        val itemContentDescription = stringResource(
-            id = R.string.woopos_product_item_content_description,
-            popularItem.name,
-            popularItem.price
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = WooPosSpacing.Medium.value.toAdaptivePadding())
+    ) {
+        SectionHeader(
+            title = stringResource(R.string.woopos_search_recent_searches_title)
         )
 
-        WooPosProductCard(
-            modifier = Modifier,
-            itemContentDescription = itemContentDescription,
-            onItemClicked = { onPopularItemClicked(popularItem) },
-            item = popularItem,
-        )
+        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value.toAdaptivePadding()))
+        val horizontalScrollState = rememberScrollState()
+        Row(
+            modifier = Modifier
+                .horizontalScroll(horizontalScrollState)
+                .padding(vertical = WooPosSpacing.Small.value)
+        ) {
+            Spacer(modifier = Modifier.width(WooPosSpacing.Small.value))
+
+            recentSearches.forEach { recentSearch ->
+                SearchChip(
+                    text = recentSearch,
+                    onClick = { onRecentSearchClicked(recentSearch) }
+                )
+
+                Spacer(modifier = Modifier.width(WooPosSpacing.Small.value))
+            }
+        }
     }
 }
 
 @Composable
-private fun RecentSearchesSection(
-    state: WooPosItemsSearchViewState.EmptySearchQuery,
-    onRecentSearchClicked: (String) -> Unit,
+private fun SearchChip(
+    text: String,
+    onClick: () -> Unit
 ) {
-    SectionHeader(
-        title = stringResource(R.string.woopos_search_recent_searches_title)
-    )
-
-    Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
-
-    state.recentSearches.forEach { recentSearch ->
-        WooPosCard(
-            shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
-            backgroundColor = MaterialTheme.colorScheme.surfaceContainerLowest,
-            shadowType = ShadowType.Soft,
+    Surface(
+        modifier = Modifier.clickable(onClick = onClick),
+        shape = RoundedCornerShape(WooPosCornerRadius.Large.value),
+        color = MaterialTheme.colorScheme.surfaceContainerLowest,
+        shadowElevation = 1.dp,
+    ) {
+        Row(
+            modifier = Modifier.padding(
+                horizontal = WooPosSpacing.Medium.value,
+                vertical = WooPosSpacing.Small.value
+            ),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                modifier = Modifier
-                    .clickable { onRecentSearchClicked(recentSearch) }
-                    .height(112.dp)
-                    .fillMaxWidth()
-                    .padding(horizontal = WooPosSpacing.Medium.value.toAdaptivePadding()),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Spacer(modifier = Modifier.width(WooPosSpacing.Small.value.toAdaptivePadding()))
-                Icon(
-                    imageVector = Icons.Outlined.Search,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier
-                        .size(32.dp)
-                )
+            Icon(
+                imageVector = Icons.Outlined.Search,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(20.dp)
+            )
 
-                Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value.toAdaptivePadding()))
+            Spacer(modifier = Modifier.width(WooPosSpacing.Small.value))
 
-                WooPosText(
-                    text = recentSearch,
-                    style = WooPosTypography.BodyLarge,
-                    fontWeight = FontWeight.Medium,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(1f)
-                )
-
-                Icon(
-                    imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier
-                        .size(32.dp)
-                )
-            }
+            WooPosText(
+                text = text,
+                style = WooPosTypography.BodyMedium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
         }
+    }
+}
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value.toAdaptivePadding()))
+@Composable
+private fun PopularItemsSection(
+    popularItems: List<WooPosItemSelectionViewState.Product>,
+    onPopularItemClicked: (WooPosItemSelectionViewState.Product) -> Unit,
+) {
+    Column(
+        modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value.toAdaptivePadding())
+    ) {
+        SectionHeader(
+            title = stringResource(R.string.woopos_search_popular_items_title)
+        )
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
+
+        popularItems.forEach { popularItem ->
+            val itemContentDescription = stringResource(
+                id = R.string.woopos_product_item_content_description,
+                popularItem.name,
+                popularItem.price
+            )
+
+            WooPosProductCard(
+                modifier = Modifier,
+                itemContentDescription = itemContentDescription,
+                onItemClicked = { onPopularItemClicked(popularItem) },
+                item = popularItem,
+            )
+
+            Spacer(modifier = Modifier.height(WooPosSpacing.Small.value.toAdaptivePadding()))
+        }
     }
 }
 
@@ -234,7 +237,7 @@ fun WooPosItemsEmptySearchQueryStatePreview() {
                             variationIds = listOf(1, 2, 3),
                         ),
                     ),
-                    recentSearches = listOf("T-shirt", "Jeans", "Shoes"),
+                    recentSearches = listOf("Chocolate", "Mug", "Hario", "Coffee"),
                 ),
                 onUIEvent = { },
             )
@@ -278,6 +281,23 @@ fun WooPosItemsEmptySearchQueryStateOnyItemsPreview() {
                     recentSearches = emptyList()
                 ),
                 onUIEvent = { },
+            )
+        }
+    }
+}
+
+@WooPosPreview
+@Composable
+fun WooPosRecentSearchesChipsPreview() {
+    WooPosTheme {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(WooPosSpacing.Medium.value)
+        ) {
+            RecentSearchesChips(
+                recentSearches = listOf("Chocolate", "Mug", "Hario", "Coffee", "Prezzetti"),
+                onRecentSearchClicked = {}
             )
         }
     }
