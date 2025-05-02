@@ -204,8 +204,6 @@ class IssueRefundViewModel @Inject constructor(
         if (refundByItemsStateLiveData.hasInitialValue) {
             refundByItemsState = refundByItemsState.copy(
                 currency = order.currency,
-                subtotal = formatCurrency(BigDecimal.ZERO),
-                taxes = formatCurrency(BigDecimal.ZERO),
                 shippingSubtotal = formatCurrency(order.shippingTotal),
                 shippingTaxes = formatCurrency(order.shippingLines.sumByBigDecimal { it.totalTax }),
                 feesSubtotal = formatCurrency(order.feesTotal),
@@ -510,13 +508,6 @@ class IssueRefundViewModel @Inject constructor(
         refundSummaryState = refundSummaryState.copy(isSummaryTextTooLong = currLength > maxLength)
     }
 
-    fun onProductsRefundAmountChanged(newAmount: BigDecimal) {
-        refundByItemsState = refundByItemsState.copy(
-            productsRefund = newAmount,
-            formattedProductsRefund = formatCurrency(newAmount)
-        )
-    }
-
     fun onRefundQuantityChanged(uniqueId: Long, newQuantity: Int) {
         val newItems = getUpdatedItemList(uniqueId, newQuantity)
         updateRefundItems(newItems)
@@ -535,8 +526,6 @@ class IssueRefundViewModel @Inject constructor(
         refundByItemsState = refundByItemsState.copy(
             productsRefund = productsRefund,
             formattedProductsRefund = formatCurrency(productsRefund),
-            taxes = formatCurrency(taxes),
-            subtotal = formatCurrency(subtotal),
             selectButtonTitle = selectButtonTitle
         )
     }
@@ -786,8 +775,6 @@ class IssueRefundViewModel @Inject constructor(
         val currency: String? = null,
         val productsRefund: BigDecimal = BigDecimal.ZERO,
         val formattedProductsRefund: String? = null,
-        val subtotal: String? = null,
-        val taxes: String? = null,
         val feesSubtotal: String? = null,
         val feesTaxes: String? = null,
         val feesRefund: BigDecimal = BigDecimal.ZERO,
