@@ -17,6 +17,8 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateToVariationsScreen
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart.WooPosItemSource
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemsNextPageLoaded
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -39,6 +41,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
     private val navigator: WooPosItemsNavigator,
     private val searchHelper: WooPosItemsSearchHelper,
+    private val analyticsTracker: WooPosAnalyticsTracker,
 ) : ViewModel() {
     private val _viewState =
         MutableStateFlow<WooPosItemsSearchViewState>(WooPosItemsSearchViewState.Empty)
@@ -190,6 +193,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
         loadMoreJob = viewModelScope.launch {
             val result = dataSource.loadMore(query = currentState.searchQuery)
             _viewState.value = if (result.isSuccess) {
+                trackItemsNextPageLoaded()
                 result.getOrThrow().toContentState(
                     searchQuery = currentState.searchQuery,
                 )
@@ -197,6 +201,18 @@ class WooPosItemsSearchViewModel @Inject constructor(
                 currentState.copy(paginationState = WooPosPaginationState.Error)
             }
         }
+    }
+
+    private suspend fun trackItemsNextPageLoaded() {
+        val event = ItemsNextPageLoaded.apply {
+            addProperties(
+                mapOf(
+                    "item_list_type" to "products",
+                    "search" to "true"
+                )
+            )
+        }
+        analyticsTracker.track(event)
     }
 
     private fun handleItemClicked(item: WooPosItemSelectionViewState, source: WooPosItemSource) {

@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.home.items.WooPosVariationsViewState
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart.WooPosItemSource
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemsNextPageLoaded
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.VariationsPullToRefreshTriggered
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
@@ -170,6 +171,7 @@ class WooPosVariationsViewModel @Inject constructor(
         loadMoreJob = viewModelScope.launch {
             val result = variationsDataSource.loadMore(productId)
             _viewState.value = if (result.isSuccess) {
+                trackItemsNextPageLoaded()
                 WooPosVariationsViewState.Content(
                     items = result.getOrThrow().map {
                         WooPosItemSelectionViewState.Product.Variation(
@@ -185,6 +187,19 @@ class WooPosVariationsViewModel @Inject constructor(
                 currentState.copy(paginationState = WooPosPaginationState.Error)
             }
         }
+    }
+
+    private suspend fun trackItemsNextPageLoaded() {
+        val event = ItemsNextPageLoaded.apply {
+            val isSearch: Boolean = variationsSource == WooPosItemSource.SEARCH_RESULT
+            addProperties(
+                mapOf(
+                    "item_list_type" to "variations",
+                    "search" to "$isSearch"
+                )
+            )
+        }
+        analyticsTracker.track(event)
     }
 
     fun onUIEvent(event: WooPosVariationsUIEvents) {
