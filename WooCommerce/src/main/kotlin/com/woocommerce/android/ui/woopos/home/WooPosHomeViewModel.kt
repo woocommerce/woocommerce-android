@@ -195,6 +195,9 @@ class WooPosHomeViewModel @Inject constructor(
                     }
 
                     is ChildToParentEvent.OrderCreated -> handleOrderCreated(event)
+                    is ChildToParentEvent.RemoveCouponsClicked -> {
+                        sendEventToChildren(ParentToChildrenEvent.RemoveCouponsClicked)
+                    }
                 }
             }
         }

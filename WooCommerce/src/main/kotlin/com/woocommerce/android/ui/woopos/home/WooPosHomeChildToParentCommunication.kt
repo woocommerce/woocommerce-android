@@ -35,6 +35,7 @@ sealed class ChildToParentEvent {
     data object OrderSuccessfullyPaidByCard : ChildToParentEvent()
     data object ExitPosClicked : ChildToParentEvent()
     data object ProductsDialogInfoIconClicked : ChildToParentEvent()
+    data object RemoveCouponsClicked : ChildToParentEvent()
 
     data class ToastMessageDisplayed(val message: String) : ChildToParentEvent()
     sealed class NavigationEvent : ChildToParentEvent() {

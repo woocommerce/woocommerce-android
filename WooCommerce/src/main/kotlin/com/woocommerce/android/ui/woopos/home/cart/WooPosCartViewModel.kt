@@ -176,7 +176,15 @@ class WooPosCartViewModel @Inject constructor(
                     is ParentToChildrenEvent.SearchEvent.ChangedQuery,
                     ParentToChildrenEvent.SearchEvent.Finished,
                     ParentToChildrenEvent.SearchEvent.Started -> Unit
-                    is ParentToChildrenEvent.RemoveCouponsClicked -> {}
+                    is ParentToChildrenEvent.RemoveCouponsClicked -> {
+                        val cartBody = _state.value.body as? WooPosCartState.Body.WithItems
+                        cartBody?.itemsInCart
+                            ?.filterIsInstance<WooPosCartItemViewState.Coupon>()
+                            ?.toSet()?.let { couponsToRemove ->
+                                removeItemsFromCart(couponsToRemove)
+                            }
+                        // TODO send recreate order event back to Totals
+                    }
                 }
             }
         }

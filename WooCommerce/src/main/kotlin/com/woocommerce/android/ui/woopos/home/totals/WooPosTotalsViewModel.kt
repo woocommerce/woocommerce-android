@@ -165,9 +165,9 @@ class WooPosTotalsViewModel @Inject constructor(
 
             WooPosTotalsUIEvent.OnBackClicked -> handleBackPress()
 
-            WooPosTotalsUIEvent.GoBackToCheckoutAfterFailedCouponValidation -> TODO()
+            WooPosTotalsUIEvent.GoBackToCheckoutAfterFailedCouponValidation -> handleEditOrderClicked()
 
-            WooPosTotalsUIEvent.OnRemoveCouponsClicked -> TODO()
+            WooPosTotalsUIEvent.OnRemoveCouponsClicked -> handleRemoveCouponsClicked()
         }
     }
 
@@ -232,6 +232,20 @@ class WooPosTotalsViewModel @Inject constructor(
         }
     }
 
+    private fun handleEditOrderClicked() {
+        viewModelScope.launch {
+            childrenToParentEventSender.sendToParent(ChildToParentEvent.BackFromCheckoutToCartClicked)
+        }
+    }
+
+    private fun handleRemoveCouponsClicked() {
+        viewModelScope.launch {
+            childrenToParentEventSender.sendToParent(ChildToParentEvent.RemoveCouponsClicked)
+        }
+    }
+
+
+
     private suspend fun retryPaymentCollectionFromScratch() {
         cancelPaymentAction()
         val order = totalsRepository.getOrderById(dataState.value.orderId)
@@ -294,7 +308,8 @@ class WooPosTotalsViewModel @Inject constructor(
                     is ParentToChildrenEvent.SearchEvent.ChangedQuery,
                     ParentToChildrenEvent.SearchEvent.Finished,
                     is ParentToChildrenEvent.OrderCreated,
-                    ParentToChildrenEvent.SearchEvent.Started -> Unit
+                    ParentToChildrenEvent.SearchEvent.Started,
+                    ParentToChildrenEvent.RemoveCouponsClicked -> Unit
                 }
             }
         }
