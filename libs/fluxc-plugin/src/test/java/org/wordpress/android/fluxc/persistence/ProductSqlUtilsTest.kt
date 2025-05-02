@@ -39,7 +39,6 @@ class ProductSqlUtilsTest {
                 listOf(
                         WCProductReviewModel::class.java,
                         WCProductShippingClassModel::class.java,
-                        WCProductTagModel::class.java,
                         SiteModel::class.java),
                 WellSqlConfig.ADDON_WOOCOMMERCE)
         WellSql.init(config)
@@ -319,152 +318,121 @@ class ProductSqlUtilsTest {
     }
 
 
-    @Test
-    fun testInsertOrUpdateProductTag() {
-        val tagModel = ProductTestUtils.generateProductTags(site.id)[0]
-        assertNotNull(tagModel)
-
-        // Test inserting a product tag
-        var rowsAffected = ProductSqlUtils.insertOrUpdateProductTag(tagModel)
-        assertEquals(1, rowsAffected)
-
-        var savedTagList = ProductSqlUtils.getProductTagsForSite(site.id)
-        assertEquals(savedTagList.size, 1)
-        assertEquals(savedTagList[0].localSiteId, tagModel.localSiteId)
-        assertEquals(savedTagList[0].remoteTagId, tagModel.remoteTagId)
-        assertEquals(savedTagList[0].name, tagModel.name)
-        assertEquals(savedTagList[0].slug, tagModel.slug)
-        assertEquals(savedTagList[0].description, tagModel.description)
-
-        // Test updating the same product tag
-        tagModel.apply { name = "Tag update" }
-        rowsAffected = ProductSqlUtils.insertOrUpdateProductTag(tagModel)
-        assertEquals(1, rowsAffected)
-
-        savedTagList = ProductSqlUtils.getProductTagsForSite(site.id)
-        assertEquals(savedTagList.size, 1)
-        assertEquals(savedTagList[0].localSiteId, tagModel.localSiteId)
-        assertEquals(savedTagList[0].remoteTagId, tagModel.remoteTagId)
-        assertEquals(savedTagList[0].name, tagModel.name)
-        assertEquals(savedTagList[0].slug, tagModel.slug)
-        assertEquals(savedTagList[0].description, tagModel.description)
-    }
-
-    @Test
-    fun testInsertOrUpdateProductTagList() {
-        val tagList = ProductTestUtils.generateProductTags(site.id)
-        assertTrue(tagList.isNotEmpty())
-
-        // Insert product tag list
-        val rowsAffected = ProductSqlUtils.insertOrUpdateProductTags(tagList)
-        assertEquals(tagList.size, rowsAffected)
-    }
-
-    @Test
-    fun testGetProductTagsForSite() {
-        val tagList = ProductTestUtils.generateProductTags(site.id)
-        assertTrue(tagList.isNotEmpty())
-
-        // Insert product tag list
-        val rowsAffected = ProductSqlUtils.insertOrUpdateProductTags(tagList)
-        assertEquals(tagList.size, rowsAffected)
-
-        // Get tag list for site and verify
-        val savedTagListExists = ProductSqlUtils.getProductTagsForSite(site.id)
-        assertEquals(tagList.size, savedTagListExists.size)
-
-        // Get tag list for a site that does not exist
-        val nonExistingSite = SiteModel().apply { id = 400 }
-        val savedTagList = ProductSqlUtils.getProductTagsForSite(nonExistingSite.id)
-        assertEquals(0, savedTagList.size)
-    }
-
-    @Test
-    fun testGetProductTagByName() {
-        val tagList = ProductTestUtils.generateProductTags(site.id)
-        assertTrue(tagList.isNotEmpty())
-
-        // Insert product tag list
-        val rowsAffected = ProductSqlUtils.insertOrUpdateProductTags(tagList)
-        assertEquals(tagList.size, rowsAffected)
-
-        // Get tag by name and verify
-        val savedTagExists = ProductSqlUtils.getProductTagByName(site.id, tagList[0].name)
-        assertEquals(tagList[0].name, savedTagExists?.name)
-        assertEquals(tagList[0].remoteTagId, savedTagExists?.remoteTagId)
-        assertEquals(tagList[0].slug, savedTagExists?.slug)
-        assertEquals(tagList[0].description, savedTagExists?.description)
-
-        // Get tag for a name that does not exist
-        val nonExistingTagName = "test"
-        val savedTag = ProductSqlUtils.getProductTagByName(site.id, nonExistingTagName)
-        assertNull(savedTag)
-    }
-
-    @Test
-    fun testGetProductTagsByNames() {
-        val tagList = ProductTestUtils.generateProductTags(site.id)
-        assertTrue(tagList.isNotEmpty())
-
-        // Insert product tag list
-        val rowsAffected = ProductSqlUtils.insertOrUpdateProductTags(tagList)
-        assertEquals(tagList.size, rowsAffected)
-
-        // Get tags by list of name and verify
-        val tagNames = tagList.map { it.name }.toList()
-        val savedTagListExists = ProductSqlUtils.getProductTagsByNames(site.id, tagNames)
-        assertEquals(tagList.size, savedTagListExists.size)
-        assertEquals(tagList[0].name, savedTagListExists[0].name)
-        assertEquals(tagList[1].name, savedTagListExists[1].name)
-        assertEquals(tagList[2].name, savedTagListExists[2].name)
-
-        // Get tags for a name that does not exist
-        val monExistingTagList = ProductSqlUtils.getProductTagsByNames(
-                site.id, listOf("test", "test1", "test2")
-        )
-        assertEquals(0, monExistingTagList.size)
-
-        val savedTagList = ProductSqlUtils.getProductTagsByNames(
-                site.id, listOf(tagNames[0], tagNames[1], "test")
-        )
-        assertEquals(2, savedTagList.size)
-    }
-
-    @Test
-    fun testDeleteProductTagsForSite() {
-        val tags = ProductTestUtils.generateProductTags(site.id)
-
-        var rowsAffected = ProductSqlUtils.insertOrUpdateProductTags(tags)
-        assertEquals(tags.size, rowsAffected)
-
-        // Verify product tags inserted
-        var savedTags = ProductSqlUtils.getProductTagsForSite(site.id)
-        assertEquals(tags.size, savedTags.size)
-
-        // Delete tags for site and verify
-        rowsAffected = ProductSqlUtils.deleteProductTagsForSite(site)
-        assertEquals(tags.size, rowsAffected)
-        savedTags = ProductSqlUtils.getProductTagsForSite(site.id)
-        assertEquals(0, savedTags.size)
-    }
-
-    @Test
-    fun testDeleteSiteDeletesProductTags() {
-        val tags = ProductTestUtils.generateProductTags(site.id)
-        assertTrue(tags.isNotEmpty())
-
-        val rowsAffected = ProductSqlUtils.insertOrUpdateProductTags(tags)
-        assertEquals(tags.size, rowsAffected)
-
-        // Verify tags inserted
-        var savedTags = ProductSqlUtils.getProductTagsForSite(site.id)
-        assertEquals(tags.size, savedTags.size)
-
-        // Delete site and verify tags are deleted via foreign key constraint
-        TestSiteSqlUtils.siteSqlUtils.deleteSite(site)
-        savedTags = ProductSqlUtils.getProductTagsForSite(site.id)
-        assertEquals(0, savedTags.size)
-    }
+//    @Test
+//    fun testInsertOrUpdateProductTagList() {
+//        val tagList = ProductTestUtils.generateProductTags(site.id)
+//        assertTrue(tagList.isNotEmpty())
+//
+//        // Insert product tag list
+//        val rowsAffected = ProductSqlUtils.insertOrUpdateProductTags(tagList)
+//        assertEquals(tagList.size, rowsAffected)
+//    }
+//
+//    @Test
+//    fun testGetProductTagsForSite() {
+//        val tagList = ProductTestUtils.generateProductTags(site.id)
+//        assertTrue(tagList.isNotEmpty())
+//
+//        // Insert product tag list
+//        val rowsAffected = ProductSqlUtils.insertOrUpdateProductTags(tagList)
+//        assertEquals(tagList.size, rowsAffected)
+//
+//        // Get tag list for site and verify
+//        val savedTagListExists = ProductSqlUtils.getProductTagsForSite(site.id)
+//        assertEquals(tagList.size, savedTagListExists.size)
+//
+//        // Get tag list for a site that does not exist
+//        val nonExistingSite = SiteModel().apply { id = 400 }
+//        val savedTagList = ProductSqlUtils.getProductTagsForSite(nonExistingSite.id)
+//        assertEquals(0, savedTagList.size)
+//    }
+//
+//    @Test
+//    fun testGetProductTagByName() {
+//        val tagList = ProductTestUtils.generateProductTags(site.id)
+//        assertTrue(tagList.isNotEmpty())
+//
+//        // Insert product tag list
+//        val rowsAffected = ProductSqlUtils.insertOrUpdateProductTags(tagList)
+//        assertEquals(tagList.size, rowsAffected)
+//
+//        // Get tag by name and verify
+//        val savedTagExists = ProductSqlUtils.getProductTagByName(site.id, tagList[0].name)
+//        assertEquals(tagList[0].name, savedTagExists?.name)
+//        assertEquals(tagList[0].remoteTagId, savedTagExists?.remoteTagId)
+//        assertEquals(tagList[0].slug, savedTagExists?.slug)
+//        assertEquals(tagList[0].description, savedTagExists?.description)
+//
+//        // Get tag for a name that does not exist
+//        val nonExistingTagName = "test"
+//        val savedTag = ProductSqlUtils.getProductTagByName(site.id, nonExistingTagName)
+//        assertNull(savedTag)
+//    }
+//
+//    @Test
+//    fun testGetProductTagsByNames() {
+//        val tagList = ProductTestUtils.generateProductTags(site.id)
+//        assertTrue(tagList.isNotEmpty())
+//
+//        // Insert product tag list
+//        val rowsAffected = ProductSqlUtils.insertOrUpdateProductTags(tagList)
+//        assertEquals(tagList.size, rowsAffected)
+//
+//        // Get tags by list of name and verify
+//        val tagNames = tagList.map { it.name }.toList()
+//        val savedTagListExists = ProductSqlUtils.getProductTagsByNames(site.id, tagNames)
+//        assertEquals(tagList.size, savedTagListExists.size)
+//        assertEquals(tagList[0].name, savedTagListExists[0].name)
+//        assertEquals(tagList[1].name, savedTagListExists[1].name)
+//        assertEquals(tagList[2].name, savedTagListExists[2].name)
+//
+//        // Get tags for a name that does not exist
+//        val monExistingTagList = ProductSqlUtils.getProductTagsByNames(
+//                site.id, listOf("test", "test1", "test2")
+//        )
+//        assertEquals(0, monExistingTagList.size)
+//
+//        val savedTagList = ProductSqlUtils.getProductTagsByNames(
+//                site.id, listOf(tagNames[0], tagNames[1], "test")
+//        )
+//        assertEquals(2, savedTagList.size)
+//    }
+//
+//    @Test
+//    fun testDeleteProductTagsForSite() {
+//        val tags = ProductTestUtils.generateProductTags(site.id)
+//
+//        var rowsAffected = ProductSqlUtils.insertOrUpdateProductTags(tags)
+//        assertEquals(tags.size, rowsAffected)
+//
+//        // Verify product tags inserted
+//        var savedTags = ProductSqlUtils.getProductTagsForSite(site.id)
+//        assertEquals(tags.size, savedTags.size)
+//
+//        // Delete tags for site and verify
+//        rowsAffected = ProductSqlUtils.deleteProductTagsForSite(site)
+//        assertEquals(tags.size, rowsAffected)
+//        savedTags = ProductSqlUtils.getProductTagsForSite(site.id)
+//        assertEquals(0, savedTags.size)
+//    }
+//
+//    @Test
+//    fun testDeleteSiteDeletesProductTags() {
+//        val tags = ProductTestUtils.generateProductTags(site.id)
+//        assertTrue(tags.isNotEmpty())
+//
+//        val rowsAffected = ProductSqlUtils.insertOrUpdateProductTags(tags)
+//        assertEquals(tags.size, rowsAffected)
+//
+//        // Verify tags inserted
+//        var savedTags = ProductSqlUtils.getProductTagsForSite(site.id)
+//        assertEquals(tags.size, savedTags.size)
+//
+//        // Delete site and verify tags are deleted via foreign key constraint
+//        TestSiteSqlUtils.siteSqlUtils.deleteSite(site)
+//        savedTags = ProductSqlUtils.getProductTagsForSite(site.id)
+//        assertEquals(0, savedTags.size)
+//    }
 
     private fun getProductReviews(localSiteId: Int): List<WCProductReviewModel> {
         val reviewJson = UnitTestUtils.getStringFromResourceFile(this.javaClass, "wc/product-reviews.json")

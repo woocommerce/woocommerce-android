@@ -152,14 +152,14 @@ object ProductTestUtils {
         count: Int = 3,
         siteId: Int = 6
     ): WCProductTagModel {
-        return WCProductTagModel().apply {
-            remoteTagId = remoteId
-            localSiteId = siteId
-            this.name = name
-            this.slug = slug
-            this.description = description
-            this.count = count
-        }
+        return WCProductTagModel(
+            remoteTagId = remoteId,
+            localSiteId = siteId,
+            name = name,
+            slug = slug,
+            description = description,
+            count = count,
+        )
     }
 
     fun generateProductTags(siteId: Int = 6): List<WCProductTagModel> {
