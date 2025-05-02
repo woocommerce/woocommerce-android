@@ -2465,12 +2465,13 @@ class ProductDetailViewModel @Inject constructor(
      */
     fun setProductTagsFilter(filter: String) {
         productTagsViewState = productTagsViewState.copy(currentFilter = filter)
-        val productTags = productTagsRepository.getProductTags()
-        filterProductTagList(productTags)
 
-        // fetch from the backend when a filter exists in case not all tags have been fetched yet
-        if (filter.isNotEmpty()) {
-            launch {
+        launch {
+            val productTags = productTagsRepository.getProductTags()
+            filterProductTagList(productTags)
+
+            // fetch from the backend when a filter exists in case not all tags have been fetched yet
+            if (filter.isNotEmpty()) {
                 fetchProductTags(searchQuery = filter)
             }
         }
