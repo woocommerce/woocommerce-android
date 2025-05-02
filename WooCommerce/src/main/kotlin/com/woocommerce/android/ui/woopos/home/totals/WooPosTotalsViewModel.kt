@@ -29,7 +29,6 @@ import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccess
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
-import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState.PaymentFailed
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState.PaymentInProgress
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState.Totals
@@ -317,7 +316,7 @@ class WooPosTotalsViewModel @Inject constructor(
         }
     }
 
-    private fun onCartDataReceived(newCartData: List<ItemClickedData>) {
+    private fun onCartDataReceived(newCartData: List<WooPosItemsViewModel.ItemClickedData>) {
         dataState.value = dataState.value.copy(itemClickedDataList = newCartData)
         createOrderDraft(dataState.value.itemClickedDataList)
     }

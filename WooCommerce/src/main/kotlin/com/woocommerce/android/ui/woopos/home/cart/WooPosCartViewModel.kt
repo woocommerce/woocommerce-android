@@ -16,9 +16,6 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
-import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState.Coupon
-import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState.Product.Simple
-import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState.Product.Variation
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartStatus.CHECKOUT
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartStatus.EDITABLE
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartStatus.EMPTY
@@ -138,13 +135,13 @@ class WooPosCartViewModel @Inject constructor(
     private fun getCartItemsDataList(): List<ItemClickedData> {
         val itemClickedDataList = (_state.value.body as WooPosCartState.Body.WithItems).itemsInCart.map {
             when (it) {
-                is Simple -> ItemClickedData.Product.Simple(it.id)
-                is Variation -> ItemClickedData.Product.Variation(
+                is WooPosCartItemViewState.Product.Simple -> ItemClickedData.Product.Simple(it.id)
+                is WooPosCartItemViewState.Product.Variation -> ItemClickedData.Product.Variation(
                     productId = it.id,
                     id = it.variationId
                 )
 
-                is Coupon -> ItemClickedData.Coupon(it.id)
+                is WooPosCartItemViewState.Coupon -> ItemClickedData.Coupon(it.id)
             }
         }
         return itemClickedDataList
