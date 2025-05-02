@@ -1,0 +1,2 @@
+22.2 :
+Cette mise à jour apporte d’importantes améliorations ! Les incidents liés au formatage des devises, à l’écran « Ajouter un montant personnalisé » et à l’écran d’installation de Jetpack ont tous été résolus pour une expérience plus fluide et plus fiable. Profitez d’une stabilité accrue dans votre application mobile WooCommerce !

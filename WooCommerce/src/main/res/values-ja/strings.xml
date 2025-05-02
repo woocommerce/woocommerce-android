@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-04-08 09:54:04+0000
+Translation-Revision-Date: 2025-04-22 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_split_shipment_bottom_sheet_remove_button">配送を削除</string>
+    <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_plural">この配送の%d件のアイテムの移動先を選択します。</string>
+    <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_one">この配送の%d件のアイテムの移動先を選択します。</string>
+    <string name="woo_shipping_split_shipment_bottom_sheet_desc">すべてのアイテムは %s にマージされます。</string>
+    <string name="woo_shipping_split_shipment_bottom_sheet_title">配送を削除</string>
+    <string name="woo_shipping_split_shipment_shipment_remove">%s を削除</string>
+    <string name="woo_shipping_split_shipment_moved_notice_plural">%1$d件のアイテムを配送 %2$d に移動しました</string>
+    <string name="woo_shipping_split_shipment_moved_notice_one">%1$d件のアイテムを配送 %2$d に移動しました</string>
+    <string name="woo_shipping_labels_package_creation_empty_saved_message">保存された荷物はまだありません</string>
+    <string name="woo_shipping_labels_package_creation_empty_carrier_message">配送業者の情報が見つかりません</string>
+    <string name="woo_shipping_labels_package_creation_empty_button">カスタム荷物を作成</string>
+    <string name="woopos_cart_changes_in_the_cart">カートに変更があります</string>
     <string name="woo_shipping_split_shipment_shipment_new">新規配送</string>
     <string name="woo_shipping_split_shipment_shipment_name">配送 %s</string>
     <string name="woo_shipping_split_move_to">移動先</string>

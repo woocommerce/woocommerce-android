@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-04-09 09:54:03+0000
+Translation-Revision-Date: 2025-04-22 09:54:08+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_split_shipment_bottom_sheet_remove_button">Ta bort försändelse</string>
+    <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_plural">Välj vart de %d objekten i den här försändelsen ska flyttas.</string>
+    <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_one">Välj vart %d objekt i den här försändelsen ska flyttas.</string>
+    <string name="woo_shipping_split_shipment_bottom_sheet_desc">Alla objekt slås samman med %s.</string>
+    <string name="woo_shipping_split_shipment_bottom_sheet_title">Ta bort försändelse</string>
+    <string name="woo_shipping_split_shipment_shipment_remove">Ta bort %s</string>
+    <string name="woo_shipping_split_shipment_moved_notice_plural">Flyttade %1$d objekt till försändelse %2$d</string>
+    <string name="woo_shipping_split_shipment_moved_notice_one">Flyttade %1$d objekt till försändelse %2$d</string>
+    <string name="woo_shipping_labels_package_creation_empty_saved_message">Inga paket har sparats ännu</string>
+    <string name="woo_shipping_labels_package_creation_empty_carrier_message">Ingen information om transportföretag hittades</string>
+    <string name="woo_shipping_labels_package_creation_empty_button">Skapa ett anpassat paket</string>
+    <string name="woopos_cart_changes_in_the_cart">Det finns ändringar i varukorgen</string>
     <string name="woo_shipping_split_move_to">Flytta till</string>
     <string name="woo_shipping_split_shipment_shipment_new">Ny försändelse</string>
     <string name="woo_shipping_split_shipment_shipment_name">Försändelse %s</string>
