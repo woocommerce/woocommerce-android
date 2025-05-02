@@ -486,13 +486,13 @@ class WooPosTotalsViewModel @Inject constructor(
                     )
                 } catch (e: NumberFormatException) {
                     wooLogWrapper.e(
-                        POS, "Parsing coupon failed, discount: ${it.discount}, code: ${it.code}, id: ${it.id}"
+                        POS, "Parsing coupon failed, discount: ${it.discount}, code: ${it.code}, id: ${it.id}, $e"
                     )
                     null
                 }
             } ?: null.also {
                 wooLogWrapper.e(
-                    POS, "Coupon line is null or empty: ${coupon.code}, coupon id: ${coupon.id}"
+                    POS, "Coupon info is null or empty: ${coupon.code}, coupon id: ${coupon.id}"
                 )
             }
         }
