@@ -1,1 +1,2 @@
-We've made important improvements in this update! Crashes related to currency formatting, the "Add custom amount" screen, and the Jetpack Installation screen have all been resolved for a smoother and more reliable experience. Enjoy the enhanced stability in your WooCommerce mobile app!
+- [Internal] Fixed a bug where site changes weren't reflected in the app until the next restart [https://github.com/woocommerce/woocommerce-android/pull/13949]
+- [*] Move info about available product types in the POS to the POS menu [https://github.com/woocommerce/woocommerce-android/pull/13977]
