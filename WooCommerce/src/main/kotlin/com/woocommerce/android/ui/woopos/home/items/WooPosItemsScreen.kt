@@ -2,10 +2,8 @@ package com.woocommerce.android.ui.woopos.home.items
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -105,8 +103,6 @@ private fun MainItemsList(
                 onTabClicked = onTabClicked,
                 onSearchEvent = onSearchEvent,
             )
-
-            Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
 
             when (val itemsState = state.value) {
                 is WooPosItemsViewState.ProductList -> {

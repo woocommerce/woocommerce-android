@@ -9,8 +9,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.Divider
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,15 +32,16 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageDa
 fun WooShippingPackageListItem(
     modifier: Modifier,
     packageData: PackageData,
-    onPackageSelected: (PackageData, Boolean) -> Unit
+    onPackageSelected: (PackageData, Boolean) -> Unit,
+    packageItemSupportsStarring: Boolean,
+    onPackageStarred: (PackageData, Boolean) -> Unit = { _, _ -> }
 ) {
     Column(
-        modifier = modifier
-            .clickable { onPackageSelected(packageData, packageData.isSelected.not()) }
-            .padding(top = 8.dp),
+        modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Row(
+            modifier = Modifier.padding(top = 8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -44,7 +49,10 @@ fun WooShippingPackageListItem(
                 isSelected = packageData.isSelected,
                 onSelectionChange = { onPackageSelected(packageData, it) }
             )
-            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
                 Text(
                     text = stringResource(id = packageData.descriptionResId),
                     style = MaterialTheme.typography.caption,
@@ -60,6 +68,24 @@ fun WooShippingPackageListItem(
                         ?.let { "${packageData.dimensionForDisplay} • ${packageData.weightForDisplay}" }
                         ?: packageData.dimensionForDisplay,
                     style = MaterialTheme.typography.body2
+                )
+            }
+            if (packageItemSupportsStarring) {
+                Icon(
+                    modifier = Modifier
+                        .padding(end = 16.dp)
+                        .clickable { onPackageStarred(packageData, !packageData.isStarred) },
+                    tint = colorResource(id = R.color.color_on_surface_disabled),
+                    imageVector = when (packageData.isStarred) {
+                        true -> Icons.Filled.Star
+                        false -> Icons.Outlined.StarOutline
+                    },
+                    contentDescription = stringResource(
+                        id = when (packageData.isStarred) {
+                            true -> R.string.woo_shipping_labels_package_creation_unstarred
+                            else -> R.string.woo_shipping_labels_package_creation_starred
+                        }
+                    )
                 )
             }
         }
@@ -120,7 +146,8 @@ fun WooSavedPackageListItemPreview() {
                 isSelected = false,
                 id = "1",
             ),
-            onPackageSelected = { _, _ -> }
+            onPackageSelected = { _, _ -> },
+            packageItemSupportsStarring = true
         )
     }
 }

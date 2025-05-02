@@ -253,6 +253,26 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
             ?: Result.failure(Throwable("Failed to save package"))
     }
 
+    fun onCarrierPackageStarred(packageData: PackageData, isStarred: Boolean) {
+        _viewState.update { viewState ->
+            val predefinedPackages = viewState.predefinedPackagesData ?: return@update viewState
+            val updatedCarrierPackages = predefinedPackages.carrierPackages.mapValues { (_, packageGroupList) ->
+                packageGroupList.map { packageGroup ->
+                    val updatedPackages = packageGroup.packages.map {
+                        when {
+                            it.id == packageData.id -> it.copy(isStarred = isStarred)
+                            else -> it
+                        }
+                    }
+                    packageGroup.copy(packages = updatedPackages)
+                }
+            }
+            viewState.copy(
+                predefinedPackagesState = predefinedPackages.copy(carrierPackages = updatedCarrierPackages)
+            )
+        }
+    }
+
     @Parcelize
     data class ViewState(
         val pageTabs: List<PageTab> = emptyList(),
