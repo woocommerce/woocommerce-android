@@ -1,0 +1,2 @@
+22.2:
+Hemos realizado mejoras importantes en esta actualización. Se han resuelto los fallos relacionados con el formato de la moneda, la pantalla "Añadir cantidad personalizada" y la pantalla de instalación de Jetpack para ofrecer una experiencia más fluida y fiable. ¡Disfruta de la estabilidad mejorada en tu aplicación móvil de WooCommerce!
