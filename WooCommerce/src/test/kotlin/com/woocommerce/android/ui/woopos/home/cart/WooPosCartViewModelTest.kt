@@ -8,9 +8,11 @@ import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetCouponById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetVariationById
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
+import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState.Coupon.CouponValidationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.WooPosGetCachedStoreCurrency
@@ -258,7 +260,7 @@ class WooPosCartViewModelTest {
                         itemNumber = 1,
                         name = "coupon_code",
                         summary = "100% off everything",
-                        formattedDiscount = null,
+                        validationState = CouponValidationState.Unknown,
                     )
                 )
             )
@@ -776,6 +778,133 @@ class WooPosCartViewModelTest {
                         ).properties[WooPosAnalyticsEventConstant.PRODUCT_TYPE] == "coupon"
             }
         )
+    }
+
+    @Test
+    fun `given cart has coupons, when coupons validation fails, then coupons validation state is INVALID`() = runTest {
+        // GIVEN
+        val parentToChildrenEventsMutableFlow = MutableSharedFlow<ParentToChildrenEvent>()
+        whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenEventsMutableFlow)
+        val sut = createSut()
+        val states = sut.state.captureValues()
+        parentToChildrenEventsMutableFlow.emit(
+            ParentToChildrenEvent.ItemClickedInProductSelector(
+                WooPosItemsViewModel.ItemClickedData.Coupon(id = 1L)
+            )
+        )
+        sut.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
+
+        // WHEN
+        parentToChildrenEventsMutableFlow.emit(ParentToChildrenEvent.CouponsValidationFailed)
+
+        // THEN
+        val itemsInCart = (states.last().body as WooPosCartState.Body.WithItems).itemsInCart
+        assertThat(itemsInCart).hasSize(1)
+        assertThat((itemsInCart.first() as WooPosCartItemViewState.Coupon).validationState)
+            .isEqualTo(CouponValidationState.Invalid)
+    }
+
+    @Test
+    fun `when remove coupons event received, then should remove all coupons from cart`() = runTest {
+        // GIVEN
+        val parentToChildrenEventsMutableFlow = MutableSharedFlow<ParentToChildrenEvent>()
+        whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenEventsMutableFlow)
+        val sut = createSut()
+        val states = sut.state.captureValues()
+        parentToChildrenEventsMutableFlow.emit(
+            ParentToChildrenEvent.ItemClickedInProductSelector(
+                WooPosItemsViewModel.ItemClickedData.Coupon(id = 1L)
+            )
+        )
+        parentToChildrenEventsMutableFlow.emit(
+            ParentToChildrenEvent.ItemClickedInProductSelector(
+                WooPosItemsViewModel.ItemClickedData.Coupon(id = 2L)
+            )
+        )
+
+        val product = ProductTestUtils.generateProduct(
+            productId = 23L,
+            productName = "title",
+            amount = "10.0"
+        ).copy(firstImageUrl = "url")
+        whenever(getProductById(eq(product.remoteId))).thenReturn(product)
+        parentToChildrenEventsMutableFlow.emit(
+            ParentToChildrenEvent.ItemClickedInProductSelector(
+                WooPosItemsViewModel.ItemClickedData.Product.Simple(
+                    id = product.remoteId
+                )
+            )
+        )
+        sut.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
+
+        assertThat((states.last().body as WooPosCartState.Body.WithItems).itemsInCart).hasSize(3)
+
+        // WHEN
+        parentToChildrenEventsMutableFlow.emit(ParentToChildrenEvent.RemoveCouponsClicked)
+
+        // THEN
+        val finalItemsInCart = (states.last().body as WooPosCartState.Body.WithItems).itemsInCart
+        assertThat(finalItemsInCart).hasSize(1)
+        assertThat(finalItemsInCart.first()).isInstanceOf(WooPosCartItemViewState.Product.Simple::class.java)
+
+        verify(childrenToParentEventSender).sendToParent(any<ChildToParentEvent.CouponsRemoved>())
+    }
+
+    @Test
+    fun `when remove coupons event received, then emits coupons removed event`() = runTest {
+        // GIVEN
+        val parentToChildrenEventsMutableFlow = MutableSharedFlow<ParentToChildrenEvent>()
+        whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenEventsMutableFlow)
+        createSut()
+        parentToChildrenEventsMutableFlow.emit(
+            ParentToChildrenEvent.ItemClickedInProductSelector(
+                WooPosItemsViewModel.ItemClickedData.Coupon(id = 2L)
+            )
+        )
+
+        val product = ProductTestUtils.generateProduct(
+            productId = 23L,
+            productName = "title",
+            amount = "10.0"
+        ).copy(firstImageUrl = "url")
+        whenever(getProductById(eq(product.remoteId))).thenReturn(product)
+        parentToChildrenEventsMutableFlow.emit(
+            ParentToChildrenEvent.ItemClickedInProductSelector(
+                WooPosItemsViewModel.ItemClickedData.Product.Simple(
+                    id = product.remoteId
+                )
+            )
+        )
+
+        // WHEN
+        parentToChildrenEventsMutableFlow.emit(ParentToChildrenEvent.RemoveCouponsClicked)
+
+        // THEN
+        verify(childrenToParentEventSender).sendToParent(any<ChildToParentEvent.CouponsRemoved>())
+    }
+
+    @Test
+    fun `when back from checkout to cart, then coupon validation states should be reset to UNKNOWN`() = runTest {
+        // GIVEN
+        val parentToChildrenEventsMutableFlow = MutableSharedFlow<ParentToChildrenEvent>()
+        whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenEventsMutableFlow)
+        val sut = createSut()
+        val states = sut.state.captureValues()
+        parentToChildrenEventsMutableFlow.emit(
+            ParentToChildrenEvent.ItemClickedInProductSelector(
+                WooPosItemsViewModel.ItemClickedData.Coupon(id = 1L)
+            )
+        )
+        sut.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
+
+        // WHEN
+        parentToChildrenEventsMutableFlow.emit(ParentToChildrenEvent.BackFromCheckoutToCartClicked)
+
+        // THEN
+        val finalItemsInCart = (states.last().body as WooPosCartState.Body.WithItems).itemsInCart
+        assertThat(finalItemsInCart).hasSize(1)
+        assertThat((finalItemsInCart.first() as WooPosCartItemViewState.Coupon).validationState)
+            .isEqualTo(CouponValidationState.Unknown)
     }
 
     private suspend fun createSutWithItemsInCart(): Pair<WooPosCartViewModel, List<WooPosCartState>> {
