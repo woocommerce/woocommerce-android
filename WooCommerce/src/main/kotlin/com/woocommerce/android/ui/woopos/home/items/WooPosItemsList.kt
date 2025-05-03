@@ -223,9 +223,7 @@ fun WooPosProductCard(
 
             Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
 
-            Box(modifier = Modifier.weight(1f)) {
-                ProductInfo(item)
-            }
+                ProductInfo(modifier = Modifier.weight(1f), item = item)
 
             if (item is Product.Variable) {
                 Image(
@@ -242,9 +240,9 @@ fun WooPosProductCard(
 }
 
 @Composable
-private fun ProductInfo(item: Product) {
+private fun ProductInfo(modifier: Modifier, item: Product) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxHeight()
             .padding(
                 top = WooPosSpacing.Medium.value,
