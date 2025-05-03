@@ -86,13 +86,15 @@ sealed class WooPosCartItemViewState(open val itemNumber: Int, open val name: St
         val validationState: CouponValidationState = CouponValidationState.Unknown,
     ) : WooPosCartItemViewState(itemNumber, name), Parcelable {
         @Parcelize
-        sealed class CouponValidationState: Parcelable {
+        sealed class CouponValidationState : Parcelable {
             @Parcelize
             data class Valid(val formattedDiscount: String) : CouponValidationState(), Parcelable
+
             @Parcelize
-            data object Invalid: CouponValidationState(), Parcelable
+            data object Invalid : CouponValidationState(), Parcelable
+
             @Parcelize
-            data object Unknown: CouponValidationState(), Parcelable
+            data object Unknown : CouponValidationState(), Parcelable
         }
     }
 }

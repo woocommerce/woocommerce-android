@@ -150,6 +150,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
         }
     }
 
+    @Suppress("CyclomaticComplexMethod")
     private fun listenEventsFromParent() {
         viewModelScope.launch {
             parentToChildrenEventReceiver.events.collect { event ->

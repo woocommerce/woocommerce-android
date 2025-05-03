@@ -95,7 +95,7 @@ class WooPosTotalsViewModelTest {
     private val networkStatus: WooPosNetworkStatus = mock()
 
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender = mock()
-    private val resourceProvider: ResourceProvider = mock() {
+    private val resourceProvider: ResourceProvider = mock {
         on { getString(any()) }.thenReturn("")
     }
     private val cardReaderManager: CardReaderManager = mock()

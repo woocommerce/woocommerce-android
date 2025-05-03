@@ -555,7 +555,7 @@ private fun CouponItem(
                     imageVector = Icons.Outlined.LocalOffer,
                     contentDescription = null,
                     colorFilter = ColorFilter.tint(
-                        when (item.validationState){
+                        when (item.validationState) {
                             CouponValidationState.Invalid -> MaterialTheme.colorScheme.onError
                             CouponValidationState.Unknown -> WooPosTheme.colors.onSurfaceVariantLowest
                             is CouponValidationState.Valid -> WooPosTheme.colors.onSuccess
@@ -590,7 +590,7 @@ private fun CouponItem(
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.clearAndSetSemantics { }
                 )
-                when(item.validationState){
+                when (item.validationState) {
                     CouponValidationState.Unknown -> Unit
                     CouponValidationState.Invalid -> {
                         Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value.toAdaptivePadding()))
