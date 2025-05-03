@@ -461,7 +461,6 @@ class WooPosTotalsViewModel @Inject constructor(
         WooLog.e(POS, "Order creation failed - $exception")
         val wooError = (exception as? WooException)?.error
         if (wooError != null && wooError.type == WooErrorType.INVALID_COUPON) {
-            // TODO Update coupons with error
             uiState.value = WooPosTotalsViewState.InvalidCouponError(
                 message = resourceProvider.getString(R.string.woopos_totals_invalid_coupon_error),
                 reason = wooError.message ?: ""
