@@ -274,7 +274,7 @@ class WooCommerceStoreTest {
             val expectedModel = settingsMapper.mapTaxBasedOnSettings(taxBasedOnSettingsResponse!!, site.localId())
             val result = fetchTaxBasedOnSettings()
             assertThat(result.isError).isFalse
-            with (result.model) {
+            with(result.model) {
                 assertThat(this).isNotNull
                 assertThat(this?.localSiteId).isEqualTo(expectedModel.localSiteId)
                 assertThat(this?.selectedOption).isEqualTo(expectedModel.selectedOption)
@@ -407,12 +407,14 @@ class WooCommerceStoreTest {
     @Test
     fun `given 3 woo and 3 updated sites, when fetching a jetpack cp site, emit event with 6 rows affected`() {
         runBlocking {
-            val sites = (0..4).map { SiteUtils.generateSelfHostedNonJPSite() }
+            val sites = (0..4).map {
+                SiteUtils.generateSelfHostedNonJPSite().apply { siteId = it.toLong() }
+            }
             whenever(siteStore.sites).thenReturn(sites)
 
             whenever(accountStore.hasAccessToken()).thenReturn(true)
             val updatedSites = (0..4).map {
-                SiteUtils.generateJetpackCPSite()
+                SiteUtils.generateJetpackCPSite().apply { siteId = it.toLong() }
             }
             whenever(siteStore.fetchSites(any())).thenReturn(
                 OnSiteChanged(3, updatedSites = updatedSites)
@@ -543,7 +545,7 @@ class WooCommerceStoreTest {
         return wooCommerceStore.fetchSiteProductSettings(site)
     }
 
-    private suspend fun fetchTaxBasedOnSettings(isError: Boolean = false) : WooResult<TaxBasedOnSettingEntity> {
+    private suspend fun fetchTaxBasedOnSettings(isError: Boolean = false): WooResult<TaxBasedOnSettingEntity> {
         val payload = WooPayload(taxBasedOnSettingsResponse)
         if (isError) {
             whenever(wcrestClient.fetchSiteSettingsTaxBasedOn(site)).thenReturn(WooPayload(error))

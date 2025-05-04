@@ -13,6 +13,7 @@ import androidx.activity.viewModels
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import androidx.navigation.NavDeepLinkBuilder
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
@@ -20,6 +21,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.login.MagicLinkInterceptViewModel.CancelJetpackActivation
+import com.woocommerce.android.extensions.doOnApplyWindowInsets
 import com.woocommerce.android.ui.login.MagicLinkInterceptViewModel.ContinueJetpackActivation
 import com.woocommerce.android.ui.login.MagicLinkInterceptViewModel.OpenLogin
 import com.woocommerce.android.ui.login.MagicLinkInterceptViewModel.OpenSitePicker
@@ -55,6 +57,17 @@ class MagicLinkInterceptActivity : AppCompatActivity() {
         loginAnalyticsListener.trackLoginMagicLinkOpened()
 
         setContentView(org.wordpress.android.login.R.layout.login_magic_link_sent_screen)
+
+        val rootLayout = findViewById<View>(org.wordpress.android.login.R.id.login_magic_link_root_layout)
+        rootLayout.doOnApplyWindowInsets {
+            rootLayout.updatePadding(
+                left = it.left,
+                top = it.top,
+                right = it.right,
+                bottom = it.bottom
+            )
+        }
+
         retryButton = findViewById(R.id.login_open_email_client)
         retryContainer = findViewById(R.id.login_magic_link_container)
         retryButton?.text = getString(R.string.retry)

@@ -24,7 +24,7 @@ class WooPosCartItemsUpdater @Inject constructor(
     suspend operator fun invoke(
         itemsInCart: List<WooPosCartItemViewState>,
         updatedProducts: List<ParentToChildrenEvent.OrderCreated.ProductInfo>,
-        updatedCoupons: List<ParentToChildrenEvent.OrderCreated.CouponLine>,
+        updatedCoupons: List<ParentToChildrenEvent.OrderCreated.CouponInfo>,
     ): List<WooPosCartItemViewState> {
         val mutableCurrentBodyList = itemsInCart.toMutableList()
         var productsChanged = false
@@ -80,7 +80,7 @@ class WooPosCartItemsUpdater @Inject constructor(
     }
 
     private suspend fun updateCouponsWithFormattedDiscount(
-        updatedCoupons: List<ParentToChildrenEvent.OrderCreated.CouponLine>,
+        updatedCoupons: List<ParentToChildrenEvent.OrderCreated.CouponInfo>,
         item: WooPosCartItemViewState.Coupon,
     ) = updatedCoupons.find { it.code == item.name }?.let {
         item.copy(validationState = CouponValidationState.Valid("-${formatPrice(it.discountAmount)}"))

@@ -54,7 +54,7 @@ class ProductSelectorFragment : BaseFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    ProductSelectorScreen(viewModel)
+                    ProductSelectorScreen(viewModel = viewModel, handleInsets = false)
                 }
             }
         }

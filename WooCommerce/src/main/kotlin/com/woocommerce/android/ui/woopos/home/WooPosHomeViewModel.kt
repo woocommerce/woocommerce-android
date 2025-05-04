@@ -168,7 +168,7 @@ class WooPosHomeViewModel @Inject constructor(
                         )
                     }
 
-                    ChildToParentEvent.ProductsDialogInfoIconClicked -> {
+                    ChildToParentEvent.SimpleProductExplanationMenuItemClicked -> {
                         _state.value = _state.value.copy(
                             productsInfoDialog = ProductsInfoDialog(isVisible = true)
                         )
@@ -235,7 +235,7 @@ class WooPosHomeViewModel @Inject constructor(
                     }
                 },
                 updatedCoupons = event.updatedCoupons.map {
-                    OrderCreated.CouponLine(
+                    OrderCreated.CouponInfo(
                         id = it.id,
                         code = it.code,
                         discountAmount = it.discountAmount

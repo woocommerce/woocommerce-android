@@ -16,6 +16,7 @@ data class PackageData(
     val weight: String,
     val isSelected: Boolean,
     val isLetter: Boolean,
+    val isStarred: Boolean = false,
     val isPredefined: Boolean = false,
     val dimensionUnit: String = "cm",
     val weightUnit: String = "kg",

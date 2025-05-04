@@ -30,6 +30,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -253,6 +254,7 @@ private fun PreparingReader(title: String, subtitle: String) {
     WooPosText(
         text = title,
         style = WooPosTypography.BodyLarge,
+        color = WooPosTheme.colors.onSurfaceVariantHighest,
     )
     Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
     WooPosText(
@@ -275,6 +277,7 @@ private fun ReaderReadyForPayment(readerStatus: WooPosTotalsViewState.ReaderStat
     WooPosText(
         text = readerStatus.title,
         style = WooPosTypography.BodyLarge,
+        color = WooPosTheme.colors.onSurfaceVariantHighest,
     )
     Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
     WooPosText(
@@ -347,14 +350,24 @@ private fun TotalsGrid(totals: Totals.Visible) {
             TotalsGridRow(
                 textOne = stringResource(R.string.woopos_payment_discount_label),
                 textTwo = totals.orderDiscountText,
+                colorOne = WooPosTheme.colors.onSurfaceVariantHighest,
             )
 
             Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
         }
 
         TotalsGridRow(
+            textOne = stringResource(R.string.woopos_payment_subtotal_label),
+            textTwo = totals.orderSubtotalText,
+            colorOne = WooPosTheme.colors.onSurfaceVariantHighest
+        )
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
+
+        TotalsGridRow(
             textOne = stringResource(R.string.woopos_payment_tax_label),
             textTwo = totals.orderTaxText,
+            colorOne = WooPosTheme.colors.onSurfaceVariantHighest
         )
 
         Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
@@ -380,8 +393,10 @@ private fun TotalsGridRow(
     textTwo: String,
     styleOne: WooPosTypography = WooPosTypography.BodyLarge,
     fontWeightOne: FontWeight = FontWeight.Normal,
+    colorOne: Color = Color.Unspecified,
     styleTwo: WooPosTypography = WooPosTypography.BodyLarge,
     fontWeightTwo: FontWeight = FontWeight.Normal,
+    colorTwo: Color = Color.Unspecified,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -391,11 +406,13 @@ private fun TotalsGridRow(
             text = textOne,
             style = styleOne,
             fontWeight = fontWeightOne,
+            color = colorOne,
         )
         WooPosText(
             text = textTwo,
             style = styleTwo,
             fontWeight = fontWeightTwo,
+            color = colorTwo,
         )
     }
 }

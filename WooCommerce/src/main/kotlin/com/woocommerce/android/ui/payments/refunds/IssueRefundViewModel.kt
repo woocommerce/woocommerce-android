@@ -34,21 +34,13 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
-import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.InputValidationState.TOO_HIGH
-import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.InputValidationState.TOO_LOW
-import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.InputValidationState.VALID
-import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.HideValidationError
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.OpenUrl
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.ShowNumberPicker
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundConfirmation
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundSummary
-import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.ShowValidationError
-import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.RefundType.AMOUNT
-import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.RefundType.ITEMS
 import com.woocommerce.android.ui.payments.refunds.RefundFeeListAdapter.FeeRefundListItem
 import com.woocommerce.android.ui.payments.refunds.RefundProductListAdapter.ProductRefundListItem
 import com.woocommerce.android.ui.payments.refunds.RefundShippingListAdapter.ShippingRefundListItem
-import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.max
 import com.woocommerce.android.util.min
@@ -61,7 +53,6 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.parcelize.Parcelize
@@ -71,7 +62,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCGatewayStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCRefundStore
-import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.util.Locale
 import javax.inject.Inject
@@ -83,10 +73,8 @@ import org.wordpress.android.fluxc.utils.sumBy as sumByBigDecimal
 @Suppress("LargeClass") // TODO Refactor this class in a follow up PR
 class IssueRefundViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    private val dispatchers: CoroutineDispatchers,
     currencyFormatter: CurrencyFormatter,
     private val orderStore: WCOrderStore,
-    private val wooStore: WooCommerceStore,
     private val selectedSite: SelectedSite,
     private val networkStatus: NetworkStatus,
     private val resourceProvider: ResourceProvider,
@@ -98,7 +86,6 @@ class IssueRefundViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedState) {
     companion object {
-        private const val DEFAULT_DECIMAL_PRECISION = 2
         private const val REFUND_METHOD_MANUAL = "manual"
         private const val SELECTED_QUANTITIES_KEY = "selected_quantities_key"
     }
@@ -145,33 +132,9 @@ class IssueRefundViewModel @Inject constructor(
         }
     )
 
-    /**
-     * Saving more data than necessary into the SavedState has associated risks which were not known at the time this
-     * field was implemented - after we ensure we don't save unnecessary data, we can replace @Suppress("OPT_IN_USAGE")
-     * with @OptIn(LiveDelegateSavedStateAPI::class).
-     */
-    @Suppress("OPT_IN_USAGE")
-    val refundByAmountStateLiveData = LiveDataDelegate(
-        savedState,
-        RefundByAmountViewState(),
-        onChange = { _, new ->
-            updateRefundTotal(new.enteredAmount)
-        }
-    )
-
-    /**
-     * Saving more data than necessary into the SavedState has associated risks which were not known at the time this
-     * field was implemented - after we ensure we don't save unnecessary data, we can replace @Suppress("OPT_IN_USAGE")
-     * with @OptIn(LiveDelegateSavedStateAPI::class).
-     */
-    @Suppress("OPT_IN_USAGE")
-    private val productsRefundLiveData = LiveDataDelegate(savedState, ProductsRefundViewState())
-
     private var commonState by commonStateLiveData
-    private var refundByAmountState by refundByAmountStateLiveData
     private var refundByItemsState by refundByItemsStateLiveData
     private var refundSummaryState by refundSummaryStateLiveData
-    private var productsRefundState by productsRefundLiveData
 
     private val order: Order
     private val refunds: List<Refund>
@@ -211,7 +174,6 @@ class IssueRefundViewModel @Inject constructor(
         refundableShippingLineIds = getRefundableShippingLineIds()
         refundableFeeLineIds = getRefundableFeeLineIds()
 
-        initRefundByAmountState()
         initRefundByItemsState()
         initRefundSummaryState()
     }
@@ -226,23 +188,6 @@ class IssueRefundViewModel @Inject constructor(
                 R.string.order_refunds_title_with_amount, formatCurrency(amount)
             )
         )
-    }
-
-    private fun initRefundByAmountState() {
-        if (refundByAmountStateLiveData.hasInitialValue) {
-            val decimals = wooStore.getSiteSettings(selectedSite.get())?.currencyDecimalNumber
-                ?: DEFAULT_DECIMAL_PRECISION
-
-            refundByAmountState = refundByAmountState.copy(
-                currency = order.currency,
-                decimals = decimals,
-                availableForRefund = resourceProvider.getString(
-                    R.string.order_refunds_available_for_refund,
-                    formatCurrency(maxRefund)
-                ),
-                isNextButtonEnabled = false
-            )
-        }
     }
 
     private fun initRefundByItemsState() {
@@ -315,16 +260,6 @@ class IssueRefundViewModel @Inject constructor(
                 isFeesRefundAvailable = true
             )
         }
-
-        if (productsRefundLiveData.hasInitialValue) {
-            val decimals = wooStore.getSiteSettings(selectedSite.get())?.currencyDecimalNumber
-                ?: DEFAULT_DECIMAL_PRECISION
-
-            productsRefundState = productsRefundState.copy(
-                currency = order.currency,
-                decimals = decimals
-            )
-        }
     }
 
     private fun orderContainsOnlyCustomAmounts(): Boolean {
@@ -361,28 +296,11 @@ class IssueRefundViewModel @Inject constructor(
         analyticsTrackerWrapper.track(
             CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED,
             mapOf(
-                AnalyticsTracker.KEY_REFUND_TYPE to ITEMS.name,
                 AnalyticsTracker.KEY_ORDER_ID to order.id
             )
         )
 
         showRefundSummary()
-    }
-
-    fun onNextButtonTappedFromAmounts() {
-        analyticsTrackerWrapper.track(
-            CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED,
-            mapOf(
-                AnalyticsTracker.KEY_REFUND_TYPE to AMOUNT.name,
-                AnalyticsTracker.KEY_ORDER_ID to order.id
-            )
-        )
-
-        if (isInputValid()) {
-            showRefundSummary()
-        } else {
-            showValidationState()
-        }
     }
 
     fun onOpenStoreAdminLinkClicked() {
@@ -396,14 +314,7 @@ class IssueRefundViewModel @Inject constructor(
             refundAmount = formatCurrency(commonState.refundTotal)
         )
 
-        triggerEvent(ShowRefundSummary(commonState.refundType))
-    }
-
-    fun onManualRefundAmountChanged(amount: BigDecimal) {
-        if (refundByAmountState.enteredAmount != amount) {
-            refundByAmountState = refundByAmountState.copy(enteredAmount = amount)
-            showValidationState()
-        }
+        triggerEvent(ShowRefundSummary)
     }
 
     fun onRefundConfirmed(wasConfirmed: Boolean) {
@@ -431,7 +342,6 @@ class IssueRefundViewModel @Inject constructor(
                             AnalyticsTracker.KEY_ORDER_ID to order.id,
                             AnalyticsTracker.KEY_REFUND_IS_FULL to
                                 (commonState.refundTotal isEqualTo maxRefund).toString(),
-                            AnalyticsTracker.KEY_REFUND_TYPE to commonState.refundType.name,
                             AnalyticsTracker.KEY_REFUND_METHOD to gateway.methodTitle,
                             AnalyticsTracker.KEY_AMOUNT to commonState.refundTotal.toString()
                         )
@@ -477,49 +387,33 @@ class IssueRefundViewModel @Inject constructor(
     }
 
     private suspend fun initiateRefund(): WooResult<WCRefundModel> {
-        val result = async(dispatchers.io) {
-            return@async when (commonState.refundType) {
-                ITEMS -> {
-                    val allItems = mutableListOf<WCRefundItem>()
-                    refundItems.value?.let {
-                        it.forEach { item -> allItems.add(item.toDataModel()) }
-                    }
-
-                    val selectedShipping = refundShippingLines.value?.filter {
-                        refundByItemsState.selectedShippingLines
-                            ?.contains(it.shippingLine.itemId)
-                            ?: false
-                    }
-                    selectedShipping?.forEach { allItems.add(it.toDataModel()) }
-
-                    val selectedFees = refundFeeLines.value?.filter {
-                        refundByItemsState.selectedFeeLines
-                            ?.contains(it.feeLine.id)
-                            ?: false
-                    }
-                    selectedFees?.forEach { allItems.add(it.toDataModel()) }
-
-                    refundStore.createItemsRefund(
-                        selectedSite.get(),
-                        order.id,
-                        refundSummaryState.refundReason ?: "",
-                        true,
-                        gateway.supportsRefunds,
-                        items = allItems
-                    )
-                }
-                AMOUNT -> {
-                    refundStore.createAmountRefund(
-                        selectedSite.get(),
-                        order.id,
-                        commonState.refundTotal,
-                        refundSummaryState.refundReason ?: "",
-                        gateway.supportsRefunds
-                    )
-                }
-            }
+        val allItems = mutableListOf<WCRefundItem>()
+        refundItems.value?.let {
+            it.forEach { item -> allItems.add(item.toDataModel()) }
         }
-        return result.await()
+
+        val selectedShipping = refundShippingLines.value?.filter {
+            refundByItemsState.selectedShippingLines
+                ?.contains(it.shippingLine.itemId)
+                ?: false
+        }
+        selectedShipping?.forEach { allItems.add(it.toDataModel()) }
+
+        val selectedFees = refundFeeLines.value?.filter {
+            refundByItemsState.selectedFeeLines
+                ?.contains(it.feeLine.id)
+                ?: false
+        }
+        selectedFees?.forEach { allItems.add(it.toDataModel()) }
+
+        return refundStore.createItemsRefund(
+            selectedSite.get(),
+            order.id,
+            refundSummaryState.refundReason ?: "",
+            true,
+            gateway.supportsRefunds,
+            items = allItems
+        )
     }
 
     private fun trackRefundError(result: WooResult<WCRefundModel>) {
@@ -702,33 +596,6 @@ class IssueRefundViewModel @Inject constructor(
         )
     }
 
-    private fun validateInput(): InputValidationState {
-        return when {
-            refundByAmountState.enteredAmount > maxRefund -> return TOO_HIGH
-            refundByAmountState.enteredAmount isEqualTo BigDecimal.ZERO -> TOO_LOW
-            else -> VALID
-        }
-    }
-
-    private fun showValidationState() {
-        refundByAmountState = when (validateInput()) {
-            TOO_HIGH -> {
-                triggerEvent(ShowValidationError(resourceProvider.getString(R.string.order_refunds_refund_high_error)))
-                refundByAmountState.copy(isNextButtonEnabled = false)
-            }
-            TOO_LOW -> {
-                triggerEvent(ShowValidationError(resourceProvider.getString(R.string.order_refunds_refund_zero_error)))
-                refundByAmountState.copy(isNextButtonEnabled = false)
-            }
-            VALID -> {
-                triggerEvent(HideValidationError)
-                refundByAmountState.copy(isNextButtonEnabled = true)
-            }
-        }
-    }
-
-    private fun isInputValid() = validateInput() == VALID
-
     fun onShippingRefundMainSwitchChanged(isChecked: Boolean) {
         if (isChecked) {
             val shippingRefund = calculatePartialShippingTotal(allShippingLineIds)
@@ -839,6 +706,7 @@ class IssueRefundViewModel @Inject constructor(
                     }
                     updateRefundSummaryState(refundMethodWithCard, isMethodDescriptionVisible = false)
                 }
+
                 PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Error -> {
                     cardType = PaymentMethodType.CARD_PRESENT
                     updateRefundSummaryState(refundMethod, isMethodDescriptionVisible = false)
@@ -918,32 +786,6 @@ class IssueRefundViewModel @Inject constructor(
         AnalyticsTracker.KEY_ERROR_DESC to exception.error.message
     )
 
-    private enum class InputValidationState {
-        TOO_HIGH,
-        TOO_LOW,
-        VALID
-    }
-
-    enum class RefundType {
-        ITEMS,
-        AMOUNT
-    }
-
-    @Parcelize
-    data class RefundByAmountViewState(
-        val currency: String? = null,
-        val decimals: Int = DEFAULT_DECIMAL_PRECISION,
-        val availableForRefund: String? = null,
-        val isNextButtonEnabled: Boolean? = null,
-        val enteredAmount: BigDecimal = BigDecimal.ZERO
-    ) : Parcelable
-
-    @Parcelize
-    data class ProductsRefundViewState(
-        val currency: String? = null,
-        val decimals: Int = DEFAULT_DECIMAL_PRECISION
-    ) : Parcelable
-
     @Parcelize
     @Suppress("ForbiddenComment")
     data class RefundByItemsViewState(
@@ -999,12 +841,10 @@ class IssueRefundViewModel @Inject constructor(
     @Parcelize
     data class CommonViewState(
         val refundTotal: BigDecimal = BigDecimal.ZERO,
-        val screenTitle: String? = null,
-        val refundType: RefundType = ITEMS
+        val screenTitle: String? = null
     ) : Parcelable
 
     sealed class IssueRefundEvent : Event() {
-        data class ShowValidationError(val message: String) : IssueRefundEvent()
         data class ShowNumberPicker(val refundItem: ProductRefundListItem) : IssueRefundEvent()
         data class ShowRefundConfirmation(
             val title: String,
@@ -1012,15 +852,8 @@ class IssueRefundViewModel @Inject constructor(
             val confirmButtonTitle: String
         ) : IssueRefundEvent()
 
-        data class ShowRefundSummary(val refundType: RefundType) : IssueRefundEvent()
-        data class ShowRefundAmountDialog(
-            val refundAmount: BigDecimal,
-            val maxRefund: BigDecimal,
-            val message: String
-        ) : IssueRefundEvent()
-
+        data object ShowRefundSummary : IssueRefundEvent()
         data class OpenUrl(val url: String) : IssueRefundEvent()
-        object HideValidationError : IssueRefundEvent()
         data class NavigateToCardReaderScreen(val orderId: Long, val refundAmount: BigDecimal) : IssueRefundEvent()
     }
 
@@ -1030,7 +863,7 @@ class IssueRefundViewModel @Inject constructor(
 
         companion object {
             fun fromValue(paymentMethodType: String?): PaymentMethodType {
-                return values().firstOrNull { it.paymentMethodType == paymentMethodType } ?: CARD_PRESENT
+                return entries.firstOrNull { it.paymentMethodType == paymentMethodType } ?: CARD_PRESENT
             }
         }
     }

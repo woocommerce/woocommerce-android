@@ -145,11 +145,12 @@ class WooPosItemsSearchViewModelTest {
             val emptySearchQuery = value as WooPosItemsSearchViewState.EmptySearchQuery
             assertThat(emptySearchQuery.popularItems).hasSize(2)
             assertThat(emptySearchQuery.popularItems.map { it.id }).containsExactly(1, 2)
-            assertThat(emptySearchQuery.recentSearches).hasSize(3)
+            assertThat(emptySearchQuery.recentSearches).hasSize(4)
             assertThat(emptySearchQuery.recentSearches).containsExactly(
                 "Recent Search 1",
                 "Recent Search 2",
-                "Recent Search 3"
+                "Recent Search 3",
+                "Recent Search 4",
             )
         }
     }

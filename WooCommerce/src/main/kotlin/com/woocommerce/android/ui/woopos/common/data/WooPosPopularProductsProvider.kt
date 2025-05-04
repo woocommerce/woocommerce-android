@@ -18,7 +18,7 @@ class WooPosPopularProductsProvider @Inject constructor(
     private val productsTypesFilterConfig: WooPosProductsTypesFilterConfig,
 ) {
     companion object {
-        private const val MAX_POPULAR_PRODUCTS = 3
+        private const val MAX_POPULAR_PRODUCTS = 10
     }
 
     private val mutex = Mutex()

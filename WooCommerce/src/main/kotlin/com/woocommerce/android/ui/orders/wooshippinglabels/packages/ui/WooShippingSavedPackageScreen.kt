@@ -119,7 +119,8 @@ fun WooShippingSavedPackageContent(
             WooShippingPackageListItem(
                 modifier,
                 packageData,
-                onSavedPackageSelected
+                onSavedPackageSelected,
+                packageItemSupportsStarring = false
             )
         }
     }

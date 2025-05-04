@@ -232,7 +232,8 @@ fun WooShippingLabelsPackageCreationScreenPreview() {
                             )
                         )
                     ),
-                    onPackageSelected = { _, _ -> }
+                    onPackageSelected = { _, _ -> },
+                    onPackageStarred = { _, _ -> },
                 )
             }
         )
