@@ -457,7 +457,7 @@ class WooPosTotalsViewModel @Inject constructor(
     }
 
     private suspend fun onCreateOrderDraftFails(exception: Throwable) {
-        WooLog.e(POS, "Order creation failed - $exception")
+        wooLogWrapper.e(POS, "Order creation failed - $exception")
         val wooError = (exception as? WooException)?.error
         if (wooError != null && wooError.type == WooErrorType.INVALID_COUPON) {
             uiState.value = WooPosTotalsViewState.InvalidCouponError(
