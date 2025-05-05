@@ -56,20 +56,20 @@ class CustomAmountsViewModel @Inject constructor(
         get() {
             val orderTotal = BigDecimal(args.orderTotal ?: "0")
             return if (orderTotal > BigDecimal.ZERO) {
-                (viewState.customAmountUIModel.currentPrice.divide(orderTotal, 2, RoundingMode.HALF_UP)).multiply(
+                (viewState.customAmountUIModel.currentPrice.divide(orderTotal, 4, RoundingMode.HALF_UP)).multiply(
                     BigDecimal(PERCENTAGE_SCALE_FACTOR)
-                )
+                ).setScale(2, RoundingMode.HALF_UP)
             } else {
                 BigDecimal.ZERO
             }
         }
         set(value) {
-            val totalAmount = BigDecimal(args.orderTotal ?: "0")
+            val orderTotal = BigDecimal(args.orderTotal ?: "0")
 
-            if (totalAmount > BigDecimal.ZERO) {
-                val percentage = value.toString().toDouble().roundToInt()
+            if (orderTotal > BigDecimal.ZERO) {
+                val percentage = value.setScale(2, RoundingMode.HALF_UP)
                 val updatedAmount = (
-                    totalAmount.multiply(BigDecimal(percentage))
+                    orderTotal.multiply(percentage)
                         .divide(BigDecimal(PERCENTAGE_SCALE_FACTOR), 2, RoundingMode.HALF_UP)
                     )
                 viewState = viewState.copy(
@@ -135,15 +135,18 @@ class CustomAmountsViewModel @Inject constructor(
         args.customAmountUIModel.apply {
             val orderTotalValue = BigDecimal(args.orderTotal ?: "0")
             if (orderTotalValue > BigDecimal.ZERO) {
-                populatePercentage(this)
                 when (type) {
                     CustomAmountType.FIXED_CUSTOM_AMOUNT -> {
                         currentPrice = amount
                     }
 
                     CustomAmountType.PERCENTAGE_CUSTOM_AMOUNT -> {
-                        currentPercentage = (amount.divide(orderTotalValue, 2, RoundingMode.HALF_UP))
-                            .multiply(BigDecimal(PERCENTAGE_SCALE_FACTOR))
+                        if (orderTotalValue > BigDecimal.ZERO) {
+                            val percentage = (amount.divide(orderTotalValue, 4, RoundingMode.HALF_UP))
+                                .multiply(BigDecimal(PERCENTAGE_SCALE_FACTOR))
+                            populatePercentage(this)
+                            currentPercentage = percentage
+                        }
                     }
                 }
             }
