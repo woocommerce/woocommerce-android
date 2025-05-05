@@ -80,6 +80,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
                             event.recentSearch
                         )
                     )
+                    trackRecentSearchSelected()
                 }
             }
 
@@ -87,7 +88,6 @@ class WooPosItemsSearchViewModel @Inject constructor(
                 viewModelScope.launch {
                     emptyStateRepository.addPopularItemsToCache()
                     handleItemClicked(event.item, WooPosItemSource.POPULAR_PRODUCTS)
-                    trackPopularItemClicked()
                 }
             }
         }
@@ -217,12 +217,11 @@ class WooPosItemsSearchViewModel @Inject constructor(
         analyticsTracker.track(event)
     }
 
-    private suspend fun trackPopularItemClicked() {
+
+    private suspend fun trackRecentSearchSelected() {
         val event = PreSearchRecentTermTapped.apply {
             addProperties(
-                mapOf(
-                    "item_list_type" to "products",
-                )
+                mapOf("item_list_type" to "products")
             )
         }
         analyticsTracker.track(event)
