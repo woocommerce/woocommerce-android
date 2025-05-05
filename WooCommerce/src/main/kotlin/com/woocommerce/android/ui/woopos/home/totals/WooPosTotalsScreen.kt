@@ -598,6 +598,14 @@ fun TotalsErrorPreview() {
 
 @Composable
 @WooPosPreview
+fun TotalsCouponValidationFailedPreview() {
+    WooPosTheme {
+        WooPosTotalsViewState.InvalidCouponError("Invalid coupon", "Invalid coupon reason")
+    }
+}
+
+@Composable
+@WooPosPreview
 fun WooPosTotalsScreenLoadingPreview() {
     WooPosTheme {
         WooPosTotalsScreen(
