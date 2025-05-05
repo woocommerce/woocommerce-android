@@ -38,6 +38,9 @@ class WooPosCouponsListViewStateManagerTest {
     private val formatCouponSummary: WooPosFormatCouponSummary = mock()
     private val getCachedStoreCurrency: WooPosGetCachedStoreCurrency = mock()
     private val couponsDataFlow = MutableStateFlow<List<CouponDBModel>>(emptyList())
+    private val isCouponsEnabled: IsCouponsEnabled = mock {
+        on { invoke() } doReturn true
+    }
 
     private val couponsDataSource: WooPosCouponsDataSource = mock {
         on { couponsFlow } doReturn couponsDataFlow
@@ -47,7 +50,8 @@ class WooPosCouponsListViewStateManagerTest {
         couponsDataSource,
         formatCouponSummary,
         getCachedStoreCurrency,
-        coroutinesTestRule.testDispatcher
+        coroutinesTestRule.testDispatcher,
+        isCouponsEnabled
     )
 
     @Before
@@ -366,6 +370,22 @@ class WooPosCouponsListViewStateManagerTest {
             testScheduler.advanceTimeBy(2)
 
             assertThat(expectMostRecentItem()).isInstanceOf(WooPosCouponsViewState.Empty::class.java)
+
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `given coupons not enabled, when fetching coupons, then emits CouponsDisabledError`() = runTest {
+        // GIVEN
+        whenever(isCouponsEnabled()).doReturn(false)
+
+        sat.viewState.test {
+            // WHEN
+            sat.fetchCoupons(this)
+
+            // THEN
+            assertThat(expectMostRecentItem()).isInstanceOf(WooPosCouponsViewState.Error.CouponsDisabledError::class.java)
 
             cancelAndIgnoreRemainingEvents()
         }
