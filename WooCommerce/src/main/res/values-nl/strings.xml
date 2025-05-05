@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-04-08 09:54:04+0000
+Translation-Revision-Date: 2025-04-23 09:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_split_shipment_bottom_sheet_remove_button">Zending verwijderen</string>
+    <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_plural">Kies waar je de %d artikelen in deze verzending naartoe wilt verplaatsen.</string>
+    <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_one">Kies waar je het %d artikel in deze verzending naartoe wilt verplaatsen.</string>
+    <string name="woo_shipping_split_shipment_bottom_sheet_desc">Alle artikelen worden samengevoegd met %s.</string>
+    <string name="woo_shipping_split_shipment_bottom_sheet_title">Zending verwijderen</string>
+    <string name="woo_shipping_split_shipment_shipment_remove">Verwijderen %s</string>
+    <string name="woo_shipping_split_shipment_moved_notice_plural">Verplaatst %1$d artikelen naar verzending %2$d </string>
+    <string name="woo_shipping_split_shipment_moved_notice_one">Verplaatst %1$d artikel naar verzending %2$d </string>
+    <string name="woo_shipping_labels_package_creation_empty_saved_message">Nog geen opgeslagen pakketten</string>
+    <string name="woo_shipping_labels_package_creation_empty_carrier_message">Geen koeriersgegevens gevonden</string>
+    <string name="woo_shipping_labels_package_creation_empty_button">Een aangepast pakket maken</string>
+    <string name="woopos_cart_changes_in_the_cart">Er zijn wijzigingen in de winkelwagen</string>
     <string name="woo_shipping_split_shipment_shipment_new">Nieuwe verzending</string>
     <string name="woo_shipping_split_shipment_shipment_name">Verzending %s</string>
     <string name="woo_shipping_split_move_to">Verplaatsen naar</string>

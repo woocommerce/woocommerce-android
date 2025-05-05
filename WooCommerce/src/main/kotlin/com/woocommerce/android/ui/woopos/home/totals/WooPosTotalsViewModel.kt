@@ -20,6 +20,7 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToCashPayment
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToEmailReceipt
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NewTransactionClicked
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OrderCreated.CouponInfo
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OrderSuccessfullyPaidByCard
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.ToastMessageDisplayed
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
@@ -33,8 +34,8 @@ import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState.Total
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.UiStringParser
-import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLog.T
+import com.woocommerce.android.util.WooLog.T.POS
+import com.woocommerce.android.util.WooLogWrapper
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -60,6 +61,7 @@ class WooPosTotalsViewModel @Inject constructor(
     private val uiStringParser: UiStringParser,
     private val isCouponsEnabled: WooPosIsCouponsEnabled,
     private val totalsAnalyticsTracker: WooPosTotalsAnalyticsTracker,
+    private val wooLogWrapper: WooLogWrapper,
     savedState: SavedStateHandle,
 ) : ViewModel() {
 
@@ -420,7 +422,7 @@ class WooPosTotalsViewModel @Inject constructor(
                 .fold(
                     onSuccess = { order -> handleCreatedOrder(order) },
                     onFailure = { error ->
-                        WooLog.e(T.POS, "Order creation failed - $error")
+                        wooLogWrapper.e(POS, "Order creation failed - $error")
                         uiState.value = WooPosTotalsViewState.Error(
                             resourceProvider.getString(R.string.woopos_totals_order_creation_error)
                         )
@@ -466,11 +468,34 @@ class WooPosTotalsViewModel @Inject constructor(
                                 )
                             }
                         }
-                    }
+                    },
+                    updatedCoupons = mapCouponLines(order)
                 )
             )
         }
     }
+
+    private fun mapCouponLines(order: Order) = order.couponLines
+        .mapNotNull { coupon ->
+            coupon.takeIf { it.id != null && !it.discount.isNullOrEmpty() }?.let {
+                try {
+                    CouponInfo(
+                        id = requireNotNull(it.id),
+                        code = it.code,
+                        discountAmount = BigDecimal(it.discount)
+                    )
+                } catch (e: NumberFormatException) {
+                    wooLogWrapper.e(
+                        POS, "Parsing coupon failed, discount: ${it.discount}, code: ${it.code}, id: ${it.id}, $e"
+                    )
+                    null
+                }
+            } ?: null.also {
+                wooLogWrapper.e(
+                    POS, "Coupon info is null or empty: ${coupon.code}, coupon id: ${coupon.id}"
+                )
+            }
+        }
 
     private fun showSuccessfulPaymentState(paymentMethod: PaymentMethod) {
         viewModelScope.launch {
@@ -506,7 +531,7 @@ class WooPosTotalsViewModel @Inject constructor(
         return WooPosTotalsViewState.Checkout(
             totals = Totals.Visible(
                 orderDiscountText =
-                if (isCouponsEnabled() && discountAmount > BigDecimal.ZERO) priceFormat(discountAmount) else null,
+                if (isCouponsEnabled() && discountAmount > BigDecimal.ZERO) "-${priceFormat(discountAmount)}" else null,
                 orderSubtotalText = priceFormat(subtotalAmount),
                 orderTaxText = priceFormat(taxAmount),
                 orderTotalText = priceFormat(totalAmount),
