@@ -177,13 +177,7 @@ class WooPosCartViewModelTest {
         val states = sut.state.captureValues()
 
         // WHEN
-        parentToChildrenEventsMutableFlow.emit(
-            ParentToChildrenEvent.ItemClickedInProductSelector(
-                WooPosItemsViewModel.ItemClickedData.Coupon(
-                    id = 1L,
-                )
-            )
-        )
+        simulateCouponClicked()
 
         // THEN
         val itemsInCart = (states.last().body as WooPosCartState.Body.WithItems).itemsInCart
@@ -243,13 +237,7 @@ class WooPosCartViewModelTest {
             val sut = createSut()
             val states = sut.state.captureValues()
 
-            parentToChildrenEventsMutableFlow.emit(
-                ParentToChildrenEvent.ItemClickedInProductSelector(
-                    WooPosItemsViewModel.ItemClickedData.Coupon(
-                        id = 1L,
-                    )
-                )
-            )
+            simulateCouponClicked()
 
             // WHEN
             sut.onUIEvent(
@@ -525,13 +513,7 @@ class WooPosCartViewModelTest {
         createSut()
 
         // WHEN
-        parentToChildrenEventsMutableFlow.emit(
-            ParentToChildrenEvent.ItemClickedInProductSelector(
-                WooPosItemsViewModel.ItemClickedData.Coupon(
-                    id = 1L,
-                )
-            )
-        )
+        simulateCouponClicked()
 
         // THEN
         verify(analyticsTracker).track(InteractionWithCustomerStarted)
@@ -661,13 +643,7 @@ class WooPosCartViewModelTest {
         sut.state.captureValues()
 
         // WHEN
-        parentToChildrenEventsMutableFlow.emit(
-            ParentToChildrenEvent.ItemClickedInProductSelector(
-                WooPosItemsViewModel.ItemClickedData.Coupon(
-                    id = 1L,
-                )
-            )
-        )
+        simulateCouponClicked()
 
         // THEN
         verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.ItemAddedToCart)
@@ -760,13 +736,7 @@ class WooPosCartViewModelTest {
         sut.state.captureValues()
 
         // WHEN
-        parentToChildrenEventsMutableFlow.emit(
-            ParentToChildrenEvent.ItemClickedInProductSelector(
-                WooPosItemsViewModel.ItemClickedData.Coupon(
-                    id = 1L,
-                )
-            )
-        )
+        simulateCouponClicked()
 
         // THEN
         verify(analyticsTracker).track(
@@ -797,11 +767,7 @@ class WooPosCartViewModelTest {
         val states = sut.state.captureValues()
 
         // WHEN
-        parentToChildrenMutableSharedFlow.emit(
-            ParentToChildrenEvent.ItemClickedInProductSelector(
-                WooPosItemsViewModel.ItemClickedData.Coupon(id = 1L)
-            )
-        )
+        simulateCouponClicked()
 
         // THEN
         val finalState = states.last()
@@ -848,11 +814,7 @@ class WooPosCartViewModelTest {
         val states = sut.state.captureValues()
 
         // WHEN
-        parentToChildrenMutableSharedFlow.emit(
-            ParentToChildrenEvent.ItemClickedInProductSelector(
-                WooPosItemsViewModel.ItemClickedData.Coupon(id = 1L)
-            )
-        )
+        simulateCouponClicked()
 
         parentToChildrenMutableSharedFlow.emit(
             ParentToChildrenEvent.ItemClickedInProductSelector(
@@ -879,11 +841,7 @@ class WooPosCartViewModelTest {
         whenever(getProductById(eq(product.remoteId))).thenReturn(product)
         val sut = createSut()
         val states = sut.state.captureValues()
-        parentToChildrenMutableSharedFlow.emit(
-            ParentToChildrenEvent.ItemClickedInProductSelector(
-                WooPosItemsViewModel.ItemClickedData.Coupon(id = 1L)
-            )
-        )
+        simulateCouponClicked()
         parentToChildrenMutableSharedFlow.emit(
             ParentToChildrenEvent.ItemClickedInProductSelector(
                 WooPosItemsViewModel.ItemClickedData.Product.Simple(
@@ -900,6 +858,14 @@ class WooPosCartViewModelTest {
         // THEN
         val finalState = states.last()
         assertThat(finalState.isCheckoutButtonVisible).isFalse()
+    }
+
+    private suspend fun simulateCouponClicked(couponId: Long = 1L) {
+        parentToChildrenMutableSharedFlow.emit(
+            ParentToChildrenEvent.ItemClickedInProductSelector(
+                WooPosItemsViewModel.ItemClickedData.Coupon(id = couponId)
+            )
+        )
     }
 
     @Test
