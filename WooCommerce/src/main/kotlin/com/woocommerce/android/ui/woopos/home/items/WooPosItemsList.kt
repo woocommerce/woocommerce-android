@@ -223,7 +223,7 @@ fun WooPosProductCard(
 
             Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
 
-                ProductInfo(modifier = Modifier.weight(1f), item = item)
+            ProductInfo(modifier = Modifier.weight(1f), item = item)
 
             if (item is Product.Variable) {
                 Image(
