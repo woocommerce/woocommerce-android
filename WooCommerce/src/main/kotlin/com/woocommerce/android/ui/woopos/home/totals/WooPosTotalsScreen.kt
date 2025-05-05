@@ -119,7 +119,7 @@ private fun WooPosTotalsScreen(
 
         StateChangeAnimated(visible = state is WooPosTotalsViewState.InvalidCouponError) {
             if (state is WooPosTotalsViewState.InvalidCouponError) {
-                LocalContext.current.announceForAccessibility("${state.message} reason: ${state.reason}")
+                LocalContext.current.announceForAccessibility("${state.message}: ${state.reason}")
                 TotalsInvalidCouponsErrorScreen(
                     errorMessage = state.message,
                     errorReason = state.reason,
