@@ -16,6 +16,7 @@ import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNaviga
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart.WooPosItemSource
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemsNextPageLoaded
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.PreSearchRecentTermTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -691,6 +692,25 @@ class WooPosItemsSearchViewModelTest {
         // THEN
         verify(mockChildToParentEventSender).sendToParent(
             ChildToParentEvent.SearchEvent.RecentSearchSelected(recentSearch)
+        )
+    }
+
+    @Test
+    fun `when recent search clicked, then track PreSearchRecentTermTapped event`() = runTest {
+        // GIVEN
+        val recentSearch = "T-shirt"
+
+        // WHEN
+        val viewModel = createViewModel()
+        viewModel.onUIEvent(WooPosItemsSearchUiEvent.OnRecentSearchClicked(recentSearch))
+        advanceUntilIdle()
+
+        // THEN
+        verify(mockAnalyticsTracker).track(
+            argThat { event ->
+                event is PreSearchRecentTermTapped &&
+                    event.properties["item_list_type"] == "products"
+            }
         )
     }
 
