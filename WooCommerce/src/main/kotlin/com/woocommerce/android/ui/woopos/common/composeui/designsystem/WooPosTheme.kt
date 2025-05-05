@@ -13,8 +13,8 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 
 data class CustomColors(
-    val success: Color = WooPosColors.VividGreen,
-    val onSuccess: Color = WooPosColors.Gray100,
+    val success: Color,
+    val onSuccess: Color,
 
     val alert: Color = WooPosColors.Amber,
     val onAlert: Color = WooPosColors.White,
@@ -43,7 +43,8 @@ private object WooPosColors {
 
     val Amber = Color(0xFFF16618)
 
-    val VividGreen = Color(0xFF06E782)
+    val VividGreen = Color(0xFF1ED15A)
+    val ForestGreen = Color(0xFF00A32A)
 
     val Gray0 = Color(0xFFF6F7F7)
     val Gray5 = Color(0xFFDCDCDE)
@@ -123,6 +124,9 @@ private val LocalCustomColors = staticCompositionLocalOf {
 }
 
 private val LightCustomColors = CustomColors(
+    success = WooPosColors.ForestGreen,
+    onSuccess = WooPosColors.White,
+
     disabledContainer = WooPosColors.Gray5,
     onDisabledContainer = WooPosColors.Gray20,
 
@@ -134,6 +138,9 @@ private val LightCustomColors = CustomColors(
 )
 
 private val DarkCustomColors = CustomColors(
+    success = WooPosColors.VividGreen,
+    onSuccess = WooPosColors.Gray100,
+
     disabledContainer = WooPosColors.Gray60,
     onDisabledContainer = WooPosColors.Gray40,
 

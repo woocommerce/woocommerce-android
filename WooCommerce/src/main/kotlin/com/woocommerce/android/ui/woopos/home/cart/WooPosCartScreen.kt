@@ -525,6 +525,8 @@ private fun CouponItem(
         item.name
     )
 
+    val isDiscountCalculated = item.formattedDiscount.isNotNullOrEmpty()
+
     WooPosCard(
         modifier = modifier
             .height(96.dp)
@@ -540,14 +542,26 @@ private fun CouponItem(
         ) {
             Box(
                 modifier = Modifier
-                    .background(MaterialTheme.colorScheme.surfaceDim)
+                    .background(
+                        if (isDiscountCalculated) {
+                            WooPosTheme.colors.success
+                        } else {
+                            MaterialTheme.colorScheme.surfaceDim
+                        }
+                    )
                     .size(96.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Image(
                     imageVector = Icons.Outlined.LocalOffer,
                     contentDescription = null,
-                    colorFilter = ColorFilter.tint(WooPosTheme.colors.onSurfaceVariantLowest),
+                    colorFilter = ColorFilter.tint(
+                        if (isDiscountCalculated) {
+                            WooPosTheme.colors.onSuccess
+                        } else {
+                            WooPosTheme.colors.onSurfaceVariantLowest
+                        }
+                    ),
                     modifier = Modifier.size(36.dp, 36.dp)
                 )
             }
@@ -577,6 +591,15 @@ private fun CouponItem(
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.clearAndSetSemantics { }
                 )
+                if (isDiscountCalculated) {
+                    Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value.toAdaptivePadding()))
+                    WooPosText(
+                        text = requireNotNull(item.formattedDiscount) { "Can't be null" },
+                        style = WooPosTypography.BodySmall,
+                        color = WooPosTheme.colors.success,
+                        modifier = Modifier.clearAndSetSemantics { }
+                    )
+                }
             }
 
             if (canRemoveItems) {
@@ -628,7 +651,8 @@ fun WooPosCartScreenProductsPreview(modifier: Modifier = Modifier) {
                             itemNumber = 1,
                             name = "Test Coupon",
                             summary = "50% Off · All Products",
-                            id = 1L
+                            id = 1L,
+                            formattedDiscount = "-$10"
                         ),
                         WooPosCartItemViewState.Product.Simple(
                             itemNumber = 2,
@@ -687,7 +711,8 @@ fun WooPosCartScreenCheckoutPreview(modifier: Modifier = Modifier) {
                                 "50% Off · 1 Product 50% Off · 1 Product 50% Off · 1 Product 50% Off · 1 Product " +
                                 "50% Off · 1 Product 50% Off · 1 Product 50% Off · 1 Product 50% Off · 1 Product " +
                                 "50% Off · 1 Product 50% Off · 1 Product 50% Off · 1 Product 50% Off · 1 Product",
-                            id = 1L
+                            id = 1L,
+                            formattedDiscount = null
                         ),
                         WooPosCartItemViewState.Product.Simple(
                             itemNumber = 2,

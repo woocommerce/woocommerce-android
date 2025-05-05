@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-04-08 11:54:04+0000
+Translation-Revision-Date: 2025-04-22 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_split_shipment_bottom_sheet_remove_button">Hapus Pengiriman</string>
+    <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_plural">Pilih ke mana %d item pengiriman ini akan dipindahkan.</string>
+    <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_one">Pilih ke mana %d item pengiriman ini akan dipindahkan.</string>
+    <string name="woo_shipping_split_shipment_bottom_sheet_desc">Semua item akan digabungkan dengan %s.</string>
+    <string name="woo_shipping_split_shipment_bottom_sheet_title">Hapus pengiriman</string>
+    <string name="woo_shipping_split_shipment_shipment_remove">Hapus %s</string>
+    <string name="woo_shipping_split_shipment_moved_notice_plural">Pindahkan %1$d item ke Pengiriman %2$d </string>
+    <string name="woo_shipping_split_shipment_moved_notice_one">Pindahkan %1$d item ke Pengiriman %2$d </string>
+    <string name="woo_shipping_labels_package_creation_empty_saved_message">Belum ada paket yang disimpan</string>
+    <string name="woo_shipping_labels_package_creation_empty_carrier_message">Informasi operator tidak ditemukan</string>
+    <string name="woo_shipping_labels_package_creation_empty_button">Buat paket khusus</string>
+    <string name="woopos_cart_changes_in_the_cart">Ada perubahan di keranjang</string>
     <string name="woo_shipping_split_shipment_shipment_new">Pengiriman baru</string>
     <string name="woo_shipping_split_shipment_shipment_name">Pengiriman %s</string>
     <string name="woo_shipping_split_move_to">Pindah ke</string>
