@@ -51,8 +51,9 @@ class WooPosCartViewModelTest {
     val coroutinesTestRule = WooPosCoroutineTestRule()
 
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender = mock()
+    private val parentToChildrenMutableSharedFlow = MutableSharedFlow<ParentToChildrenEvent>()
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
-        on { events }.thenReturn(MutableSharedFlow())
+        on { events }.thenReturn(parentToChildrenMutableSharedFlow)
     }
     private val getProductById: WooPosGetProductById = mock()
 
@@ -777,6 +778,159 @@ class WooPosCartViewModelTest {
             }
         )
     }
+
+    @Test
+    fun `given empty cart, then button should not be visible`() = runTest {
+        // WHEN
+        val sut = createSut()
+        val states = sut.state.captureValues()
+
+        // THEN
+        val state = states.last()
+        assertThat(state.isCheckoutButtonVisible).isFalse()
+    }
+
+    @Test
+    fun `given empty, when coupon added to cart, then checkout button should not be visible`() = runTest {
+        // GIVEN
+        val sut = createSut()
+        val states = sut.state.captureValues()
+
+        // WHEN
+        parentToChildrenMutableSharedFlow.emit(
+            ParentToChildrenEvent.ItemClickedInProductSelector(
+                WooPosItemsViewModel.ItemClickedData.Coupon(id = 1L)
+            )
+        )
+
+        // THEN
+        val finalState = states.last()
+        assertThat(finalState.isCheckoutButtonVisible).isFalse()
+    }
+
+    @Test
+    fun `given empty cart, when product added to cart, then checkout button should be visible`() = runTest {
+        // GIVEN
+        val product = ProductTestUtils.generateProduct(
+            productId = 23L,
+            productName = "title",
+            amount = "10.0"
+        ).copy(firstImageUrl = "url")
+        whenever(getProductById(eq(product.remoteId))).thenReturn(product)
+        val sut = createSut()
+        val states = sut.state.captureValues()
+
+        // WHEN
+        parentToChildrenMutableSharedFlow.emit(
+            ParentToChildrenEvent.ItemClickedInProductSelector(
+                WooPosItemsViewModel.ItemClickedData.Product.Simple(
+                    id = product.remoteId
+                )
+            )
+        )
+
+        // THEN
+        val finalState = states.last()
+        assertThat(finalState.isCheckoutButtonVisible).isTrue()
+    }
+
+    @Test
+    fun `given empty cart, when coupon and product added to cart, then checkout button should be visible`() = runTest {
+        // GIVEN
+        val product = ProductTestUtils.generateProduct(
+            productId = 23L,
+            productName = "title",
+            amount = "10.0"
+        ).copy(firstImageUrl = "url")
+
+        whenever(getProductById(eq(product.remoteId))).thenReturn(product)
+        val sut = createSut()
+        val states = sut.state.captureValues()
+
+        // WHEN
+        parentToChildrenMutableSharedFlow.emit(
+            ParentToChildrenEvent.ItemClickedInProductSelector(
+                WooPosItemsViewModel.ItemClickedData.Coupon(id = 1L)
+            )
+        )
+
+        parentToChildrenMutableSharedFlow.emit(
+            ParentToChildrenEvent.ItemClickedInProductSelector(
+                WooPosItemsViewModel.ItemClickedData.Product.Simple(
+                    id = product.remoteId
+                )
+            )
+        )
+
+        // THEN
+        val finalState = states.last()
+        assertThat(finalState.isCheckoutButtonVisible).isTrue()
+    }
+
+    @Test
+    fun `given cart with products and coupon, when products removed, then checkout button disappears`() = runTest {
+        // GIVEN
+        val product = ProductTestUtils.generateProduct(
+            productId = 23L,
+            productName = "title",
+            amount = "10.0"
+        ).copy(firstImageUrl = "url")
+
+        whenever(getProductById(eq(product.remoteId))).thenReturn(product)
+        val sut = createSut()
+        val states = sut.state.captureValues()
+        parentToChildrenMutableSharedFlow.emit(
+            ParentToChildrenEvent.ItemClickedInProductSelector(
+                WooPosItemsViewModel.ItemClickedData.Coupon(id = 1L)
+            )
+        )
+        parentToChildrenMutableSharedFlow.emit(
+            ParentToChildrenEvent.ItemClickedInProductSelector(
+                WooPosItemsViewModel.ItemClickedData.Product.Simple(
+                    id = product.remoteId
+                )
+            )
+        )
+
+        // WHEN
+        val productToRemove = (states.last().body as WooPosCartState.Body.WithItems).itemsInCart
+            .filterIsInstance<WooPosCartItemViewState.Product.Simple>().first()
+        sut.onUIEvent(WooPosCartUIEvent.ItemRemovedFromCart(productToRemove))
+
+        // THEN
+        val finalState = states.last()
+        assertThat(finalState.isCheckoutButtonVisible).isFalse()
+    }
+
+    @Test
+    fun `given cart with products, when navigated to checkout, then checkout button not visible`() = runTest {
+        // GIVEN
+        val (sut, states) = createSutWithItemsInCart()
+        assertThat(states.last().isCheckoutButtonVisible).isTrue()
+
+        // WHEN
+        sut.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
+
+        // THEN
+        val finalState = states.last()
+        assertThat(finalState.isCheckoutButtonVisible).isFalse()
+    }
+
+    @Test
+    fun `given CHECKOUT status with products, when back clicked, then checkout button visible`() = runTest {
+        // GIVEN
+        val (sut, states) = createSutWithItemsInCart()
+        sut.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
+        assertThat(states.last().isCheckoutButtonVisible).isFalse()
+
+        // WHEN
+        sut.onUIEvent(WooPosCartUIEvent.BackClicked)
+
+        // THEN
+        val finalState = states.last()
+        assertThat(finalState.isCheckoutButtonVisible).isTrue()
+    }
+
 
     private suspend fun createSutWithItemsInCart(): Pair<WooPosCartViewModel, List<WooPosCartState>> {
         val product = ProductTestUtils.generateProduct(
