@@ -3,17 +3,22 @@ package com.woocommerce.android.ui.orders.wooshippinglabels
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.getNonRefundedProducts
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
+import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
+import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
 class GetShippableItems @Inject constructor(
     private val orderDetailRepository: OrderDetailRepository,
-    private val productDetailRepository: ProductDetailRepository
+    private val productDetailRepository: ProductDetailRepository,
+    private val configDataStore: WooShippingConfigDataStore,
 ) {
     suspend operator fun invoke(order: Order): List<ShippableItemModel> {
         val refunds = orderDetailRepository.getOrderRefunds(order.id)
         val noRefundedProducts = refunds.getNonRefundedProducts(order.items)
+
+        val shipments = configDataStore.observeConfig(order.id).first()?.shipments // TODO Use this in the UI
 
         return noRefundedProducts.mapNotNull { item ->
             productDetailRepository.getProductAsync(item.productId)?.let {

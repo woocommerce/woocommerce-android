@@ -3,11 +3,13 @@ package com.woocommerce.android.ui.orders.wooshippinglabels
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
+import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigDataStore
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import org.junit.Assert.assertNotEquals
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -23,7 +25,11 @@ import kotlin.test.assertEquals
 class GetShippableItemsTests : BaseUnitTest() {
     private val orderDetailRepository: OrderDetailRepository = mock()
     private val productDetailRepository: ProductDetailRepository = mock()
-    private val sut = GetShippableItems(orderDetailRepository, productDetailRepository)
+    private val configDataStore: WooShippingConfigDataStore = mock {
+        doReturn(flowOf(null)).whenever(it).observeConfig(any())
+    }
+
+    private val sut = GetShippableItems(orderDetailRepository, productDetailRepository, configDataStore)
 
     @Test
     fun `when order only contains refunded products then should return empty list`() = testBlocking {
