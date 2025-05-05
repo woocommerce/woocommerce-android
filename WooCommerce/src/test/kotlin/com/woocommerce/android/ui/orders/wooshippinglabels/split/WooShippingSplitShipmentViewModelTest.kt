@@ -447,7 +447,8 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
                     height = 3f,
                     weight = 8f
                 )
-            )
+            ),
+            purchased = false
         )
     )
 
@@ -481,7 +482,8 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
                     height = 3f,
                     weight = 8f
                 )
-            )
+            ),
+            purchased = false
         ),
         ShipmentUIModel(
             id = "1",
@@ -499,7 +501,8 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
                     height = 3f,
                     weight = 8f
                 )
-            )
+            ),
+            purchased = false
         )
     )
 
@@ -533,7 +536,8 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
                     height = 3f,
                     weight = 8f
                 )
-            )
+            ),
+            purchased = false
         ),
         ShipmentUIModel(
             id = "1",
@@ -551,7 +555,8 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
                     height = 3f,
                     weight = 8f
                 )
-            )
+            ),
+            purchased = false
         ),
         ShipmentUIModel(
             id = "2",
@@ -569,7 +574,8 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
                     height = 3f,
                     weight = 8f
                 )
-            )
+            ),
+            purchased = false
         )
     )
 }

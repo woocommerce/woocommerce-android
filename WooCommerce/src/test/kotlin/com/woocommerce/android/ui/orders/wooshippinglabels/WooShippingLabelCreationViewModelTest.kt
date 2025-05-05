@@ -85,7 +85,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
             length = it.toFloat()
         )
     }
-    private val defaultShipments = listOf(ShipmentUIModel("0", defaultShippableItems))
+    private val defaultShipments = listOf(ShipmentUIModel(id = "0", items = defaultShippableItems, purchased = false))
     private val defaultShippingLines = List(3) {
         Order.ShippingLine(
             methodTitle = "Shipping Line $it",
