@@ -305,7 +305,7 @@ class WooPosCartViewModel @Inject constructor(
                 newState.copy(
                     areItemsRemovable = true,
                     isCheckoutButtonVisible = newState.body is WooPosCartState.Body.WithItems &&
-                        isCartContainsPurchasableItems(newState.body),
+                        cartContainsPurchasableItems(newState.body),
                 )
             }
 
@@ -370,7 +370,7 @@ class WooPosCartViewModel @Inject constructor(
     private fun getInitialValueOrHighestUsedItemNumberAfterProcessDeath() =
         (_state.value.body as? WooPosCartState.Body.WithItems)?.itemsInCart?.maxOfOrNull { it.itemNumber } ?: 1
 
-    private fun isCartContainsPurchasableItems(body: WooPosCartState.Body.WithItems) =
+    private fun cartContainsPurchasableItems(body: WooPosCartState.Body.WithItems) =
         body.itemsInCart.filterIsInstance<WooPosCartItemViewState.Product>().isNotEmpty()
 }
 
