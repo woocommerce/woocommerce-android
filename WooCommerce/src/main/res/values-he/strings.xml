@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-04-08 15:54:04+0000
+Translation-Revision-Date: 2025-04-23 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_split_shipment_bottom_sheet_remove_button">להסיר משלוח</string>
+    <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_plural">יש לבחור לאן להעביר את הפריטים של %d במשלוח הזה.</string>
+    <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_one">יש לבחור לאן להעביר את הפריט של %d במשלוח הזה.</string>
+    <string name="woo_shipping_split_shipment_bottom_sheet_desc">כל הפריטים האלו ישולבו עם %s.</string>
+    <string name="woo_shipping_split_shipment_bottom_sheet_title">להסיר משלוח</string>
+    <string name="woo_shipping_split_shipment_shipment_remove">להסיר את %s</string>
+    <string name="woo_shipping_split_shipment_moved_notice_plural">להעביר ⁦%1$d⁩ פריטים למשלוח ⁦%2$d⁩</string>
+    <string name="woo_shipping_split_shipment_moved_notice_one">להעביר פריט ⁦%1$d⁩ למשלוח ⁦%2$d⁩</string>
+    <string name="woo_shipping_labels_package_creation_empty_saved_message">עדיין אין חבילות שנשמרו</string>
+    <string name="woo_shipping_labels_package_creation_empty_carrier_message">לא נמצאו פרטי ספק</string>
+    <string name="woo_shipping_labels_package_creation_empty_button">ליצור חבילה מותאמת אישית</string>
+    <string name="woopos_cart_changes_in_the_cart">בוצעו שינויים בעגלת הקניות</string>
     <string name="woo_shipping_split_shipment_shipment_new">משלוח חדש</string>
     <string name="woo_shipping_split_shipment_shipment_name">משלוח %s</string>
     <string name="woo_shipping_split_move_to">להעביר אל</string>

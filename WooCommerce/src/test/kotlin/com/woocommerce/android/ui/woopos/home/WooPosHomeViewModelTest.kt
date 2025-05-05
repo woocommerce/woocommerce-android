@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
+import org.mockito.kotlin.argThat
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -39,6 +40,25 @@ class WooPosHomeViewModelTest {
     private val wooPosItemsNavigator: WooPosItemsNavigator = mock()
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private val soundHelper: WooPosSoundHelper = mock()
+
+    @Test
+    fun `when order created, then pass event to cart`() =
+        runTest {
+            // GIVEN
+            whenever(childrenToParentEventReceiver.events).thenReturn(
+                flowOf(ChildToParentEvent.OrderCreated(emptyList(), emptyList()))
+            )
+
+            // WHEN
+            createViewModel()
+
+            // THEN
+            verify(parentToChildrenEventSender).sendToChildren(
+                argThat {
+                    this is ParentToChildrenEvent.OrderCreated
+                }
+            )
+        }
 
     @Test
     fun `given state checkout, when SystemBackClicked passed, then BackFromCheckoutToCartClicked event should be sent`() =
