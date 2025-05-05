@@ -871,7 +871,6 @@ class WooPosCartViewModelTest {
         assertThat(finalState.isCheckoutButtonVisible).isTrue()
     }
 
-
     private suspend fun createSutWithItemsInCart(): Pair<WooPosCartViewModel, List<WooPosCartState>> {
         val product = ProductTestUtils.generateProduct(
             productId = 23L,
