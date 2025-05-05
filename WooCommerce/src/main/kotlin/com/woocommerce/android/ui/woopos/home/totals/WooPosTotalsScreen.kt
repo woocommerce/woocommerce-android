@@ -342,6 +342,7 @@ private fun TotalsGrid(totals: Totals.Visible) {
         TotalsGridRow(
             textOne = stringResource(R.string.woopos_payment_subtotal_label),
             textTwo = totals.orderSubtotalText,
+            colorOne = WooPosTheme.colors.onSurfaceVariantHighest
         )
 
         Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
@@ -355,14 +356,6 @@ private fun TotalsGrid(totals: Totals.Visible) {
 
             Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
         }
-
-        TotalsGridRow(
-            textOne = stringResource(R.string.woopos_payment_subtotal_label),
-            textTwo = totals.orderSubtotalText,
-            colorOne = WooPosTheme.colors.onSurfaceVariantHighest
-        )
-
-        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
 
         TotalsGridRow(
             textOne = stringResource(R.string.woopos_payment_tax_label),

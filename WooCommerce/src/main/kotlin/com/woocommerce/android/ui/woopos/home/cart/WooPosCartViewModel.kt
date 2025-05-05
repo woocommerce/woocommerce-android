@@ -349,7 +349,8 @@ class WooPosCartViewModel @Inject constructor(
             EDITABLE -> {
                 newState.copy(
                     areItemsRemovable = true,
-                    isCheckoutButtonVisible = newState.body is WooPosCartState.Body.WithItems
+                    isCheckoutButtonVisible = newState.body is WooPosCartState.Body.WithItems &&
+                        cartContainsPurchasableItems(newState.body),
                 )
             }
 
@@ -413,6 +414,9 @@ class WooPosCartViewModel @Inject constructor(
         )
     private fun getInitialValueOrHighestUsedItemNumberAfterProcessDeath() =
         (_state.value.body as? WooPosCartState.Body.WithItems)?.itemsInCart?.maxOfOrNull { it.itemNumber } ?: 1
+
+    private fun cartContainsPurchasableItems(body: WooPosCartState.Body.WithItems) =
+        body.itemsInCart.filterIsInstance<WooPosCartItemViewState.Product>().isNotEmpty()
 }
 
 private fun WooPosItemsViewModel.ItemClickedData.posItemNameForAnalytics(): String {

@@ -42,7 +42,7 @@ class MockCardReaderManagerModule {
             override val id: String
                 get() = "ADEE123"
             override val type: String
-                get() = "COTS_DEVICE"
+                get() = "TAP_TO_PAY_DEVICE"
             override val currentBatteryLevel: Float
                 get() = 1f
             override val firmwareVersion: String
