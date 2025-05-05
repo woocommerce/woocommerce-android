@@ -91,6 +91,7 @@ private fun WooPosCouponsScreen(
             )
 
             is WooPosCouponsViewState.Empty -> WooPosItemsEmptyList(
+                modifier = Modifier.fillMaxSize(),
                 title = stringResource(id = R.string.woopos_coupons_empty_list_title),
                 message = stringResource(id = R.string.woopos_coupons_empty_list_message),
                 contentDescription = stringResource(id = R.string.woopos_coupons_empty_list_image_description),
