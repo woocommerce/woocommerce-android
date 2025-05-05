@@ -223,15 +223,26 @@ fun WooPosProductCard(
 
             Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
 
-            ProductInfo(item)
+            ProductInfo(modifier = Modifier.weight(1f), item = item)
+
+            if (item is Product.Variable) {
+                Image(
+                    modifier = Modifier
+                        .padding(end = WooPosSpacing.XLarge.value)
+                        .size(32.dp),
+                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_chevron),
+                    contentDescription = null,
+                    colorFilter = ColorFilter.tint(WooPosTheme.colors.onSurfaceVariantHighest),
+                )
+            }
         }
     }
 }
 
 @Composable
-private fun ProductInfo(item: Product) {
+private fun ProductInfo(modifier: Modifier, item: Product) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxHeight()
             .padding(
                 top = WooPosSpacing.Medium.value,
@@ -434,7 +445,8 @@ private fun ItemsLoadingItem() {
             Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
 
             Column(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .weight(1f),
                 verticalArrangement = Arrangement.Center,
             ) {
@@ -545,7 +557,14 @@ fun ItemListPreview() {
                         price = "$10.00",
                         imageUrl = ""
                     ),
-                    Product.Variable(id = 2, name = "Variable Product", price = "$10.00", "", 1, listOf()),
+                    Product.Variable(
+                        id = 2,
+                        name = "Variable Product with very loooooooooooooooooooooooooooooooooong",
+                        price = "$10.00",
+                        "",
+                        1,
+                        listOf()
+                    ),
                     Product.Variation(3, "Variation", "$10", "", 0),
                     Coupon(id = 4, name = "Coupon", summary = "10% off everything"),
                 ),

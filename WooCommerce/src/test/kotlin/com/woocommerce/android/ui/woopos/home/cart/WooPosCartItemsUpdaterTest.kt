@@ -440,7 +440,7 @@ class WooPosCartItemsUpdaterTest {
     private fun generateCouponLine(
         code: String,
         discountAmount: String
-    ) = ParentToChildrenEvent.OrderCreated.CouponLine(
+    ) = ParentToChildrenEvent.OrderCreated.CouponInfo(
         code = code,
         id = 1L,
         discountAmount = BigDecimal(discountAmount)

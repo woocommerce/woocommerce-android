@@ -20,7 +20,7 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToCashPayment
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToEmailReceipt
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NewTransactionClicked
-import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OrderCreated.CouponLine
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OrderCreated.CouponInfo
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OrderSuccessfullyPaidByCard
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.ToastMessageDisplayed
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
@@ -34,7 +34,6 @@ import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState.Total
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.UiStringParser
-import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.POS
 import com.woocommerce.android.util.WooLogWrapper
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -422,7 +421,7 @@ class WooPosTotalsViewModel @Inject constructor(
                 .fold(
                     onSuccess = { order -> handleCreatedOrder(order) },
                     onFailure = { error ->
-                        WooLog.e(POS, "Order creation failed - $error")
+                        wooLogWrapper.e(POS, "Order creation failed - $error")
                         uiState.value = WooPosTotalsViewState.Error(
                             resourceProvider.getString(R.string.woopos_totals_order_creation_error)
                         )
@@ -483,20 +482,20 @@ class WooPosTotalsViewModel @Inject constructor(
         .mapNotNull { coupon ->
             coupon.takeIf { it.id != null && !it.discount.isNullOrEmpty() }?.let {
                 try {
-                    CouponLine(
+                    CouponInfo(
                         id = requireNotNull(it.id),
                         code = it.code,
                         discountAmount = BigDecimal(it.discount)
                     )
                 } catch (e: NumberFormatException) {
                     wooLogWrapper.e(
-                        POS, "Parsing coupon failed, discount: ${it.discount}, code: ${it.code}, id: ${it.id}"
+                        POS, "Parsing coupon failed, discount: ${it.discount}, code: ${it.code}, id: ${it.id}, $e"
                     )
                     null
                 }
             } ?: null.also {
                 wooLogWrapper.e(
-                    POS, "Coupon line is null or empty: ${coupon.code}, coupon id: ${coupon.id}"
+                    POS, "Coupon info is null or empty: ${coupon.code}, coupon id: ${coupon.id}"
                 )
             }
         }
