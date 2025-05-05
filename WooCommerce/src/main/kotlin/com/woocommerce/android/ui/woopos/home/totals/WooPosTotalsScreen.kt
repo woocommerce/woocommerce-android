@@ -600,7 +600,11 @@ fun TotalsErrorPreview() {
 @WooPosPreview
 fun TotalsCouponValidationFailedPreview() {
     WooPosTheme {
-        WooPosTotalsViewState.InvalidCouponError("Invalid coupon", "Invalid coupon reason")
+        TotalsInvalidCouponsErrorScreen(
+            errorMessage = "Invalid coupons",
+            errorReason = "Coupon '10OFF' is not valid for this order",
+            onUIEvent = {},
+        )
     }
 }
 
