@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.common.composeui.component
 
+import android.os.Parcelable
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -30,6 +31,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -55,6 +57,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import kotlinx.coroutines.delay
+import kotlinx.parcelize.Parcelize
 
 private val INPUT_FIELD_HEIGHT = 56.dp
 
@@ -307,18 +310,24 @@ private fun SearchInput(
     }
 }
 
-sealed class WooPosSearchInputState {
+@Stable
+sealed class WooPosSearchInputState : Parcelable {
+    @Parcelize
     data class Open(
         val input: Input,
         val isLoading: Boolean,
         val hasAnimationPlayed: Boolean = false,
     ) : WooPosSearchInputState() {
-        sealed class Input(val text: String, open val cursorPosition: Int) {
+        @Parcelize
+        sealed class Input(val text: String, open val cursorPosition: Int) : Parcelable {
+            @Parcelize
             data class Query(val query: String, override val cursorPosition: Int) : Input(query, cursorPosition)
+            @Parcelize
             data class Hint(val hint: String) : Input(hint, 0)
         }
     }
 
+    @Parcelize
     object Closed : WooPosSearchInputState()
 }
 
