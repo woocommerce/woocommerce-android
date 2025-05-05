@@ -322,6 +322,7 @@ sealed class WooPosSearchInputState : Parcelable {
         sealed class Input(val text: String, open val cursorPosition: Int) : Parcelable {
             @Parcelize
             data class Query(val query: String, override val cursorPosition: Int) : Input(query, cursorPosition)
+
             @Parcelize
             data class Hint(val hint: String) : Input(hint, 0)
         }
