@@ -454,13 +454,18 @@ class WooPosTotalsViewModel @Inject constructor(
     }
 
     private fun mapItemLines(order: Order) = order.items.map {
+        val basePrice = if (order.pricesIncludeTax) {
+            it.subtotal + it.subtotalTax
+        } else {
+            it.subtotal
+        }
         when {
             it.variationId == 0L -> {
                 ChildToParentEvent.OrderCreated.ProductInfo.Simple(
                     id = it.productId,
                     name = it.name,
                     finalPrice = it.price,
-                    basePrice = it.subtotal,
+                    basePrice = basePrice,
                     quantity = it.quantity
                 )
             }
@@ -471,7 +476,7 @@ class WooPosTotalsViewModel @Inject constructor(
                     name = it.name,
                     finalPrice = it.price,
                     quantity = it.quantity,
-                    basePrice = it.subtotal,
+                    basePrice = basePrice,
                     variationId = it.variationId
                 )
             }
