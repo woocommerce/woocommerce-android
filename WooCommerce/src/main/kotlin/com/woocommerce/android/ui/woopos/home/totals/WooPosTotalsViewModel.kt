@@ -530,8 +530,11 @@ class WooPosTotalsViewModel @Inject constructor(
         }
         return WooPosTotalsViewState.Checkout(
             totals = Totals.Visible(
-                orderDiscountText =
-                if (isCouponsFFEnabled() && discountAmount > BigDecimal.ZERO) "-${priceFormat(discountAmount)}" else null,
+                orderDiscountText = if (isCouponsFFEnabled() && discountAmount > BigDecimal.ZERO) {
+                    "-${priceFormat(discountAmount)}"
+                } else {
+                    null
+                },
                 orderSubtotalText = priceFormat(subtotalAmount),
                 orderTaxText = priceFormat(taxAmount),
                 orderTotalText = priceFormat(totalAmount),

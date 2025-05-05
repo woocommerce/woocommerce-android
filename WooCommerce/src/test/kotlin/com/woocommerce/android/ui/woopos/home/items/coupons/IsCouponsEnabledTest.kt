@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.home.items.coupons
 
-
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi

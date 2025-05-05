@@ -385,7 +385,8 @@ class WooPosCouponsListViewStateManagerTest {
             sat.fetchCoupons(this)
 
             // THEN
-            assertThat(expectMostRecentItem()).isInstanceOf(WooPosCouponsViewState.Error.CouponsDisabledError::class.java)
+            assertThat(expectMostRecentItem())
+                .isInstanceOf(WooPosCouponsViewState.Error.CouponsDisabledError::class.java)
 
             cancelAndIgnoreRemainingEvents()
         }
