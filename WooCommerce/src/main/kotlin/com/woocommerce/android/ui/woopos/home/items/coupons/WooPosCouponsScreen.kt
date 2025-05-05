@@ -95,6 +95,8 @@ private fun WooPosCouponsScreen(
                 title = stringResource(id = R.string.woopos_coupons_empty_list_title),
                 message = stringResource(id = R.string.woopos_coupons_empty_list_message),
                 contentDescription = stringResource(id = R.string.woopos_coupons_empty_list_image_description),
+                actionLabel = stringResource(id = R.string.woopos_coupons_empty_list_create_coupon_label),
+                onActionClicked = { onUIEvent(WooPosCouponsUIEvent.CreateCouponClicked) }
             )
 
             is WooPosCouponsViewState.Error -> CouponsError { onUIEvent(WooPosCouponsUIEvent.RetryTriggered) }
