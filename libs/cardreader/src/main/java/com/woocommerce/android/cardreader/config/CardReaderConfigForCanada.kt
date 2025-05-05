@@ -11,7 +11,7 @@ object CardReaderConfigForCanada : CardReaderConfigForSupportedCountry(
     countryCode = "CA",
     supportedReaders = listOf(
         ReaderType.ExternalReader.WisePade3,
-        ReaderType.BuildInReader.CotsDevice,
+        ReaderType.BuildInReader.TapToPayDevice,
     ),
     paymentMethodTypes = listOf(
         PaymentMethodType.CARD_PRESENT,
