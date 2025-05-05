@@ -354,7 +354,7 @@ class WooPosVariationsViewModelTest {
     }
 
     @Test
-    fun `given variation clicked and source is search result, when item clicked, then sends event with search result source`() = runTest {
+    fun `given search results screen, when variation clicked, then sends event with search results as source`() = runTest {
         // GIVEN
         val viewModel = createViewModel()
         viewModel.init(123L, WooPosItemSource.SEARCH_RESULT)
