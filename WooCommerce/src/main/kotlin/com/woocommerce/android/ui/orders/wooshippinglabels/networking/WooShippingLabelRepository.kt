@@ -50,10 +50,14 @@ class WooShippingLabelRepository @Inject constructor(
                 }
         }
 
-    suspend fun fetchConfig(site: SiteModel, orderId: Long) = restClient.fetchConfig(site, orderId).asWooResult()
-        .also { response ->
-            response.model?.takeIf { !response.isError }?.let { configDataStore.saveConfig(orderId, it.config) }
-        }
+    suspend fun fetchConfig(site: SiteModel, orderId: Long): WooResult<ConfigResponse> =
+        restClient.fetchConfig(site, orderId)
+            .asWooResult()
+            .also { response ->
+                response.model
+                    ?.takeIf { !response.isError }
+                    ?.let { configDataStore.saveConfig(orderId, it.config) }
+            }
 
     suspend fun fetchPurchasedShippingLabels(
         site: SiteModel,
