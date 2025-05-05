@@ -17,6 +17,9 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosVariationsViewState
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart.WooPosItemSource
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemsNextPageLoaded
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.VariationsPullToRefreshTriggered
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.IS_SEARCH
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ITEM_LIST_TYPE
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ITEM_LIST_TYPE_VARIATIONS
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -194,8 +197,8 @@ class WooPosVariationsViewModel @Inject constructor(
             val isSearch: Boolean = variationsSource == WooPosItemSource.SEARCH_RESULT
             addProperties(
                 mapOf(
-                    "item_list_type" to "variations",
-                    "search" to "$isSearch"
+                    ITEM_LIST_TYPE to ITEM_LIST_TYPE_VARIATIONS,
+                    IS_SEARCH to "$isSearch"
                 )
             )
         }
