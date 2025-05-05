@@ -460,8 +460,8 @@ class WooPosTotalsViewModel @Inject constructor(
                 ChildToParentEvent.OrderCreated.ProductInfo.Simple(
                     id = it.productId,
                     name = it.name,
-                    actualPrice = it.price,
-                    subtotalPrice = it.subtotal,
+                    finalPrice = it.price,
+                    basePrice = it.subtotal,
                     quantity = it.quantity
                 )
             }
@@ -470,9 +470,9 @@ class WooPosTotalsViewModel @Inject constructor(
                 ChildToParentEvent.OrderCreated.ProductInfo.Variation(
                     id = it.productId,
                     name = it.name,
-                    actualPrice = it.price,
+                    finalPrice = it.price,
                     quantity = it.quantity,
-                    subtotalPrice = it.subtotal,
+                    basePrice = it.subtotal,
                     variationId = it.variationId
                 )
             }

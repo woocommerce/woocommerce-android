@@ -73,8 +73,8 @@ class WooPosCartItemsUpdaterTest {
         val updatedInfo = ParentToChildrenEvent.OrderCreated.ProductInfo.Simple(
             id = 1L,
             name = "Updated Name",
-            actualPrice = BigDecimal("10.0"),
-            subtotalPrice = BigDecimal("10.0"),
+            finalPrice = BigDecimal("10.0"),
+            basePrice = BigDecimal("10.0"),
             quantity = 1f
         )
         val cachedProduct = mock<Product>()
@@ -114,8 +114,8 @@ class WooPosCartItemsUpdaterTest {
             id = 1L,
             variationId = 2L,
             name = "Updated Variation",
-            actualPrice = BigDecimal("10.0"),
-            subtotalPrice = BigDecimal("10.0"),
+            finalPrice = BigDecimal("10.0"),
+            basePrice = BigDecimal("10.0"),
             quantity = 1f
         )
         val cachedProduct = mock<Product>()
@@ -185,8 +185,8 @@ class WooPosCartItemsUpdaterTest {
         val updatedInfo = ParentToChildrenEvent.OrderCreated.ProductInfo.Simple(
             id = 1L,
             name = "Updated Product 1",
-            actualPrice = BigDecimal("10.0"),
-            subtotalPrice = BigDecimal("10.0"),
+            finalPrice = BigDecimal("10.0"),
+            basePrice = BigDecimal("10.0"),
             quantity = 1f
         )
         val cachedProduct = mock<Product>()
@@ -230,8 +230,8 @@ class WooPosCartItemsUpdaterTest {
         val updatedInfo = ParentToChildrenEvent.OrderCreated.ProductInfo.Simple(
             id = 1L,
             name = "Updated Product",
-            actualPrice = BigDecimal("10.0"),
-            subtotalPrice = BigDecimal("10.0"),
+            finalPrice = BigDecimal("10.0"),
+            basePrice = BigDecimal("10.0"),
             quantity = 1f
         )
         val cachedProduct = mock<Product>()
@@ -276,8 +276,8 @@ class WooPosCartItemsUpdaterTest {
         val updatedInfo = ParentToChildrenEvent.OrderCreated.ProductInfo.Simple(
             id = 1L,
             name = "Product",
-            actualPrice = BigDecimal("10.0"),
-            subtotalPrice = BigDecimal("10.0"),
+            finalPrice = BigDecimal("10.0"),
+            basePrice = BigDecimal("10.0"),
             quantity = 1f
         )
 
@@ -325,8 +325,8 @@ class WooPosCartItemsUpdaterTest {
         val updatedInfo = ParentToChildrenEvent.OrderCreated.ProductInfo.Simple(
             id = 1L,
             name = "Updated Name",
-            actualPrice = BigDecimal("10.0"),
-            subtotalPrice = BigDecimal("10.0"),
+            finalPrice = BigDecimal("10.0"),
+            basePrice = BigDecimal("10.0"),
             quantity = 1f
         )
         val cachedProduct = mock<Product>()

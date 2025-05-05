@@ -198,5 +198,5 @@ class WooPosCartItemsUpdater @Inject constructor(
     }
 
     private fun ParentToChildrenEvent.OrderCreated.ProductInfo.subtotalPricePerItem() =
-        subtotalPrice.div(quantity.toBigDecimal())
+        basePrice.div(quantity.toBigDecimal())
 }
