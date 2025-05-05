@@ -13,9 +13,17 @@ sealed class WooPosCouponsViewState(
         override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Enabled,
     ) : WooPosCouponsViewState(pullToRefreshState)
 
-    data class Error(
+    sealed class Error(
         override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Disabled,
-    ) : WooPosCouponsViewState(pullToRefreshState)
+    ) : WooPosCouponsViewState(pullToRefreshState) {
+        data class GenericError(
+            override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Disabled
+        ) : Error(pullToRefreshState = pullToRefreshState)
+
+        data class CouponsDisabledError(
+            override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Disabled
+        ) : Error(pullToRefreshState = pullToRefreshState)
+    }
 
     data class Empty(
         override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Enabled,
@@ -26,6 +34,7 @@ fun WooPosCouponsViewState.updatePullToRefreshState(newState: WooPosPullToRefres
     when (this) {
         is WooPosCouponsViewState.Content -> this.copy(pullToRefreshState = newState)
         is WooPosCouponsViewState.Loading -> this.copy(pullToRefreshState = newState)
-        is WooPosCouponsViewState.Error -> this.copy(pullToRefreshState = newState)
+        is WooPosCouponsViewState.Error.GenericError -> this.copy(pullToRefreshState = newState)
+        is WooPosCouponsViewState.Error.CouponsDisabledError -> this.copy(pullToRefreshState = newState)
         is WooPosCouponsViewState.Empty -> this.copy(pullToRefreshState = newState)
     }
