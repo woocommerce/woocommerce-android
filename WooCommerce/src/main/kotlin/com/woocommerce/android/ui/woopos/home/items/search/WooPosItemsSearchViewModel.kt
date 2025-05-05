@@ -19,6 +19,9 @@ import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNaviga
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart.WooPosItemSource
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemsNextPageLoaded
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.PreSearchRecentTermTapped
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.IS_SEARCH
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ITEM_LIST_TYPE
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ITEM_LIST_TYPE_PRODUCTS
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -209,19 +212,18 @@ class WooPosItemsSearchViewModel @Inject constructor(
         val event = ItemsNextPageLoaded.apply {
             addProperties(
                 mapOf(
-                    "item_list_type" to "products",
-                    "search" to "true"
+                    ITEM_LIST_TYPE to ITEM_LIST_TYPE_PRODUCTS,
+                    IS_SEARCH to "true"
                 )
             )
         }
         analyticsTracker.track(event)
     }
 
-
     private suspend fun trackRecentSearchSelected() {
         val event = PreSearchRecentTermTapped.apply {
             addProperties(
-                mapOf("item_list_type" to "products")
+                mapOf(ITEM_LIST_TYPE to ITEM_LIST_TYPE_PRODUCTS)
             )
         }
         analyticsTracker.track(event)
