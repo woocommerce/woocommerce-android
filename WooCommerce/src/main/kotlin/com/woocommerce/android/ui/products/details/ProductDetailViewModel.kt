@@ -2405,13 +2405,15 @@ class ProductDetailViewModel @Inject constructor(
     fun onProductTagAdded(tagName: String) {
         // verify if the entered tagName exists for the site
         // It so, the tag should be added to the product directly
-        runBlocking { productTagsRepository.getProductTagByName(tagName) }?.let {
-            onProductTagSelected(it)
-        } ?: run {
-            // Since the tag does not exist for the site, add the tag to
-            // a list of newly added tags
-            _addedProductTags.addNewItem(ProductTag(name = tagName))
-            loadProductTags()
+        viewModelScope.launch {
+            productTagsRepository.getProductTagByName(tagName)?.let {
+                onProductTagSelected(it)
+            } ?: run {
+                // Since the tag does not exist for the site, add the tag to
+                // a list of newly added tags
+                _addedProductTags.addNewItem(ProductTag(name = tagName))
+                loadProductTags()
+            }
         }
     }
 
