@@ -489,6 +489,7 @@ fun WooPosItemsEmptyList(
         onActionClicked = null
     )
 }
+
 @Composable
 fun WooPosItemsEmptyList(
     modifier: Modifier = Modifier,
