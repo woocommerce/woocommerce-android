@@ -7,9 +7,10 @@ import android.os.Build
 import com.stripe.stripeterminal.external.callable.Callback
 import com.stripe.stripeterminal.external.callable.ReaderCallback
 import com.stripe.stripeterminal.external.models.ConnectionConfiguration.BluetoothConnectionConfiguration
-import com.stripe.stripeterminal.external.models.ConnectionConfiguration.LocalMobileConnectionConfiguration
+import com.stripe.stripeterminal.external.models.ConnectionConfiguration.TapToPayConnectionConfiguration
 import com.stripe.stripeterminal.external.models.DeviceType
 import com.stripe.stripeterminal.external.models.Reader
+import com.stripe.stripeterminal.external.models.TerminalErrorCode
 import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
@@ -38,6 +39,7 @@ private const val ARTIFICIAL_STATUS_UPDATE_DELAY_IN_MILLIS = 500L
 internal class ConnectionManager(
     private val terminal: TerminalWrapper,
     private val bluetoothReaderListener: BluetoothReaderListenerImpl,
+    private val tapToPayReaderListener: TapToPayReaderListenerImpl,
     private val discoverReadersAction: DiscoverReadersAction,
     private val terminalListenerImpl: TerminalListenerImpl,
     private val application: Application,
@@ -140,7 +142,7 @@ internal class ConnectionManager(
             }
 
             when (it.cardReader.deviceType) {
-                DeviceType.COTS_DEVICE -> connectToBuiltInReader(cardReader, locationId, readerCallback)
+                DeviceType.TAP_TO_PAY_DEVICE -> connectToBuiltInReader(cardReader, locationId, readerCallback)
                 else -> connectToExternalReader(cardReader, locationId, readerCallback)
             }
         }
@@ -199,9 +201,8 @@ internal class ConnectionManager(
     ) {
         terminal.connectToReader(
             cardReader.cardReader,
-            BluetoothConnectionConfiguration(locationId),
-            readerCallback,
-            bluetoothReaderListener,
+            BluetoothConnectionConfiguration(locationId, true, bluetoothReaderListener),
+            readerCallback
         )
     }
 
@@ -212,14 +213,18 @@ internal class ConnectionManager(
     ) {
         terminal.connectToMobile(
             cardReader.cardReader,
-            LocalMobileConnectionConfiguration(locationId),
+            TapToPayConnectionConfiguration(
+                locationId,
+                autoReconnectOnUnexpectedDisconnect = true,
+                tapToPayReaderListener
+            ),
             readerCallback
         )
     }
 
-    private fun TerminalException.TerminalErrorCode.toErrorCode(): CardReaderStatus.NotConnected.ErrorCode =
+    private fun TerminalErrorCode.toErrorCode(): CardReaderStatus.NotConnected.ErrorCode =
         when (this) {
-            TerminalException.TerminalErrorCode.READER_BATTERY_CRITICALLY_LOW ->
+            TerminalErrorCode.READER_BATTERY_CRITICALLY_LOW ->
                 CardReaderStatus.NotConnected.ErrorCode.BATTERY_CRITICALLY_LOW
 
             else -> CardReaderStatus.NotConnected.ErrorCode.OTHER

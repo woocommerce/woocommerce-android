@@ -223,15 +223,13 @@ fun WooPosProductCard(
 
             Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
 
-            Box(modifier = Modifier.weight(1f)) {
-                ProductInfo(item)
-            }
+            ProductInfo(modifier = Modifier.weight(1f), item = item)
 
             if (item is Product.Variable) {
                 Image(
                     modifier = Modifier
-                        .size(32.dp)
-                        .padding(end = WooPosSpacing.XLarge.value),
+                        .padding(end = WooPosSpacing.XLarge.value)
+                        .size(32.dp),
                     imageVector = ImageVector.vectorResource(id = R.drawable.ic_chevron),
                     contentDescription = null,
                     colorFilter = ColorFilter.tint(WooPosTheme.colors.onSurfaceVariantHighest),
@@ -242,9 +240,9 @@ fun WooPosProductCard(
 }
 
 @Composable
-private fun ProductInfo(item: Product) {
+private fun ProductInfo(modifier: Modifier, item: Product) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxHeight()
             .padding(
                 top = WooPosSpacing.Medium.value,

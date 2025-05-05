@@ -1,5 +1,6 @@
 package com.woocommerce.android.cardreader.internal.payments.actions
 
+import com.stripe.stripeterminal.external.callable.Callback
 import com.stripe.stripeterminal.external.callable.PaymentIntentCallback
 import com.stripe.stripeterminal.external.models.PaymentIntent
 import com.stripe.stripeterminal.external.models.TerminalException
@@ -21,7 +22,7 @@ internal class ProcessPaymentAction(private val terminal: TerminalWrapper, priva
 
     fun processPayment(paymentIntent: PaymentIntent): Flow<ProcessPaymentStatus> {
         return callbackFlow {
-            terminal.processPayment(
+            val cancelable = terminal.processPayment(
                 paymentIntent,
                 object : PaymentIntentCallback {
                     override fun onSuccess(paymentIntent: PaymentIntent) {
@@ -41,7 +42,19 @@ internal class ProcessPaymentAction(private val terminal: TerminalWrapper, priva
                     }
                 }
             )
-            awaitClose()
+            awaitClose {
+                if (!cancelable.isCompleted) cancelable.cancel(noop)
+            }
         }
+    }
+}
+
+private val noop = object : Callback {
+    override fun onFailure(e: TerminalException) {
+        // noop
+    }
+
+    override fun onSuccess() {
+        // noop
     }
 }

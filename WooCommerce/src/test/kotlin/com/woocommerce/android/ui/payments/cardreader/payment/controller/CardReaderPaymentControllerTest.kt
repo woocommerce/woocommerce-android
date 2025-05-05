@@ -2394,7 +2394,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
     fun `given built in payment failed state and connected BI, when user presses back, then disconnect from reader invoked`() =
         testBlocking {
             val cardReader: CardReader = mock {
-                on { type }.thenReturn("COTS_DEVICE")
+                on { type }.thenReturn("TAP_TO_PAY_DEVICE")
             }
             whenever(cardReaderManager.readerStatus).thenReturn(
                 MutableStateFlow(CardReaderStatus.Connected(cardReader))
@@ -3492,7 +3492,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
         testBlocking {
             setupControllerForInteracRefund()
             val cardReader: CardReader = mock {
-                on { type }.thenReturn("COTS_DEVICE")
+                on { type }.thenReturn("TAP_TO_PAY_DEVICE")
             }
             whenever(cardReaderManager.readerStatus).thenReturn(
                 MutableStateFlow(CardReaderStatus.Connected(cardReader))

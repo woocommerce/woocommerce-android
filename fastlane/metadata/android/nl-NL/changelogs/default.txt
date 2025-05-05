@@ -1,2 +1,0 @@
-22.2:
-We hebben belangrijke verbeteringen aangebracht in deze update! Crashes met betrekking tot valuta-opmaak, het scherm 'Aangepast bedrag toevoegen' en het Jetpack-installatiescherm zijn allemaal opgelost voor een soepelere en betrouwbaardere ervaring. Geniet van de verbeterde stabiliteit in je mobiele WooCommerce-app!
