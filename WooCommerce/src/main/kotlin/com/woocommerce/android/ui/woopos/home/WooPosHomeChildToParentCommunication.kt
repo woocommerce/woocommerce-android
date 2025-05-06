@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.home
 
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart.WooPosItemSource
 import dagger.hilt.android.scopes.ActivityRetainedScoped
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -25,7 +26,10 @@ sealed class ChildToParentEvent {
     ) : ChildToParentEvent()
 
     data object BackFromCheckoutToCartClicked : ChildToParentEvent()
-    data class ItemClickedInProductSelector(val itemData: WooPosItemsViewModel.ItemClickedData) : ChildToParentEvent()
+    data class ItemClickedInProductSelector(
+        val itemData: WooPosItemsViewModel.ItemClickedData,
+        val source: WooPosItemSource
+    ) : ChildToParentEvent()
     data object NewTransactionClicked : ChildToParentEvent()
     data object PaymentCollecting : ChildToParentEvent()
     data object PaymentInProgress : ChildToParentEvent()
@@ -34,7 +38,12 @@ sealed class ChildToParentEvent {
     data object GoBackToCheckoutAfterFailedPayment : ChildToParentEvent()
     data object OrderSuccessfullyPaidByCard : ChildToParentEvent()
     data object ExitPosClicked : ChildToParentEvent()
-    data object ProductsDialogInfoIconClicked : ChildToParentEvent()
+    data object SimpleProductExplanationMenuItemClicked : ChildToParentEvent()
+    data object CouponsValidationFailed : ChildToParentEvent()
+    data object RemoveCouponsClicked : ChildToParentEvent()
+    data class CouponsRemoved(
+        val cartDataList: List<WooPosItemsViewModel.ItemClickedData>
+    ) : ChildToParentEvent()
 
     data class ToastMessageDisplayed(val message: String) : ChildToParentEvent()
     sealed class NavigationEvent : ChildToParentEvent() {
@@ -51,7 +60,10 @@ sealed class ChildToParentEvent {
         object Started : SearchEvent()
     }
 
-    data class OrderCreated(val updatedProducts: List<ProductInfo>) : ChildToParentEvent() {
+    data class OrderCreated(
+        val updatedProducts: List<ProductInfo>,
+        val updatedCoupons: List<CouponInfo>
+    ) : ChildToParentEvent() {
         sealed class ProductInfo(
             open val id: Long,
             open val name: String,
@@ -73,6 +85,12 @@ sealed class ChildToParentEvent {
                 val variationId: Long,
             ) : ProductInfo(id, name, price, quantity)
         }
+
+        data class CouponInfo(
+            val id: Long,
+            val code: String,
+            val discountAmount: BigDecimal,
+        )
     }
 }
 

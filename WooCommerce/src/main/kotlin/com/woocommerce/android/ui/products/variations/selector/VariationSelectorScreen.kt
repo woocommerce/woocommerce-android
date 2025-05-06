@@ -9,9 +9,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -26,7 +29,6 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.Composable
@@ -46,6 +48,7 @@ import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
+import com.woocommerce.android.ui.compose.component.TopAppBarEdgeToEdge
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.products.selector.SelectionState.SELECTED
 import com.woocommerce.android.ui.products.selector.components.SelectorListItem
@@ -61,7 +64,7 @@ fun VariationSelectorScreen(viewModel: VariationSelectorViewModel) {
     BackHandler(onBack = viewModel::onBackPress)
     Scaffold(
         topBar = {
-            TopAppBar(
+            TopAppBarEdgeToEdge(
                 title = {
                     Text(
                         text = viewState.productName
@@ -165,7 +168,8 @@ private fun VariationList(
             state = listState,
             modifier = Modifier
                 .weight(1f)
-                .fillMaxHeight()
+                .fillMaxHeight(),
+            contentPadding = WindowInsets.navigationBars.asPaddingValues(),
         ) {
             itemsIndexed(state.variations) { _, variation ->
                 SelectorListItem(
@@ -213,7 +217,10 @@ private fun VariationList(
 @Suppress("MagicNumber")
 fun VariationListSkeleton() {
     val numberOfInboxSkeletonRows = 10
-    LazyColumn(Modifier.background(color = MaterialTheme.colors.surface)) {
+    LazyColumn(
+        Modifier.background(color = MaterialTheme.colors.surface),
+        contentPadding = WindowInsets.navigationBars.asPaddingValues(),
+    ) {
         repeat(numberOfInboxSkeletonRows) {
             item {
                 Row(

@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-04-08 09:54:04+0000
+Translation-Revision-Date: 2025-04-22 13:54:05+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_split_shipment_bottom_sheet_remove_button">Eliminar envío</string>
+    <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_plural">Elige a dónde mover los elementos %d de este envío.</string>
+    <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_one">Elige a dónde mover el elemento  %d de este envío.</string>
+    <string name="woo_shipping_split_shipment_bottom_sheet_desc">Todos los elementos se fusionarán con %s.</string>
+    <string name="woo_shipping_split_shipment_bottom_sheet_title">Eliminar envío</string>
+    <string name="woo_shipping_split_shipment_shipment_remove">Eliminar %s</string>
+    <string name="woo_shipping_split_shipment_moved_notice_plural">Se han movido %1$d elementos a Envío %2$d</string>
+    <string name="woo_shipping_split_shipment_moved_notice_one">Se ha movido %1$d elemento a Envío %2$d</string>
+    <string name="woo_shipping_labels_package_creation_empty_saved_message">Aún no hay paquetes guardados</string>
+    <string name="woo_shipping_labels_package_creation_empty_carrier_message">No se ha encontrado información de la empresa de transporte</string>
+    <string name="woo_shipping_labels_package_creation_empty_button">Crear un paquete personalizado</string>
+    <string name="woopos_cart_changes_in_the_cart">Hay cambios en el carrito</string>
     <string name="woo_shipping_split_shipment_shipment_new">Nuevo envío</string>
     <string name="woo_shipping_split_shipment_shipment_name">Envío %s</string>
     <string name="woo_shipping_split_move_to">Mover a</string>

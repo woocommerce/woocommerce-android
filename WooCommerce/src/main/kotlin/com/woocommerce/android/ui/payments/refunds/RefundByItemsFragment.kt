@@ -24,7 +24,6 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.OpenUrl
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.ShowNumberPicker
-import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundAmountDialog
 import com.woocommerce.android.ui.payments.refunds.RefundFeeListAdapter.OnFeeLineCheckedChangeListener
 import com.woocommerce.android.ui.payments.refunds.RefundShippingListAdapter.OnCheckedChangeListener
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -32,7 +31,6 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.hilt.android.AndroidEntryPoint
-import java.math.BigDecimal
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -230,16 +228,6 @@ class RefundByItemsFragment :
                         uniqueId = event.refundItem.orderItem.itemId,
                         maxValue = event.refundItem.availableRefundQuantity,
                         currentValue = event.refundItem.quantity
-                    )
-                    findNavController().navigateSafely(action)
-                }
-                is ShowRefundAmountDialog -> {
-                    val action = IssueRefundFragmentDirections.actionIssueRefundFragmentToRefundAmountDialog(
-                        title = getString(R.string.order_refunds_products_refund),
-                        maxValue = event.maxRefund,
-                        currentValue = event.refundAmount,
-                        minValue = BigDecimal.ZERO,
-                        message = event.message
                     )
                     findNavController().navigateSafely(action)
                 }

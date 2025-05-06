@@ -58,6 +58,7 @@ import com.woocommerce.android.ui.orders.creation.shipping.GetShippingMethodsWit
 import com.woocommerce.android.ui.orders.creation.shipping.RefreshShippingMethods
 import com.woocommerce.android.ui.orders.creation.shipping.ShippingLineDetails
 import com.woocommerce.android.ui.orders.creation.shipping.ShippingMethodsRepository
+import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingLabelRepository
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
@@ -108,6 +109,7 @@ class OrderDetailViewModel @Inject constructor(
     private val paymentsFlowTracker: PaymentsFlowTracker,
     private val tracker: OrderDetailTracker,
     private val shippingLabelOnboardingRepository: ShippingLabelOnboardingRepository,
+    private val shippingLabelRepository: WooShippingLabelRepository,
     private val orderDetailsTransactionLauncher: OrderDetailsTransactionLauncher,
     private val getOrderSubscriptions: GetOrderSubscriptions,
     private val giftCardRepository: GiftCardRepository,
@@ -271,6 +273,7 @@ class OrderDetailViewModel @Inject constructor(
             awaitAll(
                 fetchOrderAsync(),
                 fetchOrderNotesAsync(),
+                fetchShipmentsAsync(),
                 fetchOrderShippingLabelsAsync(),
                 fetchShipmentTrackingAsync(),
                 fetchOrderRefundsAsync(),
@@ -829,6 +832,13 @@ class OrderDetailViewModel @Inject constructor(
         }
 
         orderDetailsTransactionLauncher.onShipmentTrackingFetchingCompleted()
+    }
+
+    private fun fetchShipmentsAsync() = async {
+        if (shippingLabelOnboardingRepository.shippingPluginSupport.isSupported()) {
+            shippingLabelRepository.fetchConfig(selectedSite.get(), navArgs.orderId)
+        }
+        orderDetailsTransactionLauncher.onShipmentsFetchingCompleted()
     }
 
     private fun fetchOrderShippingLabelsAsync() = async {

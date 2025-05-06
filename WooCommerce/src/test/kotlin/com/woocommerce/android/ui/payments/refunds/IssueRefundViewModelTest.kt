@@ -39,7 +39,6 @@ import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.fluxc.store.WCGatewayStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCRefundStore
-import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.util.Date
 import kotlin.test.assertEquals
@@ -53,7 +52,6 @@ class IssueRefundViewModelTest : BaseUnitTest() {
     }
 
     private val orderStore: WCOrderStore = mock()
-    private val wooStore: WooCommerceStore = mock()
     private val selectedSite: SelectedSite = mock()
     private val networkStatus: NetworkStatus = mock()
     private val orderDetailRepository: OrderDetailRepository = mock()
@@ -88,20 +86,18 @@ class IssueRefundViewModelTest : BaseUnitTest() {
         whenever(currencyFormatter.buildBigDecimalFormatter(any())).thenReturn { "" }
 
         viewModel = IssueRefundViewModel(
-            savedState,
-            coroutinesTestRule.testDispatchers,
-            currencyFormatter,
-            orderStore,
-            wooStore,
-            selectedSite,
-            networkStatus,
-            resourceProvider,
-            orderDetailRepository,
-            gatewayStore,
-            refundStore,
-            paymentChargeRepository,
-            orderMapper,
-            analyticsTrackerWrapper,
+            savedState = savedState,
+            currencyFormatter = currencyFormatter,
+            orderStore = orderStore,
+            selectedSite = selectedSite,
+            networkStatus = networkStatus,
+            resourceProvider = resourceProvider,
+            orderDetailRepository = orderDetailRepository,
+            gatewayStore = gatewayStore,
+            refundStore = refundStore,
+            paymentChargeRepository = paymentChargeRepository,
+            orderMapper = orderMapper,
+            analyticsTrackerWrapper = analyticsTrackerWrapper,
         )
     }
 
@@ -683,30 +679,6 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             verify(analyticsTrackerWrapper).track(
                 AnalyticsEvent.CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED,
                 mapOf(
-                    AnalyticsTracker.KEY_REFUND_TYPE to IssueRefundViewModel.RefundType.ITEMS.name,
-                    AnalyticsTracker.KEY_ORDER_ID to ORDER_ID
-                )
-            )
-        }
-    }
-
-    @Test
-    fun `when next button is tapped from amounts, then verify proper tracks event is triggered `() {
-        testBlocking {
-            val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
-                paymentMethod = "cod",
-                metaData = emptyList()
-            )
-            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
-            whenever(resourceProvider.getString(any())).thenReturn("")
-
-            initViewModel()
-            viewModel.onNextButtonTappedFromAmounts()
-
-            verify(analyticsTrackerWrapper).track(
-                AnalyticsEvent.CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED,
-                mapOf(
-                    AnalyticsTracker.KEY_REFUND_TYPE to IssueRefundViewModel.RefundType.AMOUNT.name,
                     AnalyticsTracker.KEY_ORDER_ID to ORDER_ID
                 )
             )
@@ -745,7 +717,6 @@ class IssueRefundViewModelTest : BaseUnitTest() {
                     AnalyticsTracker.KEY_ORDER_ID to ORDER_ID,
                     AnalyticsTracker.KEY_REFUND_IS_FULL to
                         ((commonState).refundTotal isEqualTo BigDecimal.TEN).toString(),
-                    AnalyticsTracker.KEY_REFUND_TYPE to (commonState).refundType.name,
                     AnalyticsTracker.KEY_REFUND_METHOD to "manual",
                     AnalyticsTracker.KEY_AMOUNT to (commonState).refundTotal.toString()
                 )
@@ -1210,7 +1181,6 @@ class IssueRefundViewModelTest : BaseUnitTest() {
                     on { totalTax }.thenReturn(BigDecimal.ZERO)
                     on { metaData }.thenReturn(null)
                 },
-
             )
 
             val refund = WCRefundModel(

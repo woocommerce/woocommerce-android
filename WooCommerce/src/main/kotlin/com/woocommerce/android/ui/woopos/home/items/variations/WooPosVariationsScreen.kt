@@ -48,6 +48,7 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsEmptyList
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsLoadingIndicator
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.home.items.WooPosVariationsViewState
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart.WooPosItemSource
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -61,7 +62,7 @@ fun WooPosVariationsScreen(
         key = variableProductData.id.toString()
     )
     LaunchedEffect(variableProductData.id) {
-        viewModel.init(variableProductData.id)
+        viewModel.init(variableProductData.id, variableProductData.source)
     }
     val state = viewModel.viewState
     WooPosVariationsScreens(
@@ -166,6 +167,7 @@ private fun WooPosVariationsScreens(
 
                 is WooPosVariationsViewState.Empty -> {
                     WooPosItemsEmptyList(
+                        modifier = Modifier.fillMaxSize(),
                         title = stringResource(id = R.string.woopos_variations_empty_list_title),
                         message = stringResource(id = R.string.woopos_variations_empty_list_message),
                         contentDescription = stringResource(
@@ -297,6 +299,7 @@ fun WooPosVariationsScreenPreview() {
                 id = 0,
                 name = "Variable Product",
                 numOfVariations = 20,
+                source = WooPosItemSource.PRODUCT_LIST,
             ),
             state = productState,
         )

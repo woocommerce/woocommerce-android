@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.home
 
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart.WooPosItemSource
 import dagger.hilt.android.scopes.ActivityRetainedScoped
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -21,8 +22,14 @@ class WooPosParentToChildrenCommunication @Inject constructor() :
 
 sealed class ParentToChildrenEvent {
     data object BackFromCheckoutToCartClicked : ParentToChildrenEvent()
+    data object CouponsValidationFailed : ParentToChildrenEvent()
+    data object RemoveCouponsClicked : ParentToChildrenEvent()
+    data class CouponsRemoved(
+        val cartDataList: List<WooPosItemsViewModel.ItemClickedData>
+    ) : ParentToChildrenEvent()
     data class ItemClickedInProductSelector(
-        val itemData: WooPosItemsViewModel.ItemClickedData
+        val itemData: WooPosItemsViewModel.ItemClickedData,
+        val source: WooPosItemSource
     ) : ParentToChildrenEvent()
 
     data class CheckoutClicked(
@@ -43,7 +50,10 @@ sealed class ParentToChildrenEvent {
         object Started : SearchEvent()
     }
 
-    data class OrderCreated(val updatedProducts: List<ProductInfo>) : ParentToChildrenEvent() {
+    data class OrderCreated(
+        val updatedProducts: List<ProductInfo>,
+        val updatedCoupons: List<CouponInfo>,
+    ) : ParentToChildrenEvent() {
         sealed class ProductInfo(
             open val id: Long,
             open val name: String,
@@ -65,6 +75,12 @@ sealed class ParentToChildrenEvent {
                 val variationId: Long,
             ) : ProductInfo(id, name, price, quantity)
         }
+
+        data class CouponInfo(
+            val id: Long,
+            val code: String,
+            val discountAmount: BigDecimal,
+        )
     }
 }
 

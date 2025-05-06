@@ -90,9 +90,7 @@ private fun WooPosHomeScreen(
 
     val productsWidthAnimatedDp by animateDpAsState(
         when (state.screenPositionState) {
-            WooPosHomeState.ScreenPositionState.Cart.Hidden -> screenWidthDp
-
-            is WooPosHomeState.ScreenPositionState.Cart.Visible,
+            is WooPosHomeState.ScreenPositionState.Cart,
             WooPosHomeState.ScreenPositionState.Checkout.CartWithTotals -> productsWidthDp
 
             WooPosHomeState.ScreenPositionState.Checkout.FullScreenTotals -> productsWidthDp - cartWidthDp
@@ -249,7 +247,7 @@ fun WooPosHomeCartScreenPreview() {
     WooPosTheme {
         WooPosHomeScreen(
             state = WooPosHomeState(
-                screenPositionState = WooPosHomeState.ScreenPositionState.Cart.Visible,
+                screenPositionState = WooPosHomeState.ScreenPositionState.Cart,
                 productsInfoDialog = ProductsInfoDialog(isVisible = false),
                 exitConfirmationDialog = WooPosHomeState.ExitConfirmationDialog(isVisible = false),
             ),

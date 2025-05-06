@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.home
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.common.util.WooPosSoundHelper
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccessfullyPaid.PaymentMethod
 import com.woocommerce.android.ui.woopos.home.WooPosHomeUIEvent.ExitPosClicked
 import com.woocommerce.android.ui.woopos.home.WooPosHomeUIEvent.SystemBackClicked
@@ -18,6 +19,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
+import org.mockito.kotlin.argThat
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -37,6 +39,26 @@ class WooPosHomeViewModelTest {
     private val parentToChildrenEventSender: WooPosParentToChildrenEventSender = mock()
     private val wooPosItemsNavigator: WooPosItemsNavigator = mock()
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
+    private val soundHelper: WooPosSoundHelper = mock()
+
+    @Test
+    fun `when order created, then pass event to cart`() =
+        runTest {
+            // GIVEN
+            whenever(childrenToParentEventReceiver.events).thenReturn(
+                flowOf(ChildToParentEvent.OrderCreated(emptyList(), emptyList()))
+            )
+
+            // WHEN
+            createViewModel()
+
+            // THEN
+            verify(parentToChildrenEventSender).sendToChildren(
+                argThat {
+                    this is ParentToChildrenEvent.OrderCreated
+                }
+            )
+        }
 
     @Test
     fun `given state checkout, when SystemBackClicked passed, then BackFromCheckoutToCartClicked event should be sent`() =
@@ -53,7 +75,7 @@ class WooPosHomeViewModelTest {
             // THEN
             verify(parentToChildrenEventSender).sendToChildren(ParentToChildrenEvent.BackFromCheckoutToCartClicked)
             assertThat(viewModel.state.value.screenPositionState)
-                .isEqualTo(WooPosHomeState.ScreenPositionState.Cart.Visible)
+                .isEqualTo(WooPosHomeState.ScreenPositionState.Cart)
         }
 
     @Test
@@ -93,7 +115,7 @@ class WooPosHomeViewModelTest {
                 )
             )
             assertThat(viewModel.state.value.screenPositionState)
-                .isEqualTo(WooPosHomeState.ScreenPositionState.Cart.Visible)
+                .isEqualTo(WooPosHomeState.ScreenPositionState.Cart)
         }
 
     @Test
@@ -148,13 +170,11 @@ class WooPosHomeViewModelTest {
         }
 
     @Test
-    fun `when info icon is clicked in products, then display products info dialog`() {
-        // GIVEN
-        whenever(childrenToParentEventReceiver.events).thenReturn(
-            flowOf(ChildToParentEvent.ProductsDialogInfoIconClicked)
-        )
-
+    fun `when where are my products clicked, then display products info dialog`() {
         // WHEN
+        whenever(childrenToParentEventReceiver.events).thenReturn(
+            flowOf(ChildToParentEvent.SimpleProductExplanationMenuItemClicked)
+        )
         val viewModel = createViewModel()
 
         // THEN
@@ -164,13 +184,11 @@ class WooPosHomeViewModelTest {
     }
 
     @Test
-    fun `given info icon is clicked in products screen, when product info dialog is displayed, then ensure dialog heading is correct`() {
+    fun `given product info dialog is displayed, then ensure dialog heading is correct`() {
         // GIVEN
         whenever(childrenToParentEventReceiver.events).thenReturn(
-            flowOf(ChildToParentEvent.ProductsDialogInfoIconClicked)
+            flowOf(ChildToParentEvent.SimpleProductExplanationMenuItemClicked)
         )
-
-        // WHEN
         val viewModel = createViewModel()
 
         // THEN
@@ -182,13 +200,11 @@ class WooPosHomeViewModelTest {
     }
 
     @Test
-    fun `given info icon is clicked in products screen, when product info dialog is displayed, then ensure dialog primary message is correct`() {
+    fun `given product info dialog is displayed, then ensure dialog primary message is correct`() {
         // GIVEN
         whenever(childrenToParentEventReceiver.events).thenReturn(
-            flowOf(ChildToParentEvent.ProductsDialogInfoIconClicked)
+            flowOf(ChildToParentEvent.SimpleProductExplanationMenuItemClicked)
         )
-
-        // WHEN
         val viewModel = createViewModel()
 
         // THEN
@@ -200,13 +216,11 @@ class WooPosHomeViewModelTest {
     }
 
     @Test
-    fun `given info icon is clicked in products screen, when product info dialog is displayed, then ensure dialog secondary message is correct`() {
-        // GIVEN
-        whenever(childrenToParentEventReceiver.events).thenReturn(
-            flowOf(ChildToParentEvent.ProductsDialogInfoIconClicked)
-        )
-
+    fun `when where are my products clicked, then ensure dialog secondary message is correct`() {
         // WHEN
+        whenever(childrenToParentEventReceiver.events).thenReturn(
+            flowOf(ChildToParentEvent.SimpleProductExplanationMenuItemClicked)
+        )
         val viewModel = createViewModel()
 
         // THEN
@@ -218,13 +232,11 @@ class WooPosHomeViewModelTest {
     }
 
     @Test
-    fun `given info icon is clicked in products screen, when product info dialog is displayed, then ensure dialog tertiary message is correct`() {
-        // GIVEN
-        whenever(childrenToParentEventReceiver.events).thenReturn(
-            flowOf(ChildToParentEvent.ProductsDialogInfoIconClicked)
-        )
-
+    fun `when where are my products clicked, then ensure dialog tertiary message is correct`() {
         // WHEN
+        whenever(childrenToParentEventReceiver.events).thenReturn(
+            flowOf(ChildToParentEvent.SimpleProductExplanationMenuItemClicked)
+        )
         val viewModel = createViewModel()
 
         // THEN
@@ -236,10 +248,10 @@ class WooPosHomeViewModelTest {
     }
 
     @Test
-    fun `given info icon is clicked in products screen, when product info dialog is displayed, then ensure dialog primary button label is correct`() {
+    fun `when where are my products clicked, then ensure dialog primary button label is correct`() {
         // GIVEN
         whenever(childrenToParentEventReceiver.events).thenReturn(
-            flowOf(ChildToParentEvent.ProductsDialogInfoIconClicked)
+            flowOf(ChildToParentEvent.SimpleProductExplanationMenuItemClicked)
         )
 
         // WHEN
@@ -257,7 +269,7 @@ class WooPosHomeViewModelTest {
     fun `given product info is displayed, when dialog is dismissed, then ensure the state is updated`() {
         // GIVEN
         whenever(childrenToParentEventReceiver.events).thenReturn(
-            flowOf(ChildToParentEvent.ProductsDialogInfoIconClicked)
+            flowOf(ChildToParentEvent.SimpleProductExplanationMenuItemClicked)
         )
         val viewModel = createViewModel()
 
@@ -414,6 +426,7 @@ class WooPosHomeViewModelTest {
             verify(wooPosItemsNavigator).sendNavigationEvent(
                 WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateBackToItemListScreen
             )
+            verify(soundHelper).playChaChing()
         }
 
     @Test
@@ -440,6 +453,7 @@ class WooPosHomeViewModelTest {
         parentToChildrenEventSender,
         wooPosItemsNavigator,
         analyticsTracker,
+        soundHelper,
         SavedStateHandle()
     )
 }

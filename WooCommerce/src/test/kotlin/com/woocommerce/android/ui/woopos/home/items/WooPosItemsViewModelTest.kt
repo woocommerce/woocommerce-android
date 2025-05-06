@@ -4,12 +4,13 @@ import app.cash.turbine.test
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.featureflags.WooPosIsProductsSearchEnabled
-import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
-import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SearchButtonTapped
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ITEM_LIST_TYPE
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ITEM_LIST_TYPE_PRODUCTS
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -38,8 +39,6 @@ class WooPosItemsViewModelTest {
         )
     )
 
-    private val fromChildToParentEventSender: WooPosChildrenToParentEventSender = mock()
-    private val posPreferencesRepository: WooPosPreferencesRepository = mock()
     private val wooPosItemsNavigator: WooPosItemsNavigator = mock()
 
     private val isProductsSearchEnabled: WooPosIsProductsSearchEnabled = mock()
@@ -47,13 +46,10 @@ class WooPosItemsViewModelTest {
     private val tabsHelper: WooPosItemsTabsHelper = mock {
         on { defaultTabs }.thenReturn(tabs)
     }
+    private val analyticsTracker: WooPosAnalyticsTracker = mock()
 
     @Before
     fun setup() {
-        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerWasHiddenByUser).thenReturn(
-            flowOf(false)
-        )
-
         whenever(searchHelper.getInitialSearchState(any())).thenReturn(
             WooPosItemsViewState.SearchState.Visible(
                 state = WooPosSearchInputState.Closed
@@ -189,13 +185,29 @@ class WooPosItemsViewModelTest {
             assertThat(value).isInstanceOf(WooPosItemsViewState.CouponList::class.java)
         }
     }
+
+    @Test
+    fun `when search icon is tapped, the track analytics event`() = runTest {
+        // GIVEN
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosItemsUIEvent.SearchIconClicked)
+
+        // THEN
+        verify(analyticsTracker).track(
+            SearchButtonTapped.apply {
+                addProperties(mapOf(ITEM_LIST_TYPE to ITEM_LIST_TYPE_PRODUCTS))
+            }
+        )
+    }
+
     private fun createViewModel() =
         WooPosItemsViewModel(
-            fromChildToParentEventSender,
-            posPreferencesRepository,
             wooPosItemsNavigator,
             searchHelper,
             isProductsSearchEnabled,
             tabsHelper,
+            analyticsTracker
         )
 }
