@@ -1,9 +1,9 @@
 package com.woocommerce.android.cardreader.internal.payments
 
 import com.stripe.stripeterminal.external.models.PaymentIntent
+import com.stripe.stripeterminal.external.models.TerminalErrorCode
+import com.stripe.stripeterminal.external.models.TerminalErrorCode.DECLINED_BY_READER
 import com.stripe.stripeterminal.external.models.TerminalException
-import com.stripe.stripeterminal.external.models.TerminalException.TerminalErrorCode
-import com.stripe.stripeterminal.external.models.TerminalException.TerminalErrorCode.DECLINED_BY_READER
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
 import com.woocommerce.android.cardreader.internal.CardReaderBaseUnitTest
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.BuiltInReader
@@ -562,7 +562,7 @@ class PaymentErrorMapperTest : CardReaderBaseUnitTest() {
 
     @Test
     fun `given local_mobile_nfc_disabled, when terminal exception thrown, then nfc disabled type returned`() {
-        whenever(terminalException.errorCode).thenReturn(TerminalErrorCode.LOCAL_MOBILE_NFC_DISABLED)
+        whenever(terminalException.errorCode).thenReturn(TerminalErrorCode.TAP_TO_PAY_NFC_DISABLED)
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
@@ -571,7 +571,7 @@ class PaymentErrorMapperTest : CardReaderBaseUnitTest() {
 
     @Test
     fun `given local_mobile_library_not_included, when terminal exception thrown, then invalid app setup returned`() {
-        whenever(terminalException.errorCode).thenReturn(TerminalErrorCode.LOCAL_MOBILE_LIBRARY_NOT_INCLUDED)
+        whenever(terminalException.errorCode).thenReturn(TerminalErrorCode.TAP_TO_PAY_LIBRARY_NOT_INCLUDED)
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
@@ -580,7 +580,7 @@ class PaymentErrorMapperTest : CardReaderBaseUnitTest() {
 
     @Test
     fun `given local_mobile_unsupported_device, when terminal exception thrown, then device unsupported returned`() {
-        whenever(terminalException.errorCode).thenReturn(TerminalErrorCode.LOCAL_MOBILE_UNSUPPORTED_DEVICE)
+        whenever(terminalException.errorCode).thenReturn(TerminalErrorCode.TAP_TO_PAY_UNSUPPORTED_DEVICE)
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
@@ -589,7 +589,7 @@ class PaymentErrorMapperTest : CardReaderBaseUnitTest() {
 
     @Test
     fun `given local_mobile_unsupported_android_version, when terminal exception thrown, then device unsupported`() {
-        whenever(terminalException.errorCode).thenReturn(TerminalErrorCode.LOCAL_MOBILE_UNSUPPORTED_ANDROID_VERSION)
+        whenever(terminalException.errorCode).thenReturn(TerminalErrorCode.TAP_TO_PAY_UNSUPPORTED_ANDROID_VERSION)
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
@@ -598,7 +598,7 @@ class PaymentErrorMapperTest : CardReaderBaseUnitTest() {
 
     @Test
     fun `given local_mobile_device_tampered, when terminal exception thrown, then device unsupported returned`() {
-        whenever(terminalException.errorCode).thenReturn(TerminalErrorCode.LOCAL_MOBILE_DEVICE_TAMPERED)
+        whenever(terminalException.errorCode).thenReturn(TerminalErrorCode.TAP_TO_PAY_DEVICE_TAMPERED)
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
