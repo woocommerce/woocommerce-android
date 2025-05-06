@@ -8,6 +8,7 @@ import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
+import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState.Coupon.CouponValidationState
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.WooLogWrapper
@@ -339,7 +340,7 @@ class WooPosCartItemsUpdaterTest {
     }
 
     @Test
-    fun `given cart with coupon, when updatedCoupons contains matching code, then formattedDiscount is updated`() =
+    fun `given cart with coupon, when updatedCoupons contains matching code, then Valid state returned`() =
         runTest {
             // GIVEN
             val coupon = generateCoupon(code = "COUPON1")
@@ -357,11 +358,11 @@ class WooPosCartItemsUpdaterTest {
             // THEN
             assertThat(result).hasSize(1)
             val updatedCoupon = result[0] as WooPosCartItemViewState.Coupon
-            assertThat(updatedCoupon.formattedDiscount).isEqualTo("-5.0$")
+            assertThat(updatedCoupon.validationState).isEqualTo(CouponValidationState.Valid("-5.0$"))
         }
 
     @Test
-    fun `given cart with coupon, when updatedCoupons does not contain matching code, then formattedDiscount remains null`() =
+    fun `given cart with coupon, when updatedCoupons does not contain matching code, then Unknown state returned`() =
         runTest {
             // GIVEN
             val itemsInCart = listOf(generateCoupon("COUPON2"))
@@ -372,7 +373,7 @@ class WooPosCartItemsUpdaterTest {
             // THEN
             assertThat(result).hasSize(1)
             val updatedCoupon = result[0] as WooPosCartItemViewState.Coupon
-            assertThat(updatedCoupon.formattedDiscount).isNull()
+            assertThat(updatedCoupon.validationState).isEqualTo(CouponValidationState.Unknown)
         }
 
     @Test
@@ -412,9 +413,9 @@ class WooPosCartItemsUpdaterTest {
             // THEN
             assertThat(result).hasSize(2)
             val updatedCoupon1 = result[0] as WooPosCartItemViewState.Coupon
-            assertThat(updatedCoupon1.formattedDiscount).isEqualTo("-5.0$")
+            assertThat(updatedCoupon1.validationState).isEqualTo(CouponValidationState.Valid("-5.0$"))
             val updatedCoupon2 = result[1] as WooPosCartItemViewState.Coupon
-            assertThat(updatedCoupon2.formattedDiscount).isEqualTo("-10.0$")
+            assertThat(updatedCoupon2.validationState).isEqualTo(CouponValidationState.Valid("-10.0$"))
         }
 
     private fun generateCoupon(
@@ -422,13 +423,13 @@ class WooPosCartItemsUpdaterTest {
         summary: String = "Coupon Summary",
         itemNumber: Int = 1,
         id: Long = 1L,
-        formattedDiscount: String? = null
+        validationState: CouponValidationState = CouponValidationState.Unknown
     ) = WooPosCartItemViewState.Coupon(
         itemNumber = itemNumber,
         name = code,
         summary = summary,
         id = id,
-        formattedDiscount = formattedDiscount
+        validationState = validationState
     )
 
     private fun generateCouponLine(
