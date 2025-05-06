@@ -208,7 +208,8 @@ class WooPosProductsViewModelTest {
                 ChildToParentEvent.ItemClickedInProductSelector(
                     WooPosItemsViewModel.ItemClickedData.Product.Simple(
                         id = product.id
-                    )
+                    ),
+                    source = WooPosItemSource.PRODUCT_LIST
                 )
             )
             cancelAndConsumeRemainingEvents()

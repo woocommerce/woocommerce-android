@@ -33,7 +33,6 @@ class WooPosItemsSearchHelperTest {
     private val mockResourceProvider: ResourceProvider = mock()
     private val mockChildToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val mockParentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock()
-    private val mockAnalyticsTracker: WooPosAnalyticsTracker = mock()
 
     private lateinit var viewStateFlow: MutableStateFlow<WooPosItemsViewState>
     private lateinit var searchHelper: WooPosItemsSearchHelper
@@ -48,7 +47,6 @@ class WooPosItemsSearchHelperTest {
             resourceProvider = mockResourceProvider,
             childToParentEventSender = mockChildToParentEventSender,
             parentToChildrenEventReceiver = mockParentToChildrenEventReceiver,
-            analyticsTracker = mockAnalyticsTracker,
         )
     }
 

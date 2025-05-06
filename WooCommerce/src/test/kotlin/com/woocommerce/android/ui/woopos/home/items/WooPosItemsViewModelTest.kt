@@ -6,6 +6,10 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearch
 import com.woocommerce.android.ui.woopos.featureflags.WooPosIsProductsSearchEnabled
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SearchButtonTapped
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ITEM_LIST_TYPE
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ITEM_LIST_TYPE_PRODUCTS
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -42,6 +46,7 @@ class WooPosItemsViewModelTest {
     private val tabsHelper: WooPosItemsTabsHelper = mock {
         on { defaultTabs }.thenReturn(tabs)
     }
+    private val analyticsTracker: WooPosAnalyticsTracker = mock()
 
     @Before
     fun setup() {
@@ -181,11 +186,28 @@ class WooPosItemsViewModelTest {
         }
     }
 
+    @Test
+    fun `when search icon is tapped, the track analytics event`() = runTest {
+        // GIVEN
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosItemsUIEvent.SearchIconClicked)
+
+        // THEN
+        verify(analyticsTracker).track(
+            SearchButtonTapped.apply {
+                addProperties(mapOf(ITEM_LIST_TYPE to ITEM_LIST_TYPE_PRODUCTS))
+            }
+        )
+    }
+
     private fun createViewModel() =
         WooPosItemsViewModel(
             wooPosItemsNavigator,
             searchHelper,
             isProductsSearchEnabled,
             tabsHelper,
+            analyticsTracker
         )
 }
