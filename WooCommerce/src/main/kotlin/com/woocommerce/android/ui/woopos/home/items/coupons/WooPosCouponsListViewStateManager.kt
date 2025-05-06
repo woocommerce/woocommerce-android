@@ -48,7 +48,11 @@ class WooPosCouponsListViewStateManager @Inject constructor(
     private val contentFlow = couponsDataSource.couponsFlow.combine(fetchingState) { coupons, fetchingState ->
         when (fetchingState) {
             FETCHING_FIRST_PAGE -> {
-                WooPosCouponsViewState.Loading()
+                if(coupons.isEmpty()) {
+                    WooPosCouponsViewState.Loading()
+                } else {
+                    showCachedData(coupons, fetchingState)
+                }
             }
 
             ERROR_FETCHING_FIRST_PAGE -> {
@@ -59,16 +63,21 @@ class WooPosCouponsListViewStateManager @Inject constructor(
                 when {
                     coupons.isEmpty() -> WooPosCouponsViewState.Empty()
                     else -> {
-                        WooPosCouponsViewState.Content(
-                            items = mapCouponsToSelectionState(coupons),
-                            paginationState = getPaginationState(fetchingState),
-                            pullToRefreshState = getPullToRefreshState(fetchingState)
-                        )
+                        showCachedData(coupons, fetchingState)
                     }
                 }
             }
         }
     }
+
+    private suspend fun WooPosCouponsListViewStateManager.showCachedData(
+        coupons: List<Coupon>,
+        fetchingState: FetchingCouponsState
+    ) = WooPosCouponsViewState.Content(
+        items = mapCouponsToSelectionState(coupons),
+        paginationState = getPaginationState(fetchingState),
+        pullToRefreshState = getPullToRefreshState(fetchingState)
+    )
 
     val viewState: Flow<WooPosCouponsViewState> = contentFlow
 
