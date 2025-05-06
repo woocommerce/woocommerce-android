@@ -27,6 +27,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.CheckoutTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ClearCartTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.InteractionWithCustomerStarted
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart.WooPosItemSource
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemRemovedFromCart
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
@@ -211,12 +212,14 @@ class WooPosCartViewModel @Inject constructor(
                 analyticsTracker.track(InteractionWithCustomerStarted)
             }
             _state.value = updateStateWithNewItem(itemClicked.await())
-            WooPosAnalyticsEvent.Event.ItemAddedToCart.addProperties(
-                mapOf(
-                    WooPosAnalyticsEventConstant.PRODUCT_TYPE to event.itemData.posItemNameForAnalytics()
+
+            val source = WooPosItemSource.toAnalyticsString(event.source)
+            val itemAddedEvent = WooPosAnalyticsEvent.Event.ItemAddedToCart(source).apply {
+                addProperties(
+                    mapOf(WooPosAnalyticsEventConstant.PRODUCT_TYPE to event.itemData.posItemNameForAnalytics())
                 )
-            )
-            analyticsTracker.track(WooPosAnalyticsEvent.Event.ItemAddedToCart)
+            }
+            analyticsTracker.track(itemAddedEvent)
         }
     }
 

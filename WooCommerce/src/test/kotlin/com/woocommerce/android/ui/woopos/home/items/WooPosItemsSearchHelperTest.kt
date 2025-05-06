@@ -8,6 +8,7 @@ import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.viewmodel.ResourceProvider
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
@@ -44,7 +45,7 @@ class WooPosItemsSearchHelperTest {
         searchHelper = WooPosItemsSearchHelper(
             resourceProvider = mockResourceProvider,
             childToParentEventSender = mockChildToParentEventSender,
-            parentToChildrenEventReceiver = mockParentToChildrenEventReceiver
+            parentToChildrenEventReceiver = mockParentToChildrenEventReceiver,
         )
     }
 
@@ -79,7 +80,7 @@ class WooPosItemsSearchHelperTest {
         // GIVEN
         val searchQuery = "test query"
         val cursorPosition = searchQuery.length
-        searchHelper.initialize(this, viewStateFlow)
+        searchHelper.initialize(CoroutineScope(coroutinesTestRule.testDispatcher), viewStateFlow)
 
         // WHEN
         searchHelper.onSearchChanged(searchQuery, cursorPosition)
@@ -96,7 +97,7 @@ class WooPosItemsSearchHelperTest {
         // GIVEN
         val searchQuery = "test query"
         val cursorPosition = searchQuery.length
-        searchHelper.initialize(this, viewStateFlow)
+        searchHelper.initialize(CoroutineScope(coroutinesTestRule.testDispatcher), viewStateFlow)
 
         // WHEN
         searchHelper.onSearchChanged(searchQuery, cursorPosition)
@@ -116,7 +117,7 @@ class WooPosItemsSearchHelperTest {
         // GIVEN
         val emptyQuery = ""
         val cursorPosition = 0
-        searchHelper.initialize(this, viewStateFlow)
+        searchHelper.initialize(CoroutineScope(coroutinesTestRule.testDispatcher), viewStateFlow)
 
         // WHEN
         searchHelper.onSearchChanged(emptyQuery, cursorPosition)
@@ -131,7 +132,7 @@ class WooPosItemsSearchHelperTest {
     @Test
     fun `given open search state, when onCloseSearchClicked called, then updates to closed state`() = runTest {
         // GIVEN
-        searchHelper.initialize(this, viewStateFlow)
+        searchHelper.initialize(CoroutineScope(coroutinesTestRule.testDispatcher), viewStateFlow)
         searchHelper.onSearchChanged("initial query", "initial query".length)
 
         // WHEN
@@ -147,7 +148,7 @@ class WooPosItemsSearchHelperTest {
     fun `given search with query, when onClearSearchClicked called, then resets to initial open state with hint`() =
         runTest {
             // GIVEN
-            searchHelper.initialize(this, viewStateFlow)
+            searchHelper.initialize(CoroutineScope(coroutinesTestRule.testDispatcher), viewStateFlow)
             searchHelper.onSearchChanged("initial query", "initial query".length)
 
             // WHEN
@@ -168,7 +169,7 @@ class WooPosItemsSearchHelperTest {
         )
 
         // WHEN
-        searchHelper.initialize(this, viewStateFlow)
+        searchHelper.initialize(CoroutineScope(coroutinesTestRule.testDispatcher), viewStateFlow)
         advanceUntilIdle()
 
         // THEN
@@ -186,7 +187,7 @@ class WooPosItemsSearchHelperTest {
         )
 
         // WHEN
-        searchHelper.initialize(this, viewStateFlow)
+        searchHelper.initialize(CoroutineScope(coroutinesTestRule.testDispatcher), viewStateFlow)
 
         // THEN
         val currentState = viewStateFlow.value as WooPosItemsViewState.ProductList
@@ -198,10 +199,11 @@ class WooPosItemsSearchHelperTest {
     @Test
     fun `when animation completes, then hasAnimationPlayed flag is set to true`() = runTest {
         // GIVEN
-        searchHelper.initialize(this, viewStateFlow)
+        searchHelper.initialize(CoroutineScope(coroutinesTestRule.testDispatcher), viewStateFlow)
 
         // WHEN
         searchHelper.onAnimationComplete()
+        advanceUntilIdle()
 
         // THEN
         val currentState = viewStateFlow.value as WooPosItemsViewState.ProductList
@@ -213,7 +215,7 @@ class WooPosItemsSearchHelperTest {
     @Test
     fun `given animation completed, when search changed, then hasAnimationPlayed is preserved`() = runTest {
         // GIVEN
-        searchHelper.initialize(this, viewStateFlow)
+        searchHelper.initialize(CoroutineScope(coroutinesTestRule.testDispatcher), viewStateFlow)
         searchHelper.onAnimationComplete()
 
         // WHEN
@@ -233,7 +235,7 @@ class WooPosItemsSearchHelperTest {
     @Test
     fun `given animation has played, when onClearSearchClicked, then hasAnimationPlayed is false`() = runTest {
         // GIVEN
-        searchHelper.initialize(this, viewStateFlow)
+        searchHelper.initialize(CoroutineScope(coroutinesTestRule.testDispatcher), viewStateFlow)
 
         searchHelper.onAnimationComplete()
 
@@ -250,7 +252,7 @@ class WooPosItemsSearchHelperTest {
     @Test
     fun `given animation complete, when order successful paid, then state is closed`() = runTest {
         // GIVEN
-        searchHelper.initialize(this, viewStateFlow)
+        searchHelper.initialize(CoroutineScope(coroutinesTestRule.testDispatcher), viewStateFlow)
         searchHelper.onAnimationComplete()
 
         // WHEN
@@ -261,7 +263,7 @@ class WooPosItemsSearchHelperTest {
                 )
             )
         )
-        searchHelper.initialize(this, viewStateFlow)
+        searchHelper.initialize(CoroutineScope(coroutinesTestRule.testDispatcher), viewStateFlow)
         advanceUntilIdle()
 
         // THEN
