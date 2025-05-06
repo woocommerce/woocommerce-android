@@ -48,7 +48,7 @@ class WooPosCouponsListViewStateManager @Inject constructor(
     private val contentFlow = couponsDataSource.couponsFlow.combine(fetchingState) { coupons, fetchingState ->
         when (fetchingState) {
             FETCHING_FIRST_PAGE -> {
-                if(coupons.isEmpty()) {
+                if (coupons.isEmpty()) {
                     WooPosCouponsViewState.Loading()
                 } else {
                     showCachedData(coupons, fetchingState)
