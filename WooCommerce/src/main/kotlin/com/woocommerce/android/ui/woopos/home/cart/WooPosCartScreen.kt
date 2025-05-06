@@ -143,7 +143,13 @@ private fun WooPosCartScreen(
                 CartBodyWithItems(
                     modifier = Modifier.constrainAs(body) {
                         top.linkTo(toolbar.bottom, margin = productsTopMargin)
-                        bottom.linkTo(checkoutButton.top)
+                        bottom.linkTo(
+                            if (state.isCheckoutButtonVisible) {
+                                checkoutButton.top
+                            } else {
+                                parent.bottom
+                            }
+                        )
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
                         height = Dimension.fillToConstraints
