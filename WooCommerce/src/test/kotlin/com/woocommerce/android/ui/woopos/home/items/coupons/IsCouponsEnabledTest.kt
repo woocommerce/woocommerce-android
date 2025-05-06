@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.home.items.coupons
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule
@@ -35,12 +36,12 @@ class IsCouponsEnabledTest {
     }
 
     @Test
-    fun `returns true when coupons are enabled in site settings`() {
+    fun `returns true when coupons are enabled in site settings`() = runTest {
         // Given
         val siteSettings = mock<WCSettingsModel> {
             on { couponsEnabled } doReturn true
         }
-        whenever(wooCommerceStore.getSiteSettings(siteModel)).thenReturn(siteSettings)
+        whenever(wooCommerceStore.getSiteSettingsAsync(siteModel)).thenReturn(siteSettings)
 
         // When
         val result = isCouponsEnabled()
@@ -50,12 +51,12 @@ class IsCouponsEnabledTest {
     }
 
     @Test
-    fun `returns false when coupons are disabled in site settings`() {
+    fun `returns false when coupons are disabled in site settings`() = runTest {
         // Given
         val siteSettings = mock<WCSettingsModel> {
             on { couponsEnabled } doReturn false
         }
-        whenever(wooCommerceStore.getSiteSettings(siteModel)).thenReturn(siteSettings)
+        whenever(wooCommerceStore.getSiteSettingsAsync(siteModel)).thenReturn(siteSettings)
 
         // When
         val result = isCouponsEnabled()
@@ -65,14 +66,37 @@ class IsCouponsEnabledTest {
     }
 
     @Test
-    fun `returns false when site settings are null`() {
+    fun `returns false when site settings are null`() = runTest {
         // Given
-        whenever(wooCommerceStore.getSiteSettings(siteModel)).thenReturn(null)
+        whenever(wooCommerceStore.getSiteSettingsAsync(siteModel)).thenReturn(null)
 
         // When
         val result = isCouponsEnabled()
 
         // Then
         assertThat(result).isFalse()
+    }
+
+    @Test
+    fun `uses cached value on subsequent calls`() = runTest {
+        // GIVEN
+        val siteSettings = mock<WCSettingsModel> {
+            on { couponsEnabled } doReturn true
+        }
+        whenever(wooCommerceStore.getSiteSettingsAsync(siteModel)).thenReturn(siteSettings)
+
+        // WHEN
+        val firstResult = isCouponsEnabled()
+
+        val newSettings = mock<WCSettingsModel> {
+            on { couponsEnabled } doReturn false
+        }
+        whenever(wooCommerceStore.getSiteSettingsAsync(siteModel)).thenReturn(newSettings)
+
+        val secondResult = isCouponsEnabled()
+
+        // THEN
+        assertThat(firstResult).isTrue()
+        assertThat(secondResult).isTrue() // Still true from cache, not false from new mock
     }
 }
