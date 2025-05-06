@@ -228,7 +228,7 @@ private fun DashboardWidgetCard(
 
 @Composable
 private fun ConfigurableWidgetCard(
-    widgetUiModel: DashboardWidgetUiModel.ConfigurableWidget,
+    widgetUiModel: ConfigurableWidget,
     mainActivityViewModel: MainActivityViewModel,
     dashboardViewModel: DashboardViewModel,
     blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher,
@@ -336,7 +336,7 @@ private fun ShareStoreCard(
 
 @Composable
 private fun FeedbackCard(
-    widget: DashboardWidgetUiModel.FeedbackWidget,
+    widget: FeedbackWidget,
     modifier: Modifier
 ) {
     LaunchedEffect(Unit) {
@@ -380,7 +380,7 @@ private fun FeedbackCard(
 
 @Composable
 private fun NewWidgetsCard(
-    state: DashboardWidgetUiModel.NewWidgetsCard,
+    state: NewWidgetsCard,
     modifier: Modifier
 ) {
     Column(
