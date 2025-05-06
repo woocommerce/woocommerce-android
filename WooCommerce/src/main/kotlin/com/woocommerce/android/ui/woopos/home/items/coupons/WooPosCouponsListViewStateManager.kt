@@ -34,7 +34,7 @@ class WooPosCouponsListViewStateManager @Inject constructor(
     private val formatCouponSummary: WooPosFormatCouponSummary,
     private val getCachedStoreCurrency: WooPosGetCachedStoreCurrency,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
-    private val isCouponsEnabled: IsCouponsEnabled,
+    private val cachedCouponEnabledChecker: CachedCouponEnabledChecker,
 ) {
     private val fetchingState: MutableStateFlow<FetchingCouponsState> = MutableStateFlow(IDLE)
 
@@ -47,7 +47,7 @@ class WooPosCouponsListViewStateManager @Inject constructor(
     }
 
     private val contentFlow = couponsDataSource.couponsFlow.combine(fetchingState) { coupons, fetchingState ->
-        if (!isCouponsEnabled()) {
+        if (!cachedCouponEnabledChecker.isEnabled()) {
             return@combine WooPosCouponsViewState.Error.CouponsDisabledError()
         }
         when (fetchingState) {

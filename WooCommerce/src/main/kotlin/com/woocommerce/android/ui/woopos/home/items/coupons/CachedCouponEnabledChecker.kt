@@ -4,13 +4,13 @@ import com.woocommerce.android.tools.SelectedSite
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
-class IsCouponsEnabled @Inject constructor(
+class CachedCouponEnabledChecker @Inject constructor(
     val wooCommerceStore: WooCommerceStore,
     val selectedSite: SelectedSite
 ) {
     private var cachedValue: Boolean? = null
 
-    suspend operator fun invoke(): Boolean {
+    suspend fun isEnabled(): Boolean {
         cachedValue?.let { return it }
 
         val result = wooCommerceStore.getSiteSettingsAsync(selectedSite.get())?.couponsEnabled ?: false

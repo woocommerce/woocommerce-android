@@ -16,12 +16,12 @@ import org.wordpress.android.fluxc.model.WCSettingsModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
 @ExperimentalCoroutinesApi
-class IsCouponsEnabledTest {
+class CachedCouponEnabledCheckerTest {
     @Rule
     @JvmField
     val coroutineTestRule = WooPosCoroutineTestRule()
 
-    private lateinit var isCouponsEnabled: IsCouponsEnabled
+    private lateinit var cachedCouponEnabledChecker: CachedCouponEnabledChecker
     private lateinit var wooCommerceStore: WooCommerceStore
     private lateinit var selectedSite: SelectedSite
     private val siteModel = SiteModel().apply { id = 123 }
@@ -30,7 +30,7 @@ class IsCouponsEnabledTest {
     fun setup() {
         selectedSite = mock()
         wooCommerceStore = mock()
-        isCouponsEnabled = IsCouponsEnabled(wooCommerceStore, selectedSite)
+        cachedCouponEnabledChecker = CachedCouponEnabledChecker(wooCommerceStore, selectedSite)
 
         whenever(selectedSite.get()).thenReturn(siteModel)
     }
@@ -44,7 +44,7 @@ class IsCouponsEnabledTest {
         whenever(wooCommerceStore.getSiteSettingsAsync(siteModel)).thenReturn(siteSettings)
 
         // When
-        val result = isCouponsEnabled()
+        val result = cachedCouponEnabledChecker.isEnabled()
 
         // Then
         assertThat(result).isTrue()
@@ -59,7 +59,7 @@ class IsCouponsEnabledTest {
         whenever(wooCommerceStore.getSiteSettingsAsync(siteModel)).thenReturn(siteSettings)
 
         // When
-        val result = isCouponsEnabled()
+        val result = cachedCouponEnabledChecker.isEnabled()
 
         // Then
         assertThat(result).isFalse()
@@ -71,7 +71,7 @@ class IsCouponsEnabledTest {
         whenever(wooCommerceStore.getSiteSettingsAsync(siteModel)).thenReturn(null)
 
         // When
-        val result = isCouponsEnabled()
+        val result = cachedCouponEnabledChecker.isEnabled()
 
         // Then
         assertThat(result).isFalse()
@@ -86,14 +86,14 @@ class IsCouponsEnabledTest {
         whenever(wooCommerceStore.getSiteSettingsAsync(siteModel)).thenReturn(siteSettings)
 
         // WHEN
-        val firstResult = isCouponsEnabled()
+        val firstResult = cachedCouponEnabledChecker.isEnabled()
 
         val newSettings = mock<WCSettingsModel> {
             on { couponsEnabled } doReturn false
         }
         whenever(wooCommerceStore.getSiteSettingsAsync(siteModel)).thenReturn(newSettings)
 
-        val secondResult = isCouponsEnabled()
+        val secondResult = cachedCouponEnabledChecker.isEnabled()
 
         // THEN
         assertThat(firstResult).isTrue()
