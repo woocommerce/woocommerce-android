@@ -198,10 +198,6 @@ open class WooCommerceStore @Inject constructor(
     /**
      * Given a [SiteModel], returns its WooCommerce site settings, or null if no settings are stored for this site.
      */
-    @Deprecated(
-        "Use async/suspend version instead",
-        ReplaceWith("getSiteSettingsAsync(site)")
-    )
     fun getSiteSettings(site: SiteModel): WCSettingsModel? =
         WCSettingsSqlUtils.getSettingsForSite(site)
 
