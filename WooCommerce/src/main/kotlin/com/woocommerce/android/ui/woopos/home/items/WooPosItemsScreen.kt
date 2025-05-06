@@ -1,5 +1,8 @@
 package com.woocommerce.android.ui.woopos.home.items
 
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -106,28 +109,43 @@ private fun MainItemsList(
                 onSearchEvent = onSearchEvent,
             )
 
-            when (val itemsState = state.value) {
-                is WooPosItemsViewState.ProductList -> {
-                    Column {
-                        when (val searchState = itemsState.search) {
-                            WooPosItemsViewState.SearchState.Hidden -> {
-                                WooPosProductsScreen(modifier = Modifier, listState = listState)
-                            }
-                            is WooPosItemsViewState.SearchState.Visible -> {
-                                when (searchState.state) {
-                                    WooPosSearchInputState.Closed -> {
-                                        WooPosProductsScreen(modifier = Modifier, listState = listState)
-                                    }
+            val currentState = state.value
 
-                                    is WooPosSearchInputState.Open -> WooPosItemsSearchScreen()
-                                }
-                            }
-                        }
-                    }
+            Crossfade(
+                targetState = getScreenState(currentState),
+                animationSpec = tween(
+                    durationMillis = 300,
+                    easing = LinearEasing,
+                ),
+            ) { screenState ->
+                when (screenState) {
+                    ScreenState.PRODUCTS -> WooPosProductsScreen(modifier = Modifier, listState = listState)
+                    ScreenState.PRODUCTS_SEARCH -> WooPosItemsSearchScreen()
+                    ScreenState.COUPONS -> WooPosCouponsScreen(modifier = Modifier)
                 }
-                is WooPosItemsViewState.CouponList -> WooPosCouponsScreen(modifier = Modifier)
             }
         }
+    }
+}
+
+private enum class ScreenState {
+    PRODUCTS, PRODUCTS_SEARCH, COUPONS
+}
+
+private fun getScreenState(state: WooPosItemsViewState): ScreenState {
+    return when (state) {
+        is WooPosItemsViewState.ProductList -> {
+            when (val searchState = state.search) {
+                WooPosItemsViewState.SearchState.Hidden -> ScreenState.PRODUCTS
+                is WooPosItemsViewState.SearchState.Visible -> {
+                    when (searchState.state) {
+                        WooPosSearchInputState.Closed -> ScreenState.PRODUCTS
+                        is WooPosSearchInputState.Open -> ScreenState.PRODUCTS_SEARCH
+                    }
+                }
+            }
+        }
+        is WooPosItemsViewState.CouponList -> ScreenState.COUPONS
     }
 }
 
