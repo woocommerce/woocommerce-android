@@ -4,6 +4,7 @@ import app.cash.turbine.test
 import com.woocommerce.android.ui.coupons.CouponTestUtils
 import com.woocommerce.android.ui.woopos.home.items.WooPosCouponsViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosCouponsViewState.Content
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.WooPosGetCachedStoreCurrency
@@ -23,6 +24,7 @@ import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.mockito.kotlin.wheneverBlocking
+import java.util.Date
 import com.woocommerce.android.model.Coupon as CouponDBModel
 
 private const val MORE_PAGES_AVAILABLE = true
@@ -366,6 +368,93 @@ class WooPosCouponsListViewStateManagerTest {
             testScheduler.advanceTimeBy(2)
 
             assertThat(expectMostRecentItem()).isInstanceOf(WooPosCouponsViewState.Empty::class.java)
+
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `given coupon without expiration date, when mapped, then expiredState is NotExpired`() = runTest {
+        // GIVEN
+        val coupon = CouponTestUtils.generateTestCoupon(0L).copy(
+            dateExpires = null
+        )
+        whenever(couponsDataSource.clearCacheAndFetchFirstPage()).doSuspendableAnswer {
+            couponsDataFlow.emit(listOf(coupon))
+            delay(1) // workaround for bug in mockito
+            Result.success(false)
+        }
+
+        sat.viewState.test {
+            // WHEN
+            sat.fetchCoupons(this)
+            advanceUntilIdle()
+
+            // THEN
+            val state = expectMostRecentItem() as Content
+            val mappedCoupon = state.items.first() as WooPosItemSelectionViewState.Coupon
+            assertThat(mappedCoupon.expiredState)
+                .isInstanceOf(WooPosItemSelectionViewState.Coupon.ExpiredState.NotExpired::class.java)
+
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `given coupon with future expiration date, when mapped, then expiredState is NotExpired`() = runTest {
+        // GIVEN
+        val futureDate = Date(System.currentTimeMillis() + 86400000) // tomorrow
+        val coupon = CouponTestUtils.generateTestCoupon(0L).copy(
+            dateExpires = futureDate
+        )
+        whenever(couponsDataSource.clearCacheAndFetchFirstPage()).doSuspendableAnswer {
+            couponsDataFlow.emit(listOf(coupon))
+            delay(1) // workaround for bug in mockito
+            Result.success(false)
+        }
+
+        sat.viewState.test {
+            // WHEN
+            sat.fetchCoupons(this)
+            advanceUntilIdle()
+
+            // THEN
+            val state = expectMostRecentItem() as Content
+            val mappedCoupon = state.items.first() as WooPosItemSelectionViewState.Coupon
+            assertThat(mappedCoupon.expiredState)
+                .isInstanceOf(WooPosItemSelectionViewState.Coupon.ExpiredState.NotExpired::class.java)
+
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `given coupon with past expiration date, when mapped, then expiredState is Expired with formatted date`() = runTest {
+        // GIVEN
+        val pastDate = Date(System.currentTimeMillis() - 86400000) // yesterday
+        val coupon = CouponTestUtils.generateTestCoupon(0L).copy(
+            dateExpires = pastDate
+        )
+        val formattedDate = "01 Jan 2023"
+        whenever(couponFormatter.formatExpiredText(pastDate)).thenReturn(formattedDate)
+        whenever(couponsDataSource.clearCacheAndFetchFirstPage()).doSuspendableAnswer {
+            couponsDataFlow.emit(listOf(coupon))
+            delay(1) // workaround for bug in mockito
+            Result.success(false)
+        }
+
+        sat.viewState.test {
+            // WHEN
+            sat.fetchCoupons(this)
+            advanceUntilIdle()
+
+            // THEN
+            val state = expectMostRecentItem() as Content
+            val mappedCoupon = state.items.first() as WooPosItemSelectionViewState.Coupon
+            assertThat(mappedCoupon.expiredState)
+                .isInstanceOf(WooPosItemSelectionViewState.Coupon.ExpiredState.Expired::class.java)
+            val expiredState = mappedCoupon.expiredState as WooPosItemSelectionViewState.Coupon.ExpiredState.Expired
+            assertThat(expiredState.formattedDate).isEqualTo(formattedDate)
 
             cancelAndIgnoreRemainingEvents()
         }
