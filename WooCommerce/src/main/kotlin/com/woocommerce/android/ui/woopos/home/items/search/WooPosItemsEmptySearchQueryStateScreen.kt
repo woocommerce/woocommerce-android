@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.home.items.search
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,19 +10,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -31,8 +25,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosChip
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
@@ -115,49 +109,14 @@ private fun RecentSearchesChips(
             Spacer(modifier = Modifier.width(WooPosSpacing.Small.value))
 
             recentSearches.forEach { recentSearch ->
-                SearchChip(
+                WooPosChip(
                     text = recentSearch,
-                    onClick = { onRecentSearchClicked(recentSearch) }
+                    onClick = { onRecentSearchClicked(recentSearch) },
+                    leadingIcon = Icons.Outlined.Search
                 )
 
                 Spacer(modifier = Modifier.width(WooPosSpacing.Small.value))
             }
-        }
-    }
-}
-
-@Composable
-private fun SearchChip(
-    text: String,
-    onClick: () -> Unit
-) {
-    Surface(
-        modifier = Modifier.clickable(onClick = onClick),
-        shape = RoundedCornerShape(WooPosCornerRadius.Large.value),
-        color = MaterialTheme.colorScheme.surfaceContainerLowest,
-        shadowElevation = 1.dp,
-    ) {
-        Row(
-            modifier = Modifier.padding(
-                horizontal = WooPosSpacing.Medium.value,
-                vertical = WooPosSpacing.Small.value
-            ),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = Icons.Outlined.Search,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(20.dp)
-            )
-
-            Spacer(modifier = Modifier.width(WooPosSpacing.Small.value))
-
-            WooPosText(
-                text = text,
-                style = WooPosTypography.BodyMedium,
-                color = MaterialTheme.colorScheme.onSurface
-            )
         }
     }
 }
