@@ -4333,7 +4333,7 @@
     <string name="woopos_coupons_empty_list_image_description">No coupons</string>
     <string name="woopos_coupons_empty_list_title">No coupons found</string>
     <string name="woopos_coupons_loading_error_coupons_disabled_title">No coupons found</string>
-    <string name="woopos_coupons_loading_error_coupons_disabled_message">In order to use coupons you need to enabled it on your app’s settings.</string>
+    <string name="woopos_coupons_loading_error_coupons_disabled_message">Please enable coupons in WooCommerce Settings.</string>
     <string name="woopos_coupons_empty_list_message">Boost your business by sending customers special offers and discounts.</string>
     <string name="woopos_coupons_loading_error_title">Error loading coupons</string>
     <string name="woopos_coupons_loading_error_message">Give it another go?</string>
