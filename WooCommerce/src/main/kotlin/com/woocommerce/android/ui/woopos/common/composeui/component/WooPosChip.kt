@@ -1,18 +1,14 @@
 package com.woocommerce.android.ui.woopos.common.composeui.component
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -21,7 +17,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
@@ -58,7 +56,7 @@ fun WooPosChip(
                     imageVector = leadingIcon,
                     contentDescription = null,
                     tint = iconTint,
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier.size(32.dp).padding(WooPosSpacing.XSmall.value)
                 )
 
                 Spacer(modifier = Modifier.width(8.dp))
@@ -66,7 +64,7 @@ fun WooPosChip(
 
             WooPosText(
                 text = text,
-                style = WooPosTypography.BodyMedium,
+                style = WooPosTypography.BodyLarge,
                 color = contentColor
             )
         }
@@ -87,7 +85,7 @@ fun WooPosChipPreview() {
                 WooPosChip(
                     text = "Search chip",
                     onClick = {},
-                    leadingIcon = Icons.Outlined.Search
+                    leadingIcon = ImageVector.vectorResource(id = R.drawable.ic_woo_pos_search)
                 )
 
                 WooPosChip(
