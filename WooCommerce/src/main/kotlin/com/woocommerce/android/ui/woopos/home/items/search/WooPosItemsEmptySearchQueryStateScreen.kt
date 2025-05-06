@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.home.items.search
 
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,6 +19,7 @@ import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -104,18 +106,16 @@ private fun RecentSearchesChips(
         Row(
             modifier = Modifier
                 .horizontalScroll(horizontalScrollState)
-                .padding(vertical = WooPosSpacing.Small.value)
+                .padding(vertical = WooPosSpacing.Small.value),
+            horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value, Alignment.Start),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Spacer(modifier = Modifier.width(WooPosSpacing.Small.value))
-
             recentSearches.forEach { recentSearch ->
                 WooPosChip(
                     text = recentSearch,
                     onClick = { onRecentSearchClicked(recentSearch) },
                     leadingIcon = Icons.Outlined.Search
                 )
-
-                Spacer(modifier = Modifier.width(WooPosSpacing.Small.value))
             }
         }
     }
