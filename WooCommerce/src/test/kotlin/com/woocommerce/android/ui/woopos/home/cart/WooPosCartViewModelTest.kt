@@ -8,9 +8,11 @@ import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetCouponById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetVariationById
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
+import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState.Coupon.CouponValidationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.WooPosGetCachedStoreCurrency
@@ -19,6 +21,8 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.CheckoutTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ClearCartTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.InteractionWithCustomerStarted
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart.WooPosItemSource
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart.WooPosItemSource.Companion.toAnalyticsString
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTrackingDataKeeper
@@ -116,7 +120,8 @@ class WooPosCartViewModelTest {
             ParentToChildrenEvent.ItemClickedInProductSelector(
                 WooPosItemsViewModel.ItemClickedData.Product.Simple(
                     id = product.remoteId
-                )
+                ),
+                source = WooPosItemSource.PRODUCT_LIST
             )
         )
 
@@ -153,7 +158,8 @@ class WooPosCartViewModelTest {
                 WooPosItemsViewModel.ItemClickedData.Product.Variation(
                     id = variation.remoteVariationId,
                     productId = variation.remoteProductId
-                )
+                ),
+                source = WooPosItemSource.PRODUCT_LIST
             )
         )
 
@@ -198,7 +204,8 @@ class WooPosCartViewModelTest {
                 ParentToChildrenEvent.ItemClickedInProductSelector(
                     WooPosItemsViewModel.ItemClickedData.Product.Simple(
                         id = product.remoteId
-                    )
+                    ),
+                    source = WooPosItemSource.PRODUCT_LIST
                 )
             )
 
@@ -239,7 +246,7 @@ class WooPosCartViewModelTest {
                         itemNumber = 1,
                         name = "coupon_code",
                         summary = "100% off everything",
-                        formattedDiscount = null,
+                        validationState = CouponValidationState.Unknown,
                     )
                 )
             )
@@ -266,7 +273,8 @@ class WooPosCartViewModelTest {
             ParentToChildrenEvent.ItemClickedInProductSelector(
                 WooPosItemsViewModel.ItemClickedData.Product.Simple(
                     id = product.remoteId
-                )
+                ),
+                source = WooPosItemSource.PRODUCT_LIST
             )
         )
 
@@ -356,7 +364,8 @@ class WooPosCartViewModelTest {
                 ParentToChildrenEvent.ItemClickedInProductSelector(
                     WooPosItemsViewModel.ItemClickedData.Product.Simple(
                         id = product.remoteId
-                    )
+                    ),
+                    source = WooPosItemSource.PRODUCT_LIST
                 )
             )
 
@@ -417,14 +426,16 @@ class WooPosCartViewModelTest {
                 ParentToChildrenEvent.ItemClickedInProductSelector(
                     WooPosItemsViewModel.ItemClickedData.Product.Simple(
                         id = product1.remoteId
-                    )
+                    ),
+                    source = WooPosItemSource.PRODUCT_LIST
                 )
             )
             parentToChildrenMutableSharedFlow.emit(
                 ParentToChildrenEvent.ItemClickedInProductSelector(
                     WooPosItemsViewModel.ItemClickedData.Product.Simple(
                         id = product2.remoteId
-                    )
+                    ),
+                    source = WooPosItemSource.PRODUCT_LIST
                 )
             )
 
@@ -445,7 +456,8 @@ class WooPosCartViewModelTest {
                 ParentToChildrenEvent.ItemClickedInProductSelector(
                     WooPosItemsViewModel.ItemClickedData.Product.Simple(
                         id = product3.remoteId
-                    )
+                    ),
+                    source = WooPosItemSource.PRODUCT_LIST
                 )
             )
 
@@ -485,7 +497,8 @@ class WooPosCartViewModelTest {
             ParentToChildrenEvent.ItemClickedInProductSelector(
                 WooPosItemsViewModel.ItemClickedData.Product.Simple(
                     id = product.remoteId
-                )
+                ),
+                source = WooPosItemSource.PRODUCT_LIST
             )
         )
 
@@ -549,7 +562,8 @@ class WooPosCartViewModelTest {
             ParentToChildrenEvent.ItemClickedInProductSelector(
                 WooPosItemsViewModel.ItemClickedData.Product.Simple(
                     id = product.remoteId
-                )
+                ),
+                source = WooPosItemSource.PRODUCT_LIST
             )
         )
 
@@ -608,12 +622,16 @@ class WooPosCartViewModelTest {
             ParentToChildrenEvent.ItemClickedInProductSelector(
                 WooPosItemsViewModel.ItemClickedData.Product.Simple(
                     id = product.remoteId
-                )
+                ),
+                source = WooPosItemSource.PRODUCT_LIST
             )
         )
 
         // THEN
-        verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.ItemAddedToCart)
+        verify(analyticsTracker)
+            .track(
+                WooPosAnalyticsEvent.Event.ItemAddedToCart(source = toAnalyticsString(WooPosItemSource.PRODUCT_LIST))
+            )
     }
 
     @Test
@@ -626,7 +644,7 @@ class WooPosCartViewModelTest {
         simulateCouponClicked()
 
         // THEN
-        verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.ItemAddedToCart)
+        verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.ItemAddedToCart(source = "coupons"))
     }
 
     @Test
@@ -647,14 +665,15 @@ class WooPosCartViewModelTest {
             ParentToChildrenEvent.ItemClickedInProductSelector(
                 WooPosItemsViewModel.ItemClickedData.Product.Simple(
                     id = product.remoteId
-                )
+                ),
+                source = WooPosItemSource.PRODUCT_LIST
             )
         )
 
         // THEN
         verify(analyticsTracker).track(
             argThat {
-                this == WooPosAnalyticsEvent.Event.ItemAddedToCart &&
+                this == WooPosAnalyticsEvent.Event.ItemAddedToCart() &&
                     (
                         this as WooPosAnalyticsEvent.Event.ItemAddedToCart
                         ).properties[WooPosAnalyticsEventConstant.PRODUCT_TYPE] == "simple"
@@ -688,14 +707,15 @@ class WooPosCartViewModelTest {
                 WooPosItemsViewModel.ItemClickedData.Product.Variation(
                     id = variation.remoteProductId,
                     productId = variation.remoteProductId
-                )
+                ),
+                source = WooPosItemSource.PRODUCT_LIST
             )
         )
 
         // THEN
         verify(analyticsTracker).track(
             argThat {
-                this == WooPosAnalyticsEvent.Event.ItemAddedToCart &&
+                this == WooPosAnalyticsEvent.Event.ItemAddedToCart() &&
                     (
                         this as WooPosAnalyticsEvent.Event.ItemAddedToCart
                         ).properties[WooPosAnalyticsEventConstant.PRODUCT_TYPE] == "variation"
@@ -715,12 +735,139 @@ class WooPosCartViewModelTest {
         // THEN
         verify(analyticsTracker).track(
             argThat {
-                this == WooPosAnalyticsEvent.Event.ItemAddedToCart &&
+                this == WooPosAnalyticsEvent.Event.ItemAddedToCart(source = "coupons") &&
                     (
                         this as WooPosAnalyticsEvent.Event.ItemAddedToCart
                         ).properties[WooPosAnalyticsEventConstant.PRODUCT_TYPE] == "coupon"
             }
         )
+    }
+
+    @Test
+    fun `given cart has coupons, when coupons validation fails, then coupons validation state is INVALID`() = runTest {
+        // GIVEN
+        val parentToChildrenEventsMutableFlow = MutableSharedFlow<ParentToChildrenEvent>()
+        whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenEventsMutableFlow)
+        val sut = createSut()
+        val states = sut.state.captureValues()
+        parentToChildrenEventsMutableFlow.emit(
+            ParentToChildrenEvent.ItemClickedInProductSelector(
+                WooPosItemsViewModel.ItemClickedData.Coupon(id = 1L)
+            )
+        )
+        sut.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
+
+        // WHEN
+        parentToChildrenEventsMutableFlow.emit(ParentToChildrenEvent.CouponsValidationFailed)
+
+        // THEN
+        val itemsInCart = (states.last().body as WooPosCartState.Body.WithItems).itemsInCart
+        assertThat(itemsInCart).hasSize(1)
+        assertThat((itemsInCart.first() as WooPosCartItemViewState.Coupon).validationState)
+            .isEqualTo(CouponValidationState.Invalid)
+    }
+
+    @Test
+    fun `when remove coupons event received, then should remove all coupons from cart`() = runTest {
+        // GIVEN
+        val parentToChildrenEventsMutableFlow = MutableSharedFlow<ParentToChildrenEvent>()
+        whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenEventsMutableFlow)
+        val sut = createSut()
+        val states = sut.state.captureValues()
+        parentToChildrenEventsMutableFlow.emit(
+            ParentToChildrenEvent.ItemClickedInProductSelector(
+                WooPosItemsViewModel.ItemClickedData.Coupon(id = 1L)
+            )
+        )
+        parentToChildrenEventsMutableFlow.emit(
+            ParentToChildrenEvent.ItemClickedInProductSelector(
+                WooPosItemsViewModel.ItemClickedData.Coupon(id = 2L)
+            )
+        )
+
+        val product = ProductTestUtils.generateProduct(
+            productId = 23L,
+            productName = "title",
+            amount = "10.0"
+        ).copy(firstImageUrl = "url")
+        whenever(getProductById(eq(product.remoteId))).thenReturn(product)
+        parentToChildrenEventsMutableFlow.emit(
+            ParentToChildrenEvent.ItemClickedInProductSelector(
+                WooPosItemsViewModel.ItemClickedData.Product.Simple(
+                    id = product.remoteId
+                )
+            )
+        )
+        sut.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
+
+        assertThat((states.last().body as WooPosCartState.Body.WithItems).itemsInCart).hasSize(3)
+
+        // WHEN
+        parentToChildrenEventsMutableFlow.emit(ParentToChildrenEvent.RemoveCouponsClicked)
+
+        // THEN
+        val finalItemsInCart = (states.last().body as WooPosCartState.Body.WithItems).itemsInCart
+        assertThat(finalItemsInCart).hasSize(1)
+        assertThat(finalItemsInCart.first()).isInstanceOf(WooPosCartItemViewState.Product.Simple::class.java)
+
+        verify(childrenToParentEventSender).sendToParent(any<ChildToParentEvent.CouponsRemoved>())
+    }
+
+    @Test
+    fun `when remove coupons event received, then emits coupons removed event`() = runTest {
+        // GIVEN
+        val parentToChildrenEventsMutableFlow = MutableSharedFlow<ParentToChildrenEvent>()
+        whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenEventsMutableFlow)
+        createSut()
+        parentToChildrenEventsMutableFlow.emit(
+            ParentToChildrenEvent.ItemClickedInProductSelector(
+                WooPosItemsViewModel.ItemClickedData.Coupon(id = 2L)
+            )
+        )
+
+        val product = ProductTestUtils.generateProduct(
+            productId = 23L,
+            productName = "title",
+            amount = "10.0"
+        ).copy(firstImageUrl = "url")
+        whenever(getProductById(eq(product.remoteId))).thenReturn(product)
+        parentToChildrenEventsMutableFlow.emit(
+            ParentToChildrenEvent.ItemClickedInProductSelector(
+                WooPosItemsViewModel.ItemClickedData.Product.Simple(
+                    id = product.remoteId
+                )
+            )
+        )
+
+        // WHEN
+        parentToChildrenEventsMutableFlow.emit(ParentToChildrenEvent.RemoveCouponsClicked)
+
+        // THEN
+        verify(childrenToParentEventSender).sendToParent(any<ChildToParentEvent.CouponsRemoved>())
+    }
+
+    @Test
+    fun `when back from checkout to cart, then coupon validation states should be reset to UNKNOWN`() = runTest {
+        // GIVEN
+        val parentToChildrenEventsMutableFlow = MutableSharedFlow<ParentToChildrenEvent>()
+        whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenEventsMutableFlow)
+        val sut = createSut()
+        val states = sut.state.captureValues()
+        parentToChildrenEventsMutableFlow.emit(
+            ParentToChildrenEvent.ItemClickedInProductSelector(
+                WooPosItemsViewModel.ItemClickedData.Coupon(id = 1L)
+            )
+        )
+        sut.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
+
+        // WHEN
+        parentToChildrenEventsMutableFlow.emit(ParentToChildrenEvent.BackFromCheckoutToCartClicked)
+
+        // THEN
+        val finalItemsInCart = (states.last().body as WooPosCartState.Body.WithItems).itemsInCart
+        assertThat(finalItemsInCart).hasSize(1)
+        assertThat((finalItemsInCart.first() as WooPosCartItemViewState.Coupon).validationState)
+            .isEqualTo(CouponValidationState.Unknown)
     }
 
     @Test
@@ -765,7 +912,8 @@ class WooPosCartViewModelTest {
             ParentToChildrenEvent.ItemClickedInProductSelector(
                 WooPosItemsViewModel.ItemClickedData.Product.Simple(
                     id = product.remoteId
-                )
+                ),
+                source = WooPosItemSource.PRODUCT_LIST
             )
         )
 
@@ -794,7 +942,8 @@ class WooPosCartViewModelTest {
             ParentToChildrenEvent.ItemClickedInProductSelector(
                 WooPosItemsViewModel.ItemClickedData.Product.Simple(
                     id = product.remoteId
-                )
+                ),
+                source = WooPosItemSource.PRODUCT_LIST
             )
         )
 
@@ -820,7 +969,8 @@ class WooPosCartViewModelTest {
             ParentToChildrenEvent.ItemClickedInProductSelector(
                 WooPosItemsViewModel.ItemClickedData.Product.Simple(
                     id = product.remoteId
-                )
+                ),
+                source = WooPosItemSource.PRODUCT_LIST
             )
         )
 
@@ -837,8 +987,10 @@ class WooPosCartViewModelTest {
     private suspend fun simulateCouponClicked(couponId: Long = 1L) {
         parentToChildrenMutableSharedFlow.emit(
             ParentToChildrenEvent.ItemClickedInProductSelector(
-                WooPosItemsViewModel.ItemClickedData.Coupon(id = couponId)
-            )
+                itemData = WooPosItemsViewModel.ItemClickedData.Coupon(id = couponId),
+                source = WooPosItemSource.COUPON_LIST
+            ),
+
         )
     }
 
@@ -885,7 +1037,8 @@ class WooPosCartViewModelTest {
             ParentToChildrenEvent.ItemClickedInProductSelector(
                 WooPosItemsViewModel.ItemClickedData.Product.Simple(
                     id = product.remoteId
-                )
+                ),
+                source = WooPosItemSource.PRODUCT_LIST
             )
         )
         return Pair(sut, states)

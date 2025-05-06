@@ -36,6 +36,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.core.text.HtmlCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieClipSpec
@@ -111,6 +112,17 @@ private fun WooPosTotalsScreen(
                 LocalContext.current.announceForAccessibility(state.message)
                 TotalsErrorScreen(
                     errorMessage = state.message,
+                    onUIEvent = onUIEvent
+                )
+            }
+        }
+
+        StateChangeAnimated(visible = state is WooPosTotalsViewState.InvalidCouponError) {
+            if (state is WooPosTotalsViewState.InvalidCouponError) {
+                LocalContext.current.announceForAccessibility("${state.message}: ${state.reason}")
+                TotalsInvalidCouponsErrorScreen(
+                    errorMessage = state.message,
+                    errorReason = state.reason,
                     onUIEvent = onUIEvent
                 )
             }
@@ -454,6 +466,26 @@ private fun TotalsErrorScreen(
 }
 
 @Composable
+private fun TotalsInvalidCouponsErrorScreen(
+    errorMessage: String,
+    errorReason: String,
+    onUIEvent: (WooPosTotalsUIEvent) -> Unit
+) {
+    return WooPosErrorScreen(
+        message = errorMessage,
+        reason = HtmlCompat.fromHtml(errorReason, HtmlCompat.FROM_HTML_MODE_COMPACT).toString(),
+        primaryButton = Button(
+            text = stringResource(R.string.woopos_totals_coupons_validation_failed_edit_order),
+            click = { onUIEvent(WooPosTotalsUIEvent.GoBackToCheckoutAfterFailedCouponValidation) }
+        ),
+        secondaryButton = Button(
+            text = stringResource(R.string.woopos_totals_coupons_validation_failed_remove_coupons),
+            click = { onUIEvent(WooPosTotalsUIEvent.OnRemoveCouponsClicked) }
+        )
+    )
+}
+
+@Composable
 @WooPosPreview
 fun WooPosTotalsScreenPreview(modifier: Modifier = Modifier) {
     WooPosTheme {
@@ -554,6 +586,18 @@ fun TotalsErrorPreview() {
     )
     WooPosTheme {
         ReaderDisconnected(modifier = Modifier, status = readerStatus) {}
+    }
+}
+
+@Composable
+@WooPosPreview
+fun TotalsCouponValidationFailedPreview() {
+    WooPosTheme {
+        TotalsInvalidCouponsErrorScreen(
+            errorMessage = "Invalid coupons",
+            errorReason = "Coupon '10OFF' is not valid for this order",
+            onUIEvent = {},
+        )
     }
 }
 

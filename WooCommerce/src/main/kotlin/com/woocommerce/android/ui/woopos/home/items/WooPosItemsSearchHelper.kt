@@ -18,7 +18,7 @@ import javax.inject.Inject
 class WooPosItemsSearchHelper @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val childToParentEventSender: WooPosChildrenToParentEventSender,
-    private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver
+    private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
 ) {
     private lateinit var coroutineScope: CoroutineScope
     private lateinit var viewStateFlow: MutableStateFlow<WooPosItemsViewState>
@@ -57,6 +57,9 @@ class WooPosItemsSearchHelper @Inject constructor(
                     is ParentToChildrenEvent.CheckoutClicked -> Unit
                     is ParentToChildrenEvent.SearchEvent.ChangedQuery -> Unit
                     is ParentToChildrenEvent.OrderCreated -> Unit
+                    is ParentToChildrenEvent.CouponsRemoved -> Unit
+                    is ParentToChildrenEvent.RemoveCouponsClicked -> Unit
+                    is ParentToChildrenEvent.CouponsValidationFailed -> Unit
                 }
             }
         }

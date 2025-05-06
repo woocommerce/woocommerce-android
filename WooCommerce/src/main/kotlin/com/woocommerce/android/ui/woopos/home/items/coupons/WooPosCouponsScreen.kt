@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
@@ -98,6 +99,11 @@ private fun WooPosCouponsScreen(
 
             is WooPosCouponsViewState.Error -> CouponsError { onUIEvent(WooPosCouponsUIEvent.RetryTriggered) }
         }
+        PullRefreshIndicator(
+            modifier = Modifier.align(Alignment.TopCenter),
+            refreshing = state.value.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
+            state = pullToRefreshState
+        )
     }
 }
 

@@ -21,7 +21,7 @@ class WooPosAnalyticsEventTrackerTest {
     @Test
     fun `given an event, when track is called, then it should track the event via wrapper`() = runTest {
         // GIVEN
-        val event = WooPosAnalyticsEvent.Event.ItemAddedToCart
+        val event = WooPosAnalyticsEvent.Event.ItemAddedToCart()
 
         // WHEN
         tracker.track(event)
@@ -58,7 +58,7 @@ class WooPosAnalyticsEventTrackerTest {
     @Test
     fun `given an event and common properties, when track is called, then it should track the event with common properties`() = runTest {
         // GIVEN
-        val event = WooPosAnalyticsEvent.Event.ItemAddedToCart
+        val event = WooPosAnalyticsEvent.Event.ItemAddedToCart()
         val commonProperties = mapOf("test" to "test")
         whenever(commonPropertiesProvider.commonProperties).thenReturn(commonProperties)
 

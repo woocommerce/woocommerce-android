@@ -81,7 +81,7 @@ fun WooPosErrorScreen(
             }
             secondaryButton?.let {
                 Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
-                WooPosButton(
+                WooPosOutlinedButton(
                     text = it.text,
                     onClick = it.click,
                     modifier = Modifier
