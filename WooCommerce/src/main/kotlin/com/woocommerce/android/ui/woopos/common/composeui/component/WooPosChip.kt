@@ -41,7 +41,7 @@ fun WooPosChip(
     iconTint: Color = MaterialTheme.colorScheme.onSurfaceVariant,
 ) {
     WooPosCard(
-        modifier = modifier,
+        modifier = modifier.padding(8.dp),
         shape = shape,
         backgroundColor = backgroundColor,
         elevation = WooPosElevation.Medium,
