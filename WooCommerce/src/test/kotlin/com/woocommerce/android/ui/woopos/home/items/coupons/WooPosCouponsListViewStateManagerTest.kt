@@ -7,7 +7,7 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosCouponsViewState.Conte
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.WooPosGetCachedStoreCurrency
-import com.woocommerce.android.ui.woopos.util.format.WooPosFormatCouponSummary
+import com.woocommerce.android.ui.woopos.util.format.WooPosCouponsFormatter
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,7 +35,7 @@ class WooPosCouponsListViewStateManagerTest {
     @Rule
     val coroutinesTestRule = WooPosCoroutineTestRule()
 
-    private val formatCouponSummary: WooPosFormatCouponSummary = mock()
+    private val couponFormatter: WooPosCouponsFormatter = mock()
     private val getCachedStoreCurrency: WooPosGetCachedStoreCurrency = mock()
     private val couponsDataFlow = MutableStateFlow<List<CouponDBModel>>(emptyList())
 
@@ -45,7 +45,7 @@ class WooPosCouponsListViewStateManagerTest {
 
     private val sat = WooPosCouponsListViewStateManager(
         couponsDataSource,
-        formatCouponSummary,
+        couponFormatter,
         getCachedStoreCurrency,
         coroutinesTestRule.testDispatcher
     )
@@ -53,7 +53,7 @@ class WooPosCouponsListViewStateManagerTest {
     @Before
     fun setup() {
         wheneverBlocking { getCachedStoreCurrency() }.thenReturn("USD")
-        whenever(formatCouponSummary.invoke(anyOrNull(), anyOrNull())).thenAnswer { "" }
+        whenever(couponFormatter.formatSummary(anyOrNull(), anyOrNull())).thenAnswer { "" }
     }
 
     @Test

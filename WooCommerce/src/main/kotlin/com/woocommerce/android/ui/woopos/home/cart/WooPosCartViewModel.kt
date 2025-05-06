@@ -33,7 +33,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTrackingDataKeeper
-import com.woocommerce.android.ui.woopos.util.format.WooPosFormatCouponSummary
+import com.woocommerce.android.ui.woopos.util.format.WooPosCouponsFormatter
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -49,7 +49,7 @@ class WooPosCartViewModel @Inject constructor(
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
     private val getProductById: WooPosGetProductById,
     private val getCouponById: WooPosGetCouponById,
-    private val formatCouponSummary: WooPosFormatCouponSummary,
+    private val couponFormatter: WooPosCouponsFormatter,
     private val getVariationsById: WooPosGetVariationById,
     private val resourceProvider: ResourceProvider,
     private val formatPrice: WooPosFormatPrice,
@@ -284,7 +284,7 @@ class WooPosCartViewModel @Inject constructor(
             itemNumber = getItemNumber(),
             id = couponId,
             name = coupon.code ?: "",
-            summary = formatCouponSummary(coupon, getCachedStoreCurrency()),
+            summary = couponFormatter.formatSummary(coupon, getCachedStoreCurrency()),
             validationState = CouponValidationState.Unknown
         )
     }

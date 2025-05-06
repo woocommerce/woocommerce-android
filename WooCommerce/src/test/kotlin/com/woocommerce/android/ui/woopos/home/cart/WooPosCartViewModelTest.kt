@@ -24,7 +24,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTrackingDataKeeper
-import com.woocommerce.android.ui.woopos.util.format.WooPosFormatCouponSummary
+import com.woocommerce.android.ui.woopos.util.format.WooPosCouponsFormatter
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -70,8 +70,8 @@ class WooPosCartViewModelTest {
             )
         )
     }
-    private val formatCouponSummary: WooPosFormatCouponSummary = mock {
-        on { invoke(any(), any()) }
+    private val formatCouponSummary: WooPosCouponsFormatter = mock {
+        on { formatSummary(any(), any()) }
             .thenReturn("100% off everything")
     }
 
