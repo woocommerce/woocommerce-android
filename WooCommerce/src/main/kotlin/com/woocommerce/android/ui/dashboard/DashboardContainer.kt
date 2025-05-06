@@ -70,7 +70,7 @@ fun DashboardContainer(
     dashboardViewModel.dashboardCardsState.observeAsState().value?.let { state ->
 
         val pullRefreshState = rememberPullRefreshState(state.isRefreshing, dashboardViewModel::onPullToRefresh)
-        BoxWithConstraints(Modifier.pullRefresh(pullRefreshState)) {
+        BoxWithConstraints(Modifier.pullRefresh(pullRefreshState).fillMaxSize()) {
             val boxWithConstraintsScope = this
             DashboardWidgets(
                 widgetUiModels = state.widgets,
@@ -162,13 +162,16 @@ private fun DashboardWidgets(
 private fun calculateColumnNumber(
     availableWidthInDp: Dp,
     state: DashboardCardsState
-) = when {
-    availableWidthInDp < 600.dp -> 1 // 600dp covers 99.96% of phones in portrait
-    availableWidthInDp < 1000.dp -> 2 // 1000dp should be enough to avoid 3 columns on big phones in landscape
-    else -> 3 // 3 columns should only display on tablets in landscape
-}.coerceAtMost(
-    maximumValue = state.widgets.filter { it.isVisible }.size
-)
+): Int {
+    val columns = when {
+        availableWidthInDp < 600.dp -> 1 // 600dp covers 99.96% of phones in portrait
+        availableWidthInDp < 1000.dp -> 2 // 1000dp should be enough to avoid 3 columns on big phones in landscape
+        else -> 3 // 3 columns should only display on tablets in landscape
+    }
+
+    val visibleWidgetsCount = state.widgets.count { it.isVisible }
+    return columns.coerceAtMost(maximumValue = maxOf(visibleWidgetsCount, 1))
+}
 
 private fun splitWidgetsIntoColumns(
     numberOfColumns: Int,

@@ -181,7 +181,7 @@ private fun StatsChart(
     }
 
     AndroidView(
-        modifier = modifier,
+        modifier = modifier.fillMaxWidth(),
         factory = {
             statsView.apply {
                 customRangeButton.setOnClickListener { onAddCustomRangeClick() }
