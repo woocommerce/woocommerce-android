@@ -59,6 +59,7 @@ import com.woocommerce.android.ui.dashboard.stats.DashboardStatsCard
 import com.woocommerce.android.ui.dashboard.stock.DashboardProductStockCard
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersWidgetCard
 import com.woocommerce.android.ui.main.MainActivityViewModel
+import com.woocommerce.android.util.WooLog
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -68,9 +69,17 @@ fun DashboardContainer(
     blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher,
 ) {
     dashboardViewModel.dashboardCardsState.observeAsState().value?.let { state ->
+        WooLog.d(
+            WooLog.T.DASHBOARD,
+            "DashboardCardsState observed: widgets=${state.widgets.size}, refreshing=${state.isRefreshing}"
+        )
 
         val pullRefreshState = rememberPullRefreshState(state.isRefreshing, dashboardViewModel::onPullToRefresh)
         BoxWithConstraints(Modifier.pullRefresh(pullRefreshState).fillMaxSize()) {
+            WooLog.d(
+                WooLog.T.DASHBOARD,
+                "BoxWithConstraints: maxWidth=${maxWidth.value}, maxHeight=${maxHeight.value}"
+            )
             val boxWithConstraintsScope = this
             DashboardWidgets(
                 widgetUiModels = state.widgets,
