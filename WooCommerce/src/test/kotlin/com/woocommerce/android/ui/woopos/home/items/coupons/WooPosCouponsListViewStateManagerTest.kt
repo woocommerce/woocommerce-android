@@ -5,6 +5,7 @@ import com.woocommerce.android.ui.coupons.CouponTestUtils
 import com.woocommerce.android.ui.woopos.home.items.WooPosCouponsViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosCouponsViewState.Content
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
+import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.WooPosGetCachedStoreCurrency
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatCouponSummary
@@ -78,10 +79,10 @@ class WooPosCouponsListViewStateManagerTest {
     }
 
     @Test
-    fun `given full db, when fetching first page in progress, then Loading state`() = runTest {
+    fun `given full db, when fetching first page in progress, then cached data shown`() = runTest {
         // GIVEN
         whenever(couponsDataSource.clearCacheAndFetchFirstPage()).doSuspendableAnswer {
-            couponsDataFlow.emit(listOf(CouponTestUtils.generateTestCoupon(1L))) // cache empty
+            couponsDataFlow.emit(listOf(CouponTestUtils.generateTestCoupon(1L))) // cache data
             delay(500)
             couponsDataFlow.emit(listOf(CouponTestUtils.generateTestCoupon(2L))) // remote data
             Result.success(true)
@@ -92,11 +93,34 @@ class WooPosCouponsListViewStateManagerTest {
             sat.fetchCoupons(this)
 
             // THEN
-            assertThat(expectMostRecentItem()).isInstanceOf(WooPosCouponsViewState.Loading::class.java)
+            assertThat(expectMostRecentItem()).isInstanceOf(Content::class.java)
 
             cancelAndIgnoreRemainingEvents()
         }
     }
+
+    @Test
+    fun `given cached data and fetching in progress, when content shown, then pullToRefreshState is Refreshing`() =
+        runTest {
+            // GIVEN
+            whenever(couponsDataSource.clearCacheAndFetchFirstPage()).doSuspendableAnswer {
+                couponsDataFlow.emit(listOf(CouponTestUtils.generateTestCoupon(1L)))
+                delay(500)
+                couponsDataFlow.emit(listOf(CouponTestUtils.generateTestCoupon(2L))) // remote data
+                Result.success(true)
+            }
+
+            sat.viewState.test {
+                // WHEN
+                sat.fetchCoupons(this)
+
+                // THEN
+                assertThat(expectMostRecentItem().pullToRefreshState)
+                    .isEqualTo(WooPosPullToRefreshState.Refreshing)
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
 
     @Test
     fun `given empty db, when fetching first page completes, then Empty state`() = runTest {
@@ -346,10 +370,10 @@ class WooPosCouponsListViewStateManagerTest {
     }
 
     @Test
-    fun `loading is still shown until remote request finishes`() = runTest {
+    fun `cached data are still shown until remote request finishes`() = runTest {
         // GIVEN
         whenever(couponsDataSource.clearCacheAndFetchFirstPage()).doSuspendableAnswer {
-            couponsDataFlow.emit(listOf(CouponTestUtils.generateTestCoupon(1L))) // remote
+            couponsDataFlow.emit(listOf(CouponTestUtils.generateTestCoupon(1L)))
             delay(500)
             couponsDataFlow.emit(emptyList()) // remote
             Result.success(true)
@@ -358,11 +382,11 @@ class WooPosCouponsListViewStateManagerTest {
         sat.viewState.test {
             // WHEN
             sat.fetchCoupons(this)
-            skipItems(2) // Empty + Loading
+            skipItems(2) // Empty + cached data shown
 
             // THEN
             testScheduler.advanceTimeBy(499)
-            expectNoEvents() // Still Loading
+            expectNoEvents() // Still Cached data shown
             testScheduler.advanceTimeBy(2)
 
             assertThat(expectMostRecentItem()).isInstanceOf(WooPosCouponsViewState.Empty::class.java)
