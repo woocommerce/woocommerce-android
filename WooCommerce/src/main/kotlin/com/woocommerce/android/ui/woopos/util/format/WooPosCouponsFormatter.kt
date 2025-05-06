@@ -12,7 +12,6 @@ class WooPosCouponsFormatter @Inject constructor(
 ) {
     private val expiryDateFormatter = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
 
-
     fun formatSummary(coupon: Coupon, currencyCode: String): String {
         return couponUtils.generateSummary(coupon, currencyCode)
     }
