@@ -43,7 +43,9 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -134,7 +136,7 @@ fun WooPosSearchInput(
             )
         ) {
             WooPosCircularIconButton(
-                icon = Icons.Default.Search,
+                icon = ImageVector.vectorResource(id = R.drawable.ic_woo_pos_search),
                 contentDescription = stringResource(
                     id = R.string.woopos_search_products,
                 ),
