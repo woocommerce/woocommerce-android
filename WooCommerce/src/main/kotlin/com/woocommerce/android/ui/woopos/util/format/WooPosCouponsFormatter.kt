@@ -16,4 +16,8 @@ class WooPosCouponsFormatter @Inject constructor(
     fun formatSummary(coupon: Coupon, currencyCode: String): String {
         return couponUtils.generateSummary(coupon, currencyCode)
     }
+
+    fun formatExpiredText(couponExpireDate: Date): String {
+        return expiryDateFormatter.format(couponExpireDate)
+    }
 }

@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import java.util.Date
 import javax.inject.Inject
 
 private const val AVOID_UI_FLICKERING_DELAY = 500L
@@ -117,14 +118,19 @@ class WooPosCouponsListViewStateManager @Inject constructor(
         }
     }
 
+    // This method should eventually be moved out of this class
     private suspend fun WooPosCouponsListViewStateManager.mapCouponsToSelectionState(
         coupons: List<Coupon>
-    ) = coupons.map { coupon ->
-        WooPosItemSelectionViewState.Coupon(
-            id = coupon.id,
-            name = coupon.code.orEmpty(),
-            summary = formatCouponSummary(coupon, getCachedStoreCurrency())
-        )
+    ): List<WooPosItemSelectionViewState.Coupon> {
+        val currentDate = Date()
+        return coupons.map { coupon ->
+            WooPosItemSelectionViewState.Coupon(
+                id = coupon.id,
+                name = coupon.code.orEmpty(),
+                summary = couponsFormatter.formatSummary(coupon, getCachedStoreCurrency()),
+                expiredState = determineExpiredState(coupon, currentDate)
+            )
+        }
     }
 
     private fun getPaginationState(fetchingState: FetchingCouponsState) =
@@ -140,4 +146,19 @@ class WooPosCouponsListViewStateManager @Inject constructor(
             FETCHING_FIRST_PAGE -> Refreshing
             ERROR_FETCHING_FIRST_PAGE -> error("Full screen error should be displayed")
         }
+
+    private fun determineExpiredState(
+        coupon: Coupon,
+        currentDate: Date
+    ): WooPosItemSelectionViewState.Coupon.ExpiredState {
+        val expiryDate = coupon.dateExpires ?: return WooPosItemSelectionViewState.Coupon.ExpiredState.NotExpired
+
+        return if (expiryDate.before(currentDate)) {
+            WooPosItemSelectionViewState.Coupon.ExpiredState.Expired(
+                couponsFormatter.formatExpiredText(expiryDate)
+            )
+        } else {
+            WooPosItemSelectionViewState.Coupon.ExpiredState.NotExpired
+        }
+    }
 }
