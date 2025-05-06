@@ -50,7 +50,6 @@ class WooPosCouponsListViewStateManagerTest {
         couponsDataSource,
         formatCouponSummary,
         getCachedStoreCurrency,
-        coroutinesTestRule.testDispatcher,
         cachedCouponEnabledChecker
     )
 
