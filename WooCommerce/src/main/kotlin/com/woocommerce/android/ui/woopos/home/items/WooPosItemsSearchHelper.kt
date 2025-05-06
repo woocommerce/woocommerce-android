@@ -7,19 +7,10 @@ import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState.SearchState
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SearchButtonTapped
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ITEM_LIST_TYPE
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ITEM_LIST_TYPE_PRODUCTS
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.scopes.ActivityRetainedScoped
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -28,7 +19,6 @@ class WooPosItemsSearchHelper @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val childToParentEventSender: WooPosChildrenToParentEventSender,
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
-    private val analyticsTracker: WooPosAnalyticsTracker,
 ) {
     private lateinit var coroutineScope: CoroutineScope
     private lateinit var viewStateFlow: MutableStateFlow<WooPosItemsViewState>
@@ -40,7 +30,6 @@ class WooPosItemsSearchHelper @Inject constructor(
         this.coroutineScope = coroutineScope
         this.viewStateFlow = viewStateFlow
         listenEventsFromParent()
-        observeAndTrackSearchInputStateOpen(viewStateFlow, coroutineScope)
     }
 
     private fun listenEventsFromParent() {
@@ -174,25 +163,6 @@ class WooPosItemsSearchHelper @Inject constructor(
                 )
             )
         )
-    }
-
-    private fun observeAndTrackSearchInputStateOpen(
-        viewStateFlow: MutableStateFlow<WooPosItemsViewState>,
-        coroutineScope: CoroutineScope
-    ) {
-        viewStateFlow
-            .map { it.search }
-            .distinctUntilChanged()
-            .map { it is SearchState.Visible && it.state is WooPosSearchInputState.Open }
-            .distinctUntilChanged()
-            .filter { it }
-            .onEach {
-                val event = SearchButtonTapped.apply {
-                    addProperties(mapOf(ITEM_LIST_TYPE to ITEM_LIST_TYPE_PRODUCTS))
-                }
-                analyticsTracker.track(event)
-            }
-            .launchIn(coroutineScope)
     }
 
     private fun getCurrentContentState(): WooPosItemsViewState {

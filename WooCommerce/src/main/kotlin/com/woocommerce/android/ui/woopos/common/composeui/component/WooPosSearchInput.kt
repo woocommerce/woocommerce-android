@@ -52,6 +52,7 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState.Open.Input
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent.SearchIconClicked
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
@@ -95,7 +96,7 @@ fun WooPosSearchInput(
                     contentDescription = stringResource(
                         id = R.string.woopos_search_products,
                     ),
-                    onClick = { onEvent(WooPosSearchUIEvent.Search("", 0)) }
+                    onClick = { onEvent(SearchIconClicked) }
                 )
             }
         }
@@ -371,6 +372,7 @@ sealed class WooPosSearchInputState {
 
 sealed class WooPosSearchUIEvent {
     object Clear : WooPosSearchUIEvent()
+    object SearchIconClicked : WooPosSearchUIEvent()
     data class Search(val query: String, val cursorPosition: Int) : WooPosSearchUIEvent()
     object Close : WooPosSearchUIEvent()
     object AnimationComplete : WooPosSearchUIEvent()

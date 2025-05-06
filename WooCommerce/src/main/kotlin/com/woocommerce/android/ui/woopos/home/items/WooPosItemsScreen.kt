@@ -70,6 +70,8 @@ private fun WooPosItemsScreen(
                 is WooPosSearchUIEvent.AnimationComplete -> {
                     onUIEvent(WooPosItemsUIEvent.SearchAnimationComplete)
                 }
+
+                WooPosSearchUIEvent.SearchIconClicked -> onUIEvent(WooPosItemsUIEvent.SearchIconClicked)
             }
         },
         onTabClicked = { onUIEvent(WooPosItemsUIEvent.OnTabClicked(it)) },
