@@ -51,7 +51,7 @@ class WooPosCouponsListViewStateManager @Inject constructor(
                 if (coupons.isEmpty()) {
                     WooPosCouponsViewState.Loading()
                 } else {
-                    showCachedData(coupons, fetchingState)
+                    createContentViewState(coupons, fetchingState)
                 }
             }
 
@@ -63,14 +63,14 @@ class WooPosCouponsListViewStateManager @Inject constructor(
                 when {
                     coupons.isEmpty() -> WooPosCouponsViewState.Empty()
                     else -> {
-                        showCachedData(coupons, fetchingState)
+                        createContentViewState(coupons, fetchingState)
                     }
                 }
             }
         }
     }
 
-    private suspend fun WooPosCouponsListViewStateManager.showCachedData(
+    private suspend fun createContentViewState(
         coupons: List<Coupon>,
         fetchingState: FetchingCouponsState
     ) = WooPosCouponsViewState.Content(
