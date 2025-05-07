@@ -70,6 +70,10 @@ class WooPosCouponsViewModel @Inject constructor(
             }
 
             RetryTriggered -> fetchCoupons()
+
+            is WooPosCouponsUIEvent.CreateCouponClicked -> {
+                error("Create coupon clicked event not implemented yet")
+            }
         }
     }
 
