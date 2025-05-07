@@ -163,7 +163,7 @@ class WooPosCouponsListViewStateManager @Inject constructor(
     private fun getPullToRefreshState(fetchingState: FetchingCouponsState) =
         when (fetchingState) {
             ERROR_FETCHING_MORE, IDLE, FETCHING_MORE -> Enabled
-            FETCHING_FIRST_PAGE,  -> Disabled
+            FETCHING_FIRST_PAGE -> Disabled
             PTR_FETCHING_FIRST_PAGE -> Refreshing
             ERROR_FETCHING_FIRST_PAGE -> error("Full screen error should be displayed")
         }
