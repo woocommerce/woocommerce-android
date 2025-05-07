@@ -60,11 +60,10 @@ class WooPosCouponsListViewStateManager @Inject constructor(
             }
 
             IDLE, FETCHING_MORE, ERROR_FETCHING_MORE -> {
-                when {
-                    coupons.isEmpty() -> WooPosCouponsViewState.Empty()
-                    else -> {
-                        createContentViewState(coupons, fetchingState)
-                    }
+                if (coupons.isEmpty()) {
+                 WooPosCouponsViewState.Empty()
+                } else {
+                    createContentViewState(coupons, fetchingState)
                 }
             }
         }
