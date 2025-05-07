@@ -39,12 +39,13 @@ fun WooPosChip(
     iconTint: Color = MaterialTheme.colorScheme.onSurfaceVariant,
 ) {
     WooPosCard(
-        modifier = modifier.padding(8.dp),
+        modifier = modifier.padding(WooPosSpacing.Small.value),
         shape = shape,
         backgroundColor = backgroundColor,
         elevation = WooPosElevation.Medium,
         shadowType = ShadowType.Soft,
     ) {
+        @Suppress("WooPosDesignSystemSpacingUsageRule")
         Row(
             modifier = Modifier
                 .clickable(onClick = onClick)
