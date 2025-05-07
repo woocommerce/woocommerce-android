@@ -100,7 +100,11 @@ private fun WooPosCouponsScreen(
                 onActionClicked = { onUIEvent(WooPosCouponsUIEvent.CreateCouponClicked) }
             )
 
-            is WooPosCouponsViewState.Error -> CouponsError { onUIEvent(WooPosCouponsUIEvent.RetryTriggered) }
+            is WooPosCouponsViewState.Error.GenericError -> {
+                CouponsError { onUIEvent(WooPosCouponsUIEvent.RetryTriggered) }
+            }
+
+            is WooPosCouponsViewState.Error.CouponsDisabledError -> CouponsDisabledError()
         }
         PullRefreshIndicator(
             modifier = Modifier.align(Alignment.TopCenter),
@@ -135,6 +139,19 @@ fun CouponsError(onRetryClicked: () -> Unit) {
                 text = stringResource(id = R.string.woopos_products_loading_error_retry_button),
                 click = onRetryClicked
             )
+        )
+    }
+}
+
+@Composable
+fun CouponsDisabledError() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
+    ) {
+        WooPosErrorScreen(
+            message = stringResource(id = R.string.woopos_coupons_loading_error_coupons_disabled_title),
+            reason = stringResource(id = R.string.woopos_coupons_loading_error_coupons_disabled_message),
         )
     }
 }
@@ -239,7 +256,24 @@ fun WooPosCouponsEmptyListPreview() {
 @WooPosPreview
 fun WooPosCouponsUIEventScreenErrorPreview() {
     val productState = MutableStateFlow(
-        WooPosCouponsViewState.Error()
+        WooPosCouponsViewState.Error.GenericError()
+    )
+    WooPosTheme {
+        WooPosCouponsScreen(
+            modifier = Modifier,
+            listState = rememberLazyListState(),
+            viewStateFlow = productState,
+            onUIEvent = {},
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+@WooPosPreview
+fun WooPosCouponsUIEventScreenCouponsDisabledErrorPreview() {
+    val productState = MutableStateFlow(
+        WooPosCouponsViewState.Error.CouponsDisabledError()
     )
     WooPosTheme {
         WooPosCouponsScreen(
