@@ -399,7 +399,6 @@ class WooPosCouponsListViewStateManagerTest {
     fun `when content shown and fetching first page, then pagination state loading`() = runTest {
         // GIVEN
         whenever(couponsDataSource.clearCacheAndFetchFirstPage()).doSuspendableAnswer {
-//            delay(1) // workaround for bug in mockito
             couponsDataFlow.emit(listOf(CouponTestUtils.generateTestCoupon(0L))) // cache
             delay(500)
             Result.success(MORE_PAGES_AVAILABLE)
