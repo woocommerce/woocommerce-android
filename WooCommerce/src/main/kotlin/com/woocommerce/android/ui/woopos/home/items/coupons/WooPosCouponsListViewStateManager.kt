@@ -6,6 +6,7 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState.Error
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState.Loading
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState.None
+import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState.Disabled
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState.Enabled
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState.Refreshing
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsListViewStateManager.FetchingCouponsState.ERROR_FETCHING_FIRST_PAGE
@@ -76,7 +77,7 @@ class WooPosCouponsListViewStateManager @Inject constructor(
             pullToRefreshState = if (fetchingState == PTR_FETCHING_FIRST_PAGE) {
                 Refreshing
             } else {
-                Enabled
+                Disabled
             }
         )
 
@@ -162,7 +163,8 @@ class WooPosCouponsListViewStateManager @Inject constructor(
     private fun getPullToRefreshState(fetchingState: FetchingCouponsState) =
         when (fetchingState) {
             ERROR_FETCHING_MORE, IDLE, FETCHING_MORE -> Enabled
-            FETCHING_FIRST_PAGE, PTR_FETCHING_FIRST_PAGE -> Refreshing
+            FETCHING_FIRST_PAGE,  -> Disabled
+            PTR_FETCHING_FIRST_PAGE -> Refreshing
             ERROR_FETCHING_FIRST_PAGE -> error("Full screen error should be displayed")
         }
 }

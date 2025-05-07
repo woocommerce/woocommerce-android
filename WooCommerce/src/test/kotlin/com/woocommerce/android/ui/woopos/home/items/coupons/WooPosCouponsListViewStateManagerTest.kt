@@ -100,7 +100,7 @@ class WooPosCouponsListViewStateManagerTest {
     }
 
     @Test
-    fun `given cached data and fetching in progress, when content shown, then pullToRefreshState is Refreshing`() =
+    fun `given cached data and fetching in progress, when content shown, then pullToRefreshState is Disabled`() =
         runTest {
             // GIVEN
             whenever(couponsDataSource.clearCacheAndFetchFirstPage()).doSuspendableAnswer {
@@ -116,7 +116,7 @@ class WooPosCouponsListViewStateManagerTest {
 
                 // THEN
                 assertThat(expectMostRecentItem().pullToRefreshState)
-                    .isEqualTo(WooPosPullToRefreshState.Refreshing)
+                    .isEqualTo(WooPosPullToRefreshState.Disabled)
 
                 cancelAndIgnoreRemainingEvents()
             }
@@ -396,7 +396,7 @@ class WooPosCouponsListViewStateManagerTest {
     }
 
     @Test
-    fun `given state empty, when pull to refresh triggered, then pull to refresh state is Refreshing`() = runTest {
+    fun `given state empty, when pull to refresh triggered, then loading shown with PTR`() = runTest {
         // GIVEN
         whenever(couponsDataSource.clearCacheAndFetchFirstPage()).doSuspendableAnswer {
             couponsDataFlow.emit(emptyList())
@@ -419,6 +419,36 @@ class WooPosCouponsListViewStateManagerTest {
             val state = expectMostRecentItem()
             assertThat(state).isInstanceOf(WooPosCouponsViewState.Loading::class.java)
             assertThat((state as WooPosCouponsViewState.Loading).pullToRefreshState)
+                .isEqualTo(WooPosPullToRefreshState.Refreshing)
+
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `given cached data shown, when pull to refresh triggered, then content shown with PTR`() = runTest {
+        // GIVEN
+        whenever(couponsDataSource.clearCacheAndFetchFirstPage()).doSuspendableAnswer {
+            couponsDataFlow.emit(listOf(CouponTestUtils.generateTestCoupon(1L)))
+            delay(1) // workaround for bug in mockito
+            Result.success(MORE_PAGES_NOT_AVAILABLE)
+        }
+        sat.fetchCoupons(this, pullToRefresh = false)
+        advanceUntilIdle()
+        whenever(couponsDataSource.clearCacheAndFetchFirstPage()).doSuspendableAnswer {
+            delay(500)
+            couponsDataFlow.emit(listOf(CouponTestUtils.generateTestCoupon(1L)))
+            Result.success(MORE_PAGES_NOT_AVAILABLE)
+        }
+
+        sat.viewState.test {
+            // WHEN
+            sat.fetchCoupons(this, pullToRefresh = true)
+
+            // THEN
+            val state = expectMostRecentItem()
+            assertThat(state).isInstanceOf(Content::class.java)
+            assertThat((state as Content).pullToRefreshState)
                 .isEqualTo(WooPosPullToRefreshState.Refreshing)
 
             cancelAndIgnoreRemainingEvents()
