@@ -41,7 +41,7 @@ class WooPosCouponsListViewStateManager @Inject constructor(
 
     private var loadingMoreJob: Job? = null
     private var fetchingFirstPageJob: Job? = null
-    private var canLoadMore: Boolean = false
+    private var canLoadMore: Boolean = true
 
     enum class FetchingCouponsState {
         IDLE, FETCHING_FIRST_PAGE, PTR_FETCHING_FIRST_PAGE, FETCHING_MORE,

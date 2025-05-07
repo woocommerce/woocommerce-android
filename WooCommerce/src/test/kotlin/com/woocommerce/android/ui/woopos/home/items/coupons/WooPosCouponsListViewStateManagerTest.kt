@@ -396,6 +396,28 @@ class WooPosCouponsListViewStateManagerTest {
     }
 
     @Test
+    fun `when content shown and fetching first page, then pagination state loading`() = runTest {
+        // GIVEN
+        whenever(couponsDataSource.clearCacheAndFetchFirstPage()).doSuspendableAnswer {
+//            delay(1) // workaround for bug in mockito
+            couponsDataFlow.emit(listOf(CouponTestUtils.generateTestCoupon(0L))) // cache
+            delay(500)
+            Result.success(MORE_PAGES_AVAILABLE)
+        }
+
+        sat.viewState.test {
+            // WHEN
+            sat.fetchCoupons(this, false)
+
+            // THEN
+            val state = expectMostRecentItem() as Content
+            assertThat(state.paginationState).isInstanceOf(WooPosPaginationState.Loading::class.java)
+
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
     fun `given state empty, when pull to refresh triggered, then loading shown with PTR`() = runTest {
         // GIVEN
         whenever(couponsDataSource.clearCacheAndFetchFirstPage()).doSuspendableAnswer {
