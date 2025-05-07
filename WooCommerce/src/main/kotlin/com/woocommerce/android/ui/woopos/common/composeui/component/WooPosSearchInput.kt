@@ -136,7 +136,7 @@ fun WooPosSearchInput(
             )
         ) {
             WooPosCircularIconButton(
-                icon = ImageVector.vectorResource(id = R.drawable.ic_woo_pos_search),
+                icon = Icons.Default.Search,
                 contentDescription = stringResource(
                     id = R.string.woopos_search_products,
                 ),
