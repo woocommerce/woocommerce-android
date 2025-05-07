@@ -78,6 +78,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
+import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState.Coupon.CouponValidationState
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartUIEvent.ItemRemovedFromCart
 
 @Composable
@@ -401,7 +402,11 @@ private fun ProductItem(
         modifier = modifier
             .height(96.dp)
             .semantics { contentDescription = itemContentDescription },
-        backgroundColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+        backgroundColor = if (item.productDoesNotExist) {
+            WooPosTheme.colors.disabledContainer
+        } else {
+            MaterialTheme.colorScheme.surfaceContainerLowest
+        },
         elevation = WooPosElevation.Medium,
         shadowType = ShadowType.Soft,
         shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
@@ -431,9 +436,12 @@ private fun ProductItem(
                     Image(
                         painter = painterResource(R.drawable.ic_box),
                         contentDescription = null,
-                        colorFilter = ColorFilter.tint(WooPosTheme.colors.onSurfaceVariantLowest),
-                        modifier = Modifier.alpha(if (item.productDoesNotExist) 0.5f else 1f)
-                            .size(36.dp)
+                        colorFilter = if (item.productDoesNotExist) {
+                            ColorFilter.tint(WooPosTheme.colors.onSurfaceVariantLowest)
+                        } else {
+                            ColorFilter.tint(WooPosTheme.colors.onDisabledContainer)
+                        },
+                        modifier = Modifier.size(36.dp)
                     )
                 }
 
@@ -457,35 +465,44 @@ private fun ProductItem(
                 WooPosText(
                     text = item.name,
                     maxLines = 1,
-                    style = WooPosTypography.BodyLarge,
+                    style = WooPosTypography.BodySmall,
                     fontWeight = FontWeight.Bold,
                     overflow = TextOverflow.Ellipsis,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    color = if (item.productDoesNotExist) {
+                        WooPosTheme.colors.onDisabledContainer
+                    } else {
+                        MaterialTheme.colorScheme.onSurface
+                    },
                     modifier = Modifier
                         .clearAndSetSemantics { }
-                        .alpha(if (item.productDoesNotExist) 0.2f else 1f)
                 )
                 Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value.toAdaptivePadding()))
                 if (item.description.isNotNullOrEmpty()) {
                     WooPosText(
                         text = item.description ?: "",
                         style = WooPosTypography.BodySmall,
-                        color = WooPosTheme.colors.onSurfaceVariantHighest,
+                        color = if (item.productDoesNotExist) {
+                            WooPosTheme.colors.onDisabledContainer
+                        } else {
+                            WooPosTheme.colors.onSurfaceVariantHighest
+                        },
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier
                             .clearAndSetSemantics { }
-                            .alpha(if (item.productDoesNotExist) 0.5f else 1f)
                     )
                     Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value.toAdaptivePadding()))
                 }
                 WooPosText(
                     text = item.price,
                     style = WooPosTypography.BodySmall,
-                    color = WooPosTheme.colors.onSurfaceVariantHighest,
+                    color = if (item.productDoesNotExist) {
+                        WooPosTheme.colors.onDisabledContainer
+                    } else {
+                        WooPosTheme.colors.onSurfaceVariantHighest
+                    },
                     modifier = Modifier
                         .clearAndSetSemantics { }
-                        .alpha(if (item.productDoesNotExist) 0.5f else 1f)
                 )
             }
 
@@ -524,14 +541,26 @@ private fun CouponItem(
         ) {
             Box(
                 modifier = Modifier
-                    .background(MaterialTheme.colorScheme.surfaceDim)
+                    .background(
+                        when (item.validationState) {
+                            CouponValidationState.Invalid -> MaterialTheme.colorScheme.error
+                            CouponValidationState.Unknown -> MaterialTheme.colorScheme.surfaceDim
+                            is CouponValidationState.Valid -> WooPosTheme.colors.success
+                        }
+                    )
                     .size(96.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Image(
                     imageVector = Icons.Outlined.LocalOffer,
                     contentDescription = null,
-                    colorFilter = ColorFilter.tint(WooPosTheme.colors.onSurfaceVariantLowest),
+                    colorFilter = ColorFilter.tint(
+                        when (item.validationState) {
+                            CouponValidationState.Invalid -> MaterialTheme.colorScheme.onError
+                            CouponValidationState.Unknown -> WooPosTheme.colors.onSurfaceVariantLowest
+                            is CouponValidationState.Valid -> WooPosTheme.colors.onSuccess
+                        }
+                    ),
                     modifier = Modifier.size(36.dp, 36.dp)
                 )
             }
@@ -546,7 +575,7 @@ private fun CouponItem(
                 WooPosText(
                     text = item.name,
                     maxLines = 1,
-                    style = WooPosTypography.BodyLarge,
+                    style = WooPosTypography.BodySmall,
                     fontWeight = FontWeight.Bold,
                     overflow = TextOverflow.Ellipsis,
                     color = MaterialTheme.colorScheme.onSurface,
@@ -561,6 +590,27 @@ private fun CouponItem(
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.clearAndSetSemantics { }
                 )
+                when (item.validationState) {
+                    CouponValidationState.Unknown -> Unit
+                    CouponValidationState.Invalid -> {
+                        Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value.toAdaptivePadding()))
+                        WooPosText(
+                            text = stringResource(R.string.woopos_cart_coupon_invalid_subtitle),
+                            style = WooPosTypography.BodySmall,
+                            color = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.clearAndSetSemantics { }
+                        )
+                    }
+                    is CouponValidationState.Valid -> {
+                        Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value.toAdaptivePadding()))
+                        WooPosText(
+                            text = item.validationState.formattedDiscount,
+                            style = WooPosTypography.BodySmall,
+                            color = WooPosTheme.colors.success,
+                            modifier = Modifier.clearAndSetSemantics { }
+                        )
+                    }
+                }
             }
 
             if (canRemoveItems) {
@@ -612,7 +662,15 @@ fun WooPosCartScreenProductsPreview(modifier: Modifier = Modifier) {
                             itemNumber = 1,
                             name = "Test Coupon",
                             summary = "50% Off · All Products",
-                            id = 1L
+                            id = 1L,
+                            validationState = CouponValidationState.Valid("-$10")
+                        ),
+                        WooPosCartItemViewState.Coupon(
+                            itemNumber = 1,
+                            name = "Test Coupon",
+                            summary = "10$ off * All Products",
+                            id = 1L,
+                            validationState = CouponValidationState.Invalid
                         ),
                         WooPosCartItemViewState.Product.Simple(
                             itemNumber = 2,
@@ -671,7 +729,15 @@ fun WooPosCartScreenCheckoutPreview(modifier: Modifier = Modifier) {
                                 "50% Off · 1 Product 50% Off · 1 Product 50% Off · 1 Product 50% Off · 1 Product " +
                                 "50% Off · 1 Product 50% Off · 1 Product 50% Off · 1 Product 50% Off · 1 Product " +
                                 "50% Off · 1 Product 50% Off · 1 Product 50% Off · 1 Product 50% Off · 1 Product",
-                            id = 1L
+                            id = 1L,
+                            validationState = CouponValidationState.Valid("-$10")
+                        ),
+                        WooPosCartItemViewState.Coupon(
+                            itemNumber = 1,
+                            name = "Test Coupon",
+                            summary = "10$ off * All Products",
+                            id = 1L,
+                            validationState = CouponValidationState.Invalid
                         ),
                         WooPosCartItemViewState.Product.Simple(
                             itemNumber = 2,

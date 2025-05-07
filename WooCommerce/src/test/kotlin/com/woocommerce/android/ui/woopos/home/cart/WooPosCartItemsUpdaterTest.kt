@@ -1,20 +1,25 @@
 package com.woocommerce.android.ui.woopos.home.cart
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
+import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState.Coupon.CouponValidationState
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
+import com.woocommerce.android.util.WooLogWrapper
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.argThat
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -24,7 +29,7 @@ import java.math.BigDecimal
 import kotlin.test.Test
 
 @ExperimentalCoroutinesApi
-class WooPosCartProductUpdaterTest {
+class WooPosCartItemsUpdaterTest {
     @Rule
     @JvmField
     val rule = InstantTaskExecutorRule()
@@ -38,15 +43,20 @@ class WooPosCartProductUpdaterTest {
         on { getString(eq(R.string.woopos_cart_changes_in_the_cart)) }.thenReturn("Changes made to items in cart")
     }
     private val formatPrice: WooPosFormatPrice = mock {
-        onBlocking { invoke(any()) }.thenReturn("10.0$")
+        onBlocking { invoke(argThat { this == BigDecimal("10.0") }) }.thenReturn("10.0$")
+        onBlocking { invoke(argThat { this == BigDecimal("5.0") }) }.thenReturn("5.0$")
     }
     private val productsCache: WooPosProductsCache = mock()
+    private val crashLogger: CrashLogging = mock()
+    private val logger: WooLogWrapper = mock()
 
-    private val updater = WooPosCartProductUpdater(
+    private val updater = WooPosCartItemsUpdater(
         childrenToParentEventSender = childrenToParentEventSender,
         resourceProvider = resourceProvider,
         formatPrice = formatPrice,
-        productsCache = productsCache
+        productsCache = productsCache,
+        wooLogWrapper = logger,
+        crashLogger = crashLogger
     )
 
     @Test
@@ -71,7 +81,7 @@ class WooPosCartProductUpdaterTest {
         whenever(productsCache.getProductById(1L)).thenReturn(cachedProduct)
 
         // WHEN
-        val result = updater.invoke(itemsInCart, listOf(updatedInfo))
+        val result = updater.invoke(itemsInCart, listOf(updatedInfo), emptyList())
 
         // THEN
         assertThat(result).hasSize(1)
@@ -111,7 +121,7 @@ class WooPosCartProductUpdaterTest {
         whenever(productsCache.getProductById(1L)).thenReturn(cachedProduct)
 
         // WHEN
-        val result = updater.invoke(itemsInCart, listOf(updatedInfo))
+        val result = updater.invoke(itemsInCart, listOf(updatedInfo), emptyList())
 
         // THEN
         assertThat(result).hasSize(1)
@@ -141,7 +151,7 @@ class WooPosCartProductUpdaterTest {
         val itemsInCart = listOf(simpleProduct)
 
         // WHEN
-        val result = updater.invoke(itemsInCart, emptyList())
+        val result = updater.invoke(itemsInCart, emptyList(), emptyList())
 
         // THEN
         assertThat(result).hasSize(1)
@@ -181,7 +191,7 @@ class WooPosCartProductUpdaterTest {
         whenever(productsCache.getProductById(1L)).thenReturn(cachedProduct)
 
         // WHEN
-        val result = updater.invoke(itemsInCart, listOf(updatedInfo))
+        val result = updater.invoke(itemsInCart, listOf(updatedInfo), emptyList())
 
         // THEN
         assertThat(result).hasSize(2)
@@ -225,7 +235,7 @@ class WooPosCartProductUpdaterTest {
         whenever(productsCache.getProductById(1L)).thenReturn(cachedProduct)
 
         // WHEN
-        val result = updater.invoke(itemsInCart, listOf(updatedInfo))
+        val result = updater.invoke(itemsInCart, listOf(updatedInfo), emptyList())
 
         // THEN
         assertThat(result).hasSize(2)
@@ -268,7 +278,7 @@ class WooPosCartProductUpdaterTest {
         )
 
         // WHEN
-        val result = updater.invoke(itemsInCart, listOf(updatedInfo))
+        val result = updater.invoke(itemsInCart, listOf(updatedInfo), emptyList())
 
         // THEN
         assertThat(result).hasSize(1)
@@ -290,7 +300,7 @@ class WooPosCartProductUpdaterTest {
         val itemsInCart = listOf(simpleProduct)
 
         // WHEN
-        updater.invoke(itemsInCart, emptyList())
+        updater.invoke(itemsInCart, emptyList(), emptyList())
 
         // THEN
         verify(productsCache).deleteProduct(1L)
@@ -318,7 +328,7 @@ class WooPosCartProductUpdaterTest {
         whenever(productsCache.getProductById(1L)).thenReturn(cachedProduct)
 
         // WHEN
-        updater.invoke(itemsInCart, listOf(updatedInfo))
+        updater.invoke(itemsInCart, listOf(updatedInfo), emptyList())
 
         // THEN
         verify(productsCache).updateProduct(
@@ -328,4 +338,106 @@ class WooPosCartProductUpdaterTest {
             )
         )
     }
+
+    @Test
+    fun `given cart with coupon, when updatedCoupons contains matching code, then Valid state returned`() =
+        runTest {
+            // GIVEN
+            val coupon = generateCoupon(code = "COUPON1")
+            val itemsInCart = listOf(coupon)
+            val updatedCoupons = listOf(
+                generateCouponLine(
+                    code = "COUPON1",
+                    discountAmount = "5.0"
+                )
+            )
+
+            // WHEN
+            val result = updater.invoke(itemsInCart, emptyList(), updatedCoupons)
+
+            // THEN
+            assertThat(result).hasSize(1)
+            val updatedCoupon = result[0] as WooPosCartItemViewState.Coupon
+            assertThat(updatedCoupon.validationState).isEqualTo(CouponValidationState.Valid("-5.0$"))
+        }
+
+    @Test
+    fun `given cart with coupon, when updatedCoupons does not contain matching code, then Unknown state returned`() =
+        runTest {
+            // GIVEN
+            val itemsInCart = listOf(generateCoupon("COUPON2"))
+
+            // WHEN
+            val result = updater.invoke(itemsInCart, emptyList(), updatedCoupons = emptyList())
+
+            // THEN
+            assertThat(result).hasSize(1)
+            val updatedCoupon = result[0] as WooPosCartItemViewState.Coupon
+            assertThat(updatedCoupon.validationState).isEqualTo(CouponValidationState.Unknown)
+        }
+
+    @Test
+    fun `given cart with coupon, when updatedCoupons does not contain matching code, then crashlytics report sent`() =
+        runTest {
+            // GIVEN
+            val itemsInCart = listOf(generateCoupon("COUPON2"))
+
+            // WHEN
+            updater.invoke(itemsInCart, emptyList(), updatedCoupons = emptyList())
+
+            // THEN
+            verify(crashLogger).sendReport(any(), anyOrNull(), anyOrNull())
+        }
+
+    @Test
+    fun `given cart with multiple coupons, then relevant coupons are updated`() =
+        runTest {
+            // GIVEN
+            val coupon1 = generateCoupon(code = "COUPON1")
+            val coupon2 = generateCoupon(code = "COUPON2")
+            val itemsInCart = listOf(coupon1, coupon2)
+            val updatedCoupons = listOf(
+                generateCouponLine(
+                    code = "COUPON1",
+                    discountAmount = "5.0"
+                ),
+                generateCouponLine(
+                    code = "COUPON2",
+                    discountAmount = "10.0"
+                )
+            )
+
+            // WHEN
+            val result = updater.invoke(itemsInCart, emptyList(), updatedCoupons)
+
+            // THEN
+            assertThat(result).hasSize(2)
+            val updatedCoupon1 = result[0] as WooPosCartItemViewState.Coupon
+            assertThat(updatedCoupon1.validationState).isEqualTo(CouponValidationState.Valid("-5.0$"))
+            val updatedCoupon2 = result[1] as WooPosCartItemViewState.Coupon
+            assertThat(updatedCoupon2.validationState).isEqualTo(CouponValidationState.Valid("-10.0$"))
+        }
+
+    private fun generateCoupon(
+        code: String = "COUPON1",
+        summary: String = "Coupon Summary",
+        itemNumber: Int = 1,
+        id: Long = 1L,
+        validationState: CouponValidationState = CouponValidationState.Unknown
+    ) = WooPosCartItemViewState.Coupon(
+        itemNumber = itemNumber,
+        name = code,
+        summary = summary,
+        id = id,
+        validationState = validationState
+    )
+
+    private fun generateCouponLine(
+        code: String,
+        discountAmount: String
+    ) = ParentToChildrenEvent.OrderCreated.CouponInfo(
+        code = code,
+        id = 1L,
+        discountAmount = BigDecimal(discountAmount)
+    )
 }

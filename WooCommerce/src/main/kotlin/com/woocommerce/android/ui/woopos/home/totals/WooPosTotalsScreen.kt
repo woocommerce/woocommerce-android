@@ -30,11 +30,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.core.text.HtmlCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieClipSpec
@@ -110,6 +112,17 @@ private fun WooPosTotalsScreen(
                 LocalContext.current.announceForAccessibility(state.message)
                 TotalsErrorScreen(
                     errorMessage = state.message,
+                    onUIEvent = onUIEvent
+                )
+            }
+        }
+
+        StateChangeAnimated(visible = state is WooPosTotalsViewState.InvalidCouponError) {
+            if (state is WooPosTotalsViewState.InvalidCouponError) {
+                LocalContext.current.announceForAccessibility("${state.message}: ${state.reason}")
+                TotalsInvalidCouponsErrorScreen(
+                    errorMessage = state.message,
+                    errorReason = state.reason,
                     onUIEvent = onUIEvent
                 )
             }
@@ -241,6 +254,7 @@ private fun PreparingReader(title: String, subtitle: String) {
     WooPosText(
         text = title,
         style = WooPosTypography.BodyLarge,
+        color = WooPosTheme.colors.onSurfaceVariantHighest,
     )
     Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
     WooPosText(
@@ -263,6 +277,7 @@ private fun ReaderReadyForPayment(readerStatus: WooPosTotalsViewState.ReaderStat
     WooPosText(
         text = readerStatus.title,
         style = WooPosTypography.BodyLarge,
+        color = WooPosTheme.colors.onSurfaceVariantHighest,
     )
     Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
     WooPosText(
@@ -324,25 +339,28 @@ private fun TotalsGrid(totals: Totals.Visible) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
+        TotalsGridRow(
+            textOne = stringResource(R.string.woopos_payment_subtotal_label),
+            textTwo = totals.orderSubtotalText,
+            colorOne = WooPosTheme.colors.onSurfaceVariantHighest
+        )
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
+
         totals.orderDiscountText?.let {
             TotalsGridRow(
                 textOne = stringResource(R.string.woopos_payment_discount_label),
                 textTwo = totals.orderDiscountText,
+                colorOne = WooPosTheme.colors.onSurfaceVariantHighest,
             )
 
             Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
         }
 
         TotalsGridRow(
-            textOne = stringResource(R.string.woopos_payment_subtotal_label),
-            textTwo = totals.orderSubtotalText,
-        )
-
-        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
-
-        TotalsGridRow(
             textOne = stringResource(R.string.woopos_payment_tax_label),
             textTwo = totals.orderTaxText,
+            colorOne = WooPosTheme.colors.onSurfaceVariantHighest
         )
 
         Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
@@ -368,8 +386,10 @@ private fun TotalsGridRow(
     textTwo: String,
     styleOne: WooPosTypography = WooPosTypography.BodyLarge,
     fontWeightOne: FontWeight = FontWeight.Normal,
+    colorOne: Color = Color.Unspecified,
     styleTwo: WooPosTypography = WooPosTypography.BodyLarge,
     fontWeightTwo: FontWeight = FontWeight.Normal,
+    colorTwo: Color = Color.Unspecified,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -379,11 +399,13 @@ private fun TotalsGridRow(
             text = textOne,
             style = styleOne,
             fontWeight = fontWeightOne,
+            color = colorOne,
         )
         WooPosText(
             text = textTwo,
             style = styleTwo,
             fontWeight = fontWeightTwo,
+            color = colorTwo,
         )
     }
 }
@@ -439,6 +461,26 @@ private fun TotalsErrorScreen(
         primaryButton = Button(
             text = stringResource(R.string.retry),
             click = { onUIEvent(WooPosTotalsUIEvent.RetryOrderCreationClicked) }
+        )
+    )
+}
+
+@Composable
+private fun TotalsInvalidCouponsErrorScreen(
+    errorMessage: String,
+    errorReason: String,
+    onUIEvent: (WooPosTotalsUIEvent) -> Unit
+) {
+    return WooPosErrorScreen(
+        message = errorMessage,
+        reason = HtmlCompat.fromHtml(errorReason, HtmlCompat.FROM_HTML_MODE_COMPACT).toString(),
+        primaryButton = Button(
+            text = stringResource(R.string.woopos_totals_coupons_validation_failed_edit_order),
+            click = { onUIEvent(WooPosTotalsUIEvent.GoBackToCheckoutAfterFailedCouponValidation) }
+        ),
+        secondaryButton = Button(
+            text = stringResource(R.string.woopos_totals_coupons_validation_failed_remove_coupons),
+            click = { onUIEvent(WooPosTotalsUIEvent.OnRemoveCouponsClicked) }
         )
     )
 }
@@ -544,6 +586,18 @@ fun TotalsErrorPreview() {
     )
     WooPosTheme {
         ReaderDisconnected(modifier = Modifier, status = readerStatus) {}
+    }
+}
+
+@Composable
+@WooPosPreview
+fun TotalsCouponValidationFailedPreview() {
+    WooPosTheme {
+        TotalsInvalidCouponsErrorScreen(
+            errorMessage = "Invalid coupons",
+            errorReason = "Coupon '10OFF' is not valid for this order",
+            onUIEvent = {},
+        )
     }
 }
 

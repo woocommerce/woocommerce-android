@@ -1,11 +1,12 @@
 package com.woocommerce.android.ui.woopos.home.items
 
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -72,6 +73,8 @@ private fun WooPosItemsScreen(
                 is WooPosSearchUIEvent.AnimationComplete -> {
                     onUIEvent(WooPosItemsUIEvent.SearchAnimationComplete)
                 }
+
+                WooPosSearchUIEvent.SearchIconClicked -> onUIEvent(WooPosItemsUIEvent.SearchIconClicked)
             }
         },
         onTabClicked = { onUIEvent(WooPosItemsUIEvent.OnTabClicked(it)) },
@@ -106,30 +109,43 @@ private fun MainItemsList(
                 onSearchEvent = onSearchEvent,
             )
 
-            Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
+            val currentState = state.value
 
-            when (val itemsState = state.value) {
-                is WooPosItemsViewState.ProductList -> {
-                    Column {
-                        when (val searchState = itemsState.search) {
-                            WooPosItemsViewState.SearchState.Hidden -> {
-                                WooPosProductsScreen(modifier = Modifier, listState = listState)
-                            }
-                            is WooPosItemsViewState.SearchState.Visible -> {
-                                when (searchState.state) {
-                                    WooPosSearchInputState.Closed -> {
-                                        WooPosProductsScreen(modifier = Modifier, listState = listState)
-                                    }
-
-                                    is WooPosSearchInputState.Open -> WooPosItemsSearchScreen()
-                                }
-                            }
-                        }
-                    }
+            Crossfade(
+                targetState = getScreenState(currentState),
+                animationSpec = tween(
+                    durationMillis = 300,
+                    easing = LinearEasing,
+                ),
+            ) { screenState ->
+                when (screenState) {
+                    ScreenState.PRODUCTS -> WooPosProductsScreen(modifier = Modifier, listState = listState)
+                    ScreenState.PRODUCTS_SEARCH -> WooPosItemsSearchScreen()
+                    ScreenState.COUPONS -> WooPosCouponsScreen(modifier = Modifier)
                 }
-                is WooPosItemsViewState.CouponList -> WooPosCouponsScreen(modifier = Modifier)
             }
         }
+    }
+}
+
+private enum class ScreenState {
+    PRODUCTS, PRODUCTS_SEARCH, COUPONS
+}
+
+private fun getScreenState(state: WooPosItemsViewState): ScreenState {
+    return when (state) {
+        is WooPosItemsViewState.ProductList -> {
+            when (val searchState = state.search) {
+                WooPosItemsViewState.SearchState.Hidden -> ScreenState.PRODUCTS
+                is WooPosItemsViewState.SearchState.Visible -> {
+                    when (searchState.state) {
+                        WooPosSearchInputState.Closed -> ScreenState.PRODUCTS
+                        is WooPosSearchInputState.Open -> ScreenState.PRODUCTS_SEARCH
+                    }
+                }
+            }
+        }
+        is WooPosItemsViewState.CouponList -> ScreenState.COUPONS
     }
 }
 
@@ -139,7 +155,6 @@ private fun MainItemsList(
 fun WooPosItemsScreenSearchVisiblePreview(modifier: Modifier = Modifier) {
     val productState = MutableStateFlow(
         WooPosItemsViewState.ProductList(
-            banner = WooPosItemsViewState.BannerState.Hidden,
             search = WooPosItemsViewState.SearchState.Visible(
                 state = WooPosSearchInputState.Open(
                     input = WooPosSearchInputState.Open.Input.Query("", 0),
@@ -165,7 +180,6 @@ fun WooPosItemsScreenSearchVisiblePreview(modifier: Modifier = Modifier) {
 fun WooPosItemsScreenSearchHiddenPreview(modifier: Modifier = Modifier) {
     val productState = MutableStateFlow(
         WooPosItemsViewState.ProductList(
-            banner = WooPosItemsViewState.BannerState.Hidden,
             search = WooPosItemsViewState.SearchState.Visible(
                 state = WooPosSearchInputState.Open(
                     input = WooPosSearchInputState.Open.Input.Query("", 0),

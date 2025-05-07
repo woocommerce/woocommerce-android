@@ -5,12 +5,14 @@ import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
+import com.woocommerce.android.WooException
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.event.BluetoothCardReaderMessages
 import com.woocommerce.android.cardreader.connection.event.CardReaderBatteryStatus
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.Order.CouponLine
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
@@ -33,6 +35,7 @@ import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.featureflags.WooPosIsCouponsEnabled
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.BackFromCheckoutToCartClicked
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OrderCreated
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.ReturnedFromCardReaderPaymentToCheckout
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccessfullyPaid.PaymentMethod
@@ -40,7 +43,6 @@ import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsUIEvent.OnBackClicked
-import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState.Totals.Visible
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
@@ -51,6 +53,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTrackingD
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.UiStringParser
+import com.woocommerce.android.util.WooLogWrapper
 import com.woocommerce.android.viewmodel.ResourceProvider
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -63,11 +66,15 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule
 import org.mockito.kotlin.any
+import org.mockito.kotlin.argThat
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.util.Date
@@ -88,7 +95,9 @@ class WooPosTotalsViewModelTest {
     private val networkStatus: WooPosNetworkStatus = mock()
 
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender = mock()
-    private val resourceProvider: ResourceProvider = mock()
+    private val resourceProvider: ResourceProvider = mock {
+        on { getString(any()) }.thenReturn("")
+    }
     private val cardReaderManager: CardReaderManager = mock()
     private val orderRepository: OrderDetailRepository = mock()
     private val selectedSite: SelectedSite = mock()
@@ -108,6 +117,7 @@ class WooPosTotalsViewModelTest {
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker = mock()
     private val paymentReceiptShare: PaymentReceiptShare = mock()
     private val uiStringParser: UiStringParser = mock()
+    private val wooLogWrapper: WooLogWrapper = mock()
     private val isCouponsEnabled: WooPosIsCouponsEnabled = mock()
     private val paymentControllerFactory = WooPosCardReaderPaymentControllerFactory(
         cardReaderManager = cardReaderManager,
@@ -748,7 +758,7 @@ class WooPosTotalsViewModelTest {
         val mockCardReaderPaymentController: CardReaderPaymentController = mock()
         val factory: WooPosCardReaderPaymentControllerFactory = mock()
         whenever(factory.create(any(), any(), any())).thenReturn(mockCardReaderPaymentController)
-        val vm = createViewModelAndSetupForSuccessfulOrderCreation(controllerFactory = factory)
+        createViewModelAndSetupForSuccessfulOrderCreation(controllerFactory = factory)
 
         // WHEN
         readerStatus.value = CardReaderStatus.NotConnected()
@@ -902,8 +912,10 @@ class WooPosTotalsViewModelTest {
             val vm = createViewModelAndSetupForSuccessfulOrderCreation(discountTotal = discountTotal)
 
             // THEN
-            assertThat(((vm.state.value as WooPosTotalsViewState.Checkout).totals as Visible).orderDiscountText)
-                .isNotNull()
+            assertThat(
+                ((vm.state.value as WooPosTotalsViewState.Checkout).totals as WooPosTotalsViewState.Totals.Visible)
+                    .orderDiscountText
+            ).isNotNull()
         }
 
     @Test
@@ -917,8 +929,10 @@ class WooPosTotalsViewModelTest {
             val vm = createViewModelAndSetupForSuccessfulOrderCreation(discountTotal = discountTotal)
 
             // THEN
-            assertThat(((vm.state.value as WooPosTotalsViewState.Checkout).totals as Visible).orderDiscountText)
-                .isNull()
+            assertThat(
+                ((vm.state.value as WooPosTotalsViewState.Checkout).totals as WooPosTotalsViewState.Totals.Visible)
+                    .orderDiscountText
+            ).isNull()
         }
 
     @Test
@@ -1035,7 +1049,7 @@ class WooPosTotalsViewModelTest {
         advanceUntilIdle()
 
         // THEN
-        verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.ReturnedFromCardReaderPaymentToCheckout)
+        verify(childrenToParentEventSender).sendToParent(ReturnedFromCardReaderPaymentToCheckout)
     }
 
     @Test
@@ -1380,6 +1394,145 @@ class WooPosTotalsViewModelTest {
         verify(childrenToParentEventSender).sendToParent(ReturnedFromCardReaderPaymentToCheckout)
     }
 
+    @Test
+    fun `given valid order, when order created, then emits ChildToParentEvent-OrderCreated`() =
+        runTest {
+            // WHEN
+            createViewModelAndSetupForSuccessfulOrderCreation()
+
+            // THEN
+            verify(childrenToParentEventSender).sendToParent(argThat { this is OrderCreated })
+        }
+
+    @Test
+    fun `given valid coupons returned, when order created, then updatedCoupons passed to parent`() =
+        runTest {
+            // GIVEN
+            val couponLines = listOf(
+                CouponLine(
+                    id = 1L,
+                    code = "TEST",
+                    discount = "1.00",
+                )
+            )
+            // WHEN
+            createViewModelAndSetupForSuccessfulOrderCreation(couponLines = couponLines)
+
+            // THEN
+            val eventCaptor = argumentCaptor<OrderCreated>()
+            verify(childrenToParentEventSender).sendToParent(eventCaptor.capture())
+            val childToParentEvent = eventCaptor.firstValue
+            assertThat(childToParentEvent.updatedCoupons.first().code).isEqualTo("TEST")
+        }
+
+    @Test
+    fun `given valid and broken coupons returned, when order created, then broken coupon skipped`() =
+        runTest {
+            // GIVEN
+            val couponLines = listOf(
+                CouponLine(
+                    id = 1L,
+                    code = "BROKEN_COUPON",
+                    discount = "invalid discount amount",
+                ),
+                CouponLine(
+                    id = 2L,
+                    code = "VALID_COUPON",
+                    discount = "1.00",
+                )
+            )
+            // WHEN
+            createViewModelAndSetupForSuccessfulOrderCreation(couponLines = couponLines)
+
+            // THEN
+            val eventCaptor = argumentCaptor<OrderCreated>()
+            verify(childrenToParentEventSender).sendToParent(eventCaptor.capture())
+            val childToParentEvent = eventCaptor.firstValue
+            assertThat(childToParentEvent.updatedCoupons.size).isEqualTo(1)
+        }
+
+    @Test
+    fun `when GoBackToCheckoutAfterFailedCouponValidation clicked, then should send BackFromCheckoutToCartClicked event`() = runTest {
+        // GIVEN
+        val viewModel = createViewModelAndSetupForSuccessfulOrderCreation(couponLines = emptyList())
+
+        // WHEN
+        viewModel.onUIEvent(WooPosTotalsUIEvent.GoBackToCheckoutAfterFailedCouponValidation)
+
+        // THEN
+        verify(childrenToParentEventSender).sendToParent(BackFromCheckoutToCartClicked)
+    }
+
+    @Test
+    fun `when OnRemoveCouponsClicked is triggered, then should send RemoveCouponsClicked event`() = runTest {
+        // GIVEN
+        val viewModel = createViewModelAndSetupForSuccessfulOrderCreation(couponLines = emptyList())
+
+        // WHEN
+        viewModel.onUIEvent(WooPosTotalsUIEvent.OnRemoveCouponsClicked)
+
+        // THEN
+        verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.RemoveCouponsClicked)
+    }
+
+    @Test
+    fun `given invalid coupon error during order creation, then send CouponsValidationFailed event`() = runTest {
+        // GIVEN
+        val parentToChildrenEventFlow = MutableStateFlow(ParentToChildrenEvent.CheckoutClicked(emptyList()))
+        val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
+            on { events }.thenReturn(parentToChildrenEventFlow)
+        }
+        val wooError = mock<WooError> {
+            on { type }.thenReturn(WooErrorType.INVALID_COUPON)
+        }
+        val wooException = mock<WooException> {
+            on { error }.thenReturn(wooError)
+        }
+        val totalsRepository: WooPosTotalsRepository = mock {
+            onBlocking { createOrderFromCartItems(any()) }.thenReturn(
+                Result.failure(wooException)
+            )
+        }
+
+        // WHEN
+        createViewModel(
+            parentToChildrenEventReceiver = parentToChildrenEventReceiver,
+            totalsRepository = totalsRepository,
+        )
+
+        // THEN
+        verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.CouponsValidationFailed)
+    }
+
+    @Test
+    fun `given invalid coupon error during order creation, then show InvalidCouponError state`() = runTest {
+        // GIVEN
+        val parentToChildrenEventFlow = MutableStateFlow(ParentToChildrenEvent.CheckoutClicked(emptyList()))
+        val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
+            on { events }.thenReturn(parentToChildrenEventFlow)
+        }
+        val wooError = mock<WooError> {
+            on { type }.thenReturn(WooErrorType.INVALID_COUPON)
+        }
+        val wooException = mock<WooException> {
+            on { error }.thenReturn(wooError)
+        }
+        val totalsRepository: WooPosTotalsRepository = mock {
+            onBlocking { createOrderFromCartItems(any()) }.thenReturn(
+                Result.failure(wooException)
+            )
+        }
+
+        // WHEN
+        val viewModel = createViewModel(
+            parentToChildrenEventReceiver = parentToChildrenEventReceiver,
+            totalsRepository = totalsRepository,
+        )
+
+        // THEN
+        assertThat(viewModel.state.value).isInstanceOf(WooPosTotalsViewState.InvalidCouponError::class.java)
+    }
+
     private fun mockPaymentFailedTexts() {
         whenever(resourceProvider.getString(R.string.woopos_success_totals_payment_processing_title))
             .thenReturn("Processing payment")
@@ -1436,6 +1589,7 @@ class WooPosTotalsViewModelTest {
         parentToChildrenEventFlow: MutableStateFlow<ParentToChildrenEvent> =
             MutableStateFlow(ParentToChildrenEvent.CheckoutClicked(itemClickedData)),
         discountTotal: BigDecimal = BigDecimal.ZERO,
+        couponLines: List<CouponLine> = emptyList(),
     ): WooPosTotalsViewModel {
         whenever(resourceProvider.getString(R.string.woopos_success_totals_error_reader_not_connected_title))
             .thenReturn("Reader not connected")
@@ -1482,6 +1636,7 @@ class WooPosTotalsViewModelTest {
             productsTotal = BigDecimal("3.00"),
             discountTotal = discountTotal,
             total = BigDecimal("5.00"),
+            couponLines = couponLines,
         )
         val totalsRepository: WooPosTotalsRepository = mock {
             onBlocking {
@@ -1529,5 +1684,6 @@ class WooPosTotalsViewModelTest {
             analyticsData = WooPosAnalyticsTrackingDataKeeper()
         ),
         isCouponsEnabled = isCouponsEnabled,
+        wooLogWrapper = wooLogWrapper,
     )
 }

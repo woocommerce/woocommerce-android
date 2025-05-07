@@ -52,7 +52,7 @@ sealed class WooPosCartItemViewState(open val itemNumber: Int, open val name: St
         open val description: String?,
         open val imageUrl: String?,
         open val productDoesNotExist: Boolean,
-    ) : WooPosCartItemViewState(itemNumber, name), Parcelable {
+    ) : WooPosCartItemViewState(itemNumber, name) {
         @Parcelize
         data class Simple(
             override val itemNumber: Int,
@@ -62,7 +62,7 @@ sealed class WooPosCartItemViewState(open val itemNumber: Int, open val name: St
             override val description: String?,
             override val imageUrl: String?,
             override val productDoesNotExist: Boolean = false,
-        ) : Product(itemNumber, id, name, price, description, imageUrl, productDoesNotExist), Parcelable
+        ) : Product(itemNumber, id, name, price, description, imageUrl, productDoesNotExist)
 
         @Parcelize
         data class Variation(
@@ -74,7 +74,7 @@ sealed class WooPosCartItemViewState(open val itemNumber: Int, open val name: St
             override val description: String?,
             override val imageUrl: String?,
             override val productDoesNotExist: Boolean = false,
-        ) : Product(itemNumber, id, name, price, description, imageUrl, productDoesNotExist), Parcelable
+        ) : Product(itemNumber, id, name, price, description, imageUrl, productDoesNotExist)
     }
 
     @Parcelize
@@ -83,5 +83,18 @@ sealed class WooPosCartItemViewState(open val itemNumber: Int, open val name: St
         override val name: String,
         val summary: String,
         val id: Long,
-    ) : WooPosCartItemViewState(itemNumber, name), Parcelable
+        val validationState: CouponValidationState = CouponValidationState.Unknown,
+    ) : WooPosCartItemViewState(itemNumber, name) {
+        @Parcelize
+        sealed class CouponValidationState : Parcelable {
+            @Parcelize
+            data class Valid(val formattedDiscount: String) : CouponValidationState()
+
+            @Parcelize
+            data object Invalid : CouponValidationState()
+
+            @Parcelize
+            data object Unknown : CouponValidationState()
+        }
+    }
 }

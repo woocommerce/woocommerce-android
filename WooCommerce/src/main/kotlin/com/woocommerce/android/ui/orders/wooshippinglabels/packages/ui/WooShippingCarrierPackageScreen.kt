@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui
 import android.content.res.Configuration
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -62,7 +63,8 @@ fun WooShippingCarrierPackageScreen(
         onPackageSelected = viewModel::onCarrierPackageSelected,
         onAddPackageClick = viewModel::onAddCarrierPackageClick,
         onRetryClick = viewModel::onRetryClick,
-        onTabChange = onTabChange
+        onTabChange = onTabChange,
+        onPackageStarred = viewModel::onCarrierPackageStarred
     )
 }
 
@@ -74,7 +76,8 @@ fun WooShippingCarrierPackageScreen(
     isAddPackageEnabled: Boolean = false,
     onAddPackageClick: () -> Unit = {},
     onRetryClick: () -> Unit,
-    onTabChange: (PageType) -> Unit
+    onTabChange: (PageType) -> Unit,
+    onPackageStarred: (PackageData, Boolean) -> Unit = { _, _ -> }
 ) {
     Column(modifier = modifier) {
         Box(modifier = modifier.weight(1f)) {
@@ -89,6 +92,7 @@ fun WooShippingCarrierPackageScreen(
                     modifier = modifier,
                     carrierPackages = packageState.carrierPackages,
                     onPackageSelected = onPackageSelected,
+                    onPackageStarred = onPackageStarred
                 )
 
                 packageState is PredefinedPackagesState.Error -> ErrorMessageWithButton(
@@ -127,6 +131,7 @@ fun WooShippingCarrierPackageContent(
     modifier: Modifier = Modifier,
     carrierPackages: Map<Carrier, List<CarrierPackageGroup>>,
     onPackageSelected: (PackageData, Boolean) -> Unit,
+    onPackageStarred: (PackageData, Boolean) -> Unit
 ) {
     val pagerState = rememberPagerState { carrierPackages.keys.size }
     Column(
@@ -145,7 +150,8 @@ fun WooShippingCarrierPackageContent(
                 .weight(1f),
             pagerState = pagerState,
             carrierPackages = carrierPackages,
-            onPackageSelected = onPackageSelected
+            onPackageSelected = onPackageSelected,
+            onPackageStarred = onPackageStarred
         )
     }
 }
@@ -198,7 +204,8 @@ private fun PackageListPager(
     modifier: Modifier,
     pagerState: PagerState,
     carrierPackages: Map<Carrier, List<CarrierPackageGroup>>,
-    onPackageSelected: (PackageData, Boolean) -> Unit
+    onPackageSelected: (PackageData, Boolean) -> Unit,
+    onPackageStarred: (PackageData, Boolean) -> Unit
 ) {
     HorizontalPager(
         state = pagerState,
@@ -209,7 +216,8 @@ private fun PackageListPager(
         val carrierPackageGroups = carrierPackages[carrierForPageIndex] ?: emptyList()
         PackageList(
             packageGroups = carrierPackageGroups,
-            onPackageSelected = onPackageSelected
+            onPackageSelected = onPackageSelected,
+            onPackageStarred = onPackageStarred
         )
     }
 }
@@ -217,7 +225,8 @@ private fun PackageListPager(
 @Composable
 private fun PackageList(
     packageGroups: List<CarrierPackageGroup>,
-    onPackageSelected: (PackageData, Boolean) -> Unit
+    onPackageSelected: (PackageData, Boolean) -> Unit,
+    onPackageStarred: (PackageData, Boolean) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -229,7 +238,8 @@ private fun PackageList(
             PackageListSection(
                 sectionHeader = group.groupName,
                 packages = group.packages,
-                onPackageSelected = onPackageSelected
+                onPackageSelected = onPackageSelected,
+                onPackageStarred = onPackageStarred
             )
         }
     }
@@ -239,7 +249,8 @@ private fun PackageList(
 private fun PackageListSection(
     sectionHeader: String,
     packages: List<PackageData>,
-    onPackageSelected: (PackageData, Boolean) -> Unit
+    onPackageSelected: (PackageData, Boolean) -> Unit,
+    onPackageStarred: (PackageData, Boolean) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -255,9 +266,13 @@ private fun PackageListSection(
         Divider()
         packages.forEach { packageData ->
             WooShippingPackageListItem(
-                modifier = Modifier.padding(start = 16.dp),
+                modifier = Modifier
+                    .clickable { onPackageSelected(packageData, packageData.isSelected.not()) }
+                    .padding(start = 16.dp),
                 packageData = packageData,
-                onPackageSelected = onPackageSelected
+                onPackageSelected = onPackageSelected,
+                packageItemSupportsStarring = true,
+                onPackageStarred = onPackageStarred
             )
         }
     }
@@ -352,7 +367,8 @@ fun WooShippingCarrierPackageScreenPreview() {
                     )
                 )
             ),
-            onPackageSelected = { _, _ -> }
+            onPackageSelected = { _, _ -> },
+            onPackageStarred = { _, _ -> }
         )
     }
 }

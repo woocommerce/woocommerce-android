@@ -63,7 +63,7 @@ class WooPosPopularProductsProviderTest {
             productStore.fetchProducts(
                 site = siteModel,
                 offset = 0,
-                pageSize = 3,
+                pageSize = 10,
                 filterOptions = emptyMap(),
                 includeTypes = emptyList(),
                 sortType = ProductSorting.POPULARITY_DESC
@@ -88,7 +88,7 @@ class WooPosPopularProductsProviderTest {
             productStore.fetchProducts(
                 site = siteModel,
                 offset = 0,
-                pageSize = 3,
+                pageSize = 10,
                 filterOptions = emptyMap(),
                 includeTypes = emptyList(),
                 sortType = ProductSorting.POPULARITY_DESC
@@ -122,7 +122,7 @@ class WooPosPopularProductsProviderTest {
             productStore.fetchProducts(
                 site = siteModel,
                 offset = 0,
-                pageSize = 3,
+                pageSize = 10,
                 filterOptions = emptyMap(),
                 includeTypes = emptyList(),
                 sortType = ProductSorting.POPULARITY_DESC
@@ -149,7 +149,7 @@ class WooPosPopularProductsProviderTest {
                 productStore.fetchProducts(
                     site = siteModel,
                     offset = 0,
-                    pageSize = 3,
+                    pageSize = 10,
                     filterOptions = emptyMap(),
                     includeTypes = emptyList(),
                     sortType = ProductSorting.POPULARITY_DESC
@@ -175,7 +175,7 @@ class WooPosPopularProductsProviderTest {
                 productStore.fetchProducts(
                     site = siteModel,
                     offset = 0,
-                    pageSize = 3,
+                    pageSize = 10,
                     filterOptions = emptyMap(),
                     includeTypes = emptyList(),
                     sortType = ProductSorting.POPULARITY_DESC
