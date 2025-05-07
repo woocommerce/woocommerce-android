@@ -53,7 +53,7 @@ fun WooPosChip(
                 .padding(
                     start = WooPosSpacing.Medium.value,
                     top = 12.dp,
-                    end = WooPosSpacing.Large.value,
+                    end = WooPosSpacing.Medium.value,
                     bottom = 12.dp
                 ),
             verticalAlignment = Alignment.CenterVertically
