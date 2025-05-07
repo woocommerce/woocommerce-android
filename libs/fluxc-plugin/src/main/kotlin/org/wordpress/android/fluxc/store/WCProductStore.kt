@@ -1766,6 +1766,7 @@ class WCProductStore @Inject internal constructor(
                 site = site,
                 offset = offset,
                 pageSize = pageSize,
+                searchQuery = searchNameOrSkuQuery,
                 searchNameOrSkuQuery = searchNameOrSkuQuery,
                 filterOptions = filterOptions,
                 includeTypes = includeTypes
