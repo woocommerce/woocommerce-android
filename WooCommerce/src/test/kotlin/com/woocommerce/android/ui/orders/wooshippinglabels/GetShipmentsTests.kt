@@ -3,11 +3,15 @@ package com.woocommerce.android.ui.orders.wooshippinglabels
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
+import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigDataStore
+import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ConfigDTO
+import com.woocommerce.android.ui.orders.wooshippinglabels.networking.Item
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import org.junit.Assert.assertNotEquals
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -20,30 +24,30 @@ import org.mockito.kotlin.whenever
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class GetShippableItemsTests : BaseUnitTest() {
+class GetShipmentsTests : BaseUnitTest() {
     private val orderDetailRepository: OrderDetailRepository = mock()
     private val productDetailRepository: ProductDetailRepository = mock()
-    private val sut = GetShippableItems(orderDetailRepository, productDetailRepository)
+    private val configDataStore: WooShippingConfigDataStore = mock {
+        doReturn(flowOf(null)).whenever(it).observeConfig(any())
+    }
+
+    private val sut = GetShipments(orderDetailRepository, productDetailRepository, configDataStore)
 
     @Test
     fun `when order only contains refunded products then should return empty list`() = testBlocking {
         val productId = 18L
         val quantity = 2F
-        val refunds = OrderTestUtils.generateItemsRefunds(
-            listOf(Pair(productId, quantity.toInt()))
-        )
+        val refunds = OrderTestUtils.generateItemsRefunds(listOf(Pair(productId, quantity.toInt())))
         val order = OrderTestUtils.generateTestOrder().copy(
-            items = OrderTestUtils.generateTestOrderItems(
-                productId = productId,
-                quantity = quantity
-            )
+            items = OrderTestUtils.generateTestOrderItems(productId = productId, quantity = quantity)
         )
 
         whenever(orderDetailRepository.getOrderRefunds(eq(order.id))) doReturn refunds
 
         val result = sut.invoke(order)
+        val items = result.first().items
 
-        assertTrue(result.isEmpty())
+        assertTrue(items.isEmpty())
         verify(productDetailRepository, never()).getProductAsync(any())
     }
 
@@ -52,9 +56,7 @@ class GetShippableItemsTests : BaseUnitTest() {
         val itemsSize = 5
         val refunds = emptyList<Refund>()
         val order = OrderTestUtils.generateTestOrder().copy(
-            items = OrderTestUtils.generateTestOrderItems(
-                count = itemsSize,
-            )
+            items = OrderTestUtils.generateTestOrderItems(count = itemsSize)
         )
         whenever(orderDetailRepository.getOrderRefunds(eq(order.id))) doReturn refunds
         whenever(productDetailRepository.getProductAsync(any())).thenAnswer { invocation ->
@@ -63,9 +65,10 @@ class GetShippableItemsTests : BaseUnitTest() {
         }
 
         val result = sut.invoke(order)
+        val items = result.first().items
 
-        assertTrue(result.isNotEmpty())
-        assertEquals(result.size, itemsSize)
+        assertTrue(items.isNotEmpty())
+        assertEquals(items.size, itemsSize)
     }
 
     @Test
@@ -73,15 +76,9 @@ class GetShippableItemsTests : BaseUnitTest() {
         val productId = 18L
         val quantity = 2F
         val itemsSize = 1
-        val refunds = OrderTestUtils.generateItemsRefunds(
-            listOf(Pair(productId, quantity.toInt() - 1))
-        )
+        val refunds = OrderTestUtils.generateItemsRefunds(listOf(Pair(productId, quantity.toInt() - 1)))
         val order = OrderTestUtils.generateTestOrder().copy(
-            items = OrderTestUtils.generateTestOrderItems(
-                count = itemsSize,
-                productId = productId,
-                quantity = quantity
-            )
+            items = OrderTestUtils.generateTestOrderItems(count = itemsSize, productId = productId, quantity = quantity)
         )
 
         whenever(orderDetailRepository.getOrderRefunds(eq(order.id))) doReturn refunds
@@ -91,9 +88,10 @@ class GetShippableItemsTests : BaseUnitTest() {
         }
 
         val result = sut.invoke(order)
+        val items = result.first().items
 
-        assertTrue(result.isNotEmpty())
-        assertEquals(result.size, itemsSize)
+        assertTrue(items.isNotEmpty())
+        assertEquals(items.size, itemsSize)
     }
 
     @Test
@@ -101,9 +99,9 @@ class GetShippableItemsTests : BaseUnitTest() {
         val itemsSize = 5
         val virtualProductId = 1L
         val sampleProductId = 2L
-        val items = OrderTestUtils.generateTestOrderItems(count = itemsSize)
+        val orderItems = OrderTestUtils.generateTestOrderItems(count = itemsSize)
         val refunds = emptyList<Refund>()
-        val order = OrderTestUtils.generateTestOrder().copy(items = items)
+        val order = OrderTestUtils.generateTestOrder().copy(items = orderItems)
 
         whenever(orderDetailRepository.getOrderRefunds(eq(order.id))) doReturn refunds
         whenever(productDetailRepository.getProductAsync(any())).thenAnswer { invocation ->
@@ -118,14 +116,66 @@ class GetShippableItemsTests : BaseUnitTest() {
         }
 
         val result = sut.invoke(order)
+        val items = result.first().items
 
-        assertTrue(result.isNotEmpty())
+        assertTrue(items.isNotEmpty())
         // result without a virtual product and a sample product should be total - 2
-        assertNotEquals(result.size, itemsSize)
-        assertEquals(result.size, itemsSize - 2)
-        val expectedFilteredProducts = result.filter {
+        assertNotEquals(items.size, itemsSize)
+        assertEquals(items.size, itemsSize - 2)
+        val expectedFilteredProducts = items.filter {
             it.productId == virtualProductId || it.productId == sampleProductId
         }
         assertTrue(expectedFilteredProducts.isEmpty())
+    }
+
+    @Test
+    fun `when there are multiple shipments, then should return shipments with correct quantities`() = testBlocking {
+        val itemsSize = 1
+        val quantity = 10f
+        val refunds = emptyList<Refund>()
+        val item = OrderTestUtils.generateTestOrderItems(count = itemsSize, quantity = quantity).first()
+
+        val order = OrderTestUtils.generateTestOrder().copy(items = listOf(item))
+        whenever(orderDetailRepository.getOrderRefunds(eq(order.id))) doReturn refunds
+        whenever(productDetailRepository.getProductAsync(any())).thenAnswer { invocation ->
+            val productId = invocation.arguments[0] as Long
+            ProductTestUtils.generateProduct(productId = productId, productName = "Product $productId")
+        }
+
+        // When total order quantity is 10 and each shipment has 5 items
+        val shipments = mapOf(
+            "0" to listOf(
+                Item(
+                    id = item.itemId,
+                    subItems = listOf(
+                        "${item.itemId}-sub-0",
+                        "${item.itemId}-sub-1",
+                        "${item.itemId}-sub-2",
+                        "${item.itemId}-sub-3",
+                        "${item.itemId}-sub-4"
+                    )
+                )
+            ),
+            "1" to listOf(
+                Item(
+                    id = item.itemId,
+                    subItems = listOf(
+                        "${item.itemId}-sub-0",
+                        "${item.itemId}-sub-1",
+                        "${item.itemId}-sub-2",
+                        "${item.itemId}-sub-3",
+                        "${item.itemId}-sub-4"
+                    )
+                )
+            )
+        )
+        whenever(configDataStore.observeConfig(eq(order.id))) doReturn flowOf(ConfigDTO(shipments))
+
+        val result = sut.invoke(order)
+        val shipment1 = result.first()
+        val shipment2 = result[1]
+
+        assertEquals(shipment1.items.first().quantity, 5f)
+        assertEquals(shipment2.items.first().quantity, 5f)
     }
 }

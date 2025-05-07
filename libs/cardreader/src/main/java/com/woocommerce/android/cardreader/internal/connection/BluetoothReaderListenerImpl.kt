@@ -1,14 +1,16 @@
 package com.woocommerce.android.cardreader.internal.connection
 
 import com.stripe.stripeterminal.external.callable.Cancelable
-import com.stripe.stripeterminal.external.callable.ReaderListener
+import com.stripe.stripeterminal.external.callable.MobileReaderListener
 import com.stripe.stripeterminal.external.models.BatteryStatus
+import com.stripe.stripeterminal.external.models.DisconnectReason
 import com.stripe.stripeterminal.external.models.ReaderDisplayMessage
 import com.stripe.stripeterminal.external.models.ReaderEvent
 import com.stripe.stripeterminal.external.models.ReaderInputOptions
 import com.stripe.stripeterminal.external.models.ReaderSoftwareUpdate
 import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.LogWrapper
+import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.event.BluetoothCardReaderMessages
 import com.woocommerce.android.cardreader.connection.event.BluetoothCardReaderMessages.CardReaderNoMessage
 import com.woocommerce.android.cardreader.connection.event.CardReaderBatteryStatus
@@ -27,7 +29,8 @@ internal class BluetoothReaderListenerImpl(
     private val logWrapper: LogWrapper,
     private val additionalInfoMapper: AdditionalInfoMapper,
     private val updateErrorMapper: UpdateErrorMapper,
-) : ReaderListener {
+    private val terminalListenerImpl: TerminalListenerImpl
+) : MobileReaderListener {
     private val _updateStatusEvents = MutableStateFlow<SoftwareUpdateStatus>(SoftwareUpdateStatus.Unknown)
     val updateStatusEvents = _updateStatusEvents.asStateFlow()
 
@@ -102,6 +105,11 @@ internal class BluetoothReaderListenerImpl(
     override fun onRequestReaderInput(options: ReaderInputOptions) {
         logWrapper.d(LOG_TAG, "onRequestReaderInput: $options")
         _displayMessagesEvents.value = BluetoothCardReaderMessages.CardReaderInputMessage(options.toString())
+    }
+
+    override fun onDisconnect(reason: DisconnectReason) {
+        logWrapper.d(LOG_TAG, "onDisconnect")
+        terminalListenerImpl.updateReaderStatus(CardReaderStatus.NotConnected())
     }
 
     fun resetConnectionState() {

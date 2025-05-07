@@ -1534,7 +1534,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             verify(cardReaderManager).discoverReaders(anyBoolean(), captor.capture())
             assertThat(captor.firstValue).isEqualTo(
                 CardReaderTypesToDiscover.SpecificReaders.BuiltInReaders(
-                    listOf(ReaderType.BuildInReader.CotsDevice)
+                    listOf(ReaderType.BuildInReader.TapToPayDevice)
                 )
             )
         }

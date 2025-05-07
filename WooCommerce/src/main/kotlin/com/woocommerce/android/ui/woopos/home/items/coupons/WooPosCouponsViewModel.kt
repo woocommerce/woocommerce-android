@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsUIEvent
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsUIEvent.RetryTriggered
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart.WooPosItemSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -69,6 +70,10 @@ class WooPosCouponsViewModel @Inject constructor(
             }
 
             RetryTriggered -> fetchCoupons()
+
+            is WooPosCouponsUIEvent.CreateCouponClicked -> {
+                error("Create coupon clicked event not implemented yet")
+            }
         }
     }
 
@@ -96,7 +101,10 @@ class WooPosCouponsViewModel @Inject constructor(
         viewModelScope.launch {
             fromChildToParentEventSender.sendToParent(
                 // CouponsProject: rename ItemClickedInProductSelector to ItemClicked
-                ChildToParentEvent.ItemClickedInProductSelector(ItemClickedData.Coupon(event.couponId))
+                ChildToParentEvent.ItemClickedInProductSelector(
+                    itemData = ItemClickedData.Coupon(event.couponId),
+                    source = WooPosItemSource.COUPON_LIST
+                )
             )
         }
     }

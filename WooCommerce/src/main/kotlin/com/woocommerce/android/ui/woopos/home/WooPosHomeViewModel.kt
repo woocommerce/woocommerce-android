@@ -129,7 +129,7 @@ class WooPosHomeViewModel @Inject constructor(
 
                     is ChildToParentEvent.ItemClickedInProductSelector -> {
                         sendEventToChildren(
-                            ItemClickedInProductSelector(event.itemData)
+                            ItemClickedInProductSelector(itemData = event.itemData, source = event.source)
                         )
                     }
 
@@ -195,6 +195,15 @@ class WooPosHomeViewModel @Inject constructor(
                     }
 
                     is ChildToParentEvent.OrderCreated -> handleOrderCreated(event)
+                    is ChildToParentEvent.CouponsValidationFailed -> {
+                        sendEventToChildren(ParentToChildrenEvent.CouponsValidationFailed)
+                    }
+                    is ChildToParentEvent.RemoveCouponsClicked -> {
+                        sendEventToChildren(ParentToChildrenEvent.RemoveCouponsClicked)
+                    }
+                    is ChildToParentEvent.CouponsRemoved -> {
+                        sendEventToChildren(ParentToChildrenEvent.CouponsRemoved(event.cartDataList))
+                    }
                 }
             }
         }

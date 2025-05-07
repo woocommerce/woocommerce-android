@@ -9,7 +9,6 @@ import com.stripe.stripeterminal.external.callable.ConnectionTokenProvider
 import com.stripe.stripeterminal.external.callable.DiscoveryListener
 import com.stripe.stripeterminal.external.callable.PaymentIntentCallback
 import com.stripe.stripeterminal.external.callable.ReaderCallback
-import com.stripe.stripeterminal.external.callable.ReaderListener
 import com.stripe.stripeterminal.external.callable.RefundCallback
 import com.stripe.stripeterminal.external.callable.TerminalListener
 import com.stripe.stripeterminal.external.models.ConnectionConfiguration
@@ -56,15 +55,14 @@ internal class TerminalWrapper {
     fun connectToReader(
         reader: Reader,
         configuration: ConnectionConfiguration.BluetoothConnectionConfiguration,
-        callback: ReaderCallback,
-        listener: ReaderListener
-    ) = Terminal.getInstance().connectBluetoothReader(reader, configuration, listener, callback)
+        callback: ReaderCallback
+    ) = Terminal.getInstance().connectReader(reader, configuration, callback)
 
     fun connectToMobile(
         reader: Reader,
-        configuration: ConnectionConfiguration.LocalMobileConnectionConfiguration,
+        configuration: ConnectionConfiguration.TapToPayConnectionConfiguration,
         callback: ReaderCallback
-    ) = Terminal.getInstance().connectLocalMobileReader(reader, configuration, callback)
+    ) = Terminal.getInstance().connectReader(reader, configuration, callback)
 
     fun disconnectReader(callback: Callback) =
         Terminal.getInstance().disconnectReader(callback)
@@ -79,7 +77,7 @@ internal class TerminalWrapper {
         callback: PaymentIntentCallback
     ): Cancelable = Terminal.getInstance().collectPaymentMethod(paymentIntent, callback)
 
-    fun processPayment(paymentIntent: PaymentIntent, callback: PaymentIntentCallback) =
+    fun processPayment(paymentIntent: PaymentIntent, callback: PaymentIntentCallback): Cancelable =
         Terminal.getInstance().confirmPaymentIntent(paymentIntent, callback)
 
     fun cancelPayment(paymentIntent: PaymentIntent, callback: PaymentIntentCallback) =
