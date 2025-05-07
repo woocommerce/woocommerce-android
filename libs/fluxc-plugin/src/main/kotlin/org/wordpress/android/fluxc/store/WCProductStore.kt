@@ -1753,6 +1753,42 @@ class WCProductStore @Inject internal constructor(
         }
     }
 
+    suspend fun searchProductsByNameAndSku(
+        site: SiteModel,
+        searchNameOrSkuQuery: String,
+        offset: Int = 0,
+        pageSize: Int = DEFAULT_PRODUCT_PAGE_SIZE,
+        filterOptions: Map<ProductFilterOption, String> = emptyMap(),
+        includeTypes: List<IncludeType> = emptyList(),
+    ): WooResult<ProductSearchResult> {
+        return coroutineEngine.withDefaultContext(API, this, "searchProductsByNameAndSku") {
+            val response = wcProductRestClient.fetchProductsWithSyncRequest(
+                site = site,
+                offset = offset,
+                pageSize = pageSize,
+                searchNameOrSkuQuery = searchNameOrSkuQuery,
+                filterOptions = filterOptions,
+                includeTypes = includeTypes
+            )
+            when {
+                response.isError -> WooResult(response.error)
+                response.result != null -> {
+                    productStorageHelper.upsertProducts(response.result)
+                    val productIds = response.result.map { it.product.remoteProductId }
+                    val products = if (productIds.isNotEmpty()) {
+                        productsDao.getProducts(localSiteId = site.id, remoteProductIds = productIds)
+                    } else {
+                        emptyList()
+                    }
+                    val canLoadMore = response.result.size == pageSize
+                    WooResult(ProductSearchResult(products, canLoadMore))
+                }
+
+                else -> WooResult(WooError(WooErrorType.GENERIC_ERROR, UNKNOWN))
+            }
+        }
+    }
+
     suspend fun searchProducts(
         site: SiteModel,
         searchString: String,
