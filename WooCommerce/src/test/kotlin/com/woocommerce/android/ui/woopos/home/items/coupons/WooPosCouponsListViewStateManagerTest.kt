@@ -8,6 +8,7 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.WooPosGetCachedStoreCurrency
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatCouponSummary
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,6 +35,8 @@ class WooPosCouponsListViewStateManagerTest {
     @JvmField
     @Rule
     val coroutinesTestRule = WooPosCoroutineTestRule()
+
+    private val testViewModelScope = CoroutineScope(coroutinesTestRule.testDispatcher)
 
     private val formatCouponSummary: WooPosFormatCouponSummary = mock()
     private val getCachedStoreCurrency: WooPosGetCachedStoreCurrency = mock()
@@ -71,7 +74,7 @@ class WooPosCouponsListViewStateManagerTest {
 
         sat.viewState.test {
             // WHEN
-            sat.fetchCoupons(this)
+            sat.fetchCoupons(testViewModelScope)
 
             // THEN
             assertThat(expectMostRecentItem()).isInstanceOf(WooPosCouponsViewState.Loading::class.java)
@@ -92,7 +95,7 @@ class WooPosCouponsListViewStateManagerTest {
 
         sat.viewState.test {
             // WHEN
-            sat.fetchCoupons(this)
+            sat.fetchCoupons(testViewModelScope)
 
             // THEN
             assertThat(expectMostRecentItem()).isInstanceOf(WooPosCouponsViewState.Loading::class.java)
@@ -113,7 +116,7 @@ class WooPosCouponsListViewStateManagerTest {
 
         sat.viewState.test {
             // WHEN
-            sat.fetchCoupons(this)
+            sat.fetchCoupons(testViewModelScope)
 
             // THEN
             advanceUntilIdle()
@@ -135,7 +138,7 @@ class WooPosCouponsListViewStateManagerTest {
 
         sat.viewState.test {
             // WHEN
-            sat.fetchCoupons(this)
+            sat.fetchCoupons(testViewModelScope)
             advanceUntilIdle()
 
             // THEN
@@ -156,7 +159,7 @@ class WooPosCouponsListViewStateManagerTest {
 
         sat.viewState.test {
             // WHEN
-            sat.fetchCoupons(this)
+            sat.fetchCoupons(testViewModelScope)
 
             // THEN
             skipItems(1) // Loading
@@ -173,7 +176,7 @@ class WooPosCouponsListViewStateManagerTest {
         // GIVEN
         whenever(couponsDataSource.clearCacheAndFetchFirstPage())
             .doReturn(Result.failure<Boolean>(IllegalArgumentException("Test exception")))
-        sat.fetchCoupons(this)
+        sat.fetchCoupons(testViewModelScope)
         advanceUntilIdle()
         whenever(couponsDataSource.clearCacheAndFetchFirstPage()).doSuspendableAnswer {
             delay(1) // workaround for bug in mockito
@@ -183,7 +186,7 @@ class WooPosCouponsListViewStateManagerTest {
 
         sat.viewState.test {
             // WHEN
-            sat.fetchCoupons(this)
+            sat.fetchCoupons(testViewModelScope)
 
             // THEN
             advanceUntilIdle()
@@ -198,14 +201,14 @@ class WooPosCouponsListViewStateManagerTest {
         // GIVEN
         whenever(couponsDataSource.clearCacheAndFetchFirstPage())
             .doReturn(Result.failure<Boolean>(IllegalArgumentException("Test exception")))
-        sat.fetchCoupons(this)
+        sat.fetchCoupons(testViewModelScope)
         advanceUntilIdle()
         whenever(couponsDataSource.clearCacheAndFetchFirstPage())
             .doReturn(Result.failure<Boolean>(IllegalArgumentException("Test exception")))
 
         sat.viewState.test {
             // WHEN
-            sat.fetchCoupons(this)
+            sat.fetchCoupons(testViewModelScope)
 
             // THEN
             advanceUntilIdle()
@@ -226,7 +229,7 @@ class WooPosCouponsListViewStateManagerTest {
 
         sat.viewState.test {
             // WHEN
-            sat.fetchCoupons(this)
+            sat.fetchCoupons(testViewModelScope)
 
             advanceUntilIdle()
 
@@ -249,7 +252,7 @@ class WooPosCouponsListViewStateManagerTest {
 
         sat.viewState.test {
             // WHEN
-            sat.fetchCoupons(this)
+            sat.fetchCoupons(testViewModelScope)
 
             // THEN
             advanceUntilIdle()
@@ -270,7 +273,7 @@ class WooPosCouponsListViewStateManagerTest {
             delay(1) // workaround for bug in mockito
             Result.success(MORE_PAGES_AVAILABLE)
         }
-        sat.fetchCoupons(this)
+        sat.fetchCoupons(testViewModelScope)
         advanceUntilIdle()
         whenever(couponsDataSource.loadMore()).doSuspendableAnswer {
             delay(1) // workaround for bug in mockito
@@ -279,7 +282,7 @@ class WooPosCouponsListViewStateManagerTest {
 
         sat.viewState.test {
             // WHEN
-            sat.endOfListReached(this)
+            sat.endOfListReached(testViewModelScope)
 
             advanceUntilIdle()
 
@@ -299,7 +302,7 @@ class WooPosCouponsListViewStateManagerTest {
             delay(1) // workaround for bug in mockito
             Result.success(MORE_PAGES_AVAILABLE)
         }
-        sat.fetchCoupons(this)
+        sat.fetchCoupons(testViewModelScope)
         advanceUntilIdle()
         whenever(couponsDataSource.loadMore()).doSuspendableAnswer {
             delay(1) // workaround for bug in mockito
@@ -329,7 +332,7 @@ class WooPosCouponsListViewStateManagerTest {
             delay(1) // workaround for bug in mockito
             Result.success(MORE_PAGES_AVAILABLE)
         }
-        sat.fetchCoupons(this)
+        sat.fetchCoupons(testViewModelScope)
         advanceUntilIdle()
         whenever(couponsDataSource.loadMore()).doSuspendableAnswer {
             delay(1) // workaround for bug in mockito
@@ -338,7 +341,7 @@ class WooPosCouponsListViewStateManagerTest {
 
         sat.viewState.test {
             // WHEN
-            sat.retryLoadMore(this)
+            sat.retryLoadMore(testViewModelScope)
 
             // THEN
             val state = expectMostRecentItem() as Content
@@ -360,7 +363,7 @@ class WooPosCouponsListViewStateManagerTest {
 
         sat.viewState.test {
             // WHEN
-            sat.fetchCoupons(this)
+            sat.fetchCoupons(testViewModelScope)
             skipItems(2) // Empty + Loading
 
             // THEN
@@ -381,7 +384,7 @@ class WooPosCouponsListViewStateManagerTest {
 
         sat.viewState.test {
             // WHEN
-            sat.fetchCoupons(this)
+            sat.fetchCoupons(testViewModelScope)
 
             // THEN
             assertThat(expectMostRecentItem())
