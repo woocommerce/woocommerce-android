@@ -162,7 +162,7 @@ class WCProductStore @Inject internal constructor(
     class SearchProductsPayload(
         var site: SiteModel,
         var searchQuery: String,
-        var skuSearchOptions: SkuSearchOptions = SkuSearchOptions.Disabled,
+        var skuSearchOptions: SkuSearchOptions = Disabled,
         var pageSize: Int = DEFAULT_PRODUCT_PAGE_SIZE,
         var offset: Int = 0,
         var sorting: ProductSorting = DEFAULT_PRODUCT_SORTING,
@@ -1214,7 +1214,7 @@ class WCProductStore @Inject internal constructor(
         remoteProductId: Long,
         remoteVariationId: Long
     ): OnVariationChanged {
-        return coroutineEngine.withDefaultContext(T.API, this, "fetchSingleVariation") {
+        return coroutineEngine.withDefaultContext(API, this, "fetchSingleVariation") {
             val result = wcProductRestClient
                 .fetchSingleVariation(site, remoteProductId, remoteVariationId)
 
@@ -1248,7 +1248,7 @@ class WCProductStore @Inject internal constructor(
                 includedProductIds = remoteProductIds,
                 filterOptions = filterOptions,
                 excludedProductIds = excludedProductIds,
-                skuSearchOptions = SkuSearchOptions.Disabled
+                skuSearchOptions = Disabled
             )
         }
     }
@@ -1756,7 +1756,7 @@ class WCProductStore @Inject internal constructor(
     suspend fun searchProducts(
         site: SiteModel,
         searchString: String,
-        skuSearchOptions: SkuSearchOptions = SkuSearchOptions.Disabled,
+        skuSearchOptions: SkuSearchOptions = Disabled,
         offset: Int = 0,
         pageSize: Int = DEFAULT_PRODUCT_PAGE_SIZE,
         filterOptions: Map<ProductFilterOption, String> = emptyMap(),
