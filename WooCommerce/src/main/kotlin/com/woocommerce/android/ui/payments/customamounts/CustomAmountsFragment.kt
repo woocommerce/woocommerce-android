@@ -217,7 +217,9 @@ class CustomAmountsFragment : BaseFragment(R.layout.dialog_custom_amounts) {
 
             new.isProgressShowing.takeIfNotEqualTo(old?.isProgressShowing) { show ->
                 binding.progressBar.isVisible = show
-                binding.buttonDone.text = if (show) "" else {
+                binding.buttonDone.text = if (show) {
+                    ""
+                } else {
                     if (viewModel.isInCreateMode()) {
                         getString(R.string.custom_amounts_add_custom_amount)
                     } else {

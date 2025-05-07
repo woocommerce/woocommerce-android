@@ -23,7 +23,6 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.math.RoundingMode
 import javax.inject.Inject
-import kotlin.math.roundToInt
 
 @HiltViewModel
 class CustomAmountsViewModel @Inject constructor(
@@ -56,7 +55,13 @@ class CustomAmountsViewModel @Inject constructor(
         get() {
             val orderTotal = BigDecimal(args.orderTotal ?: "0")
             return if (orderTotal > BigDecimal.ZERO) {
-                (viewState.customAmountUIModel.currentPrice.divide(orderTotal, 4, RoundingMode.HALF_UP)).multiply(
+                (
+                    viewState.customAmountUIModel.currentPrice.divide(
+                        orderTotal,
+                        DIVISION_SCALE_FACTOR,
+                        RoundingMode.HALF_UP
+                    )
+                    ).multiply(
                     BigDecimal(PERCENTAGE_SCALE_FACTOR)
                 ).setScale(2, RoundingMode.HALF_UP)
             } else {
@@ -141,12 +146,7 @@ class CustomAmountsViewModel @Inject constructor(
                     }
 
                     CustomAmountType.PERCENTAGE_CUSTOM_AMOUNT -> {
-                        if (orderTotalValue > BigDecimal.ZERO) {
-                            val percentage = (amount.divide(orderTotalValue, 4, RoundingMode.HALF_UP))
-                                .multiply(BigDecimal(PERCENTAGE_SCALE_FACTOR))
-                            populatePercentage(this)
-                            currentPercentage = percentage
-                        }
+                        populateUIWithPercentageMode(orderTotalValue)
                     }
                 }
             }
@@ -160,6 +160,15 @@ class CustomAmountsViewModel @Inject constructor(
                     type = type
                 )
             )
+        }
+    }
+
+    private fun CustomAmountUIModel.populateUIWithPercentageMode(orderTotalValue: BigDecimal) {
+        if (orderTotalValue > BigDecimal.ZERO) {
+            val percentage = (amount.divide(orderTotalValue, DIVISION_SCALE_FACTOR, RoundingMode.HALF_UP))
+                .multiply(BigDecimal(PERCENTAGE_SCALE_FACTOR))
+            populatePercentage(this)
+            currentPercentage = percentage
         }
     }
 
@@ -202,5 +211,6 @@ class CustomAmountsViewModel @Inject constructor(
 
     companion object {
         const val PERCENTAGE_SCALE_FACTOR = 100
+        const val DIVISION_SCALE_FACTOR = 4
     }
 }
