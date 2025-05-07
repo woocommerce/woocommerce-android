@@ -72,7 +72,9 @@ private fun WooPosItemsSearchScreen(
                         modifier = Modifier.fillMaxSize().imePadding(),
                         title = stringResource(id = R.string.woopos_search_items_empty_title),
                         message = stringResource(id = R.string.woopos_search_empty_description),
-                        contentDescription = stringResource(id = R.string.woopos_search_empty_image_content_description),
+                        contentDescription = stringResource(
+                            id = R.string.woopos_search_empty_image_content_description
+                        ),
                     )
                 }
 
