@@ -37,43 +37,43 @@ class CachedCouponEnabledCheckerTest {
 
     @Test
     fun `returns true when coupons are enabled in site settings`() = runTest {
-        // Given
+        // GIVEN
         val siteSettings = mock<WCSettingsModel> {
             on { couponsEnabled } doReturn true
         }
         whenever(wooCommerceStore.getSiteSettingsAsync(siteModel)).thenReturn(siteSettings)
 
-        // When
+        // WHEN
         val result = cachedCouponEnabledChecker.isEnabled()
 
-        // Then
+        // THEN
         assertThat(result).isTrue()
     }
 
     @Test
     fun `returns false when coupons are disabled in site settings`() = runTest {
-        // Given
+        // GIVEN
         val siteSettings = mock<WCSettingsModel> {
             on { couponsEnabled } doReturn false
         }
         whenever(wooCommerceStore.getSiteSettingsAsync(siteModel)).thenReturn(siteSettings)
 
-        // When
+        // WHEN
         val result = cachedCouponEnabledChecker.isEnabled()
 
-        // Then
+        // THEN
         assertThat(result).isFalse()
     }
 
     @Test
     fun `returns false when site settings are null`() = runTest {
-        // Given
+        // GIVEN
         whenever(wooCommerceStore.getSiteSettingsAsync(siteModel)).thenReturn(null)
 
-        // When
+        // WHEN
         val result = cachedCouponEnabledChecker.isEnabled()
 
-        // Then
+        // THEN
         assertThat(result).isFalse()
     }
 
