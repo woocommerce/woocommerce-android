@@ -32,7 +32,7 @@ import com.woocommerce.android.ui.payments.receipt.PaymentReceiptShare
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
-import com.woocommerce.android.ui.woopos.featureflags.WooPosIsCouponsEnabled
+import com.woocommerce.android.ui.woopos.featureflags.WooPosIsCouponsFeatureFlagEnabled
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.BackFromCheckoutToCartClicked
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OrderCreated
@@ -118,7 +118,7 @@ class WooPosTotalsViewModelTest {
     private val paymentReceiptShare: PaymentReceiptShare = mock()
     private val uiStringParser: UiStringParser = mock()
     private val wooLogWrapper: WooLogWrapper = mock()
-    private val isCouponsEnabled: WooPosIsCouponsEnabled = mock()
+    private val isCouponsEnabled: WooPosIsCouponsFeatureFlagEnabled = mock()
     private val paymentControllerFactory = WooPosCardReaderPaymentControllerFactory(
         cardReaderManager = cardReaderManager,
         orderRepository = orderRepository,
@@ -1683,7 +1683,7 @@ class WooPosTotalsViewModelTest {
             analyticsTracker = analyticsTracker,
             analyticsData = WooPosAnalyticsTrackingDataKeeper()
         ),
-        isCouponsEnabled = isCouponsEnabled,
+        isCouponsFFEnabled = isCouponsEnabled,
         wooLogWrapper = wooLogWrapper,
     )
 }
