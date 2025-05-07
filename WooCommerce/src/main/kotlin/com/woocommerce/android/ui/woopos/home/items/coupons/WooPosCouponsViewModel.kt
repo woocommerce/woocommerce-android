@@ -45,7 +45,7 @@ class WooPosCouponsViewModel @Inject constructor(
             }
         }
 
-        listViewStateManager.fetchCoupons(viewModelScope)
+        listViewStateManager.fetchCoupons(viewModelScope, pullToRefresh = false)
     }
 
     fun onUIEvent(event: WooPosCouponsUIEvent) {
@@ -54,7 +54,7 @@ class WooPosCouponsViewModel @Inject constructor(
                 handleCouponClicked(event)
             }
 
-            PullToRefreshTriggered -> fetchCoupons()
+            PullToRefreshTriggered -> fetchCoupons(pullToRefresh = true)
 
             is EndOfListReached -> {
                 onEndOfListReached()
@@ -68,12 +68,12 @@ class WooPosCouponsViewModel @Inject constructor(
                 navigateBackToItemListScreen()
             }
 
-            RetryTriggered -> fetchCoupons()
+            RetryTriggered -> fetchCoupons(false)
         }
     }
 
-    private fun fetchCoupons() {
-        listViewStateManager.fetchCoupons(viewModelScope)
+    private fun fetchCoupons(pullToRefresh: Boolean) {
+        listViewStateManager.fetchCoupons(viewModelScope, pullToRefresh)
     }
 
     private fun onEndOfListReached() {

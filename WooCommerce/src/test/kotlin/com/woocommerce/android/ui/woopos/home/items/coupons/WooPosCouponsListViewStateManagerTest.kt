@@ -69,7 +69,7 @@ class WooPosCouponsListViewStateManagerTest {
 
         sat.viewState.test {
             // WHEN
-            sat.fetchCoupons(this)
+            sat.fetchCoupons(this, pullToRefresh = false)
 
             // THEN
             assertThat(expectMostRecentItem()).isInstanceOf(WooPosCouponsViewState.Loading::class.java)
@@ -90,7 +90,7 @@ class WooPosCouponsListViewStateManagerTest {
 
         sat.viewState.test {
             // WHEN
-            sat.fetchCoupons(this)
+            sat.fetchCoupons(this, pullToRefresh = false)
 
             // THEN
             assertThat(expectMostRecentItem()).isInstanceOf(Content::class.java)
@@ -112,7 +112,7 @@ class WooPosCouponsListViewStateManagerTest {
 
             sat.viewState.test {
                 // WHEN
-                sat.fetchCoupons(this)
+                sat.fetchCoupons(this, pullToRefresh = false)
 
                 // THEN
                 assertThat(expectMostRecentItem().pullToRefreshState)
@@ -134,7 +134,7 @@ class WooPosCouponsListViewStateManagerTest {
 
         sat.viewState.test {
             // WHEN
-            sat.fetchCoupons(this)
+            sat.fetchCoupons(this, pullToRefresh = false)
 
             // THEN
             advanceUntilIdle()
@@ -156,7 +156,7 @@ class WooPosCouponsListViewStateManagerTest {
 
         sat.viewState.test {
             // WHEN
-            sat.fetchCoupons(this)
+            sat.fetchCoupons(this, pullToRefresh = false)
             advanceUntilIdle()
 
             // THEN
@@ -177,7 +177,7 @@ class WooPosCouponsListViewStateManagerTest {
 
         sat.viewState.test {
             // WHEN
-            sat.fetchCoupons(this)
+            sat.fetchCoupons(this, pullToRefresh = false)
 
             // THEN
             skipItems(1) // Loading
@@ -194,7 +194,7 @@ class WooPosCouponsListViewStateManagerTest {
         // GIVEN
         whenever(couponsDataSource.clearCacheAndFetchFirstPage())
             .doReturn(Result.failure<Boolean>(IllegalArgumentException("Test exception")))
-        sat.fetchCoupons(this)
+        sat.fetchCoupons(this, pullToRefresh = false)
         advanceUntilIdle()
         whenever(couponsDataSource.clearCacheAndFetchFirstPage()).doSuspendableAnswer {
             delay(1) // workaround for bug in mockito
@@ -204,7 +204,7 @@ class WooPosCouponsListViewStateManagerTest {
 
         sat.viewState.test {
             // WHEN
-            sat.fetchCoupons(this)
+            sat.fetchCoupons(this, pullToRefresh = false)
 
             // THEN
             advanceUntilIdle()
@@ -219,14 +219,14 @@ class WooPosCouponsListViewStateManagerTest {
         // GIVEN
         whenever(couponsDataSource.clearCacheAndFetchFirstPage())
             .doReturn(Result.failure<Boolean>(IllegalArgumentException("Test exception")))
-        sat.fetchCoupons(this)
+        sat.fetchCoupons(this, pullToRefresh = false)
         advanceUntilIdle()
         whenever(couponsDataSource.clearCacheAndFetchFirstPage())
             .doReturn(Result.failure<Boolean>(IllegalArgumentException("Test exception")))
 
         sat.viewState.test {
             // WHEN
-            sat.fetchCoupons(this)
+            sat.fetchCoupons(this, pullToRefresh = false)
 
             // THEN
             advanceUntilIdle()
@@ -247,7 +247,7 @@ class WooPosCouponsListViewStateManagerTest {
 
         sat.viewState.test {
             // WHEN
-            sat.fetchCoupons(this)
+            sat.fetchCoupons(this, pullToRefresh = false)
 
             advanceUntilIdle()
 
@@ -270,7 +270,7 @@ class WooPosCouponsListViewStateManagerTest {
 
         sat.viewState.test {
             // WHEN
-            sat.fetchCoupons(this)
+            sat.fetchCoupons(this, pullToRefresh = false)
 
             // THEN
             advanceUntilIdle()
@@ -291,7 +291,7 @@ class WooPosCouponsListViewStateManagerTest {
             delay(1) // workaround for bug in mockito
             Result.success(MORE_PAGES_AVAILABLE)
         }
-        sat.fetchCoupons(this)
+        sat.fetchCoupons(this, pullToRefresh = false)
         advanceUntilIdle()
         whenever(couponsDataSource.loadMore()).doSuspendableAnswer {
             delay(1) // workaround for bug in mockito
@@ -320,7 +320,7 @@ class WooPosCouponsListViewStateManagerTest {
             delay(1) // workaround for bug in mockito
             Result.success(MORE_PAGES_AVAILABLE)
         }
-        sat.fetchCoupons(this)
+        sat.fetchCoupons(this, pullToRefresh = false)
         advanceUntilIdle()
         whenever(couponsDataSource.loadMore()).doSuspendableAnswer {
             delay(1) // workaround for bug in mockito
@@ -350,7 +350,7 @@ class WooPosCouponsListViewStateManagerTest {
             delay(1) // workaround for bug in mockito
             Result.success(MORE_PAGES_AVAILABLE)
         }
-        sat.fetchCoupons(this)
+        sat.fetchCoupons(this, pullToRefresh = false)
         advanceUntilIdle()
         whenever(couponsDataSource.loadMore()).doSuspendableAnswer {
             delay(1) // workaround for bug in mockito
@@ -381,7 +381,7 @@ class WooPosCouponsListViewStateManagerTest {
 
         sat.viewState.test {
             // WHEN
-            sat.fetchCoupons(this)
+            sat.fetchCoupons(this, pullToRefresh = false)
             skipItems(2) // Empty + cached data shown
 
             // THEN
@@ -390,6 +390,36 @@ class WooPosCouponsListViewStateManagerTest {
             testScheduler.advanceTimeBy(2)
 
             assertThat(expectMostRecentItem()).isInstanceOf(WooPosCouponsViewState.Empty::class.java)
+
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `given state empty, when pull to refresh triggered, then pull to refresh state is Refreshing`() = runTest {
+        // GIVEN
+        whenever(couponsDataSource.clearCacheAndFetchFirstPage()).doSuspendableAnswer {
+            couponsDataFlow.emit(emptyList())
+            delay(1) // workaround for bug in mockito
+            Result.success(MORE_PAGES_NOT_AVAILABLE)
+        }
+        sat.fetchCoupons(this, pullToRefresh = false)
+        advanceUntilIdle()
+        whenever(couponsDataSource.clearCacheAndFetchFirstPage()).doSuspendableAnswer {
+            delay(500)
+            couponsDataFlow.emit(listOf(CouponTestUtils.generateTestCoupon(1L)))
+            Result.success(MORE_PAGES_NOT_AVAILABLE)
+        }
+
+        sat.viewState.test {
+            // WHEN
+            sat.fetchCoupons(this, pullToRefresh = true)
+
+            // THEN
+            val state = expectMostRecentItem()
+            assertThat(state).isInstanceOf(WooPosCouponsViewState.Loading::class.java)
+            assertThat((state as WooPosCouponsViewState.Loading).pullToRefreshState)
+                .isEqualTo(WooPosPullToRefreshState.Refreshing)
 
             cancelAndIgnoreRemainingEvents()
         }

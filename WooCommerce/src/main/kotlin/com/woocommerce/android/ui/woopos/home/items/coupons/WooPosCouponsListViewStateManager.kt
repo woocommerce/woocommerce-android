@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsListVie
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsListViewStateManager.FetchingCouponsState.FETCHING_FIRST_PAGE
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsListViewStateManager.FetchingCouponsState.FETCHING_MORE
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsListViewStateManager.FetchingCouponsState.IDLE
+import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsListViewStateManager.FetchingCouponsState.PTR_FETCHING_FIRST_PAGE
 import com.woocommerce.android.ui.woopos.util.WooPosGetCachedStoreCurrency
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatCouponSummary
 import kotlinx.coroutines.CoroutineDispatcher
@@ -42,14 +43,15 @@ class WooPosCouponsListViewStateManager @Inject constructor(
     private var canLoadMore: Boolean = false
 
     enum class FetchingCouponsState {
-        IDLE, FETCHING_FIRST_PAGE, FETCHING_MORE, ERROR_FETCHING_FIRST_PAGE, ERROR_FETCHING_MORE
+        IDLE, FETCHING_FIRST_PAGE, PTR_FETCHING_FIRST_PAGE, FETCHING_MORE,
+        ERROR_FETCHING_FIRST_PAGE, ERROR_FETCHING_MORE
     }
 
     private val contentFlow = couponsDataSource.couponsFlow.combine(fetchingState) { coupons, fetchingState ->
         when (fetchingState) {
-            FETCHING_FIRST_PAGE -> {
+            FETCHING_FIRST_PAGE, PTR_FETCHING_FIRST_PAGE -> {
                 if (coupons.isEmpty()) {
-                    WooPosCouponsViewState.Loading()
+                    createLoadingState(fetchingState)
                 } else {
                     createContentViewState(coupons, fetchingState)
                 }
@@ -61,13 +63,22 @@ class WooPosCouponsListViewStateManager @Inject constructor(
 
             IDLE, FETCHING_MORE, ERROR_FETCHING_MORE -> {
                 if (coupons.isEmpty()) {
-                 WooPosCouponsViewState.Empty()
+                    WooPosCouponsViewState.Empty()
                 } else {
                     createContentViewState(coupons, fetchingState)
                 }
             }
         }
     }
+
+    private fun createLoadingState(fetchingState: FetchingCouponsState) =
+        WooPosCouponsViewState.Loading(
+            pullToRefreshState = if (fetchingState == PTR_FETCHING_FIRST_PAGE) {
+                Refreshing
+            } else {
+                Enabled
+            }
+        )
 
     private suspend fun createContentViewState(
         coupons: List<Coupon>,
@@ -80,14 +91,20 @@ class WooPosCouponsListViewStateManager @Inject constructor(
 
     val viewState: Flow<WooPosCouponsViewState> = contentFlow
 
-    fun fetchCoupons(viewModelScope: CoroutineScope) {
+    fun fetchCoupons(viewModelScope: CoroutineScope, pullToRefresh: Boolean) {
         if (fetchingFirstPageJob?.isActive == true) {
             return
         }
 
         fetchingFirstPageJob = viewModelScope.launch(dispatcher) {
             loadingMoreJob?.cancelAndJoin()
-            fetchingState.emit(FETCHING_FIRST_PAGE)
+            fetchingState.emit(
+                if (pullToRefresh) {
+                    PTR_FETCHING_FIRST_PAGE
+                } else {
+                    FETCHING_FIRST_PAGE
+                }
+            )
             val result = couponsDataSource.clearCacheAndFetchFirstPage()
             if (result.isSuccess) {
                 canLoadMore = result.getOrNull() ?: false
@@ -137,7 +154,7 @@ class WooPosCouponsListViewStateManager @Inject constructor(
 
     private fun getPaginationState(fetchingState: FetchingCouponsState) =
         when (fetchingState) {
-            IDLE, FETCHING_FIRST_PAGE, FETCHING_MORE -> if (canLoadMore) Loading else None
+            IDLE, FETCHING_FIRST_PAGE, PTR_FETCHING_FIRST_PAGE, FETCHING_MORE -> if (canLoadMore) Loading else None
             ERROR_FETCHING_MORE -> Error
             ERROR_FETCHING_FIRST_PAGE -> error("Full screen error should be displayed")
         }
@@ -145,7 +162,7 @@ class WooPosCouponsListViewStateManager @Inject constructor(
     private fun getPullToRefreshState(fetchingState: FetchingCouponsState) =
         when (fetchingState) {
             ERROR_FETCHING_MORE, IDLE, FETCHING_MORE -> Enabled
-            FETCHING_FIRST_PAGE -> Refreshing
+            FETCHING_FIRST_PAGE, PTR_FETCHING_FIRST_PAGE -> Refreshing
             ERROR_FETCHING_FIRST_PAGE -> error("Full screen error should be displayed")
         }
 }
