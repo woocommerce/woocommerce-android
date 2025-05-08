@@ -116,15 +116,20 @@ private fun MainItemsList(
                     durationMillis = 300,
                     easing = LinearEasing,
                 ),
-                modifier = Modifier.padding(
-                    start = WooPosSpacing.Medium.value.toAdaptivePadding(),
-                    end = WooPosSpacing.Medium.value.toAdaptivePadding(),
-                )
             ) { screenState ->
                 when (screenState) {
-                    ScreenState.PRODUCTS -> WooPosProductsScreen(modifier = Modifier, listState = listState)
+                    ScreenState.PRODUCTS -> WooPosProductsScreen(
+                        modifier = Modifier.padding(
+                            horizontal = WooPosSpacing.Medium.value.toAdaptivePadding(),
+                        ),
+                        listState = listState
+                    )
                     ScreenState.PRODUCTS_SEARCH -> WooPosItemsSearchScreen()
-                    ScreenState.COUPONS -> WooPosCouponsScreen(modifier = Modifier)
+                    ScreenState.COUPONS -> WooPosCouponsScreen(
+                        modifier = Modifier.padding(
+                            horizontal = WooPosSpacing.Medium.value.toAdaptivePadding(),
+                        )
+                    )
                 }
             }
         }

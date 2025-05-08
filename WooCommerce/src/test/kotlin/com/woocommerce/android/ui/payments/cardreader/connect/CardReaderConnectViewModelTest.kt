@@ -64,6 +64,7 @@ import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
+import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -109,6 +110,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     }
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper = mock()
     private val learnMoreUrlProvider: LearnMoreUrlProvider = mock()
+    private val resourceProvider: ResourceProvider = mock()
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker = mock()
     private val locationId = "location_id"
     private val updateFrequency = CardReaderManager.SimulatorUpdateFrequency.RANDOM
@@ -1648,6 +1650,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             cardReaderTrackingInfoKeeper = cardReaderTrackingInfoKeeper,
             cardReaderOnboardingChecker = cardReaderOnboardingChecker,
             learnMoreUrlProvider = learnMoreUrlProvider,
+            resourceProvider = resourceProvider
         )
     }
 
