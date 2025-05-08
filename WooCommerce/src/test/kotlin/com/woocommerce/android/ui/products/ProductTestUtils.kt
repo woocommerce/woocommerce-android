@@ -139,18 +139,18 @@ object ProductTestUtils {
         isPurchasable: Boolean = true,
         productAttributes: String = "",
     ): ProductVariation {
-        return WCProductVariationModel(2).apply {
-            dateCreated = "2018-01-05T05:14:30Z"
-            localSiteId = 1
-            remoteProductId = productId
-            remoteVariationId = variationId
-            price = amount
-            image = ""
-            attributes = productAttributes
-            virtual = isVirtual
-            downloadable = isDownloadable
-            purchasable = isPurchasable
-        }.toAppModel().also { it.priceWithCurrency = "$10.00" }
+        return WCProductVariationModel(2).copy(
+            dateCreated = "2018-01-05T05:14:30Z",
+            localSiteId = 1,
+            remoteProductId = productId,
+            remoteVariationId = variationId,
+            price = amount,
+            image = "",
+            attributes = productAttributes,
+            virtual = isVirtual,
+            downloadable = isDownloadable,
+            purchasable = isPurchasable,
+        ).toAppModel().also { it.priceWithCurrency = "$10.00" }
     }
 
     fun generateProductVariationList(productId: Long = 1L): List<ProductVariation> {

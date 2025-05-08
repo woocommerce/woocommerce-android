@@ -84,7 +84,9 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
     private val wooCommerceStore: WooCommerceStore = mock()
     private val networkStatus: NetworkStatus = mock()
-    private val productRepository: ProductDetailRepository = mock()
+    private val productRepository: ProductDetailRepository = mock {
+        onBlocking { getCachedVariationCount(any()) } doReturn 0
+    }
     private val productCategoriesRepository: ProductCategoriesRepository = mock()
     private val productTagsRepository: ProductTagsRepository = mock()
     private val mediaFilesRepository: MediaFilesRepository = mock()

@@ -331,9 +331,8 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
             whenever(variationRepo.getVariationOrNull(productId, variationId)).thenReturn(originalVariation)
             whenever(variationRepo.updateVariation(any())).thenReturn(
                 WCProductStore.OnVariationUpdated(
-                    1,
-                    1,
-                    variationId
+                    remoteProductId = 1,
+                    remoteVariationId = variationId
                 )
             )
             whenever(
@@ -374,7 +373,9 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
                 ProductTestUtils.generateProductVariation(productId = 1, variationId = 2)
                     .copy(stockQuantity = 1.0, isStockManaged = true)
             whenever(variationRepo.getVariationOrNull(1, 2)).thenReturn(originalVariation)
-            whenever(variationRepo.updateVariation(any())).thenReturn(WCProductStore.OnVariationUpdated(1, 1, 2))
+            whenever(
+                variationRepo.updateVariation(any())
+            ).thenReturn(WCProductStore.OnVariationUpdated(remoteProductId = 1, remoteVariationId = 2))
             whenever(
                 resourceProvider.getString(
                     R.string.scan_to_update_inventory_success_snackbar,
