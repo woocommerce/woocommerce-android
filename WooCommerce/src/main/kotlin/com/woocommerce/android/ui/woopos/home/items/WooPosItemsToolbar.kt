@@ -96,6 +96,7 @@ fun WooPosItemsToolbar(
                     }
                 }
                 if (state.isAddCouponVisible) {
+                    Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
                     WooPosCircularIconButton(
                         icon = Icons.Default.LocalOffer,
                         contentDescription = stringResource(
