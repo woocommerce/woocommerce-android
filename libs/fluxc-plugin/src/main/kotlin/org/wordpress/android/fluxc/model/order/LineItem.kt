@@ -18,6 +18,8 @@ data class LineItem(
     val variationId: Long? = null,
     val quantity: Float? = null,
     val subtotal: String? = null,
+    @SerializedName("subtotal_tax")
+    val subtotalTax: String? = null,
     val total: String? = null, // Price x quantity
     @SerializedName("total_tax")
     val totalTax: String? = null,
