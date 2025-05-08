@@ -93,7 +93,6 @@ private fun MainItemsList(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .padding(bottom = WooPosSpacing.None.value.toAdaptivePadding())
     ) {
         Column(
             modifier.fillMaxHeight()

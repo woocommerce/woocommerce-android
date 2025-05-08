@@ -33,7 +33,7 @@ fun WooPosToolbar(
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = WooPosSpacing.XLarge.value.toAdaptivePadding())
-            .height(48.dp),
+            .height(56.dp),
     ) {
         val (backButton, title) = createRefs()
         IconButton(
@@ -42,6 +42,7 @@ fun WooPosToolbar(
                 .constrainAs(backButton) {
                     start.linkTo(parent.start)
                     bottom.linkTo(parent.bottom)
+                    top.linkTo(parent.top)
                 }
                 .size(48.dp)
                 .padding(start = WooPosSpacing.Small.value.toAdaptivePadding())

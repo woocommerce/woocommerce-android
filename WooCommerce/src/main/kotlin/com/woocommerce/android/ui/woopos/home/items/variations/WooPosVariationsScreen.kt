@@ -110,7 +110,6 @@ private fun WooPosVariationsScreens(
                 state = pullToRefreshState,
                 enabled = itemState.value.pullToRefreshState == WooPosPullToRefreshState.Enabled
             )
-            .padding(top = WooPosSpacing.XSmall.value.toAdaptivePadding())
     ) {
         BackHandler(onBack = onBackClicked)
         Column(
