@@ -75,9 +75,11 @@ fun DashboardContainer(
         )
 
         val pullRefreshState = rememberPullRefreshState(state.isRefreshing, dashboardViewModel::onPullToRefresh)
-        BoxWithConstraints(Modifier
-            .pullRefresh(pullRefreshState)
-            .fillMaxSize()) {
+        BoxWithConstraints(
+            modifier = Modifier
+                .pullRefresh(pullRefreshState)
+                .fillMaxSize()
+        ) {
             WooLog.d(
                 WooLog.T.DASHBOARD,
                 "BoxWithConstraints: maxWidth=${maxWidth.value}, maxHeight=${maxHeight.value}"
