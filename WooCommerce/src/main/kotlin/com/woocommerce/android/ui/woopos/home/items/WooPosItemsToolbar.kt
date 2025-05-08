@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -32,6 +33,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState.SearchState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState.Tab.HighlightLevel.Full
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState.Tab.HighlightLevel.Normal
@@ -40,6 +42,7 @@ private const val ANIMATION_DURATION = 300
 
 @Composable
 fun WooPosItemsToolbar(
+    modifier: Modifier = Modifier,
     state: WooPosItemsViewState,
     onTabClicked: (WooPosItemsViewState.Tab) -> Unit,
     onSearchEvent: (WooPosSearchUIEvent) -> Unit,
@@ -49,7 +52,7 @@ fun WooPosItemsToolbar(
     } == true
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(56.dp),
         contentAlignment = Alignment.CenterStart
@@ -70,7 +73,12 @@ fun WooPosItemsToolbar(
                 )
             ),
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = WooPosSpacing.Medium.value.toAdaptivePadding()),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
                 state.tabs.forEach { tab ->
                     WooPosText(
                         text = stringResource(id = tab.stringId),
