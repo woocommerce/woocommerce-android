@@ -19,6 +19,7 @@ import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNaviga
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart.WooPosItemSource
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemsNextPageLoaded
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.PreSearchRecentTermTapped
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SearchRemoteResultsFetched
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.IS_SEARCH
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ITEM_LIST_TYPE
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ITEM_LIST_TYPE_PRODUCTS
@@ -137,6 +138,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
             }
 
             childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Started)
+            val searchStartTimeMillis = System.currentTimeMillis()
             val result = dataSource.searchRemoteProducts(query)
 
             if (query != currentQuery.get()) {
@@ -144,13 +146,17 @@ class WooPosItemsSearchViewModel @Inject constructor(
                 return@launch
             }
 
+            val searchTimeMillis = System.currentTimeMillis() - searchStartTimeMillis
+
             if (result.isSuccess) {
-                val products = result.getOrThrow()
-                if (products.isEmpty()) {
+                val searchResult = result.getOrThrow()
+                if (searchResult.products.isEmpty()) {
                     _viewState.value = WooPosItemsSearchViewState.Empty
                 } else {
-                    _viewState.value = products.toContentState(searchQuery = query)
+                    _viewState.value = searchResult.products.toContentState(searchQuery = query)
                 }
+
+                trackSearchPerformance(searchTimeMillis, searchResult.totalProductsCount)
             } else {
                 _viewState.value = WooPosItemsSearchViewState.Error(searchQuery = query)
             }
@@ -230,6 +236,14 @@ class WooPosItemsSearchViewModel @Inject constructor(
                 mapOf(ITEM_LIST_TYPE to ITEM_LIST_TYPE_PRODUCTS)
             )
         }
+        analyticsTracker.track(event)
+    }
+
+    private suspend fun trackSearchPerformance(searchTimeMillis: Long, totalProductsCount: Int?) {
+        val event = SearchRemoteResultsFetched(
+            totalProductsCount = totalProductsCount,
+            millisecondsSinceRequestSent = searchTimeMillis.toInt()
+        )
         analyticsTracker.track(event)
     }
 
