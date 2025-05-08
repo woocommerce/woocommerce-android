@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -66,7 +67,9 @@ fun WooPosItemsEmptySearchQueryStateScreen(
 
         if (state.popularItems.isNotEmpty()) {
             Column(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = WooPosSpacing.Medium.value.toAdaptivePadding()),
             ) {
                 PopularItemsSection(
                     popularItems = state.popularItems,
@@ -89,6 +92,7 @@ private fun RecentSearchesChips(
 ) {
     Column {
         SectionHeader(
+            modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value.toAdaptivePadding()),
             title = stringResource(R.string.woopos_search_recent_searches_title)
         )
 
@@ -101,6 +105,8 @@ private fun RecentSearchesChips(
             horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value, Alignment.Start),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            Spacer(modifier = Modifier.width(WooPosSpacing.Small.value.toAdaptivePadding()))
+
             recentSearches.forEach { recentSearch ->
                 WooPosChip(
                     text = recentSearch,
@@ -108,6 +114,8 @@ private fun RecentSearchesChips(
                     leadingIcon = Icons.Default.Search
                 )
             }
+
+            Spacer(modifier = Modifier.width(WooPosSpacing.Small.value.toAdaptivePadding()))
         }
     }
 }
@@ -144,8 +152,12 @@ private fun PopularItemsSection(
 }
 
 @Composable
-private fun SectionHeader(title: String) {
+private fun SectionHeader(
+    modifier: Modifier = Modifier,
+    title: String
+) {
     WooPosText(
+        modifier = modifier,
         text = title,
         style = WooPosTypography.BodyMedium,
         color = MaterialTheme.colorScheme.onSurface,
