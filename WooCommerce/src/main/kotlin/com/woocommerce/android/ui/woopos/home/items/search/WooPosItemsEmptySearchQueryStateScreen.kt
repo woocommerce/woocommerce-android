@@ -118,7 +118,7 @@ private fun PopularItemsSection(
     popularItems: List<WooPosItemSelectionViewState.Product>,
     onPopularItemClicked: (WooPosItemSelectionViewState.Product) -> Unit,
 ) {
-    Column{
+    Column {
         SectionHeader(
             title = stringResource(R.string.woopos_search_popular_items_title)
         )
