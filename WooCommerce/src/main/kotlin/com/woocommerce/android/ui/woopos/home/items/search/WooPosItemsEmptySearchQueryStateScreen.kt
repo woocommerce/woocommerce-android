@@ -88,9 +88,7 @@ private fun RecentSearchesChips(
     recentSearches: List<String>,
     onRecentSearchClicked: (String) -> Unit,
 ) {
-    Column(
-        modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value.toAdaptivePadding())
-    ) {
+    Column {
         SectionHeader(
             title = stringResource(R.string.woopos_search_recent_searches_title)
         )
@@ -120,9 +118,7 @@ private fun PopularItemsSection(
     popularItems: List<WooPosItemSelectionViewState.Product>,
     onPopularItemClicked: (WooPosItemSelectionViewState.Product) -> Unit,
 ) {
-    Column(
-        modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value.toAdaptivePadding())
-    ) {
+    Column{
         SectionHeader(
             title = stringResource(R.string.woopos_search_popular_items_title)
         )
