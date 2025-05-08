@@ -384,20 +384,22 @@ class ProductRestClient @Inject constructor(
                 val productData = response.data
                 if (productData != null) {
                     RemoteVariationPayload(
-                        productData.asProductVariationModel().apply {
-                            this.remoteProductId = remoteProductId
-                            localSiteId = site.id
-                            metadata = stripProductVariationMetaData(metadata)
+                        productData.asProductVariationModel().let { original ->
+                            original.copy(
+                                remoteProductId = remoteProductId,
+                                localSiteId = site.id,
+                                metadata = stripProductVariationMetaData(original.metadata)
+                            )
                         },
                         site
                     )
                 } else {
                     RemoteVariationPayload(
                         ProductError(GENERIC_ERROR, "Success response with empty data"),
-                        WCProductVariationModel().apply {
-                            this.remoteProductId = remoteProductId
-                            this.remoteVariationId = remoteVariationId
-                        },
+                        WCProductVariationModel().copy (
+                            remoteProductId = remoteProductId,
+                            remoteVariationId = remoteVariationId
+                    ),
                         site
                     )
                 }
@@ -406,10 +408,10 @@ class ProductRestClient @Inject constructor(
             is WPAPIResponse.Error -> {
                 RemoteVariationPayload(
                     wpAPINetworkErrorToProductError(response.error),
-                    WCProductVariationModel().apply {
-                        this.remoteProductId = remoteProductId
-                        this.remoteVariationId = remoteVariationId
-                    },
+                    WCProductVariationModel().copy (
+                        remoteProductId = remoteProductId,
+                        remoteVariationId = remoteVariationId
+                    ),
                     site
                 )
             }
@@ -926,10 +928,12 @@ class ProductRestClient @Inject constructor(
         when (response) {
             is WPAPIResponse.Success -> {
                 val variationModels = response.data?.map {
-                    it.asProductVariationModel().apply {
-                        localSiteId = site.id
-                        remoteProductId = productId
-                        metadata = stripProductVariationMetaData(metadata)
+                    it.asProductVariationModel().let { original ->
+                        original.copy(
+                            localSiteId = site.id,
+                            remoteProductId = productId,
+                            metadata = stripProductVariationMetaData(original.metadata)
+                        )
                     }
                 }.orEmpty()
 
@@ -996,12 +1000,13 @@ class ProductRestClient @Inject constructor(
 
         return response.toWooPayload { variations ->
             variations.map {
-                it.asProductVariationModel()
-                    .apply {
-                        localSiteId = site.id
-                        remoteProductId = productId
-                        metadata = stripProductVariationMetaData(metadata)
-                    }
+                it.asProductVariationModel().let { original ->
+                    original.copy(
+                        localSiteId = site.id,
+                        remoteProductId = productId,
+                        metadata = stripProductVariationMetaData(original.metadata)
+                    )
+                }
             }
         }
     }
@@ -1090,19 +1095,21 @@ class ProductRestClient @Inject constructor(
         return when (response) {
             is WPAPIResponse.Success -> {
                 response.data?.let {
-                    val newModel = it.asProductVariationModel().apply {
-                        this.remoteProductId = remoteProductId
-                        localSiteId = site.id
-                        metadata = stripProductVariationMetaData(metadata)
+                    val newModel = it.asProductVariationModel().let { original ->
+                        original.copy(
+                            remoteProductId = remoteProductId,
+                            localSiteId = site.id,
+                            metadata = stripProductVariationMetaData(original.metadata)
+                        )
                     }
                     RemoteUpdateVariationPayload(site, newModel)
                 } ?: RemoteUpdateVariationPayload(
                     ProductError(GENERIC_ERROR, "Success response with empty data"),
                     site,
-                    WCProductVariationModel().apply {
-                        this.remoteProductId = remoteProductId
-                        this.remoteVariationId = remoteVariationId
-                    }
+                    WCProductVariationModel().copy(
+                        remoteProductId = remoteProductId,
+                        remoteVariationId = remoteVariationId
+                    )
                 )
             }
 
@@ -1111,10 +1118,10 @@ class ProductRestClient @Inject constructor(
                 RemoteUpdateVariationPayload(
                     productError,
                     site,
-                    WCProductVariationModel().apply {
-                        this.remoteProductId = remoteProductId
-                        this.remoteVariationId = remoteVariationId
-                    }
+                    WCProductVariationModel().copy(
+                        remoteProductId = remoteProductId,
+                        remoteVariationId = remoteVariationId
+                    )
                 )
             }
         }
