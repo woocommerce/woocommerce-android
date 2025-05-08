@@ -79,7 +79,7 @@ class WooPosCouponsViewModel @Inject constructor(
     }
 
     private fun fetchCoupons(refreshType: WooPosCouponsListRefreshType) {
-        listViewStateManager.fetchCoupons(viewModelScope,refreshType)
+        listViewStateManager.fetchCoupons(viewModelScope, refreshType)
     }
 
     private fun onEndOfListReached() {
