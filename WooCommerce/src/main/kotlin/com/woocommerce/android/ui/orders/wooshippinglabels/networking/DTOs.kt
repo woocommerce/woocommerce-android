@@ -36,7 +36,8 @@ typealias ShipmentMap = Map<String, List<Item>>
 data class ConfigDTO(
     @SerializedName("shipments")
     @JsonAdapter(ShipmentMapDeserializer::class)
-    val shipments: ShipmentMap? = null
+    val shipments: ShipmentMap? = null,
+    @SerializedName("shippingLabelData") val shippingLabelData: ShippingLabelDTO,
 )
 
 data class Item(@SerializedName("id") val id: Long?, @SerializedName("subItems") val subItems: List<String>?)
@@ -72,7 +73,10 @@ data class ShippingLabelDTO(
     @SerializedName("rate") val rate: BigDecimal? = null,
     @SerializedName("currency") val currency: String? = null,
     @SerializedName("expiry_date") val expiryDate: Long? = null,
+    @SerializedName("currentOrderLabels") val currentOrderLabels: List<OrderLabel>? = null,
 )
+
+data class OrderLabel(@SerializedName("id") val id: Long)
 
 data class PurchasedShippingLabelResponseDTO(
     val success: Boolean,

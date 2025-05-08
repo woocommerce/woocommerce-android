@@ -40,10 +40,12 @@ class GetShipments @Inject constructor(
             }
         }
 
-        val shipments = configDataStore.observeConfig(order.id).first()?.shipments
+        val config = configDataStore.observeConfig(order.id).first()
+        val purchasedLabels = config?.shippingLabelData?.currentOrderLabels
+        val shipments = config?.shipments
 
         return if (shipments.isNullOrEmpty()) {
-            listOf(ShipmentUIModel(id = null, items = orderItems))
+            listOf(ShipmentUIModel(id = null, items = orderItems, purchased = !purchasedLabels.isNullOrEmpty()))
         } else {
             shipments.map { (shipmentId, shipmentItems) ->
                 val items = shipmentItems.mapNotNull { (id, subItems) ->
@@ -52,7 +54,8 @@ class GetShipments @Inject constructor(
                     orderItems.firstOrNull { it.itemId == id }
                         ?.copy(quantity = if (subItems.isNullOrEmpty()) 1f else subItems.size.toFloat())
                 }
-                ShipmentUIModel(shipmentId, items)
+                val purchased = purchasedLabels?.map { it.toString() }?.contains(shipmentId) == true
+                ShipmentUIModel(shipmentId, items, purchased)
             }
         }
     }
