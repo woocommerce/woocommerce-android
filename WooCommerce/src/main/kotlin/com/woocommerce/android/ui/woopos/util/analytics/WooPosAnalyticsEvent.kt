@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.util.analytics
 
 import com.woocommerce.android.analytics.IAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ITEM_LIST_TYPE
 import kotlin.reflect.KClass
 
 sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
@@ -139,7 +140,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                 addProperties(
                     mapOf(
                         "milliseconds_since_request_sent" to millisecondsSinceRequestSent.toString(),
-                        "item_list_type" to "products"
+                        ITEM_LIST_TYPE to "products"
                     )
                 )
                 if (totalProductsCount != null) {
