@@ -143,13 +143,7 @@ private fun WooPosCartScreen(
                 CartBodyWithItems(
                     modifier = Modifier.constrainAs(body) {
                         top.linkTo(toolbar.bottom, margin = productsTopMargin)
-                        bottom.linkTo(
-                            if (state.isCheckoutButtonVisible) {
-                                checkoutButton.top
-                            } else {
-                                parent.bottom
-                            }
-                        )
+                        bottom.linkTo(checkoutButton.top)
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
                         height = Dimension.fillToConstraints
@@ -223,13 +217,14 @@ private fun CartBodyWithItems(
     ScrollToTopHandler(items, listState)
 
     val spacerHeight by animateDpAsState(
-        targetValue = if (!isCheckoutButtonVisible) 100.dp else 0.dp,
+        targetValue = if (!isCheckoutButtonVisible) 212.dp else 0.dp,
         label = "cart list height animation"
     )
 
     WooPosLazyColumn(
         modifier = modifier
-            .padding(horizontal = WooPosSpacing.Medium.value.toAdaptivePadding()),
+            .padding(horizontal = WooPosSpacing.Medium.value.toAdaptivePadding())
+            .fillMaxSize(),
         state = listState,
         verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value.toAdaptivePadding()),
         horizontalAlignment = Alignment.CenterHorizontally,
