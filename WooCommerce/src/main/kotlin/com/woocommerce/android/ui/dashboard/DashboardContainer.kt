@@ -75,7 +75,9 @@ fun DashboardContainer(
         )
 
         val pullRefreshState = rememberPullRefreshState(state.isRefreshing, dashboardViewModel::onPullToRefresh)
-        BoxWithConstraints(Modifier.pullRefresh(pullRefreshState).fillMaxSize()) {
+        BoxWithConstraints(Modifier
+            .pullRefresh(pullRefreshState)
+            .fillMaxSize()) {
             WooLog.d(
                 WooLog.T.DASHBOARD,
                 "BoxWithConstraints: maxWidth=${maxWidth.value}, maxHeight=${maxHeight.value}"
@@ -179,6 +181,12 @@ private fun calculateColumnNumber(
     }
 
     val visibleWidgetsCount = state.widgets.count { it.isVisible }
+    WooLog.d(
+        WooLog.T.DASHBOARD,
+        "calculateColumnNumber: availableWidthInDp=$availableWidthInDp, " +
+            "columns=$columns, " +
+            "visibleWidgetsCount=$visibleWidgetsCount"
+    )
     return columns.coerceAtMost(maximumValue = maxOf(visibleWidgetsCount, 1))
 }
 
