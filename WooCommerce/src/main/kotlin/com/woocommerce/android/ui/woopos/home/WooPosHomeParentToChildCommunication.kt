@@ -57,23 +57,26 @@ sealed class ParentToChildrenEvent {
         sealed class ProductInfo(
             open val id: Long,
             open val name: String,
-            open val price: BigDecimal,
+            open val finalPrice: BigDecimal,
+            open val basePrice: BigDecimal,
             open val quantity: Float,
         ) {
             data class Simple(
                 override val id: Long,
                 override val name: String,
-                override val price: BigDecimal,
+                override val finalPrice: BigDecimal,
+                override val basePrice: BigDecimal,
                 override val quantity: Float,
-            ) : ProductInfo(id, name, price, quantity)
+            ) : ProductInfo(id, name, finalPrice, basePrice, quantity)
 
             data class Variation(
                 override val id: Long,
                 override val name: String,
-                override val price: BigDecimal,
+                override val finalPrice: BigDecimal,
+                override val basePrice: BigDecimal,
                 override val quantity: Float,
                 val variationId: Long,
-            ) : ProductInfo(id, name, price, quantity)
+            ) : ProductInfo(id, name, finalPrice, basePrice, quantity)
         }
 
         data class CouponInfo(

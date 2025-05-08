@@ -431,6 +431,7 @@ fun OrderCreateEditProductDiscountScreenPreview() =
                     productId = 1,
                     variationId = 1,
                     subtotal = BigDecimal.ZERO,
+                    subtotalTax = BigDecimal.ZERO,
                     totalTax = BigDecimal.ZERO,
                     sku = "",
                     itemId = 1L,

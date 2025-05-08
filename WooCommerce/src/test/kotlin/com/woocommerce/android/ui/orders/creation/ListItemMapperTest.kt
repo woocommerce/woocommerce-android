@@ -53,6 +53,7 @@ class ListItemMapperTest : BaseUnitTest() {
         variationId = 3,
         quantity = 4F,
         subtotal = 1000.toBigDecimal(),
+        subtotalTax = 100.toBigDecimal(),
         total = 1100.toBigDecimal(),
         price = 2.toBigDecimal(),
         sku = "",
