@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart.WooPosItemSource
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemsNextPageLoaded
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.PreSearchRecentTermTapped
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SearchRemoteResultsFetched
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -32,6 +33,7 @@ import org.junit.Assert.assertThrows
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.mock
@@ -748,6 +750,51 @@ class WooPosItemsSearchViewModelTest {
             argThat { event ->
                 event is PreSearchRecentTermTapped &&
                     event.properties["item_list_type"] == "products"
+            }
+        )
+    }
+
+    @Test
+    fun `when search results fetched, then track SearchRemoteResultsFetched event with correct properties`() = runTest {
+        // GIVEN
+        val query = "test query"
+        val products = listOf(
+            ProductTestUtils.generateProduct(
+                productId = 1,
+                productName = "Test Product",
+                amount = "10.0",
+                productType = "simple"
+            )
+        )
+        val totalProductsCount = 23
+
+        whenever(mockEmptyStateProvider.getPopularItems()).thenReturn(emptyList())
+        whenever(mockEmptyStateProvider.getLastSearches()).thenReturn(emptyList())
+        whenever(mockDataSource.searchLocalProducts(query)).thenReturn(emptyList())
+        whenever(mockDataSource.searchRemoteProducts(query)).thenReturn(
+            Result.success(
+                WooPosSearchProductsDataSource.SearchResult(
+                    products = products,
+                    canLoadMore = false,
+                    totalProductsCount = totalProductsCount
+                )
+            )
+        )
+        whenever(mockPriceFormat(BigDecimal("10.0"))).thenReturn("$10.0")
+        whenever(mockParentToChildrenEventReceiver.events).thenReturn(
+            flowOf(ParentToChildrenEvent.SearchEvent.ChangedQuery(query))
+        )
+
+        // WHEN
+        createViewModel()
+        advanceUntilIdle()
+
+        // THEN
+        verify(mockAnalyticsTracker).track(
+            argThat { event ->
+                event is SearchRemoteResultsFetched &&
+                event.totalProductsCount == totalProductsCount &&
+                event.properties["item_list_type"] == "products"
             }
         )
     }
