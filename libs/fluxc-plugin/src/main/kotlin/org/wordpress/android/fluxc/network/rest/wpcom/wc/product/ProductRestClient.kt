@@ -11,6 +11,7 @@ import org.wordpress.android.fluxc.generated.endpoint.WPAPI
 import org.wordpress.android.fluxc.generated.endpoint.WPCOMREST
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.ProductWithMetaData
+import org.wordpress.android.fluxc.model.ProductsWithTotal
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.StripProductVariationMetaData
 import org.wordpress.android.fluxc.model.WCProductCategoryModel
@@ -574,7 +575,7 @@ class ProductRestClient @Inject constructor(
         filterOptions: Map<ProductFilterOption, String>? = null,
         includeTypes: List<WCProductStore.IncludeType> = emptyList(),
         orderCurrency: String? = null,
-    ): WooPayload<List<ProductWithMetaData>> {
+    ): WooPayload<ProductsWithTotal> {
         val params = buildProductParametersMap(
             pageSize = pageSize,
             sortType = sortType,
@@ -597,10 +598,20 @@ class ProductRestClient @Inject constructor(
             clazz = Array<ProductApiResponse>::class.java
         )
 
-        return response.toWooPayload { products ->
-            products.map {
-                productDtoMapper.mapToModel(site.localId(), it)
+        val totalProducts = when (response) {
+            is WPAPIResponse.Success -> {
+                response.headers?.get("X-WP-Total")?.toIntOrNull()
             }
+            else -> null
+        }
+
+        return response.toWooPayload { products ->
+            ProductsWithTotal(
+                products = products.map {
+                    productDtoMapper.mapToModel(site.localId(), it)
+                },
+                totalCount = totalProducts
+            )
         }
     }
 
