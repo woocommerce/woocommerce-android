@@ -143,7 +143,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                     )
                 )
                 if (totalProductsCount != null) {
-                    addProperties(mapOf("total_products_count" to totalProductsCount.toString()))
+                    addProperties(mapOf("total_items_count" to totalProductsCount.toString()))
                 }
             }
         }
