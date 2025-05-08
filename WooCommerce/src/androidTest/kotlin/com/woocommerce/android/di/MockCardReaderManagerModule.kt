@@ -78,7 +78,7 @@ class MockCardReaderManagerModule {
             return emptyFlow()
         }
 
-        override  fun setupTapToPayUx(config: TapToPayUxConfig) {}
+        override fun setupTapToPayUx(config: TapToPayUxConfig) {}
 
         override fun startConnectionToReader(cardReader: CardReader, locationId: String) {}
 
