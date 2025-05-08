@@ -22,6 +22,8 @@ import com.stripe.stripeterminal.external.models.SimulateReaderUpdate
 import com.stripe.stripeterminal.external.models.SimulatedCard
 import com.stripe.stripeterminal.external.models.SimulatedCardType
 import com.stripe.stripeterminal.external.models.SimulatorConfiguration
+import com.stripe.stripeterminal.external.models.TapToPayUxConfiguration
+import com.stripe.stripeterminal.external.models.TapToPayUxConfiguration.Color
 import com.stripe.stripeterminal.log.LogLevel
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReader
@@ -113,5 +115,32 @@ internal class TerminalWrapper {
             }
             CardReaderManager.SimulatorUpdateFrequency.RANDOM -> SimulateReaderUpdate.RANDOM
         }
+    }
+
+    fun setupTapToPayUx(config: CardReaderManager.TapToPayUxConfig) {
+        val uxConfig = TapToPayUxConfiguration.Builder()
+            .tapZone(
+                TapToPayUxConfiguration.TapZone.Manual.Builder()
+                    .indicator(TapToPayUxConfiguration.TapZoneIndicator.DEFAULT)
+                    .position(TapToPayUxConfiguration.TapZonePosition.Default)
+                    .build()
+            )
+            .colors(
+                TapToPayUxConfiguration.ColorScheme.Builder()
+                    .primary(Color.Resource(config.primaryColor))
+                    .success(Color.Resource(config.successColor))
+                    .error(Color.Resource(config.errorColor))
+                    .build()
+            )
+            .darkMode(
+                if (config.isDarkMode) {
+                    TapToPayUxConfiguration.DarkMode.DARK
+                } else {
+                    TapToPayUxConfiguration.DarkMode.LIGHT
+                }
+            )
+            .build()
+
+        Terminal.getInstance().setTapToPayUxConfiguration(uxConfig)
     }
 }

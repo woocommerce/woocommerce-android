@@ -88,6 +88,10 @@ internal class CardReaderManagerImpl(
         return connectionManager.discoverReaders(isSimulated, cardReaderTypesToDiscover)
     }
 
+    override fun setupTapToPayUx(config: CardReaderManager.TapToPayUxConfig) {
+        connectionManager.setupTapToPayUx(config)
+    }
+
     override fun startConnectionToReader(cardReader: CardReader, locationId: String) {
         if (!terminal.isInitialized()) error("Terminal not initialized")
         connectionManager.startConnectionToReader(cardReader, locationId)
