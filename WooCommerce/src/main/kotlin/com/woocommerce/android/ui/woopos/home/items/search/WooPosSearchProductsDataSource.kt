@@ -67,9 +67,9 @@ class WooPosSearchProductsDataSource @Inject constructor(
         searchQuery: String,
         offset: Int = 0
     ): Result<SearchResult> {
-        return productStore.searchProducts(
+        return productStore.searchProductsByNameAndSku(
             selectedSite.get(),
-            searchString = searchQuery,
+            searchNameOrSkuQuery = searchQuery,
             offset = offset,
             pageSize = PAGE_SIZE,
             filterOptions = productsTypesFilterConfig.filters,

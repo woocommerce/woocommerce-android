@@ -37,6 +37,7 @@ private object WooPosColors {
     val WooPurple40 = Color(0xFF873EFF)
 
     val WooRed50 = Color(0xFFD63638)
+    val WooRed30 = Color(0xFFF86368)
 
     val White = Color(0xFFFFFFFF)
     val Black = Color(0xFF000000)
@@ -115,8 +116,8 @@ private val DarkColorScheme = darkColorScheme(
     inverseSurface = WooPosColors.White,
     inverseOnSurface = WooPosColors.Gray100,
 
-    error = WooPosColors.WooRed50,
-    onError = WooPosColors.White,
+    error = WooPosColors.WooRed30,
+    onError = WooPosColors.Gray100,
 )
 
 private val LocalCustomColors = staticCompositionLocalOf {

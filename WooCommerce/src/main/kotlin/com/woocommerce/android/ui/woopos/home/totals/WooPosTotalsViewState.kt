@@ -70,4 +70,9 @@ sealed class WooPosTotalsViewState : Parcelable {
     ) : WooPosTotalsViewState()
 
     data class Error(val message: String) : WooPosTotalsViewState()
+
+    data class InvalidCouponError(
+        val message: String,
+        val reason: String,
+    ) : WooPosTotalsViewState()
 }

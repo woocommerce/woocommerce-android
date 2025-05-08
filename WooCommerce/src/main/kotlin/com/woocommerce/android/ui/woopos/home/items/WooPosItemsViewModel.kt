@@ -8,6 +8,10 @@ import com.woocommerce.android.ui.woopos.featureflags.WooPosIsProductsSearchEnab
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState.Tab
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SearchButtonTapped
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ITEM_LIST_TYPE
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ITEM_LIST_TYPE_PRODUCTS
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -23,6 +27,7 @@ class WooPosItemsViewModel @Inject constructor(
     private val searchHelper: WooPosItemsSearchHelper,
     private val isProductsSearchEnabled: WooPosIsProductsSearchEnabled,
     private val tabsHelper: WooPosItemsTabsHelper,
+    private val analyticsTracker: WooPosAnalyticsTracker,
 ) : ViewModel() {
     private val _viewState = MutableStateFlow<WooPosItemsViewState>(
         WooPosItemsViewState.ProductList(
@@ -60,6 +65,19 @@ class WooPosItemsViewModel @Inject constructor(
             WooPosItemsUIEvent.SearchAnimationComplete -> searchHelper.onAnimationComplete()
 
             is WooPosItemsUIEvent.OnTabClicked -> selectTab(event.tab)
+            WooPosItemsUIEvent.SearchIconClicked -> {
+                searchHelper.onSearchChanged("", 0)
+                trackSearchIconClicked()
+            }
+        }
+    }
+
+    private fun trackSearchIconClicked() {
+        viewModelScope.launch {
+            val event = SearchButtonTapped.apply {
+                addProperties(mapOf(ITEM_LIST_TYPE to ITEM_LIST_TYPE_PRODUCTS))
+            }
+            analyticsTracker.track(event)
         }
     }
 

@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels
 
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigurationDataStore
+import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingStoreOptionsDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.StoreOptionsModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.transformLatest
@@ -9,7 +9,7 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 class ObserveStoreOptions @Inject constructor(
-    private val configurationDataStore: WooShippingConfigurationDataStore,
+    private val configurationDataStore: WooShippingStoreOptionsDataStore,
     private val fetchAccountSettings: FetchAccountSettings,
     private val wooStore: WooCommerceStore,
     private val site: SelectedSite,

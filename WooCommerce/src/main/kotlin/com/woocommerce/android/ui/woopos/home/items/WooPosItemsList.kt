@@ -50,6 +50,7 @@ import coil.request.ImageRequest
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosLazyColumn
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
@@ -479,6 +480,44 @@ fun WooPosItemsEmptyList(
     message: String,
     contentDescription: String,
 ) {
+    WooPosItemsEmptyListInternal(
+        modifier = modifier,
+        title = title,
+        message = message,
+        contentDescription = contentDescription,
+        actionLabel = null,
+        onActionClicked = null
+    )
+}
+
+@Composable
+fun WooPosItemsEmptyList(
+    modifier: Modifier = Modifier,
+    title: String,
+    message: String,
+    contentDescription: String,
+    actionLabel: String,
+    onActionClicked: (() -> Unit),
+) {
+    WooPosItemsEmptyListInternal(
+        modifier = modifier,
+        title = title,
+        message = message,
+        contentDescription = contentDescription,
+        actionLabel = actionLabel,
+        onActionClicked = onActionClicked
+    )
+}
+
+@Composable
+private fun WooPosItemsEmptyListInternal(
+    modifier: Modifier = Modifier,
+    title: String,
+    message: String,
+    contentDescription: String,
+    actionLabel: String?,
+    onActionClicked: (() -> Unit)? = null,
+) {
     Box(
         modifier = modifier.verticalScroll(rememberScrollState()),
         contentAlignment = Alignment.Center
@@ -510,7 +549,17 @@ fun WooPosItemsEmptyList(
                 textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
+            Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
+
+            if (onActionClicked != null && actionLabel != null) {
+                WooPosButton(
+                    text = actionLabel,
+                    onClick = onActionClicked,
+                    modifier = Modifier
+                        .fillMaxWidth(0.5f)
+                        .height(80.dp)
+                )
+            }
         }
     }
 }

@@ -202,6 +202,14 @@ open class WooCommerceStore @Inject constructor(
         WCSettingsSqlUtils.getSettingsForSite(site)
 
     /**
+     * Given a [SiteModel], returns its WooCommerce site settings, or null if no settings are stored for this site.
+     */
+    suspend fun getSiteSettingsAsync(site: SiteModel): WCSettingsModel? =
+        coroutineEngine.withDefaultContext(T.DB, this, "getSiteSettingsAsync") {
+            WCSettingsSqlUtils.getSettingsForSite(site)
+        }
+
+    /**
      * Given a [SiteModel], returns its WooCommerce product settings, or null if no settings are stored for this site.
      */
     open fun getProductSettings(site: SiteModel): WCProductSettingsModel? =

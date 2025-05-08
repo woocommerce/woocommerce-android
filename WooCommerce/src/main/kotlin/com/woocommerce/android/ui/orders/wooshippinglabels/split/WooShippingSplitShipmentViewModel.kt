@@ -31,10 +31,12 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
     private val navArgs: WooShippingSplitShipmentFragmentArgs by savedState.navArgs()
     private val storeOptions = navArgs.shipmentArgs.storeOptions
 
-    private val currentShipments = MutableStateFlow(navArgs.shipmentArgs.shipments)
+    private val currentShipments = MutableStateFlow(
+        navArgs.shipmentArgs.shipments.withIndex().associate { (index, shipment) -> index to shipment.items }
+    )
     private val shipmentsUIMap: MutableStateFlow<Map<Int, SelectableShippableItemsUI>?> = MutableStateFlow(null)
 
-    private val shipmentSelected = MutableStateFlow(navArgs.shipmentArgs.shipments.keys.first())
+    private val shipmentSelected = MutableStateFlow(0)
     private val removeShipmentSheet: MutableStateFlow<RemoveShipmentSheet?> = MutableStateFlow(null)
     private val splitMessage: MutableStateFlow<SplitShipmentMessage?> = MutableStateFlow(null)
 
