@@ -218,7 +218,8 @@ class WooPosHomeViewModel @Inject constructor(
                             OrderCreated.ProductInfo.Simple(
                                 id = it.id,
                                 name = it.name,
-                                price = it.price,
+                                finalPrice = it.finalPrice,
+                                basePrice = it.basePrice,
                                 quantity = it.quantity
                             )
                         }
@@ -227,7 +228,8 @@ class WooPosHomeViewModel @Inject constructor(
                             OrderCreated.ProductInfo.Variation(
                                 id = it.id,
                                 name = it.name,
-                                price = it.price,
+                                finalPrice = it.finalPrice,
+                                basePrice = it.basePrice,
                                 quantity = it.quantity,
                                 variationId = it.variationId
                             )
