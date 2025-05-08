@@ -51,7 +51,8 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
                     it.value.toSelectableUIModel(
                         currencyFormatter = currencyFormatter,
                         dimensionUnit = storeOptions.dimensionUnit,
-                        weightUnit = storeOptions.weightUnit
+                        weightUnit = storeOptions.weightUnit,
+                        purchased = it.value.purchased
                     )
                 }
 
@@ -246,7 +247,8 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
 data class SelectableShippableItemsUI(
     val shippableItems: List<SelectableShippableItemUI>,
     val formattedTotalWeight: String,
-    val formattedTotalPrice: String
+    val formattedTotalPrice: String,
+    val purchased: Boolean
 ) {
     val totalItemQuantity: Int
         get() = shippableItems.sumByFloat { it.shippableItem.quantity }.toInt()

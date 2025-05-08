@@ -77,7 +77,8 @@ fun ShippableItemModel.toSelectableUIModel(
 fun List<ShippableItemModel>.toSelectableUIModel(
     currencyFormatter: CurrencyFormatter,
     dimensionUnit: String,
-    weightUnit: String
+    weightUnit: String,
+    purchased: Boolean
 ): SelectableShippableItemsUI {
     val shippableItemsUI = map { item -> item.toSelectableUIModel(currencyFormatter, dimensionUnit, weightUnit) }
     val formattedTotalPrice = getFormattedTotalPrice(currencyFormatter)
@@ -86,7 +87,8 @@ fun List<ShippableItemModel>.toSelectableUIModel(
     return SelectableShippableItemsUI(
         shippableItems = shippableItemsUI,
         formattedTotalWeight = formattedTotalWeight,
-        formattedTotalPrice = formattedTotalPrice
+        formattedTotalPrice = formattedTotalPrice,
+        purchased = purchased
     )
 }
 
