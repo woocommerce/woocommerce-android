@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.dashboard.stats
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Divider
 import androidx.compose.runtime.Composable
@@ -13,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LiveData
@@ -181,7 +183,9 @@ private fun StatsChart(
     }
 
     AndroidView(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp),
         factory = {
             statsView.apply {
                 customRangeButton.setOnClickListener { onAddCustomRangeClick() }
