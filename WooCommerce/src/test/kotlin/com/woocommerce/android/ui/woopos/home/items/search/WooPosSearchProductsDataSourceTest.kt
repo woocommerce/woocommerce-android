@@ -103,7 +103,7 @@ class WooPosSearchProductsDataSourceTest {
                     filterOptions = anyOrNull(),
                     includeTypes = anyOrNull(),
                 )
-            ).thenReturn(WooResult(ProductSearchResult(emptyList(), true)))
+            ).thenReturn(WooResult(ProductSearchResult(emptyList(), true, 23)))
 
             // WHEN
             val result = sut.searchRemoteProducts(query)
