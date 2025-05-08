@@ -33,7 +33,6 @@ import org.junit.Assert.assertThrows
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.mock
@@ -793,8 +792,8 @@ class WooPosItemsSearchViewModelTest {
         verify(mockAnalyticsTracker).track(
             argThat { event ->
                 event is SearchRemoteResultsFetched &&
-                event.totalProductsCount == totalProductsCount &&
-                event.properties["item_list_type"] == "products"
+                    event.totalProductsCount == totalProductsCount &&
+                    event.properties["item_list_type"] == "products"
             }
         )
     }
