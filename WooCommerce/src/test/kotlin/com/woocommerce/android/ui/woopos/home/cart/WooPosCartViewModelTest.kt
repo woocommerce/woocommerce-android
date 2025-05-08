@@ -753,7 +753,7 @@ class WooPosCartViewModelTest {
         parentToChildrenEventsMutableFlow.emit(
             ParentToChildrenEvent.ItemClickedInProductSelector(
                 itemData = WooPosItemsViewModel.ItemClickedData.Coupon(id = 1L),
-                source = WooPosItemSource.COUPON_LIST
+                source = WooPosItemSource.COUPON_LIST,
             )
         )
         sut.onUIEvent(WooPosCartUIEvent.CheckoutClicked)

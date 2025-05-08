@@ -15,9 +15,7 @@ import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsListVie
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsListViewStateManager.FetchingCouponsState.IDLE
 import com.woocommerce.android.ui.woopos.util.WooPosGetCachedStoreCurrency
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatCouponSummary
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
@@ -33,7 +31,7 @@ class WooPosCouponsListViewStateManager @Inject constructor(
     private val couponsDataSource: WooPosCouponsDataSource,
     private val formatCouponSummary: WooPosFormatCouponSummary,
     private val getCachedStoreCurrency: WooPosGetCachedStoreCurrency,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
+    private val cachedCouponEnabledChecker: CachedCouponEnabledChecker,
 ) {
     private val fetchingState: MutableStateFlow<FetchingCouponsState> = MutableStateFlow(IDLE)
 
@@ -46,13 +44,16 @@ class WooPosCouponsListViewStateManager @Inject constructor(
     }
 
     private val contentFlow = couponsDataSource.couponsFlow.combine(fetchingState) { coupons, fetchingState ->
+        if (!cachedCouponEnabledChecker.isEnabled()) {
+            return@combine WooPosCouponsViewState.Error.CouponsDisabledError()
+        }
         when (fetchingState) {
             FETCHING_FIRST_PAGE -> {
                 WooPosCouponsViewState.Loading()
             }
 
             ERROR_FETCHING_FIRST_PAGE -> {
-                WooPosCouponsViewState.Error()
+                WooPosCouponsViewState.Error.GenericError()
             }
 
             IDLE, FETCHING_MORE, ERROR_FETCHING_MORE -> {
@@ -77,7 +78,7 @@ class WooPosCouponsListViewStateManager @Inject constructor(
             return
         }
 
-        fetchingFirstPageJob = viewModelScope.launch(dispatcher) {
+        fetchingFirstPageJob = viewModelScope.launch {
             loadingMoreJob?.cancelAndJoin()
             fetchingState.emit(FETCHING_FIRST_PAGE)
             val result = couponsDataSource.clearCacheAndFetchFirstPage()
@@ -104,7 +105,7 @@ class WooPosCouponsListViewStateManager @Inject constructor(
             return
         }
 
-        loadingMoreJob = viewModelScope.launch(dispatcher) {
+        loadingMoreJob = viewModelScope.launch {
             fetchingState.emit(FETCHING_MORE)
             val result = couponsDataSource.loadMore()
             if (!result.isSuccess) {

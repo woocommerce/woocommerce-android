@@ -15,7 +15,7 @@ import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardRea
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState.CardReaderPaymentState
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
-import com.woocommerce.android.ui.woopos.featureflags.WooPosIsCouponsEnabled
+import com.woocommerce.android.ui.woopos.featureflags.WooPosIsCouponsFeatureFlagEnabled
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToCashPayment
@@ -61,7 +61,7 @@ class WooPosTotalsViewModel @Inject constructor(
     private val networkStatus: WooPosNetworkStatus,
     private val cardReaderPaymentControllerFactory: WooPosCardReaderPaymentControllerFactory,
     private val uiStringParser: UiStringParser,
-    private val isCouponsEnabled: WooPosIsCouponsEnabled,
+    private val isCouponsFFEnabled: WooPosIsCouponsFeatureFlagEnabled,
     private val totalsAnalyticsTracker: WooPosTotalsAnalyticsTracker,
     private val wooLogWrapper: WooLogWrapper,
     savedState: SavedStateHandle,
@@ -396,8 +396,7 @@ class WooPosTotalsViewModel @Inject constructor(
         val totalsState = uiState.value
         if (totalsState is WooPosTotalsViewState.Checkout) {
             uiState.value = totalsState.copy(
-                readerStatus =
-                WooPosTotalsViewState.ReaderStatus.Preparing(
+                readerStatus = WooPosTotalsViewState.ReaderStatus.Preparing(
                     title = resourceProvider.getString(R.string.woopos_totals_reader_getting_ready),
                     subtitle = resourceProvider.getString(R.string.woopos_totals_reader_preparing_reader_for_payment)
                 )
@@ -488,31 +487,40 @@ class WooPosTotalsViewModel @Inject constructor(
         viewModelScope.launch {
             childrenToParentEventSender.sendToParent(
                 ChildToParentEvent.OrderCreated(
-                    updatedProducts = order.items.map {
-                        when {
-                            (it.variationId == 0L) -> {
-                                ChildToParentEvent.OrderCreated.ProductInfo.Simple(
-                                    id = it.productId,
-                                    name = it.name,
-                                    price = it.price,
-                                    quantity = it.quantity
-                                )
-                            }
-
-                            else -> {
-                                ChildToParentEvent.OrderCreated.ProductInfo.Variation(
-                                    id = it.productId,
-                                    name = it.name,
-                                    price = it.price,
-                                    quantity = it.quantity,
-                                    variationId = it.variationId
-                                )
-                            }
-                        }
-                    },
+                    updatedProducts = mapItemLines(order),
                     updatedCoupons = mapCouponLines(order)
                 )
             )
+        }
+    }
+
+    private fun mapItemLines(order: Order) = order.items.map {
+        val basePrice = if (order.pricesIncludeTax) {
+            it.subtotal + it.subtotalTax
+        } else {
+            it.subtotal
+        }
+        when {
+            it.variationId == 0L -> {
+                ChildToParentEvent.OrderCreated.ProductInfo.Simple(
+                    id = it.productId,
+                    name = it.name,
+                    finalPrice = it.price,
+                    basePrice = basePrice,
+                    quantity = it.quantity
+                )
+            }
+
+            else -> {
+                ChildToParentEvent.OrderCreated.ProductInfo.Variation(
+                    id = it.productId,
+                    name = it.name,
+                    finalPrice = it.price,
+                    quantity = it.quantity,
+                    basePrice = basePrice,
+                    variationId = it.variationId
+                )
+            }
         }
     }
 
@@ -571,8 +579,11 @@ class WooPosTotalsViewModel @Inject constructor(
         }
         return WooPosTotalsViewState.Checkout(
             totals = Totals.Visible(
-                orderDiscountText =
-                if (isCouponsEnabled() && discountAmount > BigDecimal.ZERO) "-${priceFormat(discountAmount)}" else null,
+                orderDiscountText = if (isCouponsFFEnabled() && discountAmount > BigDecimal.ZERO) {
+                    "-${priceFormat(discountAmount)}"
+                } else {
+                    null
+                },
                 orderSubtotalText = priceFormat(subtotalAmount),
                 orderTaxText = priceFormat(taxAmount),
                 orderTotalText = priceFormat(totalAmount),
