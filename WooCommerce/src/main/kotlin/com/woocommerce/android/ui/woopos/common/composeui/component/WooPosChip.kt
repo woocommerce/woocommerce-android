@@ -82,7 +82,7 @@ fun WooPosChip(
 @Composable
 fun WooPosChipPreview() {
     WooPosTheme {
-        Box(modifier = Modifier.padding(16.dp)) {
+        Box(modifier = Modifier.padding(WooPosSpacing.Medium.value)) {
             Column(
                 modifier = Modifier
             ) {
