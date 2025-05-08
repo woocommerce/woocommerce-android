@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -44,8 +43,8 @@ fun WooPosToolbar(
                     start.linkTo(parent.start)
                     bottom.linkTo(parent.bottom)
                 }
-                .padding(start = WooPosSpacing.Small.value.toAdaptivePadding())
                 .size(48.dp)
+                .padding(start = WooPosSpacing.Small.value.toAdaptivePadding())
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -53,7 +52,6 @@ fun WooPosToolbar(
                 tint = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier
                     .size(28.dp)
-                    .offset(y = 2.dp)
             )
         }
 
@@ -68,6 +66,7 @@ fun WooPosToolbar(
                 .constrainAs(title) {
                     start.linkTo(backButton.end, margin = iconTitlePadding)
                     bottom.linkTo(parent.bottom)
+                    top.linkTo(parent.top)
                 }
         )
     }

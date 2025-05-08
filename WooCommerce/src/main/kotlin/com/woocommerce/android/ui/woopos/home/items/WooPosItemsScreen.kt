@@ -93,17 +93,17 @@ private fun MainItemsList(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .padding(
-                start = WooPosSpacing.Medium.value.toAdaptivePadding(),
-                end = WooPosSpacing.Medium.value.toAdaptivePadding(),
-                top = WooPosSpacing.XLarge.value.toAdaptivePadding(),
-                bottom = WooPosSpacing.None.value.toAdaptivePadding(),
-            )
+            .padding(bottom = WooPosSpacing.None.value.toAdaptivePadding())
     ) {
         Column(
             modifier.fillMaxHeight()
         ) {
             WooPosItemsToolbar(
+                modifier = Modifier
+                    .padding(
+                        top = WooPosSpacing.XLarge.value.toAdaptivePadding(),
+                        end = WooPosSpacing.Medium.value.toAdaptivePadding(),
+                    ),
                 state = state.value,
                 onTabClicked = onTabClicked,
                 onSearchEvent = onSearchEvent,
@@ -117,6 +117,10 @@ private fun MainItemsList(
                     durationMillis = 300,
                     easing = LinearEasing,
                 ),
+                modifier = Modifier.padding(
+                    start = WooPosSpacing.Medium.value.toAdaptivePadding(),
+                    end = WooPosSpacing.Medium.value.toAdaptivePadding(),
+                )
             ) { screenState ->
                 when (screenState) {
                     ScreenState.PRODUCTS -> WooPosProductsScreen(modifier = Modifier, listState = listState)
@@ -145,6 +149,7 @@ private fun getScreenState(state: WooPosItemsViewState): ScreenState {
                 }
             }
         }
+
         is WooPosItemsViewState.CouponList -> ScreenState.COUPONS
     }
 }

@@ -57,6 +57,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCor
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import kotlinx.coroutines.delay
 import kotlinx.parcelize.Parcelize
 
@@ -176,7 +177,9 @@ private fun SearchInput(
     ) {
         IconButton(
             onClick = { onEvent(WooPosSearchUIEvent.Close) },
-            modifier = Modifier.size(48.dp)
+            modifier = Modifier
+                .size(48.dp)
+                .padding(start = WooPosSpacing.Small.value.toAdaptivePadding())
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
