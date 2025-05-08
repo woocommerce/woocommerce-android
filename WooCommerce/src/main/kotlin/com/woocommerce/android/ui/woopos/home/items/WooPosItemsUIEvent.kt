@@ -11,5 +11,6 @@ sealed class WooPosItemsUIEvent {
     ) : WooPosItemsUIEvent()
     data object CloseSearchClicked : WooPosItemsUIEvent()
     data object SearchAnimationComplete : WooPosItemsUIEvent()
-    object SearchIconClicked : WooPosItemsUIEvent()
+    data object SearchIconClicked : WooPosItemsUIEvent()
+    data object AddCouponIconClicked : WooPosItemsUIEvent()
 }
