@@ -27,6 +27,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.LocalOffer
 import androidx.compose.material3.Icon
@@ -218,13 +219,14 @@ private fun CartBodyWithItems(
     ScrollToTopHandler(items, listState)
 
     val spacerHeight by animateDpAsState(
-        targetValue = if (!isCheckoutButtonVisible) 182.dp else 0.dp,
+        targetValue = if (!isCheckoutButtonVisible) 212.dp else 0.dp,
         label = "cart list height animation"
     )
 
     WooPosLazyColumn(
         modifier = modifier
-            .padding(horizontal = WooPosSpacing.Medium.value.toAdaptivePadding()),
+            .padding(horizontal = WooPosSpacing.Medium.value.toAdaptivePadding())
+            .fillMaxSize(),
         state = listState,
         verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value.toAdaptivePadding()),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -310,12 +312,13 @@ private fun CartToolbar(
                         start.linkTo(parent.start)
                         centerVerticallyTo(parent)
                     }
+                    .size(48.dp)
                     .padding(start = WooPosSpacing.Small.value.toAdaptivePadding())
             ) {
                 Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.ic_back_24dp),
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = stringResource(R.string.woopos_cart_back_content_description),
-                    tint = MaterialTheme.colorScheme.onBackground,
+                    tint = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier
                         .size(iconSize)
                         .offset(y = 4.dp)

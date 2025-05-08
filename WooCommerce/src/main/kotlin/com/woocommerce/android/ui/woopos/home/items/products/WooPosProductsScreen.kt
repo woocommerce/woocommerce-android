@@ -102,7 +102,7 @@ private fun ProductsList(
             )
     ) {
         Column(
-            modifier.fillMaxHeight()
+            Modifier.fillMaxHeight()
         ) {
             when (val itemsState = state.value) {
                 is WooPosProductsViewState.Content -> {
