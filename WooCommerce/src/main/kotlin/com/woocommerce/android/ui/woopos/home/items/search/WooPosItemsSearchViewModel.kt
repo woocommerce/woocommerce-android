@@ -48,7 +48,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
     private val analyticsTracker: WooPosAnalyticsTracker,
 ) : ViewModel() {
     private val _viewState =
-        MutableStateFlow<WooPosItemsSearchViewState>(WooPosItemsSearchViewState.Empty)
+        MutableStateFlow<WooPosItemsSearchViewState>(WooPosItemsSearchViewState.Loading)
     val viewState: StateFlow<WooPosItemsSearchViewState> = _viewState
         .stateIn(
             viewModelScope,
