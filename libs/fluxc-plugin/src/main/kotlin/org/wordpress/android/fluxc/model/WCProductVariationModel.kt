@@ -4,6 +4,8 @@ import androidx.room.Entity
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.JsonParseException
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.WCProductVariationModel.ProductVariantOption
 import org.wordpress.android.fluxc.network.utils.getLong
 import org.wordpress.android.fluxc.network.utils.getString
@@ -22,9 +24,9 @@ typealias VariationAttributes = List<ProductVariantOption>
     primaryKeys = ["localSiteId", "remoteProductId", "remoteVariationId"],
 )
 data class WCProductVariationModel(
-    val localSiteId: Int = 0,
-    val remoteProductId: Long = 0L,
-    val remoteVariationId: Long = 0L,
+    val localSiteId: LocalId = LocalId(0),
+    val remoteProductId: RemoteId = RemoteId(0),
+    val remoteVariationId: RemoteId = RemoteId(0),
     val dateCreated: String = "",
     val dateModified: String = "",
     val description: String = "",

@@ -9,6 +9,7 @@ import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.generated.endpoint.WOOCOMMERCE
 import org.wordpress.android.fluxc.generated.endpoint.WPAPI
 import org.wordpress.android.fluxc.generated.endpoint.WPCOMREST
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.ProductWithMetaData
 import org.wordpress.android.fluxc.model.SiteModel
@@ -386,8 +387,8 @@ class ProductRestClient @Inject constructor(
                     RemoteVariationPayload(
                         productData.asProductVariationModel().let { original ->
                             original.copy(
-                                remoteProductId = remoteProductId,
-                                localSiteId = site.id,
+                                remoteProductId = RemoteId(remoteProductId),
+                                localSiteId = LocalId(site.id),
                                 metadata = stripProductVariationMetaData(original.metadata)
                             )
                         },
@@ -397,8 +398,8 @@ class ProductRestClient @Inject constructor(
                     RemoteVariationPayload(
                         ProductError(GENERIC_ERROR, "Success response with empty data"),
                         WCProductVariationModel().copy (
-                            remoteProductId = remoteProductId,
-                            remoteVariationId = remoteVariationId
+                            remoteProductId = RemoteId(remoteProductId),
+                            remoteVariationId = RemoteId(remoteVariationId)
                     ),
                         site
                     )
@@ -409,8 +410,8 @@ class ProductRestClient @Inject constructor(
                 RemoteVariationPayload(
                     wpAPINetworkErrorToProductError(response.error),
                     WCProductVariationModel().copy (
-                        remoteProductId = remoteProductId,
-                        remoteVariationId = remoteVariationId
+                        remoteProductId = RemoteId(remoteProductId),
+                        remoteVariationId = RemoteId(remoteVariationId)
                     ),
                     site
                 )
@@ -934,8 +935,8 @@ class ProductRestClient @Inject constructor(
                 val variationModels = response.data?.map {
                     it.asProductVariationModel().let { original ->
                         original.copy(
-                            localSiteId = site.id,
-                            remoteProductId = productId,
+                            localSiteId = LocalId(site.id),
+                            remoteProductId = RemoteId(productId),
                             metadata = stripProductVariationMetaData(original.metadata)
                         )
                     }
@@ -1006,8 +1007,8 @@ class ProductRestClient @Inject constructor(
             variations.map {
                 it.asProductVariationModel().let { original ->
                     original.copy(
-                        localSiteId = site.id,
-                        remoteProductId = productId,
+                        localSiteId = LocalId(site.id),
+                        remoteProductId = RemoteId(productId),
                         metadata = stripProductVariationMetaData(original.metadata)
                     )
                 }
@@ -1083,7 +1084,7 @@ class ProductRestClient @Inject constructor(
     ): RemoteUpdateVariationPayload {
         val remoteProductId = updatedProductVariationModel.remoteProductId
         val remoteVariationId = updatedProductVariationModel.remoteVariationId
-        val url = WOOCOMMERCE.products.id(remoteProductId).variations.variation(remoteVariationId).pathV3
+        val url = WOOCOMMERCE.products.id(remoteProductId.value).variations.variation(remoteVariationId.value).pathV3
         val body = variantModelToProductJsonBody(
             storedWCProductVariationModel,
             updatedProductVariationModel
@@ -1102,7 +1103,7 @@ class ProductRestClient @Inject constructor(
                     val newModel = it.asProductVariationModel().let { original ->
                         original.copy(
                             remoteProductId = remoteProductId,
-                            localSiteId = site.id,
+                            localSiteId = LocalId(site.id),
                             metadata = stripProductVariationMetaData(original.metadata)
                         )
                     }

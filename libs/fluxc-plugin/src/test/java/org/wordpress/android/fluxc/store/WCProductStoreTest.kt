@@ -28,6 +28,7 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.SingleStoreWellSqlConfigForTests
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.model.AccountModel
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.ProductWithMetaData
 import org.wordpress.android.fluxc.model.SiteModel
@@ -196,7 +197,7 @@ class WCProductStoreTest {
         val variationModel = ProductTestUtils.generateSampleVariation(42, 24).copy(
             description = "test description"
         )
-        val site = SiteModel().apply { id = variationModel.localSiteId }
+        val site = SiteModel().apply { id = variationModel.localSiteId.value }
         whenever(productRestClient.updateVariation(site, null, variationModel))
             .thenReturn(RemoteUpdateVariationPayload(site, variationModel))
 
@@ -205,8 +206,8 @@ class WCProductStoreTest {
         with(
             productStore.getVariationByRemoteId(
                 site,
-                variationModel.remoteProductId,
-                variationModel.remoteVariationId
+                variationModel.remoteProductId.value,
+                variationModel.remoteVariationId.value
             )
         ) {
             // The version of the product model in the database should have the updated description
@@ -358,21 +359,21 @@ class WCProductStoreTest {
         ).copy(
             description = "test new description"
         )
-        val site = SiteModel().apply { id = variation.localSiteId }
+        val site = SiteModel().apply { id = variation.localSiteId.value }
         val variations = ProductTestUtils.generateSampleVariations(
             number = 5,
-            productId = variation.remoteProductId,
+            productId = variation.remoteProductId.value,
             siteId = site.id
         )
         productsVariationsDao.upsertProductVariations(variations)
 
-        var observedVariations = productStore.observeVariations(site, variation.remoteProductId)
+        var observedVariations = productStore.observeVariations(site, variation.remoteProductId.value)
             .first()
         assertThat(observedVariations).containsExactlyInAnyOrderElementsOf(variations)
 
         // when
         productsVariationsDao.upsertProductVariation(variation)
-        observedVariations = productStore.observeVariations(site, variation.remoteProductId).first()
+        observedVariations = productStore.observeVariations(site, variation.remoteProductId.value).first()
 
         // then
         assertThat(observedVariations).containsExactlyInAnyOrderElementsOf(variations + variation)
@@ -413,7 +414,7 @@ class WCProductStoreTest {
             )
 
             // when
-            val variationsIds = variations.map { it.remoteVariationId }
+            val variationsIds = variations.map { it.remoteVariationId.value }
             val variationsUpdatePayload = BatchUpdateVariationsPayload.Builder(
                 site,
                 product.remoteProductId,
@@ -450,7 +451,7 @@ class WCProductStoreTest {
             )
 
             // when
-            val variationsIds = variations.map { it.remoteVariationId }
+            val variationsIds = variations.map { it.remoteVariationId.value }
             val variationsUpdatePayload =
                 BatchUpdateVariationsPayload.Builder(site, product.remoteProductId, variationsIds)
                     .build()
@@ -486,7 +487,7 @@ class WCProductStoreTest {
             productsVariationsDao.upsertProductVariations(variations)
 
             // when
-            val variationsIds = variations.map { it.remoteVariationId }
+            val variationsIds = variations.map { it.remoteVariationId.value }
             val newRegularPrice = "1.234 💰"
             val newSalePrice = "0.234 💰"
             val variationsUpdatePayload =
@@ -496,7 +497,7 @@ class WCProductStoreTest {
                     .build()
             val variationsReturnedFromBackend = variations.map {
                 ProductVariationApiResponse().apply {
-                    id = it.remoteVariationId
+                    id = it.remoteVariationId.value
                     regular_price = newRegularPrice
                     sale_price = newSalePrice
                 }
@@ -539,7 +540,7 @@ class WCProductStoreTest {
             productsVariationsDao.upsertProductVariations(variations)
 
             // when
-            val variationsIds = variations.map { it.remoteVariationId }
+            val variationsIds = variations.map { it.remoteVariationId.value }
             val newRegularPrice = "1.234 💰"
             val newSalePrice = "0.234 💰"
             val variationsUpdatePayload =
@@ -582,7 +583,7 @@ class WCProductStoreTest {
         val builder = BatchUpdateVariationsPayload.Builder(
             site,
             product.remoteProductId,
-            variations.map { it.remoteVariationId }
+            variations.map { it.remoteVariationId.value }
         )
 
         val modifiedRegularPrice = "11234.234"
@@ -773,8 +774,8 @@ class WCProductStoreTest {
             val site = SiteModel()
             val productId = RemoteId(123)
             val variationsToCreate = listOf(
-                WCProductVariationModel(5).copy(description = "test1"),
-                WCProductVariationModel(6).copy(description = "test2")
+                WCProductVariationModel(LocalId(5)).copy(description = "test1"),
+                WCProductVariationModel(LocalId(6)).copy(description = "test2")
             )
             whenever(productRestClient.createVariations(any(), any(), any())) doReturn WooPayload()
 
@@ -814,9 +815,9 @@ class WCProductStoreTest {
             // then
             val storedVariations = productsVariationsDao.getVariations(site.localId(), productId)
             assertThat(storedVariations).hasSize(2).anyMatch {
-                it.remoteVariationId == 5L
+                it.remoteVariationId == RemoteId(5L)
             }.anyMatch {
-                it.remoteVariationId == 6L
+                it.remoteVariationId == RemoteId(6L)
             }
         }
 
