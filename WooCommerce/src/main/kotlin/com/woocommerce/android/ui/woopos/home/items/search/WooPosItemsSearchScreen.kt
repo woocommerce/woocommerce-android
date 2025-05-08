@@ -23,6 +23,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorS
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosPaginationErrorIndicator
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemList
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsEmptyList
@@ -63,13 +64,24 @@ private fun WooPosItemsSearchScreen(
 
                 is WooPosItemsSearchViewState.Content -> {
                     key(currentState.searchQuery) {
-                        WooPosItemsSearchContent(currentState, onUIEvent)
+                        WooPosItemsSearchContent(
+                            modifier = Modifier.padding(
+                                horizontal = WooPosSpacing.Medium.value.toAdaptivePadding(),
+                            ),
+                            currentState,
+                            onUIEvent
+                        )
                     }
                 }
 
                 WooPosItemsSearchViewState.Empty -> {
                     WooPosItemsEmptyList(
-                        modifier = Modifier.fillMaxSize().imePadding(),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(
+                                horizontal = WooPosSpacing.Medium.value.toAdaptivePadding(),
+                            )
+                            .imePadding(),
                         title = stringResource(id = R.string.woopos_search_items_empty_title),
                         message = stringResource(id = R.string.woopos_search_empty_description),
                         contentDescription = stringResource(
@@ -80,7 +92,11 @@ private fun WooPosItemsSearchScreen(
 
                 is WooPosItemsSearchViewState.Error -> {
                     WooPosErrorScreen(
-                        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).imePadding(),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = WooPosSpacing.Medium.value.toAdaptivePadding())
+                            .verticalScroll(rememberScrollState())
+                            .imePadding(),
                         message = stringResource(id = R.string.woopos_search_items_error_title),
                         reason = stringResource(id = R.string.woopos_search_items_error_description),
                         primaryButton = Button(
@@ -92,7 +108,11 @@ private fun WooPosItemsSearchScreen(
 
                 WooPosItemsSearchViewState.Loading -> {
                     WooPosItemsLoadingIndicator(
-                        modifier = Modifier.padding(top = WooPosSpacing.Large.value),
+                        modifier = Modifier.padding(
+                            start = WooPosSpacing.Medium.value.toAdaptivePadding(),
+                            end = WooPosSpacing.Medium.value.toAdaptivePadding(),
+                            top = WooPosSpacing.Large.value
+                        ),
                         itemsCount = 5
                     )
                 }
@@ -103,6 +123,7 @@ private fun WooPosItemsSearchScreen(
 
 @Composable
 private fun WooPosItemsSearchContent(
+    modifier: Modifier = Modifier,
     state: WooPosItemsSearchViewState.Content,
     onUIEvent: (WooPosItemsSearchUiEvent) -> Unit
 ) {
@@ -115,7 +136,7 @@ private fun WooPosItemsSearchContent(
         }
     }
     WooPosItemList(
-        modifier = Modifier.padding(top = WooPosSpacing.Large.value),
+        modifier = modifier.padding(top = WooPosSpacing.Large.value),
         state = state,
         listState = listState,
         onItemClicked = { onUIEvent(WooPosItemsSearchUiEvent.OnItemClicked(it)) },

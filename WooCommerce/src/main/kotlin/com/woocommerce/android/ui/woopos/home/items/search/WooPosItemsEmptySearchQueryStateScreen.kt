@@ -51,7 +51,6 @@ fun WooPosItemsEmptySearchQueryStateScreen(
     Column(
         modifier
             .fillMaxHeight()
-            .padding(WooPosSpacing.None.value.toAdaptivePadding())
             .padding(top = WooPosSpacing.Large.value.toAdaptivePadding())
             .verticalScroll(scrollState)
     ) {
