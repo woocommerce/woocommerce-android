@@ -14,7 +14,6 @@ import androidx.navigation.fragment.NavHostFragment
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.adjustActivityTransition
 import com.woocommerce.android.ui.woopos.util.ext.isGestureNavigation
-import com.woocommerce.android.util.WooLog
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -71,12 +70,6 @@ class WooPosCouponCreationActivity : AppCompatActivity(R.layout.activity_woo_pos
             setStartDestination(R.id.couponTypePickerFragment)
         }
         navController.setGraph(graph, null)
-    }
-
-    private fun logResultListenerError(requestKey: String) {
-        val errorMessage = "Unknown request key: $requestKey"
-        WooLog.e(WooLog.T.POS, "Error in WooPosCouponsCreationActivity - $errorMessage")
-        error(errorMessage)
     }
 
     companion object {
