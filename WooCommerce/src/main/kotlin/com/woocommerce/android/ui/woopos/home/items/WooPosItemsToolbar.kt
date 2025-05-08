@@ -13,6 +13,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.LocalOffer
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -24,6 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCircularIconButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInput
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState.Open.Input
@@ -43,6 +47,7 @@ fun WooPosItemsToolbar(
     state: WooPosItemsViewState,
     onTabClicked: (WooPosItemsViewState.Tab) -> Unit,
     onSearchEvent: (WooPosSearchUIEvent) -> Unit,
+    onAddCouponEvent: () -> Unit,
 ) {
     val isSearchOpen = (state.search as? SearchState.Visible)?.let {
         it.state is WooPosSearchInputState.Open
@@ -71,19 +76,33 @@ fun WooPosItemsToolbar(
             ),
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                state.tabs.forEach { tab ->
-                    WooPosText(
-                        text = stringResource(id = tab.stringId),
-                        style = WooPosTypography.Heading,
-                        fontWeight = FontWeight.Bold,
-                        color = tab.highlightLevel.titleColor(),
-                        modifier = Modifier.clickable(
-                            interactionSource = remember { MutableInteractionSource() },
-                            indication = null,
-                            onClick = { onTabClicked(tab) }
+                LazyRow(
+                    modifier = Modifier.weight(1f),
+                ) {
+                    items(state.tabs.size) { index ->
+                        val tab = state.tabs[index]
+                        WooPosText(
+                            text = stringResource(id = tab.stringId),
+                            style = WooPosTypography.Heading,
+                            fontWeight = FontWeight.Bold,
+                            color = tab.highlightLevel.titleColor(),
+                            modifier = Modifier.clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null,
+                                onClick = { onTabClicked(tab) }
+                            )
                         )
+                        Spacer(modifier = Modifier.width(WooPosSpacing.Large.value))
+                    }
+                }
+                if (state.isAddCouponVisible) {
+                    WooPosCircularIconButton(
+                        icon = Icons.Default.LocalOffer,
+                        contentDescription = stringResource(
+                            id = R.string.woopos_coupons_empty_list_create_coupon_label,
+                        ),
+                        onClick = { onAddCouponEvent() }
                     )
-                    Spacer(modifier = Modifier.width(WooPosSpacing.Large.value))
                 }
             }
         }
@@ -111,7 +130,7 @@ private fun WooPosItemsViewState.Tab.HighlightLevel.titleColor(): Color = when (
 
 @Composable
 @WooPosPreview
-fun WooPosItemsToolbarPreview() {
+fun WooPosProductsToolbarPreview() {
     val tabs = listOf(
         WooPosItemsViewState.Tab(R.string.woopos_products_screen_title, highlightLevel = Full),
         WooPosItemsViewState.Tab(R.string.woopos_coupons_screen_title, highlightLevel = Normal),
@@ -124,7 +143,26 @@ fun WooPosItemsToolbarPreview() {
                 search = SearchState.Hidden,
             ),
             onTabClicked = {},
-            onSearchEvent = {}
+            onSearchEvent = {},
+            onAddCouponEvent = {},
+        )
+    }
+}
+
+@Composable
+@WooPosPreview
+fun WooPosCouponsToolbarPreview() {
+    val tabs = listOf(
+        WooPosItemsViewState.Tab(R.string.woopos_products_screen_title, highlightLevel = Normal),
+        WooPosItemsViewState.Tab(R.string.woopos_coupons_screen_title, highlightLevel = Full),
+    )
+
+    WooPosTheme {
+        WooPosItemsToolbar(
+            state = WooPosItemsViewState.CouponList(tabs = tabs),
+            onTabClicked = {},
+            onSearchEvent = {},
+            onAddCouponEvent = {},
         )
     }
 }
@@ -153,7 +191,8 @@ fun WooPosItemsToolbarWithSearchPreview() {
                 )
             ),
             onTabClicked = {},
-            onSearchEvent = {}
+            onSearchEvent = {},
+            onAddCouponEvent = {},
         )
     }
 }
