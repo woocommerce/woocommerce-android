@@ -97,17 +97,16 @@ private fun MainItemsList(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .padding(
-                start = WooPosSpacing.Medium.value.toAdaptivePadding(),
-                end = WooPosSpacing.Medium.value.toAdaptivePadding(),
-                top = WooPosSpacing.XLarge.value.toAdaptivePadding(),
-                bottom = WooPosSpacing.None.value.toAdaptivePadding(),
-            )
     ) {
         Column(
             modifier.fillMaxHeight()
         ) {
             WooPosItemsToolbar(
+                modifier = Modifier
+                    .padding(
+                        top = WooPosSpacing.XLarge.value.toAdaptivePadding(),
+                        end = WooPosSpacing.Medium.value.toAdaptivePadding(),
+                    ),
                 state = state.value,
                 onTabClicked = onTabClicked,
                 onSearchEvent = onSearchEvent,
@@ -124,9 +123,18 @@ private fun MainItemsList(
                 ),
             ) { screenState ->
                 when (screenState) {
-                    ScreenState.PRODUCTS -> WooPosProductsScreen(modifier = Modifier, listState = listState)
+                    ScreenState.PRODUCTS -> WooPosProductsScreen(
+                        modifier = Modifier.padding(
+                            horizontal = WooPosSpacing.Medium.value.toAdaptivePadding(),
+                        ),
+                        listState = listState
+                    )
                     ScreenState.PRODUCTS_SEARCH -> WooPosItemsSearchScreen()
-                    ScreenState.COUPONS -> WooPosCouponsScreen(modifier = Modifier)
+                    ScreenState.COUPONS -> WooPosCouponsScreen(
+                        modifier = Modifier.padding(
+                            horizontal = WooPosSpacing.Medium.value.toAdaptivePadding(),
+                        )
+                    )
                 }
             }
         }
@@ -150,6 +158,7 @@ private fun getScreenState(state: WooPosItemsViewState): ScreenState {
                 }
             }
         }
+
         is WooPosItemsViewState.CouponList -> ScreenState.COUPONS
     }
 }

@@ -47,6 +47,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
@@ -57,6 +58,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCor
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import kotlinx.coroutines.delay
 import kotlinx.parcelize.Parcelize
 
@@ -176,7 +178,9 @@ private fun SearchInput(
     ) {
         IconButton(
             onClick = { onEvent(WooPosSearchUIEvent.Close) },
-            modifier = Modifier.size(48.dp)
+            modifier = Modifier
+                .size(48.dp)
+                .padding(start = WooPosSpacing.Small.value.toAdaptivePadding())
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -233,7 +237,11 @@ private fun SearchInput(
             textStyle = WooPosTypography.BodyMedium.style
                 .copy(fontWeight = FontWeight.Bold),
             singleLine = true,
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Search,
+                capitalization = KeyboardCapitalization.None,
+                autoCorrectEnabled = false
+            ),
             shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
             keyboardActions = KeyboardActions(
                 onSearch = {
