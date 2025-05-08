@@ -129,6 +129,24 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
         data object ItemsNextPageLoaded : Event() {
             override val name: String = "items_next_page_loaded"
         }
+        data class SearchRemoteResultsFetched(
+            val totalProductsCount: Int?,
+            val millisecondsSinceRequestSent: Int
+        ) : Event() {
+            override val name: String = "pos_search_remote_results_fetched"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "milliseconds_since_request_sent" to millisecondsSinceRequestSent.toString(),
+                        "item_list_type" to "products"
+                    )
+                )
+                if (totalProductsCount != null) {
+                    addProperties(mapOf("total_products_count" to totalProductsCount.toString()))
+                }
+            }
+        }
     }
 
     sealed class PaymentFlowTrackerEvent : WooPosAnalyticsEvent() {
