@@ -14,6 +14,7 @@ import androidx.core.view.WindowInsetsCompat
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
+import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationFacade
 import com.woocommerce.android.ui.woopos.support.WooPosGetSupportFacade
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.ext.isGestureNavigation
@@ -31,6 +32,9 @@ class WooPosActivity : AppCompatActivity() {
     @Inject
     lateinit var wooPosAnalyticsTracker: WooPosAnalyticsTracker
 
+    @Inject
+    lateinit var wooPosCouponCreationFacade: WooPosCouponCreationFacade
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -38,6 +42,7 @@ class WooPosActivity : AppCompatActivity() {
 
         lifecycle.addObserver(wooPosCardReaderFacade)
         lifecycle.addObserver(wooPosGetSupportFacade)
+        lifecycle.addObserver(wooPosCouponCreationFacade)
 
         setContent {
             WooPosTheme {
