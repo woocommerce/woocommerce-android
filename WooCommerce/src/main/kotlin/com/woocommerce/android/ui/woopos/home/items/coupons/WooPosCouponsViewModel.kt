@@ -6,6 +6,7 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.WooPosCouponsViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
+import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsListViewStateManager.WooPosCouponsListRefreshType
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsUIEvent.BackButtonClicked
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsUIEvent.CouponClicked
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsUIEvent.EndOfListReached
@@ -46,7 +47,7 @@ class WooPosCouponsViewModel @Inject constructor(
             }
         }
 
-        listViewStateManager.fetchCoupons(viewModelScope, pullToRefresh = false)
+        fetchCoupons(WooPosCouponsListRefreshType.INITIAL)
     }
 
     fun onUIEvent(event: WooPosCouponsUIEvent) {
@@ -55,7 +56,7 @@ class WooPosCouponsViewModel @Inject constructor(
                 handleCouponClicked(event)
             }
 
-            PullToRefreshTriggered -> fetchCoupons(pullToRefresh = true)
+            PullToRefreshTriggered -> fetchCoupons(WooPosCouponsListRefreshType.PULL_TO_REFRESH)
 
             is EndOfListReached -> {
                 onEndOfListReached()
@@ -69,7 +70,7 @@ class WooPosCouponsViewModel @Inject constructor(
                 navigateBackToItemListScreen()
             }
 
-            RetryTriggered -> fetchCoupons(false)
+            RetryTriggered -> fetchCoupons(WooPosCouponsListRefreshType.RETRY)
 
             is WooPosCouponsUIEvent.CreateCouponClicked -> {
                 error("Create coupon clicked event not implemented yet")
@@ -77,8 +78,8 @@ class WooPosCouponsViewModel @Inject constructor(
         }
     }
 
-    private fun fetchCoupons(pullToRefresh: Boolean) {
-        listViewStateManager.fetchCoupons(viewModelScope, pullToRefresh)
+    private fun fetchCoupons(refreshType: WooPosCouponsListRefreshType) {
+        listViewStateManager.fetchCoupons(viewModelScope,refreshType)
     }
 
     private fun onEndOfListReached() {
