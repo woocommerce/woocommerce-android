@@ -34,7 +34,7 @@ internal class DiscoverReadersAction(
         value = "android.permission.ACCESS_FINE_LOCATION",
     )
     fun discoverBuildInReaders(isSimulated: Boolean): Flow<DiscoverReadersStatus> =
-        discoverReaders(DiscoveryConfiguration.LocalMobileDiscoveryConfiguration(isSimulated))
+        discoverReaders(DiscoveryConfiguration.TapToPayDiscoveryConfiguration(isSimulated))
 
     @RequiresPermission(
         allOf = [

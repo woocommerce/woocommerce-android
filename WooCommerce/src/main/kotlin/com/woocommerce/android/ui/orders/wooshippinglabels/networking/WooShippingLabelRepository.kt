@@ -4,7 +4,8 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingAddressDataStore
-import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigurationDataStore
+import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigDataStore
+import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingStoreOptionsDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.AddressNormalizationModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
@@ -22,7 +23,8 @@ import javax.inject.Inject
 class WooShippingLabelRepository @Inject constructor(
     private val restClient: WooShippingLabelRestClient,
     private val mapper: WooShippingNetworkingMapper,
-    private val configurationDataStore: WooShippingConfigurationDataStore,
+    private val configDataStore: WooShippingConfigDataStore,
+    private val configurationDataStore: WooShippingStoreOptionsDataStore,
     private val addressDataStore: WooShippingAddressDataStore
 ) {
     suspend fun fetchShippingLabelPrinting(
@@ -47,6 +49,15 @@ class WooShippingLabelRepository @Inject constructor(
                     configurationDataStore.saveStoreOptions(it)
                 }
         }
+
+    suspend fun fetchConfig(site: SiteModel, orderId: Long): WooResult<ConfigResponse> =
+        restClient.fetchConfig(site, orderId)
+            .asWooResult()
+            .also { response ->
+                response.model
+                    ?.takeIf { !response.isError }
+                    ?.let { configDataStore.saveConfig(orderId, it.config) }
+            }
 
     suspend fun fetchPurchasedShippingLabels(
         site: SiteModel,

@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 22.3
+We've streamlined the WooCommerce mobile app! Product types are now seamlessly integrated into the POS menu. This updated design makes managing product information during checkout simple and intuitive.
+
 ## 22.2
 We've made important improvements in this update! Crashes related to currency formatting, the "Add custom amount" screen, and the Jetpack Installation screen have all been resolved for a smoother and more reliable experience. Enjoy the enhanced stability in your WooCommerce mobile app!
 

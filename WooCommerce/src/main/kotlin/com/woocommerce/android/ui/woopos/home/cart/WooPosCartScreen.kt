@@ -27,6 +27,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.LocalOffer
 import androidx.compose.material3.Icon
@@ -78,6 +79,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
+import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState.Coupon.CouponValidationState
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartUIEvent.ItemRemovedFromCart
 
 @Composable
@@ -217,13 +219,14 @@ private fun CartBodyWithItems(
     ScrollToTopHandler(items, listState)
 
     val spacerHeight by animateDpAsState(
-        targetValue = if (!isCheckoutButtonVisible) 182.dp else 0.dp,
+        targetValue = if (!isCheckoutButtonVisible) 212.dp else 0.dp,
         label = "cart list height animation"
     )
 
     WooPosLazyColumn(
         modifier = modifier
-            .padding(horizontal = WooPosSpacing.Medium.value.toAdaptivePadding()),
+            .padding(horizontal = WooPosSpacing.Medium.value.toAdaptivePadding())
+            .fillMaxSize(),
         state = listState,
         verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value.toAdaptivePadding()),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -309,12 +312,13 @@ private fun CartToolbar(
                         start.linkTo(parent.start)
                         centerVerticallyTo(parent)
                     }
+                    .size(48.dp)
                     .padding(start = WooPosSpacing.Small.value.toAdaptivePadding())
             ) {
                 Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.ic_back_24dp),
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = stringResource(R.string.woopos_cart_back_content_description),
-                    tint = MaterialTheme.colorScheme.onBackground,
+                    tint = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier
                         .size(iconSize)
                         .offset(y = 4.dp)
@@ -540,14 +544,26 @@ private fun CouponItem(
         ) {
             Box(
                 modifier = Modifier
-                    .background(MaterialTheme.colorScheme.surfaceDim)
+                    .background(
+                        when (item.validationState) {
+                            CouponValidationState.Invalid -> MaterialTheme.colorScheme.error
+                            CouponValidationState.Unknown -> MaterialTheme.colorScheme.surfaceDim
+                            is CouponValidationState.Valid -> WooPosTheme.colors.success
+                        }
+                    )
                     .size(96.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Image(
                     imageVector = Icons.Outlined.LocalOffer,
                     contentDescription = null,
-                    colorFilter = ColorFilter.tint(WooPosTheme.colors.onSurfaceVariantLowest),
+                    colorFilter = ColorFilter.tint(
+                        when (item.validationState) {
+                            CouponValidationState.Invalid -> MaterialTheme.colorScheme.onError
+                            CouponValidationState.Unknown -> WooPosTheme.colors.onSurfaceVariantLowest
+                            is CouponValidationState.Valid -> WooPosTheme.colors.onSuccess
+                        }
+                    ),
                     modifier = Modifier.size(36.dp, 36.dp)
                 )
             }
@@ -577,6 +593,27 @@ private fun CouponItem(
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.clearAndSetSemantics { }
                 )
+                when (item.validationState) {
+                    CouponValidationState.Unknown -> Unit
+                    CouponValidationState.Invalid -> {
+                        Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value.toAdaptivePadding()))
+                        WooPosText(
+                            text = stringResource(R.string.woopos_cart_coupon_invalid_subtitle),
+                            style = WooPosTypography.BodySmall,
+                            color = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.clearAndSetSemantics { }
+                        )
+                    }
+                    is CouponValidationState.Valid -> {
+                        Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value.toAdaptivePadding()))
+                        WooPosText(
+                            text = item.validationState.formattedDiscount,
+                            style = WooPosTypography.BodySmall,
+                            color = WooPosTheme.colors.success,
+                            modifier = Modifier.clearAndSetSemantics { }
+                        )
+                    }
+                }
             }
 
             if (canRemoveItems) {
@@ -628,7 +665,15 @@ fun WooPosCartScreenProductsPreview(modifier: Modifier = Modifier) {
                             itemNumber = 1,
                             name = "Test Coupon",
                             summary = "50% Off · All Products",
-                            id = 1L
+                            id = 1L,
+                            validationState = CouponValidationState.Valid("-$10")
+                        ),
+                        WooPosCartItemViewState.Coupon(
+                            itemNumber = 1,
+                            name = "Test Coupon",
+                            summary = "10$ off * All Products",
+                            id = 1L,
+                            validationState = CouponValidationState.Invalid
                         ),
                         WooPosCartItemViewState.Product.Simple(
                             itemNumber = 2,
@@ -687,7 +732,15 @@ fun WooPosCartScreenCheckoutPreview(modifier: Modifier = Modifier) {
                                 "50% Off · 1 Product 50% Off · 1 Product 50% Off · 1 Product 50% Off · 1 Product " +
                                 "50% Off · 1 Product 50% Off · 1 Product 50% Off · 1 Product 50% Off · 1 Product " +
                                 "50% Off · 1 Product 50% Off · 1 Product 50% Off · 1 Product 50% Off · 1 Product",
-                            id = 1L
+                            id = 1L,
+                            validationState = CouponValidationState.Valid("-$10")
+                        ),
+                        WooPosCartItemViewState.Coupon(
+                            itemNumber = 1,
+                            name = "Test Coupon",
+                            summary = "10$ off * All Products",
+                            id = 1L,
+                            validationState = CouponValidationState.Invalid
                         ),
                         WooPosCartItemViewState.Product.Simple(
                             itemNumber = 2,

@@ -120,6 +120,7 @@ class OrderMapper @Inject constructor(
                     it.sku ?: "",
                     it.quantity ?: 0f,
                     it.subtotal?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
+                    it.subtotalTax?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
                     it.totalTax?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
                     it.total?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
                     it.variationId ?: 0,

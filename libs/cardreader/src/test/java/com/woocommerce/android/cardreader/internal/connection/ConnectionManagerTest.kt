@@ -5,6 +5,7 @@ import com.stripe.stripeterminal.external.callable.Callback
 import com.stripe.stripeterminal.external.callable.ReaderCallback
 import com.stripe.stripeterminal.external.models.DeviceType
 import com.stripe.stripeterminal.external.models.Reader
+import com.stripe.stripeterminal.external.models.TerminalErrorCode
 import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.ReadersFound
@@ -40,6 +41,7 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
 
     private val terminalWrapper: TerminalWrapper = mock()
     private val bluetoothReaderListener: BluetoothReaderListenerImpl = mock()
+    private val tapToPayReaderListenerImpl: TapToPayReaderListenerImpl = mock()
     private val discoverReadersAction: DiscoverReadersAction = mock()
     private val terminalListenerImpl: TerminalListenerImpl = mock {
         on { readerStatus }.thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
@@ -62,6 +64,7 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
         connectionManager = ConnectionManager(
             terminalWrapper,
             bluetoothReaderListener,
+            tapToPayReaderListenerImpl,
             discoverReadersAction,
             terminalListenerImpl,
             application,
@@ -130,7 +133,7 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
             )
             val discoveredBuiltInReaders = listOf<Reader>(
                 mock {
-                    on { deviceType }.thenReturn(DeviceType.COTS_DEVICE)
+                    on { deviceType }.thenReturn(DeviceType.TAP_TO_PAY_DEVICE)
                 }
             )
             whenever(discoverReadersAction.discoverExternalReaders(anyBoolean()))
@@ -144,7 +147,7 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
             ).toList()
 
             assertThat((result[0] as ReadersFound).list[0].type).isEqualTo(
-                ReaderType.BuildInReader.CotsDevice.name
+                ReaderType.BuildInReader.TapToPayDevice.name
             )
             assertThat((result[0] as ReadersFound).list.size).isEqualTo(1)
 
@@ -194,7 +197,7 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
         testBlocking {
             val discoveredReaders = listOf<Reader>(
                 mock {
-                    on { deviceType }.thenReturn(DeviceType.COTS_DEVICE)
+                    on { deviceType }.thenReturn(DeviceType.TAP_TO_PAY_DEVICE)
                 }
             )
             whenever(discoverReadersAction.discoverBuildInReaders(anyBoolean()))
@@ -203,12 +206,12 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
             val result = connectionManager.discoverReaders(
                 true,
                 CardReaderTypesToDiscover.SpecificReaders.BuiltInReaders(
-                    listOf(ReaderType.BuildInReader.CotsDevice)
+                    listOf(ReaderType.BuildInReader.TapToPayDevice)
                 )
             ).toList()
 
             assertThat((result.first() as ReadersFound).list[0].type).isEqualTo(
-                ReaderType.BuildInReader.CotsDevice.name
+                ReaderType.BuildInReader.TapToPayDevice.name
             )
             assertThat((result.first() as ReadersFound).list.size).isEqualTo(1)
         }
@@ -243,7 +246,7 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
             val cardReader: CardReaderImpl = mock {
                 on { cardReader }.thenReturn(reader)
             }
-            whenever(terminalWrapper.connectToReader(any(), any(), any(), any())).thenAnswer {
+            whenever(terminalWrapper.connectToReader(any(), any(), any())).thenAnswer {
                 (it.arguments[2] as ReaderCallback).onSuccess(mock())
             }
 
@@ -262,12 +265,12 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
                 on { cardReader }.thenReturn(reader)
             }
             val message = "error_message"
-            val errorCode = TerminalException.TerminalErrorCode.READER_SOFTWARE_UPDATE_FAILED_READER_ERROR
+            val errorCode = TerminalErrorCode.READER_SOFTWARE_UPDATE_FAILED_READER_ERROR
             val exception: TerminalException = mock {
                 on { errorMessage }.thenReturn(message)
                 on { this.errorCode }.thenReturn(errorCode)
             }
-            whenever(terminalWrapper.connectToReader(any(), any(), any(), any())).thenAnswer {
+            whenever(terminalWrapper.connectToReader(any(), any(), any())).thenAnswer {
                 (it.arguments[2] as ReaderCallback).onFailure(exception)
             }
 
@@ -291,12 +294,12 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
                 on { cardReader }.thenReturn(reader)
             }
             val message = "error_message"
-            val errorCode = TerminalException.TerminalErrorCode.READER_BATTERY_CRITICALLY_LOW
+            val errorCode = TerminalErrorCode.READER_BATTERY_CRITICALLY_LOW
             val exception: TerminalException = mock {
                 on { errorMessage }.thenReturn(message)
                 on { this.errorCode }.thenReturn(errorCode)
             }
-            whenever(terminalWrapper.connectToReader(any(), any(), any(), any())).thenAnswer {
+            whenever(terminalWrapper.connectToReader(any(), any(), any())).thenAnswer {
                 (it.arguments[2] as ReaderCallback).onFailure(exception)
             }
 
@@ -319,7 +322,7 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
             val cardReader: CardReaderImpl = mock {
                 on { cardReader }.thenReturn(reader)
             }
-            whenever(terminalWrapper.connectToReader(any(), any(), any(), any())).thenAnswer {
+            whenever(terminalWrapper.connectToReader(any(), any(), any())).thenAnswer {
                 (it.arguments[2] as ReaderCallback).onSuccess(cardReader.cardReader)
             }
 

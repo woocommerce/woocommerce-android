@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.WooException
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connecting
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnected
@@ -14,12 +15,13 @@ import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardRea
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState.CardReaderPaymentState
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
-import com.woocommerce.android.ui.woopos.featureflags.WooPosIsCouponsEnabled
+import com.woocommerce.android.ui.woopos.featureflags.WooPosIsCouponsFeatureFlagEnabled
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToCashPayment
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToEmailReceipt
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NewTransactionClicked
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OrderCreated.CouponInfo
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OrderSuccessfullyPaidByCard
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.ToastMessageDisplayed
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
@@ -33,8 +35,8 @@ import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState.Total
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.UiStringParser
-import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLog.T
+import com.woocommerce.android.util.WooLog.T.POS
+import com.woocommerce.android.util.WooLogWrapper
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -44,6 +46,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import java.math.BigDecimal
 import javax.inject.Inject
 
@@ -58,8 +61,9 @@ class WooPosTotalsViewModel @Inject constructor(
     private val networkStatus: WooPosNetworkStatus,
     private val cardReaderPaymentControllerFactory: WooPosCardReaderPaymentControllerFactory,
     private val uiStringParser: UiStringParser,
-    private val isCouponsEnabled: WooPosIsCouponsEnabled,
+    private val isCouponsFFEnabled: WooPosIsCouponsFeatureFlagEnabled,
     private val totalsAnalyticsTracker: WooPosTotalsAnalyticsTracker,
+    private val wooLogWrapper: WooLogWrapper,
     savedState: SavedStateHandle,
 ) : ViewModel() {
 
@@ -159,6 +163,10 @@ class WooPosTotalsViewModel @Inject constructor(
             WooPosTotalsUIEvent.ConnectReaderClicked -> cardReaderFacade.connectToReader()
 
             WooPosTotalsUIEvent.OnBackClicked -> handleBackPress()
+
+            WooPosTotalsUIEvent.GoBackToCheckoutAfterFailedCouponValidation -> handleEditOrderClicked()
+
+            WooPosTotalsUIEvent.OnRemoveCouponsClicked -> handleRemoveCouponsClicked()
         }
     }
 
@@ -223,6 +231,18 @@ class WooPosTotalsViewModel @Inject constructor(
         }
     }
 
+    private fun handleEditOrderClicked() {
+        viewModelScope.launch {
+            childrenToParentEventSender.sendToParent(ChildToParentEvent.BackFromCheckoutToCartClicked)
+        }
+    }
+
+    private fun handleRemoveCouponsClicked() {
+        viewModelScope.launch {
+            childrenToParentEventSender.sendToParent(ChildToParentEvent.RemoveCouponsClicked)
+        }
+    }
+
     private suspend fun retryPaymentCollectionFromScratch() {
         cancelPaymentAction()
         val order = totalsRepository.getOrderById(dataState.value.orderId)
@@ -262,8 +282,7 @@ class WooPosTotalsViewModel @Inject constructor(
             parentToChildrenEventReceiver.events.collect { event ->
                 when (event) {
                     is ParentToChildrenEvent.CheckoutClicked -> {
-                        dataState.value = dataState.value.copy(itemClickedDataList = event.itemClickedDataList)
-                        createOrderDraft(dataState.value.itemClickedDataList)
+                        onCartDataReceived(event.itemClickedDataList)
                         totalsAnalyticsTracker.incrementCheckoutButtonTaps()
                     }
 
@@ -280,15 +299,26 @@ class WooPosTotalsViewModel @Inject constructor(
                         showSuccessfulPaymentState(event.paymentMethod)
                     }
 
+                    is ParentToChildrenEvent.CouponsRemoved -> {
+                        onCartDataReceived(event.cartDataList)
+                    }
+
                     is ParentToChildrenEvent.SearchEvent.RecentSearchSelected,
                     is ParentToChildrenEvent.ItemClickedInProductSelector,
                     is ParentToChildrenEvent.SearchEvent.ChangedQuery,
                     ParentToChildrenEvent.SearchEvent.Finished,
                     is ParentToChildrenEvent.OrderCreated,
-                    ParentToChildrenEvent.SearchEvent.Started -> Unit
+                    ParentToChildrenEvent.SearchEvent.Started,
+                    ParentToChildrenEvent.RemoveCouponsClicked,
+                    ParentToChildrenEvent.CouponsValidationFailed -> Unit
                 }
             }
         }
+    }
+
+    private fun onCartDataReceived(newCartData: List<WooPosItemsViewModel.ItemClickedData>) {
+        dataState.value = dataState.value.copy(itemClickedDataList = newCartData)
+        createOrderDraft(dataState.value.itemClickedDataList)
     }
 
     private fun listenToPaymentState() {
@@ -366,8 +396,7 @@ class WooPosTotalsViewModel @Inject constructor(
         val totalsState = uiState.value
         if (totalsState is WooPosTotalsViewState.Checkout) {
             uiState.value = totalsState.copy(
-                readerStatus =
-                WooPosTotalsViewState.ReaderStatus.Preparing(
+                readerStatus = WooPosTotalsViewState.ReaderStatus.Preparing(
                     title = resourceProvider.getString(R.string.woopos_totals_reader_getting_ready),
                     subtitle = resourceProvider.getString(R.string.woopos_totals_reader_preparing_reader_for_payment)
                 )
@@ -420,14 +449,27 @@ class WooPosTotalsViewModel @Inject constructor(
                 .fold(
                     onSuccess = { order -> handleCreatedOrder(order) },
                     onFailure = { error ->
-                        WooLog.e(T.POS, "Order creation failed - $error")
-                        uiState.value = WooPosTotalsViewState.Error(
-                            resourceProvider.getString(R.string.woopos_totals_order_creation_error)
-                        )
-                        totalsAnalyticsTracker.trackOrderCreationFailed(error)
+                        onCreateOrderDraftFails(error)
                     }
                 )
         }
+    }
+
+    private suspend fun onCreateOrderDraftFails(exception: Throwable) {
+        wooLogWrapper.e(POS, "Order creation failed - $exception")
+        val wooError = (exception as? WooException)?.error
+        if (wooError != null && wooError.type == WooErrorType.INVALID_COUPON) {
+            uiState.value = WooPosTotalsViewState.InvalidCouponError(
+                message = resourceProvider.getString(R.string.woopos_totals_invalid_coupon_error),
+                reason = wooError.message ?: ""
+            )
+            childrenToParentEventSender.sendToParent(ChildToParentEvent.CouponsValidationFailed)
+        } else {
+            uiState.value = WooPosTotalsViewState.Error(
+                resourceProvider.getString(R.string.woopos_totals_order_creation_error)
+            )
+        }
+        totalsAnalyticsTracker.trackOrderCreationFailed(exception)
     }
 
     private suspend fun handleCreatedOrder(order: Order) {
@@ -445,32 +487,64 @@ class WooPosTotalsViewModel @Inject constructor(
         viewModelScope.launch {
             childrenToParentEventSender.sendToParent(
                 ChildToParentEvent.OrderCreated(
-                    updatedProducts = order.items.map {
-                        when {
-                            (it.variationId == 0L) -> {
-                                ChildToParentEvent.OrderCreated.ProductInfo.Simple(
-                                    id = it.productId,
-                                    name = it.name,
-                                    price = it.price,
-                                    quantity = it.quantity
-                                )
-                            }
-
-                            else -> {
-                                ChildToParentEvent.OrderCreated.ProductInfo.Variation(
-                                    id = it.productId,
-                                    name = it.name,
-                                    price = it.price,
-                                    quantity = it.quantity,
-                                    variationId = it.variationId
-                                )
-                            }
-                        }
-                    }
+                    updatedProducts = mapItemLines(order),
+                    updatedCoupons = mapCouponLines(order)
                 )
             )
         }
     }
+
+    private fun mapItemLines(order: Order) = order.items.map {
+        val basePrice = if (order.pricesIncludeTax) {
+            it.subtotal + it.subtotalTax
+        } else {
+            it.subtotal
+        }
+        when {
+            it.variationId == 0L -> {
+                ChildToParentEvent.OrderCreated.ProductInfo.Simple(
+                    id = it.productId,
+                    name = it.name,
+                    finalPrice = it.price,
+                    basePrice = basePrice,
+                    quantity = it.quantity
+                )
+            }
+
+            else -> {
+                ChildToParentEvent.OrderCreated.ProductInfo.Variation(
+                    id = it.productId,
+                    name = it.name,
+                    finalPrice = it.price,
+                    quantity = it.quantity,
+                    basePrice = basePrice,
+                    variationId = it.variationId
+                )
+            }
+        }
+    }
+
+    private fun mapCouponLines(order: Order) = order.couponLines
+        .mapNotNull { coupon ->
+            coupon.takeIf { it.id != null && !it.discount.isNullOrEmpty() }?.let {
+                try {
+                    CouponInfo(
+                        id = requireNotNull(it.id),
+                        code = it.code,
+                        discountAmount = BigDecimal(it.discount)
+                    )
+                } catch (e: NumberFormatException) {
+                    wooLogWrapper.e(
+                        POS, "Parsing coupon failed, discount: ${it.discount}, code: ${it.code}, id: ${it.id}, $e"
+                    )
+                    null
+                }
+            } ?: null.also {
+                wooLogWrapper.e(
+                    POS, "Coupon info is null or empty: ${coupon.code}, coupon id: ${coupon.id}"
+                )
+            }
+        }
 
     private fun showSuccessfulPaymentState(paymentMethod: PaymentMethod) {
         viewModelScope.launch {
@@ -505,8 +579,11 @@ class WooPosTotalsViewModel @Inject constructor(
         }
         return WooPosTotalsViewState.Checkout(
             totals = Totals.Visible(
-                orderDiscountText =
-                if (isCouponsEnabled() && discountAmount > BigDecimal.ZERO) priceFormat(discountAmount) else null,
+                orderDiscountText = if (isCouponsFFEnabled() && discountAmount > BigDecimal.ZERO) {
+                    "-${priceFormat(discountAmount)}"
+                } else {
+                    null
+                },
                 orderSubtotalText = priceFormat(subtotalAmount),
                 orderTaxText = priceFormat(taxAmount),
                 orderTotalText = priceFormat(totalAmount),

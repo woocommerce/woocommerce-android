@@ -571,6 +571,7 @@ class ProductRestClient @Inject constructor(
         includedProductIds: List<Long>? = null,
         excludedProductIds: List<Long>? = null,
         searchQuery: String? = null,
+        searchNameOrSkuQuery: String? = null,
         skuSearchOptions: SkuSearchOptions = SkuSearchOptions.Disabled,
         filterOptions: Map<ProductFilterOption, String>? = null,
         includeTypes: List<WCProductStore.IncludeType> = emptyList(),
@@ -581,6 +582,7 @@ class ProductRestClient @Inject constructor(
             sortType = sortType,
             offset = offset,
             searchQuery = searchQuery,
+            searchNameOrSkuQuery = searchNameOrSkuQuery,
             skuSearchOptions = skuSearchOptions,
             includedProductIds = includedProductIds,
             excludedProductIds = excludedProductIds,
@@ -624,6 +626,7 @@ class ProductRestClient @Inject constructor(
         sortType: ProductSorting,
         offset: Int,
         searchQuery: String?,
+        searchNameOrSkuQuery: String? = null,
         skuSearchOptions: SkuSearchOptions,
         globalUniqueIdSearchQuery: String? = null,
         includedProductIds: List<Long>? = null,
@@ -639,6 +642,7 @@ class ProductRestClient @Inject constructor(
         addFilterOptions(params, filterOptions)
         addSearchParams(params, searchQuery, skuSearchOptions)
         addGlobalUniqueIdSearchQuery(params, globalUniqueIdSearchQuery)
+        params.putIfNotEmpty("search_name_or_sku" to searchNameOrSkuQuery)
 
         return params
     }
