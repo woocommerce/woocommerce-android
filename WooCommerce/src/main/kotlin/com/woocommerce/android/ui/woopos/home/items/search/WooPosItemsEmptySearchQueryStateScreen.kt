@@ -13,15 +13,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
@@ -55,8 +55,6 @@ fun WooPosItemsEmptySearchQueryStateScreen(
             .padding(top = WooPosSpacing.Large.value.toAdaptivePadding())
             .verticalScroll(scrollState)
     ) {
-        Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
-
         if (state.recentSearches.isNotEmpty()) {
             RecentSearchesChips(
                 recentSearches = state.recentSearches,
@@ -91,21 +89,18 @@ private fun RecentSearchesChips(
     onRecentSearchClicked: (String) -> Unit,
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = WooPosSpacing.Medium.value.toAdaptivePadding())
+        modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value.toAdaptivePadding())
     ) {
         SectionHeader(
             title = stringResource(R.string.woopos_search_recent_searches_title)
         )
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
         val horizontalScrollState = rememberScrollState()
         Row(
             modifier = Modifier
-                .horizontalScroll(horizontalScrollState)
-                .padding(vertical = WooPosSpacing.Small.value),
+                .horizontalScroll(horizontalScrollState),
             horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value, Alignment.Start),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -113,7 +108,7 @@ private fun RecentSearchesChips(
                 WooPosChip(
                     text = recentSearch,
                     onClick = { onRecentSearchClicked(recentSearch) },
-                    leadingIcon = ImageVector.vectorResource(id = R.drawable.ic_woo_pos_search)
+                    leadingIcon = Icons.Default.Search
                 )
             }
         }
