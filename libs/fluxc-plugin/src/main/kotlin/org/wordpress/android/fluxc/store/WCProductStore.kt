@@ -1326,7 +1326,7 @@ class WCProductStore @Inject internal constructor(
                 if (result.offset == 0) {
                     productVariationsDao.deleteVariationsForProduct(
                         localSiteId = result.site.localId(),
-                        remoteProductId = RemoteId(payload.remoteProductId)
+                        remoteProductId = RemoteId(result.remoteProductId)
                     )
                 }
 
