@@ -458,10 +458,26 @@ class WooPosItemsSearchViewModelTest {
         )
 
         whenever(mockDataSource.searchLocalProducts(query1)).thenReturn(emptyList())
-        whenever(mockDataSource.searchRemoteProducts(query1)).thenReturn(Result.success(emptyList()))
+        whenever(mockDataSource.searchRemoteProducts(query1)).thenReturn(
+            Result.success(
+                WooPosSearchProductsDataSource.SearchResult(
+                    products = emptyList(),
+                    canLoadMore = false,
+                    totalProductsCount = 23
+                )
+            )
+        )
 
         whenever(mockDataSource.searchLocalProducts(query2)).thenReturn(emptyList())
-        whenever(mockDataSource.searchRemoteProducts(query2)).thenReturn(Result.success(products))
+        whenever(mockDataSource.searchRemoteProducts(query2)).thenReturn(
+            Result.success(
+                WooPosSearchProductsDataSource.SearchResult(
+                    products = products,
+                    canLoadMore = false,
+                    totalProductsCount = 23
+                )
+            )
+        )
 
         whenever(mockPriceFormat(BigDecimal("10.0"))).thenReturn("$10.0")
 
@@ -504,7 +520,15 @@ class WooPosItemsSearchViewModelTest {
         whenever(mockEmptyStateProvider.getLastSearches()).thenReturn(emptyList())
 
         whenever(mockDataSource.searchLocalProducts(query)).thenReturn(emptyList())
-        whenever(mockDataSource.searchRemoteProducts(query)).thenReturn(Result.success(products))
+        whenever(mockDataSource.searchRemoteProducts(query)).thenReturn(
+            Result.success(
+                WooPosSearchProductsDataSource.SearchResult(
+                    products = products,
+                    canLoadMore = false,
+                    totalProductsCount = 23
+                )
+            )
+        )
 
         whenever(mockPriceFormat(BigDecimal("10.0"))).thenReturn("$10.0")
         whenever(mockParentToChildrenEventReceiver.events).thenReturn(
@@ -542,7 +566,15 @@ class WooPosItemsSearchViewModelTest {
             whenever(mockEmptyStateProvider.getLastSearches()).thenReturn(emptyList())
 
             whenever(mockDataSource.searchLocalProducts(query)).thenReturn(emptyList())
-            whenever(mockDataSource.searchRemoteProducts(query)).thenReturn(Result.success(products))
+            whenever(mockDataSource.searchRemoteProducts(query)).thenReturn(
+                Result.success(
+                    WooPosSearchProductsDataSource.SearchResult(
+                        products = products,
+                        canLoadMore = false,
+                        totalProductsCount = 23
+                    )
+                )
+            )
 
             whenever(mockDataSource.hasMorePages).thenReturn(false)
 
@@ -584,7 +616,13 @@ class WooPosItemsSearchViewModelTest {
         whenever(mockDataSource.searchLocalProducts(query)).thenReturn(emptyList())
         whenever(mockDataSource.searchRemoteProducts(query)).thenReturn(
             Result.failure(Exception("Search failed")),
-            Result.success(products)
+            Result.success(
+                WooPosSearchProductsDataSource.SearchResult(
+                    products = products,
+                    canLoadMore = false,
+                    totalProductsCount = 23
+                )
+            )
         )
 
         whenever(mockPriceFormat(BigDecimal("10.0"))).thenReturn("$10.0")
@@ -802,7 +840,15 @@ class WooPosItemsSearchViewModelTest {
 
     private fun mockSuccessfulSearch(query: String, products: List<com.woocommerce.android.model.Product>) {
         wheneverBlocking { mockDataSource.searchLocalProducts(query) }.thenReturn(emptyList())
-        wheneverBlocking { mockDataSource.searchRemoteProducts(query) }.thenReturn(Result.success(products))
+        wheneverBlocking { mockDataSource.searchRemoteProducts(query) }.thenReturn(
+            Result.success(
+                WooPosSearchProductsDataSource.SearchResult(
+                    products = products,
+                    canLoadMore = false,
+                    totalProductsCount = 23
+                )
+            )
+        )
         whenever(mockParentToChildrenEventReceiver.events).thenReturn(
             flowOf(ParentToChildrenEvent.SearchEvent.ChangedQuery(query))
         )
@@ -837,7 +883,13 @@ class WooPosItemsSearchViewModelTest {
     ) {
         wheneverBlocking { mockDataSource.searchLocalProducts(query) }.thenReturn(listOf(cachedProduct))
         wheneverBlocking { mockDataSource.searchRemoteProducts(query) }.thenReturn(
-            Result.success(listOf(remoteProduct))
+            Result.success(
+                WooPosSearchProductsDataSource.SearchResult(
+                    products = listOf(remoteProduct),
+                    canLoadMore = false,
+                    totalProductsCount = 23
+                )
+            )
         )
         whenever(mockParentToChildrenEventReceiver.events).thenReturn(
             flowOf(ParentToChildrenEvent.SearchEvent.ChangedQuery(query))
