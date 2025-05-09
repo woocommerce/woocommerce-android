@@ -5,13 +5,17 @@ import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.ui.coupons.edit.EditCouponViewModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
 @HiltViewModel
 class CouponTypePickerViewModel @Inject constructor(savedStateHandle: SavedStateHandle) :
     ScopedViewModel(savedStateHandle) {
-        val navArgs = CouponTypePickerFragmentArgs.fromSavedStateHandle(savedStateHandle)
+    private val navArgs = CouponTypePickerFragmentArgs.fromSavedStateHandle(savedStateHandle)
+    private val isPOSMode: StateFlow<Boolean> =
+        savedStateHandle.getStateFlow(this, navArgs.isPOSMode, "key_is_pos_mode")
 
     fun onPercentageDiscountClicked() {
         triggerEvent(NavigateToCouponEdit(EditCouponViewModel.Mode.Create(Coupon.Type.Percent)))
@@ -26,7 +30,7 @@ class CouponTypePickerViewModel @Inject constructor(savedStateHandle: SavedState
     }
 
     fun onCancel() {
-        if (navArgs.isPOSMode) {
+        if (isPOSMode.value) {
             triggerEvent(NavigateBackToPOS)
         }
     }
