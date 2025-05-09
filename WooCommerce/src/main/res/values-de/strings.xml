@@ -6,7 +6,7 @@ Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="woo_shipping_split_shipment_bottom_sheet_remove_button">Sendung entfernen</string>
+    <string name="woo_shipping_split_shipment_bottom_sheet_remove_button">UPDATE Sendung entfernen</string>
     <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_plural">Wähle, wohin die %d Artikel in dieser Sendung verschoben werden sollen.</string>
     <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_one">Wähle, wohin der %d Artikel in dieser Sendung verschoben werden sollen.</string>
     <string name="woo_shipping_split_shipment_bottom_sheet_desc">Alle Elemente werden zusammengeführt mit %s.</string>
