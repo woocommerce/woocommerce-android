@@ -25,6 +25,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventCons
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ITEM_LIST_TYPE_PRODUCTS
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
+import com.woocommerce.android.ui.woopos.products.GetTotalProductCount
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
@@ -47,6 +48,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
     private val navigator: WooPosItemsNavigator,
     private val searchHelper: WooPosItemsSearchHelper,
     private val analyticsTracker: WooPosAnalyticsTracker,
+    private val getTotalProductCount: GetTotalProductCount,
 ) : ViewModel() {
     private val _viewState =
         MutableStateFlow<WooPosItemsSearchViewState>(WooPosItemsSearchViewState.Loading)
@@ -156,7 +158,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
                     _viewState.value = searchResult.products.toContentState(searchQuery = query)
                 }
 
-                trackSearchPerformance(searchTimeMillis, searchResult.totalProductsCount)
+                trackSearchPerformance(searchTimeMillis)
             } else {
                 _viewState.value = WooPosItemsSearchViewState.Error(searchQuery = query)
             }
@@ -239,7 +241,8 @@ class WooPosItemsSearchViewModel @Inject constructor(
         analyticsTracker.track(event)
     }
 
-    private suspend fun trackSearchPerformance(searchTimeMillis: Long, totalProductsCount: Int?) {
+    private suspend fun trackSearchPerformance(searchTimeMillis: Long) {
+        val totalProductsCount = getTotalProductCount()
         val event = SearchRemoteResultsFetched(
             totalProductsCount = totalProductsCount,
             millisecondsSinceRequestSent = searchTimeMillis.toInt()

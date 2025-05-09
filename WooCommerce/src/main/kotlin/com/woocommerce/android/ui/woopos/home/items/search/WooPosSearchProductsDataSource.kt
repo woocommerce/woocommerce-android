@@ -80,7 +80,6 @@ class WooPosSearchProductsDataSource @Inject constructor(
             } else {
                 val searchResult = result.model!!
                 val products = searchResult.products.map { product -> product.toAppModel() }
-                val totalProductsCount = searchResult.totalProductsCount
 
                 canLoadMore.set(searchResult.canLoadMore)
                 productsCache.addAll(products)
@@ -92,8 +91,7 @@ class WooPosSearchProductsDataSource @Inject constructor(
                 val searchResults = SearchResult(
                     products = searchResultsIndex.getSearchResults(searchQuery)
                         .sortedBy { it.name },
-                    canLoadMore = searchResult.canLoadMore,
-                    totalProductsCount = totalProductsCount
+                    canLoadMore = searchResult.canLoadMore
                 )
 
                 Result.success(searchResults)
@@ -112,7 +110,6 @@ class WooPosSearchProductsDataSource @Inject constructor(
 
     data class SearchResult(
         val products: List<Product>,
-        val canLoadMore: Boolean,
-        val totalProductsCount: Int?
+        val canLoadMore: Boolean
     )
 }
