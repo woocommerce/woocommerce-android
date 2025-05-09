@@ -518,7 +518,11 @@ fun SelectableProductsSection(
                             quantity = shippableItem.shippableItem.quantity,
                             imageUrl = shippableItem.shippableItem.imageUrl,
                             isSelected = shippableItem.isSelected,
-                            onSelectionChange = { onUpdateSelection(index, null) },
+                            onSelectionChange = if (shipment.purchased) {
+                                null
+                            } else {
+                                { onUpdateSelection(index, null) }
+                            },
                             modifier = Modifier.padding(vertical = 8.dp)
                         )
                     }
@@ -533,17 +537,25 @@ fun SelectableProductsSection(
                             quantity = shippableItem.shippableItem.quantity,
                             imageUrl = shippableItem.shippableItem.imageUrl,
                             isSelected = shippableItem.isSelected,
-                            onSelectionChange = { onUpdateSelection(index, null) },
+                            onSelectionChange = if (shipment.purchased) {
+                                null
+                            } else {
+                                { onUpdateSelection(index, null) }
+                            },
                             isExpanded = expanded,
                             onExpand = { expanded = !expanded },
                             singleWeight = shippableItem.innerShippableItem.formattedWeight,
                             singlePrice = shippableItem.innerShippableItem.formattedPrice,
                             selectedIndexes = shippableItem.selectedIndexes,
-                            onInnerSelectionChange = { isSelected, innerIndex ->
-                                val indexes = shippableItem.selectedIndexes.toMutableSet()
-                                if (isSelected) indexes.remove(innerIndex) else indexes.add(innerIndex)
+                            onInnerSelectionChange = if (shipment.purchased) {
+                                null
+                            } else {
+                                { isSelected, innerIndex ->
+                                    val indexes = shippableItem.selectedIndexes.toMutableSet()
+                                    if (isSelected) indexes.remove(innerIndex) else indexes.add(innerIndex)
 
-                                onUpdateSelection(index, indexes)
+                                    onUpdateSelection(index, indexes)
+                                }
                             },
                             modifier = Modifier.padding(vertical = 8.dp)
                         )
