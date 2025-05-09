@@ -36,11 +36,8 @@ steps:
 
       - label: "detekt"
         command: |
-          # Check if we can skip this job based on PR changes
           if .buildkite/commands/should-skip-job.sh --validation; then
-            message="Skipping Detekt - no relevant files changed"
-            echo "$message" | buildkite-agent annotate --style "info" --context "skip-detekt"
-            echo "$message"
+            echo "Skipping Detekt - no relevant files changed" | buildkite-agent annotate --style "info" --context "skip-detekt"
             exit 0
           fi
           ./gradlew detektAll
