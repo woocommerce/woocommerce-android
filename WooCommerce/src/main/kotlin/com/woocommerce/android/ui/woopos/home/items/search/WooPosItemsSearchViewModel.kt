@@ -37,6 +37,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicReference
 import javax.inject.Inject
+import kotlin.system.measureTimeMillis
 
 @HiltViewModel
 class WooPosItemsSearchViewModel @Inject constructor(
@@ -140,8 +141,10 @@ class WooPosItemsSearchViewModel @Inject constructor(
             }
 
             childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Started)
-            val searchStartTimeMillis = System.currentTimeMillis()
-            val result = dataSource.searchRemoteProducts(query)
+            var result: Result<List<Product>>
+            val searchStartTimeMillis =  measureTimeMillis {
+                result = dataSource.searchRemoteProducts(query)
+            }
 
             if (query != currentQuery.get()) {
                 childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Finished)
