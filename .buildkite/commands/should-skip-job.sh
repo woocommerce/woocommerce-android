@@ -24,7 +24,7 @@ if [ "$1" = "--validation" ]; then
   pr_changed_files --all-match "${PATTERNS[@]}"
 elif [ "$1" = "--build" ]; then
   # Check if changes are limited to documentation, tooling, and non-code files (NOT localization files)
-  PATTERNS=("${COMMON_PATTERNS[@]}" "app/metadata/**")
+  PATTERNS=("${COMMON_PATTERNS[@]}")
   pr_changed_files --all-match "${PATTERNS[@]}"
 else
   echo "Error: Must specify either --validation or --build"
