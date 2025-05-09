@@ -370,7 +370,7 @@ class EditCouponViewModel @Inject constructor(
     }
 
     private fun exitFlow(couponId: Long? = null) {
-        if(isPOSMode.value) {
+        if (isPOSMode.value) {
             triggerEvent(NavigateBackToPOS(couponId))
         } else {
             triggerEvent(Exit)

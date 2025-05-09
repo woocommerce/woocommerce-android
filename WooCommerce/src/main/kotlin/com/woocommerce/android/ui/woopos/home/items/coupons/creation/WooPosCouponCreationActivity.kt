@@ -115,7 +115,6 @@ class WooPosCouponCreationActivity : AppCompatActivity(R.layout.activity_woo_pos
 
         graph.setStartDestination(R.id.nav_graph_coupons)
 
-
         val couponsGraph = graph.findNode(R.id.nav_graph_coupons) as NavGraph
         couponsGraph.setStartDestination(R.id.couponTypePickerFragment)
 

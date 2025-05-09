@@ -25,8 +25,7 @@ import kotlin.coroutines.resume
  * landscape and not receiving result of the newly created coupon isn't critical.
  */
 @ActivityRetainedScoped
-class WooPosCouponCreationFacade @Inject constructor(
-) : DefaultLifecycleObserver {
+class WooPosCouponCreationFacade @Inject constructor() : DefaultLifecycleObserver {
     private var activityWR: WeakReference<AppCompatActivity>? = null
 
     private var couponCreationLauncher: ActivityResultLauncher<Intent>? = null

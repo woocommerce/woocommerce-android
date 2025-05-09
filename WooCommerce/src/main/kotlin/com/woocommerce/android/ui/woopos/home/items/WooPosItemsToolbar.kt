@@ -82,7 +82,8 @@ fun WooPosItemsToolbar(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = WooPosSpacing.Medium.value.toAdaptivePadding()),
-                verticalAlignment = Alignment.CenterVertically) {
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 LazyRow(
                     modifier = Modifier.weight(1f),
                 ) {
