@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.split
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -46,6 +48,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -265,15 +268,27 @@ private fun MultipleShipments(
                     }
                     Tab(
                         text = {
-                            Text(
-                                text = stringResource(
-                                    R.string.woo_shipping_split_shipment_shipment_name,
-                                    index + 1 // Use 1-based indexing for the shipments
-                                ),
-                                color = textColor,
-                                style = MaterialTheme.typography.subtitle1,
-                                fontWeight = FontWeight.SemiBold
-                            )
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                Text(
+                                    text = stringResource(
+                                        R.string.woo_shipping_split_shipment_shipment_name,
+                                        index + 1 // Use 1-based indexing for the shipments
+                                    ),
+                                    color = textColor,
+                                    style = MaterialTheme.typography.subtitle1,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                                if (viewState.selectableItems[index]?.purchased == true) {
+                                    Icon(
+                                        modifier = Modifier.size(16.dp),
+                                        painter = painterResource(R.drawable.ic_progress_circle_complete),
+                                        contentDescription = stringResource(
+                                            R.string.purchased_shipment_content_description
+                                        ),
+                                        tint = colorResource(id = R.color.woo_green_70)
+                                    )
+                                }
+                            }
                         },
                         selected = pagerState.currentPage == index,
                         onClick = {
