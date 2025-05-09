@@ -139,11 +139,14 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
     }
 
     private fun mergeUnfulfilledShipments() {
-        currentShipments.value = currentShipments.value.run {
-            // TODO Once the purchasing shipments feature is implemented, exclude purchased shipments from the merging
-            //  action.
-            mapOf(keys.first() to values.reduce(List<ShippableItemModel>::combine))
-        }
+        val fulfilledShipments = currentShipments.value.filter { it.value.purchased }
+        val unfulfilledShipments = currentShipments.value.filterNot { it.value.purchased }
+        val firstUnfulfilledShipmentKey = unfulfilledShipments.keys.first()
+        val firstUnfulfilledShipmentValue = unfulfilledShipments.values.first()
+        val mergedShipmentUIModel = firstUnfulfilledShipmentValue.copy(
+            items = unfulfilledShipments.values.map { it.items }.reduce(List<ShippableItemModel>::combine)
+        )
+        currentShipments.value = fulfilledShipments + mapOf(firstUnfulfilledShipmentKey to mergedShipmentUIModel)
     }
 
     fun onDismissRemoveSheet() {
