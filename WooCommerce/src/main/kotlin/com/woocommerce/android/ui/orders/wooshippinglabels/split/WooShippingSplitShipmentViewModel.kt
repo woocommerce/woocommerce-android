@@ -181,15 +181,27 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
         val currentShipmentBackup = currentShipments.value
         currentShipments.update {
             val shipments = it.toMutableMap()
+
+            // Update the source shipment
             if (splitMovement.updatedSourceShipmentItems.isEmpty()) {
                 shipments.remove(splitMovement.sourceShipmentKey)
             } else {
-                shipments[splitMovement.sourceShipmentKey] = splitMovement.updatedSourceShipmentItems
+                shipments[splitMovement.sourceShipmentKey] = shipments[splitMovement.sourceShipmentKey]?.copy(
+                    items = splitMovement.updatedSourceShipmentItems
+                ) ?: return
             }
-            shipments[splitMovement.destinationShipmentKey] = shipments[splitMovement.destinationShipmentKey]
-                ?.takeIf { it.isNotEmpty() }
-                ?.combine(splitMovement.movingShipmentItems)
-                ?: splitMovement.movingShipmentItems
+
+            // Update the destination shipment
+            shipments[splitMovement.destinationShipmentKey] = shipments[splitMovement.destinationShipmentKey]?.copy(
+                items = shipments[splitMovement.destinationShipmentKey]?.items
+                    ?.takeIf { it.isNotEmpty() }
+                    ?.combine(splitMovement.movingShipmentItems)
+                    ?: splitMovement.movingShipmentItems
+            ) ?: ShipmentUIModel(
+                id = splitMovement.destinationShipmentKey.toString(),
+                items = splitMovement.movingShipmentItems
+            )
+
             reindexShipments(shipments)
         }
 
