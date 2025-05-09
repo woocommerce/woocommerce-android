@@ -35,6 +35,22 @@ class WooPosCouponCreationActivity : AppCompatActivity(R.layout.activity_woo_pos
         observeResult(navHostFragment)
     }
 
+    // Copied from MainActivity. Ensures SimpleTextEditorFragment handles backpresses as expected.
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() {
+        val navHostFragment = supportFragmentManager.primaryNavigationFragment
+        if (navHostFragment?.childFragmentManager?.fragments?.isNotEmpty() == true) {
+            navHostFragment.childFragmentManager.fragments[0]?.let { fragment ->
+                if (fragment is BackPressListener && !(fragment as BackPressListener).onRequestAllowBackPress()) {
+                    return
+                }
+            }
+        }
+
+        @Suppress("DEPRECATION")
+        super.onBackPressed()
+    }
+
     private fun setupTopAndBottomInsets() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         val rootView = findViewById<View>(R.id.snack_root)
