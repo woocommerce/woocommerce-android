@@ -5,7 +5,6 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductRestClient
-import org.wordpress.android.util.AppLog
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -27,16 +26,10 @@ class GetTotalProductCount @Inject constructor(
     private suspend fun fetchProductCount() {
         mutex.withLock {
             if (totalProductCount != null) return
-
-            try {
-                val site = selectedSite.get()
-                val result = fetchTotalProductCount(site)
-
-                if (result.isSuccess) {
-                    totalProductCount = result.getOrNull()
-                }
-            } catch (e: Exception) {
-                AppLog.e(AppLog.T.API, "Error fetching product count: ${e.message}")
+            val site = selectedSite.get()
+            val result = fetchTotalProductCount(site)
+            if (result.isSuccess) {
+                totalProductCount = result.getOrNull()
             }
         }
     }
