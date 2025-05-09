@@ -48,13 +48,13 @@ class WooPosCouponsViewModelTest {
 
     @Test
     fun `when coupon clicked, then send item clicked event`() = runTest {
-        // Given
+        // GIVEN
         val couponId = 123L
 
-        // When
+        // WHEN
         viewModel.onUIEvent(CouponClicked(couponId))
 
-        // Then
+        // THEN
         verify(fromChildToParentEventSender).sendToParent(
             ChildToParentEvent.ItemClickedInProductSelector(
                 itemData = ItemClickedData.Coupon(couponId),
@@ -65,10 +65,10 @@ class WooPosCouponsViewModelTest {
 
     @Test
     fun `when pull to refresh triggered, then fetch coupons with pull to refresh type`() {
-        // When
+        // WHEN
         viewModel.onUIEvent(PullToRefreshTriggered)
 
-        // Then
+        // THEN
         verify(listViewStateManager).fetchCoupons(
             viewModelScope = any(),
             refreshType = eq(WooPosCouponsListRefreshType.PULL_TO_REFRESH)
@@ -77,28 +77,28 @@ class WooPosCouponsViewModelTest {
 
     @Test
     fun `when end of list reached, then call end of list reached on state manager`() {
-        // When
+        // WHEN
         viewModel.onUIEvent(EndOfListReached)
 
-        // Then
+        // THEN
         verify(listViewStateManager).endOfListReached(any())
     }
 
     @Test
     fun `when retry load more triggered, then call retry load more on state manager`() {
-        // When
+        // WHEN
         viewModel.onUIEvent(RetryLoadMoreTriggered)
 
-        // Then
+        // THEN
         verify(listViewStateManager).retryLoadMore(any())
     }
 
     @Test
     fun `when back button clicked, then navigate back to item list screen`() = runTest {
-        // When
+        // WHEN
         viewModel.onUIEvent(BackButtonClicked)
 
-        // Then
+        // THEN
         verify(navigator).sendNavigationEvent(
             WooPosItemsScreenNavigationEvent.NavigateBackToItemListScreen
         )
@@ -106,10 +106,10 @@ class WooPosCouponsViewModelTest {
 
     @Test
     fun `when retry triggered, then fetch coupons with retry type`() {
-        // When
+        // WHEN
         viewModel.onUIEvent(RetryTriggered)
 
-        // Then
+        // THEN
         verify(listViewStateManager).fetchCoupons(
             viewModelScope = any(),
             refreshType = eq(WooPosCouponsListRefreshType.RETRY)
@@ -118,7 +118,7 @@ class WooPosCouponsViewModelTest {
 
     @Test
     fun `when init, then fetch coupons with initial type`() {
-        // Then (init happens in createViewModel)
+        // THEN
         verify(listViewStateManager).fetchCoupons(
             viewModelScope = any(),
             refreshType = eq(WooPosCouponsListRefreshType.INITIAL)
