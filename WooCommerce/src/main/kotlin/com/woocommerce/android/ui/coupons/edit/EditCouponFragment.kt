@@ -71,15 +71,7 @@ class EditCouponFragment : BaseFragment() {
                 is EditCouponNavigationTarget -> EditCouponNavigator.navigate(this, event)
                 is Exit -> findNavController().navigateUp()
                 is EditCouponViewModel.NavigateBackToPOS -> {
-                    val bundle = event.couponId?.let {
-                        Bundle().apply {
-                            putLong(
-                                WooPosCouponCreationActivity.WOO_POS_COUPON_CREATION_NEW_COUPON_ID,
-                                it
-                            )
-                        }
-                    } ?: Bundle()
-                    setFragmentResult(WooPosCouponCreationActivity.WOO_POS_COUPON_CREATION_REQUEST_KEY, bundle)
+                    setNewCouponIdAsResultIfAvailable(event)
                 }
                 is ShowUiStringSnackbar -> uiMessageResolver.showSnack(event.message)
             }
@@ -105,4 +97,16 @@ class EditCouponFragment : BaseFragment() {
     }
 
     override fun getFragmentTitle() = screenTitle
+
+    private fun setNewCouponIdAsResultIfAvailable(event: EditCouponViewModel.NavigateBackToPOS) {
+        val bundle = event.couponId?.let {
+            Bundle().apply {
+                putLong(
+                    WooPosCouponCreationActivity.WOO_POS_COUPON_CREATION_NEW_COUPON_ID,
+                    it
+                )
+            }
+        } ?: Bundle()
+        setFragmentResult(WooPosCouponCreationActivity.WOO_POS_COUPON_CREATION_REQUEST_KEY, bundle)
+    }
 }
