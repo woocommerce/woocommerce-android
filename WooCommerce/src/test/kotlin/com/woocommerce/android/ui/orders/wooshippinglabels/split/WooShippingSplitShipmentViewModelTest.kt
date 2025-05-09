@@ -354,6 +354,24 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when there are 2 shipments and 1 purchased shipment, then do not display the Merge all unfulfilled option`() =
+        testBlocking {
+            val shipmentArgs = SplitShipmentArgs(
+                orderId = 1L,
+                storeOptions = StoreOptionsModel.EMPTY,
+                shipments = twoShipments + purchasedShipmentUIModel
+            )
+
+            createViewModel(shipmentArgs)
+
+            sut.viewState.observeForTesting { }
+
+            val state = sut.viewState.value!!
+
+            assertThat(state.overflowMenuItems.size).isEqualTo(2)
+        }
+
+    @Test
     fun `when there are 3 shipments, then display the Merge all unfulfilled option`() = testBlocking {
         val shipmentArgs = SplitShipmentArgs(
             orderId = 1L,
@@ -403,6 +421,35 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
 
         assertThat(currentShipments.values.first().totalItemQuantity).isEqualTo(expectedItemQuantity)
     }
+
+    @Test
+    fun `when merging unfulfilled shipments, do not merge purchased shipments`() =
+        testBlocking {
+            val shipmentArgs = SplitShipmentArgs(
+                orderId = 1L,
+                storeOptions = StoreOptionsModel.EMPTY,
+                shipments = listOf(purchasedShipmentUIModel) + threeShipments
+            )
+
+            createViewModel(shipmentArgs)
+
+            // Trigger merging all shipments
+            sut.onRemoveShipments(
+                removingShipmentKeys = (0 until shipmentArgs.shipments.size).toList(),
+                destinationShipmentKey = null
+            )
+
+            sut.viewState.observeForTesting { }
+
+            val state = sut.viewState.value!!
+            val currentShipments = state.selectableItems
+            val expectedItemQuantity = 10 // All items from `threeShipments`
+
+            // Verify there are two shipments
+            assertThat(currentShipments.size).isEqualTo(2)
+
+            assertThat(currentShipments.values.toList()[1].totalItemQuantity).isEqualTo(expectedItemQuantity)
+        }
 
     private val defaultShipments = listOf(
         ShipmentUIModel(
@@ -571,5 +618,25 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
                 )
             )
         )
+    )
+
+    val purchasedShipmentUIModel = ShipmentUIModel(
+        id = "10",
+        items = listOf(
+            ShippableItemModel(
+                itemId = 1L,
+                productId = 1L,
+                title = "A product with quantity 1",
+                price = BigDecimal(30),
+                quantity = 1f,
+                imageUrl = null,
+                currency = "USD",
+                length = 3f,
+                width = 3f,
+                height = 3f,
+                weight = 8f
+            )
+        ),
+        purchased = true
     )
 }
