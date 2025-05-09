@@ -16,6 +16,7 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemCli
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateToVariationsScreen
+import com.woocommerce.android.ui.woopos.products.GetTotalProductCount
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart.WooPosItemSource
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemsNextPageLoaded
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.PreSearchRecentTermTapped
@@ -25,7 +26,6 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventCons
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ITEM_LIST_TYPE_PRODUCTS
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
-import com.woocommerce.android.ui.woopos.products.GetTotalProductCount
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
@@ -152,10 +152,10 @@ class WooPosItemsSearchViewModel @Inject constructor(
 
             if (result.isSuccess) {
                 val searchResult = result.getOrThrow()
-                if (searchResult.products.isEmpty()) {
+                if (searchResult.isEmpty()) {
                     _viewState.value = WooPosItemsSearchViewState.Empty
                 } else {
-                    _viewState.value = searchResult.products.toContentState(searchQuery = query)
+                    _viewState.value = searchResult.toContentState(searchQuery = query)
                 }
 
                 trackSearchPerformance(searchTimeMillis)

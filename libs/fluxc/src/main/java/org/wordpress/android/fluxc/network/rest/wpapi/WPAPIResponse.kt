@@ -4,7 +4,6 @@ sealed class WPAPIResponse<T> {
     data class Success<T>(
         val data: T?,
         val networkingMode: WPAPINetworkingMode? = null,
-        val headers: Map<String, String>? = null
     ) : WPAPIResponse<T>()
 
     data class Error<T>(

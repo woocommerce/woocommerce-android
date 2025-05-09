@@ -36,9 +36,13 @@ class WooPosSearchProductsDataSource @Inject constructor(
         sortProducts(productsCache.getAll().filter(searchPredicate(query))).take(PAGE_SIZE)
     }
 
-    suspend fun searchRemoteProducts(query: String): Result<SearchResult> = withContext(Dispatchers.IO) {
+    suspend fun searchRemoteProducts(query: String): Result<List<Product>> = withContext(Dispatchers.IO) {
         searchResultsIndex.clearCache()
-        performRemoteSearch(query)
+
+        performRemoteSearch(query).fold(
+            onSuccess = { result -> Result.success(result.products) },
+            onFailure = { error -> Result.failure(error) }
+        )
     }
 
     suspend fun loadMore(query: String): Result<List<Product>> {
@@ -80,20 +84,17 @@ class WooPosSearchProductsDataSource @Inject constructor(
             } else {
                 val searchResult = result.model!!
                 val products = searchResult.products.map { product -> product.toAppModel() }
-
                 canLoadMore.set(searchResult.canLoadMore)
                 productsCache.addAll(products)
                 searchResultsIndex.storeSearchResults(
                     searchQuery,
                     products.map { it.remoteId }
                 )
-
                 val searchResults = SearchResult(
                     products = searchResultsIndex.getSearchResults(searchQuery)
                         .sortedBy { it.name },
                     canLoadMore = searchResult.canLoadMore
                 )
-
                 Result.success(searchResults)
             }
         }
