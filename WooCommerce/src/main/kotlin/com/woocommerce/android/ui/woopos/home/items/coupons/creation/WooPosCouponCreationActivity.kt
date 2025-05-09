@@ -20,7 +20,6 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class WooPosCouponCreationActivity : AppCompatActivity(R.layout.activity_woo_pos_coupon_creation) {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setupTopAndBottomInsets()
@@ -74,6 +73,16 @@ class WooPosCouponCreationActivity : AppCompatActivity(R.layout.activity_woo_pos
         ) { requestKey, bundle ->
             when (requestKey) {
                 WOO_POS_COUPON_CREATION_REQUEST_KEY -> {
+                    val resultIntent = Intent()
+                    if (bundle.containsKey(WOO_POS_COUPON_CREATION_NEW_COUPON_ID)) {
+                        resultIntent.putExtra(
+                            WOO_POS_COUPON_CREATION_NEW_COUPON_ID,
+                            bundle.getLong(WOO_POS_COUPON_CREATION_NEW_COUPON_ID)
+                        )
+                        setResult(RESULT_OK, resultIntent)
+                    } else {
+                        setResult(RESULT_CANCELED)
+                    }
                     finish()
                 }
 
@@ -99,7 +108,7 @@ class WooPosCouponCreationActivity : AppCompatActivity(R.layout.activity_woo_pos
         const val WOO_POS_COUPON_CREATION_REQUEST_KEY = "woo_pos_coupon_creation_request"
         const val WOO_POS_COUPON_CREATION_NEW_COUPON_ID = "woo_pos_coupon_new_coupon_id"
 
-        fun buildIntentForCardReaderConnection(context: Context) =
+        fun buildIntentForCouponCreation(context: Context) =
             Intent(context, WooPosCouponCreationActivity::class.java)
     }
 }

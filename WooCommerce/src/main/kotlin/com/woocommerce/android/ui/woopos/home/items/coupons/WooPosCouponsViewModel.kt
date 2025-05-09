@@ -73,9 +73,7 @@ class WooPosCouponsViewModel @Inject constructor(
 
             RetryTriggered -> fetchCoupons()
 
-            is WooPosCouponsUIEvent.CreateCouponClicked -> {
-                couponCreationFacade.createCoupon()
-            }
+            is WooPosCouponsUIEvent.CreateCouponClicked -> createAndAddCoupon()
         }
     }
 
@@ -108,6 +106,20 @@ class WooPosCouponsViewModel @Inject constructor(
                     source = WooPosItemSource.COUPON_LIST
                 )
             )
+        }
+    }
+
+    private fun createAndAddCoupon() {
+        viewModelScope.launch {
+            val couponId = couponCreationFacade.createCoupon()
+            if (couponId != null) {
+                fromChildToParentEventSender.sendToParent(
+                    ChildToParentEvent.ItemClickedInProductSelector(
+                        itemData = ItemClickedData.Coupon(couponId),
+                        source = WooPosItemSource.COUPON_LIST
+                    )
+                )
+            }
         }
     }
 }
