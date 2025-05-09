@@ -2,6 +2,14 @@
 
 set -euo pipefail
 
+# Check if we can skip this job based on PR changes
+if .buildkite/commands/should-skip-job.sh --validation; then
+  message="Skipping Diff Merged Manifest - no relevant files changed"
+  echo "$message" | buildkite-agent annotate --style "info" --context "skip-diff-merged-manifest"
+  echo "$message"
+  exit 0
+fi
+
 "$(dirname "${BASH_SOURCE[0]}")/restore-cache.sh"
 
 BUILD_VARIANT=$1

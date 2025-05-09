@@ -1,5 +1,13 @@
 #!/bin/bash -eu
 
+# Check if we can skip this job based on PR changes
+if .buildkite/commands/should-skip-job.sh --validation; then
+  message="Skipping Unit Tests - no relevant files changed"
+  echo "$message" | buildkite-agent annotate --style "info" --context "skip-unit-tests"
+  echo "$message"
+  exit 0
+fi
+
 "$(dirname "${BASH_SOURCE[0]}")/restore-cache.sh"
 
 echo "--- :rubygems: Setting up Gems"
