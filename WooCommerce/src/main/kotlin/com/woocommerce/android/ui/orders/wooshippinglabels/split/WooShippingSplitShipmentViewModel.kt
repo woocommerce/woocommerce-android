@@ -72,10 +72,11 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
         removeShipmentSheet,
         splitMessage
     ) { shipmentSelected, selectableItems, sheet, message ->
+        val unfulfilledShipmentKeys = selectableItems.keys.filterNot { selectableItems.getValue(it).purchased }
         SplitShipmentViewState(
             shipmentSelected = shipmentSelected,
             selectableItems = selectableItems,
-            overflowMenuItems = getOverflowMenuItems(selectableItems.keys.toList()),
+            overflowMenuItems = getOverflowMenuItems(unfulfilledShipmentKeys),
             splitMovements = getSplitMovements(
                 sourceShipmentKey = shipmentSelected,
                 shipments = currentShipments.value,

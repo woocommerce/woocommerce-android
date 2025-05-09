@@ -299,25 +299,27 @@ private fun MultipleShipments(
                     )
                 }
             }
-            WCOverflowMenu(
-                items = viewState.overflowMenuItems,
-                mapper = { shipmentIndexList ->
-                    if (shipmentIndexList.size == 1) {
-                        // Example: "Remove shipment 1"
-                        stringResource(
-                            R.string.woo_shipping_split_shipment_shipment_remove,
+            if (viewState.overflowMenuItems.isNotEmpty()) {
+                WCOverflowMenu(
+                    items = viewState.overflowMenuItems,
+                    mapper = { shipmentIndexList ->
+                        if (shipmentIndexList.size == 1) {
+                            // Example: "Remove shipment 1"
                             stringResource(
-                                R.string.woo_shipping_split_shipment_shipment_name,
-                                shipmentIndexList.first() + 1
-                            ).toLowerCase(Locale.current)
-                        )
-                    } else {
-                        stringResource(R.string.woo_shipping_split_shipment_merge_unfulfilled_menu)
-                    }
-                },
-                onSelected = onRemoveShipmentMenuTapped,
-                modifier = modifier.align(Alignment.CenterVertically)
-            )
+                                R.string.woo_shipping_split_shipment_shipment_remove,
+                                stringResource(
+                                    R.string.woo_shipping_split_shipment_shipment_name,
+                                    shipmentIndexList.first() + 1
+                                ).toLowerCase(Locale.current)
+                            )
+                        } else {
+                            stringResource(R.string.woo_shipping_split_shipment_merge_unfulfilled_menu)
+                        }
+                    },
+                    onSelected = onRemoveShipmentMenuTapped,
+                    modifier = modifier.align(Alignment.CenterVertically)
+                )
+            }
         }
 
         HorizontalPager(
