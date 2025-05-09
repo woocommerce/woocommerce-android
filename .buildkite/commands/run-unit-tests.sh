@@ -5,6 +5,7 @@ if .buildkite/commands/should-skip-job.sh --validation; then
   message="Skipping Unit Tests - no relevant files changed"
   echo "$message" | buildkite-agent annotate --style "info" --context "skip-unit-tests"
   echo "$message"
+  mkdir -p WooCommerce/build/buildkite-test-analytics && touch WooCommerce/build/buildkite-test-analytics/empty.xml
   exit 0
 fi
 
