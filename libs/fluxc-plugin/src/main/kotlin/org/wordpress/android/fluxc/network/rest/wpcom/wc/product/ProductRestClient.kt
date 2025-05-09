@@ -616,7 +616,7 @@ class ProductRestClient @Inject constructor(
     }
 
     /**
-     * Makes a GET request to `/wp-json/wc/v3/reports/products/totals/` retrieving count of products for the given sute
+     * Makes a GET request to `/wp-json/wc/v3/reports/products/totals/` retrieving count of products for the given site.
      */
     suspend fun fetchProductsTotals(site: SiteModel): WooPayload<List<ProductCountApiResponse>> {
         val url = WOOCOMMERCE.reports.products.totals.pathV3
