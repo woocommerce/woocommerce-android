@@ -18,6 +18,10 @@
         android:id="@+id/couponTypePickerFragment"
         android:name="com.woocommerce.android.ui.coupons.create.CouponTypePickerFragment"
         android:label="CouponTypePickerFragment">
+        <argument
+            android:name="isPOSMode"
+            android:defaultValue="false"
+            app:argType="boolean" />
         <action
             android:id="@+id/action_couponTypePickerFragment_to_editCouponFragment"
             app:destination="@id/editCouponFragment" />

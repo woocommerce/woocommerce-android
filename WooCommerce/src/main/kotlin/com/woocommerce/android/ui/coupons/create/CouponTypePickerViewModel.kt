@@ -11,6 +11,7 @@ import javax.inject.Inject
 @HiltViewModel
 class CouponTypePickerViewModel @Inject constructor(savedStateHandle: SavedStateHandle) :
     ScopedViewModel(savedStateHandle) {
+        val navArgs = CouponTypePickerFragmentArgs.fromSavedStateHandle(savedStateHandle)
 
     fun onPercentageDiscountClicked() {
         triggerEvent(NavigateToCouponEdit(EditCouponViewModel.Mode.Create(Coupon.Type.Percent)))
@@ -24,5 +25,12 @@ class CouponTypePickerViewModel @Inject constructor(savedStateHandle: SavedState
         triggerEvent(NavigateToCouponEdit(EditCouponViewModel.Mode.Create(Coupon.Type.FixedProduct)))
     }
 
+    fun onCancel() {
+        if (navArgs.isPOSMode) {
+            triggerEvent(NavigateBackToPOS)
+        }
+    }
+
     data class NavigateToCouponEdit(val mode: EditCouponViewModel.Mode.Create) : MultiLiveEvent.Event()
+    data object NavigateBackToPOS : MultiLiveEvent.Event()
 }

@@ -13,7 +13,9 @@ import androidx.core.view.updatePadding
 import androidx.navigation.fragment.NavHostFragment
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.adjustActivityTransition
+import com.woocommerce.android.ui.coupons.create.CouponTypePickerFragmentArgs
 import com.woocommerce.android.ui.woopos.util.ext.isGestureNavigation
+import com.woocommerce.android.util.WooLog
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -29,6 +31,7 @@ class WooPosCouponCreationActivity : AppCompatActivity(R.layout.activity_woo_pos
         ) as NavHostFragment
 
         setupNavGraph(navHostFragment)
+        observeResult(navHostFragment)
     }
 
     private fun setupTopAndBottomInsets() {
@@ -64,15 +67,37 @@ class WooPosCouponCreationActivity : AppCompatActivity(R.layout.activity_woo_pos
         )
     }
 
+    private fun observeResult(navHostFragment: NavHostFragment) {
+        navHostFragment.childFragmentManager.setFragmentResultListener(
+            WOO_POS_COUPON_CREATION_REQUEST_KEY,
+            this
+        ) { requestKey, bundle ->
+            when (requestKey) {
+                WOO_POS_COUPON_CREATION_REQUEST_KEY -> {
+                    finish()
+                }
+
+                else -> logResultListenerError(requestKey)
+            }
+        }
+    }
+
     private fun setupNavGraph(navHostFragment: NavHostFragment) {
         val navController = navHostFragment.navController
         val graph = navController.navInflater.inflate(R.navigation.nav_graph_coupons).apply {
             setStartDestination(R.id.couponTypePickerFragment)
         }
-        navController.setGraph(graph, null)
+        navController.setGraph(graph, CouponTypePickerFragmentArgs(isPOSMode = true).toBundle())
+    }
+    private fun logResultListenerError(requestKey: String) {
+        val errorMessage = "Unknown request key: $requestKey"
+        WooLog.e(WooLog.T.POS, "Error in WooPosCouponCreationActivity - $errorMessage")
+        error(errorMessage)
     }
 
     companion object {
+        const val WOO_POS_COUPON_CREATION_REQUEST_KEY = "woo_pos_coupon_creation_request"
+
         fun buildIntentForCardReaderConnection(context: Context) =
             Intent(context, WooPosCouponCreationActivity::class.java)
     }
