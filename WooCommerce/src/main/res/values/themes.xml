@@ -161,11 +161,7 @@
         <item name="android:backgroundDimEnabled">true</item>
     </style>
 
-    <style name="Theme.WooPos.FullyTransparent" parent="Theme.WooPos">
-        <item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:windowIsFloating">false</item>
+    <style name="Theme.WooPos.FullyTransparent" parent="Theme.WooPos.Transparent">
         <item name="android:backgroundDimEnabled">false</item>
     </style>
 </resources>
