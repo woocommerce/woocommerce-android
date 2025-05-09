@@ -116,14 +116,14 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
         val shipmentsMap = shipmentsUIMap.value ?: return
         removeShipmentSheet.value = RemoveShipmentSheet(
             removingShipments = shipmentsMap.filter { it.key in shipmentKeys },
-            otherShipments = shipmentsMap.filter { it.key !in shipmentKeys },
+            otherShipments = shipmentsMap.filter { it.key !in shipmentKeys && !it.value.purchased },
         )
     }
 
     fun onRemoveShipments(removingShipmentKeys: List<Int>, destinationShipmentKey: Int?) {
         if (destinationShipmentKey != null && removingShipmentKeys.size == 1) {
             val removingShipmentKey = removingShipmentKeys.first()
-            val movingShipmentItems = currentShipments.value[removingShipmentKey] ?: return
+            val movingShipmentItems = currentShipments.value[removingShipmentKey]?.items ?: return
             onUpdateShipment(
                 SplitMovement(
                     sourceShipmentKey = removingShipmentKey,
