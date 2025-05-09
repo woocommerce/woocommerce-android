@@ -1,6 +1,7 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.wc.product
 
 import com.google.gson.JsonElement
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.WCProductVariationModel
 import org.wordpress.android.fluxc.network.Response
 import org.wordpress.android.fluxc.network.utils.getString
@@ -68,7 +69,7 @@ class ProductVariationApiResponse : Response {
         val response = this@ProductVariationApiResponse
         val dimensions = response.dimensions?.asJsonObject
         return WCProductVariationModel(
-            remoteVariationId = response.id,
+            remoteVariationId = RemoteId(response.id),
             permalink = response.permalink ?: "",
             dateCreated = response.date_created ?: "",
             dateModified = response.date_modified ?: "",

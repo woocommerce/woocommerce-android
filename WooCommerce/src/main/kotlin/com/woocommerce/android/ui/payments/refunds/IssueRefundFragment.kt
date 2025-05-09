@@ -1,5 +1,3 @@
-@file:Suppress("DEPRECATION")
-
 package com.woocommerce.android.ui.payments.refunds
 
 import android.os.Bundle

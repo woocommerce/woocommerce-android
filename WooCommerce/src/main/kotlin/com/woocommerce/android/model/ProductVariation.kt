@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.products.ProductStatus.PRIVATE
 import com.woocommerce.android.ui.products.ProductStatus.PUBLISH
 import com.woocommerce.android.ui.products.ProductStockStatus
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.WCProductVariationModel
 import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
@@ -163,8 +164,8 @@ open class ProductVariation(
         }
 
         return (cachedVariation ?: WCProductVariationModel()).copy(
-            remoteProductId = remoteProductId,
-            remoteVariationId = remoteVariationId,
+            remoteProductId = RemoteId(remoteProductId),
+            remoteVariationId = RemoteId(remoteVariationId),
             sku = sku,
             globalUniqueId = globalUniqueId,
             image = imageToJson(),
@@ -305,8 +306,8 @@ data class VariantOption(
 
 fun WCProductVariationModel.toAppModel(): ProductVariation {
     return ProductVariation(
-        remoteProductId = this.remoteProductId,
-        remoteVariationId = this.remoteVariationId,
+        remoteProductId = this.remoteProductId.value,
+        remoteVariationId = this.remoteVariationId.value,
         sku = this.sku,
         globalUniqueId = this.globalUniqueId,
         image = this.getImageModel()?.let {

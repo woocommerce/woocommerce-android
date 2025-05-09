@@ -17,7 +17,7 @@ import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.S
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover.SpecificReaders.BuiltInReaders
 import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover.SpecificReaders.ExternalReaders
-import com.woocommerce.android.cardreader.connection.ReaderType.BuildInReader.CotsDevice
+import com.woocommerce.android.cardreader.connection.ReaderType.BuildInReader.TapToPayDevice
 import com.woocommerce.android.cardreader.connection.ReaderType.ExternalReader.Chipper2X
 import com.woocommerce.android.cardreader.connection.ReaderType.ExternalReader.StripeM2
 import com.woocommerce.android.cardreader.connection.ReaderType.ExternalReader.WisePade3
@@ -73,6 +73,7 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.SingleLiveEvent
 import com.woocommerce.android.viewmodel.navArgs
@@ -96,6 +97,7 @@ class CardReaderConnectViewModel @Inject constructor(
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper,
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker,
     private val learnMoreUrlProvider: LearnMoreUrlProvider,
+    private val resourceProvider: ResourceProvider,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderConnectDialogFragmentArgs by savedState.navArgs()
     private val tracker: PaymentsFlowTracker = when (arguments.cardReaderFlowParam) {
@@ -254,6 +256,14 @@ class CardReaderConnectViewModel @Inject constructor(
                 BuildConfig.DEBUG,
             )
         }
+        cardReaderManager.setupTapToPayUx(
+            CardReaderManager.TapToPayUxConfig(
+                primaryColor = R.color.color_primary,
+                successColor = R.color.woo_green_50,
+                errorColor = R.color.color_error,
+                isDarkMode = resourceProvider.isDarkMode(),
+            )
+        )
         launch {
             startScanningIfNotStarted()
         }
@@ -578,7 +588,7 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private fun buildReadersToDiscover() =
         when (arguments.cardReaderType) {
-            BUILT_IN -> BuiltInReaders(listOf(CotsDevice))
+            BUILT_IN -> BuiltInReaders(listOf(TapToPayDevice))
             EXTERNAL -> ExternalReaders(
                 listOf(
                     Chipper2X,

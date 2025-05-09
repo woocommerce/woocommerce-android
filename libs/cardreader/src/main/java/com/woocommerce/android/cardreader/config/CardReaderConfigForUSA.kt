@@ -12,7 +12,7 @@ object CardReaderConfigForUSA : CardReaderConfigForSupportedCountry(
     supportedReaders = listOf(
         ReaderType.ExternalReader.Chipper2X,
         ReaderType.ExternalReader.StripeM2,
-        ReaderType.BuildInReader.CotsDevice,
+        ReaderType.BuildInReader.TapToPayDevice,
     ),
     paymentMethodTypes = listOf(PaymentMethodType.CARD_PRESENT),
     supportedExtensions = listOf(

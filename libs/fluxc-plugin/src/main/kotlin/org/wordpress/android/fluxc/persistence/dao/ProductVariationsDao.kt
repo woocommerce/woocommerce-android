@@ -37,7 +37,7 @@ internal abstract class ProductVariationsDao {
     abstract suspend fun getVariation(
         localSiteId: LocalId,
         remoteProductId: RemoteId,
-        remoteVariationId: Long
+        remoteVariationId: RemoteId
     ): WCProductVariationModel?
 
     @Upsert
