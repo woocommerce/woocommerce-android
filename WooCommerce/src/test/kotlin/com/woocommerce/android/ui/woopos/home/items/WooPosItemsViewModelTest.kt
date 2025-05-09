@@ -4,6 +4,8 @@ import app.cash.turbine.test
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.featureflags.WooPosIsProductsSearchEnabled
+import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
+import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationFacade
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SearchButtonTapped
@@ -47,6 +49,8 @@ class WooPosItemsViewModelTest {
         on { defaultTabs }.thenReturn(tabs)
     }
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
+    private val couponCreationFacade: WooPosCouponCreationFacade = mock()
+    private val fromChildToParentEventSender: WooPosChildrenToParentEventSender = mock()
 
     @Before
     fun setup() {
@@ -208,6 +212,8 @@ class WooPosItemsViewModelTest {
             searchHelper,
             isProductsSearchEnabled,
             tabsHelper,
-            analyticsTracker
+            couponCreationFacade,
+            fromChildToParentEventSender,
+            analyticsTracker,
         )
 }

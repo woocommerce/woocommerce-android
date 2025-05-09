@@ -366,7 +366,7 @@ class EditCouponViewModelTests : BaseUnitTest() {
     @Test
     fun `given coupon creation mode, when coupon created, should track event`() = testBlocking {
         setup(mode = Mode.Create(Coupon.Type.Percent)) {
-            whenever(couponRepository.createCoupon(any())).thenReturn(Result.success(Unit))
+            whenever(couponRepository.createCoupon(any())).thenReturn(Result.success(1L))
         }
 
         viewModel.onSaveClick()
