@@ -142,7 +142,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
 
             childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Started)
             var result: Result<List<Product>>
-            val searchStartTimeMillis =  measureTimeMillis {
+            val searchStartTimeMillis = measureTimeMillis {
                 result = dataSource.searchRemoteProducts(query)
             }
 
@@ -248,7 +248,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
         val totalProductsCount = getTotalProductCount()
         val event = SearchRemoteResultsFetched(
             totalProductsCount = totalProductsCount,
-            millisecondsSinceRequestSent = searchTimeMillis.toInt()
+            millisecondsSinceRequestSent = searchTimeMillis
         )
         analyticsTracker.track(event)
     }

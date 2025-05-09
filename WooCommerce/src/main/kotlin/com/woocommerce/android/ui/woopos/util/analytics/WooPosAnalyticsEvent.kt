@@ -132,7 +132,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
         }
         data class SearchRemoteResultsFetched(
             val totalProductsCount: Int?,
-            val millisecondsSinceRequestSent: Int
+            val millisecondsSinceRequestSent: Long
         ) : Event() {
             override val name: String = "pos_search_remote_results_fetched"
 
