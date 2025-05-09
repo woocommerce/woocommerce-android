@@ -10,10 +10,12 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
+import androidx.navigation.NavGraph
 import androidx.navigation.fragment.NavHostFragment
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.adjustActivityTransition
 import com.woocommerce.android.ui.coupons.create.CouponTypePickerFragmentArgs
+import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.woopos.util.ext.isGestureNavigation
 import com.woocommerce.android.util.WooLog
 import dagger.hilt.android.AndroidEntryPoint
@@ -93,11 +95,18 @@ class WooPosCouponCreationActivity : AppCompatActivity(R.layout.activity_woo_pos
 
     private fun setupNavGraph(navHostFragment: NavHostFragment) {
         val navController = navHostFragment.navController
-        val graph = navController.navInflater.inflate(R.navigation.nav_graph_coupons).apply {
-            setStartDestination(R.id.couponTypePickerFragment)
-        }
-        navController.setGraph(graph, CouponTypePickerFragmentArgs(isPOSMode = true).toBundle())
+        val graph = navController.navInflater.inflate(R.navigation.nav_graph_main)
+
+        graph.setStartDestination(R.id.nav_graph_coupons)
+
+
+        val couponsGraph = graph.findNode(R.id.nav_graph_coupons) as NavGraph
+        couponsGraph.setStartDestination(R.id.couponTypePickerFragment)
+
+        val args = CouponTypePickerFragmentArgs(isPOSMode = true).toBundle()
+        navController.setGraph(graph, args)
     }
+
     private fun logResultListenerError(requestKey: String) {
         val errorMessage = "Unknown request key: $requestKey"
         WooLog.e(WooLog.T.POS, "Error in WooPosCouponCreationActivity - $errorMessage")
