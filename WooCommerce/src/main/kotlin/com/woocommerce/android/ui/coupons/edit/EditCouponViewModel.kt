@@ -38,6 +38,7 @@ import com.woocommerce.android.ui.products.ProductRestriction
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
 import com.woocommerce.android.util.CouponUtils
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUiStringSnackbar
@@ -77,6 +78,8 @@ class EditCouponViewModel @Inject constructor(
 
     private val navArgs: EditCouponFragmentArgs by savedStateHandle.navArgs()
     private val mode: StateFlow<Mode> = savedStateHandle.getStateFlow(this, navArgs.mode, "key_mode")
+    private val isPOSMode: StateFlow<Boolean> =
+        savedStateHandle.getStateFlow(this, navArgs.isPOSMode, "key_is_pos_mode")
 
     private val storedCoupon: Deferred<Coupon> = async {
         with(mode.value) {
@@ -262,9 +265,9 @@ class EditCouponViewModel @Inject constructor(
 
     private suspend fun addCoupon(newCoupon: Coupon) {
         couponRepository.createCoupon(newCoupon)
-            .onSuccess {
+            .onSuccess { couponId ->
                 triggerEvent(ShowSnackbar(R.string.coupon_create_coupon_created))
-                triggerEvent(Exit)
+                exitFlow(couponId)
                 analyticsTrackerWrapper.track(COUPON_CREATION_SUCCESS)
             }
             .onFailure { exception ->
@@ -291,7 +294,7 @@ class EditCouponViewModel @Inject constructor(
         couponRepository.updateCoupon(newCoupon)
             .onSuccess {
                 triggerEvent(ShowSnackbar(R.string.coupon_edit_coupon_updated))
-                triggerEvent(Exit)
+                exitFlow()
 
                 analyticsTrackerWrapper.track(AnalyticsEvent.COUPON_UPDATE_SUCCESS)
             }
@@ -366,6 +369,14 @@ class EditCouponViewModel @Inject constructor(
         )
     }
 
+    private fun exitFlow(couponId: Long? = null) {
+        if(isPOSMode.value) {
+            triggerEvent(NavigateBackToPOS(couponId))
+        } else {
+            triggerEvent(Exit)
+        }
+    }
+
     private fun Coupon.hasUsageRestrictions() = with(restrictions) {
         isForIndividualUse == true ||
             usageLimit != null ||
@@ -396,4 +407,6 @@ class EditCouponViewModel @Inject constructor(
         @Parcelize
         data class Edit(val couponId: Long) : Mode()
     }
+
+    data class NavigateBackToPOS(val couponId: Long?) : MultiLiveEvent.Event()
 }

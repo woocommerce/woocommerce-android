@@ -18,15 +18,15 @@ class CouponTypePickerViewModel @Inject constructor(savedStateHandle: SavedState
         savedStateHandle.getStateFlow(this, navArgs.isPOSMode, "key_is_pos_mode")
 
     fun onPercentageDiscountClicked() {
-        triggerEvent(NavigateToCouponEdit(EditCouponViewModel.Mode.Create(Coupon.Type.Percent)))
+        triggerEvent(NavigateToCouponEdit(EditCouponViewModel.Mode.Create(Coupon.Type.Percent), navArgs.isPOSMode))
     }
 
     fun onFixedCartDiscountClicked() {
-        triggerEvent(NavigateToCouponEdit(EditCouponViewModel.Mode.Create(Coupon.Type.FixedCart)))
+        triggerEvent(NavigateToCouponEdit(EditCouponViewModel.Mode.Create(Coupon.Type.FixedCart), navArgs.isPOSMode))
     }
 
     fun onFixedProductDiscountClicked() {
-        triggerEvent(NavigateToCouponEdit(EditCouponViewModel.Mode.Create(Coupon.Type.FixedProduct)))
+        triggerEvent(NavigateToCouponEdit(EditCouponViewModel.Mode.Create(Coupon.Type.FixedProduct), navArgs.isPOSMode))
     }
 
     fun onCancel() {
@@ -35,6 +35,7 @@ class CouponTypePickerViewModel @Inject constructor(savedStateHandle: SavedState
         }
     }
 
-    data class NavigateToCouponEdit(val mode: EditCouponViewModel.Mode.Create) : MultiLiveEvent.Event()
+    data class NavigateToCouponEdit(val mode: EditCouponViewModel.Mode.Create, val isPOSMode: Boolean) :
+        MultiLiveEvent.Event()
     data object NavigateBackToPOS : MultiLiveEvent.Event()
 }

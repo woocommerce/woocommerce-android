@@ -45,7 +45,8 @@ class CouponTypePickerFragment : WCBottomSheetDialogFragment() {
                 is CouponTypePickerViewModel.NavigateToCouponEdit -> {
                     findNavController().navigate(
                         CouponTypePickerFragmentDirections.actionCouponTypePickerFragmentToEditCouponFragment(
-                            mode = it.mode
+                            mode = it.mode,
+                            isPOSMode = it.isPOSMode
                         )
                     )
                 }

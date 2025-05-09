@@ -44,6 +44,10 @@
         <argument
             android:name="mode"
             app:argType="com.woocommerce.android.ui.coupons.edit.EditCouponViewModel$Mode" />
+        <argument
+            android:name="isPOSMode"
+            android:defaultValue="false"
+            app:argType="boolean" />
         <action
             android:id="@+id/action_editCouponFragment_to_productSelectorFragment"
             app:destination="@id/nav_graph_product_selector" >

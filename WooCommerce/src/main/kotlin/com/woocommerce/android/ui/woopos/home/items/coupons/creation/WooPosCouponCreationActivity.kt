@@ -97,6 +97,7 @@ class WooPosCouponCreationActivity : AppCompatActivity(R.layout.activity_woo_pos
 
     companion object {
         const val WOO_POS_COUPON_CREATION_REQUEST_KEY = "woo_pos_coupon_creation_request"
+        const val WOO_POS_COUPON_CREATION_NEW_COUPON_ID = "woo_pos_coupon_new_coupon_id"
 
         fun buildIntentForCardReaderConnection(context: Context) =
             Intent(context, WooPosCouponCreationActivity::class.java)
