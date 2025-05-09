@@ -117,7 +117,6 @@ class WooPosItemsViewModel @Inject constructor(
     }
 
     private fun createAndAddCoupon() {
-        // TODO pass event to the child - coupon list - instead.
         viewModelScope.launch {
             val couponId = couponCreationFacade.createCoupon()
             if (couponId != null) {
