@@ -9,14 +9,14 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.mystore.data.DashboardDataModel
 import com.woocommerce.android.ui.mystore.data.DashboardWidgetDataModel
 import dagger.hilt.EntryPoints
-import dagger.hilt.android.scopes.ActivityRetainedScoped
+import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
-@ActivityRetainedScoped
+@ViewModelScoped
 @Suppress("LongParameterList")
 class DashboardRepository @Inject constructor(
     selectedSite: SelectedSite,
