@@ -1,5 +1,13 @@
 #!/bin/bash -u
 
+# Check if we can skip this job based on PR changes
+if .buildkite/commands/should-skip-job.sh --validation; then
+  message="Skipping Lint - no relevant files changed"
+  echo "$message" | buildkite-agent annotate --style "info" --context "skip-lint"
+  echo "$message"
+  exit 0
+fi
+
 "$(dirname "${BASH_SOURCE[0]}")/restore-cache.sh"
 
 echo "--- 🧹 Linting"

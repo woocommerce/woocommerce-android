@@ -35,7 +35,15 @@ steps:
           queue: "linter"
 
       - label: "detekt"
-        command: ./gradlew detektAll
+        command: |
+          # Check if we can skip this job based on PR changes
+          if .buildkite/commands/should-skip-job.sh --validation; then
+            message="Skipping Detekt - no relevant files changed"
+            echo "$message" | buildkite-agent annotate --style "info" --context "skip-detekt"
+            echo "$message"
+            exit 0
+          fi
+          ./gradlew detektAll
         plugins: [$CI_TOOLKIT]
         artifact_paths:
           - "**/build/reports/detekt/detekt.html"
@@ -100,5 +108,5 @@ steps:
 
 
   - label: "🐘 Populate Gradle build cache"
-    command: ".buildkite/commands/gradle-cache-build.sh"
+    command: .buildkite/commands/gradle-cache-build.sh
     plugins: [$CI_TOOLKIT]
