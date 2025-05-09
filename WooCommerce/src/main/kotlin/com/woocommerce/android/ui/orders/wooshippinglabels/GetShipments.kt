@@ -54,7 +54,7 @@ class GetShipments @Inject constructor(
                     orderItems.firstOrNull { it.itemId == id }
                         ?.copy(quantity = if (subItems.isNullOrEmpty()) 1f else subItems.size.toFloat())
                 }
-                val purchased = purchasedLabels?.map { it.toString() }?.contains(shipmentId) == true
+                val purchased = purchasedLabels?.map { it.id.toString() }?.contains(shipmentId) == true
                 ShipmentUIModel(shipmentId, items, purchased)
             }
         }
