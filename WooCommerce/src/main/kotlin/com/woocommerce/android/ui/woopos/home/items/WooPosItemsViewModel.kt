@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.featureflags.WooPosIsProductsSearchEnabled
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState.Tab
+import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationFacade
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SearchButtonTapped
@@ -27,6 +28,7 @@ class WooPosItemsViewModel @Inject constructor(
     private val searchHelper: WooPosItemsSearchHelper,
     private val isProductsSearchEnabled: WooPosIsProductsSearchEnabled,
     private val tabsHelper: WooPosItemsTabsHelper,
+    private val couponCreationFacade: WooPosCouponCreationFacade,
     private val analyticsTracker: WooPosAnalyticsTracker,
 ) : ViewModel() {
     private val _viewState = MutableStateFlow<WooPosItemsViewState>(
@@ -70,7 +72,7 @@ class WooPosItemsViewModel @Inject constructor(
                 trackSearchIconClicked()
             }
 
-            is WooPosItemsUIEvent.AddCouponIconClicked -> error("Coupon creation flow is not implemented")
+            is WooPosItemsUIEvent.AddCouponIconClicked -> couponCreationFacade.createCoupon()
         }
     }
 
