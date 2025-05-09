@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-04-08 09:54:04+0000
+Translation-Revision-Date: 2025-04-22 13:54:05+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_split_shipment_bottom_sheet_remove_button">移除貨件</string>
+    <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_plural">選擇要將這批貨件中的 %d 項商品移至哪個位置。</string>
+    <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_one">選擇要將這批貨件中的 %d 項商品移至哪個位置。</string>
+    <string name="woo_shipping_split_shipment_bottom_sheet_desc">所有商品將與「%s」合併。</string>
+    <string name="woo_shipping_split_shipment_bottom_sheet_title">移除貨件</string>
+    <string name="woo_shipping_split_shipment_shipment_remove">移除「%s」</string>
+    <string name="woo_shipping_split_shipment_moved_notice_plural">已將 %1$d 件商品移至貨件 %2$d</string>
+    <string name="woo_shipping_split_shipment_moved_notice_one">已將 %1$d 件商品移至貨件 %2$d</string>
+    <string name="woo_shipping_labels_package_creation_empty_saved_message">尚未儲存任何包裹</string>
+    <string name="woo_shipping_labels_package_creation_empty_carrier_message">找不到貨運業者資訊</string>
+    <string name="woo_shipping_labels_package_creation_empty_button">建立自訂包裹</string>
+    <string name="woopos_cart_changes_in_the_cart">購物車內容有變更</string>
     <string name="woo_shipping_split_shipment_shipment_new">新貨件</string>
     <string name="woo_shipping_split_shipment_shipment_name">貨件 %s</string>
     <string name="woo_shipping_split_move_to">移至</string>

@@ -1,5 +1,6 @@
 package com.woocommerce.android.cardreader.internal.payments.actions
 
+import com.stripe.stripeterminal.external.callable.Cancelable
 import com.stripe.stripeterminal.external.callable.PaymentIntentCallback
 import com.stripe.stripeterminal.external.models.PaymentIntent
 import com.woocommerce.android.cardreader.internal.CardReaderBaseUnitTest
@@ -29,6 +30,7 @@ internal class ProcessPaymentActionTest : CardReaderBaseUnitTest() {
     fun `when processing payment succeeds, then Success is emitted`() = testBlocking {
         whenever(terminal.processPayment(any(), any())).thenAnswer {
             (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
+            mock<Cancelable>()
         }
 
         val result = action.processPayment(mock()).first()
@@ -40,6 +42,7 @@ internal class ProcessPaymentActionTest : CardReaderBaseUnitTest() {
     fun `when processing payment fails, then Failure is emitted`() = testBlocking {
         whenever(terminal.processPayment(any(), any())).thenAnswer {
             (it.arguments[1] as PaymentIntentCallback).onFailure(mock())
+            mock<Cancelable>()
         }
 
         val result = action.processPayment(mock()).first()
@@ -52,6 +55,7 @@ internal class ProcessPaymentActionTest : CardReaderBaseUnitTest() {
         val updatedPaymentIntent = mock<PaymentIntent>()
         whenever(terminal.processPayment(any(), any())).thenAnswer {
             (it.arguments[1] as PaymentIntentCallback).onSuccess(updatedPaymentIntent)
+            mock<Cancelable>()
         }
 
         val result = action.processPayment(mock()).first()
@@ -63,6 +67,7 @@ internal class ProcessPaymentActionTest : CardReaderBaseUnitTest() {
     fun `when processing payment succeeds, then flow is terminated`() = testBlocking {
         whenever(terminal.processPayment(any(), any())).thenAnswer {
             (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
+            mock<Cancelable>()
         }
 
         val result = action.processPayment(mock()).toList()
@@ -74,6 +79,7 @@ internal class ProcessPaymentActionTest : CardReaderBaseUnitTest() {
     fun `when processing payment fails, then flow is terminated`() = testBlocking {
         whenever(terminal.processPayment(any(), any())).thenAnswer {
             (it.arguments[1] as PaymentIntentCallback).onFailure(mock())
+            mock<Cancelable>()
         }
 
         val result = action.processPayment(mock()).toList()

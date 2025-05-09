@@ -316,6 +316,7 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
                     BigDecimal(1),
                     BigDecimal(1),
                     BigDecimal(1),
+                    BigDecimal(1),
                     1L,
                     listOf()
                 )
@@ -350,6 +351,7 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
                     BigDecimal(1),
                     "",
                     1f,
+                    BigDecimal(1),
                     BigDecimal(1),
                     BigDecimal(1),
                     BigDecimal(1),
@@ -396,6 +398,7 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
                     BigDecimal(1),
                     BigDecimal(1),
                     BigDecimal(1),
+                    BigDecimal(1),
                     1L,
                     listOf()
                 )
@@ -439,6 +442,7 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
                     BigDecimal(1),
                     BigDecimal(1),
                     BigDecimal(1),
+                    BigDecimal(1),
                     1L,
                     listOf()
                 )
@@ -476,6 +480,7 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
             sku = "",
             quantity = 1f,
             subtotal = BigDecimal(10),
+            subtotalTax = BigDecimal(1),
             totalTax = BigDecimal(5),
             total = BigDecimal(1),
             variationId = 1L,
@@ -513,6 +518,7 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
             sku = "",
             quantity = 1f,
             subtotal = BigDecimal(10),
+            subtotalTax = BigDecimal(1),
             totalTax = BigDecimal(1),
             total = BigDecimal(10),
             variationId = 1L,
@@ -641,6 +647,7 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
                     BigDecimal(1),
                     BigDecimal(1),
                     BigDecimal(1),
+                    BigDecimal(1),
                     1L,
                     listOf()
                 )
@@ -697,6 +704,7 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
             BigDecimal(1),
             "",
             1f,
+            BigDecimal(1),
             BigDecimal(1),
             BigDecimal(1),
             BigDecimal(1),

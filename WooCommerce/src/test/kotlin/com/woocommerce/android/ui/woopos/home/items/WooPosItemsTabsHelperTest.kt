@@ -1,14 +1,14 @@
 package com.woocommerce.android.ui.woopos.home.items
 
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.woopos.featureflags.WooPosIsCouponsEnabled
+import com.woocommerce.android.ui.woopos.featureflags.WooPosIsCouponsFeatureFlagEnabled
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 class WooPosItemsTabsHelperTest {
-    private val isCouponsEnabled: WooPosIsCouponsEnabled = mock()
+    private val isCouponsEnabled: WooPosIsCouponsFeatureFlagEnabled = mock()
 
     @Test
     fun `given coupons feature is enabled, when helper initialized, then default tabs include products and coupons`() {

@@ -13,6 +13,7 @@ import org.wordpress.android.fluxc.Payload
 import org.wordpress.android.fluxc.action.WCProductAction
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.domain.Addon
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.ProductWithMetaData
 import org.wordpress.android.fluxc.model.SiteModel
@@ -166,7 +167,7 @@ class WCProductStore @Inject internal constructor(
     class SearchProductsPayload(
         var site: SiteModel,
         var searchQuery: String,
-        var skuSearchOptions: SkuSearchOptions = SkuSearchOptions.Disabled,
+        var skuSearchOptions: SkuSearchOptions = Disabled,
         var pageSize: Int = DEFAULT_PRODUCT_PAGE_SIZE,
         var offset: Int = 0,
         var sorting: ProductSorting = DEFAULT_PRODUCT_SORTING,
@@ -834,7 +835,7 @@ class WCProductStore @Inject internal constructor(
         productVariationsDao.getVariation(
             localSiteId = site.localId(),
             remoteProductId = RemoteId(remoteProductId),
-            remoteVariationId = remoteVariationId
+            remoteVariationId = RemoteId(remoteVariationId)
         )
 
     suspend fun isProductExists(site: SiteModel, sku: String): Boolean {
@@ -1216,21 +1217,21 @@ class WCProductStore @Inject internal constructor(
         remoteProductId: Long,
         remoteVariationId: Long
     ): OnVariationChanged {
-        return coroutineEngine.withDefaultContext(T.API, this, "fetchSingleVariation") {
+        return coroutineEngine.withDefaultContext(API, this, "fetchSingleVariation") {
             val result = wcProductRestClient
                 .fetchSingleVariation(site, remoteProductId, remoteVariationId)
 
             return@withDefaultContext if (result.isError) {
                 OnVariationChanged().also {
                     it.error = result.error
-                    it.remoteProductId = result.variation.remoteProductId
-                    it.remoteVariationId = result.variation.remoteVariationId
+                    it.remoteProductId = result.variation.remoteProductId.value
+                    it.remoteVariationId = result.variation.remoteVariationId.value
                 }
             } else {
                 productVariationsDao.upsertProductVariation(result.variation)
                 OnVariationChanged().also {
-                    it.remoteProductId = result.variation.remoteProductId
-                    it.remoteVariationId = result.variation.remoteVariationId
+                    it.remoteProductId = result.variation.remoteProductId.value
+                    it.remoteVariationId = result.variation.remoteVariationId.value
                 }
             }
         }
@@ -1250,7 +1251,7 @@ class WCProductStore @Inject internal constructor(
                 includedProductIds = remoteProductIds,
                 filterOptions = filterOptions,
                 excludedProductIds = excludedProductIds,
-                skuSearchOptions = SkuSearchOptions.Disabled
+                skuSearchOptions = Disabled
             )
         }
     }
@@ -1320,7 +1321,7 @@ class WCProductStore @Inject internal constructor(
                 if (result.offset == 0) {
                     productVariationsDao.deleteVariationsForProduct(
                         localSiteId = result.site.localId(),
-                        remoteProductId = RemoteId(payload.remoteProductId)
+                        remoteProductId = RemoteId(result.remoteProductId)
                     )
                 }
 
@@ -1507,8 +1508,8 @@ class WCProductStore @Inject internal constructor(
             with(payload) {
                 val storedVariation = getVariationByRemoteId(
                     site,
-                    variation.remoteProductId,
-                    variation.remoteVariationId
+                    variation.remoteProductId.value,
+                    variation.remoteVariationId.value
                 )
                 val result: RemoteUpdateVariationPayload = wcProductRestClient.updateVariation(
                     site,
@@ -1517,14 +1518,14 @@ class WCProductStore @Inject internal constructor(
                 )
                 return@withDefaultContext if (result.isError) {
                     OnVariationUpdated(
-                        result.variation.remoteProductId,
-                        result.variation.remoteVariationId
+                        result.variation.remoteProductId.value,
+                        result.variation.remoteVariationId.value
                     ).also { it.error = result.error }
                 } else {
                     productVariationsDao.upsertProductVariation(result.variation)
                     OnVariationUpdated(
-                        result.variation.remoteProductId,
-                        result.variation.remoteVariationId
+                        result.variation.remoteProductId.value,
+                        result.variation.remoteVariationId.value
                     )
                 }
             }
@@ -1586,8 +1587,8 @@ class WCProductStore @Inject internal constructor(
                 } else {
                     val generatedVariations = result.result?.createdVariations?.map { response ->
                         response.asProductVariationModel().copy(
-                            remoteProductId = payload.remoteProductId,
-                            localSiteId = payload.site.id
+                            remoteProductId = RemoteId(payload.remoteProductId),
+                            localSiteId = LocalId(payload.site.id)
                         )
                     } ?: emptyList()
                     productVariationsDao.upsertProductVariations(generatedVariations)
@@ -1622,8 +1623,8 @@ class WCProductStore @Inject internal constructor(
                 } else {
                     val updatedVariations = result.result?.updatedVariations?.map { response ->
                         response.asProductVariationModel().copy(
-                            remoteProductId = payload.remoteProductId,
-                            localSiteId = payload.site.id
+                            remoteProductId = RemoteId(payload.remoteProductId),
+                            localSiteId = LocalId(payload.site.id)
                         )
                     } ?: emptyList()
                     productVariationsDao.upsertProductVariations(updatedVariations)
@@ -1752,10 +1753,47 @@ class WCProductStore @Inject internal constructor(
         }
     }
 
+    suspend fun searchProductsByNameAndSku(
+        site: SiteModel,
+        searchNameOrSkuQuery: String,
+        offset: Int = 0,
+        pageSize: Int = DEFAULT_PRODUCT_PAGE_SIZE,
+        filterOptions: Map<ProductFilterOption, String> = emptyMap(),
+        includeTypes: List<IncludeType> = emptyList(),
+    ): WooResult<ProductSearchResult> {
+        return coroutineEngine.withDefaultContext(API, this, "searchProductsByNameAndSku") {
+            val response = wcProductRestClient.fetchProductsWithSyncRequest(
+                site = site,
+                offset = offset,
+                pageSize = pageSize,
+                searchQuery = searchNameOrSkuQuery,
+                searchNameOrSkuQuery = searchNameOrSkuQuery,
+                filterOptions = filterOptions,
+                includeTypes = includeTypes
+            )
+            when {
+                response.isError -> WooResult(response.error)
+                response.result != null -> {
+                    productStorageHelper.upsertProducts(response.result)
+                    val productIds = response.result.map { it.product.remoteProductId }
+                    val products = if (productIds.isNotEmpty()) {
+                        productsDao.getProducts(localSiteId = site.id, remoteProductIds = productIds)
+                    } else {
+                        emptyList()
+                    }
+                    val canLoadMore = response.result.size == pageSize
+                    WooResult(ProductSearchResult(products, canLoadMore))
+                }
+
+                else -> WooResult(WooError(WooErrorType.GENERIC_ERROR, UNKNOWN))
+            }
+        }
+    }
+
     suspend fun searchProducts(
         site: SiteModel,
         searchString: String,
-        skuSearchOptions: SkuSearchOptions = SkuSearchOptions.Disabled,
+        skuSearchOptions: SkuSearchOptions = Disabled,
         offset: Int = 0,
         pageSize: Int = DEFAULT_PRODUCT_PAGE_SIZE,
         filterOptions: Map<ProductFilterOption, String> = emptyMap(),
@@ -1935,8 +1973,8 @@ class WCProductStore @Inject internal constructor(
             ?.createdVariations
             ?.map { variationResponse ->
                 variationResponse.asProductVariationModel().copy(
-                    remoteProductId = productId.value,
-                    localSiteId = site.id
+                    remoteProductId = productId,
+                    localSiteId = LocalId(site.id)
                 )
             }
             ?.let { databaseEntities ->

@@ -1,5 +1,6 @@
 package com.woocommerce.android.cardreader.internal.payments
 
+import com.stripe.stripeterminal.external.models.TerminalErrorCode
 import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.InteracRefundFailure
 import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.RefundStatusErrorType.Cancelled
@@ -14,9 +15,9 @@ internal class RefundErrorMapper {
         exception: TerminalException
     ): InteracRefundFailure {
         val type = when (exception.errorCode) {
-            TerminalException.TerminalErrorCode.DECLINED_BY_STRIPE_API -> mapDeclinedByStripeApiError(exception)
-            TerminalException.TerminalErrorCode.STRIPE_API_CONNECTION_ERROR -> NoNetwork
-            TerminalException.TerminalErrorCode.CANCELED -> Cancelled
+            TerminalErrorCode.DECLINED_BY_STRIPE_API -> mapDeclinedByStripeApiError(exception)
+            TerminalErrorCode.STRIPE_API_CONNECTION_ERROR -> NoNetwork
+            TerminalErrorCode.CANCELED -> Cancelled
             else -> Generic
         }
         return InteracRefundFailure(type, exception.errorMessage, refundParams)

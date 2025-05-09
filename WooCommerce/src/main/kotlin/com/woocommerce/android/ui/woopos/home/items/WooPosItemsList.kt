@@ -50,6 +50,7 @@ import coil.request.ImageRequest
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosLazyColumn
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
@@ -223,15 +224,26 @@ fun WooPosProductCard(
 
             Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
 
-            ProductInfo(item)
+            ProductInfo(modifier = Modifier.weight(1f), item = item)
+
+            if (item is Product.Variable) {
+                Image(
+                    modifier = Modifier
+                        .padding(end = WooPosSpacing.XLarge.value)
+                        .size(32.dp),
+                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_chevron),
+                    contentDescription = null,
+                    colorFilter = ColorFilter.tint(WooPosTheme.colors.onSurfaceVariantHighest),
+                )
+            }
         }
     }
 }
 
 @Composable
-private fun ProductInfo(item: Product) {
+private fun ProductInfo(modifier: Modifier, item: Product) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxHeight()
             .padding(
                 top = WooPosSpacing.Medium.value,
@@ -434,7 +446,8 @@ private fun ItemsLoadingItem() {
             Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
 
             Column(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .weight(1f),
                 verticalArrangement = Arrangement.Center,
             ) {
@@ -467,6 +480,44 @@ fun WooPosItemsEmptyList(
     message: String,
     contentDescription: String,
 ) {
+    WooPosItemsEmptyListInternal(
+        modifier = modifier,
+        title = title,
+        message = message,
+        contentDescription = contentDescription,
+        actionLabel = null,
+        onActionClicked = null
+    )
+}
+
+@Composable
+fun WooPosItemsEmptyList(
+    modifier: Modifier = Modifier,
+    title: String,
+    message: String,
+    contentDescription: String,
+    actionLabel: String,
+    onActionClicked: (() -> Unit),
+) {
+    WooPosItemsEmptyListInternal(
+        modifier = modifier,
+        title = title,
+        message = message,
+        contentDescription = contentDescription,
+        actionLabel = actionLabel,
+        onActionClicked = onActionClicked
+    )
+}
+
+@Composable
+private fun WooPosItemsEmptyListInternal(
+    modifier: Modifier = Modifier,
+    title: String,
+    message: String,
+    contentDescription: String,
+    actionLabel: String?,
+    onActionClicked: (() -> Unit)? = null,
+) {
     Box(
         modifier = modifier.verticalScroll(rememberScrollState()),
         contentAlignment = Alignment.Center
@@ -498,7 +549,17 @@ fun WooPosItemsEmptyList(
                 textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
+            Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
+
+            if (onActionClicked != null && actionLabel != null) {
+                WooPosButton(
+                    text = actionLabel,
+                    onClick = onActionClicked,
+                    modifier = Modifier
+                        .fillMaxWidth(0.5f)
+                        .height(80.dp)
+                )
+            }
         }
     }
 }
@@ -545,7 +606,14 @@ fun ItemListPreview() {
                         price = "$10.00",
                         imageUrl = ""
                     ),
-                    Product.Variable(id = 2, name = "Variable Product", price = "$10.00", "", 1, listOf()),
+                    Product.Variable(
+                        id = 2,
+                        name = "Variable Product with very loooooooooooooooooooooooooooooooooong",
+                        price = "$10.00",
+                        "",
+                        1,
+                        listOf()
+                    ),
                     Product.Variation(3, "Variation", "$10", "", 0),
                     Coupon(id = 4, name = "Coupon", summary = "10% off everything"),
                 ),
