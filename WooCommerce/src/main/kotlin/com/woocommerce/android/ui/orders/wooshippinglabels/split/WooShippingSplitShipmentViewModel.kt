@@ -6,6 +6,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.sumByFloat
 import com.woocommerce.android.ui.orders.wooshippinglabels.ShippableItemUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShippingLabelsSnackbarData
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.toSelectableUIModel
 import com.woocommerce.android.util.CurrencyFormatter
@@ -32,7 +33,7 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
     private val storeOptions = navArgs.shipmentArgs.storeOptions
 
     private val currentShipments = MutableStateFlow(
-        navArgs.shipmentArgs.shipments.withIndex().associate { (index, shipment) -> index to shipment.items }
+        navArgs.shipmentArgs.shipments.withIndex().associate { (index, shipment) -> index to shipment }
     )
     private val shipmentsUIMap: MutableStateFlow<Map<Int, SelectableShippableItemsUI>?> = MutableStateFlow(null)
 
@@ -206,7 +207,7 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
      * as "Shipment 0, Shipment 1".
      */
     private fun reindexShipments(
-        shipments: Map<Int, List<ShippableItemModel>>
+        shipments: Map<Int, ShipmentUIModel>
     ) = shipments.values.mapIndexed { index, items -> index to items }.toMap()
 
     private fun showUndoSnackbar(splitMovement: SplitMovement, undoAction: () -> Unit) {

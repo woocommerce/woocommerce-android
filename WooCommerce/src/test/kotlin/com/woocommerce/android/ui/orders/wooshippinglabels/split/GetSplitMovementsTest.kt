@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.split
 
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.toSelectableUIModel
 import com.woocommerce.android.util.CurrencyFormatter
@@ -166,24 +167,26 @@ class GetSplitMovementsTest : BaseUnitTest() {
         )
     }
 
-    private val defaultShipments = mapOf(0 to defaultShippableItems)
+    private val defaultShipments = mapOf(0 to ShipmentUIModel(id = null, items = defaultShippableItems))
     val defaultSelection = defaultShipments.mapValues {
         it.value.toSelectableUIModel(
             currencyFormatter = currencyFormatter,
             dimensionUnit = "cm",
-            weightUnit = "kg"
+            weightUnit = "kg",
+            purchased = false
         )
     }
 
     private val twoShipments = mapOf(
-        0 to defaultShippableItems,
-        1 to defaultShippableItems
+        0 to ShipmentUIModel(id = null, items = defaultShippableItems),
+        1 to ShipmentUIModel(id = null, items = defaultShippableItems)
     )
     val twoShipmentsSelection = twoShipments.mapValues {
         it.value.toSelectableUIModel(
             currencyFormatter = currencyFormatter,
             dimensionUnit = "cm",
-            weightUnit = "kg"
+            weightUnit = "kg",
+            purchased = false
         )
     }
 }

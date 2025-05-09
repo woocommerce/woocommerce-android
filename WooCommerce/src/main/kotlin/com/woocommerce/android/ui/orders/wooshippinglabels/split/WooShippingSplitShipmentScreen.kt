@@ -554,12 +554,14 @@ private fun WooShippingSplitShipmentScreenPreview() = WooThemeWithBackground {
                 0 to SelectableShippableItemsUI(
                     shippableItems = emptyList(),
                     formattedTotalWeight = "",
-                    formattedTotalPrice = ""
+                    formattedTotalPrice = "",
+                    purchased = false
                 ),
                 1 to SelectableShippableItemsUI(
                     shippableItems = emptyList(),
                     formattedTotalWeight = "",
-                    formattedTotalPrice = ""
+                    formattedTotalPrice = "",
+                    purchased = false
                 )
             )
         ),
