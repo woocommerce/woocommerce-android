@@ -95,15 +95,13 @@ class WooPosSearchProductsDataSourceTest {
             val query = "test"
             whenever(searchResultsIndex.getSearchResults(query)).thenReturn(products)
             whenever(
-                productStore.searchProducts(
+                productStore.searchProductsByNameAndSku(
                     site = anyOrNull(),
-                    searchString = anyOrNull(),
-                    skuSearchOptions = anyOrNull(),
+                    searchNameOrSkuQuery = anyOrNull(),
                     offset = anyOrNull(),
                     pageSize = anyOrNull(),
                     filterOptions = anyOrNull(),
                     includeTypes = anyOrNull(),
-                    orderCurrency = anyOrNull(),
                 )
             ).thenReturn(WooResult(ProductSearchResult(emptyList(), true)))
 
@@ -126,15 +124,13 @@ class WooPosSearchProductsDataSourceTest {
             original = BaseRequest.GenericErrorType.UNKNOWN
         )
         whenever(
-            productStore.searchProducts(
+            productStore.searchProductsByNameAndSku(
                 site = anyOrNull(),
-                searchString = anyOrNull(),
-                skuSearchOptions = anyOrNull(),
+                searchNameOrSkuQuery = anyOrNull(),
                 offset = anyOrNull(),
                 pageSize = anyOrNull(),
                 filterOptions = anyOrNull(),
                 includeTypes = anyOrNull(),
-                orderCurrency = anyOrNull(),
             )
         ).thenReturn(WooResult(error))
 

@@ -16,6 +16,13 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemCli
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateToVariationsScreen
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart.WooPosItemSource
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemsNextPageLoaded
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.PreSearchRecentTermTapped
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.IS_SEARCH
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ITEM_LIST_TYPE
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ITEM_LIST_TYPE_PRODUCTS
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -38,9 +45,10 @@ class WooPosItemsSearchViewModel @Inject constructor(
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
     private val navigator: WooPosItemsNavigator,
     private val searchHelper: WooPosItemsSearchHelper,
+    private val analyticsTracker: WooPosAnalyticsTracker,
 ) : ViewModel() {
     private val _viewState =
-        MutableStateFlow<WooPosItemsSearchViewState>(WooPosItemsSearchViewState.Empty)
+        MutableStateFlow<WooPosItemsSearchViewState>(WooPosItemsSearchViewState.Loading)
     val viewState: StateFlow<WooPosItemsSearchViewState> = _viewState
         .stateIn(
             viewModelScope,
@@ -62,7 +70,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
     fun onUIEvent(event: WooPosItemsSearchUiEvent) {
         when (event) {
             WooPosItemsSearchUiEvent.OnNextPageRequested -> onEndOfListReached()
-            is WooPosItemsSearchUiEvent.OnItemClicked -> handleItemClicked(event.item)
+            is WooPosItemsSearchUiEvent.OnItemClicked -> handleItemClicked(event.item, WooPosItemSource.SEARCH_RESULT)
             WooPosItemsSearchUiEvent.LoadingErrorRetryButtonClicked -> {
                 val currentState = _viewState.value as? WooPosItemsSearchViewState.Error ?: return
                 performSearch(currentState.searchQuery)
@@ -75,13 +83,14 @@ class WooPosItemsSearchViewModel @Inject constructor(
                             event.recentSearch
                         )
                     )
+                    trackRecentSearchSelected()
                 }
             }
 
             is WooPosItemsSearchUiEvent.OnPopularItemClicked -> {
                 viewModelScope.launch {
                     emptyStateRepository.addPopularItemsToCache()
-                    handleItemClicked(event.item)
+                    handleItemClicked(event.item, WooPosItemSource.POPULAR_PRODUCTS)
                 }
             }
         }
@@ -193,6 +202,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
         loadMoreJob = viewModelScope.launch {
             val result = dataSource.loadMore(query = currentState.searchQuery)
             _viewState.value = if (result.isSuccess) {
+                trackItemsNextPageLoaded()
                 result.getOrThrow().toContentState(
                     searchQuery = currentState.searchQuery,
                 )
@@ -202,13 +212,35 @@ class WooPosItemsSearchViewModel @Inject constructor(
         }
     }
 
-    private fun handleItemClicked(item: WooPosItemSelectionViewState) {
+    private suspend fun trackItemsNextPageLoaded() {
+        val event = ItemsNextPageLoaded.apply {
+            addProperties(
+                mapOf(
+                    ITEM_LIST_TYPE to ITEM_LIST_TYPE_PRODUCTS,
+                    IS_SEARCH to "true"
+                )
+            )
+        }
+        analyticsTracker.track(event)
+    }
+
+    private suspend fun trackRecentSearchSelected() {
+        val event = PreSearchRecentTermTapped.apply {
+            addProperties(
+                mapOf(ITEM_LIST_TYPE to ITEM_LIST_TYPE_PRODUCTS)
+            )
+        }
+        analyticsTracker.track(event)
+    }
+
+    private fun handleItemClicked(item: WooPosItemSelectionViewState, source: WooPosItemSource) {
         when (item) {
             is WooPosItemSelectionViewState.Product.Simple -> {
                 viewModelScope.launch {
                     childToParentEventSender.sendToParent(
                         ChildToParentEvent.ItemClickedInProductSelector(
-                            ItemClickedData.Product.Simple(id = item.id)
+                            itemData = ItemClickedData.Product.Simple(id = item.id),
+                            source = source,
                         )
                     )
                 }
@@ -224,6 +256,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
                                 id = item.id,
                                 name = item.name,
                                 numOfVariations = item.numOfVariations,
+                                source = WooPosItemSource.SEARCH_RESULT
                             )
                         )
                     )

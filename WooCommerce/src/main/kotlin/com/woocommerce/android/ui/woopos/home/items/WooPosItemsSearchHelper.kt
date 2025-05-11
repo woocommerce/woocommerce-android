@@ -18,7 +18,7 @@ import javax.inject.Inject
 class WooPosItemsSearchHelper @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val childToParentEventSender: WooPosChildrenToParentEventSender,
-    private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver
+    private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
 ) {
     private lateinit var coroutineScope: CoroutineScope
     private lateinit var viewStateFlow: MutableStateFlow<WooPosItemsViewState>

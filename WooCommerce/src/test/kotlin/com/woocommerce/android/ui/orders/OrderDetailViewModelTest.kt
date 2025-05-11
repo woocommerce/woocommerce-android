@@ -44,6 +44,11 @@ import com.woocommerce.android.ui.orders.details.OrderProduct
 import com.woocommerce.android.ui.orders.details.OrderProductMapper
 import com.woocommerce.android.ui.orders.details.ShippingLabelOnboardingRepository
 import com.woocommerce.android.ui.orders.details.ShippingLabelOnboardingRepository.ShippingLabelSupport
+import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigDataStore
+import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ConfigDTO
+import com.woocommerce.android.ui.orders.wooshippinglabels.networking.Item
+import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ShippingLabelDTO
+import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingLabelRepository
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
@@ -114,6 +119,9 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val orderDetailRepository: OrderDetailRepository = mock {
         onBlocking { getOrderDetailsPluginsInfo() } doReturn pluginsInfo
     }
+    private val configDataStore: WooShippingConfigDataStore = mock {
+        doReturn(flowOf(null)).whenever(it).observeConfig(any())
+    }
     private val addonsRepository: AddonRepository = mock()
     private val paymentsFlowTracker: PaymentsFlowTracker = mock()
     private val orderDetailTracker: OrderDetailTracker = mock()
@@ -125,6 +133,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val shippingLabelOnboardingRepository: ShippingLabelOnboardingRepository = mock {
         doReturn(ShippingLabelSupport.WCS_SUPPORTED).whenever(it).shippingPluginSupport
     }
+    private val shippingLabelRepository: WooShippingLabelRepository = mock()
 
     private val savedState = OrderDetailFragmentArgs(
         orderId = ORDER_ID,
@@ -198,6 +207,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 networkStatus,
                 resources,
                 orderDetailRepository,
+                configDataStore,
                 addonsRepository,
                 selectedSite,
                 productImageMap,
@@ -205,6 +215,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 paymentsFlowTracker,
                 orderDetailTracker,
                 shippingLabelOnboardingRepository,
+                shippingLabelRepository,
                 orderDetailsTransactionLauncher,
                 getOrderSubscriptions,
                 giftCardRepository,
@@ -625,16 +636,34 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Hide Create shipping label button and show Products area menu when shipping labels are available`() =
+    fun `Show Create shipping label button when there are unfulfilled shipments`() =
         testBlocking {
-            doReturn(order).whenever(orderDetailRepository).getOrderById(any())
             doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
 
             doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
-            doReturn(testOrderNotes).whenever(orderDetailRepository).getOrderNotes(any())
 
-            doReturn(emptyList<Refund>()).whenever(orderDetailRepository).fetchOrderRefunds(any())
-            doReturn(emptyList<Refund>()).whenever(orderDetailRepository).getOrderRefunds(any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
+
+            doReturn(true).whenever(orderDetailRepository).isOrderEligibleForSLCreation(order.id)
+            doReturn(flowOf(ConfigDTO(emptyMap(), ShippingLabelDTO()))).whenever(configDataStore)
+                .observeConfig(order.id)
+
+            var isCreateShippingLabelButtonVisible: Boolean? = null
+            viewModel.viewStateData.observeForever { _, new ->
+                isCreateShippingLabelButtonVisible = new.isCreateShippingLabelButtonVisible
+            }
+
+            viewModel.start()
+
+            assertThat(isCreateShippingLabelButtonVisible).isTrue
+        }
+
+    @Test
+    fun `Hide Create shipping label button when all shipments fulfilled`() =
+        testBlocking {
+            doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
+
+            doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
 
             doReturn(RequestResult.SUCCESS).whenever(orderDetailRepository).fetchOrderShipmentTrackingList(any())
             doReturn(testOrderShipmentTrackings).whenever(orderDetailRepository).getOrderShipmentTrackings(any())
@@ -642,69 +671,78 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(orderShippingLabels).whenever(orderDetailRepository).getOrderShippingLabels(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
-            doReturn(Unit).whenever(orderDetailRepository).fetchSLCreationEligibility(order.id)
             doReturn(true).whenever(orderDetailRepository).isOrderEligibleForSLCreation(order.id)
             doReturn(ShippingLabelSupport.WCS_SUPPORTED)
                 .whenever(shippingLabelOnboardingRepository).shippingPluginSupport
 
-            val shippingLabels = ArrayList<ShippingLabel>()
-            viewModel.shippingLabels.observeForever {
-                it?.let { shippingLabels.addAll(it) }
-            }
+            doReturn(
+                flowOf(
+                    ConfigDTO(
+                        // Creating 5 items map since orderShippingLabels has 5 labels
+                        mapOf(
+                            "0" to emptyList<Item>(),
+                            "1" to emptyList<Item>(),
+                            "2" to emptyList<Item>(),
+                            "3" to emptyList<Item>(),
+                            "4" to emptyList<Item>()
+                        ),
+                        ShippingLabelDTO()
+                    )
+                )
+            ).whenever(configDataStore).observeConfig(order.id)
 
             var isCreateShippingLabelButtonVisible: Boolean? = null
-            var isProductListMenuVisible: Boolean? = null
             viewModel.viewStateData.observeForever { _, new ->
                 isCreateShippingLabelButtonVisible = new.isCreateShippingLabelButtonVisible
-                isProductListMenuVisible = new.isProductListMenuVisible
             }
+
+            viewModel.start()
+
+            assertThat(isCreateShippingLabelButtonVisible).isFalse
+        }
+
+    @Test
+    fun `Show Products area menu when shipping labels are available`() =
+        testBlocking {
+            doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
+
+            doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
+
+            doReturn(orderShippingLabels).whenever(orderDetailRepository).getOrderShippingLabels(any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
+
+            doReturn(true).whenever(orderDetailRepository).isOrderEligibleForSLCreation(order.id)
+
+            val shippingLabels = ArrayList<ShippingLabel>()
+            viewModel.shippingLabels.observeForever { it?.let { shippingLabels.addAll(it) } }
+
+            var isProductListMenuVisible: Boolean? = null
+            viewModel.viewStateData.observeForever { _, new -> isProductListMenuVisible = new.isProductListMenuVisible }
 
             viewModel.start()
 
             assertThat(shippingLabels).isNotEmpty
-            assertThat(isCreateShippingLabelButtonVisible).isFalse
             assertThat(isProductListMenuVisible).isTrue
         }
 
     @Test
-    fun `Show Create shipping label button and hide Products area menu when no shipping labels are available`() =
+    fun `Hide Products area menu when no shipping labels are available`() =
         testBlocking {
-            doReturn(order).whenever(orderDetailRepository).getOrderById(any())
             doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
 
             doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
-            doReturn(testOrderNotes).whenever(orderDetailRepository).getOrderNotes(any())
 
-            doReturn(emptyList<Refund>()).whenever(orderDetailRepository).fetchOrderRefunds(any())
-            doReturn(emptyList<Refund>()).whenever(orderDetailRepository).getOrderRefunds(any())
-
-            doReturn(RequestResult.SUCCESS).whenever(orderDetailRepository).fetchOrderShipmentTrackingList(any())
-            doReturn(testOrderShipmentTrackings).whenever(orderDetailRepository).getOrderShipmentTrackings(any())
-
-            doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).getOrderShippingLabels(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
-            doReturn(Unit).whenever(orderDetailRepository).fetchSLCreationEligibility(order.id)
-            doReturn(true).whenever(orderDetailRepository).isOrderEligibleForSLCreation(order.id)
-            doReturn(ShippingLabelSupport.WCS_SUPPORTED)
-                .whenever(shippingLabelOnboardingRepository).shippingPluginSupport
-
             val shippingLabels = ArrayList<ShippingLabel>()
-            viewModel.shippingLabels.observeForever {
-                it?.let { shippingLabels.addAll(it) }
-            }
+            viewModel.shippingLabels.observeForever { it?.let { shippingLabels.addAll(it) } }
 
-            var isCreateShippingLabelButtonVisible: Boolean? = null
             var isProductListMenuVisible: Boolean? = null
-            viewModel.viewStateData.observeForever { _, new ->
-                isCreateShippingLabelButtonVisible = new.isCreateShippingLabelButtonVisible
-                isProductListMenuVisible = new.isProductListMenuVisible
-            }
+            viewModel.viewStateData.observeForever { _, new -> isProductListMenuVisible = new.isProductListMenuVisible }
 
             viewModel.start()
 
             assertThat(shippingLabels).isEmpty()
-            assertThat(isCreateShippingLabelButtonVisible).isTrue
             assertThat(isProductListMenuVisible).isFalse
         }
 
@@ -2481,5 +2519,12 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         // THEN
         assertThat(observedViewState!!.orderInfo!!.order).isEqualTo(newOrder)
         assertThat(observedViewState!!.orderInfo!!.isPaymentCollectableWithCardReader).isFalse()
+    }
+
+    @Test
+    fun `when view model is initialized then fetchConfig is called`() = testBlocking {
+        viewModel.start()
+
+        verify(shippingLabelRepository).fetchConfig(selectedSite.get(), ORDER_ID)
     }
 }

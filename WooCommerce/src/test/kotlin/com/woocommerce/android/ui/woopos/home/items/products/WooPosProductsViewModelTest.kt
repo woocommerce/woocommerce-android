@@ -6,13 +6,14 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.WooPosContentViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemNavigationData
-import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState.Product
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosProductsViewState
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ProductsPullToRefreshTriggered
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart.WooPosItemSource
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -104,7 +105,7 @@ class WooPosProductsViewModelTest {
             val value = awaitItem() as WooPosProductsViewState.Content
 
             @Suppress("UNCHECKED_CAST")
-            val items = value.items as List<Product.Simple>
+            val items = value.items as List<WooPosItemSelectionViewState.Product.Simple>
             assertThat(items).hasSize(2)
             assertThat(items[0].id).isEqualTo(1)
             assertThat(items[0].name).isEqualTo("Product 1")
@@ -195,7 +196,7 @@ class WooPosProductsViewModelTest {
     @Test
     fun `when product clicked, then send event to parent`() = runTest {
         // GIVEN
-        val product = Product.Simple(id = 1, name = "", price = "", imageUrl = null)
+        val product = WooPosItemSelectionViewState.Product.Simple(id = 1, name = "", price = "", imageUrl = null)
         val viewModel = createViewModel()
 
         // WHEN
@@ -207,7 +208,8 @@ class WooPosProductsViewModelTest {
                 ChildToParentEvent.ItemClickedInProductSelector(
                     WooPosItemsViewModel.ItemClickedData.Product.Simple(
                         id = product.id
-                    )
+                    ),
+                    source = WooPosItemSource.PRODUCT_LIST
                 )
             )
             cancelAndConsumeRemainingEvents()
@@ -299,7 +301,7 @@ class WooPosProductsViewModelTest {
         viewModel.onUIEvent(WooPosProductsUIEvent.PullToRefreshTriggered)
 
         // THEN
-        verify(analyticsTracker).track(ProductsPullToRefreshTriggered)
+        verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.ProductsPullToRefreshTriggered)
     }
 
     @Test
@@ -326,7 +328,7 @@ class WooPosProductsViewModelTest {
         // WHEN
         viewModel.onUIEvent(
             WooPosProductsUIEvent.ItemClicked(
-                Product.Variable(
+                WooPosItemSelectionViewState.Product.Variable(
                     id = 1L,
                     name = "Product 1",
                     numOfVariations = 10,
@@ -344,6 +346,7 @@ class WooPosProductsViewModelTest {
                     id = 1,
                     name = "Product 1",
                     numOfVariations = 10,
+                    source = WooPosItemSource.PRODUCT_LIST
                 )
             )
         )
@@ -385,7 +388,9 @@ class WooPosProductsViewModelTest {
                 // THEN
                 val value = awaitItem() as WooPosProductsViewState.Content
 
-                assertThat(value.items.filterIsInstance<Product.Variable>().size).isEqualTo(1)
+                assertThat(
+                    value.items.filterIsInstance<WooPosItemSelectionViewState.Product.Variable>().size
+                ).isEqualTo(1)
             }
         }
 
@@ -460,6 +465,35 @@ class WooPosProductsViewModelTest {
 
         // THEN
         verify(productsDataSource, never()).loadMore()
+    }
+
+    @Test
+    fun `when variable product is clicked from product list, then navigation event uses product list source`() = runTest {
+        // GIVEN
+        val viewModel = createViewModel()
+        val item = WooPosItemSelectionViewState.Product.Variable(
+            id = 1,
+            name = "Product",
+            price = "$10",
+            imageUrl = null,
+            numOfVariations = 2,
+            variationIds = emptyList()
+        )
+
+        // WHEN
+        viewModel.onUIEvent(WooPosProductsUIEvent.ItemClicked(item))
+
+        // THEN
+        verify(wooPosItemsNavigator).sendNavigationEvent(
+            WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateToVariationsScreen(
+                WooPosItemNavigationData.VariableProductData(
+                    id = 1L,
+                    name = "Product",
+                    numOfVariations = 2,
+                    source = WooPosItemSource.PRODUCT_LIST
+                )
+            )
+        )
     }
 
     private fun createViewModel(): WooPosProductsViewModel {

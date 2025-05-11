@@ -390,6 +390,7 @@ object OrderTestUtils {
                     sku = "",
                     quantity = quantity,
                     subtotal = BigDecimal("10"),
+                    subtotalTax = BigDecimal.ZERO,
                     totalTax = BigDecimal.ZERO,
                     total = BigDecimal("10"),
                     variationId = 0,

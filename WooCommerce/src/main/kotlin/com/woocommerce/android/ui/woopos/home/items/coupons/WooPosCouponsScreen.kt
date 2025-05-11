@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
@@ -91,13 +92,25 @@ private fun WooPosCouponsScreen(
             )
 
             is WooPosCouponsViewState.Empty -> WooPosItemsEmptyList(
+                modifier = Modifier.fillMaxSize(),
                 title = stringResource(id = R.string.woopos_coupons_empty_list_title),
                 message = stringResource(id = R.string.woopos_coupons_empty_list_message),
                 contentDescription = stringResource(id = R.string.woopos_coupons_empty_list_image_description),
+                actionLabel = stringResource(id = R.string.woopos_coupons_empty_list_create_coupon_label),
+                onActionClicked = { onUIEvent(WooPosCouponsUIEvent.CreateCouponClicked) }
             )
 
-            is WooPosCouponsViewState.Error -> CouponsError { onUIEvent(WooPosCouponsUIEvent.RetryTriggered) }
+            is WooPosCouponsViewState.Error.GenericError -> {
+                CouponsError { onUIEvent(WooPosCouponsUIEvent.RetryTriggered) }
+            }
+
+            is WooPosCouponsViewState.Error.CouponsDisabledError -> CouponsDisabledError()
         }
+        PullRefreshIndicator(
+            modifier = Modifier.align(Alignment.TopCenter),
+            refreshing = state.value.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
+            state = pullToRefreshState
+        )
     }
 }
 
@@ -126,6 +139,19 @@ fun CouponsError(onRetryClicked: () -> Unit) {
                 text = stringResource(id = R.string.woopos_products_loading_error_retry_button),
                 click = onRetryClicked
             )
+        )
+    }
+}
+
+@Composable
+fun CouponsDisabledError() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
+    ) {
+        WooPosErrorScreen(
+            message = stringResource(id = R.string.woopos_coupons_loading_error_coupons_disabled_title),
+            reason = stringResource(id = R.string.woopos_coupons_loading_error_coupons_disabled_message),
         )
     }
 }
@@ -235,7 +261,24 @@ fun WooPosCouponsEmptyListPreview() {
 @WooPosPreview
 fun WooPosCouponsUIEventScreenErrorPreview() {
     val productState = MutableStateFlow(
-        WooPosCouponsViewState.Error()
+        WooPosCouponsViewState.Error.GenericError()
+    )
+    WooPosTheme {
+        WooPosCouponsScreen(
+            modifier = Modifier,
+            listState = rememberLazyListState(),
+            viewStateFlow = productState,
+            onUIEvent = {},
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+@WooPosPreview
+fun WooPosCouponsUIEventScreenCouponsDisabledErrorPreview() {
+    val productState = MutableStateFlow(
+        WooPosCouponsViewState.Error.CouponsDisabledError()
     )
     WooPosTheme {
         WooPosCouponsScreen(

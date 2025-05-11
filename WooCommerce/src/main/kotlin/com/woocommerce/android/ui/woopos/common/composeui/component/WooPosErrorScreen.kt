@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
@@ -60,6 +61,7 @@ fun WooPosErrorScreen(
                 text = message,
                 style = WooPosTypography.Heading,
                 fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
             )
 
             Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
@@ -67,6 +69,7 @@ fun WooPosErrorScreen(
             WooPosText(
                 text = reason,
                 style = WooPosTypography.BodyLarge,
+                textAlign = TextAlign.Center,
             )
             @Suppress("WooPosDesignSystemSpacingUsageRule")
             Spacer(modifier = Modifier.height(40.dp.toAdaptivePadding()))
@@ -123,8 +126,8 @@ fun WooPosErrorStatePreview() {
 fun WooPosErrorStateSingleButtonPreview() {
     WooPosTheme {
         WooPosErrorScreen(
-            message = stringResource(R.string.woopos_totals_main_error_label),
-            reason = "Reason",
+            message = "Very long title Very long title Very long title Very long title Very long title ",
+            reason = "Very loooong reason Very loooong reason Very loooong reason Very loooong reason ",
             primaryButton = Button(
                 text = stringResource(R.string.retry),
                 click = { }
