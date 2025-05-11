@@ -168,7 +168,7 @@
 
         <activity
             android:name="com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationActivity"
-            android:theme="@style/Theme.WooPos.FullyTransparent"
+            android:theme="@style/Theme.WooPos.Transparent"
             android:windowSoftInputMode="adjustResize" />
 
         <!-- Stats today app widget -->
