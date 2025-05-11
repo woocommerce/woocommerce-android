@@ -6,6 +6,7 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.WooPosCouponsViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
+import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsListViewStateManager.WooPosCouponsListRefreshType
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsUIEvent.BackButtonClicked
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsUIEvent.CouponClicked
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsUIEvent.EndOfListReached
@@ -48,7 +49,7 @@ class WooPosCouponsViewModel @Inject constructor(
             }
         }
 
-        listViewStateManager.fetchCoupons(viewModelScope)
+        fetchCoupons(WooPosCouponsListRefreshType.INITIAL)
     }
 
     fun onUIEvent(event: WooPosCouponsUIEvent) {
@@ -57,7 +58,7 @@ class WooPosCouponsViewModel @Inject constructor(
                 handleCouponClicked(event)
             }
 
-            PullToRefreshTriggered -> fetchCoupons()
+            PullToRefreshTriggered -> fetchCoupons(WooPosCouponsListRefreshType.PULL_TO_REFRESH)
 
             is EndOfListReached -> {
                 onEndOfListReached()
@@ -71,14 +72,14 @@ class WooPosCouponsViewModel @Inject constructor(
                 navigateBackToItemListScreen()
             }
 
-            RetryTriggered -> fetchCoupons()
+            RetryTriggered -> fetchCoupons(WooPosCouponsListRefreshType.RETRY)
 
             is WooPosCouponsUIEvent.CreateCouponClicked -> createAndAddCoupon()
         }
     }
 
-    private fun fetchCoupons() {
-        listViewStateManager.fetchCoupons(viewModelScope)
+    private fun fetchCoupons(refreshType: WooPosCouponsListRefreshType) {
+        listViewStateManager.fetchCoupons(viewModelScope, refreshType)
     }
 
     private fun onEndOfListReached() {
