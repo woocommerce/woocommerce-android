@@ -10,7 +10,6 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.WooPosGetCachedStoreCurrency
 import com.woocommerce.android.ui.woopos.util.format.WooPosCouponsFormatter
-import com.woocommerce.android.ui.woopos.util.format.WooPosFormatCouponSummary
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -562,70 +561,72 @@ class WooPosCouponsListViewStateManagerTest {
 
             cancelAndIgnoreRemainingEvents()
         }
+    }
 
-        @Test
-        fun `given coupon without expiration date, when mapped, then expiredState is NotExpired`() = runTest {
-            // GIVEN
-            val coupon = CouponTestUtils.generateTestCoupon(0L).copy(
-                dateExpires = null
-            )
-            whenever(couponsDataSource.clearCacheAndFetchFirstPage()).doSuspendableAnswer {
-                couponsDataFlow.emit(listOf(coupon))
-                delay(1) // workaround for bug in mockito
-                Result.success(false)
-            }
-
-            sat.viewState.test {
-                // WHEN
-                sat.fetchCoupons(
-                    testViewModelScope,
-                    WooPosCouponsListViewStateManager.WooPosCouponsListRefreshType.INITIAL
-                )
-                advanceUntilIdle()
-
-                // THEN
-                val state = expectMostRecentItem() as Content
-                val mappedCoupon = state.items.first() as WooPosItemSelectionViewState.Coupon
-                assertThat(mappedCoupon.expiredState)
-                    .isInstanceOf(WooPosItemSelectionViewState.Coupon.ExpiredState.NotExpired::class.java)
-
-                cancelAndIgnoreRemainingEvents()
-            }
+    @Test
+    fun `given coupon without expiration date, when mapped, then expiredState is NotExpired`() = runTest {
+        // GIVEN
+        val coupon = CouponTestUtils.generateTestCoupon(0L).copy(
+            dateExpires = null
+        )
+        whenever(couponsDataSource.clearCacheAndFetchFirstPage()).doSuspendableAnswer {
+            couponsDataFlow.emit(listOf(coupon))
+            delay(1) // workaround for bug in mockito
+            Result.success(false)
         }
 
-        @Test
-        fun `given coupon with future expiration date, when mapped, then expiredState is NotExpired`() = runTest {
-            // GIVEN
-            val futureDate = Date(System.currentTimeMillis() + 86400000) // tomorrow
-            val coupon = CouponTestUtils.generateTestCoupon(0L).copy(
-                dateExpires = futureDate
+        sat.viewState.test {
+            // WHEN
+            sat.fetchCoupons(
+                testViewModelScope,
+                WooPosCouponsListViewStateManager.WooPosCouponsListRefreshType.INITIAL
             )
-            whenever(couponsDataSource.clearCacheAndFetchFirstPage()).doSuspendableAnswer {
-                couponsDataFlow.emit(listOf(coupon))
-                delay(1) // workaround for bug in mockito
-                Result.success(false)
-            }
+            advanceUntilIdle()
 
-            sat.viewState.test {
-                // WHEN
-                sat.fetchCoupons(
-                    testViewModelScope,
-                    WooPosCouponsListViewStateManager.WooPosCouponsListRefreshType.INITIAL
-                )
-                advanceUntilIdle()
+            // THEN
+            val state = expectMostRecentItem() as Content
+            val mappedCoupon = state.items.first() as WooPosItemSelectionViewState.Coupon
+            assertThat(mappedCoupon.expiredState)
+                .isInstanceOf(WooPosItemSelectionViewState.Coupon.ExpiredState.NotExpired::class.java)
 
-                // THEN
-                val state = expectMostRecentItem() as Content
-                val mappedCoupon = state.items.first() as WooPosItemSelectionViewState.Coupon
-                assertThat(mappedCoupon.expiredState)
-                    .isInstanceOf(WooPosItemSelectionViewState.Coupon.ExpiredState.NotExpired::class.java)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
 
-                cancelAndIgnoreRemainingEvents()
-            }
+    @Test
+    fun `given coupon with future expiration date, when mapped, then expiredState is NotExpired`() = runTest {
+        // GIVEN
+        val futureDate = Date(System.currentTimeMillis() + 86400000) // tomorrow
+        val coupon = CouponTestUtils.generateTestCoupon(0L).copy(
+            dateExpires = futureDate
+        )
+        whenever(couponsDataSource.clearCacheAndFetchFirstPage()).doSuspendableAnswer {
+            couponsDataFlow.emit(listOf(coupon))
+            delay(1) // workaround for bug in mockito
+            Result.success(false)
         }
 
-        @Test
-        fun `given coupon with past expiration date, when mapped, then expiredState is Expired with formatted date`() = runTest {
+        sat.viewState.test {
+            // WHEN
+            sat.fetchCoupons(
+                testViewModelScope,
+                WooPosCouponsListViewStateManager.WooPosCouponsListRefreshType.INITIAL
+            )
+            advanceUntilIdle()
+
+            // THEN
+            val state = expectMostRecentItem() as Content
+            val mappedCoupon = state.items.first() as WooPosItemSelectionViewState.Coupon
+            assertThat(mappedCoupon.expiredState)
+                .isInstanceOf(WooPosItemSelectionViewState.Coupon.ExpiredState.NotExpired::class.java)
+
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `given coupon with past expiration date, when mapped, then expiredState is Expired with formatted date`() =
+        runTest {
             // GIVEN
             val pastDate = Date(System.currentTimeMillis() - 86400000) // yesterday
             val coupon = CouponTestUtils.generateTestCoupon(0L).copy(

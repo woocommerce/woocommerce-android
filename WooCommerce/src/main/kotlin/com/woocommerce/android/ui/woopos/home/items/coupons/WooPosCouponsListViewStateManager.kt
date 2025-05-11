@@ -18,7 +18,6 @@ import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsListVie
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsListViewStateManager.FetchingCouponsState.RETRY_FETCHING_FIRST_PAGE
 import com.woocommerce.android.ui.woopos.util.WooPosGetCachedStoreCurrency
 import com.woocommerce.android.ui.woopos.util.format.WooPosCouponsFormatter
-import com.woocommerce.android.ui.woopos.util.format.WooPosFormatCouponSummary
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
