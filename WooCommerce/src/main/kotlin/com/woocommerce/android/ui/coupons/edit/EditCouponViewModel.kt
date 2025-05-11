@@ -258,6 +258,10 @@ class EditCouponViewModel @Inject constructor(
         isSaving.value = false
     }
 
+    fun onBackPressed() {
+        exitFlow()
+    }
+
     private fun getSaveButtonText(): Int = when (mode.value) {
         is Mode.Edit -> R.string.coupon_edit_save_button
         is Mode.Create -> R.string.coupon_create_save_button
