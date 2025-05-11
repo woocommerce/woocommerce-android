@@ -16,7 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.LocalOffer
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -106,7 +106,7 @@ fun WooPosItemsToolbar(
                 if (state.isAddCouponVisible) {
                     Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
                     WooPosCircularIconButton(
-                        icon = Icons.Default.LocalOffer,
+                        icon = Icons.Default.Add,
                         contentDescription = stringResource(
                             id = R.string.woopos_coupons_empty_list_create_coupon_label,
                         ),
