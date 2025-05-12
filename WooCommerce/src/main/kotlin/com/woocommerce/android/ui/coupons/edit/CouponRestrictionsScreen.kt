@@ -84,21 +84,23 @@ fun CouponRestrictionsScreen(
     BackHandler {
         onBackPressed()
     }
-    Scaffold (
-        topBar = { Toolbar(
-            title = stringResource(id = R.string.coupon_edit_usage_restrictions),
-            onNavigationButtonClick = onBackPressed,
-            navigationIcon = Icons.Default.Clear,
-        ) }
+    Scaffold(
+        topBar = {
+            Toolbar(
+                title = stringResource(id = R.string.coupon_edit_usage_restrictions),
+                onNavigationButtonClick = onBackPressed,
+                navigationIcon = Icons.Default.Clear,
+            )
+        }
     ) { paddingValues ->
         Column(
             verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
             modifier = Modifier
                 .padding(paddingValues)
+                .fillMaxSize()
                 .background(color = MaterialTheme.colors.surface)
                 .verticalScroll(scrollState)
                 .padding(vertical = dimensionResource(id = R.dimen.major_100))
-                .fillMaxSize()
         ) {
             SpendingRestrictionField(
                 value = viewState.restrictions.minimumAmount,
