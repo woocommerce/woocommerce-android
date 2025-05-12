@@ -36,7 +36,7 @@ steps:
 
       - label: "detekt"
         command: |
-          if .buildkite/commands/should-skip-job.sh --validation; then
+          if .buildkite/commands/should-skip-job.sh --job-type validation; then
             echo "Skipping Detekt - no relevant files changed" | buildkite-agent annotate --style "info" --context "skip-detekt"
             exit 0
           fi
