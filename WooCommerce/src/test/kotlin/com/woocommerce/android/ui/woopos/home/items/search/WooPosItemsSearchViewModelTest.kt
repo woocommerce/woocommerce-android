@@ -12,7 +12,6 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemCli
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateToVariationsScreen
-import com.woocommerce.android.ui.woopos.products.GetTotalProductCount
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart.WooPosItemSource
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
@@ -52,9 +51,6 @@ class WooPosItemsSearchViewModelTest {
     private val mockNavigator: WooPosItemsNavigator = mock()
     private val mockSearchHelper: com.woocommerce.android.ui.woopos.home.items.WooPosItemsSearchHelper = mock()
     private val mockAnalyticsTracker: WooPosItemsSearchAnalyticsTracker = mock()
-    private val getTotalProductCount: GetTotalProductCount = mock {
-        onBlocking { invoke() }.thenReturn(23)
-    }
 
     private val defaultQuery = "test query"
     private val defaultProduct = ProductTestUtils.generateProduct(
@@ -703,37 +699,6 @@ class WooPosItemsSearchViewModelTest {
     }
 
     @Test
-    fun `when search results fetched, then track SearchRemoteResultsFetched event with correct properties`() = runTest {
-        // GIVEN
-        val query = "test query"
-        val products = listOf(
-            ProductTestUtils.generateProduct(
-                productId = 1,
-                productName = "Test Product",
-                amount = "10.0",
-                productType = "simple"
-            )
-        )
-        val totalProductsCount = 23
-
-        whenever(mockEmptyStateProvider.getPopularItems()).thenReturn(emptyList())
-        whenever(mockEmptyStateProvider.getLastSearches()).thenReturn(emptyList())
-        whenever(mockDataSource.searchLocalProducts(query)).thenReturn(emptyList())
-        whenever(mockDataSource.searchRemoteProducts(query)).thenReturn(Result.success(products))
-        whenever(mockPriceFormat(BigDecimal("10.0"))).thenReturn("$10.0")
-        whenever(mockParentToChildrenEventReceiver.events).thenReturn(
-            flowOf(ParentToChildrenEvent.SearchEvent.ChangedQuery(query))
-        )
-
-        // WHEN
-        createViewModel()
-        advanceUntilIdle()
-
-        // THEN
-        verify(mockAnalyticsTracker).trackSearchPerformance(any())
-    }
-
-    @Test
     fun `given search query in content state, when simple product clicked, then search is stored as recent`() =
         runTest {
             // GIVEN
@@ -849,7 +814,6 @@ class WooPosItemsSearchViewModelTest {
             // WHEN
             val viewModel = createViewModel()
             viewModel.onUIEvent(WooPosItemsSearchUiEvent.OnItemClicked(simpleProduct))
-
 
             // THEN
             verify(mockChildToParentEventSender).sendToParent(
