@@ -130,6 +130,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         r1.defaultRate.rate.deliveryDays.compareTo(r2.defaultRate.rate.deliveryDays)
     }
 
+    private val selectedShipmentIndex = MutableStateFlow<Int>(0)
     private val selectedRate = MutableStateFlow<ShippingRateUI?>(null)
     private val shippingRates = MutableStateFlow<Map<CarrierUI, List<ShippingRateUI>>>(emptyMap())
     private val shippingRatesState = MutableStateFlow<ShippingRatesState>(ShippingRatesState.NoAvailable)
