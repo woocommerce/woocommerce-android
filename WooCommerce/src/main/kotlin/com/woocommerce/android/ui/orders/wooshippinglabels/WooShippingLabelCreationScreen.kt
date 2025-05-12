@@ -100,7 +100,7 @@ fun WooShippingLabelCreationScreen(viewModel: WooShippingLabelCreationViewModel)
             WooShippingLabelCreationScreen(
                 onSelectPackageClick = viewModel::onSelectPackageClicked,
                 onPurchaseShippingLabel = viewModel::onPurchaseShippingLabel,
-                shipmentUI = viewState.shipmentUI,
+                shipmentUIList = viewState.shipmentUIList,
                 shippingLines = viewState.shippingLines,
                 shippingAddresses = viewState.shippingAddresses,
                 shippingRatesState = viewState.shippingRates,
@@ -142,7 +142,7 @@ fun WooShippingLabelCreationScreen(viewModel: WooShippingLabelCreationViewModel)
 
 @Composable
 fun WooShippingLabelCreationScreen(
-    shipmentUI: ShipmentUI,
+    shipmentUIList: List<ShipmentUI>,
     shippingLines: List<ShippingLineSummaryUI>,
     shippingRatesState: WooShippingLabelCreationViewModel.ShippingRatesState,
     packageSelectionState: PackageSelectionState,
@@ -209,7 +209,7 @@ fun WooShippingLabelCreationScreen(
 
     Box(modifier = Modifier.fillMaxSize()) {
         LabelCreationScreenWithBottomSheet(
-            shipmentUI = shipmentUI,
+            shipmentUIList = shipmentUIList,
             modifier = modifier,
             onSelectPackageClick = onSelectPackageClick,
             scaffoldState = scaffoldState,
@@ -290,7 +290,7 @@ fun WooShippingLabelCreationScreen(
 @Suppress("CyclomaticComplexMethod")
 @Composable
 private fun LabelCreationScreenWithBottomSheet(
-    shipmentUI: ShipmentUI,
+    shipmentUIList: List<ShipmentUI>,
     shippingLines: List<ShippingLineSummaryUI>,
     shippingRatesState: WooShippingLabelCreationViewModel.ShippingRatesState,
     packageSelectionState: PackageSelectionState,
@@ -796,10 +796,12 @@ internal fun ErrorScreen(
 private fun WooShippingLabelCreationScreenPreview() {
     WooThemeWithBackground {
         WooShippingLabelCreationScreen(
-            shipmentUI = ShipmentUI(
-                shippableItems = generateItems(6),
-                formattedTotalWeight = "8.5kg",
-                formattedTotalPrice = "$92.78"
+            shipmentUIList = listOf(
+                ShipmentUI(
+                    shippableItems = generateItems(6),
+                    formattedTotalWeight = "8.5kg",
+                    formattedTotalPrice = "$92.78"
+                )
             ),
             shippingLines = getShippingLines(),
             modifier = Modifier.fillMaxSize(),

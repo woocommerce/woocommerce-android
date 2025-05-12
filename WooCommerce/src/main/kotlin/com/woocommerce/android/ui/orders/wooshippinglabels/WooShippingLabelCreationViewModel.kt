@@ -99,7 +99,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     private val storeOptions = MutableStateFlow<StoreOptionsModel?>(StoreOptionsModel.EMPTY)
 
     private val shipments = MutableStateFlow<List<ShipmentUIModel>>(emptyList())
-    private val shippableItems = MutableStateFlow<List<ShippableItemModel>>(emptyList())
+    private val shipmentItems = MutableStateFlow<List<List<ShippableItemModel>>>(emptyList())
 
     private val packageSelected = MutableStateFlow<PackageData?>(null)
     private val customsFormData = MutableStateFlow<CustomsData?>(null)
@@ -268,11 +268,11 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     @OptIn(FlowPreview::class)
     private suspend fun observePackageWeight() {
         combine(
-            shippableItems,
+            shipmentItems,
             packageSelected,
             snapshotFlow { customWeight }.debounce(TYPING_DELAY)
-        ) { shippableItems, selectedPackage, customWeightString ->
-            val itemsWeight = shippableItems.sumByFloat { it.weight }
+        ) { shipmentItems, selectedPackage, customWeightString ->
+            val itemsWeight = shipmentItems[selectedShipmentIndex.value].sumByFloat { it.weight }
             val packageWeight = selectedPackage?.weight?.toFloatOrNull()
             PackageWeight(
                 itemsWeight = itemsWeight,
@@ -309,10 +309,11 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         combine(
             shippingAddresses,
             customsFormData,
-            shippableItems
-        ) { addresses, customsData, shippableItems ->
+            shipmentItems
+        ) { addresses, customsData, shipmentItems ->
             val customsRequired = addresses != null && shouldRequireCustoms(addresses)
-            val itnMissing = customsFormData.value?.itn.isNullOrEmpty() && shippableItems.isItnRequired()
+            val itnMissing = customsFormData.value?.itn.isNullOrEmpty() &&
+                shipmentItems[selectedShipmentIndex.value].isItnRequired()
 
             when {
                 customsRequired && itnMissing -> ItnMissing
@@ -410,18 +411,15 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                 else -> AddressStatus.UNVERIFIED
             }
 
-            shippableItems.value = shipments.value.map { it.items }.flatten()
+            shipmentItems.value = shipments.value.map { it.items }
 
             val shippingLineSummary = order.getShippingLinesSummary(currencyFormatter)
-            val shipmentUI = shippableItems.value.toUIModel(
-                currencyFormatter,
-                storeOptions.dimensionUnit,
-                storeOptions.weightUnit
-
-            )
+            val shipmentUIList = shipmentItems.value.map {
+                it.toUIModel(currencyFormatter, storeOptions.dimensionUnit, storeOptions.weightUnit)
+            }
 
             return@combine WooShippingViewState.DataState(
-                shipmentUI = shipmentUI,
+                shipmentUIList = shipmentUIList,
                 shippingLines = shippingLineSummary,
                 shippingAddresses = addresses,
                 shippingRates = shippingRates,
@@ -505,7 +503,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
         val orderId = navArgs.orderId
         val lastOrderComplete = uiState.value.markOrderComplete
-        val shippableItemsIdList = shippableItems.value.map { it.productId }
+        val shippableItemsIdList = shipmentItems.value[selectedShipmentIndex.value].map { it.productId }
         val hazmatSelection = hazmatState.value.hazmatSelection
 
         val backupPurchaseState = purchaseState.value
@@ -547,15 +545,16 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             ?.let { purchasedLabel ->
                 val currentViewState = (viewState.value as? WooShippingViewState.DataState)
                 val selectedRate = selectedRate.value
-                val hazmatSelection = hazmatState.value.hazmatSelection
                 if (currentViewState != null && selectedRate != null) {
+                    val items = currentViewState.shipmentUIList[selectedShipmentIndex.value]
+                    val hazmatSelection = hazmatState.value.hazmatSelection
                     PurchasedShippingLabelData(
                         labelId = purchasedLabel.labelId,
                         orderId = navArgs.orderId,
                         carrierId = purchasedLabel.carrierId,
                         trackingNumber = purchasedLabel.tracking,
                         addresses = currentViewState.shippingAddresses,
-                        items = currentViewState.shipmentUI,
+                        items = items,
                         rateSummary = selectedRate.summary,
                         shippingLines = currentViewState.shippingLines,
                         hazmatSelection = hazmatSelection
@@ -574,8 +573,8 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
     fun onSplitShipment() {
         val currentStoreOptions = storeOptions.value
-        val currentShippableItems = shippableItems.value
-        if (currentStoreOptions != null && currentShippableItems.isNotEmpty()) {
+        val currentShipmentItems = shipmentItems.value
+        if (currentStoreOptions != null && currentShipmentItems.isNotEmpty()) {
             triggerEvent(
                 StartSplitShipment(
                     SplitShipmentArgs(
@@ -621,7 +620,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             ?.shipTo?.address?.country?.code.orEmpty()
 
         val event = StartCustomsFormEdit(
-            shippableItems = shippableItems.value,
+            shippableItems = shipmentItems.value[selectedShipmentIndex.value],
             destinationCountryCode = destinationCountryCode,
             customData = customsFormData.value
         )
@@ -745,7 +744,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         data object Error : WooShippingViewState()
         data object Loading : WooShippingViewState()
         data class DataState(
-            val shipmentUI: ShipmentUI,
+            val shipmentUIList: List<ShipmentUI>,
             val shippingLines: List<ShippingLineSummaryUI>,
             val shippingAddresses: WooShippingAddresses,
             val shippingRates: ShippingRatesState,
