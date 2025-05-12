@@ -29,7 +29,7 @@ class WooPosPreferencesRepository @Inject constructor(
 
             val updatedSearches = (listOf(search) + currentSearches)
                 .distinct()
-                .take(MAX_RECENT_SEARCHES)
+                .take(MAX_RECENT_SEARCHES_COUNT)
 
             preferences[recentProductSearchesSiteSpecificKey] = updatedSearches.joinToString(",")
         }
@@ -38,9 +38,9 @@ class WooPosPreferencesRepository @Inject constructor(
     private fun buildSiteSpecificKey(key: String): Preferences.Key<String> =
         stringPreferencesKey("${selectedSite.getOrNull()?.siteId}-$key")
 
-    companion object {
+    private companion object {
         const val RECENT_PRODUCT_SEARCHES_KEY = "recent_product_searches_key"
 
-        const val MAX_RECENT_SEARCHES = 10
+        const val MAX_RECENT_SEARCHES_COUNT = 10
     }
 }
