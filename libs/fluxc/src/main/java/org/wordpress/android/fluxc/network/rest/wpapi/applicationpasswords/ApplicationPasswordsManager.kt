@@ -213,7 +213,7 @@ internal class ApplicationPasswordsManager @Inject constructor(
             !payload.isError -> {
                 if (payload.isDeleted) {
                     appLogWrapper.d(AppLog.T.MAIN, "Application password deleted")
-                    deleteLocalApplicationPassword(site)
+                    applicationPasswordsStore.deleteCredentials(site)
                     ApplicationPasswordDeletionResult.Success
                 } else {
                     appLogWrapper.w(AppLog.T.MAIN, "Application password deletion failed")
@@ -248,7 +248,9 @@ internal class ApplicationPasswordsManager @Inject constructor(
         }
     }
 
-    fun deleteLocalApplicationPassword(site: SiteModel) {
-        applicationPasswordsStore.deleteCredentials(site)
+    fun deleteLocalApplicationPassword(site: SiteModel, credentials: ApplicationPasswordCredentials) {
+        if (applicationPasswordsStore.getCredentials(site) == credentials) {
+            applicationPasswordsStore.deleteCredentials(site)
+        }
     }
 }
