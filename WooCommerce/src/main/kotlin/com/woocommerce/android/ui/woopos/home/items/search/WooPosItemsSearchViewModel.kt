@@ -65,7 +65,14 @@ class WooPosItemsSearchViewModel @Inject constructor(
     fun onUIEvent(event: WooPosItemsSearchUiEvent) {
         when (event) {
             WooPosItemsSearchUiEvent.OnNextPageRequested -> onEndOfListReached()
-            is WooPosItemsSearchUiEvent.OnItemClicked -> handleItemClicked(event.item, WooPosItemSource.SEARCH_RESULT)
+            is WooPosItemsSearchUiEvent.OnItemClicked -> {
+                val source = if (analyticsTracker.isProductInTheLocalSearchResult(event.item.id)) {
+                    WooPosItemSource.SEARCH_RESULT_LOCAL
+                } else {
+                    WooPosItemSource.SEARCH_RESULT
+                }
+                handleItemClicked(event.item, source)
+            }
             WooPosItemsSearchUiEvent.LoadingErrorRetryButtonClicked -> {
                 val currentState = _viewState.value as? WooPosItemsSearchViewState.Error ?: return
                 performSearch(currentState.searchQuery)
