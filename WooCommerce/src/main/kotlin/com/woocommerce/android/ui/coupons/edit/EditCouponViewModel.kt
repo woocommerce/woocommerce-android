@@ -78,8 +78,6 @@ class EditCouponViewModel @Inject constructor(
 
     private val navArgs: EditCouponFragmentArgs by savedStateHandle.navArgs()
     private val mode: StateFlow<Mode> = savedStateHandle.getStateFlow(this, navArgs.mode, "key_mode")
-    private val isPOSMode: StateFlow<Boolean> =
-        savedStateHandle.getStateFlow(this, navArgs.isPOSMode, "key_is_pos_mode")
 
     private val storedCoupon: Deferred<Coupon> = async {
         with(mode.value) {
@@ -370,7 +368,7 @@ class EditCouponViewModel @Inject constructor(
     }
 
     private fun exitFlow(couponId: Long? = null) {
-        if (isPOSMode.value) {
+        if (navArgs.isPOSMode) {
             triggerEvent(NavigateBackToPOS(couponId))
         } else {
             triggerEvent(Exit)
