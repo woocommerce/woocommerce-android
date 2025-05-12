@@ -23,15 +23,16 @@ COMMON_PATTERNS=(
 if [ -z "${1:-}" ] || [ "$1" != "--job-type" ] || [ -z "${2:-}" ]; then
   echo "Error: Must specify --job-type [validation|build|lint]"
   buildkite-agent step cancel
-  exit 1
+  exit 15
 fi
 
 if [ "$2" = "validation" ]; then
-  # Check if changes are limited to documentation, tooling, non-code files, and localization files
+  # We should skip if changes are limited to documentation, tooling, non-code files, and localization files
   PATTERNS=("${COMMON_PATTERNS[@]}" "**/strings.xml")
   pr_changed_files --all-match "${PATTERNS[@]}"
 elif [ "$2" = "build" ] || [ "$2" = "lint" ]; then
-  # Check if changes are limited to documentation, tooling, and non-code files (NOT localization files)
+  # We should if changes are limited to documentation, tooling, and non-code files
+  # We'll let the job run (won't skip) if PR includes changes in localization files though
   PATTERNS=("${COMMON_PATTERNS[@]}")
   pr_changed_files --all-match "${PATTERNS[@]}"
 else
