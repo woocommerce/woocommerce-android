@@ -737,6 +737,14 @@
             android:name="purchaseData"
             app:argType="com.woocommerce.android.ui.orders.wooshippinglabels.purchased.PurchasedShippingLabelData" />
 
+        <argument
+            android:name="totalItems"
+            app:argType="integer" />
+
+        <argument
+            android:name="totalItemsCost"
+            app:argType="string" />
+
         <action
             android:id="@+id/action_wooShippingLabelPurchasedFragment_to_printShippingLabelInfoFragment"
             app:destination="@id/printShippingLabelInfoFragment" />

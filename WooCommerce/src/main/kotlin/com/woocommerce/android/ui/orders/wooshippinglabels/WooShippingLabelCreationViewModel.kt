@@ -561,7 +561,15 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                         rateSummary = selectedRate.summary,
                         shippingLines = currentViewState.shippingLines,
                         hazmatSelection = hazmatSelection
-                    ).let { triggerEvent(LabelPurchased(purchaseData = it)) }
+                    ).let {
+                        triggerEvent(
+                            LabelPurchased(
+                                purchaseData = it,
+                                totalItems = currentViewState.totalItems,
+                                totalItemsCost = currentViewState.totalItemsCost
+                            )
+                        )
+                    }
                 }
             }
     }
@@ -719,7 +727,12 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     }
 
     data object StartPackageSelection : Event()
-    data class LabelPurchased(val purchaseData: PurchasedShippingLabelData) : Event()
+    data class LabelPurchased(
+        val purchaseData: PurchasedShippingLabelData,
+        val totalItems: Int,
+        val totalItemsCost: String
+    ) : Event()
+
     data class StartOriginAddressEdit(val originAddress: OriginShippingAddress) : Event()
     data class StartDestinationAddressEdit(
         val destinationAddress: DestinationShippingAddress,

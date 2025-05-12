@@ -72,7 +72,9 @@ class WooShippingLabelCreationFragment : BaseFragment(), BackPressListener {
                 is WooShippingLabelCreationViewModel.LabelPurchased -> {
                     WooShippingLabelCreationFragmentDirections
                         .actionWooShippingLabelCreationFragmentToWooShippingLabelPurchasedFragment(
-                            purchaseData = event.purchaseData
+                            purchaseData = event.purchaseData,
+                            totalItems = event.totalItems,
+                            totalItemsCost = event.totalItemsCost
                         ).let { findNavController().navigateSafely(it) }
                 }
 

@@ -69,6 +69,8 @@ fun WooShippingLabelPurchasedScreen(viewModel: WooShippingLabelPurchasedViewMode
         isLoading = viewState.value?.isLoadingData == true,
         isPurchaseFinished = viewState.value?.isPurchaseFinished,
         shippingData = viewState.value?.shippingLabelData,
+        totalItems = viewState.value?.totalItems ?: 0,
+        totalItemsCost = viewState.value?.totalItemsCost ?: "",
         selectedLabelPaperSizeOption = viewState.value?.paperSizeOption ?: WooShippingLabelPaperSize.LEGAL,
         onLabelPaperSizeOptionSelected = { viewModel.onLabelPaperSizeOptionSelected(it) },
         onPrintShippingLabelClicked = { viewModel.onPrintShippingLabelClicked() },
@@ -84,6 +86,8 @@ internal fun WooShippingLabelPurchasedScreen(
     isLoading: Boolean,
     isPurchaseFinished: Boolean?,
     shippingData: PurchasedShippingLabelData?,
+    totalItems: Int,
+    totalItemsCost: String,
     selectedLabelPaperSizeOption: WooShippingLabelPaperSize,
     onLabelPaperSizeOptionSelected: (WooShippingLabelPaperSize) -> Unit,
     onPrintShippingLabelClicked: () -> Unit,
@@ -99,7 +103,8 @@ internal fun WooShippingLabelPurchasedScreen(
         sheetContent = {
             shippingData?.let {
                 ShipmentDetails(
-                    shipmentUI = shippingData.items,
+                    totalItems = totalItems,
+                    totalItemsCost = totalItemsCost,
                     shippingLines = shippingData.shippingLines,
                     shippingAddresses = shippingData.addresses,
                     shippingRateSummary = shippingData.rateSummary,
@@ -404,6 +409,8 @@ internal fun WooShippingLabelPurchasedScreenPreview() {
                     shippingLines = emptyList(),
                     hazmatSelection = null
                 ),
+                totalItems = 6,
+                totalItemsCost = "#92.78",
                 selectedLabelPaperSizeOption = selectedLabelPaperSizeOption.value,
                 onLabelPaperSizeOptionSelected = { selectedLabelPaperSizeOption.value = it },
                 onPrintShippingLabelClicked = {},
