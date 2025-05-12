@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.woopos.util.datastore
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
@@ -31,10 +30,6 @@ class WooPosPreferencesRepository @Inject constructor(private val dataStore: Dat
     }
 
     companion object {
-        val SIMPLE_PRODUCTS_ONLY_BANNER_HIDDEN_BY_USER = booleanPreferencesKey(
-            "is_simple_products_only_banner_hidden_by_user"
-        )
-
         val RECENT_PRODUCT_SEARCHES = stringPreferencesKey(
             "recent_product_searches"
         )
