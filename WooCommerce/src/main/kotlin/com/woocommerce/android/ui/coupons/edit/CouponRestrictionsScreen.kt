@@ -95,10 +95,10 @@ fun CouponRestrictionsScreen(
             verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
             modifier = Modifier
                 .padding(paddingValues)
+                .fillMaxSize()
                 .background(color = MaterialTheme.colors.surface)
                 .verticalScroll(scrollState)
                 .padding(vertical = dimensionResource(id = R.dimen.major_100))
-                .fillMaxSize()
         ) {
             SpendingRestrictionField(
                 value = viewState.restrictions.minimumAmount,
