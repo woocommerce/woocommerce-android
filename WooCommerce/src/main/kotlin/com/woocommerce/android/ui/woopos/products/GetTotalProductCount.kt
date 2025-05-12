@@ -4,13 +4,13 @@ import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductRestClient
+import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class GetTotalProductCount @Inject constructor(
-    private val productRestClient: ProductRestClient,
+    private val productStore: WCProductStore,
     private val selectedSite: SelectedSite
 ) {
     private val mutex = Mutex()
@@ -34,13 +34,13 @@ class GetTotalProductCount @Inject constructor(
         }
     }
 
-    private suspend fun fetchTotalProductCount(site: SiteModel): Result<Int> {
-        val response = productRestClient.fetchProductsTotals(site)
+    private suspend fun fetchTotalProductCount(site: SiteModel): Result<Int?> {
+        val response = productStore.fetchProductsCount(site)
 
         return if (response.isError) {
-            Result.failure(Exception(response.error.message.orEmpty()))
+            Result.failure(Exception(response.error.message))
         } else {
-            val count = response.result?.sumOf { it.total.toInt() } ?: 0
+            val count = response.model?.toInt()
             Result.success(count)
         }
     }
