@@ -3,6 +3,7 @@ package org.wordpress.android.fluxc.network.rest.wpcom.wc.product
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import com.google.gson.annotations.SerializedName
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCProductAction
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
@@ -25,6 +26,7 @@ import org.wordpress.android.fluxc.model.metadata.WCMetaData
 import org.wordpress.android.fluxc.model.metadata.WCMetaDataValue
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.PARSE_ERROR
+import org.wordpress.android.fluxc.network.PaginatedResponse
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.WPComGsonNetworkError
@@ -555,6 +557,21 @@ class ProductRestClient @Inject constructor(
         )
     }
 
+    class PaginatedProductsResponse(
+        @SerializedName("data")
+        override val items: Array<ProductDto>,
+        @SerializedName("totalCount")
+        override val totalCount: Int?,
+        @SerializedName("pageCount")
+        override val pageCount: Int?
+    ) : PaginatedResponse<ProductDto> // TODO: move out
+
+    class PaginatedProductWithMetadata(
+        override val items: Array<ProductWithMetaData>,
+        override val totalCount: Int?,
+        override val pageCount: Int?
+    ) : PaginatedResponse<ProductWithMetaData>
+
     /**
      * Makes a GET request to `/wp-json/wc/v3/products` retrieving a list of products for the given
      * WooCommerce [SiteModel].
@@ -574,7 +591,7 @@ class ProductRestClient @Inject constructor(
         filterOptions: Map<ProductFilterOption, String>? = null,
         includeTypes: List<WCProductStore.IncludeType> = emptyList(),
         orderCurrency: String? = null,
-    ): WooPayload<List<ProductWithMetaData>> {
+    ): WooPayload<PaginatedProductWithMetadata> {
         val params = buildProductParametersMap(
             pageSize = pageSize,
             sortType = sortType,
@@ -594,13 +611,17 @@ class ProductRestClient @Inject constructor(
             site = site,
             path = url,
             params = params,
-            clazz = Array<ProductApiResponse>::class.java
+            clazz = PaginatedProductsResponse::class.java
         )
 
-        return response.toWooPayload { products ->
-            products.map {
-                productDtoMapper.mapToModel(site.localId(), it)
-            }
+        return response.toWooPayload { response: PaginatedProductsResponse ->
+            PaginatedProductWithMetadata(
+                items = response.items.map { it: ProductDto ->
+                    productDtoMapper.mapToModel(site.localId(), it)
+                }.toTypedArray(),
+                totalCount = response.totalCount,
+                pageCount = response.pageCount
+            )
         }
     }
 

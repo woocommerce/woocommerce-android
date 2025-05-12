@@ -1256,9 +1256,9 @@ class WCProductStore @Inject internal constructor(
     suspend fun fetchProductListSynced(site: SiteModel, productIds: List<Long>): List<WCProductModel>? {
         return coroutineEngine.withDefaultContext(API, this, "fetchProductList") {
             wcProductRestClient.fetchProductsWithSyncRequest(site = site, includedProductIds = productIds)
-                .result
+                .result?.items
         }?.also {
-            productStorageHelper.upsertProducts(it)
+            productStorageHelper.upsertProducts(it.toList())
         }?.map { it.product }
     }
 
@@ -1705,8 +1705,9 @@ class WCProductStore @Inject internal constructor(
                         productStorageHelper.deleteProductsForSite(site)
                     }
 
-                    productStorageHelper.upsertProducts(response.result)
-                    val canLoadMore = response.result.size == pageSize
+                    val items = response.result.items
+                    productStorageHelper.upsertProducts(items.toList())
+                    val canLoadMore = items.size == pageSize
                     WooResult(canLoadMore)
                 }
 
@@ -1746,7 +1747,7 @@ class WCProductStore @Inject internal constructor(
             when {
                 response.isError -> WooResult(response.error)
                 response.result != null -> {
-                    WooResult(response.result.map { it.product })
+                    WooResult(response.result.items.map { it.product })
                 }
                 else -> WooResult(WooError(WooErrorType.GENERIC_ERROR, UNKNOWN))
             }
@@ -1774,14 +1775,15 @@ class WCProductStore @Inject internal constructor(
             when {
                 response.isError -> WooResult(response.error)
                 response.result != null -> {
-                    productStorageHelper.upsertProducts(response.result)
-                    val productIds = response.result.map { it.product.remoteProductId }
+                    val items = response.result.items
+                    productStorageHelper.upsertProducts(items.toList())
+                    val productIds = items.map { it.product.remoteProductId }
                     val products = if (productIds.isNotEmpty()) {
                         productsDao.getProducts(localSiteId = site.id, remoteProductIds = productIds)
                     } else {
                         emptyList()
                     }
-                    val canLoadMore = response.result.size == pageSize
+                    val canLoadMore = items.size == pageSize
                     WooResult(ProductSearchResult(products, canLoadMore))
                 }
 
@@ -1814,14 +1816,15 @@ class WCProductStore @Inject internal constructor(
             when {
                 response.isError -> WooResult(response.error)
                 response.result != null -> {
-                    productStorageHelper.upsertProducts(response.result)
-                    val productIds = response.result.map { it.product.remoteProductId }
+                    val items = response.result.items
+                    productStorageHelper.upsertProducts(items.toList())
+                    val productIds = items.map { it.product.remoteProductId }
                     val products = if (productIds.isNotEmpty()) {
                         productsDao.getProducts(localSiteId = site.id, remoteProductIds = productIds)
                     } else {
                         emptyList()
                     }
-                    val canLoadMore = response.result.size == pageSize
+                    val canLoadMore = items.size == pageSize
                     WooResult(ProductSearchResult(products, canLoadMore))
                 }
 

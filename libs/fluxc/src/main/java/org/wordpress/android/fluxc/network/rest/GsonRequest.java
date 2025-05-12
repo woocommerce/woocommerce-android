@@ -10,11 +10,14 @@ import com.android.volley.Response.Listener;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 
 import org.wordpress.android.fluxc.logging.FluxCCrashLogger;
 import org.wordpress.android.fluxc.logging.FluxCCrashLoggerProvider;
 import org.wordpress.android.fluxc.network.BaseRequest;
+import org.wordpress.android.fluxc.network.PaginatedResponse;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
@@ -108,11 +111,28 @@ public abstract class GsonRequest<T> extends BaseRequest<T> {
     protected Response<T> parseNetworkResponse(NetworkResponse response) {
         try {
             String json = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
+            JsonElement jsonElement = mGson.fromJson(json, JsonElement.class);
+            
+            // If the response is already a JsonObject, use it directly
+            JsonObject jsonObject;
+            if (jsonElement.isJsonObject()) {
+                jsonObject = jsonElement.getAsJsonObject();
+            } else {
+                // If it's not a JsonObject (e.g., it's a JsonArray), wrap it in a JsonObject with a "data" field
+                jsonObject = new JsonObject();
+                jsonObject.add("data", jsonElement);
+            }
+            
+            if (response.headers.containsKey("x-wp-total") && response.headers.containsKey("x-wp-totalpages")) {
+                jsonObject.add("totalCount", mGson.fromJson(response.headers.get("x-wp-total"), JsonElement.class));
+                jsonObject.add("pageCount", mGson.fromJson(response.headers.get("x-wp-totalpages"), JsonElement.class));
+            }
+            
             T res;
             if (mClass == null) {
-                res = mGson.fromJson(json, mType);
+                res = mGson.fromJson(jsonObject, mType);
             } else {
-                res = mGson.fromJson(json, mClass);
+                res = mGson.fromJson(jsonObject, mClass);
             }
             return Response.success(res, createCacheEntry(response));
         } catch (UnsupportedEncodingException | JsonSyntaxException e) {
