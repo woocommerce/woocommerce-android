@@ -100,7 +100,7 @@ fun WooShippingLabelCreationScreen(viewModel: WooShippingLabelCreationViewModel)
             WooShippingLabelCreationScreen(
                 onSelectPackageClick = viewModel::onSelectPackageClicked,
                 onPurchaseShippingLabel = viewModel::onPurchaseShippingLabel,
-                shippableItems = viewState.shippableItems,
+                shipmentUI = viewState.shipmentUI,
                 shippingLines = viewState.shippingLines,
                 shippingAddresses = viewState.shippingAddresses,
                 shippingRatesState = viewState.shippingRates,
@@ -142,7 +142,7 @@ fun WooShippingLabelCreationScreen(viewModel: WooShippingLabelCreationViewModel)
 
 @Composable
 fun WooShippingLabelCreationScreen(
-    shippableItems: ShippableItemsUI,
+    shipmentUI: ShipmentUI,
     shippingLines: List<ShippingLineSummaryUI>,
     shippingRatesState: WooShippingLabelCreationViewModel.ShippingRatesState,
     packageSelectionState: PackageSelectionState,
@@ -209,7 +209,7 @@ fun WooShippingLabelCreationScreen(
 
     Box(modifier = Modifier.fillMaxSize()) {
         LabelCreationScreenWithBottomSheet(
-            shippableItems = shippableItems,
+            shipmentUI = shipmentUI,
             modifier = modifier,
             onSelectPackageClick = onSelectPackageClick,
             scaffoldState = scaffoldState,
@@ -290,7 +290,7 @@ fun WooShippingLabelCreationScreen(
 @Suppress("CyclomaticComplexMethod")
 @Composable
 private fun LabelCreationScreenWithBottomSheet(
-    shippableItems: ShippableItemsUI,
+    shipmentUI: ShipmentUI,
     shippingLines: List<ShippingLineSummaryUI>,
     shippingRatesState: WooShippingLabelCreationViewModel.ShippingRatesState,
     packageSelectionState: PackageSelectionState,
@@ -358,7 +358,7 @@ private fun LabelCreationScreenWithBottomSheet(
                 onEditOriginAddress = onEditOriginAddress
             ) {
                 ShipmentDetails(
-                    shippableItems = shippableItems,
+                    shipmentUI = shipmentUI,
                     shippingLines = shippingLines,
                     shipFromSelectionBottomSheetState = shipFromSelectionBottomSheetState,
                     onMarkOrderCompleteChange = onMarkOrderCompleteChange,
@@ -414,7 +414,7 @@ private fun LabelCreationScreenWithBottomSheet(
                 }
 
                 ShippingProductsCard(
-                    shippableItems = shippableItems,
+                    shippableItems = shipmentUI,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(
@@ -796,7 +796,7 @@ internal fun ErrorScreen(
 private fun WooShippingLabelCreationScreenPreview() {
     WooThemeWithBackground {
         WooShippingLabelCreationScreen(
-            shippableItems = ShippableItemsUI(
+            shipmentUI = ShipmentUI(
                 shippableItems = generateItems(6),
                 formattedTotalWeight = "8.5kg",
                 formattedTotalPrice = "$92.78"

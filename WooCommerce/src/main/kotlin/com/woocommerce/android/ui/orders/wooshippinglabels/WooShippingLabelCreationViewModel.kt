@@ -412,7 +412,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             shippableItems.value = shipments.value.map { it.items }.flatten()
 
             val shippingLineSummary = order.getShippingLinesSummary(currencyFormatter)
-            val shippableItemsUI = shippableItems.value.toUIModel(
+            val shipmentUI = shippableItems.value.toUIModel(
                 currencyFormatter,
                 storeOptions.dimensionUnit,
                 storeOptions.weightUnit
@@ -420,7 +420,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             )
 
             return@combine WooShippingViewState.DataState(
-                shippableItems = shippableItemsUI,
+                shipmentUI = shipmentUI,
                 shippingLines = shippingLineSummary,
                 shippingAddresses = addresses,
                 shippingRates = shippingRates,
@@ -554,7 +554,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                         carrierId = purchasedLabel.carrierId,
                         trackingNumber = purchasedLabel.tracking,
                         addresses = currentViewState.shippingAddresses,
-                        items = currentViewState.shippableItems,
+                        items = currentViewState.shipmentUI,
                         rateSummary = selectedRate.summary,
                         shippingLines = currentViewState.shippingLines,
                         hazmatSelection = hazmatSelection
@@ -744,7 +744,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         data object Error : WooShippingViewState()
         data object Loading : WooShippingViewState()
         data class DataState(
-            val shippableItems: ShippableItemsUI,
+            val shipmentUI: ShipmentUI,
             val shippingLines: List<ShippingLineSummaryUI>,
             val shippingAddresses: WooShippingAddresses,
             val shippingRates: ShippingRatesState,
@@ -872,7 +872,7 @@ data class ShippableItemUI(
 ) : Parcelable
 
 @Parcelize
-data class ShippableItemsUI(
+data class ShipmentUI(
     val shippableItems: List<ShippableItemUI>,
     val formattedTotalWeight: String,
     val formattedTotalPrice: String
