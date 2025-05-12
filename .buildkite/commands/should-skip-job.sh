@@ -26,17 +26,21 @@ if [ -z "${1:-}" ] || [ "$1" != "--job-type" ] || [ -z "${2:-}" ]; then
   exit 15
 fi
 
-if [ "$2" = "validation" ]; then
-  # We should skip if changes are limited to documentation, tooling, non-code files, and localization files
-  PATTERNS=("${COMMON_PATTERNS[@]}" "**/strings.xml")
-  pr_changed_files --all-match "${PATTERNS[@]}"
-elif [ "$2" = "build" ] || [ "$2" = "lint" ]; then
-  # We should if changes are limited to documentation, tooling, and non-code files
-  # We'll let the job run (won't skip) if PR includes changes in localization files though
-  PATTERNS=("${COMMON_PATTERNS[@]}")
-  pr_changed_files --all-match "${PATTERNS[@]}"
-else
-  echo "Error: Job type must be either 'validation', 'build', or 'lint'"
-  buildkite-agent step cancel
-  exit 1
-fi
+case "$2" in
+  "validation")
+    # We should skip if changes are limited to documentation, tooling, non-code files, and localization files
+    PATTERNS=("${COMMON_PATTERNS[@]}" "**/strings.xml")
+    pr_changed_files --all-match "${PATTERNS[@]}"
+    ;;
+  "build"|"lint")
+    # We should if changes are limited to documentation, tooling, and non-code files
+    # We'll let the job run (won't skip) if PR includes changes in localization files though
+    PATTERNS=("${COMMON_PATTERNS[@]}")
+    pr_changed_files --all-match "${PATTERNS[@]}"
+    ;;
+  *)
+    echo "Error: Job type must be either 'validation', 'build', or 'lint'"
+    buildkite-agent step cancel
+    exit 1
+    ;;
+esac
