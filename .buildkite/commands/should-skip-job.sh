@@ -1,8 +1,8 @@
 #!/bin/bash -eu
 
-# Usage: should-skip-job.sh [--validation|--build]
-# --validation: Skip when changes are limited to documentation, tooling, non-code files, and localization files
-# --build: Skip when changes are limited to documentation, tooling, and non-code files
+# Usage: should-skip-job.sh --job-type [validation|build]
+# --job-type validation: Skip when changes are limited to documentation, tooling, non-code files, and localization files
+# --job-type build: Skip when changes are limited to documentation, tooling, and non-code files
 
 COMMON_PATTERNS=(
   "*.md"
@@ -18,15 +18,22 @@ COMMON_PATTERNS=(
   "version.properties"
 )
 
-if [ "$1" = "--validation" ]; then
+if [ "$1" != "--job-type" ]; then
+  echo "Error: Must specify --job-type [validation|build]"
+  buildkite-agent step cancel
+  exit 1
+fi
+
+if [ "$2" = "validation" ]; then
   # Check if changes are limited to documentation, tooling, non-code files, and localization files
   PATTERNS=("${COMMON_PATTERNS[@]}" "**/strings.xml")
   pr_changed_files --all-match "${PATTERNS[@]}"
-elif [ "$1" = "--build" ]; then
+elif [ "$2" = "build" ]; then
   # Check if changes are limited to documentation, tooling, and non-code files (NOT localization files)
   PATTERNS=("${COMMON_PATTERNS[@]}")
   pr_changed_files --all-match "${PATTERNS[@]}"
 else
-  echo "Error: Must specify either --validation or --build"
+  echo "Error: Job type must be either 'validation' or 'build'"
+  buildkite-agent step cancel
   exit 1
 fi
