@@ -8,12 +8,15 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventCons
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ITEM_LIST_TYPE
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ITEM_LIST_TYPE_PRODUCTS
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
+import java.util.concurrent.atomic.AtomicReference
 import javax.inject.Inject
 
 class WooPosItemsSearchAnalyticsTracker @Inject constructor(
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val getTotalProductCount: GetTotalProductCount
 ) {
+    private val localSearchProductIds = AtomicReference<List<Long>>(emptyList())
+
     suspend fun trackItemsNextPageLoaded() {
         val event = ItemsNextPageLoaded.apply {
             addProperties(
@@ -42,5 +45,11 @@ class WooPosItemsSearchAnalyticsTracker @Inject constructor(
             millisecondsSinceRequestSent = searchTimeMillis
         )
         analyticsTracker.track(event)
+    }
+
+    fun isProductInTheLocalSearchResult(productId: Long): Boolean = localSearchProductIds.get().contains(productId)
+
+    fun storedLocalSearchResultIds(ids: List<Long>) {
+        localSearchProductIds.set(ids)
     }
 }

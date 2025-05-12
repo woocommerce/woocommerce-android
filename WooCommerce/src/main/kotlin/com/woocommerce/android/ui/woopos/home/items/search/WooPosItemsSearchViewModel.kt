@@ -112,6 +112,8 @@ class WooPosItemsSearchViewModel @Inject constructor(
 
             if (query != currentQuery.get()) return@launch
 
+            analyticsTracker.storedLocalSearchResultIds(localProducts.map { it.remoteId })
+
             if (localProducts.isEmpty()) {
                 _viewState.value = WooPosItemsSearchViewState.Loading
             } else {
