@@ -1,7 +1,7 @@
 #!/bin/bash -u
 
 # Check if we can skip this job based on PR changes
-if .buildkite/commands/should-skip-job.sh --job-type validation; then
+if .buildkite/commands/should-skip-job.sh --job-type lint; then
   message="Skipping Lint - no relevant files changed"
   echo "$message" | buildkite-agent annotate --style "info" --context "skip-lint"
   echo "$message"
