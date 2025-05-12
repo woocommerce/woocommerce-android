@@ -100,11 +100,13 @@ fun EditCouponScreen(
 ) {
     val scrollState = rememberScrollState()
     Scaffold(
-        topBar = { Toolbar(
-            title = viewState.screenTitle,
-            onNavigationButtonClick = { onBackPressed() },
-            navigationIcon = Icons.Default.Clear
-        ) }
+        topBar = {
+            Toolbar(
+                title = viewState.screenTitle,
+                onNavigationButtonClick = { onBackPressed() },
+                navigationIcon = Icons.Default.Clear
+            )
+        }
     ) { paddingValues ->
         Column(
             verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
