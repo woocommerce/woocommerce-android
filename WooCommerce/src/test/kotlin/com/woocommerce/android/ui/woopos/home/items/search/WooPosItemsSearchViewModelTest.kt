@@ -16,10 +16,6 @@ import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNaviga
 import com.woocommerce.android.ui.woopos.products.GetTotalProductCount
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart.WooPosItemSource
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemsNextPageLoaded
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.PreSearchRecentTermTapped
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SearchRemoteResultsFetched
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -35,7 +31,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
-import org.mockito.kotlin.argThat
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -57,7 +52,7 @@ class WooPosItemsSearchViewModelTest {
     private val mockParentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock()
     private val mockNavigator: WooPosItemsNavigator = mock()
     private val mockSearchHelper: com.woocommerce.android.ui.woopos.home.items.WooPosItemsSearchHelper = mock()
-    private val mockAnalyticsTracker: WooPosAnalyticsTracker = mock()
+    private val mockAnalyticsTracker: WooPosItemsSearchAnalyticsTracker = mock()
     private val getTotalProductCount: GetTotalProductCount = mock {
         onBlocking { invoke() }.thenReturn(23)
     }
@@ -374,13 +369,7 @@ class WooPosItemsSearchViewModelTest {
         advanceUntilIdle()
 
         // THEN
-        verify(mockAnalyticsTracker).track(
-            argThat { event ->
-                event is ItemsNextPageLoaded &&
-                    event.properties["item_list_type"] == "products" &&
-                    event.properties["search"] == "true"
-            }
-        )
+        verify(mockAnalyticsTracker).trackItemsNextPageLoaded()
     }
 
     @Test
@@ -710,12 +699,7 @@ class WooPosItemsSearchViewModelTest {
         advanceUntilIdle()
 
         // THEN
-        verify(mockAnalyticsTracker).track(
-            argThat { event ->
-                event is PreSearchRecentTermTapped &&
-                    event.properties["item_list_type"] == "products"
-            }
-        )
+        verify(mockAnalyticsTracker).trackRecentSearchSelected()
     }
 
     @Test
@@ -746,13 +730,7 @@ class WooPosItemsSearchViewModelTest {
         advanceUntilIdle()
 
         // THEN
-        verify(mockAnalyticsTracker).track(
-            argThat { event ->
-                event is SearchRemoteResultsFetched &&
-                    event.totalProductsCount == totalProductsCount &&
-                    event.properties["item_list_type"] == "products"
-            }
-        )
+        verify(mockAnalyticsTracker).trackSearchPerformance(any())
     }
 
     @Test
@@ -896,6 +874,5 @@ class WooPosItemsSearchViewModelTest {
         navigator = mockNavigator,
         searchHelper = mockSearchHelper,
         analyticsTracker = mockAnalyticsTracker,
-        getTotalProductCount = getTotalProductCount
     )
 }
