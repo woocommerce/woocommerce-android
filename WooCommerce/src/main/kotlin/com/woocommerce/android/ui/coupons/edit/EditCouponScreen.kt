@@ -113,6 +113,7 @@ fun EditCouponScreen(
                 .fillMaxSize()
                 .background(color = MaterialTheme.colors.surface)
                 .verticalScroll(scrollState)
+                .padding(vertical = dimensionResource(id = R.dimen.major_100))
         ) {
             DetailsSection(
                 viewState = viewState,
