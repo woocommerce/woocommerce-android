@@ -88,6 +88,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             enum class WooPosItemSource(val value: String) {
                 PRODUCT_LIST("list"),
                 SEARCH_RESULT("search_result"),
+                SEARCH_RESULT_LOCAL("search_result_local"),
                 POPULAR_PRODUCTS("pre_search_list"),
                 COUPON_LIST("coupons");
 
