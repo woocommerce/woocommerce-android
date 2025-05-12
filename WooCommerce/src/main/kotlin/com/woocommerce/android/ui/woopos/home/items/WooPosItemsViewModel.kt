@@ -69,6 +69,8 @@ class WooPosItemsViewModel @Inject constructor(
                 searchHelper.onSearchChanged("", 0)
                 trackSearchIconClicked()
             }
+
+            is WooPosItemsUIEvent.AddCouponIconClicked -> error("Coupon creation flow is not implemented")
         }
     }
 

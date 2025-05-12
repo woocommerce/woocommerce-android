@@ -6,6 +6,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearch
 sealed class WooPosItemsViewState(
     open val tabs: List<Tab>,
     open val search: SearchState,
+    open val isAddCouponVisible: Boolean,
 ) {
     data class ProductList(
         override val tabs: List<Tab>,
@@ -13,6 +14,7 @@ sealed class WooPosItemsViewState(
     ) : WooPosItemsViewState(
         tabs = tabs,
         search = search,
+        isAddCouponVisible = true,
     )
 
     data class CouponList(
@@ -20,6 +22,7 @@ sealed class WooPosItemsViewState(
     ) : WooPosItemsViewState(
         tabs = tabs,
         search = SearchState.Hidden,
+        isAddCouponVisible = true,
     )
 
     data class Tab(@StringRes val stringId: Int, val highlightLevel: HighlightLevel) {
