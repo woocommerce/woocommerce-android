@@ -2,6 +2,8 @@ package org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords
 
 import com.android.volley.NetworkResponse
 import com.android.volley.VolleyError
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
@@ -11,12 +13,14 @@ import org.wordpress.android.fluxc.utils.AppLogWrapper
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.AppLog.T.MAIN
 import javax.inject.Inject
+import javax.inject.Singleton
 
 private const val UNAUTHORIZED = 401
 private const val CONFLICT = 409
 private const val NOT_FOUND = 404
 private const val APPLICATION_PASSWORDS_DISABLED_ERROR_CODE = "application_passwords_disabled"
 
+@Singleton
 internal class ApplicationPasswordsManager @Inject constructor(
     private val applicationPasswordsStore: ApplicationPasswordsStore,
     private val jetpackApplicationPasswordsRestClient: JetpackApplicationPasswordsRestClient,
@@ -24,6 +28,8 @@ internal class ApplicationPasswordsManager @Inject constructor(
     private val configuration: ApplicationPasswordsConfiguration,
     private val appLogWrapper: AppLogWrapper
 ) {
+    private val mutexLock = Mutex()
+
     private val applicationName
         get() = configuration.applicationName
 
@@ -41,7 +47,7 @@ internal class ApplicationPasswordsManager @Inject constructor(
     @Suppress("ReturnCount")
     suspend fun getApplicationCredentials(
         site: SiteModel
-    ): ApplicationPasswordCreationResult {
+    ): ApplicationPasswordCreationResult = mutexLock.withLock {
         if (site.isWPCom) return ApplicationPasswordCreationResult.NotSupported(
             WPAPINetworkError(
                 BaseNetworkError(
