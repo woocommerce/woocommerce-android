@@ -101,6 +101,8 @@ fun WooShippingLabelCreationScreen(viewModel: WooShippingLabelCreationViewModel)
                 onSelectPackageClick = viewModel::onSelectPackageClicked,
                 onPurchaseShippingLabel = viewModel::onPurchaseShippingLabel,
                 shipmentUIList = viewState.shipmentUIList,
+                totalItems = viewState.totalItems,
+                totalItemsCost = viewState.totalItemsCost,
                 shippingLines = viewState.shippingLines,
                 shippingAddresses = viewState.shippingAddresses,
                 shippingRatesState = viewState.shippingRates,
@@ -143,6 +145,8 @@ fun WooShippingLabelCreationScreen(viewModel: WooShippingLabelCreationViewModel)
 @Composable
 fun WooShippingLabelCreationScreen(
     shipmentUIList: List<ShipmentUI>,
+    totalItems: Int,
+    totalItemsCost: String,
     shippingLines: List<ShippingLineSummaryUI>,
     shippingRatesState: WooShippingLabelCreationViewModel.ShippingRatesState,
     packageSelectionState: PackageSelectionState,
@@ -210,6 +214,8 @@ fun WooShippingLabelCreationScreen(
     Box(modifier = Modifier.fillMaxSize()) {
         LabelCreationScreenWithBottomSheet(
             shipmentUIList = shipmentUIList,
+            totalItems = totalItems,
+            totalItemsCost = totalItemsCost,
             modifier = modifier,
             onSelectPackageClick = onSelectPackageClick,
             scaffoldState = scaffoldState,
@@ -291,6 +297,8 @@ fun WooShippingLabelCreationScreen(
 @Composable
 private fun LabelCreationScreenWithBottomSheet(
     shipmentUIList: List<ShipmentUI>,
+    totalItems: Int,
+    totalItemsCost: String,
     shippingLines: List<ShippingLineSummaryUI>,
     shippingRatesState: WooShippingLabelCreationViewModel.ShippingRatesState,
     packageSelectionState: PackageSelectionState,
@@ -358,7 +366,8 @@ private fun LabelCreationScreenWithBottomSheet(
                 onEditOriginAddress = onEditOriginAddress
             ) {
                 ShipmentDetails(
-                    shipmentUI = shipmentUI,
+                    totalItems = totalItems,
+                    totalItemsCost = totalItemsCost,
                     shippingLines = shippingLines,
                     shipFromSelectionBottomSheetState = shipFromSelectionBottomSheetState,
                     onMarkOrderCompleteChange = onMarkOrderCompleteChange,
@@ -803,6 +812,8 @@ private fun WooShippingLabelCreationScreenPreview() {
                     formattedTotalPrice = "$92.78"
                 )
             ),
+            totalItems = 6,
+            totalItemsCost = "$92.78",
             shippingLines = getShippingLines(),
             modifier = Modifier.fillMaxSize(),
             onSelectPackageClick = {},

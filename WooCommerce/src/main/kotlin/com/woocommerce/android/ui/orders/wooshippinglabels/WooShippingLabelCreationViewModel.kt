@@ -421,6 +421,8 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
             return@combine WooShippingViewState.DataState(
                 shipmentUIList = shipmentUIList,
+                totalItems = shipmentItems.value.flatten().sumByFloat { it.quantity }.toInt(),
+                totalItemsCost = shipmentItems.value.flatten().getFormattedTotalPrice(currencyFormatter),
                 shippingLines = shippingLineSummary,
                 shippingAddresses = addresses,
                 shippingRates = shippingRates,
@@ -746,6 +748,8 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         data object Loading : WooShippingViewState()
         data class DataState(
             val shipmentUIList: List<ShipmentUI>,
+            val totalItems: Int,
+            val totalItemsCost: String,
             val shippingLines: List<ShippingLineSummaryUI>,
             val shippingAddresses: WooShippingAddresses,
             val shippingRates: ShippingRatesState,

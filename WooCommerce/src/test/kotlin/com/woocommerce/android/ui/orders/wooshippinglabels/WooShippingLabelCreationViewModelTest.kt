@@ -1143,6 +1143,6 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         val currentViewState = sut.viewState.value
         assert(currentViewState is DataState)
         val dataState = currentViewState as DataState
-        assertThat(dataState.shipmentUI.totalItemQuantity).isEqualTo(expectedItemQuantity)
+        assertThat(dataState.totalItems).isEqualTo(expectedItemQuantity)
     }
 }
