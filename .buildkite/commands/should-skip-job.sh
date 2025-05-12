@@ -19,7 +19,8 @@ COMMON_PATTERNS=(
   "version.properties"
 )
 
-if [ "$1" != "--job-type" ]; then
+# Check if arguments are valid
+if [ -z "${1:-}" ] || [ "$1" != "--job-type" ] || [ -z "${2:-}" ]; then
   echo "Error: Must specify --job-type [validation|build|lint]"
   buildkite-agent step cancel
   exit 1
