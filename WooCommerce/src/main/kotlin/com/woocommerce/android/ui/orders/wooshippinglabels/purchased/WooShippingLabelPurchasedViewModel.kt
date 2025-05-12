@@ -89,9 +89,13 @@ class WooShippingLabelPurchasedViewModel @Inject constructor(
         } ?: triggerEvent(ShowError(R.string.shipping_label_purchased_pickup_error))
     }
 
-    fun onRefundClicked() { triggerEvent(StartRefundRequest) }
+    fun onRefundClicked() {
+        triggerEvent(StartRefundRequest)
+    }
 
-    fun onLearnMoreClicked() { triggerEvent(OpenLearnMoreScreen) }
+    fun onLearnMoreClicked() {
+        triggerEvent(OpenLearnMoreScreen)
+    }
 
     private fun observeShippingLabelPurchaseStatus() {
         launch {
@@ -103,9 +107,11 @@ class WooShippingLabelPurchasedViewModel @Inject constructor(
                     PurchaseInProgress -> {
                         _viewState.update { it.copy(isPurchaseFinished = false) }
                     }
+
                     Purchased -> {
                         _viewState.update { it.copy(isPurchaseFinished = true) }
                     }
+
                     else -> {
                         _viewState.update { it.copy(isPurchaseFinished = null) }
                     }
