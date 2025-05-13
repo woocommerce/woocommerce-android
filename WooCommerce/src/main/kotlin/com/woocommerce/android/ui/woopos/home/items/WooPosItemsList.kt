@@ -361,6 +361,7 @@ private fun CouponInfo(name: String, summary: String, expiredState: Coupon.Expir
         WooPosText(
             text = summary,
             maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
             style = WooPosTypography.BodyLarge,
             color = if (expiredState is Coupon.ExpiredState.Expired) {
                 WooPosTheme.colors.onDisabledContainer
