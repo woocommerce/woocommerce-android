@@ -12,5 +12,6 @@ data class UpdateOrderRequest(
     val couponLines: List<CouponLine>? = null,
     val shippingLines: List<ShippingLine>? = null,
     val customerNote: String? = null,
-    val giftCard: String? = null
+    val giftCard: String? = null,
+    val createdVia: String? = null
 )

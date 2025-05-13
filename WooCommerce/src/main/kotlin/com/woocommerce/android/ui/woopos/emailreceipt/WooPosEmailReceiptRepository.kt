@@ -5,6 +5,7 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditRepository
+import com.woocommerce.android.ui.orders.creation.OrderCreationSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -45,7 +46,8 @@ class WooPosEmailReceiptRepository @Inject constructor(
         val updatedBillingAddress = order.billingAddress.copy(email = email)
         val updatedCustomer = order.customer?.copy(billingAddress = updatedBillingAddress)
         return orderCreateEditRepository.createOrUpdateOrder(
-            order = order.copy(customer = updatedCustomer)
+            order = order.copy(customer = updatedCustomer),
+            source = OrderCreationSource.POINT_OF_SALE
         )
     }
 
