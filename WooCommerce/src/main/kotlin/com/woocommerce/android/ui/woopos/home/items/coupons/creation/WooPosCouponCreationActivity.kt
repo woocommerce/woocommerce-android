@@ -18,7 +18,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.adjustActivityTransition
 import com.woocommerce.android.extensions.getColorCompat
 import com.woocommerce.android.ui.coupons.create.CouponTypePickerFragmentArgs
-import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.woopos.util.ext.isGestureNavigation
 import com.woocommerce.android.util.WooLog
 import dagger.hilt.android.AndroidEntryPoint
@@ -36,22 +35,6 @@ class WooPosCouponCreationActivity : AppCompatActivity(R.layout.activity_woo_pos
 
         setupNavGraph(navHostFragment)
         observeResult(navHostFragment)
-    }
-
-    // Copied from MainActivity. Ensures SimpleTextEditorFragment handles backpresses as expected.
-    @Deprecated("Deprecated in Java")
-    override fun onBackPressed() {
-        val navHostFragment = supportFragmentManager.primaryNavigationFragment
-        if (navHostFragment?.childFragmentManager?.fragments?.isNotEmpty() == true) {
-            navHostFragment.childFragmentManager.fragments[0]?.let { fragment ->
-                if (fragment is BackPressListener && !(fragment as BackPressListener).onRequestAllowBackPress()) {
-                    return
-                }
-            }
-        }
-
-        @Suppress("DEPRECATION")
-        super.onBackPressed()
     }
 
     private fun setupTopAndBottomInsets() {
