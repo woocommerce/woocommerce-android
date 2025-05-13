@@ -143,4 +143,25 @@ class OrderEntityTest {
         assertEquals("Flat Rate Shipping", shippingLinesList[0].methodTitle)
         assertEquals("Local Pickup Shipping", shippingLinesList[1].methodTitle)
     }
+
+    @Test
+    fun testGetTaxLinesHandlesInvalidJson() {
+        // GIVEN
+        val model = OrderTestUtils.generateSampleOrder(61).copy(
+            taxLines = """[{
+            "id": 1,
+            "rate_id": "stripe_tax_for_woocommerce__shipping_tax__0__Shipping Tax",
+            "code": "TAX",
+            "title": "Shipping Tax",
+            "total": "5.00",
+            "compound": false
+        }]"""
+        )
+
+        // WHEN
+        val taxLines = model.getTaxLineList()
+
+        // THEN
+        assertEquals(0, taxLines.size, "Should return empty list when tax lines contains invalid values")
+    }
 }
