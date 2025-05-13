@@ -41,6 +41,6 @@ case "$2" in
   *)
     echo "Error: Job type must be either 'validation', 'build', or 'lint'"
     buildkite-agent step cancel
-    exit 1
+    exit 15
     ;;
 esac
