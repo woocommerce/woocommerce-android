@@ -78,9 +78,9 @@ class WooPosCouponCreationActivity : AppCompatActivity(R.layout.activity_woo_pos
     override fun finish() {
         super.finish()
         adjustActivityTransition(
-            overrideTransitionOpen = true,
-            enterAnim = android.R.anim.fade_in,
-            exitAnim = android.R.anim.fade_out,
+            overrideTransitionOpen = false,
+            enterAnim = R.anim.woopos_slide_in_left,
+            exitAnim = R.anim.woopos_slide_out_right
         )
     }
 
