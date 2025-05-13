@@ -4,6 +4,7 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditRepository
+import com.woocommerce.android.ui.orders.creation.OrderCreationSource
 import com.woocommerce.android.ui.products.ProductHelper
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetCouponById
@@ -82,6 +83,7 @@ class WooPosTotalsRepositoryTest {
         val orderCapture = argumentCaptor<Order>()
         verify(orderCreateEditRepository).createOrUpdateOrder(
             orderCapture.capture(),
+            eq(OrderCreationSource.POINT_OF_SALE),
             eq("")
         )
 
@@ -109,6 +111,7 @@ class WooPosTotalsRepositoryTest {
         val orderCapture = argumentCaptor<Order>()
         verify(orderCreateEditRepository).createOrUpdateOrder(
             orderCapture.capture(),
+            eq(OrderCreationSource.POINT_OF_SALE),
             eq("")
         )
 
@@ -152,6 +155,7 @@ class WooPosTotalsRepositoryTest {
         val orderCapture = argumentCaptor<Order>()
         verify(orderCreateEditRepository).createOrUpdateOrder(
             orderCapture.capture(),
+            eq(OrderCreationSource.POINT_OF_SALE),
             eq("")
         )
 
@@ -175,7 +179,13 @@ class WooPosTotalsRepositoryTest {
             )
         )
         val mockOrder: Order = mock()
-        whenever(orderCreateEditRepository.createOrUpdateOrder(any(), eq(""))).thenReturn(Result.success(mockOrder))
+        whenever(
+            orderCreateEditRepository.createOrUpdateOrder(
+                any(),
+                eq(OrderCreationSource.POINT_OF_SALE),
+                eq("")
+            )
+        ).thenReturn(Result.success(mockOrder))
 
         // WHEN
         val result = runCatching { repository.createOrderFromCartItems(itemClickedData) }
@@ -184,7 +194,11 @@ class WooPosTotalsRepositoryTest {
         assertThat(result.isFailure).isTrue()
         assertThat(result.exceptionOrNull()).isInstanceOf(IllegalStateException::class.java)
         assertThat(result.exceptionOrNull()?.message).isEqualTo("Invalid item ID")
-        verify(orderCreateEditRepository, never()).createOrUpdateOrder(any(), eq(""))
+        verify(orderCreateEditRepository, never()).createOrUpdateOrder(
+            any(),
+            eq(OrderCreationSource.POINT_OF_SALE),
+            eq("")
+        )
     }
 
     @Test
@@ -207,6 +221,7 @@ class WooPosTotalsRepositoryTest {
         val orderCapture = argumentCaptor<Order>()
         verify(orderCreateEditRepository).createOrUpdateOrder(
             orderCapture.capture(),
+            eq(OrderCreationSource.POINT_OF_SALE),
             eq("")
         )
 
