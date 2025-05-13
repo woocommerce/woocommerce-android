@@ -1774,14 +1774,15 @@ class WCProductStore @Inject internal constructor(
             when {
                 response.isError -> WooResult(response.error)
                 response.result != null -> {
-                    productStorageHelper.upsertProducts(response.result)
-                    val productIds = response.result.map { it.product.remoteProductId }
+                    val productsWithTotal = response.result
+                    productStorageHelper.upsertProducts(productsWithTotal)
+                    val productIds = productsWithTotal.map { it.product.remoteProductId }
                     val products = if (productIds.isNotEmpty()) {
                         productsDao.getProducts(localSiteId = site.id, remoteProductIds = productIds)
                     } else {
                         emptyList()
                     }
-                    val canLoadMore = response.result.size == pageSize
+                    val canLoadMore = productsWithTotal.size == pageSize
                     WooResult(ProductSearchResult(products, canLoadMore))
                 }
 
