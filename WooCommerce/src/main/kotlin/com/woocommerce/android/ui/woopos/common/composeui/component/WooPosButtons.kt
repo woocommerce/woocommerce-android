@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -36,6 +37,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.PreviewFontScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
@@ -203,7 +205,7 @@ private fun Button(
         border = border,
         colors = colors,
         modifier = modifier
-            .height(height),
+            .heightIn(min = height, max = height * 2),
         elevation = ButtonDefaults.buttonElevation(
             defaultElevation = WooPosSpacing.None.value,
             pressedElevation = WooPosSpacing.None.value,
@@ -245,6 +247,7 @@ private fun ButtonsLoadingIndicator(size: Dp) {
 
 @Composable
 @WooPosPreview
+@PreviewFontScale
 fun WooPosButtonsPreview() {
     WooPosTheme {
         Column(
