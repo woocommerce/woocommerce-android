@@ -304,52 +304,80 @@ fun WooPosCouponCard(
         modifier = modifier
             .semantics { contentDescription = itemContentDescription },
         shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
-        backgroundColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+        backgroundColor = if (item.expiredState is Coupon.ExpiredState.Expired) {
+            WooPosTheme.colors.disabledContainer
+        } else {
+            MaterialTheme.colorScheme.surfaceContainerLowest
+        },
         elevation = WooPosElevation.Medium,
         shadowType = ShadowType.Soft,
     ) {
         Row(
             modifier = Modifier
-                .clickable { onItemClicked(item) }
+                .clickable(enabled = item.expiredState is Coupon.ExpiredState.NotExpired) { onItemClicked(item) }
                 .height(112.dp)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            CouponImage()
+            CouponImage(item.expiredState)
 
             Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
 
-            CouponInfo(item)
+            CouponInfo(item.name, item.summary, item.expiredState)
         }
     }
 }
 
 @Composable
-private fun CouponInfo(item: Coupon) {
+private fun CouponInfo(name: String, summary: String, expiredState: Coupon.ExpiredState) {
     Column(
         modifier = Modifier
             .fillMaxHeight()
             .padding(
-                top = WooPosSpacing.Medium.value,
-                bottom = WooPosSpacing.Medium.value,
                 end = WooPosSpacing.Medium.value
             ),
         verticalArrangement = Arrangement.Center
     ) {
         WooPosText(
-            text = item.name,
+            text = name,
             style = WooPosTypography.BodyLarge,
             fontWeight = FontWeight.Bold,
             maxLines = 1,
-            overflow = TextOverflow.Ellipsis
+            overflow = TextOverflow.Ellipsis,
+            color = if (expiredState is Coupon.ExpiredState.Expired) {
+                WooPosTheme.colors.onDisabledContainer
+            } else {
+                MaterialTheme.colorScheme.onSurface
+            }
         )
+
         Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
-        CouponDetails(item)
+
+        WooPosText(
+            text = summary,
+            maxLines = 1,
+            style = WooPosTypography.BodyLarge,
+            color = if (expiredState is Coupon.ExpiredState.Expired) {
+                WooPosTheme.colors.onDisabledContainer
+            } else {
+                WooPosTheme.colors.onSurfaceVariantHighest
+            },
+        )
+
+        if (expiredState is Coupon.ExpiredState.Expired) {
+            Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
+            WooPosText(
+                text = stringResource(R.string.woopos_coupon_item_expired_label, expiredState.formattedDate),
+                maxLines = 1,
+                style = WooPosTypography.BodyLarge,
+                color = WooPosTheme.colors.onDisabledContainer
+            )
+        }
     }
 }
 
 @Composable
-private fun CouponImage() {
+private fun CouponImage(expiredState: Coupon.ExpiredState) {
     Box(
         modifier = Modifier
             .size(112.dp)
@@ -359,7 +387,11 @@ private fun CouponImage() {
         Image(
             imageVector = Icons.Outlined.LocalOffer,
             contentDescription = null,
-            colorFilter = ColorFilter.tint(WooPosTheme.colors.onSurfaceVariantLowest),
+            colorFilter = if (expiredState is Coupon.ExpiredState.Expired) {
+                ColorFilter.tint(WooPosTheme.colors.disabledContainer)
+            } else {
+                ColorFilter.tint(WooPosTheme.colors.onSurfaceVariantLowest)
+            },
             modifier = Modifier.size(36.dp, 36.dp)
         )
     }
@@ -388,16 +420,6 @@ private fun VariableProductDetails() {
 fun VariationProductDetails(item: Product.Variation) {
     WooPosText(
         text = item.price,
-        style = WooPosTypography.BodyLarge,
-        color = WooPosTheme.colors.onSurfaceVariantHighest,
-    )
-}
-
-@Composable
-fun CouponDetails(item: Coupon) {
-    WooPosText(
-        text = item.summary,
-        maxLines = 1,
         style = WooPosTypography.BodyLarge,
         color = WooPosTheme.colors.onSurfaceVariantHighest,
     )
@@ -615,7 +637,18 @@ fun ItemListPreview() {
                         listOf()
                     ),
                     Product.Variation(3, "Variation", "$10", "", 0),
-                    Coupon(id = 4, name = "Coupon", summary = "10% off everything"),
+                    Coupon(
+                        id = 4,
+                        name = "Coupon",
+                        summary = "10% off everything",
+                        expiredState = Coupon.ExpiredState.NotExpired
+                    ),
+                    Coupon(
+                        id = 4,
+                        name = "Expired Coupon",
+                        summary = "10% off everything",
+                        expiredState = Coupon.ExpiredState.Expired("24 Apr 2025")
+                    ),
                 ),
             ),
             listState = LazyListState(),
