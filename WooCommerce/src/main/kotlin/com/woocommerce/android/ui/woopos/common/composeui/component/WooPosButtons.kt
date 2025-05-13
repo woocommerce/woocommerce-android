@@ -7,7 +7,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -40,7 +39,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewFontScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
@@ -246,7 +244,6 @@ private fun ButtonsLoadingIndicator(size: Dp) {
 }
 
 @Composable
-@WooPosPreview
 @PreviewFontScale
 fun WooPosButtonsPreview() {
     WooPosTheme {
@@ -298,55 +295,76 @@ fun WooPosButtonsPreview() {
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {}
             )
+        }
+    }
+}
+
+@Composable
+@PreviewFontScale
+fun WooPosSmallButtonsPreview() {
+    WooPosTheme {
+        Column(
+            modifier = Modifier
+                .padding(WooPosSpacing.Medium.value)
+                .width(600.dp)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            WooPosButtonSmall(
+                text = "Button Small",
+                state = WooPosButtonState.ENABLED,
+                onClick = {}
+            )
 
             Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                WooPosButtonSmall(
-                    text = "Button Small",
-                    state = WooPosButtonState.ENABLED,
-                    onClick = {}
-                )
-
-                WooPosButtonSmall(
-                    text = "Button Small",
-                    onClick = {},
-                    state = WooPosButtonState.DISABLED,
-                )
-
-                WooPosButtonSmall(
-                    text = "Button Small",
-                    state = WooPosButtonState.LOADING,
-                    onClick = {}
-                )
-                WooPosCircularIconButton(
-                    icon = Icons.Default.Search,
-                    onClick = {}
-                )
-            }
+            WooPosButtonSmall(
+                text = "Button Small",
+                onClick = {},
+                state = WooPosButtonState.DISABLED,
+            )
 
             Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                WooPosOutlinedButtonSmall(
-                    text = "Button Outlined Small",
-                    state = WooPosButtonState.ENABLED,
-                    onClick = {}
-                )
-                WooPosOutlinedButtonSmall(
-                    text = "Button Outlined Small",
-                    state = WooPosButtonState.DISABLED,
-                    onClick = {}
-                )
-                WooPosOutlinedButtonSmall(
-                    text = "Button Outlined Small",
-                    state = WooPosButtonState.LOADING,
-                    onClick = {}
-                )
-            }
+            WooPosButtonSmall(
+                text = "Button Small",
+                state = WooPosButtonState.LOADING,
+                onClick = {}
+            )
+
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+
+            WooPosCircularIconButton(
+                icon = Icons.Default.Search,
+                onClick = {}
+            )
+
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+
+            WooPosOutlinedButtonSmall(
+                text = "Button Outlined Small",
+                state = WooPosButtonState.ENABLED,
+                onClick = {}
+            )
+
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+
+            WooPosOutlinedButtonSmall(
+                text = "Button Outlined Small",
+                state = WooPosButtonState.DISABLED,
+                onClick = {}
+            )
+
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+
+
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+
+            WooPosOutlinedButtonSmall(
+                text = "Button Outlined Small",
+                state = WooPosButtonState.LOADING,
+                onClick = {}
+            )
         }
     }
 }
