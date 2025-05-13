@@ -21,8 +21,8 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
@@ -89,7 +89,7 @@ fun CouponRestrictionsScreen(
             Toolbar(
                 title = stringResource(id = R.string.coupon_edit_usage_restrictions),
                 onNavigationButtonClick = onBackPressed,
-                navigationIcon = Icons.Default.Clear,
+                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
             )
         }
     ) { paddingValues ->

@@ -23,23 +23,25 @@ import com.woocommerce.android.ui.compose.component.Toolbar
 @Composable
 fun SimpleTextEditorScreen(viewModel: SimpleTextEditorViewModel) {
     val viewState by viewModel.viewState.observeAsState()
-    SimpleTextEditorScreen(
-        screenTitle = viewState?.screenTitle,
-        text = viewState?.text,
-        hint = viewState?.hint,
-        strategy = viewState?.strategy,
-        viewModel::onTextChanged,
-        viewModel::onDonePressed,
-        viewModel::onBackPressed,
-    )
+    viewState?.let { state ->
+        SimpleTextEditorScreen(
+            screenTitle = state.screenTitle,
+            text = state.text,
+            hint = state.hint,
+            strategy = state.strategy,
+            viewModel::onTextChanged,
+            viewModel::onDonePressed,
+            viewModel::onBackPressed,
+        )
+    }
 }
 
 @Composable
 fun SimpleTextEditorScreen(
-    screenTitle: String?,
-    text: String?,
-    hint: String?,
-    strategy: SimpleTextEditorStrategy?,
+    screenTitle: String,
+    text: String,
+    hint: String,
+    strategy: SimpleTextEditorStrategy,
     onTextChanged: (String) -> Unit,
     onDonePressed: () -> Unit,
     onBackPressed: () -> Unit,
@@ -50,11 +52,11 @@ fun SimpleTextEditorScreen(
     Scaffold(
         topBar = {
             Toolbar(
-                title = screenTitle.orEmpty(),
+                title = screenTitle,
                 onNavigationButtonClick = onBackPressed,
                 navigationIcon = when (strategy) {
                     SimpleTextEditorStrategy.SEND_RESULT_ON_CONFIRMATION -> Icons.Default.Clear
-                    SimpleTextEditorStrategy.SEND_RESULT_ON_NAVIGATE_BACK, null -> Icons.AutoMirrored.Filled.ArrowBack
+                    SimpleTextEditorStrategy.SEND_RESULT_ON_NAVIGATE_BACK -> Icons.AutoMirrored.Filled.ArrowBack
                 },
                 actions = {
                     if (strategy == SimpleTextEditorStrategy.SEND_RESULT_ON_CONFIRMATION) {
@@ -67,10 +69,10 @@ fun SimpleTextEditorScreen(
         }
     ) { paddingValues ->
         TextField(
-            value = text.orEmpty(),
+            value = text,
             onValueChange = onTextChanged,
             placeholder = {
-                Text(hint.orEmpty())
+                Text(hint)
             },
             colors = TextFieldDefaults.textFieldColors(backgroundColor = MaterialTheme.colors.surface),
             modifier = Modifier
