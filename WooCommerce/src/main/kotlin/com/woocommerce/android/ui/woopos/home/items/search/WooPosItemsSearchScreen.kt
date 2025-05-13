@@ -14,7 +14,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
@@ -87,16 +86,14 @@ private fun WooPosItemsSearchScreen(
 
                 WooPosItemsSearchViewState.Content::class.java -> {
                     if (state is WooPosItemsSearchViewState.Content) {
-                        key(state.searchQuery) {
-                            WooPosItemsSearchContent(
-                                modifier = Modifier.padding(
-                                    horizontal = WooPosSpacing.Medium.value.toAdaptivePadding(),
-                                ),
-                                listState = listState,
-                                state = state,
-                                onUIEvent = onUIEvent
-                            )
-                        }
+                        WooPosItemsSearchContent(
+                            modifier = Modifier.padding(
+                                horizontal = WooPosSpacing.Medium.value.toAdaptivePadding(),
+                            ),
+                            listState = listState,
+                            state = state,
+                            onUIEvent = onUIEvent
+                        )
                     }
                 }
 
@@ -169,6 +166,7 @@ private fun WooPosItemsSearchContent(
         modifier = modifier.padding(top = WooPosSpacing.Large.value),
         state = state,
         listState = listState,
+        animateItems = false,
         onItemClicked = { onUIEvent(WooPosItemsSearchUiEvent.OnItemClicked(it)) },
         onEndOfProductsListReached = { onUIEvent(WooPosItemsSearchUiEvent.OnNextPageRequested) },
         onErrorWhilePaginating = {
