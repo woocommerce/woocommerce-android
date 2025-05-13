@@ -40,7 +40,9 @@ class WooPosSearchProductsDataSource @Inject constructor(
         searchResultsIndex.clearCache()
 
         performRemoteSearch(query).fold(
-            onSuccess = { result -> Result.success(result.products) },
+            onSuccess = { result ->
+                Result.success(result.products.sortedBy { it.name.lowercase() })
+            },
             onFailure = { error -> Result.failure(error) }
         )
     }
