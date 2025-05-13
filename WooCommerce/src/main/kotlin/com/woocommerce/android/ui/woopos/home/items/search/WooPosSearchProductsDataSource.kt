@@ -55,7 +55,7 @@ class WooPosSearchProductsDataSource @Inject constructor(
 
         return performRemoteSearch(query, offset).fold(
             onSuccess = { result ->
-                Result.success(result.products)
+                Result.success(searchResultsIndex.getSearchResults(query))
             },
             onFailure = { error ->
                 Result.failure(error)
@@ -92,7 +92,7 @@ class WooPosSearchProductsDataSource @Inject constructor(
                 )
                 val searchResults = SearchResult(
                     products = searchResultsIndex.getSearchResults(searchQuery)
-                        .sortedBy { it.name },
+                        .sortedBy { it.name.lowercase() },
                     canLoadMore = searchResult.canLoadMore
                 )
                 Result.success(searchResults)
