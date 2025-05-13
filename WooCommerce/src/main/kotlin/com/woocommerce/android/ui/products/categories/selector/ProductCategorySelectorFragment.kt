@@ -7,12 +7,13 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
-import com.woocommerce.android.R
+import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -29,10 +30,7 @@ class ProductCategorySelectorFragment : BaseFragment() {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     override val activityAppBarStatus: AppBarStatus
-        get() = AppBarStatus.Visible(
-            navigationIcon = R.drawable.ic_gridicons_cross_24dp,
-            hasShadow = false
-        )
+        get() = AppBarStatus.Hidden
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return ComposeView(requireContext()).apply {
@@ -56,9 +54,8 @@ class ProductCategorySelectorFragment : BaseFragment() {
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ExitWithResult<*> -> navigateBackWithResult(PRODUCT_CATEGORY_SELECTOR_RESULT, event.data)
+                is MultiLiveEvent.Event.Exit -> findNavController().navigateUp()
             }
         }
     }
-
-    override fun getFragmentTitle(): String = getString(R.string.product_category_selector_title)
 }
