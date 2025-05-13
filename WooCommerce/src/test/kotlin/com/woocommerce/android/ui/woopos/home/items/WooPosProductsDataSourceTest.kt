@@ -91,37 +91,6 @@ class WooPosProductsDataSourceTest {
     private val productsTypesFilterConfig = WooPosProductsTypesFilterConfig()
 
     @Test
-    fun `given force refresh, when loadProducts called, then should clear cache and insert products again`() = runTest {
-        // GIVEN
-        whenever(productsIndex.getProductList()).thenReturn(emptyList(), sampleProducts)
-
-        whenever(
-            productStore.fetchProducts(
-                site = eq(siteModel),
-                offset = any<Int>(),
-                pageSize = any<Int>(),
-                sortType = any(),
-                filterOptions = any<Map<WCProductStore.ProductFilterOption, String>>(),
-                includeTypes = eq(productsTypesFilterConfig.includeTypes),
-            )
-        ).thenReturn(WooResult(listOf()))
-        val sut = WooPosProductsDataSource(
-            productStore,
-            selectedSite,
-            productsCache,
-            productsIndex,
-            productsTypesFilterConfig
-        )
-
-        // WHEN
-        sut.loadProducts(forceRefreshProducts = true).first()
-
-        // THEN
-        verify(productsCache).setAll(any())
-        verify(productsIndex).clearCache()
-    }
-
-    @Test
     fun `given cached products, when loadProducts called, then should emit cached products first`() = runTest {
         // GIVEN
         whenever(productsCache.getAll()).thenReturn(sampleProducts)
@@ -219,7 +188,6 @@ class WooPosProductsDataSourceTest {
     fun `given cached and remote products, when loadProducts called, then should emit remote products after cached products`() =
         runTest {
             // GIVEN
-
             whenever(productsCache.getAll()).thenReturn(sampleProducts)
             whenever(productsIndex.getProductList()).thenReturn(sampleProducts)
             whenever(

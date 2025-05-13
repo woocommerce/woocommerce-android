@@ -90,7 +90,6 @@ class WooPosProductsDataSource @Inject constructor(
         val fetchResult = fetchProducts()
 
         if (fetchResult.isSuccess) {
-            productsCache.addAll(fetchResult.getOrThrow())
             emit(ProductsResult.Remote(Result.success(fetchResult.getOrThrow())))
         } else {
             emit(ProductsResult.Remote(Result.failure(fetchResult.exceptionOrNull() ?: Exception("Unknown error"))))
