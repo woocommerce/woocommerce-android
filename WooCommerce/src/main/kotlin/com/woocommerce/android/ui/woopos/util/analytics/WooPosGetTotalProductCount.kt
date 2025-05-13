@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.products
+package com.woocommerce.android.ui.woopos.util.analytics
 
 import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.sync.Mutex
@@ -9,7 +9,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class GetTotalProductCount @Inject constructor(
+class WooPosGetTotalProductCount @Inject constructor(
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite
 ) {

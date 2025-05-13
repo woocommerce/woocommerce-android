@@ -13,7 +13,7 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemCli
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateToVariationsScreen
-import com.woocommerce.android.ui.woopos.products.GetTotalProductCount
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosGetTotalProductCount
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart.WooPosItemSource
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemsNextPageLoaded
@@ -58,7 +58,7 @@ class WooPosItemsSearchViewModelTest {
     private val mockNavigator: WooPosItemsNavigator = mock()
     private val mockSearchHelper: com.woocommerce.android.ui.woopos.home.items.WooPosItemsSearchHelper = mock()
     private val mockAnalyticsTracker: WooPosAnalyticsTracker = mock()
-    private val getTotalProductCount: GetTotalProductCount = mock {
+    private val getTotalProductCount: WooPosGetTotalProductCount = mock {
         onBlocking { invoke() }.thenReturn(23)
     }
 

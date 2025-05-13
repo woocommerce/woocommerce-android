@@ -16,7 +16,7 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemCli
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateToVariationsScreen
-import com.woocommerce.android.ui.woopos.products.GetTotalProductCount
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosGetTotalProductCount
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart.WooPosItemSource
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemsNextPageLoaded
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.PreSearchRecentTermTapped
@@ -49,7 +49,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
     private val navigator: WooPosItemsNavigator,
     private val searchHelper: WooPosItemsSearchHelper,
     private val analyticsTracker: WooPosAnalyticsTracker,
-    private val getTotalProductCount: GetTotalProductCount,
+    private val getTotalProductCount: WooPosGetTotalProductCount,
 ) : ViewModel() {
     private val _viewState =
         MutableStateFlow<WooPosItemsSearchViewState>(WooPosItemsSearchViewState.Loading)
