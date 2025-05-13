@@ -2,43 +2,45 @@ package com.woocommerce.android.ui.woopos.util.datastore
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class WooPosPreferencesRepository @Inject constructor(private val dataStore: DataStore<Preferences>) {
+class WooPosPreferencesRepository @Inject constructor(
+    private val selectedSite: SelectedSite,
+    private val dataStore: DataStore<Preferences>
+) {
+    private val recentProductSearchesSiteSpecificKey = buildSiteSpecificKey(RECENT_PRODUCT_SEARCHES_KEY)
+
     val recentProductSearches: Flow<List<String>> = dataStore.data
         .map { preferences ->
-            val searchesString = preferences[RECENT_PRODUCT_SEARCHES] ?: ""
+            val searchesString = preferences[recentProductSearchesSiteSpecificKey] ?: ""
             if (searchesString.isEmpty()) emptyList() else searchesString.split(",")
         }
 
     suspend fun addRecentProductSearch(search: String) {
         dataStore.edit { preferences ->
-            val currentSearches = preferences[RECENT_PRODUCT_SEARCHES]?.let {
+            val currentSearches = preferences[recentProductSearchesSiteSpecificKey]?.let {
                 if (it.isEmpty()) emptyList() else it.split(",")
             } ?: emptyList()
 
             val updatedSearches = (listOf(search) + currentSearches)
                 .distinct()
-                .take(MAX_RECENT_SEARCHES)
+                .take(MAX_RECENT_SEARCHES_COUNT)
 
-            preferences[RECENT_PRODUCT_SEARCHES] = updatedSearches.joinToString(",")
+            preferences[recentProductSearchesSiteSpecificKey] = updatedSearches.joinToString(",")
         }
     }
 
-    companion object {
-        val SIMPLE_PRODUCTS_ONLY_BANNER_HIDDEN_BY_USER = booleanPreferencesKey(
-            "is_simple_products_only_banner_hidden_by_user"
-        )
+    private fun buildSiteSpecificKey(key: String): Preferences.Key<String> =
+        stringPreferencesKey("${selectedSite.getOrNull()?.siteId}-$key")
 
-        val RECENT_PRODUCT_SEARCHES = stringPreferencesKey(
-            "recent_product_searches"
-        )
+    private companion object {
+        const val RECENT_PRODUCT_SEARCHES_KEY = "recent_product_searches_key"
 
-        const val MAX_RECENT_SEARCHES = 10
+        const val MAX_RECENT_SEARCHES_COUNT = 10
     }
 }

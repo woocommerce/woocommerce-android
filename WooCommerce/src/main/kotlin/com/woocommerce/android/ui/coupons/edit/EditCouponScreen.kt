@@ -16,10 +16,12 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -47,6 +49,7 @@ import com.woocommerce.android.model.Coupon.Type.Percent
 import com.woocommerce.android.ui.compose.component.BigDecimalTextFieldValueMapper
 import com.woocommerce.android.ui.compose.component.DatePickerDialog
 import com.woocommerce.android.ui.compose.component.ProgressDialog
+import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedSpinner
@@ -74,7 +77,8 @@ fun EditCouponScreen(viewModel: EditCouponViewModel) {
             onUsageRestrictionsClick = viewModel::onUsageRestrictionsClick,
             onSelectProductsButtonClick = viewModel::onSelectProductsButtonClick,
             onSelectCategoriesButtonClick = viewModel::onSelectCategoriesButtonClick,
-            onSaveClick = viewModel::onSaveClick
+            onSaveClick = viewModel::onSaveClick,
+            onBackPressed = viewModel::onBackPressed,
         )
     }
 }
@@ -91,36 +95,48 @@ fun EditCouponScreen(
     onUsageRestrictionsClick: () -> Unit = {},
     onSelectProductsButtonClick: () -> Unit = {},
     onSelectCategoriesButtonClick: () -> Unit = {},
-    onSaveClick: () -> Unit = {}
+    onSaveClick: () -> Unit = {},
+    onBackPressed: () -> Unit = {},
 ) {
     val scrollState = rememberScrollState()
-    Column(
-        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
-        modifier = Modifier
-            .background(color = MaterialTheme.colors.surface)
-            .verticalScroll(scrollState)
-            .padding(vertical = dimensionResource(id = R.dimen.major_100))
-            .fillMaxSize()
-    ) {
-        DetailsSection(
-            viewState = viewState,
-            onAmountChanged = onAmountChanged,
-            onCouponCodeChanged = onCouponCodeChanged,
-            onRegenerateCodeClick = onRegenerateCodeClick,
-            onDescriptionButtonClick = onDescriptionButtonClick,
-            onExpiryDateChanged = onExpiryDateChanged,
-            onFreeShippingChanged = onFreeShippingChanged
-        )
-        ConditionsSection(viewState, onSelectProductsButtonClick, onSelectCategoriesButtonClick)
-        UsageRestrictionsSection(onUsageRestrictionsClick)
-        WCColoredButton(
-            onClick = onSaveClick,
-            text = stringResource(id = viewState.saveButtonText),
+    Scaffold(
+        topBar = {
+            Toolbar(
+                title = viewState.screenTitle,
+                onNavigationButtonClick = { onBackPressed() },
+                navigationIcon = Icons.Default.Clear
+            )
+        }
+    ) { paddingValues ->
+        Column(
+            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
             modifier = Modifier
-                .padding(horizontal = dimensionResource(id = R.dimen.major_100))
-                .fillMaxWidth(),
-            enabled = viewState.hasChanges
-        )
+                .padding(paddingValues)
+                .fillMaxSize()
+                .background(color = MaterialTheme.colors.surface)
+                .verticalScroll(scrollState)
+                .padding(vertical = dimensionResource(id = R.dimen.major_100))
+        ) {
+            DetailsSection(
+                viewState = viewState,
+                onAmountChanged = onAmountChanged,
+                onCouponCodeChanged = onCouponCodeChanged,
+                onRegenerateCodeClick = onRegenerateCodeClick,
+                onDescriptionButtonClick = onDescriptionButtonClick,
+                onExpiryDateChanged = onExpiryDateChanged,
+                onFreeShippingChanged = onFreeShippingChanged
+            )
+            ConditionsSection(viewState, onSelectProductsButtonClick, onSelectCategoriesButtonClick)
+            UsageRestrictionsSection(onUsageRestrictionsClick)
+            WCColoredButton(
+                onClick = onSaveClick,
+                text = stringResource(id = viewState.saveButtonText),
+                modifier = Modifier
+                    .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+                    .fillMaxWidth(),
+                enabled = viewState.hasChanges
+            )
+        }
     }
 
     if (viewState.isSaving) {
