@@ -203,7 +203,7 @@ private fun Button(
         border = border,
         colors = colors,
         modifier = modifier
-            .heightIn(min = height, max = height * 2),
+            .heightIn(min = height),
         elevation = ButtonDefaults.buttonElevation(
             defaultElevation = WooPosSpacing.None.value,
             pressedElevation = WooPosSpacing.None.value,
