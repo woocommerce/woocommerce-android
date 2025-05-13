@@ -4,8 +4,13 @@ import app.cash.turbine.test
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.featureflags.WooPosIsProductsSearchEnabled
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
+import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
+import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationFacade
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart.WooPosItemSource
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SearchButtonTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ITEM_LIST_TYPE
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ITEM_LIST_TYPE_PRODUCTS
@@ -47,6 +52,8 @@ class WooPosItemsViewModelTest {
         on { defaultTabs }.thenReturn(tabs)
     }
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
+    private val couponCreationFacade: WooPosCouponCreationFacade = mock()
+    private val fromChildToParentEventSender: WooPosChildrenToParentEventSender = mock()
 
     @Before
     fun setup() {
@@ -187,7 +194,7 @@ class WooPosItemsViewModelTest {
     }
 
     @Test
-    fun `when search icon is tapped, the track analytics event`() = runTest {
+    fun `when search icon is tapped, then track analytics event`() = runTest {
         // GIVEN
         val viewModel = createViewModel()
 
@@ -202,12 +209,32 @@ class WooPosItemsViewModelTest {
         )
     }
 
+    @Test
+    fun `when add coupon icon is tapped, then newly created coupon added to cart`() = runTest {
+        // GIVEN
+        whenever(couponCreationFacade.createCoupon()).thenReturn(1L)
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosItemsUIEvent.AddCouponIconClicked)
+
+        // THEN
+        verify(fromChildToParentEventSender).sendToParent(
+            ChildToParentEvent.ItemClickedInProductSelector(
+                itemData = ItemClickedData.Coupon(1L),
+                source = WooPosItemSource.COUPON_LIST
+            )
+        )
+    }
+
     private fun createViewModel() =
         WooPosItemsViewModel(
             wooPosItemsNavigator,
             searchHelper,
             isProductsSearchEnabled,
             tabsHelper,
-            analyticsTracker
+            couponCreationFacade,
+            fromChildToParentEventSender,
+            analyticsTracker,
         )
 }
