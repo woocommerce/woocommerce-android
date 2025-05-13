@@ -10,7 +10,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.WooTheme
 import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationActivity
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
@@ -27,7 +27,7 @@ class CouponTypePickerFragment : WCBottomSheetDialogFragment() {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                WooThemeWithBackground {
+                WooTheme {
                     CouponTypePickerScreen(
                         viewModel::onPercentageDiscountClicked,
                         viewModel::onFixedCartDiscountClicked,
