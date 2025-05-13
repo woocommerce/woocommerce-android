@@ -11,7 +11,7 @@ import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.activity.ActivityLogModel
+import org.wordpress.android.fluxc.model.dashboard.ActivityLogModel
 import org.wordpress.android.fluxc.model.dashboard.CardModel
 import org.wordpress.android.fluxc.model.dashboard.CardModel.ActivityCardModel
 import org.wordpress.android.fluxc.model.dashboard.CardModel.DynamicCardsModel
@@ -23,7 +23,7 @@ import org.wordpress.android.fluxc.model.dashboard.CardModel.PagesCardModel.Page
 import org.wordpress.android.fluxc.model.dashboard.CardModel.PostsCardModel
 import org.wordpress.android.fluxc.model.dashboard.CardModel.PostsCardModel.PostCardModel
 import org.wordpress.android.fluxc.model.dashboard.CardModel.TodaysStatsCardModel
-import org.wordpress.android.fluxc.network.rest.wpcom.activity.ActivityLogRestClient.ActivitiesResponse
+import org.wordpress.android.fluxc.network.rest.wpcom.dashboard.ActivitiesResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.dashboard.CardsRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.dashboard.CardsRestClient.CardsResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.dashboard.CardsRestClient.FetchCardsPayload

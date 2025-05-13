@@ -1,4 +1,4 @@
-package org.wordpress.android.fluxc.model.activity
+package org.wordpress.android.fluxc.model.dashboard
 
 import org.wordpress.android.fluxc.tools.FormattableContent
 import java.util.Date
