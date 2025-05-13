@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsUIEvent
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsUIEvent.PullToRefreshTriggered
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsUIEvent.RetryLoadMoreTriggered
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsUIEvent.RetryTriggered
+import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationFacade
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
@@ -34,6 +35,7 @@ class WooPosCouponsViewModelTest {
     @JvmField
     val coroutineTestRule = WooPosCoroutineTestRule()
 
+    private val couponCreationFacade: WooPosCouponCreationFacade = mock()
     private val listViewStateManager: WooPosCouponsListViewStateManager = mock()
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val navigator: WooPosItemsNavigator = mock()
@@ -125,10 +127,29 @@ class WooPosCouponsViewModelTest {
         )
     }
 
+    @Test
+    fun `when add coupon icon is tapped, then newly created coupon added to cart`() = runTest {
+        // GIVEN
+        whenever(couponCreationFacade.createCoupon()).thenReturn(1L)
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosCouponsUIEvent.CreateCouponClicked)
+
+        // THEN
+        verify(fromChildToParentEventSender).sendToParent(
+            ChildToParentEvent.ItemClickedInProductSelector(
+                itemData = ItemClickedData.Coupon(1L),
+                source = WooPosItemSource.COUPON_LIST
+            )
+        )
+    }
+
     private fun createViewModel() =
         WooPosCouponsViewModel(
             listViewStateManager,
             fromChildToParentEventSender,
+            couponCreationFacade,
             navigator,
         )
 }

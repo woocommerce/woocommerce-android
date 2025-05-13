@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products.categories.selector
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,9 +22,11 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -41,6 +44,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
+import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCSearchField
 import com.woocommerce.android.ui.compose.component.WCTextButton
@@ -58,7 +62,8 @@ fun ProductCategorySelectorScreen(viewModel: ProductCategorySelectorViewModel) {
             onLoadMore = viewModel::onLoadMore,
             onClearSelectionClick = viewModel::onClearSelectionClick,
             onSearchQueryChanged = viewModel::onSearchQueryChanged,
-            onDoneClick = viewModel::onDoneClick
+            onDoneClick = viewModel::onDoneClick,
+            onBackPressed = viewModel::onBackPressed
         )
     }
 }
@@ -70,32 +75,48 @@ fun ProductCategorySelectorScreen(
     onClearSelectionClick: () -> Unit = {},
     onSearchQueryChanged: (String) -> Unit = {},
     onDoneClick: () -> Unit = {},
+    onBackPressed: () -> Unit = {},
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colors.surface)
-    ) {
-        WCSearchField(
-            value = viewState.searchQuery,
-            onValueChange = onSearchQueryChanged,
-            hint = stringResource(id = R.string.product_category_selector_search_hint),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    horizontal = dimensionResource(id = R.dimen.major_100),
-                    vertical = dimensionResource(id = R.dimen.minor_100)
-                )
-        )
-        when {
-            viewState.categories.isNotEmpty() -> CategoriesList(
-                viewState = viewState,
-                onLoadMore = onLoadMore,
-                onClearSelectionClick = onClearSelectionClick,
-                onDoneClick = onDoneClick
+    BackHandler {
+        onBackPressed()
+    }
+    Scaffold(
+        topBar = {
+            Toolbar(
+                title = stringResource(id = R.string.product_category_selector_title),
+                navigationIcon = Icons.Default.Clear,
+                onNavigationButtonClick = onBackPressed
             )
-            viewState.loadingState == LoadingState.Loading -> CategoriesSkeleton()
-            else -> EmptyCategoriesList(viewState.searchQuery)
+        }
+    ) { contentPadding ->
+        Column(
+            modifier = Modifier
+                .padding(contentPadding)
+                .fillMaxSize()
+                .background(MaterialTheme.colors.surface)
+        ) {
+            WCSearchField(
+                value = viewState.searchQuery,
+                onValueChange = onSearchQueryChanged,
+                hint = stringResource(id = R.string.product_category_selector_search_hint),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        horizontal = dimensionResource(id = R.dimen.major_100),
+                        vertical = dimensionResource(id = R.dimen.minor_100)
+                    )
+            )
+            when {
+                viewState.categories.isNotEmpty() -> CategoriesList(
+                    viewState = viewState,
+                    onLoadMore = onLoadMore,
+                    onClearSelectionClick = onClearSelectionClick,
+                    onDoneClick = onDoneClick
+                )
+
+                viewState.loadingState == LoadingState.Loading -> CategoriesSkeleton()
+                else -> EmptyCategoriesList(viewState.searchQuery)
+            }
         }
     }
 }

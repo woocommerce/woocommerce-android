@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsUIEvent
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsUIEvent.PullToRefreshTriggered
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsUIEvent.RetryLoadMoreTriggered
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsUIEvent.RetryTriggered
+import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationFacade
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart.WooPosItemSource
@@ -28,6 +29,7 @@ import javax.inject.Inject
 class WooPosCouponsViewModel @Inject constructor(
     private val listViewStateManager: WooPosCouponsListViewStateManager,
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender,
+    private val couponCreationFacade: WooPosCouponCreationFacade,
     private val navigator: WooPosItemsNavigator,
 ) : ViewModel() {
     private val _viewState =
@@ -72,9 +74,7 @@ class WooPosCouponsViewModel @Inject constructor(
 
             RetryTriggered -> fetchCoupons(WooPosCouponsListRefreshType.RETRY)
 
-            is WooPosCouponsUIEvent.CreateCouponClicked -> {
-                error("Create coupon clicked event not implemented yet")
-            }
+            is WooPosCouponsUIEvent.CreateCouponClicked -> createAndAddCoupon()
         }
     }
 
@@ -107,6 +107,20 @@ class WooPosCouponsViewModel @Inject constructor(
                     source = WooPosItemSource.COUPON_LIST
                 )
             )
+        }
+    }
+
+    private fun createAndAddCoupon() {
+        viewModelScope.launch {
+            val couponId = couponCreationFacade.createCoupon()
+            if (couponId != null) {
+                fromChildToParentEventSender.sendToParent(
+                    ChildToParentEvent.ItemClickedInProductSelector(
+                        itemData = ItemClickedData.Coupon(couponId),
+                        source = WooPosItemSource.COUPON_LIST
+                    )
+                )
+            }
         }
     }
 }

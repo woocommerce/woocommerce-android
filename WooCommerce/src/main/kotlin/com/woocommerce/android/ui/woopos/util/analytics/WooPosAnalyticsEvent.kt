@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.util.analytics
 
 import com.woocommerce.android.analytics.IAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ITEM_LIST_TYPE
 import kotlin.reflect.KClass
 
 sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
@@ -128,6 +129,24 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
         }
         data object ItemsNextPageLoaded : Event() {
             override val name: String = "items_next_page_loaded"
+        }
+        data class SearchRemoteResultsFetched(
+            val totalProductsCount: Int?,
+            val millisecondsSinceRequestSent: Long
+        ) : Event() {
+            override val name: String = "pos_search_remote_results_fetched"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "milliseconds_since_request_sent" to millisecondsSinceRequestSent.toString(),
+                        ITEM_LIST_TYPE to "products"
+                    )
+                )
+                if (totalProductsCount != null) {
+                    addProperties(mapOf("total_items_count" to totalProductsCount.toString()))
+                }
+            }
         }
     }
 

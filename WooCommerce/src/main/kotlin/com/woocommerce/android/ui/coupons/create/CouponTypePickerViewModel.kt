@@ -11,18 +11,27 @@ import javax.inject.Inject
 @HiltViewModel
 class CouponTypePickerViewModel @Inject constructor(savedStateHandle: SavedStateHandle) :
     ScopedViewModel(savedStateHandle) {
+    private val navArgs = CouponTypePickerFragmentArgs.fromSavedStateHandle(savedStateHandle)
 
     fun onPercentageDiscountClicked() {
-        triggerEvent(NavigateToCouponEdit(EditCouponViewModel.Mode.Create(Coupon.Type.Percent)))
+        triggerEvent(NavigateToCouponEdit(EditCouponViewModel.Mode.Create(Coupon.Type.Percent), navArgs.isPOSMode))
     }
 
     fun onFixedCartDiscountClicked() {
-        triggerEvent(NavigateToCouponEdit(EditCouponViewModel.Mode.Create(Coupon.Type.FixedCart)))
+        triggerEvent(NavigateToCouponEdit(EditCouponViewModel.Mode.Create(Coupon.Type.FixedCart), navArgs.isPOSMode))
     }
 
     fun onFixedProductDiscountClicked() {
-        triggerEvent(NavigateToCouponEdit(EditCouponViewModel.Mode.Create(Coupon.Type.FixedProduct)))
+        triggerEvent(NavigateToCouponEdit(EditCouponViewModel.Mode.Create(Coupon.Type.FixedProduct), navArgs.isPOSMode))
     }
 
-    data class NavigateToCouponEdit(val mode: EditCouponViewModel.Mode.Create) : MultiLiveEvent.Event()
+    fun onCancel() {
+        if (navArgs.isPOSMode) {
+            triggerEvent(NavigateBackToPOS)
+        }
+    }
+
+    data class NavigateToCouponEdit(val mode: EditCouponViewModel.Mode.Create, val isPOSMode: Boolean) :
+        MultiLiveEvent.Event()
+    data object NavigateBackToPOS : MultiLiveEvent.Event()
 }
