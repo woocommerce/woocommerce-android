@@ -68,7 +68,7 @@ class WooPosCouponsListViewStateManagerTest {
     @Test
     fun `given empty db, when fetching first page in progress, then Loading state`() = runTest {
         // GIVEN
-        whenever(couponsDataSource.fetchFirstPage()).doSuspendableAnswer {
+        whenever(couponsDataSource.clearCacheAndFetchFirstPage()).doSuspendableAnswer {
             couponsDataFlow.emit(emptyList()) // cache empty
             delay(500)
             couponsDataFlow.emit(listOf(CouponTestUtils.generateTestCoupon(0L))) // remote data
@@ -89,7 +89,7 @@ class WooPosCouponsListViewStateManagerTest {
     @Test
     fun `given full db, when fetching first page in progress, then cached data shown`() = runTest {
         // GIVEN
-        whenever(couponsDataSource.fetchFirstPage()).doSuspendableAnswer {
+        whenever(couponsDataSource.clearCacheAndFetchFirstPage()).doSuspendableAnswer {
             couponsDataFlow.emit(listOf(CouponTestUtils.generateTestCoupon(1L))) // cache data
             delay(500)
             couponsDataFlow.emit(listOf(CouponTestUtils.generateTestCoupon(2L))) // remote data
@@ -111,7 +111,7 @@ class WooPosCouponsListViewStateManagerTest {
     fun `given cached data and fetching in progress, when content shown, then pullToRefreshState is Disabled`() =
         runTest {
             // GIVEN
-            whenever(couponsDataSource.fetchFirstPage()).doSuspendableAnswer {
+            whenever(couponsDataSource.clearCacheAndFetchFirstPage()).doSuspendableAnswer {
                 couponsDataFlow.emit(listOf(CouponTestUtils.generateTestCoupon(1L)))
                 delay(500)
                 couponsDataFlow.emit(listOf(CouponTestUtils.generateTestCoupon(2L))) // remote data
@@ -136,7 +136,7 @@ class WooPosCouponsListViewStateManagerTest {
     @Test
     fun `given empty db, when fetching first page completes, then Empty state`() = runTest {
         // GIVEN
-        whenever(couponsDataSource.fetchFirstPage()).doSuspendableAnswer {
+        whenever(couponsDataSource.clearCacheAndFetchFirstPage()).doSuspendableAnswer {
             couponsDataFlow.emit(listOf(CouponTestUtils.generateTestCoupon(1L))) // remote
             delay(500)
             couponsDataFlow.emit(emptyList()) // remote
@@ -158,7 +158,7 @@ class WooPosCouponsListViewStateManagerTest {
     @Test
     fun `given non-empty db, when fetching first page completes, then Content state`() = runTest {
         // GIVEN
-        whenever(couponsDataSource.fetchFirstPage()).doSuspendableAnswer {
+        whenever(couponsDataSource.clearCacheAndFetchFirstPage()).doSuspendableAnswer {
             couponsDataFlow.emit(listOf(CouponTestUtils.generateTestCoupon(0L))) // cache
             delay(500)
             couponsDataFlow.emit(listOf(CouponTestUtils.generateTestCoupon(1L))) // remote
@@ -180,7 +180,7 @@ class WooPosCouponsListViewStateManagerTest {
     @Test
     fun `when first page fetch fails, then emits Loading then Error`() = runTest {
         // GIVEN
-        whenever(couponsDataSource.fetchFirstPage())
+        whenever(couponsDataSource.clearCacheAndFetchFirstPage())
             .doSuspendableAnswer {
                 delay(1) // workaround for bug in mockito
                 Result.failure(IllegalArgumentException("Test exception"))
@@ -203,7 +203,7 @@ class WooPosCouponsListViewStateManagerTest {
     @Test
     fun `given data in cache, when retry to fetch first page, then emits Loading`() = runTest {
         // GIVEN
-        whenever(couponsDataSource.fetchFirstPage())
+        whenever(couponsDataSource.clearCacheAndFetchFirstPage())
             .doSuspendableAnswer {
                 couponsDataFlow.emit(listOf(CouponTestUtils.generateTestCoupon(0L))) // cache
                 delay(500)
@@ -230,7 +230,7 @@ class WooPosCouponsListViewStateManagerTest {
     @Test
     fun `given data cache empty, when retry to fetch first page, then emits Loading`() = runTest {
         // GIVEN
-        whenever(couponsDataSource.fetchFirstPage())
+        whenever(couponsDataSource.clearCacheAndFetchFirstPage())
             .doSuspendableAnswer {
                 delay(1) // workaround for bug in mockito
                 Result.failure(IllegalArgumentException("Test exception"))
@@ -256,11 +256,11 @@ class WooPosCouponsListViewStateManagerTest {
     @Test
     fun `given first page failed, when retry succeeds, then emits Content`() = runTest {
         // GIVEN
-        whenever(couponsDataSource.fetchFirstPage())
+        whenever(couponsDataSource.clearCacheAndFetchFirstPage())
             .doReturn(Result.failure<Boolean>(IllegalArgumentException("Test exception")))
         sat.fetchCoupons(testViewModelScope, WooPosCouponsListViewStateManager.WooPosCouponsListRefreshType.INITIAL)
         advanceUntilIdle()
-        whenever(couponsDataSource.fetchFirstPage()).doSuspendableAnswer {
+        whenever(couponsDataSource.clearCacheAndFetchFirstPage()).doSuspendableAnswer {
             delay(1) // workaround for bug in mockito
             couponsDataFlow.emit(listOf(CouponTestUtils.generateTestCoupon(0L))) // cache
             Result.success(true)
@@ -281,11 +281,11 @@ class WooPosCouponsListViewStateManagerTest {
     @Test
     fun `given first page failed, when retry fails, then emits Error`() = runTest {
         // GIVEN
-        whenever(couponsDataSource.fetchFirstPage())
+        whenever(couponsDataSource.clearCacheAndFetchFirstPage())
             .doReturn(Result.failure<Boolean>(IllegalArgumentException("Test exception")))
         sat.fetchCoupons(testViewModelScope, WooPosCouponsListViewStateManager.WooPosCouponsListRefreshType.INITIAL)
         advanceUntilIdle()
-        whenever(couponsDataSource.fetchFirstPage())
+        whenever(couponsDataSource.clearCacheAndFetchFirstPage())
             .doReturn(Result.failure<Boolean>(IllegalArgumentException("Test exception")))
 
         sat.viewState.test {
@@ -303,7 +303,7 @@ class WooPosCouponsListViewStateManagerTest {
     @Test
     fun `given more pages available, when content shown, then pagination state loading`() = runTest {
         // GIVEN
-        whenever(couponsDataSource.fetchFirstPage()).doSuspendableAnswer {
+        whenever(couponsDataSource.clearCacheAndFetchFirstPage()).doSuspendableAnswer {
             delay(1) // workaround for bug in mockito
             couponsDataFlow.emit(listOf(CouponTestUtils.generateTestCoupon(0L))) // cache
             Result.success(MORE_PAGES_AVAILABLE)
@@ -326,7 +326,7 @@ class WooPosCouponsListViewStateManagerTest {
     @Test
     fun `given more pages not available, when content shown, then pagination state None`() = runTest {
         // GIVEN
-        whenever(couponsDataSource.fetchFirstPage()).doSuspendableAnswer {
+        whenever(couponsDataSource.clearCacheAndFetchFirstPage()).doSuspendableAnswer {
             delay(1) // workaround for bug in mockito
             couponsDataFlow.emit(listOf(CouponTestUtils.generateTestCoupon(0L))) // cache
             Result.success(MORE_PAGES_NOT_AVAILABLE)
@@ -350,7 +350,7 @@ class WooPosCouponsListViewStateManagerTest {
     @Test
     fun `when end of list reached and load more fails, then pagination state Error`() = runTest {
         // GIVEN
-        whenever(couponsDataSource.fetchFirstPage()).doSuspendableAnswer {
+        whenever(couponsDataSource.clearCacheAndFetchFirstPage()).doSuspendableAnswer {
             couponsDataFlow.emit(listOf(CouponTestUtils.generateTestCoupon(0L))) // cache
             delay(1) // workaround for bug in mockito
             Result.success(MORE_PAGES_AVAILABLE)
@@ -379,7 +379,7 @@ class WooPosCouponsListViewStateManagerTest {
     @Test
     fun `given pagination state error, when end of list reached, then nothing happens`() = runTest {
         // GIVEN
-        whenever(couponsDataSource.fetchFirstPage()).doSuspendableAnswer {
+        whenever(couponsDataSource.clearCacheAndFetchFirstPage()).doSuspendableAnswer {
             couponsDataFlow.emit(listOf(CouponTestUtils.generateTestCoupon(0L))) // cache
             delay(1) // workaround for bug in mockito
             Result.success(MORE_PAGES_AVAILABLE)
@@ -409,7 +409,7 @@ class WooPosCouponsListViewStateManagerTest {
     @Test
     fun `when load more retried, then pagination state Loading`() = runTest {
         // GIVEN
-        whenever(couponsDataSource.fetchFirstPage()).doSuspendableAnswer {
+        whenever(couponsDataSource.clearCacheAndFetchFirstPage()).doSuspendableAnswer {
             couponsDataFlow.emit(listOf(CouponTestUtils.generateTestCoupon(0L))) // cache
             delay(1) // workaround for bug in mockito
             Result.success(MORE_PAGES_AVAILABLE)
@@ -436,7 +436,7 @@ class WooPosCouponsListViewStateManagerTest {
     @Test
     fun `cached data are still shown until remote request finishes`() = runTest {
         // GIVEN
-        whenever(couponsDataSource.fetchFirstPage()).doSuspendableAnswer {
+        whenever(couponsDataSource.clearCacheAndFetchFirstPage()).doSuspendableAnswer {
             couponsDataFlow.emit(listOf(CouponTestUtils.generateTestCoupon(1L)))
             delay(500)
             couponsDataFlow.emit(emptyList()) // remote
@@ -479,7 +479,7 @@ class WooPosCouponsListViewStateManagerTest {
     @Test
     fun `when content shown and fetching first page, then pagination state loading`() = runTest {
         // GIVEN
-        whenever(couponsDataSource.fetchFirstPage()).doSuspendableAnswer {
+        whenever(couponsDataSource.clearCacheAndFetchFirstPage()).doSuspendableAnswer {
             couponsDataFlow.emit(listOf(CouponTestUtils.generateTestCoupon(0L))) // cache
             delay(500)
             Result.success(MORE_PAGES_AVAILABLE)
@@ -500,14 +500,14 @@ class WooPosCouponsListViewStateManagerTest {
     @Test
     fun `given state empty, when pull to refresh triggered, then loading shown with PTR`() = runTest {
         // GIVEN
-        whenever(couponsDataSource.fetchFirstPage()).doSuspendableAnswer {
+        whenever(couponsDataSource.clearCacheAndFetchFirstPage()).doSuspendableAnswer {
             couponsDataFlow.emit(emptyList())
             delay(1) // workaround for bug in mockito
             Result.success(MORE_PAGES_NOT_AVAILABLE)
         }
         sat.fetchCoupons(testViewModelScope, WooPosCouponsListViewStateManager.WooPosCouponsListRefreshType.INITIAL)
         advanceUntilIdle()
-        whenever(couponsDataSource.fetchFirstPage()).doSuspendableAnswer {
+        whenever(couponsDataSource.clearCacheAndFetchFirstPage()).doSuspendableAnswer {
             delay(500)
             couponsDataFlow.emit(listOf(CouponTestUtils.generateTestCoupon(1L)))
             Result.success(MORE_PAGES_NOT_AVAILABLE)
@@ -533,14 +533,14 @@ class WooPosCouponsListViewStateManagerTest {
     @Test
     fun `given cached data shown, when pull to refresh triggered, then content shown with PTR`() = runTest {
         // GIVEN
-        whenever(couponsDataSource.fetchFirstPage()).doSuspendableAnswer {
+        whenever(couponsDataSource.clearCacheAndFetchFirstPage()).doSuspendableAnswer {
             couponsDataFlow.emit(listOf(CouponTestUtils.generateTestCoupon(1L)))
             delay(1) // workaround for bug in mockito
             Result.success(MORE_PAGES_NOT_AVAILABLE)
         }
         sat.fetchCoupons(testViewModelScope, WooPosCouponsListViewStateManager.WooPosCouponsListRefreshType.INITIAL)
         advanceUntilIdle()
-        whenever(couponsDataSource.fetchFirstPage()).doSuspendableAnswer {
+        whenever(couponsDataSource.clearCacheAndFetchFirstPage()).doSuspendableAnswer {
             delay(500)
             couponsDataFlow.emit(listOf(CouponTestUtils.generateTestCoupon(1L)))
             Result.success(MORE_PAGES_NOT_AVAILABLE)
@@ -569,7 +569,7 @@ class WooPosCouponsListViewStateManagerTest {
         val coupon = CouponTestUtils.generateTestCoupon(0L).copy(
             dateExpires = null
         )
-        whenever(couponsDataSource.fetchFirstPage()).doSuspendableAnswer {
+        whenever(couponsDataSource.clearCacheAndFetchFirstPage()).doSuspendableAnswer {
             couponsDataFlow.emit(listOf(coupon))
             delay(1) // workaround for bug in mockito
             Result.success(false)
@@ -600,7 +600,7 @@ class WooPosCouponsListViewStateManagerTest {
         val coupon = CouponTestUtils.generateTestCoupon(0L).copy(
             dateExpires = futureDate
         )
-        whenever(couponsDataSource.fetchFirstPage()).doSuspendableAnswer {
+        whenever(couponsDataSource.clearCacheAndFetchFirstPage()).doSuspendableAnswer {
             couponsDataFlow.emit(listOf(coupon))
             delay(1) // workaround for bug in mockito
             Result.success(false)
@@ -634,7 +634,7 @@ class WooPosCouponsListViewStateManagerTest {
             )
             val formattedDate = "01 Jan 2023"
             whenever(couponFormatter.formatExpiredText(pastDate)).thenReturn(formattedDate)
-            whenever(couponsDataSource.fetchFirstPage()).doSuspendableAnswer {
+            whenever(couponsDataSource.clearCacheAndFetchFirstPage()).doSuspendableAnswer {
                 couponsDataFlow.emit(listOf(coupon))
                 delay(1) // workaround for bug in mockito
                 Result.success(false)

@@ -112,7 +112,7 @@ class WooPosCouponsListViewStateManager @Inject constructor(
                     WooPosCouponsListRefreshType.RETRY -> RETRY_FETCHING_FIRST_PAGE
                 }
             )
-            val result = couponsDataSource.fetchFirstPage()
+            val result = couponsDataSource.clearCacheAndFetchFirstPage()
             if (result.isSuccess) {
                 canLoadMore = result.getOrNull() ?: false
                 fetchingState.emit(IDLE)
