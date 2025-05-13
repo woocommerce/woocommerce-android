@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.home.items.search
 
-import com.woocommerce.android.ui.woopos.products.GetTotalProductCount
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemsNextPageLoaded
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.PreSearchRecentTermTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SearchRemoteResultsFetched
@@ -8,12 +7,13 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventCons
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ITEM_LIST_TYPE
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ITEM_LIST_TYPE_PRODUCTS
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosGetTotalProductCount
 import java.util.concurrent.atomic.AtomicReference
 import javax.inject.Inject
 
 class WooPosItemsSearchAnalyticsTracker @Inject constructor(
     private val analyticsTracker: WooPosAnalyticsTracker,
-    private val getTotalProductCount: GetTotalProductCount
+    private val getTotalProductCount: WooPosGetTotalProductCount,
 ) {
     private val localSearchProductIds = AtomicReference<List<Long>>(emptyList())
 
