@@ -3,19 +3,21 @@ package com.woocommerce.android.ui.woopos.home.items.coupons.creation
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
+import androidx.activity.SystemBarStyle
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
-import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.navigation.NavGraph
 import androidx.navigation.fragment.NavHostFragment
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.adjustActivityTransition
+import com.woocommerce.android.extensions.getColorCompat
 import com.woocommerce.android.ui.coupons.create.CouponTypePickerFragmentArgs
-import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.woopos.util.ext.isGestureNavigation
 import com.woocommerce.android.util.WooLog
 import dagger.hilt.android.AndroidEntryPoint
@@ -35,24 +37,8 @@ class WooPosCouponCreationActivity : AppCompatActivity(R.layout.activity_woo_pos
         observeResult(navHostFragment)
     }
 
-    // Copied from MainActivity. Ensures SimpleTextEditorFragment handles backpresses as expected.
-    @Deprecated("Deprecated in Java")
-    override fun onBackPressed() {
-        val navHostFragment = supportFragmentManager.primaryNavigationFragment
-        if (navHostFragment?.childFragmentManager?.fragments?.isNotEmpty() == true) {
-            navHostFragment.childFragmentManager.fragments[0]?.let { fragment ->
-                if (fragment is BackPressListener && !(fragment as BackPressListener).onRequestAllowBackPress()) {
-                    return
-                }
-            }
-        }
-
-        @Suppress("DEPRECATION")
-        super.onBackPressed()
-    }
-
     private fun setupTopAndBottomInsets() {
-        WindowCompat.setDecorFitsSystemWindows(window, false)
+        applyFixForStatusBarColor()
         val rootView = findViewById<View>(R.id.snack_root)
         ViewCompat.setOnApplyWindowInsetsListener(rootView) { view, insets ->
             insets.toWindowInsets()?.let { windowInsets ->
@@ -73,6 +59,18 @@ class WooPosCouponCreationActivity : AppCompatActivity(R.layout.activity_woo_pos
 
             insets
         }
+    }
+
+    private fun applyFixForStatusBarColor() {
+        val isDark =
+            (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
+        val statusBarColor = getColorCompat(R.color.color_toolbar)
+        val statusBarStyle = if (isDark) {
+            SystemBarStyle.dark(statusBarColor)
+        } else {
+            SystemBarStyle.light(statusBarColor, statusBarColor)
+        }
+        enableEdgeToEdge(statusBarStyle = statusBarStyle)
     }
 
     override fun finish() {
