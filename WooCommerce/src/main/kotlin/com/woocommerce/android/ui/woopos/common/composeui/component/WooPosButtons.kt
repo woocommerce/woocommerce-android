@@ -357,9 +357,6 @@ fun WooPosSmallButtonsPreview() {
 
             Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
-
-            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-
             WooPosOutlinedButtonSmall(
                 text = "Button Outlined Small",
                 state = WooPosButtonState.LOADING,
