@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.TypeConverters
 import com.google.gson.Gson
+import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.metadata.WCMetaData
@@ -162,7 +163,8 @@ data class OrderEntity(
         return try {
             val responseType = object : TypeToken<List<TaxLine>>() {}.type
             gson.fromJson(taxLines, responseType) as? List<TaxLine> ?: emptyList()
-        } catch (e: Exception) {
+        } catch (e: JsonSyntaxException) {
+            @Suppress("PrintStackTrace")
             e.printStackTrace()
             emptyList()
         }
