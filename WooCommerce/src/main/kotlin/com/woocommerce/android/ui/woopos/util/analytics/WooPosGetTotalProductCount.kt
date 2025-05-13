@@ -17,6 +17,7 @@ class WooPosGetTotalProductCount @Inject constructor(
     private val dispatchers: CoroutineDispatchers
 ) {
     private val mutex = Mutex()
+
     @Volatile private var totalProductCount: Int? = null
 
     suspend operator fun invoke(): Int? = withContext(dispatchers.io) {
