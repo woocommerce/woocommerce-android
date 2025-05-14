@@ -51,6 +51,9 @@ class WooPosItemsSearchHelper @Inject constructor(
                     is ParentToChildrenEvent.SearchEvent.RecentSearchSelected -> {
                         onSearchChanged(event.query, event.query.length)
                     }
+                    is ParentToChildrenEvent.RefreshProductList -> {
+                        onSearchChanged("", 0)
+                    }
 
                     is ParentToChildrenEvent.BackFromCheckoutToCartClicked -> Unit
                     is ParentToChildrenEvent.ItemClickedInProductSelector -> Unit
