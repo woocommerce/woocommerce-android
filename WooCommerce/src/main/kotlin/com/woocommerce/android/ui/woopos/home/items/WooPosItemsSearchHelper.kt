@@ -52,7 +52,9 @@ class WooPosItemsSearchHelper @Inject constructor(
                         onSearchChanged(event.query, event.query.length)
                     }
                     is ParentToChildrenEvent.RefreshProductList -> {
-                        onSearchChanged("", 0)
+                        if (isSearchOpen()) {
+                            onSearchChanged("", 0)
+                        }
                     }
 
                     is ParentToChildrenEvent.BackFromCheckoutToCartClicked -> Unit
