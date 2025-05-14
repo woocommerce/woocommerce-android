@@ -23,6 +23,8 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.persistence.entity.CouponWithEmails
 import org.wordpress.android.fluxc.store.CouponStore
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -218,6 +220,58 @@ class WooPosTotalsRepositoryTest {
 
         assertThat(orderCapture.lastValue.couponLines.size).isEqualTo(1)
     }
+
+    @Test
+    fun `given coupon not in database, when createOrderFromCartItems, then coupon fetched and order created`() =
+        runTest {
+            // GIVEN
+            repository = createRepository()
+            val couponId = 1L
+
+            // First return null, then return the fetched coupon
+            whenever(couponStore.getCoupon(any(), eq(couponId)))
+                .thenReturn(null)
+                .thenReturn(CouponWithEmails(mock(), emptyList()))
+
+            val itemClickedData = listOf(
+                WooPosItemsViewModel.ItemClickedData.Coupon(id = couponId)
+            )
+
+            // WHEN
+            repository.createOrderFromCartItems(itemClickedData)
+
+            // THEN
+            verify(couponStore).fetchCoupon(any(), eq(couponId))
+            val orderCapture = argumentCaptor<Order>()
+            verify(orderCreateEditRepository).createOrUpdateOrder(
+                orderCapture.capture(),
+                eq("")
+            )
+            assertThat(orderCapture.lastValue.couponLines.size).isEqualTo(1)
+            assertThat(orderCapture.lastValue.couponLines[0].id).isEqualTo(1L)
+        }
+
+    @Test
+    fun `given coupon not in database and fetch fails, when createOrderFromCartItems, then order creation fails`() =
+        runTest {
+            // GIVEN
+            repository = createRepository()
+            val couponId = 1L
+
+            whenever(couponStore.getCoupon(any(), eq(couponId))).thenReturn(null)
+
+            whenever(couponStore.fetchCoupon(any(), eq(couponId))).thenReturn(WooResult(mock<WooError>()))
+
+            val itemClickedData = listOf(
+                WooPosItemsViewModel.ItemClickedData.Coupon(id = couponId)
+            )
+
+            // WHEN
+            val result = repository.createOrderFromCartItems(itemClickedData)
+
+            // THEN
+            assertThat(result.isFailure).isTrue()
+        }
 
     private fun createRepository() = WooPosTotalsRepository(
         orderCreateEditRepository,
