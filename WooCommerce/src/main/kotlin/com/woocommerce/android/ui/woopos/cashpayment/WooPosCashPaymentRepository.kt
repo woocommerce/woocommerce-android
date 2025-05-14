@@ -47,7 +47,7 @@ class WooPosCashPaymentRepository @Inject constructor(
             label = statusKey
         }
 
-        orderStore.updateOrderStatusAndPaymentMethod(
+        orderStore.updateOrderStatusAndPaymentDetails(
             orderId = orderId,
             site = selectedSite.get(),
             newStatus = statusModel,

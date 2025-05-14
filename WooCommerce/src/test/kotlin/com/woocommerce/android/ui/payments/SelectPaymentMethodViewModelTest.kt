@@ -85,7 +85,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     private val orderStore: WCOrderStore = mock {
         onBlocking { getOrderByIdAndSite(any(), any()) }.thenReturn(orderEntity)
         on { getOrderStatusForSiteAndKey(any(), any()) }.thenReturn(mock())
-        onBlocking { updateOrderStatusAndPaymentMethod(any(), any(), any(), any(), any()) }.thenReturn(
+        onBlocking { updateOrderStatusAndPaymentDetails(any(), any(), any(), any(), any()) }.thenReturn(
             flowOf(WCOrderStore.UpdateOrderResult.RemoteUpdateResult(OnOrderChanged()))
         )
         onBlocking { updateOrderStatus(any(), any(), any()) }.thenReturn(
@@ -435,7 +435,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                     title = CUSTOM_PAYMENT_METHOD_TITLE,
                 )
             )
-            whenever(orderStore.updateOrderStatusAndPaymentMethod(any(), any(), any(), any(), any())).thenReturn(
+            whenever(orderStore.updateOrderStatusAndPaymentDetails(any(), any(), any(), any(), any())).thenReturn(
                 flowOf(WCOrderStore.UpdateOrderResult.RemoteUpdateResult(OnOrderChanged()))
             )
 
@@ -443,7 +443,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             viewModel.handleIsOrderPaid(true)
 
             // THEN
-            verify(orderStore).updateOrderStatusAndPaymentMethod(
+            verify(orderStore).updateOrderStatusAndPaymentDetails(
                 any(),
                 any(),
                 any(),
@@ -463,7 +463,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             viewModel.handleIsOrderPaid(true)
 
             // THEN
-            verify(orderStore).updateOrderStatusAndPaymentMethod(
+            verify(orderStore).updateOrderStatusAndPaymentDetails(
                 any(),
                 any(),
                 any(),

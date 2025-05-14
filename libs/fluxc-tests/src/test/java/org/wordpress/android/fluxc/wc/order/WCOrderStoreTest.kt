@@ -202,7 +202,7 @@ class WCOrderStoreTest {
         val site = SiteModel().apply { id = orderModel.localSiteId.value }
         val result = RemoteOrderPayload.Updating(orderModel.copy(status = CoreOrderStatus.REFUNDED.value), site)
         whenever(orderRestClient
-            .updateOrderStatusAndPaymentMethod(orderModel, site, CoreOrderStatus.REFUNDED.value)
+            .updateOrderStatusAndPaymentDetails(orderModel, site, CoreOrderStatus.REFUNDED.value)
         ).thenReturn(result)
 
         orderStore.updateOrderStatus(orderModel.orderId, site, WCOrderStatusModel(CoreOrderStatus.REFUNDED.value))
@@ -332,7 +332,7 @@ class WCOrderStoreTest {
                 .saveToDb()
         val site = SiteModel().apply { id = orderModel.localSiteId.value }
         val result = RemoteOrderPayload.Updating(orderModel.copy(status = CoreOrderStatus.COMPLETED.value), site)
-        whenever(orderRestClient.updateOrderStatusAndPaymentMethod(orderModel, site, CoreOrderStatus.COMPLETED.value))
+        whenever(orderRestClient.updateOrderStatusAndPaymentDetails(orderModel, site, CoreOrderStatus.COMPLETED.value))
                 .thenReturn(result)
 
         assertThat(ordersDaoDecorator.getOrder(orderModel.orderId, orderModel.localSiteId)?.status)
@@ -356,7 +356,7 @@ class WCOrderStoreTest {
         val site = SiteModel().apply { id = orderModel.localSiteId.value }
         val error = OrderError()
         whenever(
-            orderRestClient.updateOrderStatusAndPaymentMethod(
+            orderRestClient.updateOrderStatusAndPaymentDetails(
                 any(),
                 any(),
                 any(),
@@ -395,7 +395,7 @@ class WCOrderStoreTest {
             paymentMethodTitle = "")
             .saveToDb()
         val site = SiteModel().apply { id = orderModel.localSiteId.value }
-        whenever(orderRestClient.updateOrderStatusAndPaymentMethod(
+        whenever(orderRestClient.updateOrderStatusAndPaymentDetails(
             orderModel,
             site,
             CoreOrderStatus.COMPLETED.value,
@@ -417,7 +417,7 @@ class WCOrderStoreTest {
         assertThat(ordersDaoDecorator.getOrder(orderModel.orderId, orderModel.localSiteId)?.paymentMethodTitle)
             .isEqualTo("")
 
-        orderStore.updateOrderStatusAndPaymentMethod(
+        orderStore.updateOrderStatusAndPaymentDetails(
             orderModel.orderId,
             site,
             WCOrderStatusModel(CoreOrderStatus.COMPLETED.value),
@@ -443,7 +443,7 @@ class WCOrderStoreTest {
         val site = SiteModel().apply { id = orderModel.localSiteId.value }
         val error = OrderError()
         whenever(
-            orderRestClient.updateOrderStatusAndPaymentMethod(
+            orderRestClient.updateOrderStatusAndPaymentDetails(
                 orderModel,
                 site,
                 CoreOrderStatus.COMPLETED.value,
@@ -463,7 +463,7 @@ class WCOrderStoreTest {
         assertThat(ordersDaoDecorator.getOrder(orderModel.orderId, orderModel.localSiteId)?.paymentMethodTitle)
             .isEqualTo("")
 
-        val response = orderStore.updateOrderStatusAndPaymentMethod(
+        val response = orderStore.updateOrderStatusAndPaymentDetails(
             orderModel.orderId,
             site,
             WCOrderStatusModel(CoreOrderStatus.COMPLETED.value),

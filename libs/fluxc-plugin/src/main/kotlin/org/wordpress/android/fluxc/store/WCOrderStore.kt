@@ -677,9 +677,9 @@ class WCOrderStore @Inject constructor(
         site: SiteModel,
         newStatus: WCOrderStatusModel
     ): Flow<UpdateOrderResult> =
-        updateOrderStatusAndPaymentMethod(orderId, site, newStatus, null, null)
+        updateOrderStatusAndPaymentDetails(orderId, site, newStatus, null, null)
 
-    suspend fun updateOrderStatusAndPaymentMethod(
+    suspend fun updateOrderStatusAndPaymentDetails(
         orderId: Long,
         site: SiteModel,
         newStatus: WCOrderStatusModel,
@@ -687,7 +687,7 @@ class WCOrderStore @Inject constructor(
         newPaymentMethodTitle: String?,
         cashPaymentChangeDueAmount: String? = null
     ): Flow<UpdateOrderResult> {
-        return coroutineEngine.flowWithDefaultContext(API, this, "updateOrderStatusAndPaymentMethod") {
+        return coroutineEngine.flowWithDefaultContext(API, this, "updateOrderStatusAndPaymentDetails") {
             val orderModel = ordersDaoDecorator.getOrder(orderId, site.localId())
 
             if (orderModel != null) {
@@ -709,7 +709,7 @@ class WCOrderStore @Inject constructor(
                 // Ensure the code gets executed even when the VM dies - eg. when the client app marks an order as
                 // completed and navigates to a different screen.
                 val remoteUpdateResult: OnOrderChanged = withContext(NonCancellable) {
-                    val remotePayload = wcOrderRestClient.updateOrderStatusAndPaymentMethod(
+                    val remotePayload = wcOrderRestClient.updateOrderStatusAndPaymentDetails(
                         orderModel,
                         site,
                         newStatus.statusKey,

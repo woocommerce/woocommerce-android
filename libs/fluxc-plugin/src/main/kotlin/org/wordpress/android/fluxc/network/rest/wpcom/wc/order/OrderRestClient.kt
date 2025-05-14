@@ -631,7 +631,7 @@ class OrderRestClient @Inject constructor(
         }
     }
 
-    suspend fun updateOrderStatusAndPaymentMethod(
+    suspend fun updateOrderStatusAndPaymentDetails(
         orderToUpdate: OrderEntity,
         site: SiteModel,
         status: String,

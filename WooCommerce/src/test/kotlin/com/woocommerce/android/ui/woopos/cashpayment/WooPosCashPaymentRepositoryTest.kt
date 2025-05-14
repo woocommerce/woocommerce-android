@@ -89,7 +89,7 @@ class WooPosCashPaymentRepositoryTest {
         whenever(gatewayStore.getGateway(site, "cod")).thenReturn(codGateway)
         whenever(orderStore.getOrderStatusForSiteAndKey(site, Order.Status.Completed.value)).thenReturn(statusModel)
         whenever(
-            orderStore.updateOrderStatusAndPaymentMethod(
+            orderStore.updateOrderStatusAndPaymentDetails(
                 orderId = orderId,
                 site = site,
                 newStatus = statusModel,
@@ -101,7 +101,7 @@ class WooPosCashPaymentRepositoryTest {
         val result = repository.completeOrder(orderId)
 
         assertThat(result.isSuccess).isTrue()
-        verify(orderStore).updateOrderStatusAndPaymentMethod(
+        verify(orderStore).updateOrderStatusAndPaymentDetails(
             orderId = orderId,
             site = site,
             newStatus = statusModel,
@@ -130,7 +130,7 @@ class WooPosCashPaymentRepositoryTest {
         whenever(gatewayStore.getGateway(site, "cod")).thenReturn(codGateway)
         whenever(orderStore.getOrderStatusForSiteAndKey(site, Order.Status.Completed.value)).thenReturn(statusModel)
         whenever(
-            orderStore.updateOrderStatusAndPaymentMethod(
+            orderStore.updateOrderStatusAndPaymentDetails(
                 orderId = orderId,
                 site = site,
                 newStatus = statusModel,
@@ -143,7 +143,7 @@ class WooPosCashPaymentRepositoryTest {
 
         assertThat(result.isFailure).isTrue()
         assertThat(result.exceptionOrNull()?.message).isEqualTo(errorMessage)
-        verify(orderStore).updateOrderStatusAndPaymentMethod(
+        verify(orderStore).updateOrderStatusAndPaymentDetails(
             orderId = orderId,
             site = site,
             newStatus = statusModel,
