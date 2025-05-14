@@ -8,7 +8,6 @@ import com.wellsql.generated.WCProductCategoryModelTable
 import com.wellsql.generated.WCProductReviewModelTable
 import com.wellsql.generated.WCProductShippingClassModelTable
 import com.wellsql.generated.WCProductTagModelTable
-import com.wellsql.generated.WCProductVariationModelTable
 import com.yarolegovich.wellsql.SelectQuery
 import com.yarolegovich.wellsql.WellSql
 import kotlinx.coroutines.Dispatchers
@@ -16,7 +15,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onStart
@@ -28,35 +26,19 @@ import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.WCProductReviewModel
 import org.wordpress.android.fluxc.model.WCProductShippingClassModel
 import org.wordpress.android.fluxc.model.WCProductTagModel
-import org.wordpress.android.fluxc.model.WCProductVariationModel
 import org.wordpress.android.fluxc.persistence.dao.ProductsDao
 import org.wordpress.android.fluxc.store.WCProductStore.Companion.DEFAULT_CATEGORY_SORTING
-import org.wordpress.android.fluxc.store.WCProductStore.Companion.DEFAULT_PRODUCT_SORTING
-import org.wordpress.android.fluxc.store.WCProductStore.Companion.categoryFilter
 import org.wordpress.android.fluxc.store.WCProductStore.ProductCategorySorting
 import org.wordpress.android.fluxc.store.WCProductStore.ProductCategorySorting.NAME_ASC
 import org.wordpress.android.fluxc.store.WCProductStore.ProductCategorySorting.NAME_DESC
-import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
-import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
 import java.util.Locale
 
 @Suppress("LargeClass")
 internal object ProductSqlUtils {
     private const val DEBOUNCE_DELAY_FOR_OBSERVERS = 50L
-    private val variationsUpdatesTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
     private val categoriesUpdatesTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
     private val gson by lazy { Gson() }
-
-    fun observeVariations(site: SiteModel, productId: Long): Flow<List<WCProductVariationModel>> {
-        return variationsUpdatesTrigger
-            .onStart { emit(Unit) }
-            .debounce(DEBOUNCE_DELAY_FOR_OBSERVERS)
-            .mapLatest {
-                getVariationsForProduct(site, productId)
-            }
-            .flowOn(Dispatchers.IO)
-    }
 
     fun observeCategories(site: SiteModel, sortType: ProductCategorySorting): Flow<List<WCProductCategoryModel>> {
         return categoriesUpdatesTrigger
@@ -96,80 +78,6 @@ internal object ProductSqlUtils {
         ).mapLatest { product ->
             getBundledProducts(product.firstOrNull())
         }
-    }
-
-    fun getVariationByRemoteId(
-        site: SiteModel,
-        remoteProductId: Long,
-        remoteVariationId: Long
-    ): WCProductVariationModel? {
-        return WellSql.select(WCProductVariationModel::class.java)
-            .where().beginGroup()
-            .equals(WCProductVariationModelTable.REMOTE_PRODUCT_ID, remoteProductId)
-            .equals(WCProductVariationModelTable.REMOTE_VARIATION_ID, remoteVariationId)
-            .equals(WCProductVariationModelTable.LOCAL_SITE_ID, site.id)
-            .endGroup().endWhere()
-            .asModel.firstOrNull()
-    }
-
-    fun insertOrUpdateProductVariation(variation: WCProductVariationModel): Int {
-        val result = WellSql.select(WCProductVariationModel::class.java)
-            .where().beginGroup()
-            .equals(WCProductVariationModelTable.ID, variation.id)
-            .or()
-            .beginGroup()
-            .equals(WCProductVariationModelTable.REMOTE_PRODUCT_ID, variation.remoteProductId)
-            .equals(WCProductVariationModelTable.REMOTE_VARIATION_ID, variation.remoteVariationId)
-            .equals(WCProductVariationModelTable.LOCAL_SITE_ID, variation.localSiteId)
-            .endGroup()
-            .endGroup().endWhere()
-            .asModel.firstOrNull()
-
-        return if (result == null) {
-            // Insert
-            WellSql.insert(variation).execute()
-            variationsUpdatesTrigger.tryEmit(Unit)
-            1
-        } else {
-            // Update
-            val oldId = result.id
-            WellSql.update(WCProductVariationModel::class.java).whereId(oldId)
-                .put(variation, UpdateAllExceptId(WCProductVariationModel::class.java))
-                .execute()
-                .also(::triggerVariationsUpdateIfNeeded)
-        }
-    }
-
-    fun insertOrUpdateProductVariations(variations: List<WCProductVariationModel>): Int {
-        var rowsAffected = 0
-        executeInTransaction {
-            variations.forEach {
-                rowsAffected += insertOrUpdateProductVariation(it)
-            }
-        }
-        return rowsAffected
-    }
-
-    fun getVariationsForProduct(site: SiteModel, remoteProductId: Long): List<WCProductVariationModel> {
-        return WellSql.select(WCProductVariationModel::class.java)
-            .where()
-            .beginGroup()
-            .equals(WCProductVariationModelTable.REMOTE_PRODUCT_ID, remoteProductId)
-            .equals(WCProductVariationModelTable.LOCAL_SITE_ID, site.id)
-            .endGroup().endWhere()
-            .orderBy(WCProductVariationModelTable.MENU_ORDER, SelectQuery.ORDER_ASCENDING)
-            .asModel
-    }
-
-    fun deleteVariationsForProduct(site: SiteModel, remoteProductId: Long): Int {
-        return WellSql.delete(WCProductVariationModel::class.java)
-            .where().beginGroup()
-            .equals(WCProductVariationModelTable.LOCAL_SITE_ID, site.id)
-            .equals(WCProductVariationModelTable.REMOTE_PRODUCT_ID, remoteProductId)
-            .endGroup()
-            .endWhere()
-            .execute()
-            .also(::triggerVariationsUpdateIfNeeded)
     }
 
     fun insertOrUpdateProductReviews(productReviews: List<WCProductReviewModel>): Int {
@@ -555,10 +463,6 @@ internal object ProductSqlUtils {
         } finally {
             db.endTransaction()
         }
-    }
-
-    private fun triggerVariationsUpdateIfNeeded(affectedRows: Int) {
-        if (affectedRows != 0) variationsUpdatesTrigger.tryEmit(Unit)
     }
 
     private fun triggerCategoriesUpdateIfNeeded(affectedRows: Int) {

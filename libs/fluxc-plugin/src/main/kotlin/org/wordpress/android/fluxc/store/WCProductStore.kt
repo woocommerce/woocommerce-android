@@ -13,6 +13,7 @@ import org.wordpress.android.fluxc.Payload
 import org.wordpress.android.fluxc.action.WCProductAction
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.domain.Addon
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.ProductWithMetaData
 import org.wordpress.android.fluxc.model.SiteModel
@@ -51,6 +52,7 @@ import org.wordpress.android.fluxc.persistence.ProductSqlUtils.getCompositeProdu
 import org.wordpress.android.fluxc.persistence.ProductSqlUtils.observeBundledProducts
 import org.wordpress.android.fluxc.persistence.ProductStorageHelper
 import org.wordpress.android.fluxc.persistence.dao.AddonsDao
+import org.wordpress.android.fluxc.persistence.dao.ProductVariationsDao
 import org.wordpress.android.fluxc.persistence.dao.ProductsDao
 import org.wordpress.android.fluxc.store.WCProductStore.ProductCategorySorting.NAME_ASC
 import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType.GENERIC_ERROR
@@ -77,6 +79,7 @@ class WCProductStore @Inject internal constructor(
     private val productStorageHelper: ProductStorageHelper,
     private val logger: AppLogWrapper,
     private val productsDao: ProductsDao,
+    private val productVariationsDao: ProductVariationsDao
 ) : Store(dispatcher) {
     companion object {
         const val NUM_REVIEWS_PER_FETCH = 25
@@ -788,7 +791,6 @@ class WCProductStore @Inject internal constructor(
     }
 
     class OnVariationUpdated(
-        var rowsAffected: Int,
         var remoteProductId: Long,
         var remoteVariationId: Long
     ) : OnChanged<ProductError>() {
@@ -824,12 +826,16 @@ class WCProductStore @Inject internal constructor(
     /**
      * returns the corresponding variation from the database as a [WCProductVariationModel].
      */
-    fun getVariationByRemoteId(
+    suspend fun getVariationByRemoteId(
         site: SiteModel,
         remoteProductId: Long,
         remoteVariationId: Long
     ): WCProductVariationModel? =
-        ProductSqlUtils.getVariationByRemoteId(site, remoteProductId, remoteVariationId)
+        productVariationsDao.getVariation(
+            localSiteId = site.localId(),
+            remoteProductId = RemoteId(remoteProductId),
+            remoteVariationId = RemoteId(remoteVariationId)
+        )
 
     suspend fun isProductExists(site: SiteModel, sku: String): Boolean {
         return productsDao.getProduct(site.id, sku = sku) != null
@@ -838,8 +844,8 @@ class WCProductStore @Inject internal constructor(
     /**
      * returns a list of variations for a specific product in the database
      */
-    fun getVariationsForProduct(site: SiteModel, remoteProductId: Long): List<WCProductVariationModel> =
-        ProductSqlUtils.getVariationsForProduct(site, remoteProductId)
+    suspend fun getVariationsForProduct(site: SiteModel, remoteProductId: Long): List<WCProductVariationModel> =
+        productVariationsDao.getVariations(localSiteId = site.localId(), remoteProductId = RemoteId(remoteProductId))
 
     /**
      * returns a list of shipping classes for a specific site in the database
@@ -1091,7 +1097,7 @@ class WCProductStore @Inject internal constructor(
     )
 
     fun observeVariations(site: SiteModel, productId: Long): Flow<List<WCProductVariationModel>> =
-        ProductSqlUtils.observeVariations(site, productId)
+        productVariationsDao.observeVariations(localSiteId = site.localId(), remoteProductId = RemoteId(productId))
 
     fun observeCategories(
         site: SiteModel,
@@ -1136,7 +1142,7 @@ class WCProductStore @Inject internal constructor(
                 .asWooResult()
                 .model?.asProductVariationModel()
                 ?.apply {
-                    ProductSqlUtils.insertOrUpdateProductVariation(this)
+                    productVariationsDao.upsertProductVariation(this)
                 }
                 ?.let { WooResult(it) }
         } ?: WooResult(WooError(WooErrorType.GENERIC_ERROR, UNKNOWN))
@@ -1154,7 +1160,7 @@ class WCProductStore @Inject internal constructor(
                 .asWooResult()
                 .model?.asProductVariationModel()
                 ?.apply {
-                    ProductSqlUtils.insertOrUpdateProductVariation(this)
+                    productVariationsDao.upsertProductVariation(this)
                 }
                 ?.let { WooResult(it) }
                 ?: WooResult(WooError(INVALID_RESPONSE, GenericErrorType.INVALID_RESPONSE))
@@ -1170,7 +1176,10 @@ class WCProductStore @Inject internal constructor(
                 .asWooResult()
                 .model?.asProductVariationModel()
                 ?.apply {
-                    ProductSqlUtils.deleteVariationsForProduct(site, productId)
+                    productVariationsDao.deleteVariationsForProduct(
+                        localSiteId = site.localId(),
+                        remoteProductId = RemoteId(productId)
+                    )
                 }
                 ?.let { WooResult(it) }
                 ?: WooResult(WooError(INVALID_RESPONSE, GenericErrorType.INVALID_RESPONSE))
@@ -1221,14 +1230,14 @@ class WCProductStore @Inject internal constructor(
             return@withDefaultContext if (result.isError) {
                 OnVariationChanged().also {
                     it.error = result.error
-                    it.remoteProductId = result.variation.remoteProductId
-                    it.remoteVariationId = result.variation.remoteVariationId
+                    it.remoteProductId = result.variation.remoteProductId.value
+                    it.remoteVariationId = result.variation.remoteVariationId.value
                 }
             } else {
-                ProductSqlUtils.insertOrUpdateProductVariation(result.variation)
+                productVariationsDao.upsertProductVariation(result.variation)
                 OnVariationChanged().also {
-                    it.remoteProductId = result.variation.remoteProductId
-                    it.remoteVariationId = result.variation.remoteVariationId
+                    it.remoteProductId = result.variation.remoteProductId.value
+                    it.remoteVariationId = result.variation.remoteVariationId.value
                 }
             }
         }
@@ -1316,10 +1325,13 @@ class WCProductStore @Inject internal constructor(
                 // delete product variations for site if this is the first page of results, otherwise
                 // product variations deleted outside of the app will persist
                 if (result.offset == 0) {
-                    ProductSqlUtils.deleteVariationsForProduct(result.site, result.remoteProductId)
+                    productVariationsDao.deleteVariationsForProduct(
+                        localSiteId = result.site.localId(),
+                        remoteProductId = RemoteId(result.remoteProductId)
+                    )
                 }
 
-                ProductSqlUtils.insertOrUpdateProductVariations(result.variations)
+                productVariationsDao.upsertProductVariations(result.variations)
                 OnProductChanged(payload.remoteProductId, canLoadMore = result.canLoadMore)
             }
         }
@@ -1504,8 +1516,8 @@ class WCProductStore @Inject internal constructor(
             with(payload) {
                 val storedVariation = getVariationByRemoteId(
                     site,
-                    variation.remoteProductId,
-                    variation.remoteVariationId
+                    variation.remoteProductId.value,
+                    variation.remoteVariationId.value
                 )
                 val result: RemoteUpdateVariationPayload = wcProductRestClient.updateVariation(
                     site,
@@ -1514,18 +1526,14 @@ class WCProductStore @Inject internal constructor(
                 )
                 return@withDefaultContext if (result.isError) {
                     OnVariationUpdated(
-                        0,
-                        result.variation.remoteProductId,
-                        result.variation.remoteVariationId
+                        result.variation.remoteProductId.value,
+                        result.variation.remoteVariationId.value
                     ).also { it.error = result.error }
                 } else {
-                    val rowsAffected = ProductSqlUtils.insertOrUpdateProductVariation(
-                        result.variation
-                    )
+                    productVariationsDao.upsertProductVariation(result.variation)
                     OnVariationUpdated(
-                        rowsAffected,
-                        result.variation.remoteProductId,
-                        result.variation.remoteVariationId
+                        result.variation.remoteProductId.value,
+                        result.variation.remoteVariationId.value
                     )
                 }
             }
@@ -1586,12 +1594,12 @@ class WCProductStore @Inject internal constructor(
                     WooResult(result.error)
                 } else {
                     val generatedVariations = result.result?.createdVariations?.map { response ->
-                        response.asProductVariationModel().apply {
-                            remoteProductId = payload.remoteProductId
-                            localSiteId = payload.site.id
-                        }
+                        response.asProductVariationModel().copy(
+                            remoteProductId = RemoteId(payload.remoteProductId),
+                            localSiteId = LocalId(payload.site.id)
+                        )
                     } ?: emptyList()
-                    ProductSqlUtils.insertOrUpdateProductVariations(generatedVariations)
+                    productVariationsDao.upsertProductVariations(generatedVariations)
                     WooResult(result.result)
                 }
             }
@@ -1622,12 +1630,12 @@ class WCProductStore @Inject internal constructor(
                     WooResult(result.error)
                 } else {
                     val updatedVariations = result.result?.updatedVariations?.map { response ->
-                        response.asProductVariationModel().apply {
-                            remoteProductId = payload.remoteProductId
-                            localSiteId = payload.site.id
-                        }
+                        response.asProductVariationModel().copy(
+                            remoteProductId = RemoteId(payload.remoteProductId),
+                            localSiteId = LocalId(payload.site.id)
+                        )
                     } ?: emptyList()
-                    ProductSqlUtils.insertOrUpdateProductVariations(updatedVariations)
+                    productVariationsDao.upsertProductVariations(updatedVariations)
                     WooResult(result.result)
                 }
             }
@@ -1898,10 +1906,13 @@ class WCProductStore @Inject internal constructor(
                         includedVariationIds.isEmpty() &&
                         excludedVariationIds.isEmpty()
                     ) {
-                        ProductSqlUtils.deleteVariationsForProduct(site, productId)
+                        productVariationsDao.deleteVariationsForProduct(
+                            localSiteId = site.localId(),
+                            remoteProductId = RemoteId(productId)
+                        )
                     }
 
-                    ProductSqlUtils.insertOrUpdateProductVariations(response.result)
+                    productVariationsDao.upsertProductVariations(response.result)
                     val canLoadMore = response.result.size == pageSize
                     WooResult(canLoadMore)
                 }
@@ -1962,7 +1973,7 @@ class WCProductStore @Inject internal constructor(
         }
     }
 
-    private fun saveVariationsInDatabase(
+    private suspend fun saveVariationsInDatabase(
         result: WooResult<BatchProductVariationsApiResponse>,
         productId: RemoteId,
         site: SiteModel
@@ -1970,13 +1981,13 @@ class WCProductStore @Inject internal constructor(
         result.model
             ?.createdVariations
             ?.map { variationResponse ->
-                variationResponse.asProductVariationModel().apply {
-                    remoteProductId = productId.value
-                    localSiteId = site.id
-                }
+                variationResponse.asProductVariationModel().copy(
+                    remoteProductId = productId,
+                    localSiteId = LocalId(site.id)
+                )
             }
             ?.let { databaseEntities ->
-                ProductSqlUtils.insertOrUpdateProductVariations(databaseEntities)
+                productVariationsDao.upsertProductVariations(databaseEntities)
             }
     }
 
