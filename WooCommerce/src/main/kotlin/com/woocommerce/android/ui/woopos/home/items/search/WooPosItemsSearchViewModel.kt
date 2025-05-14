@@ -52,7 +52,12 @@ class WooPosItemsSearchViewModel @Inject constructor(
     private val getTotalProductCount: WooPosGetTotalProductCount,
 ) : ViewModel() {
     private val _viewState =
-        MutableStateFlow<WooPosItemsSearchViewState>(WooPosItemsSearchViewState.Loading)
+        MutableStateFlow<WooPosItemsSearchViewState>(
+            WooPosItemsSearchViewState.EmptySearchQuery(
+                popularItems = emptyList(),
+                recentSearches = emptyList()
+            )
+        )
     val viewState: StateFlow<WooPosItemsSearchViewState> = _viewState
         .stateIn(
             viewModelScope,
