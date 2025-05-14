@@ -35,7 +35,9 @@ class WooPosCashPaymentRepository @Inject constructor(
         }
     }
 
-    suspend fun completeOrder(orderId: Long): Result<Unit> = withContext(Dispatchers.IO) {
+    suspend fun completeOrder(orderId: Long, cashPaymentChangeDueAmount: String): Result<Unit> = withContext(
+        Dispatchers.IO
+    ) {
         val codGateway = gatewayStore.getGateway(selectedSite.get(), CASH_ON_DELIVERY_PAYMENT_TYPE)
 
         val statusModel = orderStore.getOrderStatusForSiteAndKey(
@@ -51,6 +53,7 @@ class WooPosCashPaymentRepository @Inject constructor(
             newStatus = statusModel,
             newPaymentMethodId = CASH_ON_DELIVERY_PAYMENT_TYPE,
             newPaymentMethodTitle = codGateway?.title ?: "Pay in Person",
+            cashPaymentChangeDueAmount = cashPaymentChangeDueAmount,
         )
             .filterIsInstance<WCOrderStore.UpdateOrderResult.RemoteUpdateResult>()
             .map { result ->

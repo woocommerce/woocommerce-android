@@ -46,6 +46,7 @@ class WooPosCashPaymentViewModel @Inject constructor(
             _state.value = WooPosCashPaymentState.Collecting(
                 enteredAmount = null,
                 changeDueText = "",
+                changeDue = null,
                 total = order.total,
                 totalText = resourceProvider.getString(
                     R.string.woopos_cash_payment_total,
@@ -90,6 +91,7 @@ class WooPosCashPaymentViewModel @Inject constructor(
             _state.value = currentState.copy(
                 enteredAmount = enteredAmount,
                 changeDueText = changeDueText,
+                changeDue = changeDue,
                 errorMessage = null,
                 button = currentState.button.copy(
                     status = if (changeDue >= BigDecimal.ZERO) {
@@ -113,7 +115,7 @@ class WooPosCashPaymentViewModel @Inject constructor(
                 )
             )
 
-            val result = repository.completeOrder(orderId)
+            val result = repository.completeOrder(orderId, stateBeforeCompleting.changeDue.toString())
             if (result.isSuccess) {
                 trackPaymentSuccess()
                 _state.value = WooPosCashPaymentState.Complete

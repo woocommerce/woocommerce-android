@@ -685,6 +685,7 @@ class WCOrderStore @Inject constructor(
         newStatus: WCOrderStatusModel,
         newPaymentMethodId: String?,
         newPaymentMethodTitle: String?,
+        cashPaymentChangeDueAmount: String? = null
     ): Flow<UpdateOrderResult> {
         return coroutineEngine.flowWithDefaultContext(API, this, "updateOrderStatusAndPaymentMethod") {
             val orderModel = ordersDaoDecorator.getOrder(orderId, site.localId())
@@ -714,6 +715,7 @@ class WCOrderStore @Inject constructor(
                         newStatus.statusKey,
                         newPaymentMethodId,
                         newPaymentMethodTitle,
+                        cashPaymentChangeDueAmount
                     )
                     if (remotePayload.isError) {
                         revertOptimisticOrderUpdate(remotePayload)
