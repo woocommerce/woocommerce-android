@@ -10,6 +10,7 @@ import org.wordpress.android.fluxc.model.metadata.get
 import org.wordpress.android.fluxc.model.order.FeeLineTaxStatus
 import org.wordpress.android.fluxc.model.order.OrderAddress
 import org.wordpress.android.fluxc.model.order.TaxLine
+import org.wordpress.android.fluxc.model.order.WCLineTaxEntry
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderMappingConst.CHARGE_ID_KEY
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderMappingConst.SHIPPING_PHONE_KEY
 import org.wordpress.android.fluxc.persistence.entity.OrderEntity
@@ -84,7 +85,8 @@ class OrderMapper @Inject constructor(
                 FeeLineTaxStatus.Taxable -> Order.FeeLine.FeeLineTaxStatus.TAXABLE
                 FeeLineTaxStatus.None -> Order.FeeLine.FeeLineTaxStatus.NONE
                 else -> Order.FeeLine.FeeLineTaxStatus.UNKNOWN
-            }
+            },
+            taxes = it.taxes?.mapLineTaxes() ?: emptyList()
         )
     }
 
@@ -105,7 +107,8 @@ class OrderMapper @Inject constructor(
             methodId = it.methodId,
             methodTitle = it.methodTitle ?: StringUtils.EMPTY,
             totalTax = it.totalTax?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
-            total = it.total?.toBigDecimalOrNull() ?: BigDecimal.ZERO
+            total = it.total?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
+            taxes = it.taxes?.mapLineTaxes() ?: emptyList(),
         )
     }
 
@@ -129,7 +132,8 @@ class OrderMapper @Inject constructor(
                     },
                     it.bundledBy?.toLongOrNull() ?: it.compositeParent?.toLongOrNull(),
                     configurationKey = it.configurationKey,
-                    containsMetadata = it.metaData?.isNotEmpty() ?: false
+                    containsMetadata = it.metaData?.isNotEmpty() ?: false,
+                    taxes = it.taxes?.mapLineTaxes() ?: emptyList()
                 )
             }
 
@@ -169,6 +173,13 @@ class OrderMapper @Inject constructor(
             code = it.code,
             id = it.id,
             discount = it.discount,
+        )
+    }
+
+    private fun List<WCLineTaxEntry>.mapLineTaxes(): List<Order.LineTaxEntry> = map {
+        Order.LineTaxEntry(
+            rateId = it.rateId ?: 0L,
+            taxAmount = it.total ?: BigDecimal.ZERO,
         )
     }
 }
