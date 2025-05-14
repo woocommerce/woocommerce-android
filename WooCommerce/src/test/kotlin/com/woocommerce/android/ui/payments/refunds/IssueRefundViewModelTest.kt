@@ -43,7 +43,7 @@ import org.wordpress.android.fluxc.store.WCGatewayStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCRefundStore
 import java.math.BigDecimal
-import java.util.Date
+import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -102,6 +102,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             paymentChargeRepository = paymentChargeRepository,
             orderMapper = orderMapper,
             analyticsTrackerWrapper = analyticsTrackerWrapper,
+            coroutineDispatchers = coroutinesTestRule.testDispatchers
         )
     }
 

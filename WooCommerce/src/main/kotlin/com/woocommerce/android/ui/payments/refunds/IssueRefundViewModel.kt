@@ -35,6 +35,7 @@ import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRef
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.ShowNumberPicker
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundConfirmation
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundSummary
+import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.max
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -47,17 +48,18 @@ import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.refunds.RefundRequestItem
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel
@@ -76,7 +78,7 @@ import org.wordpress.android.fluxc.utils.sumBy as sumByBigDecimal
 @Suppress("LargeClass") // TODO Refactor this class in a follow up PR
 class IssueRefundViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    currencyFormatter: CurrencyFormatter,
+    private val currencyFormatter: CurrencyFormatter,
     private val orderStore: WCOrderStore,
     private val selectedSite: SelectedSite,
     private val networkStatus: NetworkStatus,
@@ -87,6 +89,7 @@ class IssueRefundViewModel @Inject constructor(
     private val paymentChargeRepository: PaymentChargeRepository,
     private val orderMapper: OrderMapper,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val coroutineDispatchers: CoroutineDispatchers
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val REFUND_METHOD_MANUAL = "manual"
@@ -126,14 +129,17 @@ class IssueRefundViewModel @Inject constructor(
     @Suppress("OPT_IN_USAGE")
     val refundSummaryStateLiveData = LiveDataDelegate(savedState, RefundSummaryViewState())
 
-    private val orderFlow: Flow<Order> = flow {
-        emit(loadOrder(arguments.orderId))
-    }
+    private val orderFlow: SharedFlow<Order> = flow {
+        val order = requireNotNull(
+            orderStore.getOrderByIdAndSite(arguments.orderId, selectedSite.get())?.let { orderMapper.toAppModel(it) }
+        )
+        emit(order)
+    }.shareIn(viewModelScope, started = SharingStarted.Lazily, replay = 1)
 
     private val productsRefundSection = combine(
-        orderFlow,
-        refundItems
-    ) { order, items ->
+        refundItems,
+        orderFlow
+    ) { items, _ ->
         val subtotal = items.sumByBigDecimal { it.subtotal }
         val taxes = items.sumByBigDecimal { it.taxes.sumOf { tax -> tax.tax } }
         val total = subtotal + taxes
@@ -156,14 +162,15 @@ class IssueRefundViewModel @Inject constructor(
 
     private val feesRefundSection = combine(
         isFeesMainSwitchChecked,
-        refundFeeLines
-    ) { isFeesMainSwitchChecked, feeLines ->
+        refundFeeLines,
+        orderFlow.map { it.refundableFeeLineIds }
+    ) { isFeesMainSwitchChecked, feeLines, refundableFeeLineIds ->
         val selectedFees = feeLines.filter { it.isSelected }
         val totalRefund = selectedFees.sumOf { it.feeLine.getTotalValue() }
 
         FeesRefundSection(
             feeRefundLines = feeLines,
-            isFeesRefundAvailable = getRefundableFeeLineIds().isNotEmpty(),
+            isFeesRefundAvailable = refundableFeeLineIds.isNotEmpty(),
             isFeesMainSwitchChecked = isFeesMainSwitchChecked,
             feesRefund = totalRefund,
             feesSubtotalFormatted = formatCurrency(selectedFees.sumByBigDecimal { it.feeLine.total }),
@@ -174,8 +181,9 @@ class IssueRefundViewModel @Inject constructor(
 
     private val shippingRefundSection = combine(
         isShippingMainSwitchChecked,
-        refundShippingLines
-    ) { isShippingMainSwitchChecked, shippingLines ->
+        refundShippingLines,
+        orderFlow.map { it.refundableShippingLineIds }
+    ) { isShippingMainSwitchChecked, shippingLines, refundableShippingLineIds ->
         val selectedShipping = shippingLines.filter { it.isSelected }
         val totalRefund = selectedShipping.sumOf { it.shippingLine.total + it.shippingLine.totalTax }
         ShippingRefundSection(
@@ -183,7 +191,7 @@ class IssueRefundViewModel @Inject constructor(
             // We only support refunding an Order with one shipping refund for now.
             // In the future, to support multiple shipping refund, we can replace this
             // with refundableShippingLineIds.isNotEmpty()
-            isShippingRefundAvailable = getRefundableShippingLineIds().size == 1,
+            isShippingRefundAvailable = refundableShippingLineIds.size == 1,
             isShippingMainSwitchChecked = isShippingMainSwitchChecked,
             shippingRefund = totalRefund,
             shippingSubtotalFormatted = formatCurrency(selectedShipping.sumByBigDecimal { it.shippingLine.total }),
@@ -192,34 +200,35 @@ class IssueRefundViewModel @Inject constructor(
         )
     }
 
+    private val refundNotice = orderFlow.map { order ->
+        val refundOptions = mutableListOf<String>()
+        // Inform user that multiple shipping lines can only be refunded in wp-admin.
+        if (order.refundableShippingLineIds.size > 1) {
+            val shipping = resourceProvider.getString(R.string.multiple_shipping).lowercase(Locale.getDefault())
+            refundOptions.add(shipping)
+        }
+        if (refundOptions.isNotEmpty()) {
+            val and = resourceProvider.getString(R.string.and).lowercase(Locale.getDefault())
+            val options = refundOptions.joinToString(lastSeparator = " $and ")
+            resourceProvider.getString(R.string.order_refunds_shipping_refund_variable_notice, options)
+        } else {
+            null
+        }
+    }
+
     val refundByItemsStateLiveData = combine(
         orderFlow,
         productsRefundSection,
         shippingRefundSection,
-        feesRefundSection
-    ) { order, productsSection, shippingSection, feesSection ->
-        fun getRefundNotice(): String? {
-            val refundOptions = mutableListOf<String>()
-            // Inform user that multiple shipping lines can only be refunded in wp-admin.
-            if (refundableShippingLineIds.size > 1) {
-                val shipping = resourceProvider.getString(R.string.multiple_shipping).lowercase(Locale.getDefault())
-                refundOptions.add(shipping)
-            }
-            return if (refundOptions.isNotEmpty()) {
-                val and = resourceProvider.getString(R.string.and).lowercase(Locale.getDefault())
-                val options = refundOptions.joinToString(lastSeparator = " $and ")
-                return resourceProvider.getString(R.string.order_refunds_shipping_refund_variable_notice, options)
-            } else {
-                null
-            }
-        }
-
+        feesRefundSection,
+        refundNotice
+    ) { order, productsSection, shippingSection, feesSection, refundNotice ->
         RefundByItemsViewState(
             currency = order.currency,
             productsSection = productsSection,
             feesSection = feesSection,
             shippingSection = shippingSection,
-            refundNotice = getRefundNotice()
+            refundNotice = refundNotice
         )
     }
         .onEach { updateRefundTotal(it.grandTotalRefund) }
@@ -229,16 +238,31 @@ class IssueRefundViewModel @Inject constructor(
     private var refundSummaryState by refundSummaryStateLiveData
 
     private val order: Order
-    private val refunds: List<Refund>
-    private val allShippingLineIds: List<Long>
-    private val refundableShippingLineIds: List<Long> /* Shipping lines that haven't been refunded */
-    private val allFeeLineIds: List<Long>
-    private val refundableFeeLineIds: List<Long> /* Fees lines that haven't been refunded */
+        get() = requireNotNull(orderFlow.replayCache.firstOrNull()) {
+            "Please ensure that this property is not accessed before the order is loaded."
+        }
 
-    private val maxRefund: BigDecimal
-    private val maxQuantities: Map<Long, Float>
+    private val refunds: List<Refund>
+    private val Order.allFeeLineIds: List<Long>
+        get() = feesLines.map { it.id }
+    private val Order.refundableFeeLineIds: List<Long>
+        get() = allFeeLineIds.filterNot { feeId -> refunds.any { it.id == feeId } }
+
+    private val Order.allShippingLineIds: List<Long>
+        get() = shippingLines.map { it.itemId }
+    private val Order.refundableShippingLineIds: List<Long>
+        get() = allShippingLineIds.filterNot { shippingId ->
+            refunds.any { it.id == shippingId }
+        }
+    private val Order.maxRefund: BigDecimal
+        get() = total - refundTotal
+
+    private val Order.containsOnlyCustomAmounts: Boolean
+        get() = items.isEmpty() && shippingLines.isEmpty() && feesLines.isNotEmpty()
+
     private val formatCurrency: (BigDecimal) -> String
-    private val gateway: PaymentGateway
+        get() = currencyFormatter.buildBigDecimalFormatter(order.currency)
+    private lateinit var gateway: PaymentGateway
     private var cardType = PaymentMethodType.CARD_PRESENT
     private val arguments: RefundsArgs by savedState.navArgs()
 
@@ -253,25 +277,53 @@ class IssueRefundViewModel @Inject constructor(
         get() = refundJob?.isActive ?: false
 
     init {
-        order = runBlocking { loadOrder(arguments.orderId) }
-        allShippingLineIds = order.shippingLines.map { it.itemId }
-        allFeeLineIds = order.feesLines.map { it.id }
         refunds = refundStore.getAllRefunds(selectedSite.get(), arguments.orderId).map { it.toAppModel() }
-        formatCurrency = currencyFormatter.buildBigDecimalFormatter(order.currency)
-        maxRefund = order.total - order.refundTotal
-        maxQuantities = refunds.getMaxRefundQuantities(order.items)
-            .map { (id, quantity) -> id to quantity }
-            .toMap()
-        gateway = loadPaymentGateway()
-        refundableShippingLineIds = getRefundableShippingLineIds()
-        refundableFeeLineIds = getRefundableFeeLineIds()
 
-        initRefundByItemsState()
-        initRefundSummaryState()
+        viewModelScope.launch {
+            gateway = loadPaymentGateway()
+            initRefundItems()
+            initRefundSummaryState()
+        }
     }
 
-    private suspend fun loadOrder(orderId: Long): Order =
-        requireNotNull(orderStore.getOrderByIdAndSite(orderId, selectedSite.get())?.let { orderMapper.toAppModel(it) })
+    private fun initRefundItems() {
+        viewModelScope.launch {
+            val order = orderFlow.first()
+            val maxQuantities = refunds.getMaxRefundQuantities(order.items)
+                .map { (id, quantity) -> id to quantity }
+                .toMap()
+
+            val items = order.items.mapNotNull {
+                val maxQuantity = maxQuantities[it.itemId] ?: return@mapNotNull null
+                val selectedQuantity = min(selectedQuantities[it.itemId] ?: 0, maxQuantity.toInt())
+                ProductRefundListItem(
+                    orderItem = it,
+                    maxQuantity = maxQuantity,
+                    quantity = selectedQuantity,
+                    subtotal = BigDecimal.ZERO,
+                    taxes = emptyList()
+                )
+            }
+
+            refundItems.value = items.filter { it.maxQuantity > 0 }
+
+            /* Grab all shipping lines listed in the Order, but remove those that are already refunded previously) */
+            val shippingLines = order.shippingLines
+                .filter { order.refundableShippingLineIds.contains(it.itemId) }
+                .map { ShippingRefundListItem(it, isSelected = true) }
+            refundShippingLines.value = shippingLines
+
+            /* Grab all fees lines listed in the Order, but remove those that are already refunded previously) */
+            val feeLines = order.feesLines
+                .filter { order.refundableFeeLineIds.contains(it.id) }
+                .map { FeeRefundListItem(it, isSelected = true) }
+            refundFeeLines.value = feeLines
+
+            if (order.containsOnlyCustomAmounts) {
+                isFeesMainSwitchChecked.value = true
+            }
+        }
+    }
 
     private fun updateRefundTotal(amount: BigDecimal) {
         commonState = commonState.copy(
@@ -282,45 +334,9 @@ class IssueRefundViewModel @Inject constructor(
         )
     }
 
-    private fun initRefundByItemsState() {
-        val items = order.items.mapNotNull {
-            val maxQuantity = maxQuantities[it.itemId] ?: return@mapNotNull null
-            val selectedQuantity = min(selectedQuantities[it.itemId] ?: 0, maxQuantity.toInt())
-            ProductRefundListItem(
-                orderItem = it,
-                maxQuantity = maxQuantity,
-                quantity = selectedQuantity,
-                subtotal = BigDecimal.ZERO,
-                taxes = emptyList()
-            )
-        }
-        updateRefundItems(items)
-
-        /* Grab all shipping lines listed in the Order, but remove those that are already refunded previously) */
-        val shippingLines = order.shippingLines
-            .map { ShippingRefundListItem(it, isSelected = true) }
-            .filter { refundableShippingLineIds.contains(it.shippingLine.itemId) }
-        refundShippingLines.value = shippingLines
-
-        /* Grab all fees lines listed in the Order, but remove those that are already refunded previously) */
-        val feeLines = order.feesLines
-            .map { FeeRefundListItem(it, isSelected = true) }
-            .filter { refundableFeeLineIds.contains(it.feeLine.id) }
-        refundFeeLines.value = feeLines
-
-        if (orderContainsOnlyCustomAmounts()) {
-            isFeesMainSwitchChecked.value = true
-        }
-    }
-
-    private fun orderContainsOnlyCustomAmounts(): Boolean {
-        return order.items.isEmpty() && order.shippingLines.isEmpty() && order.feesLines.isNotEmpty()
-    }
-
     private fun initRefundSummaryState() {
         if (refundSummaryStateLiveData.hasInitialValue) {
             val manualRefundMethod = resourceProvider.getString(R.string.order_refunds_manual_refund)
-
             if (!order.paymentMethod.isCashPayment && (!gateway.isEnabled || !gateway.supportsRefunds)) {
                 val paymentTitle = if (gateway.title.isNotBlank()) {
                     resourceProvider.getString(R.string.order_refunds_method, manualRefundMethod, gateway.title)
@@ -334,9 +350,9 @@ class IssueRefundViewModel @Inject constructor(
         }
     }
 
-    private fun loadPaymentGateway(): PaymentGateway {
-        val paymentGateway = gatewayStore.getGateway(selectedSite.get(), order.paymentMethod)?.toAppModel()
-        return if (paymentGateway != null && paymentGateway.isEnabled) {
+    private suspend fun loadPaymentGateway(): PaymentGateway = withContext(coroutineDispatchers.io) {
+        val paymentGateway = gatewayStore.getGateway(selectedSite.get(), orderFlow.first().paymentMethod)?.toAppModel()
+        return@withContext if (paymentGateway != null && paymentGateway.isEnabled) {
             paymentGateway
         } else {
             PaymentGateway(methodTitle = REFUND_METHOD_MANUAL)
@@ -393,7 +409,7 @@ class IssueRefundViewModel @Inject constructor(
                         mapOf(
                             AnalyticsTracker.KEY_ORDER_ID to order.id,
                             AnalyticsTracker.KEY_REFUND_IS_FULL to
-                                (commonState.refundTotal isEqualTo maxRefund).toString(),
+                                (commonState.refundTotal isEqualTo order.maxRefund).toString(),
                             AnalyticsTracker.KEY_REFUND_METHOD to gateway.methodTitle,
                             AnalyticsTracker.KEY_AMOUNT to commonState.refundTotal.toString()
                         )
@@ -526,7 +542,7 @@ class IssueRefundViewModel @Inject constructor(
         )
     }
 
-    fun onRefundIssued(reason: String) {
+    fun onRefundIssued(reason: String) = viewModelScope.launch {
         analyticsTrackerWrapper.track(
             CREATE_ORDER_REFUND_SUMMARY_REFUND_BUTTON_TAPPED,
             mapOf(
@@ -571,7 +587,7 @@ class IssueRefundViewModel @Inject constructor(
 
     fun onRefundQuantityChanged(uniqueId: Long, newQuantity: Int) {
         val newItems = getUpdatedItemList(uniqueId, newQuantity)
-        updateRefundItems(newItems)
+        refundItems.value = newItems
 
         selectedQuantities[uniqueId] = newQuantity
     }
@@ -581,7 +597,7 @@ class IssueRefundViewModel @Inject constructor(
         refundItems.value.forEach {
             if (it.orderItem.itemId == uniqueId) {
                 // Update the quantity
-                var newItem = it.copy(quantity = newQuantity, maxQuantity = maxQuantities[uniqueId] ?: 0f)
+                var newItem = it.copy(quantity = newQuantity)
 
                 // Update the subtotal and taxes based on the new quantity
                 val subtotal = newItem.calculateTotalSubtotal()
@@ -613,10 +629,6 @@ class IssueRefundViewModel @Inject constructor(
                 mapOf(AnalyticsTracker.KEY_ORDER_ID to order.id)
             )
         }
-    }
-
-    private fun updateRefundItems(items: List<ProductRefundListItem>) {
-        refundItems.value = items.filter { it.maxQuantity > 0 }
     }
 
     fun onShippingRefundMainSwitchChanged(isChecked: Boolean) {
@@ -689,30 +701,6 @@ class IssueRefundViewModel @Inject constructor(
             refundMethod = refundMethod,
             isMethodDescriptionVisible = isMethodDescriptionVisible
         )
-    }
-
-    private fun getRefundableShippingLineIds(): List<Long> {
-        val availableShippingLines = allShippingLineIds.toMutableList()
-        refunds.forEach {
-            it.shippingLines.forEach { shippingLine ->
-                if (availableShippingLines.contains(shippingLine.itemId)) {
-                    availableShippingLines -= shippingLine.itemId
-                }
-            }
-        }
-        return availableShippingLines
-    }
-
-    private fun getRefundableFeeLineIds(): List<Long> {
-        val availableFeeLines = allFeeLineIds.toMutableList()
-        refunds.forEach {
-            it.feeLines.forEach { feeLine ->
-                if (availableFeeLines.contains(feeLine.id)) {
-                    availableFeeLines -= feeLine.id
-                }
-            }
-        }
-        return availableFeeLines
     }
 
     private fun prepareTracksEventsDetails(exception: WooException) = mapOf(
