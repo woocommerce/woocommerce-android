@@ -85,7 +85,10 @@ class WooPosSearchProductsDataSource @Inject constructor(
                 Result.failure(WooException(result.error))
             } else {
                 val searchResult = result.model!!
-                val products = searchResult.products.map { product -> product.toAppModel() }
+                val products = searchResult.products
+                    .map { product -> product.toAppModel() }
+                    .sortedBy { it.name.lowercase() }
+
                 canLoadMore.set(searchResult.canLoadMore)
                 productsCache.addAll(products)
                 searchResultsIndex.storeSearchResults(
