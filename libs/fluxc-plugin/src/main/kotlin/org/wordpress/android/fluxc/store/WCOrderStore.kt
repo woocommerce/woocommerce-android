@@ -29,6 +29,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.BatchOrderApiResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient.OrderBy
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient.OrderUpdatePaymentDetails
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient.SortOrder
 import org.wordpress.android.fluxc.persistence.OrderSqlUtils
 import org.wordpress.android.fluxc.persistence.dao.MetaDataDao
@@ -713,9 +714,7 @@ class WCOrderStore @Inject constructor(
                         orderModel,
                         site,
                         newStatus.statusKey,
-                        newPaymentMethodId,
-                        newPaymentMethodTitle,
-                        cashPaymentChangeDueAmount
+                        OrderUpdatePaymentDetails(newPaymentMethodId, newPaymentMethodTitle, cashPaymentChangeDueAmount)
                     )
                     if (remotePayload.isError) {
                         revertOptimisticOrderUpdate(remotePayload)

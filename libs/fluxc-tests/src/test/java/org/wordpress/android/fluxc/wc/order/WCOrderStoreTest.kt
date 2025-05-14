@@ -360,7 +360,6 @@ class WCOrderStoreTest {
                 any(),
                 any(),
                 any(),
-                anyOrNull(),
                 anyOrNull()
             )
         ).thenReturn(
@@ -399,8 +398,7 @@ class WCOrderStoreTest {
             orderModel,
             site,
             CoreOrderStatus.COMPLETED.value,
-            COD_PAYMENT_METHOD_ID,
-            CUSTOM_PAYMENT_METHOD_TITLE
+            OrderRestClient.OrderUpdatePaymentDetails(COD_PAYMENT_METHOD_ID, CUSTOM_PAYMENT_METHOD_TITLE)
         )).thenReturn(
             RemoteOrderPayload.Updating(
                 orderModel.copy(
@@ -447,8 +445,7 @@ class WCOrderStoreTest {
                 orderModel,
                 site,
                 CoreOrderStatus.COMPLETED.value,
-                COD_PAYMENT_METHOD_ID,
-                CUSTOM_PAYMENT_METHOD_TITLE
+                OrderRestClient.OrderUpdatePaymentDetails(COD_PAYMENT_METHOD_ID, CUSTOM_PAYMENT_METHOD_TITLE)
             )
         ).thenReturn(
             RemoteOrderPayload.Updating(

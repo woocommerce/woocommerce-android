@@ -635,25 +635,23 @@ class OrderRestClient @Inject constructor(
         orderToUpdate: OrderEntity,
         site: SiteModel,
         status: String,
-        paymentMethodId: String? = null,
-        paymentMethodTitle: String? = null,
-        cashPaymentChangeDueAmount: String? = null
+        paymentDetails: OrderUpdatePaymentDetails? = null
     ): RemoteOrderPayload.Updating {
         val updatePayload = mutableMapOf<String, Any>()
         updatePayload["status"] = status
-        paymentMethodId?.let {
-            updatePayload["payment_method"] = paymentMethodId
+        paymentDetails?.paymentMethodId?.let {
+            updatePayload["payment_method"] = it
         }
-        paymentMethodTitle?.let {
-            updatePayload["payment_method_title"] = paymentMethodTitle
+        paymentDetails?.paymentMethodTitle?.let {
+            updatePayload["payment_method_title"] = it
         }
 
-        cashPaymentChangeDueAmount?.let {
+        paymentDetails?.cashPaymentChangeDueAmount?.let {
             val metaData = mapOf(
                 "meta_data" to listOfNotNull(
                         mapOf(
                             "key" to "_cash_change_amount",
-                            "value" to cashPaymentChangeDueAmount
+                            "value" to it
                         )
                 )
             )
@@ -1301,4 +1299,10 @@ class OrderRestClient @Inject constructor(
         TITLE("title"),
         SLUG("slug");
     }
+
+    data class OrderUpdatePaymentDetails(
+        val paymentMethodId: String? = null,
+        val paymentMethodTitle: String? = null,
+        val cashPaymentChangeDueAmount: String? = null
+    )
 }
