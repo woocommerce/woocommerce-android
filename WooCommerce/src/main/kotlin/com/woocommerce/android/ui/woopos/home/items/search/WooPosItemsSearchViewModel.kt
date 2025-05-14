@@ -75,10 +75,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
         when (event) {
             WooPosItemsSearchUiEvent.OnNextPageRequested -> onEndOfListReached()
             is WooPosItemsSearchUiEvent.OnItemClicked -> handleItemClicked(event.item, WooPosItemSource.SEARCH_RESULT)
-            WooPosItemsSearchUiEvent.LoadingErrorRetryButtonClicked -> {
-                val currentState = _viewState.value as? WooPosItemsSearchViewState.Error ?: return
-                performSearch(currentState.searchQuery)
-            }
+            WooPosItemsSearchUiEvent.LoadingErrorRetryButtonClicked -> handleLoadingErrorRetryClick()
 
             is WooPosItemsSearchUiEvent.OnRecentSearchClicked -> {
                 viewModelScope.launch {
@@ -98,6 +95,13 @@ class WooPosItemsSearchViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private fun handleLoadingErrorRetryClick() {
+        val currentState = _viewState.value as? WooPosItemsSearchViewState.Error ?: return
+
+        _viewState.value = WooPosItemsSearchViewState.Loading
+        performRemoteSearch(currentState.searchQuery)
     }
 
     private fun performSearch(query: String) {
