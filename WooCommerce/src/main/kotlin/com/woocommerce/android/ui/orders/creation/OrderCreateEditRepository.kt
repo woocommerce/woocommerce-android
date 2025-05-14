@@ -60,7 +60,7 @@ class OrderCreateEditRepository @Inject constructor(
             shippingLines = order.shippingLines.map { it.toDataModel() },
             feeLines = order.feesLines.map { it.toDataModel() },
             couponLines = order.couponLines.map { it.toDataModel() },
-            createdVia = source.createdViaValue(),
+            createdVia = source.value,
             giftCard = giftCard.orNullIfEmpty(),
         )
         val result = if (order.id == 0L) {
@@ -218,14 +218,7 @@ class OrderCreateEditRepository @Inject constructor(
     }
 }
 
-enum class OrderCreationSource {
-    STORE_MANAGEMENT,
-    POINT_OF_SALE
-}
-
-private fun OrderCreationSource.createdViaValue(): String? {
-    return when (this) {
-        OrderCreationSource.STORE_MANAGEMENT -> null
-        OrderCreationSource.POINT_OF_SALE -> "pos-rest-api"
-    }
+enum class OrderCreationSource(val value: String?) {
+    STORE_MANAGEMENT(null),
+    POINT_OF_SALE("pos-rest-api")
 }
