@@ -186,7 +186,8 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when source is store management then createdVia value is null`() = testBlocking {
+    fun `given the order is updated, when source is store management then createdVia value is null`() = testBlocking {
+       // GIVEN
         whenever(orderUpdateStore.createOrder(any(), any(), anyOrNull()))
             .thenReturn(WooResult(OrderTestUtils.generateOrder()))
 
@@ -194,10 +195,10 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
             id = 0L
         )
 
-        // When the createOrUpdateOrder method is call
+        // WHEN the createOrUpdateOrder method is call
         sut.createOrUpdateOrder(order, source = OrderCreationSource.STORE_MANAGEMENT)
 
-        // Then the order status is not changed
+        // THEN the order status is not changed
         val request = UpdateOrderRequest(
             status = WCOrderStatusModel(Order.Status.AUTO_DRAFT),
             lineItems = emptyList(),
