@@ -111,24 +111,7 @@ class IssueRefundViewModel @Inject constructor(
         refundItems.filterNotNull(),
         orderFlow
     ) { items, _ ->
-        val subtotal = items.sumByBigDecimal { it.subtotal }
-        val taxes = items.sumByBigDecimal { it.taxes.sumOf { tax -> tax.tax } }
-        val total = subtotal + taxes
-
-        ProductsRefundSection(
-            refundItems = items,
-            productsRefund = total,
-            formattedProductsRefund = formatCurrency(total),
-            selectedItemsHeader = resourceProvider.getString(
-                R.string.order_refunds_items_selected,
-                items.sumOf { it.quantity }
-            ),
-            selectButtonTitle = if (items.areAllItemsSelected()) {
-                resourceProvider.getString(R.string.order_refunds_items_select_none)
-            } else {
-                resourceProvider.getString(R.string.order_refunds_items_select_all)
-            }
-        )
+        prepareProductsRefundSection(items)
     }.shareIn(viewModelScope, started = SharingStarted.Lazily, replay = 1)
 
     private val isFeesMainSwitchChecked = savedState.getStateFlow(
@@ -147,17 +130,10 @@ class IssueRefundViewModel @Inject constructor(
         refundFeeLines.filterNotNull(),
         orderFlow.map { it.refundableFeeLineIds }
     ) { isFeesMainSwitchChecked, feeLines, refundableFeeLineIds ->
-        val selectedFees = feeLines.filter { it.isSelected }
-        val totalRefund = selectedFees.sumOf { it.feeLine.getTotalValue() }
-
-        FeesRefundSection(
-            feeRefundLines = feeLines,
-            isFeesRefundAvailable = refundableFeeLineIds.isNotEmpty(),
+        prepareFeesRefundSection(
             isFeesMainSwitchChecked = isFeesMainSwitchChecked,
-            feesRefund = totalRefund,
-            feesSubtotalFormatted = formatCurrency(selectedFees.sumByBigDecimal { it.feeLine.total }),
-            feesTaxesFormatted = formatCurrency(selectedFees.sumByBigDecimal { it.feeLine.totalTax }),
-            feesRefundTotalFormatted = formatCurrency(totalRefund),
+            feeLines = feeLines,
+            refundableFeeLineIds = refundableFeeLineIds
         )
     }
 
@@ -177,37 +153,10 @@ class IssueRefundViewModel @Inject constructor(
         refundShippingLines.filterNotNull(),
         orderFlow.map { it.refundableShippingLineIds }
     ) { isShippingMainSwitchChecked, shippingLines, refundableShippingLineIds ->
-        val selectedShipping = shippingLines.filter { it.isSelected }
-        val totalRefund = selectedShipping.sumOf { it.shippingLine.total + it.shippingLine.totalTax }
-        ShippingRefundSection(
-            shippingRefundLines = shippingLines,
-            // We only support refunding an Order with one shipping refund for now.
-            // In the future, to support multiple shipping refund, we can replace this
-            // with refundableShippingLineIds.isNotEmpty()
-            isShippingRefundAvailable = refundableShippingLineIds.size == 1,
-            isShippingMainSwitchChecked = isShippingMainSwitchChecked,
-            shippingRefund = totalRefund,
-            shippingSubtotalFormatted = formatCurrency(selectedShipping.sumByBigDecimal { it.shippingLine.total }),
-            shippingTaxesFormatted = formatCurrency(selectedShipping.sumByBigDecimal { it.shippingLine.totalTax }),
-            shippingRefundTotalFormatted = formatCurrency(totalRefund)
-        )
+        prepareShippingRefundSection(shippingLines, refundableShippingLineIds, isShippingMainSwitchChecked)
     }
 
-    private val refundNotice = orderFlow.map { order ->
-        val refundOptions = mutableListOf<String>()
-        // Inform user that multiple shipping lines can only be refunded in wp-admin.
-        if (order.refundableShippingLineIds.size > 1) {
-            val shipping = resourceProvider.getString(R.string.multiple_shipping).lowercase(Locale.getDefault())
-            refundOptions.add(shipping)
-        }
-        if (refundOptions.isNotEmpty()) {
-            val and = resourceProvider.getString(R.string.and).lowercase(Locale.getDefault())
-            val options = refundOptions.joinToString(lastSeparator = " $and ")
-            resourceProvider.getString(R.string.order_refunds_shipping_refund_variable_notice, options)
-        } else {
-            null
-        }
-    }
+    private val refundNotice = orderFlow.map { order -> prepareRefundNotice(order) }
 
     val refundByItemsStateLiveData = combine(
         orderFlow,
@@ -328,6 +277,86 @@ class IssueRefundViewModel @Inject constructor(
             if (order.containsOnlyCustomAmounts) {
                 isFeesMainSwitchChecked.value = true
             }
+        }
+    }
+
+    private fun prepareProductsRefundSection(
+        items: List<ProductRefundListItem>
+    ): ProductsRefundSection {
+        val subtotal = items.sumByBigDecimal { it.subtotal }
+        val taxes = items.sumByBigDecimal { it.taxes.sumOf { tax -> tax.tax } }
+        val total = subtotal + taxes
+
+        return ProductsRefundSection(
+            refundItems = items,
+            productsRefund = total,
+            formattedProductsRefund = formatCurrency(total),
+            selectedItemsHeader = resourceProvider.getString(
+                R.string.order_refunds_items_selected,
+                items.sumOf { it.quantity }
+            ),
+            selectButtonTitle = if (items.areAllItemsSelected()) {
+                resourceProvider.getString(R.string.order_refunds_items_select_none)
+            } else {
+                resourceProvider.getString(R.string.order_refunds_items_select_all)
+            }
+        )
+    }
+
+    private fun prepareFeesRefundSection(
+        isFeesMainSwitchChecked: Boolean,
+        feeLines: List<FeeRefundListItem>,
+        refundableFeeLineIds: List<Long>,
+    ): FeesRefundSection {
+        val selectedFees = feeLines.filter { it.isSelected }
+        val totalRefund = selectedFees.sumOf { it.feeLine.getTotalValue() }
+
+        return FeesRefundSection(
+            feeRefundLines = feeLines,
+            isFeesRefundAvailable = refundableFeeLineIds.isNotEmpty(),
+            isFeesMainSwitchChecked = isFeesMainSwitchChecked,
+            feesRefund = totalRefund,
+            feesSubtotalFormatted = formatCurrency(selectedFees.sumByBigDecimal { it.feeLine.total }),
+            feesTaxesFormatted = formatCurrency(selectedFees.sumByBigDecimal { it.feeLine.totalTax }),
+            feesRefundTotalFormatted = formatCurrency(totalRefund),
+        )
+    }
+
+    private fun prepareShippingRefundSection(
+        shippingLines: List<ShippingRefundListItem>,
+        refundableShippingLineIds: List<Long>,
+        isShippingMainSwitchChecked: Boolean
+    ): ShippingRefundSection {
+        val selectedShipping = shippingLines.filter { it.isSelected }
+        val totalRefund = selectedShipping.sumOf { it.shippingLine.total + it.shippingLine.totalTax }
+        return ShippingRefundSection(
+            shippingRefundLines = shippingLines,
+            // We only support refunding an Order with one shipping refund for now.
+            // In the future, to support multiple shipping refund, we can replace this
+            // with refundableShippingLineIds.isNotEmpty()
+            isShippingRefundAvailable = refundableShippingLineIds.size == 1,
+            isShippingMainSwitchChecked = isShippingMainSwitchChecked,
+            shippingRefund = totalRefund,
+            shippingSubtotalFormatted = formatCurrency(selectedShipping.sumByBigDecimal { it.shippingLine.total }),
+            shippingTaxesFormatted = formatCurrency(selectedShipping.sumByBigDecimal { it.shippingLine.totalTax }),
+            shippingRefundTotalFormatted = formatCurrency(totalRefund)
+        )
+    }
+
+    private fun prepareRefundNotice(order: Order): String? {
+        val refundOptions = mutableListOf<String>()
+        // Inform user that multiple shipping lines can only be refunded in wp-admin.
+        if (order.refundableShippingLineIds.size > 1) {
+            val shipping = resourceProvider.getString(R.string.multiple_shipping).lowercase(Locale.getDefault())
+            refundOptions.add(shipping)
+        }
+
+        return if (refundOptions.isNotEmpty()) {
+            val and = resourceProvider.getString(R.string.and).lowercase(Locale.getDefault())
+            val options = refundOptions.joinToString(lastSeparator = " $and ")
+            resourceProvider.getString(R.string.order_refunds_shipping_refund_variable_notice, options)
+        } else {
+            null
         }
     }
 
