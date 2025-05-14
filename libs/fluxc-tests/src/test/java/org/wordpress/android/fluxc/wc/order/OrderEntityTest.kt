@@ -143,4 +143,78 @@ class OrderEntityTest {
         assertEquals("Flat Rate Shipping", shippingLinesList[0].methodTitle)
         assertEquals("Local Pickup Shipping", shippingLinesList[1].methodTitle)
     }
+
+    @Test
+    fun testGetTaxLinesHandlesInvalidJson() {
+        // GIVEN
+        val model = OrderTestUtils.generateSampleOrder(61).copy(
+            taxLines = """[{
+            "id": 1,
+            "rate_id": "stripe_tax_for_woocommerce__shipping_tax__0__Shipping Tax",
+            "code": "TAX",
+            "title": "Shipping Tax",
+            "total": "5.00",
+            "compound": false
+        }]"""
+        )
+
+        // WHEN
+        val taxLines = model.getTaxLineList()
+
+        // THEN
+        assertEquals(0, taxLines.size, "Should return empty list when tax lines contains invalid values")
+    }
+
+    @Test
+    fun testGetTaxLinesValidJson() {
+        val model = OrderTestUtils.generateSampleOrder(61).copy(
+            taxLines = """[{
+            "id": 1,
+            "rate_id": 5,
+            "rate_code": "TAX-1",
+            "rate_percent": 7.5,
+            "label": "State Tax",
+            "compound": false,
+            "tax_total": "5.50",
+            "shipping_tax_total": "0.75"
+        }, {
+            "id": 2,
+            "rate_id": 6,
+            "rate_code": "TAX-2",
+            "rate_percent": 2.0,
+            "label": "County Tax",
+            "compound": true,
+            "tax_total": "2.30",
+            "shipping_tax_total": "0.25"
+        }]"""
+        )
+
+        // WHEN
+        val taxLines = model.getTaxLineList()
+
+        // THEN
+        assertEquals(2, taxLines.size)
+
+        with(taxLines[0]) {
+            assertEquals(1, id)
+            assertEquals(5, rateId)
+            assertEquals("TAX-1", rateCode)
+            assertEquals(7.5f, ratePercent)
+            assertEquals("State Tax", label)
+            assertEquals(false, compound)
+            assertEquals("5.50", taxTotal)
+            assertEquals("0.75", shippingTaxTotal)
+        }
+
+        with(taxLines[1]) {
+            assertEquals(2, id)
+            assertEquals(6, rateId)
+            assertEquals("TAX-2", rateCode)
+            assertEquals(2.0f, ratePercent)
+            assertEquals("County Tax", label)
+            assertEquals(true, compound)
+            assertEquals("2.30", taxTotal)
+            assertEquals("0.25", shippingTaxTotal)
+        }
+    }
 }
