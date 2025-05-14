@@ -1,14 +1,17 @@
 package com.woocommerce.android.ui.coupons.create
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.WooTheme
+import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationActivity
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -24,7 +27,7 @@ class CouponTypePickerFragment : WCBottomSheetDialogFragment() {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                WooThemeWithBackground {
+                WooTheme {
                     CouponTypePickerScreen(
                         viewModel::onPercentageDiscountClicked,
                         viewModel::onFixedCartDiscountClicked,
@@ -42,11 +45,23 @@ class CouponTypePickerFragment : WCBottomSheetDialogFragment() {
                 is CouponTypePickerViewModel.NavigateToCouponEdit -> {
                     findNavController().navigate(
                         CouponTypePickerFragmentDirections.actionCouponTypePickerFragmentToEditCouponFragment(
-                            mode = it.mode
+                            mode = it.mode,
+                            isPOSMode = it.isPOSMode
                         )
+                    )
+                }
+                is CouponTypePickerViewModel.NavigateBackToPOS -> {
+                    setFragmentResult(
+                        WooPosCouponCreationActivity.WOO_POS_COUPON_CREATION_REQUEST_KEY,
+                        Bundle()
                     )
                 }
             }
         }
+    }
+
+    override fun onCancel(dialog: DialogInterface) {
+        super.onCancel(dialog)
+        viewModel.onCancel()
     }
 }

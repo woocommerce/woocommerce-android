@@ -4,9 +4,13 @@ import android.os.Parcelable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
+import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState.Tab
+import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationFacade
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart.WooPosItemSource
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SearchButtonTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ITEM_LIST_TYPE
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ITEM_LIST_TYPE_PRODUCTS
@@ -25,6 +29,8 @@ class WooPosItemsViewModel @Inject constructor(
     private val navigator: WooPosItemsNavigator,
     private val searchHelper: WooPosItemsSearchHelper,
     private val tabsHelper: WooPosItemsTabsHelper,
+    private val couponCreationFacade: WooPosCouponCreationFacade,
+    private val fromChildToParentEventSender: WooPosChildrenToParentEventSender,
     private val analyticsTracker: WooPosAnalyticsTracker,
 ) : ViewModel() {
     private val _viewState = MutableStateFlow<WooPosItemsViewState>(
@@ -67,6 +73,8 @@ class WooPosItemsViewModel @Inject constructor(
                 searchHelper.onSearchChanged("", 0)
                 trackSearchIconClicked()
             }
+
+            is WooPosItemsUIEvent.AddCouponIconClicked -> createAndAddCoupon()
         }
     }
 
@@ -103,6 +111,20 @@ class WooPosItemsViewModel @Inject constructor(
             )
 
             else -> error("Invalid tab $selectedTab")
+        }
+    }
+
+    private fun createAndAddCoupon() {
+        viewModelScope.launch {
+            val couponId = couponCreationFacade.createCoupon()
+            if (couponId != null) {
+                fromChildToParentEventSender.sendToParent(
+                    ChildToParentEvent.ItemClickedInProductSelector(
+                        itemData = ItemClickedData.Coupon(couponId),
+                        source = WooPosItemSource.COUPON_LIST
+                    )
+                )
+            }
         }
     }
 

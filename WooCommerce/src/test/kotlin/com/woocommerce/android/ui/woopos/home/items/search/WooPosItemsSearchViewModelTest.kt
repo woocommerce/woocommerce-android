@@ -17,7 +17,9 @@ import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart.WooPosItemSource
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemsNextPageLoaded
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.PreSearchRecentTermTapped
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SearchRemoteResultsFetched
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosGetTotalProductCount
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -56,6 +58,9 @@ class WooPosItemsSearchViewModelTest {
     private val mockNavigator: WooPosItemsNavigator = mock()
     private val mockSearchHelper: com.woocommerce.android.ui.woopos.home.items.WooPosItemsSearchHelper = mock()
     private val mockAnalyticsTracker: WooPosAnalyticsTracker = mock()
+    private val getTotalProductCount: WooPosGetTotalProductCount = mock {
+        onBlocking { invoke() }.thenReturn(23)
+    }
 
     private val defaultQuery = "test query"
     private val defaultProduct = ProductTestUtils.generateProduct(
@@ -459,7 +464,6 @@ class WooPosItemsSearchViewModelTest {
 
         whenever(mockDataSource.searchLocalProducts(query1)).thenReturn(emptyList())
         whenever(mockDataSource.searchRemoteProducts(query1)).thenReturn(Result.success(emptyList()))
-
         whenever(mockDataSource.searchLocalProducts(query2)).thenReturn(emptyList())
         whenever(mockDataSource.searchRemoteProducts(query2)).thenReturn(Result.success(products))
 
@@ -715,6 +719,43 @@ class WooPosItemsSearchViewModelTest {
     }
 
     @Test
+    fun `when search results fetched, then track SearchRemoteResultsFetched event with correct properties`() = runTest {
+        // GIVEN
+        val query = "test query"
+        val products = listOf(
+            ProductTestUtils.generateProduct(
+                productId = 1,
+                productName = "Test Product",
+                amount = "10.0",
+                productType = "simple"
+            )
+        )
+        val totalProductsCount = 23
+
+        whenever(mockEmptyStateProvider.getPopularItems()).thenReturn(emptyList())
+        whenever(mockEmptyStateProvider.getLastSearches()).thenReturn(emptyList())
+        whenever(mockDataSource.searchLocalProducts(query)).thenReturn(emptyList())
+        whenever(mockDataSource.searchRemoteProducts(query)).thenReturn(Result.success(products))
+        whenever(mockPriceFormat(BigDecimal("10.0"))).thenReturn("$10.0")
+        whenever(mockParentToChildrenEventReceiver.events).thenReturn(
+            flowOf(ParentToChildrenEvent.SearchEvent.ChangedQuery(query))
+        )
+
+        // WHEN
+        createViewModel()
+        advanceUntilIdle()
+
+        // THEN
+        verify(mockAnalyticsTracker).track(
+            argThat { event ->
+                event is SearchRemoteResultsFetched &&
+                    event.totalProductsCount == totalProductsCount &&
+                    event.properties["item_list_type"] == "products"
+            }
+        )
+    }
+
+    @Test
     fun `given search query in content state, when simple product clicked, then search is stored as recent`() =
         runTest {
             // GIVEN
@@ -836,9 +877,11 @@ class WooPosItemsSearchViewModelTest {
         remoteProduct: com.woocommerce.android.model.Product
     ) {
         wheneverBlocking { mockDataSource.searchLocalProducts(query) }.thenReturn(listOf(cachedProduct))
-        wheneverBlocking { mockDataSource.searchRemoteProducts(query) }.thenReturn(
-            Result.success(listOf(remoteProduct))
-        )
+        wheneverBlocking {
+            mockDataSource.searchRemoteProducts(
+                query
+            )
+        }.thenReturn(Result.success(listOf(remoteProduct)))
         whenever(mockParentToChildrenEventReceiver.events).thenReturn(
             flowOf(ParentToChildrenEvent.SearchEvent.ChangedQuery(query))
         )
@@ -853,5 +896,6 @@ class WooPosItemsSearchViewModelTest {
         navigator = mockNavigator,
         searchHelper = mockSearchHelper,
         analyticsTracker = mockAnalyticsTracker,
+        getTotalProductCount = getTotalProductCount
     )
 }

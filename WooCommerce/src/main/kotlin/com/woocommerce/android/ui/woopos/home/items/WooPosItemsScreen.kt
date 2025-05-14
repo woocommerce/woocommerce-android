@@ -77,6 +77,9 @@ private fun WooPosItemsScreen(
                 WooPosSearchUIEvent.SearchIconClicked -> onUIEvent(WooPosItemsUIEvent.SearchIconClicked)
             }
         },
+        onAddCouponEvent = {
+            onUIEvent(WooPosItemsUIEvent.AddCouponIconClicked)
+        },
         onTabClicked = { onUIEvent(WooPosItemsUIEvent.OnTabClicked(it)) },
     )
 }
@@ -89,6 +92,7 @@ private fun MainItemsList(
     listState: LazyListState,
     onSearchEvent: (WooPosSearchUIEvent) -> Unit,
     onTabClicked: (WooPosItemsViewState.Tab) -> Unit,
+    onAddCouponEvent: () -> Unit,
 ) {
     Box(
         modifier = modifier
@@ -106,6 +110,7 @@ private fun MainItemsList(
                 state = state.value,
                 onTabClicked = onTabClicked,
                 onSearchEvent = onSearchEvent,
+                onAddCouponEvent = onAddCouponEvent,
             )
 
             val currentState = state.value
