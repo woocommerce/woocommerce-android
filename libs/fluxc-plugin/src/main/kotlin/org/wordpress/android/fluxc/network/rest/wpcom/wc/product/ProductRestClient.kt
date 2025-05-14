@@ -761,7 +761,7 @@ class ProductRestClient @Inject constructor(
         return response.toWooPayload { categories ->
             categories.map {
                 it.asProductCategoryModel()
-                    .copy(localSiteId = site.id)
+                    .copy(localSiteId = site.localId())
             }
         }
     }
@@ -1444,7 +1444,7 @@ class ProductRestClient @Inject constructor(
                 is WPAPIResponse.Success -> {
                     response.data?.let {
                         val categories = it.map { category ->
-                            category.asProductCategoryModel().copy (  localSiteId = site.id  )
+                            category.asProductCategoryModel().copy (  localSiteId = site.localId()  )
                         }
                         val canLoadMore = categories.size == pageSize
                         val loadedMore = offset > 0
@@ -1508,7 +1508,7 @@ class ProductRestClient @Inject constructor(
                     response.data!!.createdCategories
                         .filter { it.error == null }
                         .map {
-                            it.asProductCategoryModel().copy (localSiteId = site.id )
+                            it.asProductCategoryModel().copy (localSiteId = site.localId() )
                         }
                 )
             }
@@ -1545,7 +1545,7 @@ class ProductRestClient @Inject constructor(
 
         return when (response) {
             is WPAPIResponse.Success -> {
-                val updatedCategory = response.data?.asProductCategoryModel()?.copy (                         localSiteId = site.id )
+                val updatedCategory = response.data?.asProductCategoryModel()?.copy(localSiteId = site.localId())
                 WooPayload(updatedCategory)
             }
 
@@ -1590,7 +1590,7 @@ class ProductRestClient @Inject constructor(
         site: SiteModel,
         category: WCProductCategoryModel
     ): WooPayload<WCProductCategoryModel> {
-        val path = WOOCOMMERCE.products.categories.id(category.remoteCategoryId).pathV3
+        val path = WOOCOMMERCE.products.categories.id(category.remoteCategoryId.value).pathV3
 
         val body = mutableMapOf(
             "name" to category.name,
@@ -1606,7 +1606,7 @@ class ProductRestClient @Inject constructor(
 
         return when {
             response is WPAPIResponse.Success -> {
-                val updatedCategory = response.data?.asProductCategoryModel()?.copy (                         localSiteId = site.id )
+                val updatedCategory = response.data?.asProductCategoryModel()?.copy(localSiteId = site.localId())
                 WooPayload(updatedCategory)
             }
 
@@ -1631,7 +1631,7 @@ class ProductRestClient @Inject constructor(
 
         return when {
             response is WPAPIResponse.Success -> {
-                val updatedCategory = response.data?.asProductCategoryModel()?.copy (                         localSiteId = site.id )
+                val updatedCategory = response.data?.asProductCategoryModel()?.copy(localSiteId = site.localId())
                 WooPayload(updatedCategory)
             }
 

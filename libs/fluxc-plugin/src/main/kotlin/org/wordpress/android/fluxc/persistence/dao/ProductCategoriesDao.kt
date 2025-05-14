@@ -5,6 +5,8 @@ import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.WCProductCategoryModel
 import org.wordpress.android.fluxc.store.WCProductStore
 
@@ -14,7 +16,7 @@ internal abstract class ProductCategoriesDao {
     private companion object {
         const val GET_FOR_SITE_QUERY = """
            SELECT * FROM ProductCategoryEntity
-           WHERE localSiteId = :localSiteId
+           WHERE localSiteId = :siteId
            ORDER BY
                CASE WHEN :sortType = 'NAME_ASC' THEN name COLLATE NOCASE END ASC,
                CASE WHEN :sortType = 'NAME_DESC' THEN name COLLATE NOCASE END DESC
@@ -24,38 +26,38 @@ internal abstract class ProductCategoriesDao {
 
     @Query(GET_FOR_SITE_QUERY)
     abstract suspend fun getProductCategories(
-        localSiteId: Int,
+        siteId: LocalId,
         sortType: WCProductStore.ProductCategorySorting
     ): List<WCProductCategoryModel>
 
     @Query(GET_FOR_SITE_QUERY)
     abstract fun observeProductCategories(
-        localSiteId: Int,
+        siteId: LocalId,
         sortType: WCProductStore.ProductCategorySorting
     ): Flow<List<WCProductCategoryModel>>
 
     @Query(
         """
             SELECT * FROM ProductCategoryEntity
-            WHERE localSiteId = :localSiteId
+            WHERE localSiteId = :siteId
             AND remoteCategoryId = :remoteCategoryId
         """
     )
     abstract suspend fun getProductCategory(
-        localSiteId: Int,
-        remoteCategoryId: Long
+        siteId: LocalId,
+        remoteCategoryId: RemoteId
     ): WCProductCategoryModel?
 
     @Query(
         """
             SELECT * FROM ProductCategoryEntity
-            WHERE localSiteId = :localSiteId
+            WHERE localSiteId = :siteId
             AND remoteCategoryId IN (:categoryIds)
         """
     )
     abstract suspend fun getProductCategories(
-        localSiteId: Int,
-        categoryIds: List<Long>
+        siteId: LocalId,
+        categoryIds: List<RemoteId>
     ): List<WCProductCategoryModel>
 
     @Upsert
@@ -70,10 +72,10 @@ internal abstract class ProductCategoriesDao {
     @Query(
         """
             DELETE FROM ProductCategoryEntity
-            WHERE localSiteId = :localSiteId
+            WHERE localSiteId = :siteId
         """
     )
-    abstract suspend fun deleteProductCategoriesForSite(localSiteId: Int)
+    abstract suspend fun deleteProductCategoriesForSite(siteId: LocalId)
 
     @Query(
         """

@@ -13,6 +13,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
 import org.wordpress.android.fluxc.store.WCProductStore.ProductCategorySorting.NAME_ASC
@@ -45,7 +46,7 @@ class ProductCategoriesDaoTest {
 
         // Test inserting a product category
         sut.upsertProductCategory(category)
-        var savedCategory = sut.getProductCategory(site.id, category.remoteCategoryId)
+        var savedCategory = sut.getProductCategory(site.localId(), category.remoteCategoryId)
 
         assertNotNull(savedCategory)
         assertEquals(category.remoteCategoryId, savedCategory.remoteCategoryId)
@@ -57,7 +58,7 @@ class ProductCategoriesDaoTest {
         // Test updating the same product category
         val updated = category.copy(name = "foo")
         sut.upsertProductCategory(updated)
-        savedCategory = sut.getProductCategory(site.id, category.remoteCategoryId)
+        savedCategory = sut.getProductCategory(site.localId(), category.remoteCategoryId)
 
         assertNotNull(savedCategory)
         assertEquals(updated.name, savedCategory.name)
@@ -74,7 +75,7 @@ class ProductCategoriesDaoTest {
         assertEquals(
             productCategories,
             sut.getProductCategories(
-                localSiteId = site.id,
+                siteId = site.localId(),
                 sortType = NAME_ASC
             )
         )
@@ -89,11 +90,11 @@ class ProductCategoriesDaoTest {
         sut.upsertProductCategories(categories)
 
         // Get all product categories for site and verify
-        val savedCategoriesExist = sut.getProductCategories(site.id, NAME_ASC)
+        val savedCategoriesExist = sut.getProductCategories(site.localId(), NAME_ASC)
         assertEquals(categories.size, savedCategoriesExist.size)
 
         // Get all product categories for a site that do not exist
-        val savedCategories = sut.getProductCategories(localSiteId = 400, NAME_ASC)
+        val savedCategories = sut.getProductCategories(siteId = LocalId(400), NAME_ASC)
         assertEquals(0, savedCategories.size)
     }
 
@@ -104,19 +105,19 @@ class ProductCategoriesDaoTest {
         sut.upsertProductCategories(categories)
 
         // Verify categories inserted
-        var savedCategories = sut.getProductCategories(site.localId().value, NAME_ASC)
+        var savedCategories = sut.getProductCategories(site.localId(), NAME_ASC)
         assertEquals(categories.size, savedCategories.size)
 
         // Delete all categories and verify
         sut.deleteAllProductCategories()
-        savedCategories = sut.getProductCategories(site.localId().value, NAME_ASC)
+        savedCategories = sut.getProductCategories(site.localId(), NAME_ASC)
         assertEquals(0, savedCategories.size)
     }
 
     @Test
     fun testDeleteProductCategoriesForSite() = runTest {
-        val localSiteId = site.id
-        val categories = ProductTestUtils.getProductCategories(localSiteId)
+        val localSiteId = LocalId(site.id)
+        val categories = ProductTestUtils.getProductCategories(localSiteId.value)
 
         sut.upsertProductCategories(categories)
 
