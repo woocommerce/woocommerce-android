@@ -340,7 +340,7 @@ private fun CouponInfo(name: String, summary: String, expiredState: Coupon.Expir
             .padding(
                 end = WooPosSpacing.Medium.value,
             )
-            .padding(vertical = WooPosSpacing.Small.value.toAdaptivePadding()),
+            .padding(vertical = WooPosSpacing.Medium.value.toAdaptivePadding()),
         verticalArrangement = Arrangement.Center
     ) {
         WooPosText(
