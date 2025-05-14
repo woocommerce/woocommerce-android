@@ -136,7 +136,7 @@ class WooPosCashPaymentViewModelTest {
     @Test
     fun `given repository completes order successfully, when onUIEvent CompleteOrderClicked, then state is Complete`() = runTest {
         // GIVEN
-        whenever(repository.completeOrder(any())).thenReturn(Result.success(Unit))
+        whenever(repository.completeOrder(any(), any())).thenReturn(Result.success(Unit))
 
         // WHEN
         viewModel.onUIEvent(WooPosCashPaymentUIEvent.CompleteOrderClicked)
@@ -144,7 +144,7 @@ class WooPosCashPaymentViewModelTest {
 
         // THEN
         assertThat(state).isEqualTo(WooPosCashPaymentState.Complete)
-        verify(repository).completeOrder(any())
+        verify(repository).completeOrder(any(), any())
     }
 
     @Test
@@ -161,7 +161,7 @@ class WooPosCashPaymentViewModelTest {
         val collectingState = state as WooPosCashPaymentState.Collecting
         assertThat(collectingState.errorMessage).isEqualTo(errorMessage)
         assertThat(collectingState.button.status).isEqualTo(WooPosCashPaymentState.Collecting.Button.Status.ENABLED)
-        verify(repository).completeOrder(any())
+        verify(repository).completeOrder(any(), any())
     }
 
     @Test
@@ -179,7 +179,7 @@ class WooPosCashPaymentViewModelTest {
     @Test
     fun `when Complete button tapped, then should track event`() = runTest {
         // GIVEN
-        whenever(repository.completeOrder(any())).thenReturn(Result.success(Unit))
+        whenever(repository.completeOrder(any(), any())).thenReturn(Result.success(Unit))
 
         // WHEN
         viewModel.onUIEvent(WooPosCashPaymentUIEvent.CompleteOrderClicked)
@@ -191,7 +191,7 @@ class WooPosCashPaymentViewModelTest {
     @Test
     fun `when state is Complete, then should track event`() = runTest {
         // GIVEN
-        whenever(repository.completeOrder(any())).thenReturn(Result.success(Unit))
+        whenever(repository.completeOrder(any(), any())).thenReturn(Result.success(Unit))
 
         // WHEN
         viewModel.onUIEvent(WooPosCashPaymentUIEvent.CompleteOrderClicked)
@@ -204,7 +204,7 @@ class WooPosCashPaymentViewModelTest {
 
     private suspend fun givenRepoFailsToCompleteOrder(): String {
         val errorMessage = "Something went wrong"
-        whenever(repository.completeOrder(any())).thenReturn(Result.failure(Exception()))
+        whenever(repository.completeOrder(any(), any())).thenReturn(Result.failure(Exception()))
         whenever(resourceProvider.getString(R.string.woopos_cash_payment_error_message))
             .thenReturn(errorMessage)
         return errorMessage

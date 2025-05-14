@@ -98,7 +98,7 @@ class WooPosCashPaymentRepositoryTest {
             )
         ).thenReturn(flowOf(updateResult))
 
-        val result = repository.completeOrder(orderId)
+        val result = repository.completeOrder(orderId, cashPaymentChangeDueAmount = "5")
 
         assertThat(result.isSuccess).isTrue()
         verify(orderStore).updateOrderStatusAndPaymentDetails(
@@ -139,7 +139,7 @@ class WooPosCashPaymentRepositoryTest {
             )
         ).thenReturn(flowOf(updateResult))
 
-        val result = repository.completeOrder(orderId)
+        val result = repository.completeOrder(orderId, cashPaymentChangeDueAmount = "5")
 
         assertThat(result.isFailure).isTrue()
         assertThat(result.exceptionOrNull()?.message).isEqualTo(errorMessage)
