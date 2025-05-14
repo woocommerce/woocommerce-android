@@ -13,21 +13,15 @@ import org.wordpress.android.fluxc.store.SiteStore.AutomatedTransferEligibilityR
 import org.wordpress.android.fluxc.store.SiteStore.AutomatedTransferStatusResponsePayload;
 import org.wordpress.android.fluxc.store.SiteStore.CompleteQuickStartPayload;
 import org.wordpress.android.fluxc.store.SiteStore.ConnectSiteInfoPayload;
-import org.wordpress.android.fluxc.store.SiteStore.DesignateMobileEditorForAllSitesPayload;
-import org.wordpress.android.fluxc.store.SiteStore.DesignateMobileEditorForAllSitesResponsePayload;
-import org.wordpress.android.fluxc.store.SiteStore.DesignateMobileEditorPayload;
 import org.wordpress.android.fluxc.store.SiteStore.DesignatePrimaryDomainPayload;
 import org.wordpress.android.fluxc.store.SiteStore.DesignatedPrimaryDomainPayload;
 import org.wordpress.android.fluxc.store.SiteStore.DomainAvailabilityResponsePayload;
 import org.wordpress.android.fluxc.store.SiteStore.DomainSupportedCountriesResponsePayload;
 import org.wordpress.android.fluxc.store.SiteStore.DomainSupportedStatesResponsePayload;
-import org.wordpress.android.fluxc.store.SiteStore.FetchBlockLayoutsPayload;
 import org.wordpress.android.fluxc.store.SiteStore.FetchJetpackCapabilitiesPayload;
 import org.wordpress.android.fluxc.store.SiteStore.FetchPrivateAtomicCookiePayload;
 import org.wordpress.android.fluxc.store.SiteStore.FetchSitesPayload;
 import org.wordpress.android.fluxc.store.SiteStore.FetchWPAPISitePayload;
-import org.wordpress.android.fluxc.store.SiteStore.FetchedBlockLayoutsResponsePayload;
-import org.wordpress.android.fluxc.store.SiteStore.FetchedEditorsPayload;
 import org.wordpress.android.fluxc.store.SiteStore.FetchedJetpackCapabilitiesPayload;
 import org.wordpress.android.fluxc.store.SiteStore.FetchedPlansPayload;
 import org.wordpress.android.fluxc.store.SiteStore.FetchedPrivateAtomicCookiePayload;
@@ -57,12 +51,6 @@ public enum SiteAction implements IAction {
     CREATE_NEW_SITE,
     @Action(payloadType = SiteModel.class)
     FETCH_POST_FORMATS,
-    @Action(payloadType = SiteModel.class)
-    FETCH_SITE_EDITORS,
-    @Action(payloadType = DesignateMobileEditorPayload.class)
-    DESIGNATE_MOBILE_EDITOR,
-    @Action(payloadType = DesignateMobileEditorForAllSitesPayload.class)
-    DESIGNATE_MOBILE_EDITOR_FOR_ALL_SITES,
     @Action(payloadType = SiteModel.class)
     FETCH_USER_ROLES,
     @Action(payloadType = SiteModel.class)
@@ -97,16 +85,10 @@ public enum SiteAction implements IAction {
     DESIGNATE_PRIMARY_DOMAIN,
     @Action(payloadType = FetchPrivateAtomicCookiePayload.class)
     FETCH_PRIVATE_ATOMIC_COOKIE,
-    @Action(payloadType = FetchBlockLayoutsPayload.class)
-    FETCH_BLOCK_LAYOUTS,
 
     // Remote responses
     @Action(payloadType = SiteModel.class)
     FETCHED_PROFILE_XML_RPC,
-    @Action(payloadType = FetchedEditorsPayload.class)
-    FETCHED_SITE_EDITORS,
-    @Action(payloadType = DesignateMobileEditorForAllSitesResponsePayload.class)
-    DESIGNATED_MOBILE_EDITOR_FOR_ALL_SITES,
     @Action(payloadType = FetchedUserRolesPayload.class)
     FETCHED_USER_ROLES,
     @Action(payloadType = DeleteSiteResponsePayload.class)
@@ -141,8 +123,6 @@ public enum SiteAction implements IAction {
     FETCH_JETPACK_CAPABILITIES,
     @Action(payloadType = FetchedJetpackCapabilitiesPayload.class)
     FETCHED_JETPACK_CAPABILITIES,
-    @Action(payloadType = FetchedBlockLayoutsResponsePayload.class)
-    FETCHED_BLOCK_LAYOUTS,
 
     // Local actions
     @Action(payloadType = SiteModel.class)

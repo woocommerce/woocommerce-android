@@ -21,14 +21,10 @@ import org.wordpress.android.fluxc.action.SiteAction.COMPLETE_QUICK_START
 import org.wordpress.android.fluxc.action.SiteAction.CREATE_NEW_SITE
 import org.wordpress.android.fluxc.action.SiteAction.DELETED_SITE
 import org.wordpress.android.fluxc.action.SiteAction.DELETE_SITE
-import org.wordpress.android.fluxc.action.SiteAction.DESIGNATED_MOBILE_EDITOR_FOR_ALL_SITES
 import org.wordpress.android.fluxc.action.SiteAction.DESIGNATED_PRIMARY_DOMAIN
-import org.wordpress.android.fluxc.action.SiteAction.DESIGNATE_MOBILE_EDITOR
-import org.wordpress.android.fluxc.action.SiteAction.DESIGNATE_MOBILE_EDITOR_FOR_ALL_SITES
 import org.wordpress.android.fluxc.action.SiteAction.DESIGNATE_PRIMARY_DOMAIN
 import org.wordpress.android.fluxc.action.SiteAction.EXPORTED_SITE
 import org.wordpress.android.fluxc.action.SiteAction.EXPORT_SITE
-import org.wordpress.android.fluxc.action.SiteAction.FETCHED_BLOCK_LAYOUTS
 import org.wordpress.android.fluxc.action.SiteAction.FETCHED_CONNECT_SITE_INFO
 import org.wordpress.android.fluxc.action.SiteAction.FETCHED_DOMAIN_SUPPORTED_COUNTRIES
 import org.wordpress.android.fluxc.action.SiteAction.FETCHED_DOMAIN_SUPPORTED_STATES
@@ -36,10 +32,8 @@ import org.wordpress.android.fluxc.action.SiteAction.FETCHED_JETPACK_CAPABILITIE
 import org.wordpress.android.fluxc.action.SiteAction.FETCHED_PLANS
 import org.wordpress.android.fluxc.action.SiteAction.FETCHED_PRIVATE_ATOMIC_COOKIE
 import org.wordpress.android.fluxc.action.SiteAction.FETCHED_PROFILE_XML_RPC
-import org.wordpress.android.fluxc.action.SiteAction.FETCHED_SITE_EDITORS
 import org.wordpress.android.fluxc.action.SiteAction.FETCHED_USER_ROLES
 import org.wordpress.android.fluxc.action.SiteAction.FETCHED_WPCOM_SITE_BY_URL
-import org.wordpress.android.fluxc.action.SiteAction.FETCH_BLOCK_LAYOUTS
 import org.wordpress.android.fluxc.action.SiteAction.FETCH_CONNECT_SITE_INFO
 import org.wordpress.android.fluxc.action.SiteAction.FETCH_DOMAIN_SUPPORTED_COUNTRIES
 import org.wordpress.android.fluxc.action.SiteAction.FETCH_DOMAIN_SUPPORTED_STATES
@@ -51,7 +45,6 @@ import org.wordpress.android.fluxc.action.SiteAction.FETCH_PROFILE_XML_RPC
 import org.wordpress.android.fluxc.action.SiteAction.FETCH_SITE
 import org.wordpress.android.fluxc.action.SiteAction.FETCH_SITES
 import org.wordpress.android.fluxc.action.SiteAction.FETCH_SITES_XML_RPC
-import org.wordpress.android.fluxc.action.SiteAction.FETCH_SITE_EDITORS
 import org.wordpress.android.fluxc.action.SiteAction.FETCH_SITE_WP_API
 import org.wordpress.android.fluxc.action.SiteAction.FETCH_USER_ROLES
 import org.wordpress.android.fluxc.action.SiteAction.FETCH_WPCOM_SITE_BY_URL
@@ -76,8 +69,6 @@ import org.wordpress.android.fluxc.model.RoleModel
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.SitesModel
 import org.wordpress.android.fluxc.model.asDomainModel
-import org.wordpress.android.fluxc.model.jetpacksocial.JetpackSocial
-import org.wordpress.android.fluxc.model.jetpacksocial.JetpackSocialMapper
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
@@ -91,8 +82,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.site.AllDomainsDomain
 import org.wordpress.android.fluxc.network.rest.wpcom.site.Domain
 import org.wordpress.android.fluxc.network.rest.wpcom.site.DomainPriceResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.site.DomainSuggestionResponse
-import org.wordpress.android.fluxc.network.rest.wpcom.site.GutenbergLayout
-import org.wordpress.android.fluxc.network.rest.wpcom.site.GutenbergLayoutCategory
 import org.wordpress.android.fluxc.network.rest.wpcom.site.PrivateAtomicCookie
 import org.wordpress.android.fluxc.network.rest.wpcom.site.PrivateAtomicCookieResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.site.SiteRestClient
@@ -111,7 +100,6 @@ import org.wordpress.android.fluxc.persistence.PostSqlUtils
 import org.wordpress.android.fluxc.persistence.SiteSqlUtils
 import org.wordpress.android.fluxc.persistence.SiteSqlUtils.DuplicateSiteException
 import org.wordpress.android.fluxc.persistence.domains.DomainDao
-import org.wordpress.android.fluxc.persistence.jetpacksocial.JetpackSocialDao
 import org.wordpress.android.fluxc.store.SiteStore.AccessCookieErrorType.INVALID_RESPONSE
 import org.wordpress.android.fluxc.store.SiteStore.AccessCookieErrorType.NON_PRIVATE_AT_SITE
 import org.wordpress.android.fluxc.store.SiteStore.AccessCookieErrorType.SITE_MISSING_FROM_STORE
@@ -152,8 +140,6 @@ open class SiteStore @Inject constructor(
     private val siteSqlUtils: SiteSqlUtils,
     private val jetpackCPConnectedSitesDao: JetpackCPConnectedSitesDao,
     private val domainDao: DomainDao,
-    private val jetpackSocialDao: JetpackSocialDao,
-    private val jetpackSocialMapper: JetpackSocialMapper,
     private val coroutineEngine: CoroutineEngine
 ) : Store(dispatcher) {
     @Inject internal lateinit var applicationPasswordsManagerProvider: Provider<ApplicationPasswordsManager>
@@ -243,55 +229,6 @@ open class SiteStore @Inject constructor(
         @JvmField val site: SiteModel,
         @JvmField val postFormats: List<PostFormatModel>
     ) : Payload<PostFormatsError>()
-
-    data class DesignateMobileEditorForAllSitesPayload
-    @JvmOverloads constructor(
-        @JvmField val editor: String,
-        @JvmField val setOnlyIfEmpty: Boolean = true
-    ) : Payload<SiteEditorsError>()
-
-    data class DesignateMobileEditorPayload(
-        @JvmField val site: SiteModel,
-        @JvmField val editor: String
-    ) : Payload<SiteEditorsError>()
-
-    data class FetchedEditorsPayload(
-        @JvmField val site: SiteModel,
-        @JvmField val webEditor: String,
-        @JvmField val mobileEditor: String
-    ) : Payload<SiteEditorsError>()
-
-    data class FetchBlockLayoutsPayload(
-        @JvmField val site: SiteModel,
-        @JvmField val supportedBlocks: List<String>?,
-        @JvmField val previewWidth: Float?,
-        @JvmField val previewHeight: Float?,
-        @JvmField val scale: Float?,
-        @JvmField val isBeta: Boolean?,
-        @JvmField val preferCache: Boolean?
-    ) : Payload<BaseNetworkError>()
-
-    data class FetchedBlockLayoutsResponsePayload(
-        @JvmField val site: SiteModel,
-        @JvmField val layouts: List<GutenbergLayout>? = null,
-        @JvmField val categories: List<GutenbergLayoutCategory>? = null
-    ) : Payload<SiteError>() {
-        constructor(site: SiteModel, error: SiteError?) : this(site) {
-            this.error = error
-        }
-    }
-
-    sealed class FetchedJetpackSocialResult {
-        data class Success(
-            @JvmField val jetpackSocial: JetpackSocial,
-        ) : FetchedJetpackSocialResult()
-
-        data class Error(val error: SiteError) : FetchedJetpackSocialResult()
-    }
-
-    data class DesignateMobileEditorForAllSitesResponsePayload(
-        @JvmField val editors: Map<String, String>? = null
-    ) : Payload<SiteEditorsError>()
 
     data class FetchedUserRolesPayload(
         @JvmField val site: SiteModel,
@@ -501,13 +438,6 @@ open class SiteStore @Inject constructor(
         @JvmField val selfHostedErrorType: SelfHostedErrorType = NOT_SET
     ) : OnChangedError
 
-    data class SiteEditorsError internal constructor(
-        @JvmField val type: SiteEditorsErrorType?,
-        @JvmField val message: String
-    ) : OnChangedError {
-        constructor(type: SiteEditorsErrorType?) : this(type, "")
-    }
-
     data class PostFormatsError @JvmOverloads constructor(
         @JvmField val type: PostFormatsErrorType,
         @JvmField val message: String? = ""
@@ -574,18 +504,6 @@ open class SiteStore @Inject constructor(
 
     data class OnSiteRemoved(@JvmField val mRowsAffected: Int) : OnChanged<SiteError>()
     data class OnAllSitesRemoved(@JvmField val mRowsAffected: Int) : OnChanged<SiteError>()
-    data class OnBlockLayoutsFetched(
-        @JvmField val layouts: List<GutenbergLayout>?,
-        @JvmField val categories: List<GutenbergLayoutCategory>?
-    ) : OnChanged<SiteError>() {
-        constructor(
-            layouts: List<GutenbergLayout>?,
-            categories: List<GutenbergLayoutCategory>?,
-            error: SiteError?
-        ) : this(layouts, categories) {
-            this.error = error
-        }
-    }
 
     data class OnNewSiteCreated(
         @JvmField val dryRun: Boolean = false,
@@ -614,25 +532,6 @@ open class SiteStore @Inject constructor(
     }
 
     data class OnPostFormatsChanged(@JvmField val site: SiteModel) : OnChanged<PostFormatsError>()
-    data class OnSiteEditorsChanged(
-        @JvmField val site: SiteModel,
-        @JvmField val rowsAffected: Int = 0
-    ) : OnChanged<SiteEditorsError>() {
-        constructor(site: SiteModel, error: SiteEditorsError?) : this(site) {
-            this.error = error
-        }
-    }
-
-    data class OnAllSitesMobileEditorChanged(
-        @JvmField val rowsAffected: Int = 0,
-            // True when all sites are self-hosted or wpcom backend response
-        @JvmField val isNetworkResponse: Boolean = false,
-        @JvmField val siteEditorsError: SiteEditorsError? = null
-    ) : OnChanged<SiteEditorsError>() {
-        init {
-            this.error = siteEditorsError
-        }
-    }
 
     data class OnUserRolesChanged(@JvmField val site: SiteModel) : OnChanged<UserRolesError>()
     data class OnPlansFetched(
@@ -953,10 +852,6 @@ open class SiteStore @Inject constructor(
     }
 
     enum class UserRolesErrorType {
-        GENERIC_ERROR
-    }
-
-    enum class SiteEditorsErrorType {
         GENERIC_ERROR
     }
 
@@ -1310,28 +1205,6 @@ open class SiteStore @Inject constructor(
         }
     }
 
-    /**
-     * Gets the cached content of a page layout
-     *
-     * @param site the current site
-     * @param slug the slug of the layout
-     * @return the content or null if the content is not cached
-     */
-    fun getBlockLayoutContent(site: SiteModel, slug: String): String? {
-        return siteSqlUtils.getBlockLayoutContent(site, slug)
-    }
-
-    /**
-     * Gets the cached page layout
-     *
-     * @param site the current site
-     * @param slug the slug of the layout
-     * @return the layout or null if the layout is not cached
-     */
-    fun getBlockLayout(site: SiteModel, slug: String): GutenbergLayout? {
-        return siteSqlUtils.getBlockLayout(site, slug)
-    }
-
     fun getPostFormats(site: SiteModel?): List<PostFormatModel> {
         return siteSqlUtils.getPostFormats(site!!)
     }
@@ -1390,17 +1263,6 @@ open class SiteStore @Inject constructor(
             FETCH_POST_FORMATS -> coroutineEngine.launch(T.MAIN, this, "Fetch post formats") {
                 emitChange(fetchPostFormats(action.payload as SiteModel))
             }
-            FETCH_SITE_EDITORS -> fetchSiteEditors(action.payload as SiteModel)
-            FETCH_BLOCK_LAYOUTS -> fetchBlockLayouts(action.payload as FetchBlockLayoutsPayload)
-            FETCHED_BLOCK_LAYOUTS -> handleFetchedBlockLayouts(action.payload as FetchedBlockLayoutsResponsePayload)
-            DESIGNATE_MOBILE_EDITOR -> designateMobileEditor(action.payload as DesignateMobileEditorPayload)
-            DESIGNATE_MOBILE_EDITOR_FOR_ALL_SITES -> designateMobileEditorForAllSites(
-                    action.payload as DesignateMobileEditorForAllSitesPayload
-            )
-            FETCHED_SITE_EDITORS -> updateSiteEditors(action.payload as FetchedEditorsPayload)
-            DESIGNATED_MOBILE_EDITOR_FOR_ALL_SITES -> handleDesignatedMobileEditorForAllSites(
-                    action.payload as DesignateMobileEditorForAllSitesResponsePayload
-            )
             FETCH_USER_ROLES -> fetchUserRoles(action.payload as SiteModel)
             FETCHED_USER_ROLES -> updateUserRoles(action.payload as FetchedUserRolesPayload)
             FETCH_CONNECT_SITE_INFO -> fetchConnectSiteInfo(action.payload as String)
@@ -1717,129 +1579,6 @@ open class SiteStore @Inject constructor(
         return event
     }
 
-    private fun fetchSiteEditors(site: SiteModel) {
-        if (site.isUsingWpComRestApi) {
-            siteRestClient.fetchSiteEditors(site)
-        }
-    }
-
-    private fun fetchBlockLayouts(payload: FetchBlockLayoutsPayload) {
-        if (payload.preferCache == true && cachedLayoutsRetrieved(payload.site)) return
-        if (payload.site.isUsingWpComRestApi) {
-            siteRestClient
-                    .fetchWpComBlockLayouts(
-                            payload.site, payload.supportedBlocks,
-                            payload.previewWidth, payload.previewHeight, payload.scale, payload.isBeta
-                    )
-        } else {
-            siteRestClient.fetchSelfHostedBlockLayouts(
-                    payload.site, payload.supportedBlocks,
-                    payload.previewWidth, payload.previewHeight, payload.scale, payload.isBeta
-            )
-        }
-    }
-
-    @Suppress("TooGenericExceptionCaught", "SwallowedException")
-    private fun designateMobileEditor(payload: DesignateMobileEditorPayload) {
-        // wpcom sites sync the new value with the backend
-        if (payload.site.isUsingWpComRestApi) {
-            siteRestClient.designateMobileEditor(payload.site, payload.editor)
-        }
-
-        // Update the editor pref on the DB, and emit the change immediately
-        val site = payload.site
-        site.mobileEditor = payload.editor
-        val event = try {
-            OnSiteEditorsChanged(site, siteSqlUtils.insertOrUpdateSite(site))
-        } catch (e: Exception) {
-            OnSiteEditorsChanged(site, SiteEditorsError(SiteEditorsErrorType.GENERIC_ERROR))
-        }
-        emitChange(event)
-    }
-
-    @Suppress("TooGenericExceptionCaught", "SwallowedException")
-    private fun designateMobileEditorForAllSites(payload: DesignateMobileEditorForAllSitesPayload) {
-        var rowsAffected = 0
-        var wpcomPostRequestRequired = false
-        var error: SiteEditorsError? = null
-        for (site in sites) {
-            site.mobileEditor = payload.editor
-            if (!wpcomPostRequestRequired && site.isUsingWpComRestApi) {
-                wpcomPostRequestRequired = true
-            }
-            try {
-                rowsAffected += siteSqlUtils.insertOrUpdateSite(site)
-            } catch (e: Exception) {
-                error = SiteEditorsError(SiteEditorsErrorType.GENERIC_ERROR)
-            }
-        }
-        val isNetworkResponse = if (wpcomPostRequestRequired) {
-            siteRestClient.designateMobileEditorForAllSites(payload.editor, payload.setOnlyIfEmpty)
-            false
-        } else {
-            true
-        }
-
-        emitChange(OnAllSitesMobileEditorChanged(rowsAffected, isNetworkResponse, error))
-    }
-
-    @Suppress("TooGenericExceptionCaught", "SwallowedException")
-    private fun updateSiteEditors(payload: FetchedEditorsPayload) {
-        val site = payload.site
-        val event = if (payload.isError) {
-            OnSiteEditorsChanged(site, payload.error ?: SiteEditorsError(SiteEditorsErrorType.GENERIC_ERROR))
-        } else {
-            site.mobileEditor = payload.mobileEditor
-            site.webEditor = payload.webEditor
-            try {
-                OnSiteEditorsChanged(site, siteSqlUtils.insertOrUpdateSite(site))
-            } catch (e: Exception) {
-                OnSiteEditorsChanged(site, SiteEditorsError(SiteEditorsErrorType.GENERIC_ERROR))
-            }
-        }
-        emitChange(event)
-    }
-
-    private fun handleDesignatedMobileEditorForAllSites(payload: DesignateMobileEditorForAllSitesResponsePayload) {
-        val event = if (payload.isError) {
-            OnAllSitesMobileEditorChanged(siteEditorsError = payload.error)
-        } else {
-            onAllSitesMobileEditorChanged(payload)
-        }
-        emitChange(event)
-    }
-
-    @Suppress("TooGenericExceptionCaught", "SwallowedException")
-    private fun onAllSitesMobileEditorChanged(
-        payload: DesignateMobileEditorForAllSitesResponsePayload
-    ): OnAllSitesMobileEditorChanged {
-        var rowsAffected = 0
-        var error: SiteEditorsError? = null
-        // Loop over the returned sites and make sure we've the fresh values for editor prop stored locally
-        for ((key, value) in payload.editors ?: mapOf()) {
-            val currentModel = getSiteBySiteId(key.toLong())
-            if (currentModel == null) {
-                // this could happen when a site was added to the current account with another app, or on the web
-                AppLog.e(
-                    T.API,
-                    "handleDesignatedMobileEditorForAllSites - The backend returned info for the " +
-                        "following siteID $key but there is no site with that remote ID in SiteStore."
-                )
-                continue
-            }
-            if (currentModel.mobileEditor == null || currentModel.mobileEditor != value) {
-                // the current editor is either null or != from the value on the server. Update it
-                currentModel.mobileEditor = value
-                try {
-                    rowsAffected += siteSqlUtils.insertOrUpdateSite(currentModel)
-                } catch (e: Exception) {
-                    error = SiteEditorsError(SiteEditorsErrorType.GENERIC_ERROR)
-                }
-            }
-        }
-        return OnAllSitesMobileEditorChanged(rowsAffected, true, error)
-    }
-
     private fun fetchUserRoles(site: SiteModel) {
         if (site.isUsingWpComRestApi) {
             siteRestClient.fetchUserRoles(site)
@@ -2023,34 +1762,6 @@ open class SiteStore @Inject constructor(
         emitChange(OnDomainSupportedCountriesFetched(payload.supportedCountries, payload.error))
     }
 
-    private fun handleFetchedBlockLayouts(payload: FetchedBlockLayoutsResponsePayload) {
-        if (payload.isError) {
-            // Return cached layouts on error
-            if (!cachedLayoutsRetrieved(payload.site)) {
-                emitChange(OnBlockLayoutsFetched(payload.layouts, payload.categories, payload.error))
-            }
-        } else {
-            siteSqlUtils.insertOrReplaceBlockLayouts(payload.site, payload.categories!!, payload.layouts!!)
-            emitChange(OnBlockLayoutsFetched(payload.layouts, payload.categories, payload.error))
-        }
-    }
-
-    /**
-     * Emits a new [OnBlockLayoutsFetched] event with cached layouts for a given site
-     *
-     * @param site the site for which the cached layouts should be retrieved
-     * @return true if cached layouts were retrieved successfully
-     */
-    private fun cachedLayoutsRetrieved(site: SiteModel): Boolean {
-        val layouts = siteSqlUtils.getBlockLayouts(site)
-        val categories = siteSqlUtils.getBlockLayoutCategories(site)
-        if (layouts.isNotEmpty() && categories.isNotEmpty()) {
-            emitChange(OnBlockLayoutsFetched(layouts, categories, null))
-            return true
-        }
-        return false
-    }
-
     // Automated Transfers
     private fun checkAutomatedTransferEligibility(site: SiteModel) {
         siteRestClient.checkAutomatedTransferEligibility(site)
@@ -2163,22 +1874,6 @@ open class SiteStore @Inject constructor(
             result.map { it.toDomainModel() }
         }
     }
-
-    suspend fun fetchJetpackSocial(siteModel: SiteModel): FetchedJetpackSocialResult =
-        coroutineEngine.withDefaultContext(T.API, this, "Fetch Jetpack Social") {
-            when (val response = siteRestClient.fetchJetpackSocial(siteModel.siteId)) {
-                is Success -> {
-                    val entity = jetpackSocialMapper.mapEntity(response.data, siteModel.id)
-                    jetpackSocialDao.insert(entity)
-                    val domain = jetpackSocialMapper.mapDomain(entity)
-                    FetchedJetpackSocialResult.Success(domain)
-                }
-                is Error -> {
-                    val error = SiteError(SiteErrorType.GENERIC_ERROR, response.error.message)
-                    FetchedJetpackSocialResult.Error(error)
-                }
-            }
-        }
 
     suspend fun deleteApplicationPassword(site: SiteModel): OnApplicationPasswordDeleted =
         coroutineEngine.withDefaultContext(T.API, this, "Delete Application Password") {

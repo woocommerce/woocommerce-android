@@ -20,7 +20,6 @@ import org.wordpress.android.fluxc.model.PostFormatModel
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.SitesModel
 import org.wordpress.android.fluxc.model.asDomainModel
-import org.wordpress.android.fluxc.model.jetpacksocial.JetpackSocialMapper
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.NETWORK_ERROR
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.PARSE_ERROR
@@ -39,7 +38,6 @@ import org.wordpress.android.fluxc.persistence.JetpackCPConnectedSitesDao
 import org.wordpress.android.fluxc.persistence.PostSqlUtils
 import org.wordpress.android.fluxc.persistence.SiteSqlUtils
 import org.wordpress.android.fluxc.persistence.domains.DomainDao
-import org.wordpress.android.fluxc.persistence.jetpacksocial.JetpackSocialDao
 import org.wordpress.android.fluxc.store.SiteStore.AllDomainsError
 import org.wordpress.android.fluxc.store.SiteStore.AllDomainsErrorType
 import org.wordpress.android.fluxc.store.SiteStore.FetchSitesPayload
@@ -74,8 +72,6 @@ class SiteStoreTest {
     @Mock lateinit var siteSqlUtils: SiteSqlUtils
     @Mock lateinit var jetpackCPConnectedSitesDao: JetpackCPConnectedSitesDao
     @Mock lateinit var domainsDao: DomainDao
-    @Mock lateinit var jetpackSocialDao: JetpackSocialDao
-    @Mock lateinit var jetpackSocialMapper: JetpackSocialMapper
     @Mock lateinit var domainsSuccessResponse: Response.Success<DomainsResponse>
     @Mock lateinit var allDomainsSuccessResponse: Response.Success<AllDomainsResponse>
     @Mock lateinit var plansSuccessResponse: Response.Success<PlansResponse>
@@ -96,8 +92,6 @@ class SiteStoreTest {
             siteSqlUtils,
             jetpackCPConnectedSitesDao,
             domainsDao,
-            jetpackSocialDao,
-            jetpackSocialMapper,
             initCoroutineEngine()
         )
     }

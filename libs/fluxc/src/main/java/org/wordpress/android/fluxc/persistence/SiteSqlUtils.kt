@@ -4,9 +4,6 @@ import android.content.ContentValues
 import android.database.Cursor
 import android.database.sqlite.SQLiteConstraintException
 import com.wellsql.generated.AccountModelTable
-import com.wellsql.generated.GutenbergLayoutCategoriesModelTable
-import com.wellsql.generated.GutenbergLayoutCategoryModelTable
-import com.wellsql.generated.GutenbergLayoutModelTable
 import com.wellsql.generated.PostFormatModelTable
 import com.wellsql.generated.RoleModelTable
 import com.wellsql.generated.SiteModelTable
@@ -17,13 +14,6 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.PostFormatModel
 import org.wordpress.android.fluxc.model.RoleModel
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.layouts.GutenbergLayoutCategoriesModel
-import org.wordpress.android.fluxc.model.layouts.GutenbergLayoutCategoryModel
-import org.wordpress.android.fluxc.model.layouts.GutenbergLayoutModel
-import org.wordpress.android.fluxc.model.layouts.connections
-import org.wordpress.android.fluxc.model.layouts.transform
-import org.wordpress.android.fluxc.network.rest.wpcom.site.GutenbergLayout
-import org.wordpress.android.fluxc.network.rest.wpcom.site.GutenbergLayoutCategory
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.AppLog.T.DB
 import org.wordpress.android.util.UrlUtils
@@ -314,107 +304,6 @@ class SiteSqlUtils
             role.siteId = site.id
         }
         WellSql.insert(roles).execute()
-    }
-
-    fun getBlockLayoutCategories(site: SiteModel): List<GutenbergLayoutCategory> {
-        val categories = WellSql.select(
-                GutenbergLayoutCategoryModel::class.java
-        )
-                .where()
-                .equals(GutenbergLayoutCategoryModelTable.SITE_ID, site.id)
-                .endWhere().asModel
-        return categories.transform()
-    }
-
-    fun getBlockLayouts(site: SiteModel): List<GutenbergLayout> {
-        val blockLayouts = ArrayList<GutenbergLayout>()
-        val layouts = WellSql.select(
-                GutenbergLayoutModel::class.java
-        )
-                .where()
-                .equals(GutenbergLayoutModelTable.SITE_ID, site.id)
-                .endWhere().asModel
-        for (layout in layouts) {
-            blockLayouts.add(getGutenbergLayout(site, layout))
-        }
-        return blockLayouts
-    }
-
-    fun getBlockLayout(site: SiteModel, slug: String): GutenbergLayout? {
-        val layoutModel = getGutenbergLayoutModel(site, slug)
-        return layoutModel?.let { getGutenbergLayout(site, it) }
-    }
-
-    private fun getGutenbergLayout(site: SiteModel, layout: GutenbergLayoutModel): GutenbergLayout {
-        val connections = WellSql.select(
-                GutenbergLayoutCategoriesModel::class.java
-        )
-                .where()
-                .equals(
-                        GutenbergLayoutCategoriesModelTable.SITE_ID,
-                        site.id
-                )
-                .equals(
-                        GutenbergLayoutCategoriesModelTable.LAYOUT_ID,
-                        layout.id
-                )
-                .endWhere().asModel
-        val categories = ArrayList<GutenbergLayoutCategoryModel>()
-        for (connection in connections) {
-            categories.addAll(
-                    WellSql.select(GutenbergLayoutCategoryModel::class.java)
-                            .where()
-                            .equals(GutenbergLayoutCategoriesModelTable.ID, connection.categoryId)
-                            .endWhere().asModel
-            )
-        }
-        return layout.transform(categories)
-    }
-
-    private fun getGutenbergLayoutModel(
-        site: SiteModel,
-        slug: String
-    ): GutenbergLayoutModel? {
-        val layouts = WellSql.select(
-                GutenbergLayoutModel::class.java
-        )
-                .where()
-                .equals(GutenbergLayoutModelTable.SITE_ID, site.id)
-                .equals(GutenbergLayoutModelTable.SLUG, slug)
-                .endWhere().asModel
-        return if (layouts.size == 1) {
-            layouts[0]
-        } else null
-    }
-
-    fun getBlockLayoutContent(site: SiteModel, slug: String): String? {
-        val layout = getGutenbergLayoutModel(site, slug)
-        return layout?.content
-    }
-
-    fun insertOrReplaceBlockLayouts(
-        site: SiteModel,
-        categories: List<GutenbergLayoutCategory>,
-        layouts: List<GutenbergLayout>
-    ) {
-        // Update categories
-        WellSql.delete(GutenbergLayoutCategoryModel::class.java)
-                .where()
-                .equals(GutenbergLayoutCategoryModelTable.SITE_ID, site.id)
-                .endWhere().execute()
-        WellSql.insert(categories.transform(site)).execute()
-        // Update layouts
-        WellSql.delete(GutenbergLayoutModel::class.java)
-                .where()
-                .equals(GutenbergLayoutModelTable.SITE_ID, site.id)
-                .endWhere().execute()
-        WellSql.insert(layouts.transform(site)).execute()
-        // Update connections
-        WellSql.delete(GutenbergLayoutCategoriesModel::class.java)
-                .where()
-                .equals(GutenbergLayoutCategoriesModelTable.SITE_ID, site.id)
-                .endWhere().execute()
-        WellSql.insert<GutenbergLayoutCategoriesModel>(layouts.connections(site)).execute()
     }
 
     /**

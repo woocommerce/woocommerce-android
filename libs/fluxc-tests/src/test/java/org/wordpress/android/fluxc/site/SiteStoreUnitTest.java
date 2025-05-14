@@ -16,10 +16,7 @@ import org.wordpress.android.fluxc.WellSqlTestUtils;
 import org.wordpress.android.fluxc.model.PostFormatModel;
 import org.wordpress.android.fluxc.model.SiteModel;
 import org.wordpress.android.fluxc.model.SitesModel;
-import org.wordpress.android.fluxc.model.jetpacksocial.JetpackSocialMapper;
 import org.wordpress.android.fluxc.network.rest.wpapi.site.SiteWPAPIRestClient;
-import org.wordpress.android.fluxc.network.rest.wpcom.site.GutenbergLayout;
-import org.wordpress.android.fluxc.network.rest.wpcom.site.GutenbergLayoutCategory;
 import org.wordpress.android.fluxc.network.rest.wpcom.site.PrivateAtomicCookie;
 import org.wordpress.android.fluxc.network.rest.wpcom.site.SiteRestClient;
 import org.wordpress.android.fluxc.network.xmlrpc.site.SiteXMLRPCClient;
@@ -29,7 +26,6 @@ import org.wordpress.android.fluxc.persistence.SiteSqlUtils;
 import org.wordpress.android.fluxc.persistence.SiteSqlUtils.DuplicateSiteException;
 import org.wordpress.android.fluxc.persistence.WellSqlConfig;
 import org.wordpress.android.fluxc.persistence.domains.DomainDao;
-import org.wordpress.android.fluxc.persistence.jetpacksocial.JetpackSocialDao;
 import org.wordpress.android.fluxc.store.SiteStore;
 import org.wordpress.android.fluxc.store.SiteStore.UpdateSitesResult;
 import org.wordpress.android.fluxc.tools.CoroutineEngineUtilsKt;
@@ -37,8 +33,6 @@ import org.wordpress.android.fluxc.tools.CoroutineEngineUtilsKt;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -70,8 +64,6 @@ public class SiteStoreUnitTest {
             mSiteSqlUtils,
             Mockito.mock(JetpackCPConnectedSitesDao.class),
             Mockito.mock(DomainDao.class),
-            Mockito.mock(JetpackSocialDao.class),
-            Mockito.mock(JetpackSocialMapper.class),
             CoroutineEngineUtilsKt.initCoroutineEngine()
     );
 
@@ -701,41 +693,6 @@ public class SiteStoreUnitTest {
             duplicate = true;
         }
         assertTrue(duplicate);
-    }
-
-    @Test
-    public void testInsertOrReplaceBlockLayouts() {
-        // Test data
-        SiteModel site = generateWPComSite();
-        GutenbergLayoutCategory cat1 = new GutenbergLayoutCategory("a", "About", "About", "👋");
-        GutenbergLayoutCategory cat2 = new GutenbergLayoutCategory("b", "Blog", "Blog", "📰");
-        List<GutenbergLayoutCategory> categories = Arrays.asList(cat1, cat2);
-        GutenbergLayout layout = new GutenbergLayout("l", "Layout", "img", "img", "img", "content", "url", categories);
-        List<GutenbergLayout> layouts = Collections.singletonList(layout);
-        // Store
-        mSiteSqlUtils.insertOrReplaceBlockLayouts(site, categories, layouts);
-        // Retrieve
-        List<GutenbergLayoutCategory> retrievedCategories = mSiteSqlUtils.getBlockLayoutCategories(site);
-        List<GutenbergLayout> retrievedLayouts = mSiteSqlUtils.getBlockLayouts(site);
-        // Check
-        assertEquals(categories, retrievedCategories);
-        assertEquals(layouts, retrievedLayouts);
-    }
-
-    @Test
-    public void testInsertBlockLayoutWithNullCategoryEmoji() {
-        // Test data
-        SiteModel site = generateWPComSite();
-        GutenbergLayoutCategory cat = new GutenbergLayoutCategory("a", "About", "About", null);
-        List<GutenbergLayoutCategory> categories = Collections.singletonList(cat);
-        GutenbergLayout layout = new GutenbergLayout("l", "Layout", "img", "img", "img", "content", "url", categories);
-        List<GutenbergLayout> layouts = Collections.singletonList(layout);
-        // Store
-        mSiteSqlUtils.insertOrReplaceBlockLayouts(site, categories, layouts);
-        // Retrieve
-        List<GutenbergLayoutCategory> retrievedCategories = mSiteSqlUtils.getBlockLayoutCategories(site);
-        // Check
-        assertEquals(retrievedCategories.get(0).getEmoji(), "");
     }
 
     @Test
