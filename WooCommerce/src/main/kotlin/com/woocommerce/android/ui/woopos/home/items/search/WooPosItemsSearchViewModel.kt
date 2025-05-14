@@ -19,10 +19,12 @@ import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNaviga
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart.WooPosItemSource
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemsNextPageLoaded
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.PreSearchRecentTermTapped
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SearchRemoteResultsFetched
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.IS_SEARCH
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ITEM_LIST_TYPE
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ITEM_LIST_TYPE_PRODUCTS
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosGetTotalProductCount
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -35,6 +37,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicReference
 import javax.inject.Inject
+import kotlin.system.measureTimeMillis
 
 @HiltViewModel
 class WooPosItemsSearchViewModel @Inject constructor(
@@ -46,6 +49,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
     private val navigator: WooPosItemsNavigator,
     private val searchHelper: WooPosItemsSearchHelper,
     private val analyticsTracker: WooPosAnalyticsTracker,
+    private val getTotalProductCount: WooPosGetTotalProductCount,
 ) : ViewModel() {
     private val _viewState =
         MutableStateFlow<WooPosItemsSearchViewState>(WooPosItemsSearchViewState.Loading)
@@ -71,10 +75,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
         when (event) {
             WooPosItemsSearchUiEvent.OnNextPageRequested -> onEndOfListReached()
             is WooPosItemsSearchUiEvent.OnItemClicked -> handleItemClicked(event.item, WooPosItemSource.SEARCH_RESULT)
-            WooPosItemsSearchUiEvent.LoadingErrorRetryButtonClicked -> {
-                val currentState = _viewState.value as? WooPosItemsSearchViewState.Error ?: return
-                performSearch(currentState.searchQuery)
-            }
+            WooPosItemsSearchUiEvent.LoadingErrorRetryButtonClicked -> handleLoadingErrorRetryClick()
 
             is WooPosItemsSearchUiEvent.OnRecentSearchClicked -> {
                 viewModelScope.launch {
@@ -94,6 +95,13 @@ class WooPosItemsSearchViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private fun handleLoadingErrorRetryClick() {
+        val currentState = _viewState.value as? WooPosItemsSearchViewState.Error ?: return
+
+        _viewState.value = WooPosItemsSearchViewState.Loading
+        performRemoteSearch(currentState.searchQuery)
     }
 
     private fun performSearch(query: String) {
@@ -137,7 +145,10 @@ class WooPosItemsSearchViewModel @Inject constructor(
             }
 
             childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Started)
-            val result = dataSource.searchRemoteProducts(query)
+            var result: Result<List<Product>>
+            val searchTimeMillis = measureTimeMillis {
+                result = dataSource.searchRemoteProducts(query)
+            }
 
             if (query != currentQuery.get()) {
                 childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Finished)
@@ -145,12 +156,14 @@ class WooPosItemsSearchViewModel @Inject constructor(
             }
 
             if (result.isSuccess) {
-                val products = result.getOrThrow()
-                if (products.isEmpty()) {
+                val searchResult = result.getOrThrow()
+                if (searchResult.isEmpty()) {
                     _viewState.value = WooPosItemsSearchViewState.Empty
                 } else {
-                    _viewState.value = products.toContentState(searchQuery = query)
+                    _viewState.value = searchResult.toContentState(searchQuery = query)
                 }
+
+                trackSearchPerformance(searchTimeMillis)
             } else {
                 _viewState.value = WooPosItemsSearchViewState.Error(searchQuery = query)
             }
@@ -230,6 +243,15 @@ class WooPosItemsSearchViewModel @Inject constructor(
                 mapOf(ITEM_LIST_TYPE to ITEM_LIST_TYPE_PRODUCTS)
             )
         }
+        analyticsTracker.track(event)
+    }
+
+    private suspend fun trackSearchPerformance(searchTimeMillis: Long) {
+        val totalProductsCount = getTotalProductCount()
+        val event = SearchRemoteResultsFetched(
+            totalProductsCount = totalProductsCount,
+            millisecondsSinceRequestSent = searchTimeMillis
+        )
         analyticsTracker.track(event)
     }
 

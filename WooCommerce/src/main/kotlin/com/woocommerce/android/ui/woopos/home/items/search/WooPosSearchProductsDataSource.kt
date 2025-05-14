@@ -84,20 +84,17 @@ class WooPosSearchProductsDataSource @Inject constructor(
             } else {
                 val searchResult = result.model!!
                 val products = searchResult.products.map { product -> product.toAppModel() }
-
                 canLoadMore.set(searchResult.canLoadMore)
                 productsCache.addAll(products)
                 searchResultsIndex.storeSearchResults(
                     searchQuery,
                     products.map { it.remoteId }
                 )
-
                 val searchResults = SearchResult(
                     products = searchResultsIndex.getSearchResults(searchQuery)
                         .sortedBy { it.name },
                     canLoadMore = searchResult.canLoadMore
                 )
-
                 Result.success(searchResults)
             }
         }

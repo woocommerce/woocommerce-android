@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.TypeConverters
 import com.google.gson.Gson
+import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.metadata.WCMetaData
@@ -156,11 +157,16 @@ data class OrderEntity(
 
     /**
      * Deserializes the JSON contained in [taxLines] into a list of [TaxLine] objects.
+     * Returns an empty list if deserialization fails.
      */
     fun getTaxLineList(): List<TaxLine> {
-        val responseType = object : TypeToken<List<TaxLine>>() {}.type
-        return gson.fromJson(taxLines, responseType) as? List<TaxLine> ?: emptyList()
+        return try {
+            val responseType = object : TypeToken<List<TaxLine>>() {}.type
+            gson.fromJson(taxLines, responseType) as? List<TaxLine> ?: emptyList()
+        } catch (e: JsonSyntaxException) {
+            @Suppress("PrintStackTrace")
+            e.printStackTrace()
+            emptyList()
+        }
     }
-
-    fun isMultiShippingLinesAvailable() = getShippingLineList().size > 1
 }
