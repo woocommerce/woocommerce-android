@@ -2,9 +2,6 @@
 
 # Check if we can skip this job based on PR changes
 if .buildkite/commands/should-skip-job.sh --job-type build; then
-  message="Skipping Gradle Cache Build - no relevant files changed"
-  echo "$message" | buildkite-agent annotate --style "info" --context "skip-gradle-cache"
-  echo "$message"
   exit 0
 fi
 

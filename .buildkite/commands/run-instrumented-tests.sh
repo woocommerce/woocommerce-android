@@ -2,9 +2,6 @@
 
 # Check if we can skip this job based on PR changes
 if .buildkite/commands/should-skip-job.sh --job-type validation; then
-  message="Skipping Instrumented Tests - no relevant files changed"
-  echo "$message" | buildkite-agent annotate --style "info" --context "skip-instrumented-tests"
-  echo "$message"
   mkdir -p WooCommerce/build/buildkite-test-analytics && touch WooCommerce/build/buildkite-test-analytics/empty.xml
   exit 0
 fi
