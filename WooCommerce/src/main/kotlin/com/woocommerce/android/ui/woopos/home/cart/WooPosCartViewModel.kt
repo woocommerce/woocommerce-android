@@ -165,19 +165,7 @@ class WooPosCartViewModel @Inject constructor(
 
                     is ParentToChildrenEvent.OrderSuccessfullyPaid -> clearCart()
 
-                    is ParentToChildrenEvent.OrderCreated -> {
-                        val body = _state.value.body as? WooPosCartState.Body.WithItems ?: return@collect
-                        val updateCartItems = updateCartItemsWithChanges(
-                            itemsInCart = body.itemsInCart,
-                            updatedProducts = event.updatedProducts,
-                            updatedCoupons = event.updatedCoupons,
-                        )
-                        _state.value = _state.value.copy(
-                            body = body.copy(
-                                itemsInCart = updateCartItems,
-                            ),
-                        )
-                    }
+                    is ParentToChildrenEvent.OrderCreated -> onOrderCreated(event)
 
                     is ParentToChildrenEvent.SearchEvent.RecentSearchSelected,
                     is ParentToChildrenEvent.CheckoutClicked,
@@ -193,6 +181,27 @@ class WooPosCartViewModel @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    private suspend fun onOrderCreated(event: ParentToChildrenEvent.OrderCreated) {
+        val body = _state.value.body as? WooPosCartState.Body.WithItems ?: return
+        val updateCartItemsResult = updateCartItemsWithChanges(
+            itemsInCart = body.itemsInCart,
+            updatedProducts = event.updatedProducts,
+            updatedCoupons = event.updatedCoupons,
+        )
+        if (updateCartItemsResult.productsChanged) {
+            _state.value = _state.value.copy(
+                body = body.copy(
+                    itemsInCart = updateCartItemsResult.updatedItems,
+                ),
+            )
+            childrenToParentEventSender.sendToParent(
+                ChildToParentEvent.ToastMessageDisplayed(
+                    message = resourceProvider.getString(R.string.woopos_cart_changes_in_the_cart)
+                )
+            )
         }
     }
 
