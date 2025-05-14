@@ -74,6 +74,7 @@ fun WooPosItemList(
     modifier: Modifier = Modifier,
     state: WooPosContentViewState,
     listState: LazyListState,
+    animateItems: Boolean = true,
     onItemClicked: (item: WooPosItemSelectionViewState) -> Unit,
     onEndOfProductsListReached: () -> Unit,
     onErrorWhilePaginating: @Composable () -> Unit,
@@ -88,10 +89,12 @@ fun WooPosItemList(
             state.items,
             key = { product -> product.id }
         ) { posItem ->
+            val itemModifier = Modifier.then(if (animateItems) Modifier.animateItem() else Modifier)
+
             when (posItem) {
                 is Product.Simple -> {
                     ProductItem(
-                        modifier = Modifier.animateItem(),
+                        modifier = itemModifier,
                         item = posItem,
                         onItemClicked = onItemClicked
                     )
@@ -99,7 +102,7 @@ fun WooPosItemList(
 
                 is Product.Variable -> {
                     VariableProductItem(
-                        modifier = Modifier.animateItem(),
+                        modifier = itemModifier,
                         item = posItem,
                         onItemClicked = onItemClicked
                     )
@@ -107,14 +110,14 @@ fun WooPosItemList(
 
                 is Product.Variation -> {
                     VariationItem(
-                        modifier = Modifier.animateItem(),
+                        modifier = itemModifier,
                         item = posItem,
                         onItemClicked = onItemClicked
                     )
                 }
 
                 is Coupon -> CouponItem(
-                    modifier = Modifier.animateItem(),
+                    modifier = itemModifier,
                     item = posItem,
                     onItemClicked = onItemClicked
                 )
