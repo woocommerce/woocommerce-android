@@ -6,40 +6,34 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditRepository
 import com.woocommerce.android.ui.products.ProductHelper
 import com.woocommerce.android.ui.products.ProductType
+import com.woocommerce.android.ui.woopos.common.data.WooPosGetCouponById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetVariationById
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.util.DateUtils
-import com.woocommerce.android.util.WooLogWrapper
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
-import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.persistence.entity.CouponWithEmails
-import org.wordpress.android.fluxc.store.CouponStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 
 class WooPosTotalsRepositoryTest {
     private val orderCreateEditRepository: OrderCreateEditRepository = mock()
     private val getProductById: WooPosGetProductById = mock()
-    private val couponStore: CouponStore = mock()
+    private val getCouponById: WooPosGetCouponById = mock()
     private val getVariationById: WooPosGetVariationById = mock()
     private val dateUtils: DateUtils = mock()
     private val orderStore: WCOrderStore = mock()
-    private val selectedSite: SelectedSite = mock {
-        on { get() } doReturn mock()
-    }
+    private val selectedSite: SelectedSite = mock()
     private val orderMapper: OrderMapper = mock()
     private val resourceProvider: ResourceProvider = mock()
-    private val logWrapper: WooLogWrapper = mock()
 
     private lateinit var repository: WooPosTotalsRepository
 
@@ -197,8 +191,8 @@ class WooPosTotalsRepositoryTest {
     fun `given item list contains coupon, when createOrderFromCartItems, then coupon lines present`() = runTest {
         // GIVEN
         repository = createRepository()
-        whenever(couponStore.getCoupon(any(), any())).thenReturn(
-            CouponWithEmails(mock(), emptyList())
+        whenever(getCouponById.invoke(1L)).thenReturn(
+            mock()
         )
         val itemClickedData = listOf(
             WooPosItemsViewModel.ItemClickedData.Coupon(
@@ -223,12 +217,11 @@ class WooPosTotalsRepositoryTest {
         orderCreateEditRepository,
         dateUtils,
         getProductById,
-        couponStore,
+        getCouponById,
         getVariationById,
         orderStore,
         selectedSite,
         orderMapper,
         resourceProvider,
-        logWrapper
     )
 }
