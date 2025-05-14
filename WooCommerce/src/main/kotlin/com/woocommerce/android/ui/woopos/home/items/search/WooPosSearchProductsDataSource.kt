@@ -96,8 +96,7 @@ class WooPosSearchProductsDataSource @Inject constructor(
                     products.map { it.remoteId }
                 )
                 val searchResults = SearchResult(
-                    products = searchResultsIndex.getSearchResults(searchQuery)
-                        .sortedBy { it.name.lowercase() },
+                    products = searchResultsIndex.getSearchResults(searchQuery),
                     canLoadMore = searchResult.canLoadMore
                 )
                 Result.success(searchResults)
