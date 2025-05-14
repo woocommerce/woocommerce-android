@@ -44,14 +44,15 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.getNullableListStateFlow
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
@@ -70,8 +71,6 @@ import org.wordpress.android.fluxc.store.WCRefundStore
 import java.math.BigDecimal
 import java.util.Locale
 import javax.inject.Inject
-import kotlin.collections.set
-import kotlin.math.min
 import org.wordpress.android.fluxc.utils.sumBy as sumByBigDecimal
 
 @HiltViewModel
@@ -96,22 +95,37 @@ class IssueRefundViewModel @Inject constructor(
         private const val SELECTED_QUANTITIES_KEY = "selected_quantities_key"
     }
 
-    private val refundItems = MutableStateFlow<List<ProductRefundListItem>>(emptyList())
-
-    private val isFeesMainSwitchChecked = MutableStateFlow(false)
-    private val refundShippingLines = savedState.getStateFlow(
+    private val refundItems = savedState.getNullableListStateFlow(
         scope = viewModelScope,
-        initialValue = emptyList<ShippingRefundListItem>(),
+        initialValue = null,
+        clazz = ProductRefundListItem::class.java,
+        key = "refundItems"
+    )
+
+    private val isFeesMainSwitchChecked = savedState.getStateFlow(
+        scope = viewModelScope,
+        initialValue = false,
+        key = "isFeesMainSwitchChecked"
+    )
+    private val refundShippingLines = savedState.getNullableListStateFlow(
+        scope = viewModelScope,
+        initialValue = null,
+        clazz = ShippingRefundListItem::class.java,
         key = "refundShippingLines"
     )
 
-    private val refundFeeLines = savedState.getStateFlow(
+    private val refundFeeLines = savedState.getNullableListStateFlow(
         scope = viewModelScope,
-        initialValue = emptyList<FeeRefundListItem>(),
+        initialValue = null,
+        clazz = FeeRefundListItem::class.java,
         key = "refundFeeLines"
     )
 
-    private val isShippingMainSwitchChecked = MutableStateFlow(false)
+    private val isShippingMainSwitchChecked = savedState.getStateFlow(
+        scope = viewModelScope,
+        initialValue = false,
+        key = "isShippingMainSwitchChecked"
+    )
 
     /**
      * Saving more data than necessary into the SavedState has associated risks which were not known at the time this
@@ -137,7 +151,7 @@ class IssueRefundViewModel @Inject constructor(
     }.shareIn(viewModelScope, started = SharingStarted.Lazily, replay = 1)
 
     private val productsRefundSection = combine(
-        refundItems,
+        refundItems.filterNotNull(),
         orderFlow
     ) { items, _ ->
         val subtotal = items.sumByBigDecimal { it.subtotal }
@@ -162,7 +176,7 @@ class IssueRefundViewModel @Inject constructor(
 
     private val feesRefundSection = combine(
         isFeesMainSwitchChecked,
-        refundFeeLines,
+        refundFeeLines.filterNotNull(),
         orderFlow.map { it.refundableFeeLineIds }
     ) { isFeesMainSwitchChecked, feeLines, refundableFeeLineIds ->
         val selectedFees = feeLines.filter { it.isSelected }
@@ -181,7 +195,7 @@ class IssueRefundViewModel @Inject constructor(
 
     private val shippingRefundSection = combine(
         isShippingMainSwitchChecked,
-        refundShippingLines,
+        refundShippingLines.filterNotNull(),
         orderFlow.map { it.refundableShippingLineIds }
     ) { isShippingMainSwitchChecked, shippingLines, refundableShippingLineIds ->
         val selectedShipping = shippingLines.filter { it.isSelected }
@@ -266,12 +280,6 @@ class IssueRefundViewModel @Inject constructor(
     private var cardType = PaymentMethodType.CARD_PRESENT
     private val arguments: RefundsArgs by savedState.navArgs()
 
-    private val selectedQuantities: MutableMap<Long, Int> by lazy {
-        val quantities = savedState.get<MutableMap<Long, Int>>(SELECTED_QUANTITIES_KEY) ?: mutableMapOf()
-        savedState[SELECTED_QUANTITIES_KEY] = quantities
-        quantities
-    }
-
     private var refundJob: Job? = null
     val isRefundInProgress: Boolean
         get() = refundJob?.isActive ?: false
@@ -287,6 +295,9 @@ class IssueRefundViewModel @Inject constructor(
     }
 
     private fun initRefundItems() {
+        if (refundItems.value != null) {
+            return
+        }
         viewModelScope.launch {
             val order = orderFlow.first()
             val maxQuantities = refunds.getMaxRefundQuantities(order.items)
@@ -295,11 +306,10 @@ class IssueRefundViewModel @Inject constructor(
 
             val items = order.items.mapNotNull {
                 val maxQuantity = maxQuantities[it.itemId] ?: return@mapNotNull null
-                val selectedQuantity = min(selectedQuantities[it.itemId] ?: 0, maxQuantity.toInt())
                 ProductRefundListItem(
                     orderItem = it,
                     maxQuantity = maxQuantity,
-                    quantity = selectedQuantity,
+                    quantity = 0,
                     subtotal = BigDecimal.ZERO,
                     taxes = emptyList()
                 )
@@ -456,23 +466,23 @@ class IssueRefundViewModel @Inject constructor(
 
     private suspend fun initiateRefund(): WooResult<WCRefundModel> {
         val allItems = mutableListOf<RefundRequestItem>()
-        refundItems.value.let {
+        refundItems.value?.let {
             it.forEach { item -> allItems.add(item.toDataModel()) }
         }
 
         val selectedShipping = if (isShippingMainSwitchChecked.value) {
-            refundShippingLines.value.filter { it.isSelected }
+            refundShippingLines.value?.filter { it.isSelected }
         } else {
             emptyList()
         }
-        selectedShipping.forEach { allItems.add(it.toDataModel()) }
+        selectedShipping?.forEach { allItems.add(it.toDataModel()) }
 
         val selectedFees = if (isFeesMainSwitchChecked.value) {
-            refundFeeLines.value.filter { it.isSelected }
+            refundFeeLines.value?.filter { it.isSelected }
         } else {
             emptyList()
         }
-        selectedFees.forEach { allItems.add(it.toDataModel()) }
+        selectedFees?.forEach { allItems.add(it.toDataModel()) }
 
         return refundStore.createItemsRefund(
             site = selectedSite.get(),
@@ -567,7 +577,7 @@ class IssueRefundViewModel @Inject constructor(
     }
 
     fun onRefundQuantityTapped(uniqueId: Long) {
-        refundItems.value.firstOrNull { it.orderItem.itemId == uniqueId }?.let {
+        refundItems.value?.firstOrNull { it.orderItem.itemId == uniqueId }?.let {
             triggerEvent(ShowNumberPicker(it))
         }
 
@@ -588,13 +598,11 @@ class IssueRefundViewModel @Inject constructor(
     fun onRefundQuantityChanged(uniqueId: Long, newQuantity: Int) {
         val newItems = getUpdatedItemList(uniqueId, newQuantity)
         refundItems.value = newItems
-
-        selectedQuantities[uniqueId] = newQuantity
     }
 
     private fun getUpdatedItemList(uniqueId: Long, newQuantity: Int): MutableList<ProductRefundListItem> {
         val newItems = mutableListOf<ProductRefundListItem>()
-        refundItems.value.forEach {
+        refundItems.value?.forEach {
             if (it.orderItem.itemId == uniqueId) {
                 // Update the quantity
                 var newItem = it.copy(quantity = newQuantity)
@@ -615,11 +623,11 @@ class IssueRefundViewModel @Inject constructor(
     fun onSelectButtonTapped() {
         launch {
             if (productsRefundSection.first().allItemsSelected) {
-                refundItems.value.forEach {
+                refundItems.value?.forEach {
                     onRefundQuantityChanged(it.orderItem.itemId, 0)
                 }
             } else {
-                refundItems.value.forEach {
+                refundItems.value?.forEach {
                     onRefundQuantityChanged(it.orderItem.itemId, it.availableRefundQuantity)
                 }
             }
@@ -641,7 +649,7 @@ class IssueRefundViewModel @Inject constructor(
 
     fun onShippingLineSwitchChanged(isChecked: Boolean, itemId: Long) {
         refundShippingLines.update {
-            it.map { shippingLine ->
+            it?.map { shippingLine ->
                 if (shippingLine.shippingLine.itemId == itemId) {
                     shippingLine.copy(isSelected = isChecked)
                 } else {
@@ -653,7 +661,7 @@ class IssueRefundViewModel @Inject constructor(
 
     fun onFeeLineSwitchChanged(isChecked: Boolean, itemId: Long) {
         refundFeeLines.update {
-            it.map { feeLine ->
+            it?.map { feeLine ->
                 if (feeLine.feeLine.id == itemId) {
                     feeLine.copy(isSelected = isChecked)
                 } else {
