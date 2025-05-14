@@ -63,12 +63,12 @@ data class ShippingRefundListItem(
     override val subtotal: BigDecimal
         get() = shippingLine.total
     override val taxes: List<TaxRefund>
-        get() = listOf(
+        get() = shippingLine.taxes.map {
             TaxRefund(
-                rateId = 0L,
-                tax = shippingLine.totalTax
+                rateId = it.rateId,
+                tax = it.taxAmount
             )
-        )
+        }
 }
 
 @Parcelize
@@ -82,10 +82,10 @@ data class FeeRefundListItem(
     override val subtotal: BigDecimal
         get() = feeLine.total
     override val taxes: List<TaxRefund>
-        get() = listOf(
+        get() = feeLine.taxes.map {
             TaxRefund(
-                rateId = 0L,
-                tax = feeLine.totalTax
+                rateId = it.rateId,
+                tax = it.taxAmount
             )
-        )
+        }
 }
