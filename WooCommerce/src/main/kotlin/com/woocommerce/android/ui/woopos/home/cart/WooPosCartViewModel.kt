@@ -203,6 +203,9 @@ class WooPosCartViewModel @Inject constructor(
                     message = resourceProvider.getString(R.string.woopos_cart_changes_in_the_cart)
                 )
             )
+            childrenToParentEventSender.sendToParent(
+                ChildToParentEvent.RefreshProductList
+            )
         }
     }
 
