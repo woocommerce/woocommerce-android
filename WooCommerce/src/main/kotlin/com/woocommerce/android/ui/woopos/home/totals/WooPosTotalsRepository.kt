@@ -4,17 +4,19 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditRepository
-import com.woocommerce.android.ui.woopos.common.data.WooPosGetCouponById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetVariationById
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.home.items.variations.getNameForPOS
 import com.woocommerce.android.util.DateUtils
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLogWrapper
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
+import org.wordpress.android.fluxc.store.CouponStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import java.util.Date
 import javax.inject.Inject
@@ -23,12 +25,13 @@ class WooPosTotalsRepository @Inject constructor(
     private val orderCreateEditRepository: OrderCreateEditRepository,
     private val dateUtils: DateUtils,
     private val getProductById: WooPosGetProductById,
-    private val getCouponById: WooPosGetCouponById,
+    private val couponStore: CouponStore,
     private val getVariationById: WooPosGetVariationById,
     private val orderStore: WCOrderStore,
     private val selectedSite: SelectedSite,
     private val orderMapper: OrderMapper,
     private val resourceProvider: ResourceProvider,
+    private val logWrapper: WooLogWrapper,
 ) {
     private var orderCreationJob: Deferred<Result<Order>>? = null
 
@@ -42,7 +45,12 @@ class WooPosTotalsRepository @Inject constructor(
         return withContext(IO) {
             check(itemClickedDataList.all { it.id >= 0 }) { "Invalid item ID" }
             orderCreationJob = async {
-                val order = createOrder(itemClickedDataList)
+                val order = try {
+                    createOrder(itemClickedDataList)
+                } catch (e: CouponNotFoundException) {
+                    logWrapper.e(WooLog.T.POS, e.message)
+                    return@async Result.failure(e)
+                }
                 orderCreateEditRepository.createOrUpdateOrder(order)
             }
             orderCreationJob!!.await()
@@ -91,10 +99,15 @@ class WooPosTotalsRepository @Inject constructor(
     }
 
     private suspend fun createCouponOrderItem(id: Long): Order.CouponLine {
-        val couponResult = getCouponById(id)!!
+        val result = couponStore.getCoupon(selectedSite.get(), id)
+            ?: run {
+                couponStore.fetchCoupon(selectedSite.get(), id)
+                couponStore.getCoupon(selectedSite.get(), id)
+                    ?: throw CouponNotFoundException("Coupon with ID $id not found in database")
+            }
         return Order.CouponLine(
             id = id,
-            code = couponResult.code ?: "",
+            code = result.coupon.code ?: "",
         )
     }
 
@@ -144,6 +157,8 @@ class WooPosTotalsRepository @Inject constructor(
             orderMapper.toAppModel(it)
         }
     }
+
+    private class CouponNotFoundException(override val message: String) : Throwable()
 
     private companion object {
         /**
