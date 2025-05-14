@@ -92,56 +92,7 @@ class IssueRefundViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val REFUND_METHOD_MANUAL = "manual"
-        private const val SELECTED_QUANTITIES_KEY = "selected_quantities_key"
     }
-
-    private val refundItems = savedState.getNullableListStateFlow(
-        scope = viewModelScope,
-        initialValue = null,
-        clazz = ProductRefundListItem::class.java,
-        key = "refundItems"
-    )
-
-    private val isFeesMainSwitchChecked = savedState.getStateFlow(
-        scope = viewModelScope,
-        initialValue = false,
-        key = "isFeesMainSwitchChecked"
-    )
-    private val refundShippingLines = savedState.getNullableListStateFlow(
-        scope = viewModelScope,
-        initialValue = null,
-        clazz = ShippingRefundListItem::class.java,
-        key = "refundShippingLines"
-    )
-
-    private val refundFeeLines = savedState.getNullableListStateFlow(
-        scope = viewModelScope,
-        initialValue = null,
-        clazz = FeeRefundListItem::class.java,
-        key = "refundFeeLines"
-    )
-
-    private val isShippingMainSwitchChecked = savedState.getStateFlow(
-        scope = viewModelScope,
-        initialValue = false,
-        key = "isShippingMainSwitchChecked"
-    )
-
-    /**
-     * Saving more data than necessary into the SavedState has associated risks which were not known at the time this
-     * field was implemented - after we ensure we don't save unnecessary data, we can replace @Suppress("OPT_IN_USAGE")
-     * with @OptIn(LiveDelegateSavedStateAPI::class).
-     */
-    @Suppress("OPT_IN_USAGE")
-    val commonStateLiveData = LiveDataDelegate(savedState, CommonViewState())
-
-    /**
-     * Saving more data than necessary into the SavedState has associated risks which were not known at the time this
-     * field was implemented - after we ensure we don't save unnecessary data, we can replace @Suppress("OPT_IN_USAGE")
-     * with @OptIn(LiveDelegateSavedStateAPI::class).
-     */
-    @Suppress("OPT_IN_USAGE")
-    val refundSummaryStateLiveData = LiveDataDelegate(savedState, RefundSummaryViewState())
 
     private val orderFlow: SharedFlow<Order> = flow {
         val order = requireNotNull(
@@ -150,6 +101,12 @@ class IssueRefundViewModel @Inject constructor(
         emit(order)
     }.shareIn(viewModelScope, started = SharingStarted.Lazily, replay = 1)
 
+    private val refundItems = savedState.getNullableListStateFlow(
+        scope = viewModelScope,
+        initialValue = null,
+        clazz = ProductRefundListItem::class.java,
+        key = "refundItems"
+    )
     private val productsRefundSection = combine(
         refundItems.filterNotNull(),
         orderFlow
@@ -174,6 +131,17 @@ class IssueRefundViewModel @Inject constructor(
         )
     }.shareIn(viewModelScope, started = SharingStarted.Lazily, replay = 1)
 
+    private val isFeesMainSwitchChecked = savedState.getStateFlow(
+        scope = viewModelScope,
+        initialValue = false,
+        key = "isFeesMainSwitchChecked"
+    )
+    private val refundFeeLines = savedState.getNullableListStateFlow(
+        scope = viewModelScope,
+        initialValue = null,
+        clazz = FeeRefundListItem::class.java,
+        key = "refundFeeLines"
+    )
     private val feesRefundSection = combine(
         isFeesMainSwitchChecked,
         refundFeeLines.filterNotNull(),
@@ -193,6 +161,17 @@ class IssueRefundViewModel @Inject constructor(
         )
     }
 
+    private val isShippingMainSwitchChecked = savedState.getStateFlow(
+        scope = viewModelScope,
+        initialValue = false,
+        key = "isShippingMainSwitchChecked"
+    )
+    private val refundShippingLines = savedState.getNullableListStateFlow(
+        scope = viewModelScope,
+        initialValue = null,
+        clazz = ShippingRefundListItem::class.java,
+        key = "refundShippingLines"
+    )
     private val shippingRefundSection = combine(
         isShippingMainSwitchChecked,
         refundShippingLines.filterNotNull(),
@@ -247,6 +226,23 @@ class IssueRefundViewModel @Inject constructor(
     }
         .onEach { updateRefundTotal(it.grandTotalRefund) }
         .asLiveData()
+
+    /**
+     * Saving more data than necessary into the SavedState has associated risks which were not known at the time this
+     * field was implemented - after we ensure we don't save unnecessary data, we can replace @Suppress("OPT_IN_USAGE")
+     * with @OptIn(LiveDelegateSavedStateAPI::class).
+     */
+    @Suppress("OPT_IN_USAGE")
+    val commonStateLiveData = LiveDataDelegate(savedState, CommonViewState())
+
+    /**
+     * Saving more data than necessary into the SavedState has associated risks which were not known at the time this
+     * field was implemented - after we ensure we don't save unnecessary data, we can replace @Suppress("OPT_IN_USAGE")
+     * with @OptIn(LiveDelegateSavedStateAPI::class).
+     */
+    @Suppress("OPT_IN_USAGE")
+    val refundSummaryStateLiveData = LiveDataDelegate(savedState, RefundSummaryViewState())
+
 
     private var commonState by commonStateLiveData
     private var refundSummaryState by refundSummaryStateLiveData
