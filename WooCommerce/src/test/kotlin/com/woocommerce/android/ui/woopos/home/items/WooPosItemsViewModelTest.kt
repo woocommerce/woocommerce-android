@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.woopos.home.items
 import app.cash.turbine.test
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
-import com.woocommerce.android.ui.woopos.featureflags.WooPosIsProductsSearchEnabled
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
@@ -46,7 +45,6 @@ class WooPosItemsViewModelTest {
 
     private val wooPosItemsNavigator: WooPosItemsNavigator = mock()
 
-    private val isProductsSearchEnabled: WooPosIsProductsSearchEnabled = mock()
     private val searchHelper: WooPosItemsSearchHelper = mock()
     private val tabsHelper: WooPosItemsTabsHelper = mock {
         on { defaultTabs }.thenReturn(tabs)
@@ -57,7 +55,7 @@ class WooPosItemsViewModelTest {
 
     @Before
     fun setup() {
-        whenever(searchHelper.getInitialSearchState(any())).thenReturn(
+        whenever(searchHelper.getInitialSearchState()).thenReturn(
             WooPosItemsViewState.SearchState.Visible(
                 state = WooPosSearchInputState.Closed
             )
@@ -79,10 +77,9 @@ class WooPosItemsViewModelTest {
     }
 
     @Test
-    fun `given products search feature enabled, when view model created, then search state is visible`() = runTest {
+    fun `when view model created, then search state is visible`() = runTest {
         // GIVEN
-        whenever(isProductsSearchEnabled()).thenReturn(true)
-        whenever(searchHelper.getInitialSearchState(true)).thenReturn(
+        whenever(searchHelper.getInitialSearchState()).thenReturn(
             WooPosItemsViewState.SearchState.Visible(
                 state = WooPosSearchInputState.Closed
             )
@@ -101,28 +98,7 @@ class WooPosItemsViewModelTest {
     }
 
     @Test
-    fun `given products search feature disabled, when view model created, then search state is hidden`() = runTest {
-        // GIVEN
-        whenever(isProductsSearchEnabled()).thenReturn(false)
-        whenever(searchHelper.getInitialSearchState(false)).thenReturn(
-            WooPosItemsViewState.SearchState.Hidden
-        )
-
-        // WHEN
-        val viewModel = createViewModel()
-
-        // THEN
-        viewModel.viewState.test {
-            val contentState = awaitItem() as WooPosItemsViewState.ProductList
-            assertThat(contentState.search).isInstanceOf(WooPosItemsViewState.SearchState.Hidden::class.java)
-        }
-    }
-
-    @Test
     fun `given search visible, when close search clicked, then search state is closed`() = runTest {
-        // GIVEN
-        whenever(isProductsSearchEnabled()).thenReturn(true)
-
         // WHEN
         val viewModel = createViewModel()
         viewModel.onUIEvent(WooPosItemsUIEvent.CloseSearchClicked)
@@ -152,8 +128,6 @@ class WooPosItemsViewModelTest {
 
     @Test
     fun `given search visible, when close search clicked, then search helper is called`() = runTest {
-        whenever(isProductsSearchEnabled()).thenReturn(true)
-
         val viewModel = createViewModel()
         viewModel.onUIEvent(WooPosItemsUIEvent.CloseSearchClicked)
 
@@ -231,7 +205,6 @@ class WooPosItemsViewModelTest {
         WooPosItemsViewModel(
             wooPosItemsNavigator,
             searchHelper,
-            isProductsSearchEnabled,
             tabsHelper,
             couponCreationFacade,
             fromChildToParentEventSender,

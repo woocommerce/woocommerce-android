@@ -4,7 +4,6 @@ import android.os.Parcelable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.woopos.featureflags.WooPosIsProductsSearchEnabled
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState.Tab
@@ -29,7 +28,6 @@ import javax.inject.Inject
 class WooPosItemsViewModel @Inject constructor(
     private val navigator: WooPosItemsNavigator,
     private val searchHelper: WooPosItemsSearchHelper,
-    private val isProductsSearchEnabled: WooPosIsProductsSearchEnabled,
     private val tabsHelper: WooPosItemsTabsHelper,
     private val couponCreationFacade: WooPosCouponCreationFacade,
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender,
@@ -38,7 +36,7 @@ class WooPosItemsViewModel @Inject constructor(
     private val _viewState = MutableStateFlow<WooPosItemsViewState>(
         WooPosItemsViewState.ProductList(
             tabs = tabsHelper.defaultTabs,
-            search = searchHelper.getInitialSearchState(isProductsSearchEnabled()),
+            search = searchHelper.getInitialSearchState(),
         )
     )
     val viewState: StateFlow<WooPosItemsViewState> = _viewState
@@ -105,7 +103,7 @@ class WooPosItemsViewModel @Inject constructor(
         _viewState.value = when (selectedTab.stringId) {
             R.string.woopos_products_screen_title -> WooPosItemsViewState.ProductList(
                 tabs = tabsHelper.selectTab(state.tabs, selectedTab),
-                search = searchHelper.getInitialSearchState(isProductsSearchEnabled()),
+                search = searchHelper.getInitialSearchState(),
             )
 
             R.string.woopos_coupons_screen_title -> WooPosItemsViewState.CouponList(
