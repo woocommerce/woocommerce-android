@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.home.items
 
 import app.cash.turbine.test
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.coupons.CouponTestUtils
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
@@ -186,7 +187,7 @@ class WooPosItemsViewModelTest {
     @Test
     fun `when add coupon icon is tapped, then newly created coupon added to cart`() = runTest {
         // GIVEN
-        whenever(couponCreationFacade.createCoupon()).thenReturn(1L)
+        whenever(couponCreationFacade.createCoupon()).thenReturn(CouponTestUtils.generateTestCoupon(1L, "test"))
         val viewModel = createViewModel()
 
         // WHEN
@@ -195,7 +196,7 @@ class WooPosItemsViewModelTest {
         // THEN
         verify(fromChildToParentEventSender).sendToParent(
             ChildToParentEvent.ItemClickedInProductSelector(
-                itemData = ItemClickedData.Coupon(1L),
+                itemData = ItemClickedData.Coupon(1L, "test"),
                 source = WooPosItemSource.COUPON_LIST
             )
         )

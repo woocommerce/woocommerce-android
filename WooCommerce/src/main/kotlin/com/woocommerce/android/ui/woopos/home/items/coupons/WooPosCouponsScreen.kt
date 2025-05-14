@@ -76,7 +76,7 @@ private fun WooPosCouponsScreen(
                     modifier = Modifier.padding(top = WooPosSpacing.Large.value),
                     state = itemsState,
                     listState = listState,
-                    onItemClicked = { item -> onUIEvent(WooPosCouponsUIEvent.CouponClicked(item.id)) },
+                    onItemClicked = { item -> onUIEvent(WooPosCouponsUIEvent.CouponClicked(item.id, item.name)) },
                     onEndOfProductsListReached = { onUIEvent(WooPosCouponsUIEvent.EndOfListReached) },
                 ) {
                     CouponsPaginationError(
