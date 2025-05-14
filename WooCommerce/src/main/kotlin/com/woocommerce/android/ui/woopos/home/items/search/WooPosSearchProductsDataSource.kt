@@ -40,7 +40,9 @@ class WooPosSearchProductsDataSource @Inject constructor(
         searchResultsIndex.clearCache()
 
         performRemoteSearch(query).fold(
-            onSuccess = { result -> Result.success(result.products) },
+            onSuccess = { result ->
+                Result.success(result.products.sortedBy { it.name.lowercase() })
+            },
             onFailure = { error -> Result.failure(error) }
         )
     }
@@ -55,7 +57,7 @@ class WooPosSearchProductsDataSource @Inject constructor(
 
         return performRemoteSearch(query, offset).fold(
             onSuccess = { result ->
-                Result.success(result.products)
+                Result.success(searchResultsIndex.getSearchResults(query))
             },
             onFailure = { error ->
                 Result.failure(error)
@@ -83,7 +85,10 @@ class WooPosSearchProductsDataSource @Inject constructor(
                 Result.failure(WooException(result.error))
             } else {
                 val searchResult = result.model!!
-                val products = searchResult.products.map { product -> product.toAppModel() }
+                val products = searchResult.products
+                    .map { product -> product.toAppModel() }
+                    .sortedBy { it.name.lowercase() }
+
                 canLoadMore.set(searchResult.canLoadMore)
                 productsCache.addAll(products)
                 searchResultsIndex.storeSearchResults(
@@ -91,8 +96,7 @@ class WooPosSearchProductsDataSource @Inject constructor(
                     products.map { it.remoteId }
                 )
                 val searchResults = SearchResult(
-                    products = searchResultsIndex.getSearchResults(searchQuery)
-                        .sortedBy { it.name },
+                    products = searchResultsIndex.getSearchResults(searchQuery),
                     canLoadMore = searchResult.canLoadMore
                 )
                 Result.success(searchResults)
