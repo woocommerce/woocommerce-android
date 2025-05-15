@@ -34,7 +34,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.site.NewSiteResponse.BlogD
 import org.wordpress.android.fluxc.network.rest.wpcom.site.SiteWPComRestResponse.SitesResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.site.StatusType.ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.site.StatusType.SUCCESS
-import org.wordpress.android.fluxc.store.SiteStore.PostFormatsErrorType
 import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType
 import org.wordpress.android.fluxc.store.SiteStore.SiteFilter.WPCOM
 import org.wordpress.android.fluxc.store.SiteStore.SiteVisibility
@@ -439,41 +438,6 @@ class SiteRestClientTest {
     }
 
     @Test
-    fun `returns fetched post formats`() = test {
-        val response = PostFormatsResponse()
-        val slug = "testSlug"
-        val displayName = "testDisplayName"
-        response.formats = mapOf(slug to displayName)
-
-        initPostFormatsResponse(response)
-
-        val responseModel = restClient.fetchPostFormats(site)
-        assertThat(responseModel.postFormats).hasSize(1)
-        assertThat(responseModel.postFormats[0].slug).isEqualTo(slug)
-        assertThat(responseModel.postFormats[0].displayName).isEqualTo(displayName)
-        assertThat(urlCaptor.lastValue)
-                .isEqualTo("https://public-api.wordpress.com/rest/v1.1/sites/12/post-formats/")
-    }
-
-    @Test
-    fun `fetchPostFormats returns error when API call fails`() = test {
-        val errorMessage = "message"
-        initPostFormatsResponse(
-                error = WPComGsonNetworkError(
-                        BaseNetworkError(
-                                GenericErrorType.NETWORK_ERROR,
-                                errorMessage,
-                                VolleyError(errorMessage)
-                        )
-                )
-        )
-        val errorResponse = restClient.fetchPostFormats(site)
-
-        assertNotNull(errorResponse.error)
-        assertThat(errorResponse.error.type).isEqualTo(PostFormatsErrorType.GENERIC_ERROR)
-    }
-
-    @Test
     fun `creates new site in coming soon state`() = test {
         // given
         whenever(appSecrets.appId).thenReturn("")
@@ -636,13 +600,6 @@ class SiteRestClientTest {
         error: WPComGsonNetworkError? = null
     ): Response<NewSiteResponse> {
         return initPostResponse(NewSiteResponse::class.java, data ?: mock(), error)
-    }
-
-    private suspend fun initPostFormatsResponse(
-        data: PostFormatsResponse? = null,
-        error: WPComGsonNetworkError? = null
-    ): Response<PostFormatsResponse> {
-        return initGetResponse(PostFormatsResponse::class.java, data ?: mock(), error)
     }
 
     private suspend fun initSitesFeaturesResponse(

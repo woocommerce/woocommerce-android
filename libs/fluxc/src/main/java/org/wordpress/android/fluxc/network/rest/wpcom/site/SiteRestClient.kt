@@ -53,7 +53,6 @@ import org.wordpress.android.fluxc.store.SiteStore.DomainSupportedStatesErrorTyp
 import org.wordpress.android.fluxc.store.SiteStore.DomainSupportedStatesResponsePayload
 import org.wordpress.android.fluxc.store.SiteStore.FetchedJetpackCapabilitiesPayload
 import org.wordpress.android.fluxc.store.SiteStore.FetchedPlansPayload
-import org.wordpress.android.fluxc.store.SiteStore.FetchedPostFormatsPayload
 import org.wordpress.android.fluxc.store.SiteStore.FetchedPrivateAtomicCookiePayload
 import org.wordpress.android.fluxc.store.SiteStore.FetchedUserRolesPayload
 import org.wordpress.android.fluxc.store.SiteStore.InitiateAutomatedTransferResponsePayload
@@ -62,8 +61,6 @@ import org.wordpress.android.fluxc.store.SiteStore.JetpackCapabilitiesErrorType
 import org.wordpress.android.fluxc.store.SiteStore.NewSiteError
 import org.wordpress.android.fluxc.store.SiteStore.NewSiteErrorType
 import org.wordpress.android.fluxc.store.SiteStore.PlansError
-import org.wordpress.android.fluxc.store.SiteStore.PostFormatsError
-import org.wordpress.android.fluxc.store.SiteStore.PostFormatsErrorType
 import org.wordpress.android.fluxc.store.SiteStore.PrivateAtomicCookieError
 import org.wordpress.android.fluxc.store.SiteStore.QuickStartCompletedResponsePayload
 import org.wordpress.android.fluxc.store.SiteStore.QuickStartError
@@ -85,7 +82,6 @@ import org.wordpress.android.fluxc.store.SiteStore.SuggestDomainsResponsePayload
 import org.wordpress.android.fluxc.store.SiteStore.UserRolesError
 import org.wordpress.android.fluxc.store.SiteStore.UserRolesErrorType
 import org.wordpress.android.fluxc.tools.CoroutineEngine
-import org.wordpress.android.fluxc.utils.SiteUtils
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.AppLog.T.API
 import org.wordpress.android.util.StringUtils
@@ -357,31 +353,6 @@ class SiteRestClient @Inject constructor(
             body = mapOf("site" to site.siteId),
             Unit::class.java
         )
-    }
-
-    suspend fun fetchPostFormats(site: SiteModel): FetchedPostFormatsPayload {
-        val url = WPCOMREST.sites.site(site.siteId).post_formats.urlV1_1
-        val response = wpComGsonRequestBuilder.syncGetRequest(this, url, mapOf(), PostFormatsResponse::class.java)
-        return when (response) {
-            is Success -> {
-                val postFormats = SiteUtils.getValidPostFormatsOrNull(response.data.formats)
-                if (postFormats != null) {
-                    FetchedPostFormatsPayload(
-                            site,
-                            postFormats
-                    )
-                } else {
-                    val payload = FetchedPostFormatsPayload(site, emptyList())
-                    payload.error = PostFormatsError(PostFormatsErrorType.INVALID_RESPONSE)
-                    payload
-                }
-            }
-            is Error -> {
-                val payload = FetchedPostFormatsPayload(site, emptyList())
-                payload.error = PostFormatsError(PostFormatsErrorType.GENERIC_ERROR)
-                payload
-            }
-        }
     }
 
     @Suppress("ForbiddenComment")

@@ -39,7 +39,6 @@ import org.wordpress.android.fluxc.action.SiteAction.FETCH_DOMAIN_SUPPORTED_COUN
 import org.wordpress.android.fluxc.action.SiteAction.FETCH_DOMAIN_SUPPORTED_STATES
 import org.wordpress.android.fluxc.action.SiteAction.FETCH_JETPACK_CAPABILITIES
 import org.wordpress.android.fluxc.action.SiteAction.FETCH_PLANS
-import org.wordpress.android.fluxc.action.SiteAction.FETCH_POST_FORMATS
 import org.wordpress.android.fluxc.action.SiteAction.FETCH_PRIVATE_ATOMIC_COOKIE
 import org.wordpress.android.fluxc.action.SiteAction.FETCH_PROFILE_XML_RPC
 import org.wordpress.android.fluxc.action.SiteAction.FETCH_SITE
@@ -64,7 +63,6 @@ import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.DomainModel
 import org.wordpress.android.fluxc.model.JetpackCapability
 import org.wordpress.android.fluxc.model.PlanModel
-import org.wordpress.android.fluxc.model.PostFormatModel
 import org.wordpress.android.fluxc.model.RoleModel
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.SitesModel
@@ -224,11 +222,6 @@ open class SiteStore @Inject constructor(
             dryRun: Boolean
         ) : this(siteName, siteTitle, language, timeZoneId, visibility, null, null, dryRun, findAvailableUrl)
     }
-
-    data class FetchedPostFormatsPayload(
-        @JvmField val site: SiteModel,
-        @JvmField val postFormats: List<PostFormatModel>
-    ) : Payload<PostFormatsError>()
 
     data class FetchedUserRolesPayload(
         @JvmField val site: SiteModel,
@@ -438,11 +431,6 @@ open class SiteStore @Inject constructor(
         @JvmField val selfHostedErrorType: SelfHostedErrorType = NOT_SET
     ) : OnChangedError
 
-    data class PostFormatsError @JvmOverloads constructor(
-        @JvmField val type: PostFormatsErrorType,
-        @JvmField val message: String? = ""
-    ) : OnChangedError
-
     data class UserRolesError internal constructor(
         @JvmField val type: UserRolesErrorType?,
         @JvmField val message: String
@@ -530,8 +518,6 @@ open class SiteStore @Inject constructor(
             this.error = error
         }
     }
-
-    data class OnPostFormatsChanged(@JvmField val site: SiteModel) : OnChanged<PostFormatsError>()
 
     data class OnUserRolesChanged(@JvmField val site: SiteModel) : OnChanged<UserRolesError>()
     data class OnPlansFetched(
@@ -824,10 +810,6 @@ open class SiteStore @Inject constructor(
                 return GENERIC_ERROR
             }
         }
-    }
-
-    enum class PostFormatsErrorType {
-        INVALID_SITE, INVALID_RESPONSE, GENERIC_ERROR
     }
 
     enum class PlansErrorType {
@@ -1205,10 +1187,6 @@ open class SiteStore @Inject constructor(
         }
     }
 
-    fun getPostFormats(site: SiteModel?): List<PostFormatModel> {
-        return siteSqlUtils.getPostFormats(site!!)
-    }
-
     fun getUserRoles(site: SiteModel?): List<RoleModel> {
         return siteSqlUtils.getUserRoles(site!!)
     }
@@ -1259,9 +1237,6 @@ open class SiteStore @Inject constructor(
             HIDE_SITES -> toggleSitesVisibility(action.payload as SitesModel, false)
             CREATE_NEW_SITE -> coroutineEngine.launch(T.MAIN, this, "Create a new site") {
                 emitChange(createNewSite(action.payload as NewSitePayload))
-            }
-            FETCH_POST_FORMATS -> coroutineEngine.launch(T.MAIN, this, "Fetch post formats") {
-                emitChange(fetchPostFormats(action.payload as SiteModel))
             }
             FETCH_USER_ROLES -> fetchUserRoles(action.payload as SiteModel)
             FETCHED_USER_ROLES -> updateUserRoles(action.payload as FetchedUserRolesPayload)
@@ -1562,21 +1537,6 @@ open class SiteStore @Inject constructor(
 
     private fun handleCreateNewSiteCompleted(payload: NewSiteResponsePayload): OnNewSiteCreated {
         return OnNewSiteCreated(payload.dryRun, payload.siteUrl, payload.newSiteRemoteId, payload.error)
-    }
-
-    suspend fun fetchPostFormats(site: SiteModel): OnPostFormatsChanged {
-        val payload = if (site.isUsingWpComRestApi) {
-            siteRestClient.fetchPostFormats(site)
-        } else {
-            siteXMLRPCClient.fetchPostFormats(site)
-        }
-        val event = OnPostFormatsChanged(payload.site)
-        if (payload.isError) {
-            event.error = payload.error
-        } else {
-            siteSqlUtils.insertOrReplacePostFormats(payload.site, payload.postFormats)
-        }
-        return event
     }
 
     private fun fetchUserRoles(site: SiteModel) {

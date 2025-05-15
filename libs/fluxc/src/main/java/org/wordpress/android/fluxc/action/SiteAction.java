@@ -50,8 +50,6 @@ public enum SiteAction implements IAction {
     @Action(payloadType = NewSitePayload.class)
     CREATE_NEW_SITE,
     @Action(payloadType = SiteModel.class)
-    FETCH_POST_FORMATS,
-    @Action(payloadType = SiteModel.class)
     FETCH_USER_ROLES,
     @Action(payloadType = SiteModel.class)
     DELETE_SITE,

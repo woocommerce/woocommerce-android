@@ -13,7 +13,6 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.wordpress.android.fluxc.Dispatcher;
 import org.wordpress.android.fluxc.WellSqlTestUtils;
-import org.wordpress.android.fluxc.model.PostFormatModel;
 import org.wordpress.android.fluxc.model.SiteModel;
 import org.wordpress.android.fluxc.model.SitesModel;
 import org.wordpress.android.fluxc.network.rest.wpapi.site.SiteWPAPIRestClient;
@@ -43,7 +42,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.wordpress.android.fluxc.site.SiteUtils.generateJetpackSiteOverRestOnly;
 import static org.wordpress.android.fluxc.site.SiteUtils.generateJetpackSiteOverXMLRPC;
-import static org.wordpress.android.fluxc.site.SiteUtils.generatePostFormats;
 import static org.wordpress.android.fluxc.site.SiteUtils.generateSelfHostedNonJPSite;
 import static org.wordpress.android.fluxc.site.SiteUtils.generateSelfHostedSiteFutureJetpack;
 import static org.wordpress.android.fluxc.site.SiteUtils.generateSiteWithZendeskMetaData;
@@ -468,22 +466,6 @@ public class SiteStoreUnitTest {
         assertFalse(duplicate);
         int sitesCount = WellSql.select(SiteModel.class).getAsCursor().getCount();
         assertEquals(1, sitesCount);
-    }
-
-    @Test
-    public void testGetPostFormats() throws DuplicateSiteException {
-        SiteModel site = generateWPComSite();
-        mSiteSqlUtils.insertOrUpdateSite(site);
-
-        // Set 3 post formats
-        mSiteSqlUtils.insertOrReplacePostFormats(site, generatePostFormats("Video", "Image", "Standard"));
-        List<PostFormatModel> postFormats = mSiteStore.getPostFormats(site);
-        assertEquals(3, postFormats.size());
-
-        // Set 1 post format
-        mSiteSqlUtils.insertOrReplacePostFormats(site, generatePostFormats("Standard"));
-        postFormats = mSiteStore.getPostFormats(site);
-        assertEquals("Standard", postFormats.get(0).getDisplayName());
     }
 
     @Test

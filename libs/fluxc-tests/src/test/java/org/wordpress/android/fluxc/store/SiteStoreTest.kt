@@ -16,7 +16,6 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.model.PostFormatModel
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.SitesModel
 import org.wordpress.android.fluxc.model.asDomainModel
@@ -44,15 +43,11 @@ import org.wordpress.android.fluxc.store.SiteStore.FetchSitesPayload
 import org.wordpress.android.fluxc.store.SiteStore.FetchedAllDomainsPayload
 import org.wordpress.android.fluxc.store.SiteStore.FetchedDomainsPayload
 import org.wordpress.android.fluxc.store.SiteStore.FetchedPlansPayload
-import org.wordpress.android.fluxc.store.SiteStore.FetchedPostFormatsPayload
 import org.wordpress.android.fluxc.store.SiteStore.NewSiteError
 import org.wordpress.android.fluxc.store.SiteStore.NewSiteErrorType.SITE_NAME_INVALID
 import org.wordpress.android.fluxc.store.SiteStore.NewSitePayload
-import org.wordpress.android.fluxc.store.SiteStore.OnPostFormatsChanged
 import org.wordpress.android.fluxc.store.SiteStore.PlansError
 import org.wordpress.android.fluxc.store.SiteStore.PlansErrorType
-import org.wordpress.android.fluxc.store.SiteStore.PostFormatsError
-import org.wordpress.android.fluxc.store.SiteStore.PostFormatsErrorType.INVALID_SITE
 import org.wordpress.android.fluxc.store.SiteStore.SiteError
 import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.store.SiteStore.SiteFilter.WPCOM
@@ -320,84 +315,6 @@ class SiteStoreTest {
         assertThat(result.dryRun).isEqualTo(dryRun)
         assertThat(result.newSiteRemoteId).isEqualTo(0)
         assertThat(result.error).isEqualTo(newSiteError)
-    }
-
-    @Test
-    fun `fetches post formats for WPCom site`() = test {
-        val site = SiteModel()
-        site.setIsWPCom(true)
-        val postFormatModel = PostFormatModel(123)
-        postFormatModel.slug = "Slug"
-        postFormatModel.displayName = "Display name"
-        postFormatModel.siteId = 123
-        val postFormats = listOf(
-                postFormatModel
-        )
-        val payload = FetchedPostFormatsPayload(site, postFormats)
-        whenever(siteRestClient.fetchPostFormats(site)).thenReturn(payload)
-
-        assertPostFormatsFetched(site, payload)
-    }
-
-    @Test
-    fun `fetches post formats for XMLRPC site`() = test {
-        val site = SiteModel()
-        site.setIsWPCom(false)
-        val postFormatModel = PostFormatModel(123)
-        postFormatModel.slug = "Slug"
-        postFormatModel.displayName = "Display name"
-        postFormatModel.siteId = 123
-        val postFormats = listOf(
-                postFormatModel
-        )
-        val payload = FetchedPostFormatsPayload(site, postFormats)
-        whenever(siteXMLRPCClient.fetchPostFormats(site)).thenReturn(payload)
-
-        assertPostFormatsFetched(site, payload)
-    }
-
-    private suspend fun assertPostFormatsFetched(
-        site: SiteModel,
-        payload: FetchedPostFormatsPayload
-    ) {
-        val onPostFormatsChanged: OnPostFormatsChanged = siteStore.fetchPostFormats(site)
-
-        assertThat(onPostFormatsChanged.site).isEqualTo(site)
-        assertThat(onPostFormatsChanged.error).isNull()
-        verify(siteSqlUtils).insertOrReplacePostFormats(payload.site, payload.postFormats)
-    }
-
-    @Test
-    fun `fails to fetch post formats for WPCom site`() = test {
-        val site = SiteModel()
-        site.setIsWPCom(true)
-        val payload = FetchedPostFormatsPayload(site, emptyList())
-        payload.error = PostFormatsError(INVALID_SITE, "Invalid site")
-        whenever(siteRestClient.fetchPostFormats(site)).thenReturn(payload)
-
-        assertPostFormatsFetchFailed(site, payload)
-    }
-
-    @Test
-    fun `fails to fetch post formats from XMLRPC`() = test {
-        val site = SiteModel()
-        site.setIsWPCom(false)
-        val payload = FetchedPostFormatsPayload(site, emptyList())
-        payload.error = PostFormatsError(INVALID_SITE, "Invalid site")
-        whenever(siteXMLRPCClient.fetchPostFormats(site)).thenReturn(payload)
-
-        assertPostFormatsFetchFailed(site, payload)
-    }
-
-    private suspend fun assertPostFormatsFetchFailed(
-        site: SiteModel,
-        payload: FetchedPostFormatsPayload
-    ) {
-        val onPostFormatsChanged: OnPostFormatsChanged = siteStore.fetchPostFormats(site)
-
-        assertThat(onPostFormatsChanged.site).isEqualTo(site)
-        assertThat(onPostFormatsChanged.error).isEqualTo(payload.error)
-        verifyNoInteractions(siteSqlUtils)
     }
 
     @Test
