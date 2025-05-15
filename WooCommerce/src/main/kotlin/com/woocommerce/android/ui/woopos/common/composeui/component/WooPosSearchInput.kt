@@ -13,7 +13,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -59,10 +59,9 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
+import com.woocommerce.android.ui.woopos.home.items.WOO_POS_ITEMS_TOOLBAR_HEIGHT
 import kotlinx.coroutines.delay
 import kotlinx.parcelize.Parcelize
-
-private val INPUT_FIELD_HEIGHT = 56.dp
 
 @Composable
 fun WooPosSearchInput(
@@ -92,8 +91,7 @@ fun WooPosSearchInput(
 
     Box(
         modifier = modifier
-            .fillMaxWidth()
-            .height(INPUT_FIELD_HEIGHT),
+            .fillMaxWidth(),
         contentAlignment = Alignment.CenterEnd
     ) {
         AnimatedVisibility(
@@ -221,7 +219,7 @@ private fun SearchInput(
             },
             modifier = Modifier
                 .weight(1f)
-                .height(INPUT_FIELD_HEIGHT)
+                .heightIn(min = WOO_POS_ITEMS_TOOLBAR_HEIGHT)
                 .focusRequester(focusRequester)
                 .onFocusChanged { focusState ->
                     isFocused = focusState.isFocused
