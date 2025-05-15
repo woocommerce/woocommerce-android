@@ -69,6 +69,7 @@ import org.wordpress.android.util.AppLog.T.API
 import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
+import org.wordpress.android.fluxc.persistence.dao.ProductShippingClassesDao
 
 @Suppress("LargeClass")
 @Singleton
@@ -82,6 +83,7 @@ class WCProductStore @Inject internal constructor(
     private val productsDao: ProductsDao,
     private val productVariationsDao: ProductVariationsDao,
     private val productCategoriesDao: ProductCategoriesDao,
+    private val productShippingClassesDao: ProductShippingClassesDao,
 ) : Store(dispatcher) {
     companion object {
         const val NUM_REVIEWS_PER_FETCH = 25
@@ -767,7 +769,6 @@ class WCProductStore @Inject internal constructor(
     }
 
     class OnProductShippingClassesChanged(
-        var rowsAffected: Int,
         var canLoadMore: Boolean = false
     ) : OnChanged<ProductError>() {
         var causeOfChange: WCProductAction? = null
@@ -851,14 +852,14 @@ class WCProductStore @Inject internal constructor(
     /**
      * returns a list of shipping classes for a specific site in the database
      */
-    fun getShippingClassListForSite(site: SiteModel): List<WCProductShippingClassModel> =
-        ProductSqlUtils.getProductShippingClassListForSite(site.id)
+    suspend fun getShippingClassListForSite(site: SiteModel): List<WCProductShippingClassModel> =
+        productShippingClassesDao.getProductShippingClasses(site.localId())
 
     /**
      * returns the corresponding product shipping class from the database as a [WCProductShippingClassModel].
      */
-    fun getShippingClassByRemoteId(site: SiteModel, remoteShippingClassId: Long): WCProductShippingClassModel? =
-        ProductSqlUtils.getProductShippingClassByRemoteId(remoteShippingClassId, site.id)
+    suspend fun getShippingClassByRemoteId(site: SiteModel, remoteShippingClassId: Long): WCProductShippingClassModel? =
+        productShippingClassesDao.getProductShippingClass(site.localId(), RemoteId(remoteShippingClassId))
 
     /**
      * returns a list of [WCProductModel] for the give [SiteModel] and [remoteProductIds]
@@ -2092,31 +2093,35 @@ class WCProductStore @Inject internal constructor(
     }
 
     private fun handleFetchProductShippingClassesCompleted(payload: RemoteProductShippingClassListPayload) {
-        val onProductShippingClassesChanged = if (payload.isError) {
-            OnProductShippingClassesChanged(0).also { it.error = payload.error }
-        } else {
-            // delete product shipping class list for site if this is the first page of results, otherwise
-            // shipping class list deleted outside of the app will persist
-            if (payload.offset == 0) {
-                ProductSqlUtils.deleteProductShippingClassListForSite(payload.site)
-            }
+        coroutineEngine.launch(T.DB, this, "handleFetchProductShippingClassesCompleted") {
+            val onProductShippingClassesChanged = if (payload.isError) {
+                OnProductShippingClassesChanged().also { it.error = payload.error }
+            } else {
+                // delete product shipping class list for site if this is the first page of results, otherwise
+                // shipping class list deleted outside of the app will persist
+                if (payload.offset == 0) {
+                    productShippingClassesDao.deleteProductShippingClasses(payload.site.localId())
+                }
 
-            val rowsAffected = ProductSqlUtils.insertOrUpdateProductShippingClassList(payload.shippingClassList)
-            OnProductShippingClassesChanged(rowsAffected, canLoadMore = payload.canLoadMore)
+                productShippingClassesDao.upsertProductShippingClasses(payload.shippingClassList)
+                OnProductShippingClassesChanged(canLoadMore = payload.canLoadMore)
+            }
+            onProductShippingClassesChanged.causeOfChange = WCProductAction.FETCH_PRODUCT_SHIPPING_CLASS_LIST
+            emitChange(onProductShippingClassesChanged)
         }
-        onProductShippingClassesChanged.causeOfChange = WCProductAction.FETCH_PRODUCT_SHIPPING_CLASS_LIST
-        emitChange(onProductShippingClassesChanged)
     }
 
     private fun handleFetchProductShippingClassCompleted(payload: RemoteProductShippingClassPayload) {
-        val onProductShippingClassesChanged = if (payload.isError) {
-            OnProductShippingClassesChanged(0).also { it.error = payload.error }
-        } else {
-            val rowsAffected = ProductSqlUtils.insertOrUpdateProductShippingClass(payload.productShippingClassModel)
-            OnProductShippingClassesChanged(rowsAffected)
+        coroutineEngine.launch(T.DB, this, "handleFetchProductShippingClassCompleted") {
+            val onProductShippingClassesChanged = if (payload.isError) {
+                OnProductShippingClassesChanged().also { it.error = payload.error }
+            } else {
+                productShippingClassesDao.upsertProductShippingClass(payload.productShippingClassModel)
+                OnProductShippingClassesChanged()
+            }
+            onProductShippingClassesChanged.causeOfChange = WCProductAction.FETCH_SINGLE_PRODUCT_SHIPPING_CLASS
+            emitChange(onProductShippingClassesChanged)
         }
-        onProductShippingClassesChanged.causeOfChange = WCProductAction.FETCH_SINGLE_PRODUCT_SHIPPING_CLASS
-        emitChange(onProductShippingClassesChanged)
     }
 
     private fun handleFetchProductPasswordCompleted(payload: RemoteProductPasswordPayload) {
