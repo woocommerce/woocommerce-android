@@ -5,7 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
+import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
+import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemNavigationData.VariableProductData
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
@@ -31,6 +33,7 @@ import javax.inject.Inject
 class WooPosProductsViewModel @Inject constructor(
     private val productsDataSource: WooPosProductsDataSource,
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender,
+    private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
     private val priceFormat: WooPosFormatPrice,
     private val navigator: WooPosItemsNavigator,
     private val analyticsTracker: WooPosAnalyticsTracker,
@@ -51,10 +54,39 @@ class WooPosProductsViewModel @Inject constructor(
         )
 
     init {
+        listenEventsFromParent()
         loadProducts(
             forceRefreshProducts = false,
             withPullToRefresh = false,
         )
+    }
+
+    private fun listenEventsFromParent() {
+        viewModelScope.launch {
+            parentToChildrenEventReceiver.events.collect { event ->
+                when (event) {
+                    ParentToChildrenEvent.RefreshProductList -> {
+                        loadProducts(
+                            forceRefreshProducts = true,
+                            withPullToRefresh = false,
+                        )
+                    }
+
+                    ParentToChildrenEvent.BackFromCheckoutToCartClicked,
+                    is ParentToChildrenEvent.CheckoutClicked,
+                    is ParentToChildrenEvent.CouponsRemoved,
+                    ParentToChildrenEvent.CouponsValidationFailed,
+                    is ParentToChildrenEvent.ItemClickedInProductSelector,
+                    is ParentToChildrenEvent.OrderCreated,
+                    is ParentToChildrenEvent.OrderSuccessfullyPaid,
+                    ParentToChildrenEvent.RemoveCouponsClicked,
+                    is ParentToChildrenEvent.SearchEvent.ChangedQuery,
+                    ParentToChildrenEvent.SearchEvent.Finished,
+                    is ParentToChildrenEvent.SearchEvent.RecentSearchSelected,
+                    ParentToChildrenEvent.SearchEvent.Started -> Unit
+                }
+            }
+        }
     }
 
     fun onUIEvent(event: WooPosProductsUIEvent) {

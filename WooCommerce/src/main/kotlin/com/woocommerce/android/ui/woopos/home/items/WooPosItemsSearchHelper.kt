@@ -32,6 +32,7 @@ class WooPosItemsSearchHelper @Inject constructor(
         listenEventsFromParent()
     }
 
+    @Suppress("CyclomaticComplexMethod")
     private fun listenEventsFromParent() {
         coroutineScope.launch {
             parentToChildrenEventReceiver.events.collect { event ->
@@ -50,6 +51,11 @@ class WooPosItemsSearchHelper @Inject constructor(
 
                     is ParentToChildrenEvent.SearchEvent.RecentSearchSelected -> {
                         onSearchChanged(event.query, event.query.length)
+                    }
+                    is ParentToChildrenEvent.RefreshProductList -> {
+                        if (isSearchOpen()) {
+                            onSearchChanged("", 0)
+                        }
                     }
 
                     is ParentToChildrenEvent.BackFromCheckoutToCartClicked -> Unit

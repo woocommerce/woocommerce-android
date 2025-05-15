@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.home.items.coupons
 
+import com.woocommerce.android.ui.coupons.CouponTestUtils
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.WooPosCouponsViewState
@@ -52,14 +53,15 @@ class WooPosCouponsViewModelTest {
     fun `when coupon clicked, then send item clicked event`() = runTest {
         // GIVEN
         val couponId = 123L
+        val couponCode = "test coupon"
 
         // WHEN
-        viewModel.onUIEvent(CouponClicked(couponId))
+        viewModel.onUIEvent(CouponClicked(couponId, couponCode))
 
         // THEN
         verify(fromChildToParentEventSender).sendToParent(
             ChildToParentEvent.ItemClickedInProductSelector(
-                itemData = ItemClickedData.Coupon(couponId),
+                itemData = ItemClickedData.Coupon(couponId, couponCode),
                 source = WooPosItemSource.COUPON_LIST
             )
         )
@@ -130,7 +132,8 @@ class WooPosCouponsViewModelTest {
     @Test
     fun `when add coupon icon is tapped, then newly created coupon added to cart`() = runTest {
         // GIVEN
-        whenever(couponCreationFacade.createCoupon()).thenReturn(1L)
+        whenever(couponCreationFacade.createCoupon())
+            .thenReturn(CouponTestUtils.generateTestCoupon(1L, "test coupon"))
         val viewModel = createViewModel()
 
         // WHEN
@@ -139,7 +142,7 @@ class WooPosCouponsViewModelTest {
         // THEN
         verify(fromChildToParentEventSender).sendToParent(
             ChildToParentEvent.ItemClickedInProductSelector(
-                itemData = ItemClickedData.Coupon(1L),
+                itemData = ItemClickedData.Coupon(1L, "test coupon"),
                 source = WooPosItemSource.COUPON_LIST
             )
         )

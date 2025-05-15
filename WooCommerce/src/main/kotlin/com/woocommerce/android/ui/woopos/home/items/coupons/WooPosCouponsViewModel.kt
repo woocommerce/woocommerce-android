@@ -103,7 +103,7 @@ class WooPosCouponsViewModel @Inject constructor(
             fromChildToParentEventSender.sendToParent(
                 // CouponsProject: rename ItemClickedInProductSelector to ItemClicked
                 ChildToParentEvent.ItemClickedInProductSelector(
-                    itemData = ItemClickedData.Coupon(event.couponId),
+                    itemData = ItemClickedData.Coupon(event.couponId, event.couponCode),
                     source = WooPosItemSource.COUPON_LIST
                 )
             )
@@ -112,11 +112,11 @@ class WooPosCouponsViewModel @Inject constructor(
 
     private fun createAndAddCoupon() {
         viewModelScope.launch {
-            val couponId = couponCreationFacade.createCoupon()
-            if (couponId != null) {
+            val coupon = couponCreationFacade.createCoupon()
+            if (coupon != null) {
                 fromChildToParentEventSender.sendToParent(
                     ChildToParentEvent.ItemClickedInProductSelector(
-                        itemData = ItemClickedData.Coupon(couponId),
+                        itemData = ItemClickedData.Coupon(coupon.id, coupon.code ?: ""),
                         source = WooPosItemSource.COUPON_LIST
                     )
                 )

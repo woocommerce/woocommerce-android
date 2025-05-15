@@ -116,11 +116,11 @@ class WooPosItemsViewModel @Inject constructor(
 
     private fun createAndAddCoupon() {
         viewModelScope.launch {
-            val couponId = couponCreationFacade.createCoupon()
-            if (couponId != null) {
+            val coupon = couponCreationFacade.createCoupon()
+            if (coupon != null) {
                 fromChildToParentEventSender.sendToParent(
                     ChildToParentEvent.ItemClickedInProductSelector(
-                        itemData = ItemClickedData.Coupon(couponId),
+                        itemData = ItemClickedData.Coupon(coupon.id, coupon.code ?: ""),
                         source = WooPosItemSource.COUPON_LIST
                     )
                 )
@@ -140,6 +140,6 @@ class WooPosItemsViewModel @Inject constructor(
         }
 
         @Parcelize
-        data class Coupon(override val id: Long) : ItemClickedData(id), Parcelable
+        data class Coupon(override val id: Long, val couponCode: String) : ItemClickedData(id), Parcelable
     }
 }

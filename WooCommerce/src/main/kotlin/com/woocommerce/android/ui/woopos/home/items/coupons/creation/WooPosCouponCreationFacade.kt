@@ -7,6 +7,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityOptionsCompat
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import com.woocommerce.android.model.Coupon
+import com.woocommerce.android.ui.woopos.common.data.WooPosGetCouponById
 import dagger.hilt.android.scopes.ActivityRetainedScoped
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.Dispatchers
@@ -25,7 +27,9 @@ import kotlin.coroutines.resume
  * landscape and not receiving result of the newly created coupon isn't critical.
  */
 @ActivityRetainedScoped
-class WooPosCouponCreationFacade @Inject constructor() : DefaultLifecycleObserver {
+class WooPosCouponCreationFacade @Inject constructor(
+    private val getCouponById: WooPosGetCouponById,
+) : DefaultLifecycleObserver {
     private var activityWR: WeakReference<AppCompatActivity>? = null
 
     private var couponCreationLauncher: ActivityResultLauncher<Intent>? = null
@@ -50,12 +54,14 @@ class WooPosCouponCreationFacade @Inject constructor() : DefaultLifecycleObserve
         activityWR = null
     }
 
-    suspend fun createCoupon(): Long? = withContext(Dispatchers.Main) {
+    suspend fun createCoupon(): Coupon? = withContext(Dispatchers.Main) {
         val currentActivityWR = activityWR ?: return@withContext null
 
         suspendCancellableCoroutine { continuation ->
             cancellableContinuation = continuation
             currentActivityWR.get()?.let { launchCouponCreationActivity(it) } ?: continuation.resume(null)
+        }?.let { couponId ->
+            getCouponById(couponId)
         }
     }
 

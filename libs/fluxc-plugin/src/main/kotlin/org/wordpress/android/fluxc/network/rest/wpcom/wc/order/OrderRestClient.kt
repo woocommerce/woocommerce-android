@@ -1151,6 +1151,7 @@ class OrderRestClient @Inject constructor(
             shippingLines?.let { put("shipping_lines", it) }
             customerNote?.let { put("customer_note", it) }
             couponLines?.let { put("coupon_lines", it) }
+            createdVia?.let { put("created_via", it) }
             giftCard
                 ?.takeIf { it.isNotEmpty() }
                 ?.let { mapOf("code" to it) }

@@ -21,7 +21,10 @@ class AutoSyncPriceModifierStrategyTest : SyncStrategyTest() {
             val change = order.copy(customerNote = "testing")
             orderDraftChanges.value = change
             advanceUntilIdle()
-            verify(orderCreateEditRepository, times(0)).createOrUpdateOrder(change)
+            verify(
+                orderCreateEditRepository,
+                times(0)
+            ).createOrUpdateOrder(change, source = OrderCreationSource.STORE_MANAGEMENT)
             job.cancel()
         }
 
@@ -32,7 +35,10 @@ class AutoSyncPriceModifierStrategyTest : SyncStrategyTest() {
         val change = order.copy(items = OrderTestUtils.generateTestOrderItems())
         orderDraftChanges.value = change
         advanceUntilIdle()
-        verify(orderCreateEditRepository, times(1)).createOrUpdateOrder(change)
+        verify(
+            orderCreateEditRepository,
+            times(1)
+        ).createOrUpdateOrder(change, source = OrderCreationSource.STORE_MANAGEMENT)
         job.cancel()
     }
 
@@ -43,7 +49,10 @@ class AutoSyncPriceModifierStrategyTest : SyncStrategyTest() {
         val change = order.copy(number = "12354")
         orderDraftChanges.value = change
         advanceUntilIdle()
-        verify(orderCreateEditRepository, times(0)).createOrUpdateOrder(change)
+        verify(
+            orderCreateEditRepository,
+            times(0)
+        ).createOrUpdateOrder(change, source = OrderCreationSource.STORE_MANAGEMENT)
         job.cancel()
     }
 
@@ -59,7 +68,10 @@ class AutoSyncPriceModifierStrategyTest : SyncStrategyTest() {
             val change = order.copy(feesLines = updatedFeeLines)
             orderDraftChanges.value = change
             advanceUntilIdle()
-            verify(orderCreateEditRepository, times(1)).createOrUpdateOrder(change)
+            verify(
+                orderCreateEditRepository,
+                times(1)
+            ).createOrUpdateOrder(change, source = OrderCreationSource.STORE_MANAGEMENT)
             job.cancel()
         }
 }

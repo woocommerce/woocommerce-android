@@ -49,7 +49,7 @@ class OrderCreateEditRepository @Inject constructor(
     private val listItemMapper: ListItemMapper,
     private val getWooVersion: GetWooCorePluginCachedVersion,
 ) {
-    suspend fun createOrUpdateOrder(order: Order, giftCard: String = ""): Result<Order> {
+    suspend fun createOrUpdateOrder(order: Order, source: OrderCreationSource, giftCard: String = ""): Result<Order> {
         val request = UpdateOrderRequest(
             customerId = order.customer?.customerId,
             status = order.status.toDataModel(),
@@ -60,6 +60,7 @@ class OrderCreateEditRepository @Inject constructor(
             shippingLines = order.shippingLines.map { it.toDataModel() },
             feeLines = order.feesLines.map { it.toDataModel() },
             couponLines = order.couponLines.map { it.toDataModel() },
+            createdVia = source.value,
             giftCard = giftCard.orNullIfEmpty(),
         )
         val result = if (order.id == 0L) {
@@ -215,4 +216,9 @@ class OrderCreateEditRepository @Inject constructor(
     companion object {
         const val AUTO_DRAFT_SUPPORTED_VERSION = "6.3.0"
     }
+}
+
+enum class OrderCreationSource(val value: String?) {
+    STORE_MANAGEMENT(null),
+    POINT_OF_SALE("pos-rest-api")
 }
