@@ -57,7 +57,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
         )
 
     private var loadMoreJob: Job? = null
-    private var localSearchJob: Job? = null
+    private var searchJob: Job? = null
     private var remoteSearchJob: Job? = null
 
     private val currentQuery = AtomicReference("")
@@ -109,7 +109,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
     }
 
     private fun performSearch(query: String) {
-        localSearchJob?.cancel()
+        searchJob?.cancel()
         remoteSearchJob?.cancel()
 
         currentQuery.set(query)
@@ -117,7 +117,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
         if (query.isEmpty()) {
             setEmptySearchQueryState()
         } else {
-            localSearchJob = viewModelScope.launch {
+            searchJob = viewModelScope.launch {
                 val localProducts = dataSource.searchLocalProducts(query)
 
                 if (query != currentQuery.get()) return@launch
