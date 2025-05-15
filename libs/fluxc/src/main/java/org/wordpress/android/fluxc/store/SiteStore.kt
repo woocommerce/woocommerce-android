@@ -94,7 +94,6 @@ import org.wordpress.android.fluxc.network.xmlrpc.site.SiteXMLRPCClient
 import org.wordpress.android.fluxc.persistence.JetpackCPConnectedSiteModel
 import org.wordpress.android.fluxc.persistence.JetpackCPConnectedSitesDao
 import org.wordpress.android.fluxc.persistence.JetpackCPConnectedSitesDao.JetpackCPConnectedSiteEntity
-import org.wordpress.android.fluxc.persistence.PostSqlUtils
 import org.wordpress.android.fluxc.persistence.SiteSqlUtils
 import org.wordpress.android.fluxc.persistence.SiteSqlUtils.DuplicateSiteException
 import org.wordpress.android.fluxc.persistence.domains.DomainDao
@@ -130,7 +129,6 @@ import javax.inject.Singleton
 @Singleton
 open class SiteStore @Inject constructor(
     dispatcher: Dispatcher?,
-    private val postSqlUtils: PostSqlUtils,
     private val siteRestClient: SiteRestClient,
     private val siteXMLRPCClient: SiteXMLRPCClient,
     private val siteWPAPIRestClient: SiteWPAPIRestClient,
@@ -1382,7 +1380,7 @@ open class SiteStore @Inject constructor(
             } else {
                 OnSiteChanged(res.rowsAffected, res.updatedSites)
             }
-            siteSqlUtils.removeWPComRestSitesAbsentFromList(postSqlUtils, fetchedSites.sites)
+            siteSqlUtils.removeWPComRestSitesAbsentFromList(fetchedSites.sites)
 
             createOrUpdateJetpackCPConnectedSites(fetchedSites, res.updatedSites)
 

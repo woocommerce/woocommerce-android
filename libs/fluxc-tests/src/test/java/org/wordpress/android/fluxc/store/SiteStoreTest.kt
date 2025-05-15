@@ -34,7 +34,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.site.SiteRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.site.SiteRestClient.NewSiteResponsePayload
 import org.wordpress.android.fluxc.network.xmlrpc.site.SiteXMLRPCClient
 import org.wordpress.android.fluxc.persistence.JetpackCPConnectedSitesDao
-import org.wordpress.android.fluxc.persistence.PostSqlUtils
 import org.wordpress.android.fluxc.persistence.SiteSqlUtils
 import org.wordpress.android.fluxc.persistence.domains.DomainDao
 import org.wordpress.android.fluxc.store.SiteStore.AllDomainsError
@@ -59,7 +58,6 @@ import kotlin.test.assertEquals
 @RunWith(MockitoJUnitRunner::class)
 class SiteStoreTest {
     @Mock lateinit var dispatcher: Dispatcher
-    @Mock lateinit var postSqlUtils: PostSqlUtils
     @Mock lateinit var siteRestClient: SiteRestClient
     @Mock lateinit var siteXMLRPCClient: SiteXMLRPCClient
     @Mock lateinit var siteWPAPIClient: SiteWPAPIRestClient
@@ -79,7 +77,6 @@ class SiteStoreTest {
     fun setUp() {
         siteStore = SiteStore(
             dispatcher,
-            postSqlUtils,
             siteRestClient,
             siteXMLRPCClient,
             siteWPAPIClient,
@@ -175,7 +172,7 @@ class SiteStoreTest {
         val inOrder = inOrder(siteSqlUtils)
         inOrder.verify(siteSqlUtils).insertOrUpdateSite(siteA)
         inOrder.verify(siteSqlUtils).insertOrUpdateSite(siteB)
-        inOrder.verify(siteSqlUtils).removeWPComRestSitesAbsentFromList(postSqlUtils, sitesModel.sites)
+        inOrder.verify(siteSqlUtils).removeWPComRestSitesAbsentFromList(sitesModel.sites)
     }
 
     @Test

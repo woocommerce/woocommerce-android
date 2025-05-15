@@ -16,7 +16,6 @@ import org.wordpress.android.fluxc.annotations.action.Action;
 import org.wordpress.android.fluxc.annotations.action.IAction;
 import org.wordpress.android.fluxc.model.MediaModel;
 import org.wordpress.android.fluxc.model.MediaModel.MediaUploadState;
-import org.wordpress.android.fluxc.model.PostImmutableModel;
 import org.wordpress.android.fluxc.model.SiteModel;
 import org.wordpress.android.fluxc.model.StockMediaModel;
 import org.wordpress.android.fluxc.network.BaseRequest;
@@ -95,15 +94,6 @@ public class MediaStore extends Store {
             super(site, media, null);
             this.stripLocation = stripLocation;
         }
-
-        public UploadMediaPayload(
-                @NonNull SiteModel site,
-                @Nullable MediaModel media,
-                @Nullable MediaError error,
-                boolean stripLocation) {
-            super(site, media, error);
-            this.stripLocation = stripLocation;
-        }
     }
 
     /**
@@ -118,26 +108,6 @@ public class MediaStore extends Store {
         @SuppressWarnings("unused")
         public FetchMediaListPayload(@NonNull SiteModel site) {
             this.site = site;
-        }
-
-        public FetchMediaListPayload(
-                @NonNull SiteModel site,
-                int number,
-                boolean loadMore) {
-            this.site = site;
-            this.loadMore = loadMore;
-            this.number = number;
-        }
-
-        public FetchMediaListPayload(
-                @NonNull SiteModel site,
-                int number,
-                boolean loadMore,
-                @NonNull MimeType.Type mimeType) {
-            this.site = site;
-            this.loadMore = loadMore;
-            this.mimeType = mimeType;
-            this.number = number;
         }
     }
 
@@ -212,10 +182,6 @@ public class MediaStore extends Store {
         @NonNull public SiteModel site;
         @NonNull public MediaModel media;
         public boolean delete;
-
-        public CancelMediaPayload(@NonNull SiteModel site, @NonNull MediaModel media) {
-            this(site, media, true);
-        }
 
         public CancelMediaPayload(@NonNull SiteModel site, @NonNull MediaModel media, boolean delete) {
             this.site = site;
@@ -687,11 +653,6 @@ public class MediaStore extends Store {
         return media.size() > 0 ? media.get(0) : null;
     }
 
-    @Nullable
-    public MediaModel getMediaWithLocalId(int localMediaId) {
-        return MediaSqlUtils.getMediaWithLocalId(localMediaId);
-    }
-
     @NonNull
     public List<MediaModel> getSiteMediaWithIds(
             @NonNull SiteModel siteModel,
@@ -795,27 +756,6 @@ public class MediaStore extends Store {
             @NonNull SiteModel siteModel,
             @NonNull String searchTerm) {
         return MediaSqlUtils.searchSiteDocuments(siteModel, searchTerm);
-    }
-
-    @Nullable
-    public MediaModel getMediaForPostWithPath(
-            @NonNull PostImmutableModel postModel,
-            @NonNull String filePath) {
-        List<MediaModel> media = MediaSqlUtils.matchPostMedia(postModel.getId(), MediaModelTable.FILE_PATH, filePath);
-        return media.size() > 0 ? media.get(0) : null;
-    }
-
-    @NonNull
-    public List<MediaModel> getMediaForPost(@NonNull PostImmutableModel postModel) {
-        return MediaSqlUtils.matchPostMedia(postModel.getId());
-    }
-
-    @NonNull
-    @SuppressWarnings("unused")
-    public List<MediaModel> getMediaForPostWithState(
-            @NonNull PostImmutableModel postModel,
-            @NonNull MediaUploadState expectedState) {
-        return MediaSqlUtils.matchPostMedia(postModel.getId(), MediaModelTable.UPLOAD_STATE, expectedState);
     }
 
     @Nullable

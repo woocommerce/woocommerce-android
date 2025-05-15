@@ -294,7 +294,7 @@ class SiteSqlUtils
      * list of sites to keep in local database
      */
     @Suppress("NestedBlockDepth")
-    fun removeWPComRestSitesAbsentFromList(postSqlUtils: PostSqlUtils, sites: List<SiteModel>): Int {
+    fun removeWPComRestSitesAbsentFromList(sites: List<SiteModel>): Int {
         // get all local WP.com+Jetpack sites
         val localSites = WellSql.select(SiteModel::class.java)
                 .where()
@@ -306,16 +306,11 @@ class SiteSqlUtils
             while (localIterator.hasNext()) {
                 val localSite = localIterator.next()
 
-                // don't remove sites with local changes
-                if (postSqlUtils.getSiteHasLocalChanges(localSite)) {
-                    localIterator.remove()
-                } else {
-                    // don't remove local site if the remote ID matches a given site's ID
-                    for (site in sites) {
-                        if (site.siteId == localSite.siteId) {
-                            localIterator.remove()
-                            break
-                        }
+                // don't remove local site if the remote ID matches a given site's ID
+                for (site in sites) {
+                    if (site.siteId == localSite.siteId) {
+                        localIterator.remove()
+                        break
                     }
                 }
             }
