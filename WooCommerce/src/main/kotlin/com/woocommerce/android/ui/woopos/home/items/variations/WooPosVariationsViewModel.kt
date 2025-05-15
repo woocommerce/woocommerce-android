@@ -14,9 +14,9 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.home.items.WooPosVariationsViewState
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart.WooPosItemSource
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemsNextPageLoaded
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.VariationsPullToRefreshTriggered
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.IS_SEARCH
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ITEM_LIST_TYPE
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ITEM_LIST_TYPE_VARIATIONS
@@ -213,7 +213,12 @@ class WooPosVariationsViewModel @Inject constructor(
 
             is WooPosVariationsUIEvents.PullToRefreshTriggered -> {
                 loadVariations(event.productId, forceRefresh = true, withPullToRefresh = true)
-                viewModelScope.launch { analyticsTracker.track(VariationsPullToRefreshTriggered) }
+                viewModelScope.launch { analyticsTracker.track(
+                    WooPosAnalyticsEvent.Event.PullToRefreshTriggered(
+                        source = WooPosAnalyticsEventConstant.ItemsListSource.VARIATION,
+                        sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST,
+                    )
+                ) }
             }
 
             is WooPosVariationsUIEvents.VariationsLoadingErrorRetryButtonClicked -> {

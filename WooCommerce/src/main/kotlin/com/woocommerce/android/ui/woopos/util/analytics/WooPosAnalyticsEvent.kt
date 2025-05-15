@@ -190,10 +190,6 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                 get() = "reader_ready_for_card_payment"
         }
 
-        data object VariationsPullToRefreshTriggered : Event() {
-            override val name: String = "variations_pull_to_refresh"
-        }
-
         data object ViewDocsTapped : Event() {
             override val name: String = "view_docs_tapped"
         }

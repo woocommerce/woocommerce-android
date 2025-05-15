@@ -14,8 +14,8 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosProductsViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateToVariationsScreen
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart.WooPosItemSource
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ProductsPullToRefreshTriggered
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.PullToRefreshTriggered
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -72,7 +72,14 @@ class WooPosProductsViewModel @Inject constructor(
                     forceRefreshProducts = true,
                     withPullToRefresh = true,
                 )
-                viewModelScope.launch { analyticsTracker.track(ProductsPullToRefreshTriggered) }
+                viewModelScope.launch {
+                    analyticsTracker.track(
+                        PullToRefreshTriggered(
+                            WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT,
+                            WooPosAnalyticsEventConstant.ItemsListSourceType.LIST
+                        )
+                    )
+                }
             }
 
             WooPosProductsUIEvent.ProductsLoadingErrorRetryButtonClicked -> {
