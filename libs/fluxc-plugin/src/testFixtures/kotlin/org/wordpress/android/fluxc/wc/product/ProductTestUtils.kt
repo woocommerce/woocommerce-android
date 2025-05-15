@@ -81,8 +81,8 @@ object ProductTestUtils {
         siteId: Int = 6
     ): WCProductShippingClassModel {
         return WCProductShippingClassModel(
-            remoteShippingClassId = remoteId,
-            localSiteId = siteId,
+            remoteShippingClassId = RemoteId(remoteId),
+            localSiteId = LocalId(siteId),
             name = name,
             slug = slug,
             description = description,

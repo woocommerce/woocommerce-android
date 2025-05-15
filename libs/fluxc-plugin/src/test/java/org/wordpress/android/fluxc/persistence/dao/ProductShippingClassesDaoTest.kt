@@ -108,7 +108,7 @@ class ProductShippingClassesDaoTest {
 
         // Get shipping class for site and remoteId and verify
         val savedShippingClassExists = sut.getProductShippingClass(
-            site.localId(), RemoteId(shippingClass.remoteShippingClassId),
+            site.localId(), shippingClass.remoteShippingClassId,
         )
         assertEquals(shippingClass.remoteShippingClassId, savedShippingClassExists?.remoteShippingClassId)
         assertEquals(shippingClass.name, savedShippingClassExists?.name)
