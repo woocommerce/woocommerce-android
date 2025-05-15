@@ -321,12 +321,11 @@ class WooPosCartViewModel @Inject constructor(
         val (existingCoupons, existingProducts) = currentState.itemsInCart
             .partition { it is WooPosCartItemViewState.Coupon }
 
-        val updatedItems = if (newItem is WooPosCartItemViewState.Coupon) {
+        return if (newItem is WooPosCartItemViewState.Coupon) {
             listOf(newItem) + existingCoupons + existingProducts
         } else {
             existingCoupons + listOf(newItem) + existingProducts
         }
-        return updatedItems
     }
 
     private fun updateToolbarState(newState: WooPosCartState): WooPosCartState {
