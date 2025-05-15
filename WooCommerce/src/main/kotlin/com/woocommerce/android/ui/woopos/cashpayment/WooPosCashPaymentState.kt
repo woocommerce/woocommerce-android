@@ -11,6 +11,7 @@ sealed class WooPosCashPaymentState : Parcelable {
         val enteredAmount: BigDecimal?,
         val errorMessage: String?,
         val changeDueText: String,
+        val changeDue: BigDecimal?,
         val total: BigDecimal,
         val totalText: String,
         val currencySymbol: String,
