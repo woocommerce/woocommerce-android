@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.woopos.util.analytics
 
 import com.woocommerce.android.analytics.IAnalyticsEvent
+import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ITEM_LIST_TYPE
 import kotlin.reflect.KClass
 
@@ -78,11 +80,25 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
         data object InteractionWithCustomerStarted : Event() {
             override val name: String = "interaction_with_customer_started"
         }
-        data class ItemAddedToCart(val source: String = "list") : Event() {
+        class ItemAddedToCart private constructor(source: String = "list", itemType: String) : Event() {
             override val name: String = "item_added_to_cart"
 
+            constructor(source: String, itemType: WooPosItemsViewModel.ItemClickedData) : this(
+                source,
+                itemType = when (itemType) {
+                    is WooPosItemsViewModel.ItemClickedData.Product.Simple -> "simple"
+                    is WooPosItemsViewModel.ItemClickedData.Product.Variation -> "variation"
+                    is WooPosItemsViewModel.ItemClickedData.Coupon -> "coupon"
+                }
+            )
+
             init {
-                addProperties(mapOf("source" to source))
+                addProperties(
+                    mapOf(
+                        "source" to source,
+                        WooPosAnalyticsEventConstant.PRODUCT_TYPE to itemType
+                    )
+                )
             }
 
             enum class WooPosItemSource(val value: String) {
@@ -97,8 +113,21 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                 }
             }
         }
-        data object ItemRemovedFromCart : Event() {
+        class ItemRemovedFromCart private constructor(itemType: String) : Event() {
+            constructor(item: WooPosCartItemViewState): this(
+                itemType = when (item) {
+                    is WooPosCartItemViewState.Product.Simple -> "simple"
+                    is WooPosCartItemViewState.Product.Variation -> "variation"
+                    is WooPosCartItemViewState.Coupon -> "coupon"
+                }.toString()
+            )
+
             override val name: String = "item_removed_from_cart"
+            init {
+                addProperties(
+                    mapOf(WooPosAnalyticsEventConstant.PRODUCT_TYPE to itemType)
+                )
+            }
         }
         data object Loaded : Event() {
             override val name: String = "loaded"

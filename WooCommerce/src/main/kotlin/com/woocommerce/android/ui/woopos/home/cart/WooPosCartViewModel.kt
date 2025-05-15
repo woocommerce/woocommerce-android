@@ -31,7 +31,6 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.InteractionWithCustomerStarted
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart.WooPosItemSource
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemRemovedFromCart
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTrackingDataKeeper
 import com.woocommerce.android.ui.woopos.util.format.WooPosCouponsFormatter
@@ -123,7 +122,9 @@ class WooPosCartViewModel @Inject constructor(
             )
         }
         viewModelScope.launch {
-            analyticsTracker.track(ItemRemovedFromCart)
+            items.forEach { item ->
+                    analyticsTracker.track(ItemRemovedFromCart(item))
+            }
         }
     }
 
@@ -267,12 +268,7 @@ class WooPosCartViewModel @Inject constructor(
             _state.value = updateStateWithNewItem(itemClicked.await())
 
             val source = WooPosItemSource.toAnalyticsString(event.source)
-            val itemAddedEvent = WooPosAnalyticsEvent.Event.ItemAddedToCart(source).apply {
-                addProperties(
-                    mapOf(WooPosAnalyticsEventConstant.PRODUCT_TYPE to event.itemData.posItemNameForAnalytics())
-                )
-            }
-            analyticsTracker.track(itemAddedEvent)
+            analyticsTracker.track(WooPosAnalyticsEvent.Event.ItemAddedToCart(source, event.itemData))
         }
     }
 
@@ -428,12 +424,4 @@ class WooPosCartViewModel @Inject constructor(
 
     private fun cartContainsPurchasableItems(body: WooPosCartState.Body.WithItems) =
         body.itemsInCart.filterIsInstance<WooPosCartItemViewState.Product>().isNotEmpty()
-}
-
-private fun WooPosItemsViewModel.ItemClickedData.posItemNameForAnalytics(): String {
-    return when (this) {
-        is WooPosItemsViewModel.ItemClickedData.Product.Simple -> "simple"
-        is WooPosItemsViewModel.ItemClickedData.Product.Variation -> "variation"
-        is WooPosItemsViewModel.ItemClickedData.Coupon -> "coupon"
-    }
 }
