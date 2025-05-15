@@ -213,6 +213,7 @@ fun WooPosProductCard(
 ) {
     WooPosCard(
         modifier = modifier
+            .wrapContentHeight()
             .semantics { contentDescription = itemContentDescription },
         shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
         backgroundColor = MaterialTheme.colorScheme.surfaceContainerLowest,
@@ -222,7 +223,8 @@ fun WooPosProductCard(
         Row(
             modifier = Modifier
                 .clickable { onItemClicked(item) }
-                .height(112.dp)
+                .height(IntrinsicSize.Min)
+                .heightIn(min = 112.dp)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -278,7 +280,9 @@ private fun ProductInfo(modifier: Modifier, item: Product) {
 private fun ProductImage(item: Product) {
     Box(
         modifier = Modifier
-            .size(112.dp)
+            .width(112.dp)
+            .fillMaxHeight()
+            .heightIn(min = 112.dp)
             .background(MaterialTheme.colorScheme.surfaceDim),
         contentAlignment = Alignment.Center
     ) {
@@ -343,7 +347,7 @@ private fun CouponInfo(name: String, summary: String, expiredState: Coupon.Expir
             .padding(
                 end = WooPosSpacing.Medium.value,
             )
-            .padding(vertical = WooPosSpacing.Small.value.toAdaptivePadding()),
+            .padding(vertical = WooPosSpacing.Medium.value.toAdaptivePadding()),
         verticalArrangement = Arrangement.Center
     ) {
         WooPosText(

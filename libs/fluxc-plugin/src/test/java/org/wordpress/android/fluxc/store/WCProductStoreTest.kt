@@ -86,7 +86,6 @@ class WCProductStoreTest {
         val config = SingleStoreWellSqlConfigForTests(
             appContext,
             listOf(
-                WCProductCategoryModel::class.java,
                 WCProductReviewModel::class.java,
                 SiteModel::class.java,
                 AccountModel::class.java
@@ -115,7 +114,8 @@ class WCProductStoreTest {
             productStorageHelper = productStorageHelper,
             coroutineEngine = initCoroutineEngine(),
             productsDao = productsDao,
-            productVariationsDao = productsVariationsDao
+            productVariationsDao = productsVariationsDao,
+            productCategoriesDao = roomDb.productCategoriesDao
         )
     }
 

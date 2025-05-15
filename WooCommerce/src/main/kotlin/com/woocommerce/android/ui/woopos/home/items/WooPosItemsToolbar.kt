@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
@@ -43,6 +43,7 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState.Tab.Hig
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState.Tab.HighlightLevel.Normal
 
 private const val ANIMATION_DURATION = 300
+val WOO_POS_ITEMS_TOOLBAR_HEIGHT = 56.dp
 
 @Composable
 fun WooPosItemsToolbar(
@@ -59,7 +60,7 @@ fun WooPosItemsToolbar(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(56.dp),
+            .heightIn(min = WOO_POS_ITEMS_TOOLBAR_HEIGHT),
         contentAlignment = Alignment.CenterStart
     ) {
         AnimatedVisibility(

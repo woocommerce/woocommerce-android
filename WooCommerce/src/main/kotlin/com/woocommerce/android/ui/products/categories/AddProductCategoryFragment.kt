@@ -31,6 +31,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import com.woocommerce.android.widgets.CustomProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.runBlocking
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
@@ -111,7 +112,7 @@ class AddProductCategoryFragment :
         }
 
         with(binding.productCategoryParent) {
-            viewModel.getSelectedParentCategoryName()?.let { setText(it) }
+            runBlocking { viewModel.getSelectedParentCategoryName()?.let { setText(it) } }
             setClickListener {
                 val action = AddProductCategoryFragmentDirections
                     .actionAddProductCategoryFragmentToParentCategoryListFragment(
@@ -163,7 +164,7 @@ class AddProductCategoryFragment :
                 }
             }
             new.selectedParentId.takeIfNotEqualTo(old?.selectedParentId) {
-                val parentCategoryName = viewModel.getSelectedParentCategoryName()
+                val parentCategoryName = runBlocking { viewModel.getSelectedParentCategoryName() }
                 if (parentCategoryName != null) {
                     binding.productCategoryParent.setHtmlText(parentCategoryName)
                 } else {

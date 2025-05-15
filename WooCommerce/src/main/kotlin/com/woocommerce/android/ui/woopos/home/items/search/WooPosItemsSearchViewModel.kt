@@ -17,14 +17,6 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateToVariationsScreen
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart.WooPosItemSource
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemsNextPageLoaded
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.PreSearchRecentTermTapped
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SearchRemoteResultsFetched
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.IS_SEARCH
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ITEM_LIST_TYPE
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ITEM_LIST_TYPE_PRODUCTS
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosGetTotalProductCount
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -48,11 +40,15 @@ class WooPosItemsSearchViewModel @Inject constructor(
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
     private val navigator: WooPosItemsNavigator,
     private val searchHelper: WooPosItemsSearchHelper,
-    private val analyticsTracker: WooPosAnalyticsTracker,
-    private val getTotalProductCount: WooPosGetTotalProductCount,
+    private val analyticsTracker: WooPosItemsSearchAnalyticsTracker,
 ) : ViewModel() {
     private val _viewState =
-        MutableStateFlow<WooPosItemsSearchViewState>(WooPosItemsSearchViewState.Loading)
+        MutableStateFlow<WooPosItemsSearchViewState>(
+            WooPosItemsSearchViewState.EmptySearchQuery(
+                popularItems = emptyList(),
+                recentSearches = emptyList()
+            )
+        )
     val viewState: StateFlow<WooPosItemsSearchViewState> = _viewState
         .stateIn(
             viewModelScope,
@@ -74,7 +70,14 @@ class WooPosItemsSearchViewModel @Inject constructor(
     fun onUIEvent(event: WooPosItemsSearchUiEvent) {
         when (event) {
             WooPosItemsSearchUiEvent.OnNextPageRequested -> onEndOfListReached()
-            is WooPosItemsSearchUiEvent.OnItemClicked -> handleItemClicked(event.item, WooPosItemSource.SEARCH_RESULT)
+            is WooPosItemsSearchUiEvent.OnItemClicked -> {
+                val source = if (analyticsTracker.isProductInTheLocalSearchResult(event.item.id)) {
+                    WooPosItemSource.SEARCH_RESULT_LOCAL
+                } else {
+                    WooPosItemSource.SEARCH_RESULT
+                }
+                handleItemClicked(event.item, source)
+            }
             WooPosItemsSearchUiEvent.LoadingErrorRetryButtonClicked -> handleLoadingErrorRetryClick()
 
             is WooPosItemsSearchUiEvent.OnRecentSearchClicked -> {
@@ -84,7 +87,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
                             event.recentSearch
                         )
                     )
-                    trackRecentSearchSelected()
+                    analyticsTracker.trackRecentSearchSelected()
                 }
             }
 
@@ -125,6 +128,8 @@ class WooPosItemsSearchViewModel @Inject constructor(
 
             if (query != currentQuery.get()) return@launch
 
+            analyticsTracker.storedLocalSearchResultIds(localProducts.map { it.remoteId })
+
             if (localProducts.isEmpty()) {
                 _viewState.value = WooPosItemsSearchViewState.Loading
             } else {
@@ -163,7 +168,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
                     _viewState.value = searchResult.toContentState(searchQuery = query)
                 }
 
-                trackSearchPerformance(searchTimeMillis)
+                analyticsTracker.trackSearchPerformance(searchTimeMillis)
             } else {
                 _viewState.value = WooPosItemsSearchViewState.Error(searchQuery = query)
             }
@@ -215,7 +220,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
         loadMoreJob = viewModelScope.launch {
             val result = dataSource.loadMore(query = currentState.searchQuery)
             _viewState.value = if (result.isSuccess) {
-                trackItemsNextPageLoaded()
+                analyticsTracker.trackItemsNextPageLoaded()
                 result.getOrThrow().toContentState(
                     searchQuery = currentState.searchQuery,
                 )
@@ -223,36 +228,6 @@ class WooPosItemsSearchViewModel @Inject constructor(
                 currentState.copy(paginationState = WooPosPaginationState.Error)
             }
         }
-    }
-
-    private suspend fun trackItemsNextPageLoaded() {
-        val event = ItemsNextPageLoaded.apply {
-            addProperties(
-                mapOf(
-                    ITEM_LIST_TYPE to ITEM_LIST_TYPE_PRODUCTS,
-                    IS_SEARCH to "true"
-                )
-            )
-        }
-        analyticsTracker.track(event)
-    }
-
-    private suspend fun trackRecentSearchSelected() {
-        val event = PreSearchRecentTermTapped.apply {
-            addProperties(
-                mapOf(ITEM_LIST_TYPE to ITEM_LIST_TYPE_PRODUCTS)
-            )
-        }
-        analyticsTracker.track(event)
-    }
-
-    private suspend fun trackSearchPerformance(searchTimeMillis: Long) {
-        val totalProductsCount = getTotalProductCount()
-        val event = SearchRemoteResultsFetched(
-            totalProductsCount = totalProductsCount,
-            millisecondsSinceRequestSent = searchTimeMillis
-        )
-        analyticsTracker.track(event)
     }
 
     private fun handleItemClicked(item: WooPosItemSelectionViewState, source: WooPosItemSource) {

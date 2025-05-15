@@ -581,7 +581,7 @@ private fun CouponItem(
                 modifier = Modifier
                     .weight(1f)
                     .padding(end = WooPosSpacing.Medium.value.toAdaptivePadding())
-                    .padding(vertical = WooPosSpacing.Small.value.toAdaptivePadding())
+                    .padding(vertical = WooPosSpacing.Medium.value.toAdaptivePadding())
             ) {
                 WooPosText(
                     text = item.name,

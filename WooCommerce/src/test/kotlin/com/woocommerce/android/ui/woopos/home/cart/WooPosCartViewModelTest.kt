@@ -752,7 +752,7 @@ class WooPosCartViewModelTest {
         val states = sut.state.captureValues()
         parentToChildrenEventsMutableFlow.emit(
             ParentToChildrenEvent.ItemClickedInProductSelector(
-                itemData = WooPosItemsViewModel.ItemClickedData.Coupon(id = 1L),
+                itemData = WooPosItemsViewModel.ItemClickedData.Coupon(id = 1L, couponCode = ""),
                 source = WooPosItemSource.COUPON_LIST,
             )
         )
@@ -777,13 +777,13 @@ class WooPosCartViewModelTest {
         val states = sut.state.captureValues()
         parentToChildrenEventsMutableFlow.emit(
             ParentToChildrenEvent.ItemClickedInProductSelector(
-                itemData = WooPosItemsViewModel.ItemClickedData.Coupon(id = 1L),
+                itemData = WooPosItemsViewModel.ItemClickedData.Coupon(id = 1L, couponCode = ""),
                 source = WooPosItemSource.COUPON_LIST
             )
         )
         parentToChildrenEventsMutableFlow.emit(
             ParentToChildrenEvent.ItemClickedInProductSelector(
-                itemData = WooPosItemsViewModel.ItemClickedData.Coupon(id = 2L),
+                itemData = WooPosItemsViewModel.ItemClickedData.Coupon(id = 2L, couponCode = ""),
                 source = WooPosItemSource.COUPON_LIST
             )
         )
@@ -823,7 +823,7 @@ class WooPosCartViewModelTest {
         createSut()
         parentToChildrenEventsMutableFlow.emit(
             ParentToChildrenEvent.ItemClickedInProductSelector(
-                itemData = WooPosItemsViewModel.ItemClickedData.Coupon(id = 2L),
+                itemData = WooPosItemsViewModel.ItemClickedData.Coupon(id = 2L, couponCode = ""),
                 source = WooPosItemSource.COUPON_LIST
             )
         )
@@ -857,7 +857,7 @@ class WooPosCartViewModelTest {
         val states = sut.state.captureValues()
         parentToChildrenEventsMutableFlow.emit(
             ParentToChildrenEvent.ItemClickedInProductSelector(
-                itemData = WooPosItemsViewModel.ItemClickedData.Coupon(id = 1L),
+                itemData = WooPosItemsViewModel.ItemClickedData.Coupon(id = 1L, couponCode = ""),
                 source = WooPosItemSource.COUPON_LIST
             )
         )
@@ -1101,7 +1101,7 @@ class WooPosCartViewModelTest {
     private suspend fun simulateCouponClicked(couponId: Long = 1L) {
         parentToChildrenMutableSharedFlow.emit(
             ParentToChildrenEvent.ItemClickedInProductSelector(
-                itemData = WooPosItemsViewModel.ItemClickedData.Coupon(id = couponId),
+                itemData = WooPosItemsViewModel.ItemClickedData.Coupon(id = couponId, couponCode = ""),
                 source = WooPosItemSource.COUPON_LIST
             ),
 
