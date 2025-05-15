@@ -16,7 +16,9 @@ import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsUIEvent
 import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationFacade
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.CouponsPullToRefreshTriggered
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart.WooPosItemSource
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -31,6 +33,7 @@ class WooPosCouponsViewModel @Inject constructor(
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender,
     private val couponCreationFacade: WooPosCouponCreationFacade,
     private val navigator: WooPosItemsNavigator,
+    private val analyticsTracker: WooPosAnalyticsTracker,
 ) : ViewModel() {
     private val _viewState =
         MutableStateFlow<WooPosCouponsViewState>(WooPosCouponsViewState.Loading())
@@ -58,7 +61,10 @@ class WooPosCouponsViewModel @Inject constructor(
                 handleCouponClicked(event)
             }
 
-            PullToRefreshTriggered -> fetchCoupons(WooPosCouponsListRefreshType.PULL_TO_REFRESH)
+            PullToRefreshTriggered -> {
+                fetchCoupons(WooPosCouponsListRefreshType.PULL_TO_REFRESH)
+                viewModelScope.launch { analyticsTracker.track(CouponsPullToRefreshTriggered) }
+            }
 
             is EndOfListReached -> {
                 onEndOfListReached()

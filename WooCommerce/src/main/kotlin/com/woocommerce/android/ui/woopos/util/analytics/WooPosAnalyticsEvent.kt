@@ -109,6 +109,9 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
         data object ProductsPullToRefreshTriggered : Event() {
             override val name: String = "products_pull_to_refresh"
         }
+        data object CouponsPullToRefreshTriggered : Event() {
+            override val name: String = "coupons_pull_to_refresh"
+        }
         data object ReaderReadyForCardPayment : Event() {
             override val name: String
                 get() = "reader_ready_for_card_payment"
