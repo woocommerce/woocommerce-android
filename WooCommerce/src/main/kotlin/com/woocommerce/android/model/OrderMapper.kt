@@ -112,6 +112,7 @@ class OrderMapper @Inject constructor(
         )
     }
 
+    @Suppress("CyclomaticComplexMethod")
     private fun List<WCLineItem>.mapLineItems(): List<Item> =
         this.filter { it.productId != null && it.id != null }
             .map {
