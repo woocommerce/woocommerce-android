@@ -303,7 +303,8 @@ class IssueRefundViewModel @Inject constructor(
         refundSummaryState = refundSummaryState.copy(
             isFormEnabled = true,
             previouslyRefunded = formatCurrency(order.refundTotal),
-            refundAmount = formatCurrency(commonState.refundTotal)
+            refundAmount = commonState.refundTotal,
+            refundAmountFormatted = formatCurrency(commonState.refundTotal)
         )
 
         triggerEvent(ShowRefundSummary)
@@ -399,11 +400,12 @@ class IssueRefundViewModel @Inject constructor(
         selectedFees?.forEach { allItems.add(it.toDataModel()) }
 
         return refundStore.createItemsRefund(
-            selectedSite.get(),
-            order.id,
-            refundSummaryState.refundReason ?: "",
-            true,
-            gateway.supportsRefunds,
+            site = selectedSite.get(),
+            orderId = order.id,
+            amount = refundSummaryState.refundAmount,
+            reason = refundSummaryState.refundReason ?: "",
+            restockItems = true,
+            autoRefund = gateway.supportsRefunds,
             items = allItems
         )
     }
@@ -808,7 +810,8 @@ class IssueRefundViewModel @Inject constructor(
     data class RefundSummaryViewState(
         val isFormEnabled: Boolean? = null,
         val previouslyRefunded: String? = null,
-        val refundAmount: String? = null,
+        val refundAmount: BigDecimal? = null,
+        val refundAmountFormatted: String? = null,
         val refundMethod: String? = null,
         val refundReason: String? = null,
         val isMethodDescriptionVisible: Boolean? = null,

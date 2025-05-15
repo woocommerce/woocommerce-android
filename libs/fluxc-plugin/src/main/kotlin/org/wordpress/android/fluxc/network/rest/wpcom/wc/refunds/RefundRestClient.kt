@@ -9,8 +9,9 @@ import org.wordpress.android.fluxc.model.refunds.WCRefundModel.WCRefundFeeLine
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel.WCRefundShippingLine
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooNetwork
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
-import org.wordpress.android.fluxc.utils.sumBy
+import org.wordpress.android.fluxc.utils.extensions.filterNotNull
 import org.wordpress.android.fluxc.utils.toWooPayload
+import java.math.BigDecimal
 import javax.inject.Inject
 
 class RefundRestClient @Inject constructor(private val wooNetwork: WooNetwork) {
@@ -33,6 +34,7 @@ class RefundRestClient @Inject constructor(private val wooNetwork: WooNetwork) {
     suspend fun createRefundByItems(
         site: SiteModel,
         orderId: Long,
+        amount: BigDecimal?,
         reason: String,
         automaticRefund: Boolean,
         items: List<RefundRequestItem>,
@@ -40,11 +42,12 @@ class RefundRestClient @Inject constructor(private val wooNetwork: WooNetwork) {
     ): WooPayload<RefundResponse> {
         val body = mapOf(
                 "reason" to reason,
-                "amount" to items.sumBy { it.total }.toString(),
+                "amount" to amount?.toString(),
                 "api_refund" to automaticRefund.toString(),
                 "line_items" to items,
                 "restock_items" to restockItems
-        )
+        ).filterNotNull()
+
         return createRefund(site, orderId, body)
     }
 

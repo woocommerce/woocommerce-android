@@ -23,6 +23,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -384,6 +385,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
                 refundStore.createItemsRefund(
                     site = any(),
                     orderId = any(),
+                    amount = anyOrNull(),
                     reason = any(),
                     restockItems = any(),
                     autoRefund = any(),
@@ -435,6 +437,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
                 refundStore.createItemsRefund(
                     site = any(),
                     orderId = any(),
+                    amount = anyOrNull(),
                     reason = any(),
                     restockItems = any(),
                     autoRefund = any(),
@@ -486,6 +489,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
                 refundStore.createItemsRefund(
                     site = any(),
                     orderId = any(),
+                    amount = anyOrNull(),
                     reason = any(),
                     restockItems = any(),
                     autoRefund = any(),
@@ -778,6 +782,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
                 refundStore.createItemsRefund(
                     site = any(),
                     orderId = any(),
+                    amount = anyOrNull(),
                     reason = any(),
                     restockItems = any(),
                     autoRefund = any(),
@@ -833,6 +838,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
                 refundStore.createItemsRefund(
                     site = any(),
                     orderId = any(),
+                    amount = anyOrNull(),
                     reason = any(),
                     restockItems = any(),
                     autoRefund = any(),
