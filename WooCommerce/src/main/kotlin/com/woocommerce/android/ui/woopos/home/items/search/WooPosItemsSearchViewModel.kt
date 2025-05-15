@@ -78,6 +78,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
                 }
                 handleItemClicked(event.item, source)
             }
+
             WooPosItemsSearchUiEvent.LoadingErrorRetryButtonClicked -> handleLoadingErrorRetryClick()
 
             is WooPosItemsSearchUiEvent.OnRecentSearchClicked -> {
@@ -123,9 +124,9 @@ class WooPosItemsSearchViewModel @Inject constructor(
 
                 analyticsTracker.storedLocalSearchResultIds(localProducts.map { it.remoteId })
 
-            if (localProducts.isEmpty()) {
-                _viewState.value = WooPosItemsSearchViewState.Loading
-            performRemoteSearchImmediately(query)
+                if (localProducts.isEmpty()) {
+                    _viewState.value = WooPosItemsSearchViewState.Loading
+                    performRemoteSearchImmediately(query)
                 } else {
                     _viewState.value = localProducts.toContentState(
                         searchQuery = query,
