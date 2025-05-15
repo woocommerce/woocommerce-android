@@ -79,7 +79,9 @@ class WooPosCashPaymentViewModel @Inject constructor(
             val enteredAmount = event.newAmount ?: return@launch
 
             val changeDue = enteredAmount - currentState.total
-            val changeDueText = if (changeDue >= BigDecimal.ZERO) {
+            val isChangePositiveOrZero = changeDue >= BigDecimal.ZERO
+
+            val changeDueText = if (isChangePositiveOrZero) {
                 resourceProvider.getString(
                     R.string.woopos_cash_payment_change_due,
                     priceFormat(changeDue)
@@ -91,7 +93,7 @@ class WooPosCashPaymentViewModel @Inject constructor(
             _state.value = currentState.copy(
                 enteredAmount = enteredAmount,
                 changeDueText = changeDueText,
-                changeDue = changeDue,
+                changeDue = changeDue.takeIf { isChangePositiveOrZero },
                 errorMessage = null,
                 button = currentState.button.copy(
                     status = if (changeDue >= BigDecimal.ZERO) {

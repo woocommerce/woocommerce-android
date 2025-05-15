@@ -77,8 +77,9 @@ class WooPosCashPaymentRepositoryTest {
     }
 
     @Test
-    fun `given valid orderId, when completeOrder, then return success`() = runTest {
+    fun `given valid orderId and cashPaymentChangeDueAmount, when completeOrder, then return success`() = runTest {
         val orderId = 123L
+        val cashPaymentChangeDueAmount = "5"
         val site: SiteModel = mock()
         val gatewayTitle = "Pay in Person"
         val codGateway: WCGatewayModel = mock { on { title }.thenReturn(gatewayTitle) }
@@ -94,11 +95,12 @@ class WooPosCashPaymentRepositoryTest {
                 site = site,
                 newStatus = statusModel,
                 newPaymentMethodId = "cod",
-                newPaymentMethodTitle = gatewayTitle
+                newPaymentMethodTitle = gatewayTitle,
+                cashPaymentChangeDueAmount = cashPaymentChangeDueAmount
             )
         ).thenReturn(flowOf(updateResult))
 
-        val result = repository.completeOrder(orderId, cashPaymentChangeDueAmount = "5")
+        val result = repository.completeOrder(orderId, cashPaymentChangeDueAmount = cashPaymentChangeDueAmount)
 
         assertThat(result.isSuccess).isTrue()
         verify(orderStore).updateOrderStatusAndPaymentDetails(
@@ -106,13 +108,15 @@ class WooPosCashPaymentRepositoryTest {
             site = site,
             newStatus = statusModel,
             newPaymentMethodId = "cod",
-            newPaymentMethodTitle = gatewayTitle
+            newPaymentMethodTitle = gatewayTitle,
+            cashPaymentChangeDueAmount = cashPaymentChangeDueAmount
         )
     }
 
     @Test
-    fun `given valid orderId, when completeOrder, then return failure`() = runTest {
+    fun `given valid orderId and cashPaymentChangeDueAmount, when completeOrder, then return failure`() = runTest {
         val orderId = 123L
+        val cashPaymentChangeDueAmount = "5"
         val site: SiteModel = mock()
         val gatewayTitle = "Pay in Person"
         val codGateway: WCGatewayModel = mock { on { title }.thenReturn(gatewayTitle) }
@@ -135,11 +139,12 @@ class WooPosCashPaymentRepositoryTest {
                 site = site,
                 newStatus = statusModel,
                 newPaymentMethodId = "cod",
-                newPaymentMethodTitle = gatewayTitle
+                newPaymentMethodTitle = gatewayTitle,
+                cashPaymentChangeDueAmount = cashPaymentChangeDueAmount
             )
         ).thenReturn(flowOf(updateResult))
 
-        val result = repository.completeOrder(orderId, cashPaymentChangeDueAmount = "5")
+        val result = repository.completeOrder(orderId, cashPaymentChangeDueAmount = cashPaymentChangeDueAmount)
 
         assertThat(result.isFailure).isTrue()
         assertThat(result.exceptionOrNull()?.message).isEqualTo(errorMessage)
@@ -148,7 +153,8 @@ class WooPosCashPaymentRepositoryTest {
             site = site,
             newStatus = statusModel,
             newPaymentMethodId = "cod",
-            newPaymentMethodTitle = gatewayTitle
+            newPaymentMethodTitle = gatewayTitle,
+            cashPaymentChangeDueAmount = cashPaymentChangeDueAmount
         )
     }
 

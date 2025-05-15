@@ -20,6 +20,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -111,6 +112,7 @@ class WooPosCashPaymentViewModelTest {
         val collectingState = state as WooPosCashPaymentState.Collecting
         assertThat(collectingState.enteredAmount).isEqualTo(enteredAmount)
         assertThat(collectingState.changeDueText).isEqualTo("Change Due: $20.00")
+        assertThat(collectingState.changeDue).isEqualTo(changeDue)
         assertThat(collectingState.button.status).isEqualTo(WooPosCashPaymentState.Collecting.Button.Status.ENABLED)
     }
 
@@ -130,7 +132,28 @@ class WooPosCashPaymentViewModelTest {
         val collectingState = state as WooPosCashPaymentState.Collecting
         assertThat(collectingState.enteredAmount).isEqualTo(enteredAmount)
         assertThat(collectingState.changeDueText).isEqualTo("")
+        assertThat(collectingState.changeDue).isNull()
         assertThat(collectingState.button.status).isEqualTo(WooPosCashPaymentState.Collecting.Button.Status.DISABLED)
+    }
+
+    @Test
+    fun `given changeDue is set, when onUIEvent CompleteOrderClicked, then changeDue is passed to completeOrder`() = runTest {
+        // GIVEN
+        val enteredAmount = BigDecimal("120.00")
+        val changeDue = BigDecimal("20.00")
+        whenever(resourceProvider.getString(R.string.woopos_cash_payment_change_due, "20.00"))
+            .thenReturn("Change Due: $20.00")
+        whenever(priceFormat(changeDue)).thenReturn("20.00")
+        whenever(repository.completeOrder(any(), any())).thenReturn(Result.success(Unit))
+
+        // WHEN
+        viewModel.onUIEvent(WooPosCashPaymentUIEvent.AmountChanged(enteredAmount))
+        viewModel.onUIEvent(WooPosCashPaymentUIEvent.CompleteOrderClicked)
+        val state = viewModel.state.first()
+
+        // THEN
+        assertThat(state).isEqualTo(WooPosCashPaymentState.Complete)
+        verify(repository).completeOrder(any(), eq(changeDue.toString()))
     }
 
     @Test
