@@ -36,9 +36,9 @@ import kotlinx.coroutines.flow.StateFlow
 @Composable
 fun WooPosCouponsScreen(
     modifier: Modifier = Modifier,
+    listState: LazyListState,
 ) {
     val vm: WooPosCouponsViewModel = hiltViewModel()
-    val listState = rememberLazyListState()
     WooPosCouponsScreen(
         modifier = modifier,
         listState = listState,
@@ -76,7 +76,7 @@ private fun WooPosCouponsScreen(
                     modifier = Modifier.padding(top = WooPosSpacing.Large.value),
                     state = itemsState,
                     listState = listState,
-                    onItemClicked = { item -> onUIEvent(WooPosCouponsUIEvent.CouponClicked(item.id)) },
+                    onItemClicked = { item -> onUIEvent(WooPosCouponsUIEvent.CouponClicked(item.id, item.name)) },
                     onEndOfProductsListReached = { onUIEvent(WooPosCouponsUIEvent.EndOfListReached) },
                 ) {
                     CouponsPaginationError(

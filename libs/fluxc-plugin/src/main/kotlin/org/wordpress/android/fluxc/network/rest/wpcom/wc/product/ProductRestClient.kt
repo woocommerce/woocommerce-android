@@ -2105,14 +2105,14 @@ class ProductRestClient @Inject constructor(
         response: ProductTagApiResponse,
         site: SiteModel
     ): WCProductTagModel {
-        return WCProductTagModel().apply {
-            remoteTagId = response.id
-            localSiteId = site.id
-            name = response.name ?: ""
-            slug = response.slug ?: ""
-            description = response.description ?: ""
-            count = response.count
-        }
+        return WCProductTagModel (
+            remoteTagId = RemoteId(response.id),
+            localSiteId = LocalId(site.id),
+            name = response.name ?: "",
+            slug = response.slug ?: "",
+            description = response.description ?: "",
+            count = response.count,
+ )
     }
 
     private fun productShippingClassResponseToProductShippingClassModel(

@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 42,
-    "identityHash": "959979429372acac86efb38197d5aac8",
+    "identityHash": "6a7ead17c53abfc119cfeb1939b2ad7b",
     "entities": [
       {
         "tableName": "AddonEntity",
@@ -2592,6 +2592,57 @@
         "foreignKeys": []
       },
       {
+        "tableName": "ProductTagEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`localSiteId` INTEGER NOT NULL, `remoteTagId` INTEGER NOT NULL, `name` TEXT NOT NULL, `slug` TEXT NOT NULL, `description` TEXT NOT NULL, `count` INTEGER NOT NULL, PRIMARY KEY(`localSiteId`, `remoteTagId`))",
+        "fields": [
+          {
+            "fieldPath": "localSiteId",
+            "columnName": "localSiteId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "remoteTagId",
+            "columnName": "remoteTagId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "slug",
+            "columnName": "slug",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "count",
+            "columnName": "count",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "localSiteId",
+            "remoteTagId"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
         "tableName": "ProductShippingClassEntity",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`localSiteId` INTEGER NOT NULL, `remoteShippingClassId` INTEGER NOT NULL, `name` TEXT NOT NULL, `slug` TEXT NOT NULL, `description` TEXT NOT NULL, PRIMARY KEY(`localSiteId`, `remoteShippingClassId`))",
         "fields": [
@@ -2640,7 +2691,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '959979429372acac86efb38197d5aac8')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6a7ead17c53abfc119cfeb1939b2ad7b')"
     ]
   }
 }

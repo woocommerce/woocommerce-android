@@ -73,7 +73,8 @@ class WCLeaderboardsStoreTest {
                 productsDao = database.productsDao,
                 productVariationsDao = database.productVariationsDao,
                 productCategoriesDao = database.productCategoriesDao,
-                productShippingClassesDao = database.productShippingClassesDao
+                productTagsDao = database.productTagsDao,
+                productShippingClassesDao = database.productShippingClassesDao,
             )
         )
         prepareMocks()

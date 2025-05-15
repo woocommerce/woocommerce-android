@@ -116,7 +116,8 @@ class WCProductStoreTest {
             productsDao = productsDao,
             productVariationsDao = productsVariationsDao,
             productCategoriesDao = roomDb.productCategoriesDao,
-            productShippingClassesDao = roomDb.productShippingClassesDao
+            productTagsDao = roomDb.productTagsDao,
+            productShippingClassesDao = roomDb.productShippingClassesDao,
         )
     }
 
