@@ -104,7 +104,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
         val currentState = _viewState.value as? WooPosItemsSearchViewState.Error ?: return
 
         _viewState.value = WooPosItemsSearchViewState.Loading
-        performRemoteSearch(currentState.searchQuery)
+        performRemoteSearchImmediately(currentState.searchQuery)
     }
 
     private fun performSearch(query: String) {
@@ -116,65 +116,68 @@ class WooPosItemsSearchViewModel @Inject constructor(
         if (query.isEmpty()) {
             setEmptySearchQueryState()
         } else {
-            performLocalSearch(query)
-            performRemoteSearch(query)
-        }
-    }
+            localSearchJob = viewModelScope.launch {
+                val localProducts = dataSource.searchLocalProducts(query)
 
-    private fun performLocalSearch(query: String) {
-        localSearchJob?.cancel()
-        localSearchJob = viewModelScope.launch {
-            val localProducts = dataSource.searchLocalProducts(query)
+                if (query != currentQuery.get()) return@launch
 
-            if (query != currentQuery.get()) return@launch
-
-            analyticsTracker.storedLocalSearchResultIds(localProducts.map { it.remoteId })
+                analyticsTracker.storedLocalSearchResultIds(localProducts.map { it.remoteId })
 
             if (localProducts.isEmpty()) {
                 _viewState.value = WooPosItemsSearchViewState.Loading
-            } else {
-                _viewState.value = localProducts.toContentState(
-                    searchQuery = query,
-                )
+            performRemoteSearchImmediately(query)
+                } else {
+                    _viewState.value = localProducts.toContentState(
+                        searchQuery = query,
+                    )
+                    performRemoteSearchWithDebounce(query)
+                }
             }
         }
     }
 
-    private fun performRemoteSearch(query: String) {
+    private fun performRemoteSearchWithDebounce(query: String) {
         remoteSearchJob?.cancel()
         remoteSearchJob = viewModelScope.launch {
             delay(SEARCH_DEBOUNCING_TIME)
-
-            if (query != currentQuery.get()) {
-                return@launch
-            }
-
-            childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Started)
-            var result: Result<List<Product>>
-            val searchTimeMillis = measureTimeMillis {
-                result = dataSource.searchRemoteProducts(query)
-            }
-
-            if (query != currentQuery.get()) {
-                childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Finished)
-                return@launch
-            }
-
-            if (result.isSuccess) {
-                val searchResult = result.getOrThrow()
-                if (searchResult.isEmpty()) {
-                    _viewState.value = WooPosItemsSearchViewState.Empty
-                } else {
-                    _viewState.value = searchResult.toContentState(searchQuery = query)
-                }
-
-                analyticsTracker.trackSearchPerformance(searchTimeMillis)
-            } else {
-                _viewState.value = WooPosItemsSearchViewState.Error(searchQuery = query)
-            }
-
-            childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Finished)
+            if (query != currentQuery.get()) return@launch
+            executeRemoteSearch(query)
         }
+    }
+
+    private fun performRemoteSearchImmediately(query: String) {
+        remoteSearchJob?.cancel()
+        remoteSearchJob = viewModelScope.launch {
+            executeRemoteSearch(query)
+        }
+    }
+
+    private suspend fun executeRemoteSearch(query: String) {
+        childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Started)
+        var result: Result<List<Product>>
+        val searchTimeMillis = measureTimeMillis {
+            result = dataSource.searchRemoteProducts(query)
+        }
+
+        if (query != currentQuery.get()) {
+            childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Finished)
+            return
+        }
+
+        if (result.isSuccess) {
+            val searchResult = result.getOrThrow()
+            if (searchResult.isEmpty()) {
+                _viewState.value = WooPosItemsSearchViewState.Empty
+            } else {
+                _viewState.value = searchResult.toContentState(searchQuery = query)
+            }
+
+            analyticsTracker.trackSearchPerformance(searchTimeMillis)
+        } else {
+            _viewState.value = WooPosItemsSearchViewState.Error(searchQuery = query)
+        }
+
+        childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Finished)
     }
 
     @Suppress("CyclomaticComplexMethod")
