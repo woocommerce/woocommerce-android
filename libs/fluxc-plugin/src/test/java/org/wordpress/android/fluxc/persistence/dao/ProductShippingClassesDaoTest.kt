@@ -8,13 +8,13 @@ import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.persistence.SiteSqlUtils
@@ -43,108 +43,79 @@ class ProductShippingClassesDaoTest {
 
     @Test
     fun testInsertOrUpdateProductShippingClass() = runTest {
-        val shippingClass = ProductTestUtils.generateProductShippingClassList(site.id)[0]
-        kotlin.test.assertNotNull(shippingClass)
+        val testClass = ProductTestUtils.generateProductShippingClassList(site.id)[0]
 
-        // Test inserting a product shipping class
-        sut.upsertProductShippingClass(shippingClass)
-        var savedShippingClassList = sut.getProductShippingClasses(site.localId())
-        assertEquals(savedShippingClassList.size, 1)
-        assertEquals(savedShippingClassList[0].localSiteId, shippingClass.localSiteId)
-        assertEquals(savedShippingClassList[0].remoteShippingClassId, shippingClass.remoteShippingClassId)
-        assertEquals(savedShippingClassList[0].name, shippingClass.name)
-        assertEquals(savedShippingClassList[0].slug, shippingClass.slug)
-        assertEquals(savedShippingClassList[0].description, shippingClass.description)
+        sut.upsertProductShippingClass(testClass)
 
-        // Test updating the same product shipping class
-        val updatedShippingClass = shippingClass.copy(name = "Test shipping class")
+        assertThat(
+            sut.getProductShippingClasses(site.localId())
+        ).containsOnly(testClass)
+
+        val updatedShippingClass = testClass.copy(name = "Test shipping class")
         sut.upsertProductShippingClass(updatedShippingClass)
 
-        savedShippingClassList = sut.getProductShippingClasses(site.localId())
-        assertEquals(savedShippingClassList.size, 1)
-        assertEquals(savedShippingClassList[0].localSiteId, updatedShippingClass.localSiteId)
-        assertEquals(savedShippingClassList[0].remoteShippingClassId, updatedShippingClass.remoteShippingClassId)
-        assertEquals(savedShippingClassList[0].name, updatedShippingClass.name)
-        assertEquals(savedShippingClassList[0].slug, updatedShippingClass.slug)
-        assertEquals(savedShippingClassList[0].description, updatedShippingClass.description)
+        assertThat(
+            sut.getProductShippingClasses(site.localId())
+        ).containsOnly(updatedShippingClass)
     }
 
     @Test
     fun testInsertOrUpdateProductShippingClassList() = runTest {
-        val shippingClassList = ProductTestUtils.generateProductShippingClassList(site.id)
-        assertTrue(shippingClassList.isNotEmpty())
+        val testClasses = ProductTestUtils.generateProductShippingClassList(site.id)
 
-        // Insert product shipping class list
-        sut.upsertProductShippingClasses(shippingClassList)
-        assertThat(sut.getProductShippingClasses(site.localId())).containsExactlyInAnyOrderElementsOf(shippingClassList)
+        sut.upsertProductShippingClasses(testClasses)
+
+        assertThat(
+            sut.getProductShippingClasses(site.localId())
+        ).containsExactlyInAnyOrderElementsOf(testClasses)
     }
 
     @Test
     fun testGetProductShippingClassListForSite() = runTest {
-        val shippingClassList = ProductTestUtils.generateProductShippingClassList(site.id)
-        assertTrue(shippingClassList.isNotEmpty())
+        val testClasses = ProductTestUtils.generateProductShippingClassList(site.id)
 
-        // Insert product shipping class list
-        sut.upsertProductShippingClasses(shippingClassList)
+        sut.upsertProductShippingClasses(testClasses)
 
-        // Get shipping class list for site and verify
-        val savedShippingClassListExists = sut.getProductShippingClasses(site.localId())
-        assertEquals(shippingClassList.size, savedShippingClassListExists.size)
+        assertThat(
+            sut.getProductShippingClasses(site.localId())
+        ).containsExactlyInAnyOrderElementsOf(testClasses)
 
-        // Get shipping class list for a site that does not exist
-        val nonExistingSite = SiteModel().apply { id = 400 }
-        val savedShippingClassList = sut.getProductShippingClasses(nonExistingSite.localId())
-        assertEquals(0, savedShippingClassList.size)
+        val nonExistingSiteId = LocalId(404)
+        assertThat(
+            sut.getProductShippingClasses(nonExistingSiteId)
+        ).isEmpty()
     }
 
     @Test
     fun testGetProductShippingClassByRemoteShippingId() = runTest {
-        val shippingClass = ProductTestUtils.generateSampleProductShippingClass(
-            remoteId = 40, siteId = site.id
-        )
+        val testClass = ProductTestUtils.generateSampleProductShippingClass(remoteId = 40, siteId = site.id)
+        sut.upsertProductShippingClass(testClass)
 
-        // Insert product shipping class list
-        sut.upsertProductShippingClass(shippingClass)
+        assertThat(
+            sut.getProductShippingClass(site.localId(), testClass.remoteShippingClassId)
+        ).isEqualTo(testClass)
 
-        // Get shipping class for site and remoteId and verify
-        val savedShippingClassExists = sut.getProductShippingClass(
-            site.localId(), shippingClass.remoteShippingClassId,
-        )
-        assertEquals(shippingClass.remoteShippingClassId, savedShippingClassExists?.remoteShippingClassId)
-        assertEquals(shippingClass.name, savedShippingClassExists?.name)
-        assertEquals(shippingClass.description, savedShippingClassExists?.description)
-        assertEquals(shippingClass.slug, savedShippingClassExists?.slug)
-        assertEquals(shippingClass.localSiteId, savedShippingClassExists?.localSiteId)
+        val nonExistingSiteId = LocalId(404)
+        assertThat(
+            sut.getProductShippingClass(nonExistingSiteId, testClass.remoteShippingClassId)
+        ).isNull()
 
-        // Get shipping class for a site that does not exist
-        val nonExistingSite = SiteModel().apply { id = 400 }
-        val savedShippingClass = sut.getProductShippingClass(
-            nonExistingSite.localId(), RemoteId(25)
-        )
-        kotlin.test.assertNull(savedShippingClass)
-
-        // Get shipping class for a site that does not exist
-        val nonExistingRemoteId = RemoteId(25L)
-        val nonExistentShippingClass = sut.getProductShippingClass(
-            site.localId(), nonExistingRemoteId
-        )
-        assertNull(nonExistentShippingClass)
+        val nonExistingProductId = RemoteId(404)
+        assertThat(
+            sut.getProductShippingClass(site.localId(), nonExistingProductId)
+        ).isNull()
     }
 
     @Test
     fun testDeleteProductShippingListForSite() = runTest {
-        val shippingClassList = ProductTestUtils.generateProductShippingClassList(site.id)
+        val testClasses = ProductTestUtils.generateProductShippingClassList(site.id)
+        sut.upsertProductShippingClasses(testClasses)
 
-        sut.upsertProductShippingClasses(shippingClassList)
-
-        // Verify products inserted
-        var savedShippingClassList = sut.getProductShippingClasses(site.localId())
-        assertEquals(shippingClassList.size, savedShippingClassList.size)
-
-        // Delete shipping class list for site and verify
         sut.deleteProductShippingClasses(site.localId())
-        savedShippingClassList = sut.getProductShippingClasses(site.localId())
-        assertEquals(0, savedShippingClassList.size)
+
+        assertThat(
+            sut.getProductShippingClasses(site.localId())
+        ).isEmpty()
     }
 
     @Test
