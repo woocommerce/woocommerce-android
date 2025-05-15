@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.woopos.home.items.search
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemsNextPageLoaded
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.PreSearchRecentTermTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SearchRemoteResultsFetched
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.IS_SEARCH
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ITEM_LIST_TYPE
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ITEM_LIST_TYPE_PRODUCTS
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
@@ -18,14 +18,11 @@ class WooPosItemsSearchAnalyticsTracker @Inject constructor(
     private val localSearchProductIds = AtomicReference<List<Long>>(emptyList())
 
     suspend fun trackItemsNextPageLoaded() {
-        val event = ItemsNextPageLoaded.apply {
-            addProperties(
-                mapOf(
-                    ITEM_LIST_TYPE to ITEM_LIST_TYPE_PRODUCTS,
-                    IS_SEARCH to "true"
-                )
-            )
-        }
+        val event = ItemsNextPageLoaded(
+            source = WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT,
+            sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.SEARCH_RESULT,
+        )
+
         analyticsTracker.track(event)
     }
 

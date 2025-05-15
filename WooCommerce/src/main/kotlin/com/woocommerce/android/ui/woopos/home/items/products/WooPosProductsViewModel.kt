@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosProductsViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateToVariationsScreen
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.PullToRefreshTriggered
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
@@ -253,7 +254,14 @@ class WooPosProductsViewModel @Inject constructor(
         loadMoreProductsJob = viewModelScope.launch {
             val result = productsDataSource.loadMore()
             _viewState.value = if (result.isSuccess) {
-                result.getOrThrow().toContentState()
+                result.getOrThrow().toContentState().also {
+                    analyticsTracker.track(
+                        WooPosAnalyticsEvent.Event.ItemsNextPageLoaded(
+                            source = WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT,
+                            sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST
+                        )
+                    )
+                }
             } else {
                 currentState.copy(paginationState = WooPosPaginationState.Error)
             }

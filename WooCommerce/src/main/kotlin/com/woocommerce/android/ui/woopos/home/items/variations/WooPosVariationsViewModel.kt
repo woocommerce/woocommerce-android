@@ -17,9 +17,6 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosVariationsViewState
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemsNextPageLoaded
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.IS_SEARCH
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ITEM_LIST_TYPE
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ITEM_LIST_TYPE_VARIATIONS
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -52,13 +49,16 @@ class WooPosVariationsViewModel @Inject constructor(
         )
 
     private var fetchJob: Job? = null
-    private var variationsSource: WooPosItemSource = WooPosItemSource.PRODUCT_LIST
+    private lateinit var sourceType: WooPosAnalyticsEventConstant.ItemsListSourceType
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     internal var loadMoreJob: Job? = null
 
-    fun init(productId: Long, source: WooPosItemSource) {
-        this.variationsSource = source
+    fun init(
+        productId: Long,
+        sourceType: WooPosAnalyticsEventConstant.ItemsListSourceType
+    ) {
+        this.sourceType = sourceType
         viewModelScope.launch {
             variationsDataSource.resetState()
         }
@@ -193,16 +193,12 @@ class WooPosVariationsViewModel @Inject constructor(
     }
 
     private suspend fun trackItemsNextPageLoaded() {
-        val event = ItemsNextPageLoaded.apply {
-            val isSearch: Boolean = variationsSource == WooPosItemSource.SEARCH_RESULT
-            addProperties(
-                mapOf(
-                    ITEM_LIST_TYPE to ITEM_LIST_TYPE_VARIATIONS,
-                    IS_SEARCH to "$isSearch"
-                )
+        analyticsTracker.track(
+            ItemsNextPageLoaded(
+                source = WooPosAnalyticsEventConstant.ItemsListSource.VARIATION,
+                sourceType = this.sourceType,
             )
-        }
-        analyticsTracker.track(event)
+        )
     }
 
     fun onUIEvent(event: WooPosVariationsUIEvents) {
