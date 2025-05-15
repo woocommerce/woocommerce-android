@@ -40,6 +40,7 @@ import com.woocommerce.android.util.WooLogWrapper
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -81,6 +82,8 @@ class WooPosTotalsViewModel @Inject constructor(
         )
 
     val state: StateFlow<WooPosTotalsViewState> = uiState
+
+    private var createDraftOrderJob: Job? = null
 
     private val dataState: MutableStateFlow<TotalsDataState> = savedState.getStateFlow(
         scope = viewModelScope,
@@ -139,6 +142,10 @@ class WooPosTotalsViewModel @Inject constructor(
     private fun cancelPaymentAction() {
         cardReaderPaymentController?.onBackPressed()
         cardReaderPaymentController?.stop()
+    }
+
+    private fun cancelCreateOrderDraftAction() {
+        createDraftOrderJob?.cancel()
     }
 
     fun onUIEvent(event: WooPosTotalsUIEvent) {
@@ -226,7 +233,10 @@ class WooPosTotalsViewModel @Inject constructor(
                     retryPaymentCollectionFromScratch()
                 }
 
-                else -> childrenToParentEventSender.sendToParent(ChildToParentEvent.BackFromCheckoutToCartClicked)
+                else -> {
+                    cancelCreateOrderDraftAction()
+                    childrenToParentEventSender.sendToParent(ChildToParentEvent.BackFromCheckoutToCartClicked)
+                }
             }
         }
     }
@@ -288,6 +298,7 @@ class WooPosTotalsViewModel @Inject constructor(
 
                     is ParentToChildrenEvent.BackFromCheckoutToCartClicked -> {
                         cancelPaymentAction()
+                        cancelCreateOrderDraftAction()
                         uiState.value = InitialState
                     }
 
@@ -442,7 +453,8 @@ class WooPosTotalsViewModel @Inject constructor(
     }
 
     private fun createOrderDraft(itemClickedDataList: List<WooPosItemsViewModel.ItemClickedData>) {
-        viewModelScope.launch {
+        createDraftOrderJob?.cancel()
+        createDraftOrderJob = viewModelScope.launch {
             uiState.value = WooPosTotalsViewState.Loading
 
             totalsRepository.createOrderFromCartItems(itemClickedDataList = itemClickedDataList)
@@ -452,6 +464,7 @@ class WooPosTotalsViewModel @Inject constructor(
                         onCreateOrderDraftFails(error)
                     }
                 )
+            createDraftOrderJob = null
         }
     }
 
