@@ -21,6 +21,7 @@ import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.runBlocking
 
 /**
  * Fragment which enables updating product shipping data.
@@ -68,7 +69,8 @@ class ProductShippingFragment : BaseProductEditorFragment(R.layout.fragment_prod
                 showValue(binding.productHeight, R.string.product_height, height, viewModel.parameters.dimensionUnit)
             }
             new.shippingData.shippingClassId?.takeIfNotEqualTo(old?.shippingData?.shippingClassId) { classId ->
-                binding.productShippingClassSpinner.setText(viewModel.getShippingClassByRemoteShippingClassId(classId))
+                val selectedText = runBlocking { viewModel.getShippingClassByRemoteShippingClassId(classId) }
+                binding.productShippingClassSpinner.setText(selectedText)
             }
             new.isOneTimeShippingSectionVisible.takeIfNotEqualTo(old?.isOneTimeShippingSectionVisible) { isVisible ->
                 binding.productOneTimeShipping.isVisible = isVisible
