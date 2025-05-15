@@ -1104,8 +1104,7 @@ class WooPosCartViewModelTest {
                 itemData = WooPosItemsViewModel.ItemClickedData.Coupon(id = couponId, couponCode = ""),
                 source = WooPosItemSource.COUPON_LIST
             ),
-
-            )
+        )
     }
 
     private suspend fun simulateProductClicked(productId: Long = 1L) {
