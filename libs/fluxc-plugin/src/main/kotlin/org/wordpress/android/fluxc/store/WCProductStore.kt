@@ -943,7 +943,7 @@ class WCProductStore @Inject internal constructor(
         productTagsDao.getProductTags(site.localId())
 
     suspend fun getProductTagsByNames(site: SiteModel, tagNames: List<String>) =
-        productTagsDao.getProductTags(site.localId(), names = tagNames)
+        productTagsDao.getProductTags(siteId = site.localId(), names = tagNames)
 
     suspend fun getProductTagByName(site: SiteModel, tagName: String) =
         productTagsDao.getProductTag(siteId = site.localId(), name = tagName)
@@ -1746,10 +1746,7 @@ class WCProductStore @Inject internal constructor(
 
             when {
                 response.isError -> WooResult(response.error)
-                response.result != null -> {
-                    WooResult(response.result.map { it.product })
-                }
-
+                response.result != null -> WooResult(response.result.map { it.product })
                 else -> WooResult(WooError(WooErrorType.GENERIC_ERROR, UNKNOWN))
             }
         }
