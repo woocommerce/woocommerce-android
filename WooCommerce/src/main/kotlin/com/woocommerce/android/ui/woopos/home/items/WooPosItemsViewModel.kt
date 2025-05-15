@@ -103,12 +103,12 @@ class WooPosItemsViewModel @Inject constructor(
 
         _viewState.value = when (selectedTab.stringId) {
             R.string.woopos_products_screen_title -> WooPosItemsViewState.ProductList(
-                    tabs = tabsHelper.selectTab(state.tabs, selectedTab),
-                    search = searchHelper.getInitialSearchState(),
+                tabs = tabsHelper.selectTab(state.tabs, selectedTab),
+                search = searchHelper.getInitialSearchState(),
             ).also { trackProductsTabSelected() }
 
             R.string.woopos_coupons_screen_title -> WooPosItemsViewState.CouponList(
-                    tabs = tabsHelper.selectTab(state.tabs, selectedTab),
+                tabs = tabsHelper.selectTab(state.tabs, selectedTab),
             ).also { trackCouponsTabSelected() }
 
             else -> error("Invalid tab $selectedTab")

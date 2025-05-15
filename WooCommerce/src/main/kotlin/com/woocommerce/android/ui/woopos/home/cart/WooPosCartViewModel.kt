@@ -123,7 +123,7 @@ class WooPosCartViewModel @Inject constructor(
         }
         viewModelScope.launch {
             items.forEach { item ->
-                    analyticsTracker.track(ItemRemovedFromCart(item))
+                analyticsTracker.track(ItemRemovedFromCart(item))
             }
         }
     }
@@ -194,9 +194,11 @@ class WooPosCartViewModel @Inject constructor(
                     ParentToChildrenEvent.SearchEvent.Finished,
                     ParentToChildrenEvent.SearchEvent.Started,
                     is ParentToChildrenEvent.CouponsRemoved -> Unit
+
                     is ParentToChildrenEvent.CouponsValidationFailed -> {
                         onCouponsValidationFails()
                     }
+
                     is ParentToChildrenEvent.RemoveCouponsClicked -> {
                         removeCouponsFromCart()
                     }
@@ -419,6 +421,7 @@ class WooPosCartViewModel @Inject constructor(
             price = formatPrice(price),
             imageUrl = image?.source,
         )
+
     private fun getInitialValueOrHighestUsedItemNumberAfterProcessDeath() =
         (_state.value.body as? WooPosCartState.Body.WithItems)?.itemsInCart?.maxOfOrNull { it.itemNumber } ?: 1
 

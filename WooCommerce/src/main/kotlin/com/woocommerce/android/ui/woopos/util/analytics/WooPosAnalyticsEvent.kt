@@ -35,57 +35,73 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
         data object BackToCartTapped : Event() {
             override val name: String = "back_to_cart_tapped"
         }
+
         data object BackToCheckoutFromCash : Event() {
             override val name: String = "back_to_checkout_from_cash"
         }
+
         data object CashCollectPaymentSuccess : Event() {
             override val name: String = "cash_collect_payment_success"
         }
+
         data object CashPaymentTapped : Event() {
             override val name: String = "cash_payment_tapped"
         }
+
         data object CashPaymentFailed : Event() {
             override val name: String = "cash_payment_failed"
         }
+
         data object CheckoutTapped : Event() {
             override val name: String = "checkout_tapped"
         }
+
         data object ClearCartTapped : Event() {
             override val name: String = "clear_cart_tapped"
         }
+
         data object CreateNewOrderTapped : Event() {
             override val name: String = "create_new_order_tapped"
         }
+
         data object EmailReceiptTapped : Event() {
             override val name: String = "receipt_email_tapped"
         }
+
         data object EmailReceiptSendTapped : Event() {
             override val name: String = "receipt_email_send_tapped"
         }
+
         data object EmailReceiptSendFailed : Event() {
             override val name: String = "receipt_email_failed"
         }
+
         data object EmailReceiptSendSuccess : Event() {
             override val name: String = "receipt_email_success"
         }
+
         data object ExitTapped : Event() {
             override val name: String = "exit_menu_item_tapped"
         }
+
         data object ExitConfirmed : Event() {
             override val name: String = "exit_confirmed"
         }
+
         data object GetSupportTapped : Event() {
             override val name: String = "get_support_tapped"
         }
+
         data object InteractionWithCustomerStarted : Event() {
             override val name: String = "interaction_with_customer_started"
         }
+
         class ItemAddedToCart private constructor(source: String = "list", itemType: String) : Event() {
             override val name: String = "item_added_to_cart"
 
-            constructor(source: String, itemType: WooPosItemsViewModel.ItemClickedData) : this(
+            constructor(source: String, item: WooPosItemsViewModel.ItemClickedData) : this(
                 source,
-                itemType = when (itemType) {
+                itemType = when (item) {
                     is WooPosItemsViewModel.ItemClickedData.Product.Simple -> "simple"
                     is WooPosItemsViewModel.ItemClickedData.Product.Variation -> "variation"
                     is WooPosItemsViewModel.ItemClickedData.Coupon -> "coupon"
@@ -96,7 +112,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                 addProperties(
                     mapOf(
                         "source" to source,
-                        WooPosAnalyticsEventConstant.PRODUCT_TYPE to itemType
+                        WooPosAnalyticsEventConstant.ITEM_TYPE to itemType
                     )
                 )
             }
@@ -113,8 +129,9 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                 }
             }
         }
+
         class ItemRemovedFromCart private constructor(itemType: String) : Event() {
-            constructor(item: WooPosCartItemViewState): this(
+            constructor(item: WooPosCartItemViewState) : this(
                 itemType = when (item) {
                     is WooPosCartItemViewState.Product.Simple -> "simple"
                     is WooPosCartItemViewState.Product.Variation -> "variation"
@@ -123,52 +140,67 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             )
 
             override val name: String = "item_removed_from_cart"
+
             init {
                 addProperties(
-                    mapOf(WooPosAnalyticsEventConstant.PRODUCT_TYPE to itemType)
+                    mapOf(WooPosAnalyticsEventConstant.ITEM_TYPE to itemType)
                 )
             }
         }
+
         data object Loaded : Event() {
             override val name: String = "loaded"
         }
+
         data object OrderCreationSuccess : Event() {
             override val name: String = "order_creation_success"
         }
+
         data object ProductsPullToRefreshTriggered : Event() {
             override val name: String = "products_pull_to_refresh"
         }
+
         data object CouponsPullToRefreshTriggered : Event() {
             override val name: String = "coupons_pull_to_refresh"
         }
+
         data object ReaderReadyForCardPayment : Event() {
             override val name: String
                 get() = "reader_ready_for_card_payment"
         }
+
         data object VariationsPullToRefreshTriggered : Event() {
             override val name: String = "variations_pull_to_refresh"
         }
+
         data object ViewDocsTapped : Event() {
             override val name: String = "view_docs_tapped"
         }
+
         data object SimpleProductExplanationDialogShown : Event() {
             override val name: String = "simple_products_explanation_dialog_shown"
         }
+
         data object SearchButtonTapped : Event() {
             override val name: String = "search_button_tapped"
         }
+
         data object ProductsTabSelected : Event() {
             override val name: String = "pos_products_tapped"
         }
+
         data object CouponsTabSelected : Event() {
             override val name: String = "pos_coupons_tapped"
         }
+
         data object PreSearchRecentTermTapped : Event() {
             override val name: String = "pre_search_recent_term_tapped"
         }
+
         data object ItemsNextPageLoaded : Event() {
             override val name: String = "items_next_page_loaded"
         }
+
         data class SearchRemoteResultsFetched(
             val totalProductsCount: Int?,
             val millisecondsSinceRequestSent: Long

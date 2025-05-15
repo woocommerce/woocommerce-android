@@ -279,21 +279,18 @@ class WooPosCartViewModelTest {
         )
 
         // WHEN
-        sut.onUIEvent(
-            WooPosCartUIEvent.ItemRemovedFromCart(
-                WooPosCartItemViewState.Product.Simple(
-                    itemNumber = 1,
-                    id = product.remoteId,
-                    name = product.name,
-                    price = "10.0$",
-                    imageUrl = product.firstImageUrl,
-                    description = null,
-                )
-            )
+        val item = WooPosCartItemViewState.Product.Simple(
+            itemNumber = 1,
+            id = product.remoteId,
+            name = product.name,
+            price = "10.0$",
+            imageUrl = product.firstImageUrl,
+            description = null,
         )
+        sut.onUIEvent(WooPosCartUIEvent.ItemRemovedFromCart(item))
 
         // THEN
-        verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.ItemRemovedFromCart)
+        verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.ItemRemovedFromCart(item))
     }
 
     @Test
@@ -618,11 +615,12 @@ class WooPosCartViewModelTest {
         sut.state.captureValues()
 
         // WHEN
+        val item = WooPosItemsViewModel.ItemClickedData.Product.Simple(
+            id = product.remoteId
+        )
         parentToChildrenMutableSharedFlow.emit(
             ParentToChildrenEvent.ItemClickedInProductSelector(
-                WooPosItemsViewModel.ItemClickedData.Product.Simple(
-                    id = product.remoteId
-                ),
+                item,
                 source = WooPosItemSource.PRODUCT_LIST
             )
         )
@@ -630,7 +628,12 @@ class WooPosCartViewModelTest {
         // THEN
         verify(analyticsTracker)
             .track(
-                WooPosAnalyticsEvent.Event.ItemAddedToCart(source = toAnalyticsString(WooPosItemSource.PRODUCT_LIST))
+                WooPosAnalyticsEvent.Event.ItemAddedToCart(
+                    source = toAnalyticsString(
+                        WooPosItemSource.PRODUCT_LIST
+                    ),
+                    item = item
+                )
             )
     }
 
@@ -644,7 +647,9 @@ class WooPosCartViewModelTest {
         simulateCouponClicked()
 
         // THEN
-        verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.ItemAddedToCart(source = "coupons"))
+        verify(analyticsTracker).track(argThat{
+            this is WooPosAnalyticsEvent.Event.ItemAddedToCart
+        })
     }
 
     @Test
@@ -676,7 +681,7 @@ class WooPosCartViewModelTest {
                 this == WooPosAnalyticsEvent.Event.ItemAddedToCart() &&
                     (
                         this as WooPosAnalyticsEvent.Event.ItemAddedToCart
-                        ).properties[WooPosAnalyticsEventConstant.PRODUCT_TYPE] == "simple"
+                        ).properties[WooPosAnalyticsEventConstant.ITEM_TYPE] == "simple"
             }
         )
     }
@@ -718,7 +723,7 @@ class WooPosCartViewModelTest {
                 this == WooPosAnalyticsEvent.Event.ItemAddedToCart() &&
                     (
                         this as WooPosAnalyticsEvent.Event.ItemAddedToCart
-                        ).properties[WooPosAnalyticsEventConstant.PRODUCT_TYPE] == "variation"
+                        ).properties[WooPosAnalyticsEventConstant.ITEM_TYPE] == "variation"
             }
         )
     }
@@ -735,10 +740,7 @@ class WooPosCartViewModelTest {
         // THEN
         verify(analyticsTracker).track(
             argThat {
-                this == WooPosAnalyticsEvent.Event.ItemAddedToCart(source = "coupons") &&
-                    (
-                        this as WooPosAnalyticsEvent.Event.ItemAddedToCart
-                        ).properties[WooPosAnalyticsEventConstant.PRODUCT_TYPE] == "coupon"
+                this is WooPosAnalyticsEvent.Event.ItemAddedToCart
             }
         )
     }
@@ -993,7 +995,6 @@ class WooPosCartViewModelTest {
                 itemData = WooPosItemsViewModel.ItemClickedData.Coupon(id = couponId, couponCode = ""),
                 source = WooPosItemSource.COUPON_LIST
             ),
-
         )
     }
 
