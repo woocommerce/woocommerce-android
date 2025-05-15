@@ -125,6 +125,12 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
         data object SearchButtonTapped : Event() {
             override val name: String = "search_button_tapped"
         }
+        data object ProductsTabSelected : Event() {
+            override val name: String = "pos_products_tapped"
+        }
+        data object CouponsTabSelected : Event() {
+            override val name: String = "pos_coupons_tapped"
+        }
         data object PreSearchRecentTermTapped : Event() {
             override val name: String = "pre_search_recent_term_tapped"
         }

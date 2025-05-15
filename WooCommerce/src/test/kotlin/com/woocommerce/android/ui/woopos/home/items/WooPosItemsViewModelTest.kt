@@ -10,6 +10,7 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemCli
 import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationFacade
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart.WooPosItemSource
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SearchButtonTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ITEM_LIST_TYPE
@@ -200,6 +201,38 @@ class WooPosItemsViewModelTest {
                 source = WooPosItemSource.COUPON_LIST
             )
         )
+    }
+
+    @Test
+    fun `when products tab clicked, then products tab selected event is tracked`() = runTest {
+        // GIVEN
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(
+            WooPosItemsUIEvent.OnTabClicked(
+                tabs.first { it.stringId == R.string.woopos_products_screen_title }
+            )
+        )
+
+        // THEN
+        verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.ProductsTabSelected)
+    }
+
+    @Test
+    fun `when coupons tab clicked, then coupons tab selected event is tracked`() = runTest {
+        // GIVEN
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(
+            WooPosItemsUIEvent.OnTabClicked(
+                tabs.first { it.stringId == R.string.woopos_coupons_screen_title }
+            )
+        )
+
+        // THEN
+        verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.CouponsTabSelected)
     }
 
     private fun createViewModel() =

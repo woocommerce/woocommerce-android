@@ -10,6 +10,7 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState.Tab
 import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationFacade
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart.WooPosItemSource
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SearchButtonTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ITEM_LIST_TYPE
@@ -102,13 +103,13 @@ class WooPosItemsViewModel @Inject constructor(
 
         _viewState.value = when (selectedTab.stringId) {
             R.string.woopos_products_screen_title -> WooPosItemsViewState.ProductList(
-                tabs = tabsHelper.selectTab(state.tabs, selectedTab),
-                search = searchHelper.getInitialSearchState(),
-            )
+                    tabs = tabsHelper.selectTab(state.tabs, selectedTab),
+                    search = searchHelper.getInitialSearchState(),
+            ).also { trackProductsTabSelected() }
 
             R.string.woopos_coupons_screen_title -> WooPosItemsViewState.CouponList(
-                tabs = tabsHelper.selectTab(state.tabs, selectedTab),
-            )
+                    tabs = tabsHelper.selectTab(state.tabs, selectedTab),
+            ).also { trackCouponsTabSelected() }
 
             else -> error("Invalid tab $selectedTab")
         }
@@ -125,6 +126,18 @@ class WooPosItemsViewModel @Inject constructor(
                     )
                 )
             }
+        }
+    }
+
+    private fun trackCouponsTabSelected() {
+        viewModelScope.launch {
+            analyticsTracker.track(WooPosAnalyticsEvent.Event.CouponsTabSelected)
+        }
+    }
+
+    private fun trackProductsTabSelected() {
+        viewModelScope.launch {
+            analyticsTracker.track(WooPosAnalyticsEvent.Event.ProductsTabSelected)
         }
     }
 
