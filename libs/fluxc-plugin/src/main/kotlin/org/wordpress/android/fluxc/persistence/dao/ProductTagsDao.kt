@@ -21,10 +21,10 @@ internal abstract class ProductTagsDao {
         """
         SELECT * FROM ProductTagEntity
         WHERE localSiteId = :siteId
-        AND name IN (:tagsNames)
+        AND name IN (:names)
         """
     )
-    abstract suspend fun getProductTags(siteId: LocalId, tagsNames: List<String>): List<WCProductTagModel>
+    abstract suspend fun getProductTags(siteId: LocalId, names: List<String>): List<WCProductTagModel>
 
     @Query(
         """

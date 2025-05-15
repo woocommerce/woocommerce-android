@@ -943,7 +943,7 @@ class WCProductStore @Inject internal constructor(
         productTagsDao.getProductTags(site.localId())
 
     suspend fun getProductTagsByNames(site: SiteModel, tagNames: List<String>) =
-        productTagsDao.getProductTags(site.localId(), tagsNames = tagNames)
+        productTagsDao.getProductTags(site.localId(), names = tagNames)
 
     suspend fun getProductTagByName(site: SiteModel, tagName: String) =
         productTagsDao.getProductTag(siteId = site.localId(), name = tagName)

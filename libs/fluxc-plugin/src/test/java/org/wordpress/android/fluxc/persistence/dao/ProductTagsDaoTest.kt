@@ -107,14 +107,14 @@ class ProductTagsDaoTest {
 
         // Get tags by list of name and verify
         val tagNames = tagList.map { it.name }.toList()
-        val savedTagListExists = sut.getProductTags(site.localId(), tagsNames = tagNames)
+        val savedTagListExists = sut.getProductTags(site.localId(), names = tagNames)
         assertThat(savedTagListExists).containsExactlyInAnyOrderElementsOf(tagList)
 
         // Get tags for a name that does not exist
-        val monExistingTagList = sut.getProductTags(site.localId(), tagsNames = listOf("test", "test1", "test2"))
+        val monExistingTagList = sut.getProductTags(site.localId(), names = listOf("test", "test1", "test2"))
         assertEquals(0, monExistingTagList.size)
 
-        val savedTagList = sut.getProductTags(site.localId(), tagsNames = listOf(tagNames[0], tagNames[1], "test"))
+        val savedTagList = sut.getProductTags(site.localId(), names = listOf(tagNames[0], tagNames[1], "test"))
         assertEquals(2, savedTagList.size)
     }
 
