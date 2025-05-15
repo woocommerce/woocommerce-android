@@ -5,13 +5,19 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import java.io.IOException
 import kotlinx.coroutines.test.runTest
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.persistence.SiteSqlUtils
 import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
 import org.wordpress.android.fluxc.wc.product.ProductTestUtils
 
@@ -63,105 +69,101 @@ class ProductShippingClassesDaoTest {
         assertEquals(savedShippingClassList[0].description, updatedShippingClass.description)
     }
 
-//    @Test
-//    fun testInsertOrUpdateProductShippingClassList() {
-//        val shippingClassList = ProductTestUtils.generateProductShippingClassList(site.id)
-//        kotlin.test.assertTrue(shippingClassList.isNotEmpty())
-//
-//        // Insert product shipping class list
-//        val rowsAffected = ProductSqlUtils.insertOrUpdateProductShippingClassList(shippingClassList)
-//        kotlin.test.assertEquals(shippingClassList.size, rowsAffected)
-//    }
-//
-//    @Test
-//    fun testGetProductShippingClassListForSite() {
-//        val shippingClassList = ProductTestUtils.generateProductShippingClassList(site.id)
-//        kotlin.test.assertTrue(shippingClassList.isNotEmpty())
-//
-//        // Insert product shipping class list
-//        val rowsAffected = ProductSqlUtils.insertOrUpdateProductShippingClassList(shippingClassList)
-//        kotlin.test.assertEquals(shippingClassList.size, rowsAffected)
-//
-//        // Get shipping class list for site and verify
-//        val savedShippingClassListExists = ProductSqlUtils.getProductShippingClassListForSite(site.id)
-//        kotlin.test.assertEquals(shippingClassList.size, savedShippingClassListExists.size)
-//
-//        // Get shipping class list for a site that does not exist
-//        val nonExistingSite = SiteModel().apply { id = 400 }
-//        val savedShippingClassList = ProductSqlUtils.getProductShippingClassListForSite(nonExistingSite.id)
-//        kotlin.test.assertEquals(0, savedShippingClassList.size)
-//    }
-//
-//    @Test
-//    fun testGetProductShippingClassByRemoteShippingId() {
-//        val shippingClass = ProductTestUtils.generateSampleProductShippingClass(
-//            remoteId = 40, siteId = site.id
-//        )
-//
-//        // Insert product shipping class list
-//        val rowsAffected = ProductSqlUtils.insertOrUpdateProductShippingClass(shippingClass)
-//        kotlin.test.assertEquals(1, rowsAffected)
-//
-//        // Get shipping class for site and remoteId and verify
-//        val savedShippingClassExists = ProductSqlUtils.getProductShippingClassByRemoteId(
-//            shippingClass.remoteShippingClassId, site.id
-//        )
-//        kotlin.test.assertEquals(shippingClass.remoteShippingClassId, savedShippingClassExists?.remoteShippingClassId)
-//        kotlin.test.assertEquals(shippingClass.name, savedShippingClassExists?.name)
-//        kotlin.test.assertEquals(shippingClass.description, savedShippingClassExists?.description)
-//        kotlin.test.assertEquals(shippingClass.slug, savedShippingClassExists?.slug)
-//        kotlin.test.assertEquals(shippingClass.localSiteId, savedShippingClassExists?.localSiteId)
-//
-//        // Get shipping class for a site that does not exist
-//        val nonExistingSite = SiteModel().apply { id = 400 }
-//        val savedShippingClass = ProductSqlUtils.getProductShippingClassByRemoteId(
-//            25, nonExistingSite.id
-//        )
-//        kotlin.test.assertNull(savedShippingClass)
-//
-//        // Get shipping class for a site that does not exist
-//        val nonExistingRemoteId = 25L
-//        val nonExistentShippingClass = ProductSqlUtils.getProductShippingClassByRemoteId(
-//            nonExistingRemoteId, site.id
-//        )
-//        kotlin.test.assertNull(nonExistentShippingClass)
-//    }
-//
-//    @Test
-//    fun testDeleteProductShippingListForSite() {
-//        val shippingClassList = ProductTestUtils.generateProductShippingClassList(site.id)
-//
-//        var rowsAffected = ProductSqlUtils.insertOrUpdateProductShippingClassList(shippingClassList)
-//        kotlin.test.assertEquals(shippingClassList.size, rowsAffected)
-//
-//        // Verify products inserted
-//        var savedShippingClassList = ProductSqlUtils.getProductShippingClassListForSite(site.id)
-//        kotlin.test.assertEquals(shippingClassList.size, savedShippingClassList.size)
-//
-//        // Delete shipping class list for site and verify
-//        rowsAffected = ProductSqlUtils.deleteProductShippingClassListForSite(site)
-//        kotlin.test.assertEquals(shippingClassList.size, rowsAffected)
-//        savedShippingClassList = ProductSqlUtils.getProductShippingClassListForSite(site.id)
-//        kotlin.test.assertEquals(0, savedShippingClassList.size)
-//    }
-//
-//    @Test
-//    fun testDeleteSiteDeletesProductShippingClassList() {
-//        val shippingClassList = ProductTestUtils.generateProductShippingClassList(site.id)
-//        kotlin.test.assertTrue(shippingClassList.isNotEmpty())
-//
-//        val rowsAffected = ProductSqlUtils.insertOrUpdateProductShippingClassList(shippingClassList)
-//        kotlin.test.assertEquals(shippingClassList.size, rowsAffected)
-//
-//        // Verify products inserted
-//        var savedShippingClassList = ProductSqlUtils.getProductShippingClassListForSite(site.id)
-//        kotlin.test.assertEquals(shippingClassList.size, savedShippingClassList.size)
-//
-//        // Delete site and verify shipping class list  deleted via foreign key constraint
-//        TestSiteSqlUtils.siteSqlUtils.deleteSite(site)
-//        savedShippingClassList = ProductSqlUtils.getProductShippingClassListForSite(site.id)
-//        kotlin.test.assertEquals(0, savedShippingClassList.size)
-//    }
+    @Test
+    fun testInsertOrUpdateProductShippingClassList() = runTest {
+        val shippingClassList = ProductTestUtils.generateProductShippingClassList(site.id)
+        assertTrue(shippingClassList.isNotEmpty())
+
+        // Insert product shipping class list
+        sut.upsertProductShippingClasses(shippingClassList)
+        assertThat(sut.getProductShippingClasses(site.localId())).containsExactlyInAnyOrderElementsOf(shippingClassList)
+    }
+
+    @Test
+    fun testGetProductShippingClassListForSite() = runTest {
+        val shippingClassList = ProductTestUtils.generateProductShippingClassList(site.id)
+        assertTrue(shippingClassList.isNotEmpty())
+
+        // Insert product shipping class list
+        sut.upsertProductShippingClasses(shippingClassList)
+
+        // Get shipping class list for site and verify
+        val savedShippingClassListExists = sut.getProductShippingClasses(site.localId())
+        assertEquals(shippingClassList.size, savedShippingClassListExists.size)
+
+        // Get shipping class list for a site that does not exist
+        val nonExistingSite = SiteModel().apply { id = 400 }
+        val savedShippingClassList = sut.getProductShippingClasses(nonExistingSite.localId())
+        assertEquals(0, savedShippingClassList.size)
+    }
+
+    @Test
+    fun testGetProductShippingClassByRemoteShippingId() = runTest {
+        val shippingClass = ProductTestUtils.generateSampleProductShippingClass(
+            remoteId = 40, siteId = site.id
+        )
+
+        // Insert product shipping class list
+        sut.upsertProductShippingClass(shippingClass)
+
+        // Get shipping class for site and remoteId and verify
+        val savedShippingClassExists = sut.getProductShippingClass(
+            site.localId(), RemoteId(shippingClass.remoteShippingClassId),
+        )
+        assertEquals(shippingClass.remoteShippingClassId, savedShippingClassExists?.remoteShippingClassId)
+        assertEquals(shippingClass.name, savedShippingClassExists?.name)
+        assertEquals(shippingClass.description, savedShippingClassExists?.description)
+        assertEquals(shippingClass.slug, savedShippingClassExists?.slug)
+        assertEquals(shippingClass.localSiteId, savedShippingClassExists?.localSiteId)
+
+        // Get shipping class for a site that does not exist
+        val nonExistingSite = SiteModel().apply { id = 400 }
+        val savedShippingClass = sut.getProductShippingClass(
+            nonExistingSite.localId(), RemoteId(25)
+        )
+        kotlin.test.assertNull(savedShippingClass)
+
+        // Get shipping class for a site that does not exist
+        val nonExistingRemoteId = RemoteId(25L)
+        val nonExistentShippingClass = sut.getProductShippingClass(
+            site.localId(), nonExistingRemoteId
+        )
+        assertNull(nonExistentShippingClass)
+    }
+
+    @Test
+    fun testDeleteProductShippingListForSite() = runTest {
+        val shippingClassList = ProductTestUtils.generateProductShippingClassList(site.id)
+
+        sut.upsertProductShippingClasses(shippingClassList)
+
+        // Verify products inserted
+        var savedShippingClassList = sut.getProductShippingClasses(site.localId())
+        assertEquals(shippingClassList.size, savedShippingClassList.size)
+
+        // Delete shipping class list for site and verify
+        sut.deleteProductShippingClasses(site.localId())
+        savedShippingClassList = sut.getProductShippingClasses(site.localId())
+        assertEquals(0, savedShippingClassList.size)
+    }
+
+    @Test
+    @Ignore("This test is ignored until SiteModel is moved to Room and foreign key constraints are added")
+    fun testDeleteSiteDeletesProductShippingClassList() = runTest {
+        val shippingClassList = ProductTestUtils.generateProductShippingClassList(site.id)
+        assertTrue(shippingClassList.isNotEmpty())
+
+        sut.upsertProductShippingClasses(shippingClassList)
+
+        // Verify products inserted
+        var savedShippingClassList = sut.getProductShippingClasses(site.localId())
+        assertEquals(shippingClassList.size, savedShippingClassList.size)
+
+        // Delete site and verify shipping class list  deleted via foreign key constraint
+        SiteSqlUtils().deleteSite(site)
+        savedShippingClassList = sut.getProductShippingClasses(site.localId())
+        assertEquals(0, savedShippingClassList.size)
+    }
 
     @After
     @Throws(IOException::class)
