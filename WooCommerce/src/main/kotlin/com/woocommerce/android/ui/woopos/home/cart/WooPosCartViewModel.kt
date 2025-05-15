@@ -322,7 +322,15 @@ class WooPosCartViewModel @Inject constructor(
             .partition { it is WooPosCartItemViewState.Coupon }
 
         return if (newItem is WooPosCartItemViewState.Coupon) {
-            listOf(newItem) + existingCoupons + existingProducts
+            val couponAlreadyInCart = existingCoupons.any {
+                (it as WooPosCartItemViewState.Coupon).id == newItem.id
+            }
+
+            if (couponAlreadyInCart) {
+                currentState.itemsInCart
+            } else {
+                listOf(newItem) + existingCoupons + existingProducts
+            }
         } else {
             existingCoupons + listOf(newItem) + existingProducts
         }

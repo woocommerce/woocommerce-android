@@ -1077,6 +1077,24 @@ class WooPosCartViewModelTest {
             assertThat((itemsInCart[2] as WooPosCartItemViewState.Product.Simple).id).isEqualTo(999L)
         }
 
+    @Test
+    fun `given coupon in cart, when same coupon clicked again, then coupon not duplicated`() = runTest {
+        // GIVEN
+        val sut = createSut()
+        val states = sut.state.captureValues()
+
+        simulateCouponClicked(couponId = 1L)
+
+        // WHEN
+        simulateCouponClicked(couponId = 1L)
+
+        // THEN
+        val itemsAfterSecondAdd = (states.last().body as WooPosCartState.Body.WithItems).itemsInCart
+        assertThat(itemsAfterSecondAdd).hasSize(1)
+        assertThat(itemsAfterSecondAdd[0]).isInstanceOf(WooPosCartItemViewState.Coupon::class.java)
+        assertThat((itemsAfterSecondAdd[0] as WooPosCartItemViewState.Coupon).id).isEqualTo(1L)
+    }
+
     private suspend fun createSutWithItemsInCart(): Pair<WooPosCartViewModel, List<WooPosCartState>> {
         val product = ProductTestUtils.generateProduct(
             productId = 23L,
