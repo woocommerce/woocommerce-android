@@ -187,7 +187,7 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
 
     @Test
     fun `given the order is updated, when source is store management then createdVia value is null`() = testBlocking {
-       // GIVEN
+        // GIVEN
         whenever(orderUpdateStore.createOrder(any(), any(), anyOrNull()))
             .thenReturn(WooResult(OrderTestUtils.generateOrder()))
 
