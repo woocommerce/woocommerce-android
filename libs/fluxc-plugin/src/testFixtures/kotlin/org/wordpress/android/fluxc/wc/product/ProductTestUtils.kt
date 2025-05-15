@@ -80,13 +80,13 @@ object ProductTestUtils {
         description: String = "",
         siteId: Int = 6
     ): WCProductShippingClassModel {
-        return WCProductShippingClassModel().apply {
-            remoteShippingClassId = remoteId
-            localSiteId = siteId
-            this.name = name
-            this.slug = slug
-            this.description = description
-        }
+        return WCProductShippingClassModel(
+            remoteShippingClassId = remoteId,
+            localSiteId = siteId,
+            name = name,
+            slug = slug,
+            description = description,
+        )
     }
 
     fun generateSampleProductReview(

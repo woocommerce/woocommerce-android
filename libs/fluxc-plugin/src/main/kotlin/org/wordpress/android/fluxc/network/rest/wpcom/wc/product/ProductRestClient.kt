@@ -121,7 +121,7 @@ class ProductRestClient @Inject constructor(
                     response.data?.let {
                         val newModel = productShippingClassResponseToProductShippingClassModel(
                             it, site
-                        ).apply { localSiteId = site.id }
+                        ).copy(localSiteId = site.id)
                         val payload = RemoteProductShippingClassPayload(newModel, site)
                         dispatcher.dispatch(
                             WCProductActionBuilder.newFetchedSingleProductShippingClassAction(
@@ -135,7 +135,7 @@ class ProductRestClient @Inject constructor(
                     val productError = wpAPINetworkErrorToProductError(response.error)
                     val payload = RemoteProductShippingClassPayload(
                         productError,
-                        WCProductShippingClassModel().apply { this.remoteShippingClassId = remoteShippingClassId },
+                        WCProductShippingClassModel().copy (remoteShippingClassId = remoteShippingClassId),
                         site
                     )
                     dispatcher.dispatch(
@@ -2119,13 +2119,13 @@ class ProductRestClient @Inject constructor(
         response: ProductShippingClassApiResponse,
         site: SiteModel
     ): WCProductShippingClassModel {
-        return WCProductShippingClassModel().apply {
-            remoteShippingClassId = response.id
-            localSiteId = site.id
-            name = response.name ?: ""
-            slug = response.slug ?: ""
-            description = response.description ?: ""
-        }
+        return WCProductShippingClassModel().copy(
+            remoteShippingClassId = response.id,
+            localSiteId = site.id,
+            name = response.name ?: "",
+            slug = response.slug ?: "",
+            description = response.description ?: "",
+        )
     }
 
     private fun productReviewResponseToProductReviewModel(response: ProductReviewApiResponse): WCProductReviewModel {

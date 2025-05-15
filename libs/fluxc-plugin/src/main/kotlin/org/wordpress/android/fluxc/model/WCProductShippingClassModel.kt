@@ -13,10 +13,10 @@ import org.wordpress.android.fluxc.persistence.WellSqlConfig
     tableName = "ProductShippingClassEntity",
     primaryKeys = ["localSiteId", "remoteShippingClassId"],
 )
-class WCProductShippingClassModel(
-    @Column var localSiteId: Int = 0,
-    @Column var remoteShippingClassId: Long = 0L, // The unique identifier for this shipping class on the server
-    @Column var name: String = "",
-    @Column var slug: String = "",
-    @Column var description: String = "",
+data class WCProductShippingClassModel(
+    @Column val localSiteId: Int = 0,
+    @Column val remoteShippingClassId: Long = 0L, // The unique identifier for this shipping class on the server
+    @Column val name: String = "",
+    @Column val slug: String = "",
+    @Column val description: String = "",
 )
