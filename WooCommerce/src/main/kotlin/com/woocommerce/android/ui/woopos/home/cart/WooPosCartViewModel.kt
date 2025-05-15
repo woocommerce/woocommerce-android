@@ -324,7 +324,7 @@ class WooPosCartViewModel @Inject constructor(
         val updatedItems = if (newItem is WooPosCartItemViewState.Coupon) {
             listOf(newItem) + existingCoupons + existingProducts
         } else {
-            existingCoupons + listOf(newItem) + existingProducts.filterNot { it == newItem }
+            existingCoupons + listOf(newItem) + existingProducts
         }
         return updatedItems
     }
