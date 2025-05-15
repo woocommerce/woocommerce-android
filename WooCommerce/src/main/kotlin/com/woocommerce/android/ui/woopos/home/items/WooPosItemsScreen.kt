@@ -34,13 +34,15 @@ import kotlinx.coroutines.flow.StateFlow
 @Composable
 fun WooPosItemsScreen(
     modifier: Modifier = Modifier,
-    listState: LazyListState,
+    productsViewState: LazyListState,
+    couponsListState: LazyListState,
 ) {
     val productsViewModel: WooPosItemsViewModel = hiltViewModel()
     WooPosItemsScreen(
         modifier = modifier,
         itemsStateFlow = productsViewModel.viewState,
-        listState = listState,
+        productsViewState = productsViewState,
+        couponsListState = couponsListState,
         onUIEvent = { productsViewModel.onUIEvent(it) },
     )
 }
@@ -50,7 +52,8 @@ fun WooPosItemsScreen(
 private fun WooPosItemsScreen(
     modifier: Modifier = Modifier,
     itemsStateFlow: StateFlow<WooPosItemsViewState>,
-    listState: LazyListState,
+    productsViewState: LazyListState,
+    couponsListState: LazyListState,
     onUIEvent: (WooPosItemsUIEvent) -> Unit,
 ) {
     val state = itemsStateFlow.collectAsState()
@@ -58,7 +61,8 @@ private fun WooPosItemsScreen(
     MainItemsList(
         modifier = modifier,
         state = state,
-        listState = listState,
+        productsViewState = productsViewState,
+        couponsListState = couponsListState,
         onSearchEvent = {
             when (it) {
                 WooPosSearchUIEvent.Clear -> onUIEvent(WooPosItemsUIEvent.ClearSearchClicked)
@@ -89,7 +93,8 @@ private fun WooPosItemsScreen(
 private fun MainItemsList(
     modifier: Modifier,
     state: State<WooPosItemsViewState>,
-    listState: LazyListState,
+    productsViewState: LazyListState,
+    couponsListState: LazyListState,
     onSearchEvent: (WooPosSearchUIEvent) -> Unit,
     onTabClicked: (WooPosItemsViewState.Tab) -> Unit,
     onAddCouponEvent: () -> Unit,
@@ -127,13 +132,15 @@ private fun MainItemsList(
                         modifier = Modifier.padding(
                             horizontal = WooPosSpacing.Medium.value.toAdaptivePadding(),
                         ),
-                        listState = listState
+                        listState = productsViewState
                     )
+
                     ScreenState.PRODUCTS_SEARCH -> WooPosItemsSearchScreen()
                     ScreenState.COUPONS -> WooPosCouponsScreen(
                         modifier = Modifier.padding(
                             horizontal = WooPosSpacing.Medium.value.toAdaptivePadding(),
-                        )
+                        ),
+                        listState = couponsListState,
                     )
                 }
             }
@@ -182,7 +189,8 @@ fun WooPosItemsScreenSearchVisiblePreview(modifier: Modifier = Modifier) {
         WooPosItemsScreen(
             modifier = modifier,
             itemsStateFlow = productState,
-            listState = rememberLazyListState(),
+            productsViewState = rememberLazyListState(),
+            couponsListState = rememberLazyListState(),
             onUIEvent = {},
         )
     }
@@ -207,7 +215,8 @@ fun WooPosItemsScreenSearchHiddenPreview(modifier: Modifier = Modifier) {
         WooPosItemsScreen(
             modifier = modifier,
             itemsStateFlow = productState,
-            listState = rememberLazyListState(),
+            productsViewState = rememberLazyListState(),
+            couponsListState = rememberLazyListState(),
             onUIEvent = {},
         )
     }
