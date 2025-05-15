@@ -34,12 +34,6 @@ import org.wordpress.android.fluxc.model.list.PostListDescriptor;
 import org.wordpress.android.fluxc.model.list.PostListDescriptor.PostListDescriptorForRestSite;
 import org.wordpress.android.fluxc.model.list.PostListDescriptor.PostListDescriptorForXmlRpcSite;
 import org.wordpress.android.fluxc.model.post.PostStatus;
-import org.wordpress.android.fluxc.model.revisions.Diff;
-import org.wordpress.android.fluxc.model.revisions.LocalDiffModel;
-import org.wordpress.android.fluxc.model.revisions.LocalDiffType;
-import org.wordpress.android.fluxc.model.revisions.LocalRevisionModel;
-import org.wordpress.android.fluxc.model.revisions.RevisionModel;
-import org.wordpress.android.fluxc.model.revisions.RevisionsModel;
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError;
 import org.wordpress.android.fluxc.network.rest.wpcom.post.PostRemoteAutoSaveModel;
 import org.wordpress.android.fluxc.network.rest.wpcom.post.PostRestClient;
@@ -204,31 +198,11 @@ public class PostStore extends Store {
         }
     }
 
-    public static class FetchRevisionsPayload extends Payload<BaseNetworkError> {
-        public PostModel post;
-        public SiteModel site;
-
-        public FetchRevisionsPayload(PostModel post, SiteModel site) {
-            this.post = post;
-            this.site = site;
-        }
-    }
-
     public static class FetchPostResponsePayload extends RemotePostPayload {
         public PostAction origin = PostAction.FETCH_POST; // Only used to track fetching newly uploaded XML-RPC posts
 
         public FetchPostResponsePayload(PostModel post, SiteModel site) {
             super(post, site);
-        }
-    }
-
-    public static class FetchRevisionsResponsePayload extends Payload<BaseNetworkError> {
-        public PostModel post;
-        public RevisionsModel revisionsModel;
-
-        public FetchRevisionsResponsePayload(PostModel post, RevisionsModel revisionsModel) {
-            this.post = post;
-            this.revisionsModel = revisionsModel;
         }
     }
 
@@ -283,16 +257,6 @@ public class PostStore extends Store {
         }
     }
 
-    public static class RevisionError implements OnChangedError {
-        @NonNull public RevisionsErrorType type;
-        @Nullable public String message;
-
-        public RevisionError(@NonNull RevisionsErrorType type, @Nullable String message) {
-            this.type = type;
-            this.message = message;
-        }
-    }
-
     // OnChanged events
     public static class OnPostChanged extends OnChanged<PostError> {
         public final int rowsAffected;
@@ -319,16 +283,6 @@ public class PostStore extends Store {
         public OnPostUploaded(PostModel post, boolean isFirstTimePublish) {
             this.post = post;
             this.isFirstTimePublish = isFirstTimePublish;
-        }
-    }
-
-    public static class OnRevisionsFetched extends OnChanged<RevisionError> {
-        public PostModel post;
-        public RevisionsModel revisionsModel;
-
-        OnRevisionsFetched(PostModel post, RevisionsModel revisionsModel) {
-            this.post = post;
-            this.revisionsModel = revisionsModel;
         }
     }
 
@@ -377,10 +331,6 @@ public class PostStore extends Store {
             }
             return GENERIC_ERROR;
         }
-    }
-
-    public enum RevisionsErrorType {
-        GENERIC_ERROR
     }
 
     private final PostRestClient mPostRestClient;
@@ -696,12 +646,6 @@ public class PostStore extends Store {
             case REMOTE_AUTO_SAVED_POST:
                 handleRemoteAutoSavedPost((RemoteAutoSavePostPayload) action.getPayload());
                 break;
-            case FETCH_REVISIONS:
-                fetchRevisions((FetchRevisionsPayload) action.getPayload());
-                break;
-            case FETCHED_REVISIONS:
-                handleFetchedRevisions((FetchRevisionsResponsePayload) action.getPayload());
-                break;
         }
     }
 
@@ -855,20 +799,6 @@ public class PostStore extends Store {
             // TODO: check for WP-REST-API plugin and use it here
             mPostXMLRPCClient.fetchPosts(payload.site, pages, payload.statusTypes, offset);
         }
-    }
-
-    private void fetchRevisions(FetchRevisionsPayload payload) {
-        mPostRestClient.fetchRevisions(payload.post, payload.site);
-    }
-
-    private void handleFetchedRevisions(FetchRevisionsResponsePayload payload) {
-        OnRevisionsFetched onRevisionsFetched = new OnRevisionsFetched(payload.post, payload.revisionsModel);
-
-        if (payload.isError()) {
-            onRevisionsFetched.error = new RevisionError(RevisionsErrorType.GENERIC_ERROR, payload.error.message);
-        }
-
-        emitChange(onRevisionsFetched);
     }
 
     private void handleDeletePostCompleted(DeletedPostPayload payload) {
@@ -1071,7 +1001,6 @@ public class PostStore extends Store {
                 new ListItemsRemovedPayload(PostListDescriptor.calculateTypeIdentifier(post.getLocalSiteId()),
                         Collections.singletonList(post.getRemotePostId()))));
         int rowsAffected = mPostSqlUtils.deletePost(post);
-        deleteLocalRevisionOfAPostOrPage(post);
 
         CauseOfOnPostChanged causeOfChange = new CauseOfOnPostChanged.RemovePost(post.getId(), post.getRemotePostId());
         OnPostChanged onPostChanged = new OnPostChanged(causeOfChange, rowsAffected);
@@ -1080,7 +1009,6 @@ public class PostStore extends Store {
 
     private void removeAllPosts() {
         int rowsAffected = mPostSqlUtils.deleteAllPosts();
-        deleteAllLocalRevisionAndDiffs();
         OnPostChanged event = new OnPostChanged(RemoveAllPosts.INSTANCE, rowsAffected);
         emitChange(event);
     }
@@ -1130,82 +1058,5 @@ public class PostStore extends Store {
             onPostChanged = new OnPostChanged(causeOfChange, rowsAffected);
         }
         emitChange(onPostChanged);
-    }
-
-    public void setLocalRevision(RevisionModel model, SiteModel site, PostModel post) {
-        LocalRevisionModel localRevision = LocalRevisionModel.fromRevisionModel(model, site, post);
-
-        ArrayList<LocalDiffModel> localDiffs = new ArrayList<>();
-
-        for (Diff titleDiff : model.getTitleDiffs()) {
-            localDiffs.add(LocalDiffModel.fromDiffAndLocalRevision(
-                    titleDiff, LocalDiffType.TITLE, localRevision));
-        }
-
-        for (Diff contentDiff : model.getContentDiffs()) {
-            localDiffs.add(LocalDiffModel.fromDiffAndLocalRevision(
-                    contentDiff, LocalDiffType.CONTENT, localRevision));
-        }
-
-        mPostSqlUtils.insertOrUpdateLocalRevision(localRevision, localDiffs);
-    }
-
-    public void removeLocalRevision(PostModel post) {
-        post.setDateLocallyChanged((DateTimeUtils.iso8601UTCFromDate(new Date())));
-        int rowsAffected = mPostSqlUtils.insertOrUpdatePostOverwritingLocalChanges(post);
-        CauseOfOnPostChanged causeOfChange = new CauseOfOnPostChanged.UpdatePost(
-                post.getId(),
-                post.getRemotePostId(),
-                false
-        );
-        OnPostChanged onPostChanged = new OnPostChanged(causeOfChange, rowsAffected);
-        emitChange(onPostChanged);
-
-        mDispatcher.dispatch(ListActionBuilder.newListDataInvalidatedAction(
-                PostListDescriptor.calculateTypeIdentifier(post.getLocalSiteId())));
-    }
-
-
-
-    public RevisionModel getLocalRevision(SiteModel site, PostModel post) {
-        List<LocalRevisionModel> localRevisions = mPostSqlUtils.getLocalRevisions(site, post);
-
-        if (localRevisions.isEmpty()) {
-            return null;
-        }
-
-        // we currently only support one local revision per post or page
-        LocalRevisionModel localRevision = localRevisions.get(0);
-        List<LocalDiffModel> localDiffs =
-                mPostSqlUtils.getLocalRevisionDiffs(localRevision);
-
-        return RevisionModel.fromLocalRevisionAndDiffs(localRevision, localDiffs);
-    }
-
-    @Nullable
-    public RevisionModel getRevisionById(final long revisionId, final long postId, final long siteId) {
-        final String revisionIdString = String.valueOf(revisionId);
-        final LocalRevisionModel localRevision = mPostSqlUtils.getRevisionById(revisionIdString, postId, siteId);
-
-        if (localRevision == null) {
-            return null;
-        }
-
-        List<LocalDiffModel> localDiffs = mPostSqlUtils.getLocalRevisionDiffs(localRevision);
-
-        return RevisionModel.fromLocalRevisionAndDiffs(localRevision, localDiffs);
-    }
-
-    public void deleteLocalRevision(RevisionModel revisionModel, SiteModel site, PostModel post) {
-        mPostSqlUtils.deleteLocalRevisionAndDiffs(
-                LocalRevisionModel.fromRevisionModel(revisionModel, site, post));
-    }
-
-    public void deleteLocalRevisionOfAPostOrPage(PostModel post) {
-        mPostSqlUtils.deleteLocalRevisionAndDiffsOfAPostOrPage(post);
-    }
-
-    public void deleteAllLocalRevisionAndDiffs() {
-        mPostSqlUtils.deleteAllLocalRevisionsAndDiffs();
     }
 }

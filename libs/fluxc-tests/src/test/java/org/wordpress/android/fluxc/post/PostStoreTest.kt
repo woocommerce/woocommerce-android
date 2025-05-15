@@ -1,6 +1,5 @@
 package org.wordpress.android.fluxc.post
 
-import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -21,9 +20,6 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.list.PostListDescriptor
 import org.wordpress.android.fluxc.model.post.PostStatus
 import org.wordpress.android.fluxc.model.post.PostStatus.PUBLISHED
-import org.wordpress.android.fluxc.model.revisions.LocalDiffModel
-import org.wordpress.android.fluxc.model.revisions.LocalRevisionModel
-import org.wordpress.android.fluxc.model.revisions.RevisionModel
 import org.wordpress.android.fluxc.persistence.PostSqlUtils
 import org.wordpress.android.fluxc.store.ListStore.FetchedListItemsPayload
 import org.wordpress.android.fluxc.store.PostStore
@@ -293,72 +289,6 @@ class PostStoreTest {
             (this.type == ListAction.FETCHED_LIST_ITEMS)
         })
         verifyNoMoreInteractions(dispatcher)
-    }
-
-    @Test
-    fun `Should return mapped RevisionModel when getRevisionById is called`() {
-        // Arrange
-        val localRevision = LocalRevisionModel(1)
-        val localDiffs = listOf<LocalDiffModel>(LocalDiffModel(1))
-        whenever(postSqlUtils.getRevisionById(any(), any(), any())).thenReturn(localRevision)
-        whenever(postSqlUtils.getLocalRevisionDiffs(any())).thenReturn(localDiffs)
-
-        // Act
-        val expected = RevisionModel.fromLocalRevisionAndDiffs(localRevision, localDiffs)
-        val actual = store.getRevisionById(1L, 1L, 1L)
-
-        // Assert
-        assertEquals(expected, actual)
-    }
-
-    @Test
-    fun `Should return null when PostSqlUtils getRevisionById returns null`() {
-        // Arrange
-        whenever(postSqlUtils.getRevisionById(any(), any(), any())).thenReturn(null)
-
-        // Act
-        val expected = null
-        val actual = store.getRevisionById(1L, 1L, 1L)
-
-        // Assert
-        assertEquals(expected, actual)
-    }
-
-    @Test
-    fun `Should call PostSqlUtils getRevisionById when getRevisionById is called`() {
-        // Arrange
-        whenever(postSqlUtils.getRevisionById(any(), any(), any())).thenReturn(LocalRevisionModel())
-
-        // Act
-        store.getRevisionById(1L, 1L, 1L)
-
-        // Assert
-        verify(postSqlUtils).getRevisionById("1", 1L, 1L)
-    }
-
-    @Test
-    fun `Should delete all revisions and diffs of a Post when removePost is called`() {
-        // Arrange
-        whenever(postSqlUtils.deletePost(any())).thenReturn(1)
-        val postModel = createPostModel()
-
-        // Act
-        store.onAction(PostActionBuilder.newRemovePostAction(postModel))
-
-        // Assert
-        verify(postSqlUtils).deleteLocalRevisionAndDiffsOfAPostOrPage(postModel)
-    }
-
-    @Test
-    fun `Should remove all revisions and diffs when removeAllPosts is called`() {
-        // Arrange
-        val postModel = createPostModel()
-
-        // Act
-        store.onAction(PostActionBuilder.newRemoveAllPostsAction())
-
-        // Assert
-        verify(postSqlUtils).deleteAllLocalRevisionsAndDiffs()
     }
 
     private fun createFetchedPostListAction(
