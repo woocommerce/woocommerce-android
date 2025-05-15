@@ -285,7 +285,7 @@ private fun MultipleShipments(
                                         contentDescription = stringResource(
                                             R.string.purchased_shipment_content_description
                                         ),
-                                        tint = colorResource(id = R.color.woo_green_70)
+                                        tint = colorResource(id = R.color.woo_shipping_label_purchased_color)
                                     )
                                 }
                             }
