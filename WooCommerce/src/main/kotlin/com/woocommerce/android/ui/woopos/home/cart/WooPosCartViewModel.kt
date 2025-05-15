@@ -143,7 +143,7 @@ class WooPosCartViewModel @Inject constructor(
                     id = it.variationId
                 )
 
-                is WooPosCartItemViewState.Coupon -> WooPosItemsViewModel.ItemClickedData.Coupon(it.id)
+                is WooPosCartItemViewState.Coupon -> WooPosItemsViewModel.ItemClickedData.Coupon(it.id, it.name)
             }
         }
         return itemClickedDataList
