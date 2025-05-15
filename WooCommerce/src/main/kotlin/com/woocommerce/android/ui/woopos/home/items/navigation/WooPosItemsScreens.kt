@@ -27,12 +27,13 @@ fun WooPosItemsScreens(
     onNavigateToItemsListScreen: () -> Unit
 ) {
     val currentNavigationState = itemsScreens.collectAsState()
-    val listState = rememberLazyListState()
+    val productListState = rememberLazyListState()
+    val couponsListState = rememberLazyListState()
     Box(modifier = modifier.fillMaxSize()) {
         Crossfade(targetState = currentNavigationState.value, label = "LeftPaneScreen") { navigationState ->
             when (navigationState) {
                 is WooPosItemsScreenViewModel.ItemsScreens.ItemListScreen -> {
-                    WooPosItemsScreen(modifier = modifier, listState)
+                    WooPosItemsScreen(modifier = modifier, productListState, couponsListState)
                 }
 
                 is WooPosItemsScreenViewModel.ItemsScreens.VariationsScreen -> {
