@@ -1,7 +1,13 @@
 package com.woocommerce.android.ui.woopos.util.analytics
 
 import com.woocommerce.android.analytics.IAnalyticsEvent
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ITEM_LIST_TYPE
+import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ItemsHeaderType
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ItemsListItemType
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ItemsListProductType
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ItemsListSource
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ItemsListSourceType
 import kotlin.reflect.KClass
 
 sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
@@ -78,62 +84,176 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
         data object InteractionWithCustomerStarted : Event() {
             override val name: String = "interaction_with_customer_started"
         }
-        data class ItemAddedToCart(val source: String = "list") : Event() {
+
+        class ItemAddedToCart private constructor(
+            source: ItemsListSource,
+            sourceType: ItemsListSourceType,
+            itemType: ItemsListItemType,
+            productType: ItemsListProductType?
+        ) : Event() {
             override val name: String = "item_added_to_cart"
 
-            init {
-                addProperties(mapOf("source" to source))
-            }
-
-            enum class WooPosItemSource(val value: String) {
-                PRODUCT_LIST("list"),
-                SEARCH_RESULT("search_result"),
-                SEARCH_RESULT_LOCAL("search_result_local"),
-                POPULAR_PRODUCTS("pre_search_list"),
-                COUPON_LIST("coupons");
-
-                companion object {
-                    fun toAnalyticsString(source: WooPosItemSource): String = source.value
+            constructor(
+                source: ItemsListSource,
+                sourceType: ItemsListSourceType,
+                item: WooPosItemsViewModel.ItemClickedData
+            ) : this(
+                source,
+                sourceType,
+                itemType = when (item) {
+                    is WooPosItemsViewModel.ItemClickedData.Product -> ItemsListItemType.PRODUCT
+                    is WooPosItemsViewModel.ItemClickedData.Coupon -> ItemsListItemType.COUPON
+                },
+                productType = when (item) {
+                    is WooPosItemsViewModel.ItemClickedData.Product.Simple -> ItemsListProductType.SIMPLE
+                    is WooPosItemsViewModel.ItemClickedData.Product.Variation -> ItemsListProductType.VARIABLE
+                    is WooPosItemsViewModel.ItemClickedData.Coupon -> null
                 }
+            )
+
+            init {
+                addProperties(
+                    buildMap {
+                        put(ItemsListSource.SOURCE, source.toString())
+                        put(ItemsListSourceType.SOURCE_TYPE, sourceType.toString())
+                        put(ItemsListItemType.ITEM_TYPE, itemType.toString())
+                        if (productType != null) {
+                            put(ItemsListProductType.PRODUCT_TYPE, productType.toString())
+                        }
+                    }
+                )
             }
         }
-        data object ItemRemovedFromCart : Event() {
+
+        class ItemRemovedFromCart private constructor(
+            source: ItemsListSource,
+            itemType: ItemsListItemType,
+            productType: ItemsListProductType?
+        ) : Event() {
+            constructor(
+                source: ItemsListSource,
+                item: WooPosCartItemViewState
+            ) : this(
+                source,
+                itemType = when (item) {
+                    is WooPosCartItemViewState.Product -> ItemsListItemType.PRODUCT
+                    is WooPosCartItemViewState.Coupon -> ItemsListItemType.COUPON
+                },
+                productType = when (item) {
+                    is WooPosCartItemViewState.Product.Simple -> ItemsListProductType.SIMPLE
+                    is WooPosCartItemViewState.Product.Variation -> ItemsListProductType.VARIABLE
+                    is WooPosCartItemViewState.Coupon -> null
+                }
+            )
+
             override val name: String = "item_removed_from_cart"
+
+            init {
+                addProperties(
+                    buildMap {
+                        put(ItemsListSource.SOURCE, source.toString())
+                        put(ItemsListItemType.ITEM_TYPE, itemType.toString())
+                        if (productType != null) {
+                            put(ItemsListProductType.PRODUCT_TYPE, productType.toString())
+                        }
+                    }
+                )
+            }
         }
+
         data object Loaded : Event() {
             override val name: String = "loaded"
         }
+
         data object OrderCreationSuccess : Event() {
             override val name: String = "order_creation_success"
         }
-        data object ProductsPullToRefreshTriggered : Event() {
-            override val name: String = "products_pull_to_refresh"
+
+        class PullToRefreshTriggered(
+            source: ItemsListSource,
+            sourceType: ItemsListSourceType
+        ) : Event() {
+            override val name: String = "items_pull_to_refresh"
+
+            init {
+                addProperties(
+                    mapOf(
+                        ItemsListSource.SOURCE to source.toString(),
+                        ItemsListSourceType.SOURCE_TYPE to sourceType.toString()
+                    )
+                )
+            }
         }
+
         data object ReaderReadyForCardPayment : Event() {
             override val name: String
                 get() = "reader_ready_for_card_payment"
         }
+
         data object VariationsPullToRefreshTriggered : Event() {
             override val name: String = "variations_pull_to_refresh"
         }
+
         data object ViewDocsTapped : Event() {
             override val name: String = "view_docs_tapped"
         }
+
         data object SimpleProductExplanationDialogShown : Event() {
             override val name: String = "simple_products_explanation_dialog_shown"
         }
-        data object SearchButtonTapped : Event() {
+
+        class SearchButtonTapped(
+            source: ItemsListSource,
+            sourceType: ItemsListSourceType,
+        ) : Event() {
             override val name: String = "search_button_tapped"
+
+            init {
+                addProperties(
+                    mapOf(
+                        ItemsListSource.SOURCE to source.toString(),
+                        ItemsListSourceType.SOURCE_TYPE to sourceType.toString()
+                    )
+                )
+            }
         }
+
+        class ItemsHeaderTapped(type: ItemsHeaderType) : Event() {
+            override val name: String = "items_header_tapped"
+
+            init {
+                addProperties(
+                    mapOf(
+                        ItemsHeaderType.HEADER_TYPE to type.toString()
+                    )
+                )
+            }
+        }
+
         data object PreSearchRecentTermTapped : Event() {
             override val name: String = "pre_search_recent_term_tapped"
         }
-        data object ItemsNextPageLoaded : Event() {
+
+        class ItemsNextPageLoaded(
+            source: ItemsListSource,
+            sourceType: ItemsListSourceType
+        ) : Event() {
             override val name: String = "items_next_page_loaded"
+
+            init {
+                addProperties(
+                    mapOf(
+                        ItemsListSource.SOURCE to source.toString(),
+                        ItemsListSourceType.SOURCE_TYPE to sourceType.toString()
+                    )
+                )
+            }
         }
+
         data class SearchRemoteResultsFetched(
             val totalProductsCount: Int?,
-            val millisecondsSinceRequestSent: Long
+            val millisecondsSinceRequestSent: Long,
+            val source: ItemsListSource,
         ) : Event() {
             override val name: String = "pos_search_remote_results_fetched"
 
@@ -141,7 +261,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                 addProperties(
                     mapOf(
                         "milliseconds_since_request_sent" to millisecondsSinceRequestSent.toString(),
-                        ITEM_LIST_TYPE to "products"
+                        ItemsListSource.SOURCE to source.toString(),
                     )
                 )
                 if (totalProductsCount != null) {
