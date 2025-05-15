@@ -15,13 +15,30 @@ complexity:
 formatting:
   active: true
   autoCorrect: true
-  excludes: ['**/fluxc/**', '**/login/**']
+  excludes: ['**/login/**']
+  AnnotationOnSeparateLine:
+    excludes: ['**/fluxc/**']
+  ChainWrapping:
+    excludes: ['**/fluxc/**']
   Indentation:
     active: true
     autoCorrect: true
+    excludes: ['**/fluxc/**']
   MaximumLineLength:
     active: true
+    excludes: ['**/fluxc/**']
     ignoreBackTickedIdentifier: true
+  MultiLineIfElse:
+    excludes: ['**/fluxc/**']
+  Wrapping:
+    excludes: ['**/fluxc/**']
+  ArgumentListWrapping:
+    excludes: ['**/fluxc/**']
+  SpacingAroundComma:
+    excludes: ['**/fluxc/**']
+  SpacingBetweenDeclarationsWithAnnotations:
+    excludes: ['**/fluxc/**']
+
 
 style:
   UnnecessaryAbstractClass:

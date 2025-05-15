@@ -11,7 +11,6 @@ import org.wordpress.android.fluxc.SingleStoreWellSqlConfigForTests
 import org.wordpress.android.fluxc.TestSiteSqlUtils
 import org.wordpress.android.fluxc.UnitTestUtils
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.WCProductCategoryModel
 import org.wordpress.android.fluxc.model.WCProductReviewModel
 import org.wordpress.android.fluxc.model.WCProductShippingClassModel
 import org.wordpress.android.fluxc.model.WCProductTagModel
@@ -317,7 +316,6 @@ class ProductSqlUtilsTest {
         savedReviews = ProductSqlUtils.getProductReviewsForSite(site)
         assertEquals(0, savedReviews.size)
     }
-
 
     @Test
     fun testInsertOrUpdateProductTag() {

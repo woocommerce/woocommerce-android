@@ -4,7 +4,7 @@ import androidx.room.Entity
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 
 @Entity(tableName = "CustomerFromAnalytics", primaryKeys = ["localSiteId", "id"])
-data class CustomerFromAnalyticsEntity (
+data class CustomerFromAnalyticsEntity(
     val localSiteId: LocalOrRemoteId.LocalId,
     val id: Long,
     val userId: Long,

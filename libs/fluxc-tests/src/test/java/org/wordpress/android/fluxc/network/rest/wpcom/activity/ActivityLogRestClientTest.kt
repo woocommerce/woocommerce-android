@@ -602,8 +602,7 @@ class ActivityLogRestClientTest {
     private suspend fun initFetchRewindStatus(
         data: RewindStatusResponse = mock(),
         error: WPComGsonNetworkError? = null
-    ):
-            Response<RewindStatusResponse> {
+    ): Response<RewindStatusResponse> {
         val response = if (error != null) Response.Error<RewindStatusResponse>(error) else Success(data)
         whenever(wpComGsonRequestBuilder.syncGetRequest(
                 eq(activityRestClient),

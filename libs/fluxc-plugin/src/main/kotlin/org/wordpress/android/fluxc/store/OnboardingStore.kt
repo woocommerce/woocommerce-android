@@ -64,5 +64,3 @@ class OnboardingStore @Inject constructor(
             }
         }
 }
-
-

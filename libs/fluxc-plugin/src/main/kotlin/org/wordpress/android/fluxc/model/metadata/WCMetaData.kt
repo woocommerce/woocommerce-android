@@ -112,4 +112,3 @@ data class WCMetaData(
 }
 
 operator fun List<WCMetaData>.get(key: String) = firstOrNull { it.key == key }
-

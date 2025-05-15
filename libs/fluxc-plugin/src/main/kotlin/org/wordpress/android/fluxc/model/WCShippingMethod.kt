@@ -2,7 +2,7 @@ package org.wordpress.android.fluxc.model
 
 import org.wordpress.android.fluxc.persistence.entity.ShippingMethodEntity
 
-data class WCShippingMethod (
+data class WCShippingMethod(
     val id: String,
     val title: String
 )

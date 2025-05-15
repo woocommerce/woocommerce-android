@@ -65,7 +65,6 @@ import kotlin.test.assertTrue
 private const val COD_PAYMENT_METHOD_ID = "cod"
 private const val CUSTOM_PAYMENT_METHOD_TITLE = "Pay in Person"
 
-
 @InternalCoroutinesApi
 @Config(manifest = Config.NONE)
 @RunWith(RobolectricTestRunner::class)
@@ -384,7 +383,6 @@ class WCOrderStoreTest {
                 .isEqualTo(CoreOrderStatus.PROCESSING.value)
         Unit
     }
-
 
     @Test
     fun testUpdateOrderPaymentMethodRequestUpdatesLocalDatabase() = runBlocking {

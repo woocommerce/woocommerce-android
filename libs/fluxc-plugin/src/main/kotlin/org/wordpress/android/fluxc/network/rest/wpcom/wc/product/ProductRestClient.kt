@@ -397,7 +397,7 @@ class ProductRestClient @Inject constructor(
                 } else {
                     RemoteVariationPayload(
                         ProductError(GENERIC_ERROR, "Success response with empty data"),
-                        WCProductVariationModel().copy (
+                        WCProductVariationModel().copy(
                             remoteProductId = RemoteId(remoteProductId),
                             remoteVariationId = RemoteId(remoteVariationId)
                     ),
@@ -409,7 +409,7 @@ class ProductRestClient @Inject constructor(
             is WPAPIResponse.Error -> {
                 RemoteVariationPayload(
                     wpAPINetworkErrorToProductError(response.error),
-                    WCProductVariationModel().copy (
+                    WCProductVariationModel().copy(
                         remoteProductId = RemoteId(remoteProductId),
                         remoteVariationId = RemoteId(remoteVariationId)
                     ),
@@ -705,7 +705,6 @@ class ProductRestClient @Inject constructor(
         TITLE_ASC, DATE_ASC, POPULARITY_ASC -> "asc"
         POPULARITY_DESC, TITLE_DESC, DATE_DESC -> "desc"
     }
-
 
     private fun addGlobalUniqueIdSearchQuery(
         params: MutableMap<String, String>,
@@ -1444,7 +1443,7 @@ class ProductRestClient @Inject constructor(
                 is WPAPIResponse.Success -> {
                     response.data?.let {
                         val categories = it.map { category ->
-                            category.asProductCategoryModel().copy (  localSiteId = site.localId()  )
+                            category.asProductCategoryModel().copy(localSiteId = site.localId())
                         }
                         val canLoadMore = categories.size == pageSize
                         val loadedMore = offset > 0
@@ -1508,7 +1507,7 @@ class ProductRestClient @Inject constructor(
                     response.data!!.createdCategories
                         .filter { it.error == null }
                         .map {
-                            it.asProductCategoryModel().copy (localSiteId = site.localId() )
+                            it.asProductCategoryModel().copy(localSiteId = site.localId())
                         }
                 )
             }

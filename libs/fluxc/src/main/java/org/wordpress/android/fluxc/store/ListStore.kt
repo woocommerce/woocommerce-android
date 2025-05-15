@@ -335,7 +335,7 @@ class ListStore @Inject constructor(
         listSqlUtils.deleteAllLists()
     }
 
-    private fun handleDataFailure(event : OnListDataFailure){
+    private fun handleDataFailure(event: OnListDataFailure) {
         emitChange(event)
     }
 

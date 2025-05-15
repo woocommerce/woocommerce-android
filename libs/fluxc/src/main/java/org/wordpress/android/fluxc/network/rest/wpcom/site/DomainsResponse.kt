@@ -149,4 +149,3 @@ data class TitanMailSubscription(
     @SerializedName("status")
     val status: String? = null
 )
-

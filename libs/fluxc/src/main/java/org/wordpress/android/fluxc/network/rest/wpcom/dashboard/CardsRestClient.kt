@@ -96,13 +96,13 @@ class CardsRestClient @Inject constructor(
         fun toCards() = arrayListOf<CardModel>().apply {
             todaysStats?.let { add(it.toTodaysStatsCard()) }
             posts?.let { add(it.toPosts()) }
-            pages?.let { add(getPagesCardModel(it))}
+            pages?.let { add(getPagesCardModel(it)) }
             activity?.let { add(it.toActivityCardModel()) }
             dynamic?.let { add(getDynamicCardsModel(it)) }
         }.toList()
 
         private fun getPagesCardModel(pages: List<PageResponse>): PagesCardModel {
-            return PagesCardModel(pages.map{ it.toPages() })
+            return PagesCardModel(pages.map { it.toPages() })
         }
 
         private fun getDynamicCardsModel(dynamicCards: List<DynamicCardResponse>): DynamicCardsModel {
@@ -181,7 +181,7 @@ class CardsRestClient @Inject constructor(
         @SerializedName("modified") val modified: String,
         @SerializedName("status") val status: String,
         @SerializedName("date") val date: String
-    ){
+    ) {
         fun toPages() = PageCardModel(
                 id = id,
                 title = title,

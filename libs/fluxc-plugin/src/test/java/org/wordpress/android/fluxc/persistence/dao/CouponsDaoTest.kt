@@ -6,20 +6,20 @@ import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
-import org.wordpress.android.fluxc.persistence.entity.CouponEntity
-import java.io.IOException
-import org.assertj.core.api.Assertions.assertThat
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
+import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
 import org.wordpress.android.fluxc.persistence.entity.CouponEmailEntity
+import org.wordpress.android.fluxc.persistence.entity.CouponEntity
 import org.wordpress.android.fluxc.persistence.entity.CouponEntity.DiscountType.Percent
 import org.wordpress.android.fluxc.persistence.entity.CouponWithEmails
+import java.io.IOException
 import java.math.BigDecimal
 
 @ExperimentalCoroutinesApi
@@ -77,7 +77,7 @@ class CouponsDaoTest {
         // when
         couponsDao.insertOrUpdateCoupon(coupon)
         couponsDao.insertOrUpdateCouponEmail(email)
-        val observedCoupon = couponsDao.observeCoupon(LocalId(1), RemoteId( coupon.id.value + 1))
+        val observedCoupon = couponsDao.observeCoupon(LocalId(1), RemoteId(coupon.id.value + 1))
 
         // then
         assertThat(observedCoupon.first()).isNull()

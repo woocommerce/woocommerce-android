@@ -1,7 +1,7 @@
 package org.wordpress.android.fluxc.store
 
-import javax.inject.Inject
 import org.wordpress.android.fluxc.utils.PreferenceUtils
+import javax.inject.Inject
 
 class GetDeviceRegistrationStatus @Inject constructor(
     private val prefsWrapper: PreferenceUtils.PreferenceUtilsWrapper

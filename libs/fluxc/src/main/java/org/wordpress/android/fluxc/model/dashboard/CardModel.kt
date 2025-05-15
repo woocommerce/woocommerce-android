@@ -23,7 +23,7 @@ sealed class CardModel(
     data class ActivityCardModel(
         val activities: List<ActivityLogModel> = emptyList(),
         val error: ActivityCardError? = null
-    )  : CardModel(Type.ACTIVITY)
+    ) : CardModel(Type.ACTIVITY)
 
     data class PagesCardModel(
         val pages: List<PageCardModel> = emptyList(),

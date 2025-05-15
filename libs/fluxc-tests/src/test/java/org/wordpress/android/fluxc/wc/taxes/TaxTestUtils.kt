@@ -38,4 +38,3 @@ object TaxTestUtils {
         "wc/tax-rate-response.json"
             .jsonFileAs(Array<TaxRateDto>::class.java)
 }
-
