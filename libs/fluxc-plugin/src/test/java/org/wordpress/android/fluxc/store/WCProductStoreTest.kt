@@ -115,7 +115,8 @@ class WCProductStoreTest {
             coroutineEngine = initCoroutineEngine(),
             productsDao = productsDao,
             productVariationsDao = productsVariationsDao,
-            productCategoriesDao = roomDb.productCategoriesDao
+            productCategoriesDao = roomDb.productCategoriesDao,
+            productShippingClassesDao = roomDb.productShippingClassesDao
         )
     }
 
