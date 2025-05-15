@@ -163,7 +163,7 @@ class CouponRepository @Inject constructor(
         }
     }
 
-    suspend fun createCoupon(coupon: Coupon): Result<Unit> {
+    suspend fun createCoupon(coupon: Coupon): Result<Long?> {
         val request = coupon.createUpdateCouponRequest()
 
         val result = store.createCoupon(
@@ -173,7 +173,7 @@ class CouponRepository @Inject constructor(
 
         return when {
             result.isError -> Result.failure(WooException(result.error))
-            else -> Result.success(Unit)
+            else -> Result.success(result.model)
         }
     }
 

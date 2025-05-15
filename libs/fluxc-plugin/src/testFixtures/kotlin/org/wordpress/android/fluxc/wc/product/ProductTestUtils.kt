@@ -136,8 +136,8 @@ object ProductTestUtils {
         val converted = Gson().fromJson(categoryJson, responseType) as? List<ProductCategoryApiResponse> ?: emptyList()
         return converted.map {
             WCProductCategoryModel(
-                localSiteId = siteId,
-                remoteCategoryId = it.id,
+                localSiteId = LocalId(siteId),
+                remoteCategoryId = RemoteId(it.id),
                 name = it.name ?: "",
                 slug = it.slug ?: "",
                 parent = it.parent ?: 0L,

@@ -15,9 +15,7 @@ class WooPosProductSearchPredicate @Inject constructor() {
 
         return { product ->
             searchTerms.all { term ->
-                product.name.lowercase().contains(term) ||
-                    product.description.lowercase().contains(term) == true ||
-                    product.shortDescription.lowercase().contains(term) == true
+                product.name.lowercase().contains(term)
             }
         }
     }

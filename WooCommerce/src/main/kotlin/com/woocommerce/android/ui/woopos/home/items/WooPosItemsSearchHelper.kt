@@ -143,15 +143,10 @@ class WooPosItemsSearchHelper @Inject constructor(
         )
     }
 
-    fun getInitialSearchState(isProductsSearchEnabled: Boolean): SearchState {
-        return when (isProductsSearchEnabled) {
-            true -> SearchState.Visible(
-                state = WooPosSearchInputState.Closed
-            )
-
-            false -> SearchState.Hidden
-        }
-    }
+    fun getInitialSearchState(): SearchState =
+        SearchState.Visible(
+            state = WooPosSearchInputState.Closed
+        )
 
     @Suppress("ReturnCount")
     private fun updateLoadingState(isLoading: Boolean) {

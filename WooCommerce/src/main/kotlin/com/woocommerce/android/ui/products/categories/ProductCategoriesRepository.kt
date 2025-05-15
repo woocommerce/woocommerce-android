@@ -16,6 +16,7 @@ import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCProductAction.ADDED_PRODUCT_CATEGORY
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.WCProductCategoryModel
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductCategoryChanged
@@ -82,7 +83,7 @@ class ProductCategoriesRepository @Inject constructor(
     }
 
     suspend fun getProductCategoryByRemoteId(remoteId: Long) =
-        productStore.getProductCategoryByRemoteId(selectedSite.get(), remoteId)
+        productStore.getProductCategoryByRemoteId(selectedSite.get(), RemoteId(remoteId))
 
     suspend fun addProductCategories(categories: List<ProductCategory>): Result<List<ProductCategory>> {
         val result = productStore.addProductCategories(
@@ -133,7 +134,7 @@ class ProductCategoriesRepository @Inject constructor(
         val result = productStore.updateProductCategory(
             site = selectedSite.get(),
             category = WCProductCategoryModel(
-                remoteCategoryId = remoteId,
+                remoteCategoryId = RemoteId(remoteId),
                 name = categoryName,
                 parent = parentId
             )

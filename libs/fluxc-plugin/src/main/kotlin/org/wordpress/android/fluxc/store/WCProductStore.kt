@@ -954,14 +954,11 @@ class WCProductStore @Inject internal constructor(
     ): WCProductReviewModel? = ProductSqlUtils
         .getProductReviewByRemoteId(localSiteId, remoteReviewId)
 
-    suspend fun getProductCategoriesForSite(
-        site: SiteModel,
-        sortType: ProductCategorySorting = DEFAULT_CATEGORY_SORTING
-    ) =
-        productCategoriesDao.getProductCategories(site.localId().value, sortType)
+    suspend fun getProductCategoriesForSite(site: SiteModel, sortType: ProductCategorySorting = DEFAULT_CATEGORY_SORTING) =
+        productCategoriesDao.getProductCategories(site.localId(), sortType)
 
-    suspend fun getProductCategoryByRemoteId(site: SiteModel, remoteId: Long) =
-        productCategoriesDao.getProductCategory(site.localId().value, remoteId)
+    suspend fun getProductCategoryByRemoteId(site: SiteModel, id: RemoteId) =
+        productCategoriesDao.getProductCategory(site.localId(), id)
 
     @Suppress("LongMethod", "ComplexMethod")
     @Subscribe(threadMode = ThreadMode.ASYNC)
@@ -1101,8 +1098,7 @@ class WCProductStore @Inject internal constructor(
     fun observeCategories(
         site: SiteModel,
         sortType: ProductCategorySorting = DEFAULT_CATEGORY_SORTING
-    ): Flow<List<WCProductCategoryModel>> =
-        productCategoriesDao.observeProductCategories(site.localId().value, sortType)
+    ): Flow<List<WCProductCategoryModel>> = productCategoriesDao.observeProductCategories(site.localId(), sortType)
 
     fun observeBundledProducts(
         site: SiteModel,
@@ -1780,14 +1776,15 @@ class WCProductStore @Inject internal constructor(
             when {
                 response.isError -> WooResult(response.error)
                 response.result != null -> {
-                    productStorageHelper.upsertProducts(response.result)
-                    val productIds = response.result.map { it.product.remoteProductId }
+                    val productsWithTotal = response.result
+                    productStorageHelper.upsertProducts(productsWithTotal)
+                    val productIds = productsWithTotal.map { it.product.remoteProductId }
                     val products = if (productIds.isNotEmpty()) {
                         productsDao.getProducts(localSiteId = site.id, remoteProductIds = productIds)
                     } else {
                         emptyList()
                     }
-                    val canLoadMore = response.result.size == pageSize
+                    val canLoadMore = productsWithTotal.size == pageSize
                     WooResult(ProductSearchResult(products, canLoadMore))
                 }
 
@@ -1859,7 +1856,7 @@ class WCProductStore @Inject internal constructor(
                     productCategoriesDao.upsertProductCategories(response.result)
                     val categoryIds = response.result.map { it.remoteCategoryId }
                     val categories = if (categoryIds.isNotEmpty()) {
-                        productCategoriesDao.getProductCategories(site.localId().value, categoryIds)
+                        productCategoriesDao.getProductCategories(site.localId(), categoryIds)
                     } else {
                         emptyList()
                     }
@@ -2194,7 +2191,7 @@ class WCProductStore @Inject internal constructor(
                 // This is the simplest way to keep our local categories in sync with remote categories
                 // in case of deletions.
                 if (!payload.loadedMore) {
-                    productCategoriesDao.deleteProductCategoriesForSite(payload.site.localId().value)
+                    productCategoriesDao.deleteProductCategoriesForSite(payload.site.localId())
                 }
                 productCategoriesDao.upsertProductCategories(payload.categories)
                 onProductCategoryChanged = OnProductCategoryChanged(
