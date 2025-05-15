@@ -69,7 +69,8 @@ class WCProductLeaderboardsMapperTest {
                 mock(),
                 productsDao = database.productsDao,
                 productVariationsDao = database.productVariationsDao,
-                productCategoriesDao = database.productCategoriesDao
+                productCategoriesDao = database.productCategoriesDao,
+                productTagsDao = database.productTagsDao
             )
         )
     }
