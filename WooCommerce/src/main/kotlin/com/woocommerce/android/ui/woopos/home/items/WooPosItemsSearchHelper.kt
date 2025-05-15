@@ -32,6 +32,7 @@ class WooPosItemsSearchHelper @Inject constructor(
         listenEventsFromParent()
     }
 
+    @Suppress("CyclomaticComplexMethod")
     private fun listenEventsFromParent() {
         coroutineScope.launch {
             parentToChildrenEventReceiver.events.collect { event ->
