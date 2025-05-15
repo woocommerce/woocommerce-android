@@ -464,11 +464,10 @@ class WooPosItemsSearchViewModelTest {
 
         // WHEN
         val viewModel = createViewModel()
-        advanceTimeBy(600)
 
         // THEN
         viewModel.viewState.test {
-            skipItems(1)
+            skipItems(2)
 
             val contentState = awaitItem() as WooPosItemsSearchViewState.Content
             assertThat(contentState.searchQuery).isEqualTo(query2)
@@ -477,7 +476,7 @@ class WooPosItemsSearchViewModelTest {
     }
 
     @Test
-    fun `given empty cached results, when search performed, then show loading state`() = runTest {
+    fun `given empty cached results, when search performed, then do remote search right away`() = runTest {
         // GIVEN
         val query = "test query"
         val products = listOf(
@@ -505,11 +504,10 @@ class WooPosItemsSearchViewModelTest {
 
         // THEN
         viewModel.viewState.test {
-            val loadingState = awaitItem()
-            assertThat(loadingState).isInstanceOf(WooPosItemsSearchViewState.Loading::class.java)
-
             val contentState = awaitItem() as WooPosItemsSearchViewState.Content
+            assertThat(contentState.searchQuery).isEqualTo(query)
             assertThat(contentState.items).hasSize(1)
+            assertThat((contentState.items[0] as Product.Simple).name).isEqualTo("Test Product")
         }
     }
 
