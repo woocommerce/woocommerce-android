@@ -15,8 +15,8 @@ import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.persistence.ProductSqlUtils
 import org.wordpress.android.fluxc.persistence.SiteSqlUtils
 import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
 import org.wordpress.android.fluxc.wc.product.ProductTestUtils
@@ -49,14 +49,14 @@ class ProductTagsDaoTest {
         // Test inserting a product tag
         sut.upsertProductTag(tagModel)
 
-        var savedTagList = sut.getProductTags(site.id)
+        var savedTagList = sut.getProductTags(site.localId())
         assertThat(savedTagList).isEqualTo(listOf(tagModel))
 
         // Test updating the same product tag
         val updated = tagModel.copy(name = "Tag update")
         sut.upsertProductTag(updated)
 
-        savedTagList = sut.getProductTags(site.id)
+        savedTagList = sut.getProductTags(site.localId())
         assertThat(savedTagList).isEqualTo(listOf(updated))
     }
 
@@ -69,11 +69,11 @@ class ProductTagsDaoTest {
         sut.upsertProductTags(tagList)
 
         // Get tag list for site and verify
-        val savedTagListExists = sut.getProductTags(site.id)
+        val savedTagListExists = sut.getProductTags(site.localId())
         assertEquals(tagList.size, savedTagListExists.size)
 
         // Get tag list for a site that does not exist
-        val nonExistingSiteId = 400
+        val nonExistingSiteId = LocalId(400)
         val savedTagList = sut.getProductTags(nonExistingSiteId)
         assertEquals(0, savedTagList.size)
     }
@@ -88,12 +88,12 @@ class ProductTagsDaoTest {
 
         // Get tag by name and verify
         val firstTag = tagList.first()
-        val savedTagExists = sut.getProductTag(site.id, name = firstTag.name)
+        val savedTagExists = sut.getProductTag(site.localId(), name = firstTag.name)
         assertThat(savedTagExists).isEqualTo(firstTag)
 
         // Get tag for a name that does not exist
         val nonExistingTagName = "test"
-        val savedTag = sut.getProductTag(site.id, name = nonExistingTagName)
+        val savedTag = sut.getProductTag(site.localId(), name = nonExistingTagName)
         assertThat(savedTag).isNull()
     }
 
@@ -107,14 +107,14 @@ class ProductTagsDaoTest {
 
         // Get tags by list of name and verify
         val tagNames = tagList.map { it.name }.toList()
-        val savedTagListExists = sut.getProductTags(site.id, tagsNames = tagNames)
+        val savedTagListExists = sut.getProductTags(site.localId(), tagsNames = tagNames)
         assertThat(savedTagListExists).containsExactlyInAnyOrderElementsOf(tagList)
 
         // Get tags for a name that does not exist
-        val monExistingTagList = sut.getProductTags(site.id, tagsNames = listOf("test", "test1", "test2"))
+        val monExistingTagList = sut.getProductTags(site.localId(), tagsNames = listOf("test", "test1", "test2"))
         assertEquals(0, monExistingTagList.size)
 
-        val savedTagList = sut.getProductTags(site.id, tagsNames = listOf(tagNames[0], tagNames[1], "test"))
+        val savedTagList = sut.getProductTags(site.localId(), tagsNames = listOf(tagNames[0], tagNames[1], "test"))
         assertEquals(2, savedTagList.size)
     }
 
@@ -125,12 +125,12 @@ class ProductTagsDaoTest {
         sut.upsertProductTags(tags)
 
         // Verify product tags inserted
-        var savedTags = sut.getProductTags(site.id)
+        var savedTags = sut.getProductTags(site.localId())
         assertEquals(tags.size, savedTags.size)
 
         // Delete tags for site and verify
-        sut.deleteProductTagsForSite(site.id)
-        savedTags = sut.getProductTags(site.id)
+        sut.deleteProductTagsForSite(site.localId())
+        savedTags = sut.getProductTags(site.localId())
         assertEquals(0, savedTags.size)
     }
 
@@ -143,12 +143,12 @@ class ProductTagsDaoTest {
         sut.upsertProductTags(tags)
 
         // Verify tags inserted
-        var savedTags = sut.getProductTags(site.id)
+        var savedTags = sut.getProductTags(site.localId())
         assertEquals(tags.size, savedTags.size)
 
         // Delete site and verify tags are deleted via foreign key constraint
         SiteSqlUtils().deleteSite(site)
-        savedTags = sut.getProductTags(site.id)
+        savedTags = sut.getProductTags(site.localId())
         assertEquals(0, savedTags.size)
     }
 

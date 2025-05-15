@@ -2106,8 +2106,8 @@ class ProductRestClient @Inject constructor(
         site: SiteModel
     ): WCProductTagModel {
         return WCProductTagModel (
-            remoteTagId = response.id,
-            localSiteId = site.id,
+            remoteTagId = RemoteId(response.id),
+            localSiteId = LocalId(site.id),
             name = response.name ?: "",
             slug = response.slug ?: "",
             description = response.description ?: "",

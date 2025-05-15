@@ -154,8 +154,8 @@ object ProductTestUtils {
         siteId: Int = 6
     ): WCProductTagModel {
         return WCProductTagModel(
-            remoteTagId = remoteId,
-            localSiteId = siteId,
+            remoteTagId = RemoteId(remoteId),
+            localSiteId = LocalId(siteId),
             name = name,
             slug = slug,
             description = description,

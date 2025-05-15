@@ -940,13 +940,13 @@ class WCProductStore @Inject internal constructor(
      * returns a list of tags for a specific site in the database
      */
     suspend fun getTagsForSite(site: SiteModel): List<WCProductTagModel> =
-        productTagsDao.getProductTags(site.localId().value)
+        productTagsDao.getProductTags(site.localId())
 
     suspend fun getProductTagsByNames(site: SiteModel, tagNames: List<String>) =
-        productTagsDao.getProductTags(site.localId().value, tagsNames = tagNames)
+        productTagsDao.getProductTags(site.localId(), tagsNames = tagNames)
 
     suspend fun getProductTagByName(site: SiteModel, tagName: String) =
-        productTagsDao.getProductTag(localSiteId = site.localId().value, name = tagName)
+        productTagsDao.getProductTag(siteId = site.localId(), name = tagName)
 
     fun getProductReviewByRemoteId(
         localSiteId: Int,
@@ -2230,7 +2230,7 @@ class WCProductStore @Inject internal constructor(
                 // delete product tags for site if this is the first page of results, otherwise
                 // tags deleted outside of the app will persist
                 if (payload.offset == 0 && payload.searchQuery.isNullOrEmpty()) {
-                    productTagsDao.deleteProductTagsForSite(payload.site.localId().value)
+                    productTagsDao.deleteProductTagsForSite(payload.site.localId())
                 }
 
                 productTagsDao.upsertProductTags(payload.tags)

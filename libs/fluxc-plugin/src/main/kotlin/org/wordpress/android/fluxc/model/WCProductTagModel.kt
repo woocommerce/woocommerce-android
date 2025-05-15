@@ -1,12 +1,8 @@
 package org.wordpress.android.fluxc.model
 
 import androidx.room.Entity
-import com.yarolegovich.wellsql.core.Identifiable
-import com.yarolegovich.wellsql.core.annotation.Column
-import com.yarolegovich.wellsql.core.annotation.PrimaryKey
-import com.yarolegovich.wellsql.core.annotation.RawConstraints
-import com.yarolegovich.wellsql.core.annotation.Table
-import org.wordpress.android.fluxc.persistence.WellSqlConfig
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 
 //todo: as soon as SiteModel is migrated to Room, add foreign key constraint
 @Entity(
@@ -14,8 +10,8 @@ import org.wordpress.android.fluxc.persistence.WellSqlConfig
     primaryKeys = ["localSiteId", "remoteTagId"],
 )
 data class WCProductTagModel(
-    val localSiteId: Int = 0,
-    val remoteTagId: Long = 0L, // The unique identifier for this tag on the server
+    val localSiteId: LocalId = LocalId(0),
+    val remoteTagId: RemoteId = RemoteId(0L), // The unique identifier for this tag on the server
     val name: String = "",
     val slug: String = "",
     val description: String = "",
