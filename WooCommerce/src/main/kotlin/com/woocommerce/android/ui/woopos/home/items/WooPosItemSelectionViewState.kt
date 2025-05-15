@@ -39,5 +39,11 @@ sealed class WooPosItemSelectionViewState(
         override val id: Long,
         override val name: String,
         val summary: String,
-    ) : WooPosItemSelectionViewState(id, name)
+        val expiredState: ExpiredState,
+    ) : WooPosItemSelectionViewState(id, name) {
+        sealed class ExpiredState {
+            data class Expired(val formattedDate: String) : ExpiredState()
+            data object NotExpired : ExpiredState()
+        }
+    }
 }

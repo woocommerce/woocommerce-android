@@ -2,10 +2,15 @@ package com.woocommerce.android.ui.woopos.home.items
 
 import app.cash.turbine.test
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.coupons.CouponTestUtils
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
-import com.woocommerce.android.ui.woopos.featureflags.WooPosIsProductsSearchEnabled
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
+import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
+import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationFacade
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart.WooPosItemSource
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SearchButtonTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ITEM_LIST_TYPE
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ITEM_LIST_TYPE_PRODUCTS
@@ -41,16 +46,17 @@ class WooPosItemsViewModelTest {
 
     private val wooPosItemsNavigator: WooPosItemsNavigator = mock()
 
-    private val isProductsSearchEnabled: WooPosIsProductsSearchEnabled = mock()
     private val searchHelper: WooPosItemsSearchHelper = mock()
     private val tabsHelper: WooPosItemsTabsHelper = mock {
         on { defaultTabs }.thenReturn(tabs)
     }
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
+    private val couponCreationFacade: WooPosCouponCreationFacade = mock()
+    private val fromChildToParentEventSender: WooPosChildrenToParentEventSender = mock()
 
     @Before
     fun setup() {
-        whenever(searchHelper.getInitialSearchState(any())).thenReturn(
+        whenever(searchHelper.getInitialSearchState()).thenReturn(
             WooPosItemsViewState.SearchState.Visible(
                 state = WooPosSearchInputState.Closed
             )
@@ -72,10 +78,9 @@ class WooPosItemsViewModelTest {
     }
 
     @Test
-    fun `given products search feature enabled, when view model created, then search state is visible`() = runTest {
+    fun `when view model created, then search state is visible`() = runTest {
         // GIVEN
-        whenever(isProductsSearchEnabled()).thenReturn(true)
-        whenever(searchHelper.getInitialSearchState(true)).thenReturn(
+        whenever(searchHelper.getInitialSearchState()).thenReturn(
             WooPosItemsViewState.SearchState.Visible(
                 state = WooPosSearchInputState.Closed
             )
@@ -94,28 +99,7 @@ class WooPosItemsViewModelTest {
     }
 
     @Test
-    fun `given products search feature disabled, when view model created, then search state is hidden`() = runTest {
-        // GIVEN
-        whenever(isProductsSearchEnabled()).thenReturn(false)
-        whenever(searchHelper.getInitialSearchState(false)).thenReturn(
-            WooPosItemsViewState.SearchState.Hidden
-        )
-
-        // WHEN
-        val viewModel = createViewModel()
-
-        // THEN
-        viewModel.viewState.test {
-            val contentState = awaitItem() as WooPosItemsViewState.ProductList
-            assertThat(contentState.search).isInstanceOf(WooPosItemsViewState.SearchState.Hidden::class.java)
-        }
-    }
-
-    @Test
     fun `given search visible, when close search clicked, then search state is closed`() = runTest {
-        // GIVEN
-        whenever(isProductsSearchEnabled()).thenReturn(true)
-
         // WHEN
         val viewModel = createViewModel()
         viewModel.onUIEvent(WooPosItemsUIEvent.CloseSearchClicked)
@@ -145,8 +129,6 @@ class WooPosItemsViewModelTest {
 
     @Test
     fun `given search visible, when close search clicked, then search helper is called`() = runTest {
-        whenever(isProductsSearchEnabled()).thenReturn(true)
-
         val viewModel = createViewModel()
         viewModel.onUIEvent(WooPosItemsUIEvent.CloseSearchClicked)
 
@@ -187,7 +169,7 @@ class WooPosItemsViewModelTest {
     }
 
     @Test
-    fun `when search icon is tapped, the track analytics event`() = runTest {
+    fun `when search icon is tapped, then track analytics event`() = runTest {
         // GIVEN
         val viewModel = createViewModel()
 
@@ -202,12 +184,31 @@ class WooPosItemsViewModelTest {
         )
     }
 
+    @Test
+    fun `when add coupon icon is tapped, then newly created coupon added to cart`() = runTest {
+        // GIVEN
+        whenever(couponCreationFacade.createCoupon()).thenReturn(CouponTestUtils.generateTestCoupon(1L, "test"))
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosItemsUIEvent.AddCouponIconClicked)
+
+        // THEN
+        verify(fromChildToParentEventSender).sendToParent(
+            ChildToParentEvent.ItemClickedInProductSelector(
+                itemData = ItemClickedData.Coupon(1L, "test"),
+                source = WooPosItemSource.COUPON_LIST
+            )
+        )
+    }
+
     private fun createViewModel() =
         WooPosItemsViewModel(
             wooPosItemsNavigator,
             searchHelper,
-            isProductsSearchEnabled,
             tabsHelper,
-            analyticsTracker
+            couponCreationFacade,
+            fromChildToParentEventSender,
+            analyticsTracker,
         )
 }

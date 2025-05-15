@@ -88,8 +88,8 @@ class SubscriptionProductVariation(
     constructor(model: WCProductVariationModel) :
         this(
             subscriptionDetails = model.metadata?.let { SubscriptionDetailsMapper.toAppModel(it) },
-            remoteProductId = model.remoteProductId,
-            remoteVariationId = model.remoteVariationId,
+            remoteProductId = model.remoteProductId.value,
+            remoteVariationId = model.remoteVariationId.value,
             sku = model.sku,
             globalUniqueId = model.globalUniqueId,
             image = model.getImageModel()?.let {

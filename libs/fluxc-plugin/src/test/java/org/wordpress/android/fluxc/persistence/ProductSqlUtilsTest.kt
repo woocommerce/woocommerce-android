@@ -38,7 +38,6 @@ class ProductSqlUtilsTest {
                 appContext,
                 listOf(
                         WCProductReviewModel::class.java,
-                        WCProductCategoryModel::class.java,
                         WCProductShippingClassModel::class.java,
                         WCProductTagModel::class.java,
                         SiteModel::class.java),
@@ -319,100 +318,6 @@ class ProductSqlUtilsTest {
         assertEquals(0, savedReviews.size)
     }
 
-    @Test
-    fun testInsertOrUpdateProductCategory() {
-        val category = ProductTestUtils.getProductCategories(site.id)[0]
-        assertNotNull(category)
-
-        // Test inserting a product category
-        var rowsAffected = ProductSqlUtils.insertOrUpdateProductCategory(category)
-        assertEquals(1, rowsAffected)
-        var savedCategory = ProductSqlUtils.getProductCategoryByRemoteId(
-                site.id, category.remoteCategoryId
-        )
-        assertNotNull(savedCategory)
-        assertEquals(category.remoteCategoryId, savedCategory.remoteCategoryId)
-        assertEquals(category.name, savedCategory.name)
-        assertEquals(category.slug, savedCategory.slug)
-        assertEquals(category.parent, savedCategory.parent)
-        assertEquals(category.localSiteId, savedCategory.localSiteId)
-
-        // Test updating the same product category
-        category.apply {
-            name = "foo"
-        }
-        rowsAffected = ProductSqlUtils.insertOrUpdateProductCategory(category)
-        assertEquals(1, rowsAffected)
-        savedCategory = ProductSqlUtils.getProductCategoryByRemoteId(
-                site.id, category.remoteCategoryId
-        )
-        assertNotNull(savedCategory)
-        assertEquals(category.name, savedCategory.name)
-    }
-
-    @Test
-    fun testInsertOrUpdateProductCategories() {
-        val productCategories = ProductTestUtils.getProductCategories(site.id)
-        assertTrue(productCategories.isNotEmpty())
-
-        // Insert all product categories
-        val rowsAffected = ProductSqlUtils.insertOrUpdateProductCategories(productCategories)
-        assertEquals(productCategories.size, rowsAffected)
-    }
-
-    @Test
-    fun testGetProductCategoriesForSite() {
-        val categories = ProductTestUtils.getProductCategories(site.id)
-        assertTrue(categories.isNotEmpty())
-
-        // Insert all product categories
-        val rowsAffected = ProductSqlUtils.insertOrUpdateProductCategories(categories)
-        assertEquals(categories.size, rowsAffected)
-
-        // Get all product categories for site and verify
-        val savedCategoriesExist = ProductSqlUtils.getProductCategoriesForSite(site)
-        assertEquals(categories.size, savedCategoriesExist.size)
-
-        // Get all product categories for a site that do not exist
-        val savedCategories = ProductSqlUtils.getProductCategoriesForSite(SiteModel().apply { id = 400 })
-        assertEquals(0, savedCategories.size)
-    }
-
-    @Test
-    fun testDeleteAllProductCategories() {
-        val categories = ProductTestUtils.getProductCategories(site.id)
-        assertTrue(categories.isNotEmpty())
-        var rowsAffected = ProductSqlUtils.insertOrUpdateProductCategories(categories)
-        assertEquals(categories.size, rowsAffected)
-
-        // Verify categories inserted
-        var savedCategories = ProductSqlUtils.getProductCategoriesForSite(site)
-        assertEquals(categories.size, savedCategories.size)
-
-        // Delete all categories and verify
-        rowsAffected = ProductSqlUtils.deleteAllProductCategories()
-        assertEquals(categories.size, rowsAffected)
-        savedCategories = ProductSqlUtils.getProductCategoriesForSite(site)
-        assertEquals(0, savedCategories.size)
-    }
-
-    @Test
-    fun testDeleteProductCategoriesForSite() {
-        val categories = ProductTestUtils.getProductCategories(site.id)
-
-        var rowsAffected = ProductSqlUtils.insertOrUpdateProductCategories(categories)
-        assertEquals(categories.size, rowsAffected)
-
-        // Verify categories inserted
-        var savedCategories = ProductSqlUtils.getProductCategoriesForSite(site)
-        assertEquals(categories.size, savedCategories.size)
-
-        // Delete categories for site and verify
-        rowsAffected = ProductSqlUtils.deleteAllProductCategoriesForSite(site)
-        assertEquals(categories.size, rowsAffected)
-        savedCategories = ProductSqlUtils.getProductCategoriesForSite(site)
-        assertEquals(0, savedCategories.size)
-    }
 
     @Test
     fun testInsertOrUpdateProductTag() {

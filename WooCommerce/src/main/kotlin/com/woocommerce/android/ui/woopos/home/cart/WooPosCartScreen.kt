@@ -12,16 +12,20 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -531,7 +535,7 @@ private fun CouponItem(
 
     WooPosCard(
         modifier = modifier
-            .height(96.dp)
+            .wrapContentHeight()
             .semantics { contentDescription = itemContentDescription },
         backgroundColor = MaterialTheme.colorScheme.surfaceContainerLowest,
         elevation = WooPosElevation.Medium,
@@ -539,8 +543,9 @@ private fun CouponItem(
         shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
     ) {
         Row(
+            modifier = Modifier.height(IntrinsicSize.Min),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Box(
                 modifier = Modifier
@@ -551,7 +556,9 @@ private fun CouponItem(
                             is CouponValidationState.Valid -> WooPosTheme.colors.success
                         }
                     )
-                    .size(96.dp),
+                    .width(96.dp)
+                    .fillMaxHeight()
+                    .heightIn(min = 96.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Image(
@@ -574,6 +581,7 @@ private fun CouponItem(
                 modifier = Modifier
                     .weight(1f)
                     .padding(end = WooPosSpacing.Medium.value.toAdaptivePadding())
+                    .padding(vertical = WooPosSpacing.Medium.value.toAdaptivePadding())
             ) {
                 WooPosText(
                     text = item.name,
@@ -589,7 +597,7 @@ private fun CouponItem(
                     text = item.summary,
                     style = WooPosTypography.BodySmall,
                     color = WooPosTheme.colors.onSurfaceVariantHighest,
-                    maxLines = 1,
+                    maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.clearAndSetSemantics { }
                 )
@@ -600,6 +608,8 @@ private fun CouponItem(
                         WooPosText(
                             text = stringResource(R.string.woopos_cart_coupon_invalid_subtitle),
                             style = WooPosTypography.BodySmall,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
                             color = MaterialTheme.colorScheme.error,
                             modifier = Modifier.clearAndSetSemantics { }
                         )
@@ -609,6 +619,8 @@ private fun CouponItem(
                         WooPosText(
                             text = item.validationState.formattedDiscount,
                             style = WooPosTypography.BodySmall,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
                             color = WooPosTheme.colors.success,
                             modifier = Modifier.clearAndSetSemantics { }
                         )

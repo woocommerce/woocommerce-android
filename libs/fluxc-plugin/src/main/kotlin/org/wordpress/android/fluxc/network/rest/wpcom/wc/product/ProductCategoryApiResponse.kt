@@ -2,6 +2,7 @@ package org.wordpress.android.fluxc.network.rest.wpcom.wc.product
 
 import com.google.gson.JsonObject
 import com.google.gson.annotations.SerializedName
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.WCProductCategoryModel
 import org.wordpress.android.fluxc.network.Response
 
@@ -14,12 +15,12 @@ class ProductCategoryApiResponse : Response {
 
     fun asProductCategoryModel(): WCProductCategoryModel {
         val response = this
-        return WCProductCategoryModel().apply {
-            remoteCategoryId = response.id
-            name = response.name ?: ""
-            slug = response.slug ?: ""
-            parent = response.parent ?: 0L
-        }
+        return WCProductCategoryModel(
+            remoteCategoryId = RemoteId(response.id),
+            name = response.name ?: "",
+            slug = response.slug ?: "",
+            parent = response.parent ?: 0L,
+        )
     }
 }
 

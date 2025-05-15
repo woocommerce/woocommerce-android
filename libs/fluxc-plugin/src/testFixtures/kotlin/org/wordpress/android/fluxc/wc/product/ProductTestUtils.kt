@@ -3,7 +3,8 @@ package org.wordpress.android.fluxc.wc.product
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import org.wordpress.android.fluxc.UnitTestUtils
-import org.wordpress.android.fluxc.model.LocalOrRemoteId
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.WCProductCategoryModel
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.WCProductReviewModel
@@ -31,8 +32,8 @@ object ProductTestUtils {
         shortDescription: String = "",
     ): WCProductModel {
         return WCProductModel().copy(
-            remoteId = LocalOrRemoteId.RemoteId(remoteId),
-            localSiteId = LocalOrRemoteId.LocalId(siteId),
+            remoteId = RemoteId(remoteId),
+            localSiteId = LocalId(siteId),
             type = type,
             name = name,
             virtual = virtual,
@@ -52,13 +53,13 @@ object ProductTestUtils {
         status: String = "publish",
         stockQuantity: Double = 0.0
     ): WCProductVariationModel {
-        return WCProductVariationModel().apply {
-            remoteProductId = remoteId
-            remoteVariationId = variationId
-            localSiteId = siteId
-            this.status = status
-            this.stockQuantity = stockQuantity
-        }
+        return WCProductVariationModel(
+            remoteProductId = RemoteId(remoteId),
+            remoteVariationId = RemoteId(variationId),
+            localSiteId = LocalId(siteId),
+            status = status,
+            stockQuantity = stockQuantity
+        )
     }
 
     fun generateSampleVariations(number: Int, productId: Long, siteId: Int): List<WCProductVariationModel> {
@@ -128,44 +129,23 @@ object ProductTestUtils {
         }
     }
 
-    fun generateCategory(siteId: Int, remoteId: Long) =
-        WCProductCategoryModel().apply {
-            localSiteId = siteId
-            remoteCategoryId = remoteId
-            name = "Category $remoteId"
-            slug = "category$remoteId"
-            parent = 0L
-        }
-
-    fun generateCategoryList(siteId: Int): List<WCProductCategoryModel> {
-        return List(5) {
-            WCProductCategoryModel().apply {
-                localSiteId = siteId
-                remoteCategoryId = it.toLong()
-                name = "Category $it"
-                slug = "category$it"
-                parent = 0L
-            }
-        }
-    }
-
     fun getProductCategories(siteId: Int): List<WCProductCategoryModel> {
         val categoryJson =
             UnitTestUtils.getStringFromResourceFile(this.javaClass, "wc/product-categories.json")
         val responseType = object : TypeToken<List<ProductCategoryApiResponse>>() {}.type
         val converted = Gson().fromJson(categoryJson, responseType) as? List<ProductCategoryApiResponse> ?: emptyList()
         return converted.map {
-            WCProductCategoryModel().apply {
-                localSiteId = siteId
-                remoteCategoryId = it.id
-                name = it.name ?: ""
-                slug = it.slug ?: ""
-                parent = it.parent ?: 0L
-            }
+            WCProductCategoryModel(
+                localSiteId = LocalId(siteId),
+                remoteCategoryId = RemoteId(it.id),
+                name = it.name ?: "",
+                slug = it.slug ?: "",
+                parent = it.parent ?: 0L,
+            )
         }
     }
 
-    fun generateSampleProductTag(
+    private fun generateSampleProductTag(
         remoteId: Long = 1L,
         name: String = "",
         slug: String = "",
@@ -193,7 +173,7 @@ object ProductTestUtils {
                     name = "$i",
                     slug = "$i",
                     description = "$i"
-            )
+                )
             )
         }
         return tagList

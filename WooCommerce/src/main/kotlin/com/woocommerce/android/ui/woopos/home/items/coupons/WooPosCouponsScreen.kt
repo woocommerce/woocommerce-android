@@ -76,7 +76,7 @@ private fun WooPosCouponsScreen(
                     modifier = Modifier.padding(top = WooPosSpacing.Large.value),
                     state = itemsState,
                     listState = listState,
-                    onItemClicked = { item -> onUIEvent(WooPosCouponsUIEvent.CouponClicked(item.id)) },
+                    onItemClicked = { item -> onUIEvent(WooPosCouponsUIEvent.CouponClicked(item.id, item.name)) },
                     onEndOfProductsListReached = { onUIEvent(WooPosCouponsUIEvent.EndOfListReached) },
                 ) {
                     CouponsPaginationError(
@@ -169,11 +169,15 @@ fun WooPosCouponsScreenContentPreview() {
                         "Coupon 1 Coupon 1 Coupon 1 Coupon 1 Coupon 1 Coupon 1 Coupon 1 Coupon 1 Coupon 1 Coupon 1",
                     summary = "10% off 10% off 10% off 10% off 10% off 10% off 10% off 10% off 10% off 10% off " +
                         "10% off 10% off 10% off 10% off 10% off 10% off 10% off 10% off 10% off 10% off 10% off",
+                    expiredState = WooPosItemSelectionViewState.Coupon.ExpiredState.NotExpired,
                 ),
                 WooPosItemSelectionViewState.Coupon(
                     id = 2L,
                     name = "Coupon 2",
                     summary = "20% off",
+                    expiredState = WooPosItemSelectionViewState.Coupon.ExpiredState.Expired(
+                        formattedDate = "24 Apr 2025",
+                    ),
                 ),
             ),
             paginationState = WooPosPaginationState.None,
@@ -201,6 +205,7 @@ fun WooPosCouponsScreenLoadingMorePreview() {
                     id = 1L,
                     name = "Coupon 1",
                     summary = "20% off",
+                    expiredState = WooPosItemSelectionViewState.Coupon.ExpiredState.NotExpired,
                 ),
             ),
             paginationState = WooPosPaginationState.Loading,

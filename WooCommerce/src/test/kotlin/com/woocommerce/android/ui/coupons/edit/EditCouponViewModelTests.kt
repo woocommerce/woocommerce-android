@@ -19,6 +19,7 @@ import com.woocommerce.android.ui.coupons.CouponRepository
 import com.woocommerce.android.ui.coupons.CouponTestUtils
 import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.OpenDescriptionEditor
 import com.woocommerce.android.ui.coupons.edit.EditCouponViewModel.Mode
+import com.woocommerce.android.ui.coupons.edit.EditCouponViewModel.NavigateBackToPOS
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CouponUtils
 import com.woocommerce.android.util.CurrencyFormatter
@@ -88,12 +89,13 @@ class EditCouponViewModelTests : BaseUnitTest() {
 
     suspend fun setup(
         mode: Mode = Mode.Edit(COUPON_ID),
+        isPOSMode: Boolean = false,
         prepareMocks: suspend () -> Unit = {}
     ) {
         prepareMocks()
 
         viewModel = EditCouponViewModel(
-            savedStateHandle = EditCouponFragmentArgs(mode).toSavedStateHandle(),
+            savedStateHandle = EditCouponFragmentArgs(mode, isPOSMode).toSavedStateHandle(),
             couponRepository = couponRepository,
             couponUtils = couponUtils,
             parameterRepository = mock {
@@ -366,7 +368,7 @@ class EditCouponViewModelTests : BaseUnitTest() {
     @Test
     fun `given coupon creation mode, when coupon created, should track event`() = testBlocking {
         setup(mode = Mode.Create(Coupon.Type.Percent)) {
-            whenever(couponRepository.createCoupon(any())).thenReturn(Result.success(Unit))
+            whenever(couponRepository.createCoupon(any())).thenReturn(Result.success(1L))
         }
 
         viewModel.onSaveClick()
@@ -392,4 +394,18 @@ class EditCouponViewModelTests : BaseUnitTest() {
                 "message"
             )
         }
+
+    @Test
+    fun `given isPOSMode true, when coupon created, should return to POS with new coupon id`() = testBlocking {
+        setup(
+            mode = Mode.Create(Coupon.Type.Percent),
+            isPOSMode = true
+        ) {
+            whenever(couponRepository.createCoupon(any())).thenReturn(Result.success(1L))
+        }
+
+        viewModel.onSaveClick()
+
+        assertThat(viewModel.event.value).isEqualTo(NavigateBackToPOS(1L))
+    }
 }

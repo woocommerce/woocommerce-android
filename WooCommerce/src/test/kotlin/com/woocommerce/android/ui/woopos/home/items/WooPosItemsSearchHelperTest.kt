@@ -50,29 +50,14 @@ class WooPosItemsSearchHelperTest {
     }
 
     @Test
-    fun `given products search enabled, when getInitialSearchState called, then returns visible closed state`() {
-        // GIVEN
-        val isProductsSearchEnabled = true
-
+    fun `when getInitialSearchState called, then returns visible closed state`() {
         // WHEN
-        val result = searchHelper.getInitialSearchState(isProductsSearchEnabled)
+        val result = searchHelper.getInitialSearchState()
 
         // THEN
         assertThat(result).isInstanceOf(WooPosItemsViewState.SearchState.Visible::class.java)
         val visibleState = result as WooPosItemsViewState.SearchState.Visible
         assertThat(visibleState.state).isInstanceOf(WooPosSearchInputState.Closed::class.java)
-    }
-
-    @Test
-    fun `given products search disabled, when getInitialSearchState called, then returns hidden state`() {
-        // GIVEN
-        val isProductsSearchEnabled = false
-
-        // WHEN
-        val result = searchHelper.getInitialSearchState(isProductsSearchEnabled)
-
-        // THEN
-        assertThat(result).isInstanceOf(WooPosItemsViewState.SearchState.Hidden::class.java)
     }
 
     @Test

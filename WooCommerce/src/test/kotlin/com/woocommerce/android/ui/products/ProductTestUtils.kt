@@ -8,7 +8,8 @@ import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.ui.products.ProductStatus.DRAFT
 import org.intellij.lang.annotations.Language
-import org.wordpress.android.fluxc.model.LocalOrRemoteId
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.WCProductVariationModel
 import java.sql.Date
@@ -62,8 +63,8 @@ object ProductTestUtils {
     ): Product {
         return WCProductModel(
             dateCreated = "2018-01-05T05:14:30Z",
-            localSiteId = LocalOrRemoteId.LocalId(2),
-            remoteId = LocalOrRemoteId.RemoteId(productId),
+            localSiteId = LocalId(2),
+            remoteId = RemoteId(productId),
             parentId = parentID,
             status = customStatus ?: "publish",
             type = productType ?: if (isVariable) "variable" else "simple",
@@ -139,18 +140,18 @@ object ProductTestUtils {
         isPurchasable: Boolean = true,
         productAttributes: String = "",
     ): ProductVariation {
-        return WCProductVariationModel(2).apply {
-            dateCreated = "2018-01-05T05:14:30Z"
-            localSiteId = 1
-            remoteProductId = productId
-            remoteVariationId = variationId
-            price = amount
-            image = ""
-            attributes = productAttributes
-            virtual = isVirtual
-            downloadable = isDownloadable
-            purchasable = isPurchasable
-        }.toAppModel().also { it.priceWithCurrency = "$10.00" }
+        return WCProductVariationModel(LocalId(2)).copy(
+            dateCreated = "2018-01-05T05:14:30Z",
+            localSiteId = LocalId(1),
+            remoteProductId = RemoteId(productId),
+            remoteVariationId = RemoteId(variationId),
+            price = amount,
+            image = "",
+            attributes = productAttributes,
+            virtual = isVirtual,
+            downloadable = isDownloadable,
+            purchasable = isPurchasable,
+        ).toAppModel().also { it.priceWithCurrency = "$10.00" }
     }
 
     fun generateProductVariationList(productId: Long = 1L): List<ProductVariation> {

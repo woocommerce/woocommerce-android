@@ -331,7 +331,7 @@ class ProductDetailRepository @Inject constructor(
 
     fun isSkuAvailableLocally(sku: String) = runBlocking { !productStore.isProductExists(selectedSite.get(), sku) }
 
-    fun getCachedVariationCount(remoteProductId: Long) =
+    suspend fun getCachedVariationCount(remoteProductId: Long) =
         productStore.getVariationsForProduct(selectedSite.get(), remoteProductId).size
 
     fun getTaxClassesForSite(): List<TaxClass> =

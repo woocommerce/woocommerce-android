@@ -9,6 +9,7 @@ import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.generated.endpoint.WOOCOMMERCE
 import org.wordpress.android.fluxc.generated.endpoint.WPAPI
 import org.wordpress.android.fluxc.generated.endpoint.WPCOMREST
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.ProductWithMetaData
 import org.wordpress.android.fluxc.model.SiteModel
@@ -384,20 +385,22 @@ class ProductRestClient @Inject constructor(
                 val productData = response.data
                 if (productData != null) {
                     RemoteVariationPayload(
-                        productData.asProductVariationModel().apply {
-                            this.remoteProductId = remoteProductId
-                            localSiteId = site.id
-                            metadata = stripProductVariationMetaData(metadata)
+                        productData.asProductVariationModel().let { original ->
+                            original.copy(
+                                remoteProductId = RemoteId(remoteProductId),
+                                localSiteId = LocalId(site.id),
+                                metadata = stripProductVariationMetaData(original.metadata)
+                            )
                         },
                         site
                     )
                 } else {
                     RemoteVariationPayload(
                         ProductError(GENERIC_ERROR, "Success response with empty data"),
-                        WCProductVariationModel().apply {
-                            this.remoteProductId = remoteProductId
-                            this.remoteVariationId = remoteVariationId
-                        },
+                        WCProductVariationModel().copy (
+                            remoteProductId = RemoteId(remoteProductId),
+                            remoteVariationId = RemoteId(remoteVariationId)
+                    ),
                         site
                     )
                 }
@@ -406,10 +409,10 @@ class ProductRestClient @Inject constructor(
             is WPAPIResponse.Error -> {
                 RemoteVariationPayload(
                     wpAPINetworkErrorToProductError(response.error),
-                    WCProductVariationModel().apply {
-                        this.remoteProductId = remoteProductId
-                        this.remoteVariationId = remoteVariationId
-                    },
+                    WCProductVariationModel().copy (
+                        remoteProductId = RemoteId(remoteProductId),
+                        remoteVariationId = RemoteId(remoteVariationId)
+                    ),
                     site
                 )
             }
@@ -605,7 +608,7 @@ class ProductRestClient @Inject constructor(
     }
 
     /**
-     * Makes a GET request to `/wp-json/wc/v3/reports/products/totals/` retrieving count of products for the given sute
+     * Makes a GET request to `/wp-json/wc/v3/reports/products/totals/` retrieving count of products for the given site.
      */
     suspend fun fetchProductsTotals(site: SiteModel): WooPayload<List<ProductCountApiResponse>> {
         val url = WOOCOMMERCE.reports.products.totals.pathV3
@@ -758,7 +761,7 @@ class ProductRestClient @Inject constructor(
         return response.toWooPayload { categories ->
             categories.map {
                 it.asProductCategoryModel()
-                    .apply { localSiteId = site.id }
+                    .copy(localSiteId = site.localId())
             }
         }
     }
@@ -930,10 +933,12 @@ class ProductRestClient @Inject constructor(
         when (response) {
             is WPAPIResponse.Success -> {
                 val variationModels = response.data?.map {
-                    it.asProductVariationModel().apply {
-                        localSiteId = site.id
-                        remoteProductId = productId
-                        metadata = stripProductVariationMetaData(metadata)
+                    it.asProductVariationModel().let { original ->
+                        original.copy(
+                            localSiteId = LocalId(site.id),
+                            remoteProductId = RemoteId(productId),
+                            metadata = stripProductVariationMetaData(original.metadata)
+                        )
                     }
                 }.orEmpty()
 
@@ -1000,12 +1005,13 @@ class ProductRestClient @Inject constructor(
 
         return response.toWooPayload { variations ->
             variations.map {
-                it.asProductVariationModel()
-                    .apply {
-                        localSiteId = site.id
-                        remoteProductId = productId
-                        metadata = stripProductVariationMetaData(metadata)
-                    }
+                it.asProductVariationModel().let { original ->
+                    original.copy(
+                        localSiteId = LocalId(site.id),
+                        remoteProductId = RemoteId(productId),
+                        metadata = stripProductVariationMetaData(original.metadata)
+                    )
+                }
             }
         }
     }
@@ -1078,7 +1084,7 @@ class ProductRestClient @Inject constructor(
     ): RemoteUpdateVariationPayload {
         val remoteProductId = updatedProductVariationModel.remoteProductId
         val remoteVariationId = updatedProductVariationModel.remoteVariationId
-        val url = WOOCOMMERCE.products.id(remoteProductId).variations.variation(remoteVariationId).pathV3
+        val url = WOOCOMMERCE.products.id(remoteProductId.value).variations.variation(remoteVariationId.value).pathV3
         val body = variantModelToProductJsonBody(
             storedWCProductVariationModel,
             updatedProductVariationModel
@@ -1094,19 +1100,21 @@ class ProductRestClient @Inject constructor(
         return when (response) {
             is WPAPIResponse.Success -> {
                 response.data?.let {
-                    val newModel = it.asProductVariationModel().apply {
-                        this.remoteProductId = remoteProductId
-                        localSiteId = site.id
-                        metadata = stripProductVariationMetaData(metadata)
+                    val newModel = it.asProductVariationModel().let { original ->
+                        original.copy(
+                            remoteProductId = remoteProductId,
+                            localSiteId = LocalId(site.id),
+                            metadata = stripProductVariationMetaData(original.metadata)
+                        )
                     }
                     RemoteUpdateVariationPayload(site, newModel)
                 } ?: RemoteUpdateVariationPayload(
                     ProductError(GENERIC_ERROR, "Success response with empty data"),
                     site,
-                    WCProductVariationModel().apply {
-                        this.remoteProductId = remoteProductId
-                        this.remoteVariationId = remoteVariationId
-                    }
+                    WCProductVariationModel().copy(
+                        remoteProductId = remoteProductId,
+                        remoteVariationId = remoteVariationId
+                    )
                 )
             }
 
@@ -1115,10 +1123,10 @@ class ProductRestClient @Inject constructor(
                 RemoteUpdateVariationPayload(
                     productError,
                     site,
-                    WCProductVariationModel().apply {
-                        this.remoteProductId = remoteProductId
-                        this.remoteVariationId = remoteVariationId
-                    }
+                    WCProductVariationModel().copy(
+                        remoteProductId = remoteProductId,
+                        remoteVariationId = remoteVariationId
+                    )
                 )
             }
         }
@@ -1436,7 +1444,7 @@ class ProductRestClient @Inject constructor(
                 is WPAPIResponse.Success -> {
                     response.data?.let {
                         val categories = it.map { category ->
-                            category.asProductCategoryModel().apply { localSiteId = site.id }
+                            category.asProductCategoryModel().copy (  localSiteId = site.localId()  )
                         }
                         val canLoadMore = categories.size == pageSize
                         val loadedMore = offset > 0
@@ -1500,9 +1508,7 @@ class ProductRestClient @Inject constructor(
                     response.data!!.createdCategories
                         .filter { it.error == null }
                         .map {
-                            it.asProductCategoryModel().apply {
-                                localSiteId = site.id
-                            }
+                            it.asProductCategoryModel().copy (localSiteId = site.localId() )
                         }
                 )
             }
@@ -1539,11 +1545,7 @@ class ProductRestClient @Inject constructor(
 
         return when (response) {
             is WPAPIResponse.Success -> {
-                val updatedCategory = response.data?.let {
-                    it.asProductCategoryModel().apply {
-                        localSiteId = site.id
-                    }
-                }
+                val updatedCategory = response.data?.asProductCategoryModel()?.copy(localSiteId = site.localId())
                 WooPayload(updatedCategory)
             }
 
@@ -1588,7 +1590,7 @@ class ProductRestClient @Inject constructor(
         site: SiteModel,
         category: WCProductCategoryModel
     ): WooPayload<WCProductCategoryModel> {
-        val path = WOOCOMMERCE.products.categories.id(category.remoteCategoryId).pathV3
+        val path = WOOCOMMERCE.products.categories.id(category.remoteCategoryId.value).pathV3
 
         val body = mutableMapOf(
             "name" to category.name,
@@ -1604,11 +1606,7 @@ class ProductRestClient @Inject constructor(
 
         return when {
             response is WPAPIResponse.Success -> {
-                val updatedCategory = response.data?.let {
-                    it.asProductCategoryModel().apply {
-                        localSiteId = site.id
-                    }
-                }
+                val updatedCategory = response.data?.asProductCategoryModel()?.copy(localSiteId = site.localId())
                 WooPayload(updatedCategory)
             }
 
@@ -1633,11 +1631,7 @@ class ProductRestClient @Inject constructor(
 
         return when {
             response is WPAPIResponse.Success -> {
-                val updatedCategory = response.data?.let {
-                    it.asProductCategoryModel().apply {
-                        localSiteId = site.id
-                    }
-                }
+                val updatedCategory = response.data?.asProductCategoryModel()?.copy(localSiteId = site.localId())
                 WooPayload(updatedCategory)
             }
 
