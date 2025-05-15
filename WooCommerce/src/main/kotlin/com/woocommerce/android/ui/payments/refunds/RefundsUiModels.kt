@@ -41,7 +41,7 @@ data class ShippingRefundListItem(
     fun toDataModel(): RefundRequestItem {
         return RefundRequestItem(
             shippingLine.itemId,
-            quantity = 1, /* Hardcoded because a shipping line always has a quantity of 1 */
+            quantity = 1, // Hardcoded because a shipping line always has a quantity of 1
             refundTotal = shippingLine.total,
             refundTax = listOf(
                 RefundRequestTax(
@@ -60,7 +60,7 @@ data class FeeRefundListItem(
     fun toDataModel(): RefundRequestItem {
         return RefundRequestItem(
             feeLine.id,
-            quantity = 1, /* Hardcoded because a fee line always has a quantity of 1 */
+            quantity = 1, // Hardcoded because a fee line always has a quantity of 1
             refundTotal = feeLine.total,
             refundTax = listOf(
                 RefundRequestTax(

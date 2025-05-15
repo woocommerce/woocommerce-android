@@ -7,8 +7,6 @@
     <ID>ClassNaming:ProductDetailViewModel_AddFlowTest.kt$ProductDetailViewModel_AddFlowTest : BaseUnitTest</ID>
     <ID>CommentWrapping:IssueRefundViewModel.kt$IssueRefundViewModel$/* Fees lines that haven't been refunded */</ID>
     <ID>CommentWrapping:IssueRefundViewModel.kt$IssueRefundViewModel$/* Shipping lines that haven't been refunded */</ID>
-    <ID>CommentWrapping:RefundFeeListAdapter.kt$RefundFeeListAdapter.FeeRefundListItem$/* Hardcoded because a fee line always has a quantity of 1 */</ID>
-    <ID>CommentWrapping:RefundShippingListAdapter.kt$RefundShippingListAdapter.ShippingRefundListItem$/* Hardcoded because a shipping line always has a quantity of 1 */</ID>
     <ID>CommentWrapping:ShippingLabelCreateCustomPackageViewModel.kt$ShippingLabelCreateCustomPackageViewModel$/* Safe to set as empty, as it's not used for package creation */</ID>
     <ID>CommentWrapping:ShippingPackage.kt$ShippingPackage$/* Can be empty, only needed by predefined packages */</ID>
     <ID>ComplexCondition:ProductImageViewerFragment.kt$ProductImageViewerFragment$(show &amp;&amp; binding.fakeToolbar.visibility == View.VISIBLE) || (!show &amp;&amp; binding.fakeToolbar.visibility != View.VISIBLE)</ID>

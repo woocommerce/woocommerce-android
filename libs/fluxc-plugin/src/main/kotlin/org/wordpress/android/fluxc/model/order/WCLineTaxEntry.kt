@@ -10,8 +10,8 @@ data class WCLineTaxEntry(
     @SerializedName("id")
     val rateId: Long? = null,
     @SerializedName("total")
-    private val _total: String? = null,
+    private val totalString: String? = null,
 ) {
     val total: BigDecimal?
-        get() = _total?.toBigDecimalOrNull()
+        get() = totalString?.toBigDecimalOrNull()
 }
