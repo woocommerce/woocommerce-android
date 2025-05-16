@@ -41,6 +41,7 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock {
         on { getOrNull() } doReturn SiteModel().apply { siteId = 123 }
     }
+    private val updateSavedCarrierPackages: UpdateSavedCarrierPackages = mock()
 
     @Before
     fun setUp() {
@@ -59,6 +60,7 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             selectedSite,
             resourceProvider,
             fetchPredefinedPackages,
+            updateSavedCarrierPackages,
             packageRepository
         )
     }
@@ -201,6 +203,7 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             selectedSite,
             resourceProvider,
             fetchPredefinedPackages,
+            updateSavedCarrierPackages,
             packageRepository
         )
         sut.viewState.observeForever { lastViewState = it }
@@ -253,6 +256,7 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             selectedSite,
             resourceProvider,
             fetchPredefinedPackages,
+            updateSavedCarrierPackages,
             packageRepository
         )
         sut.viewState.observeForever { lastViewState = it }
@@ -336,6 +340,7 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             selectedSite,
             resourceProvider,
             fetchPredefinedPackages,
+            updateSavedCarrierPackages,
             packageRepository
         )
 
