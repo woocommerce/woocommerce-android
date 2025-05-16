@@ -283,14 +283,12 @@ class IssueRefundViewModel @Inject constructor(
     private fun prepareProductsRefundSection(
         items: List<ProductRefundListItem>
     ): ProductsRefundSection {
-        val subtotal = items.sumByBigDecimal { it.subtotal }
-        val taxes = items.sumByBigDecimal { it.taxes.sumOf { tax -> tax.tax } }
-        val total = subtotal + taxes
+        val totalRefund = items.sumByBigDecimal { it.total }
 
         return ProductsRefundSection(
             refundItems = items,
-            productsRefund = total,
-            formattedProductsRefund = formatCurrency(total),
+            productsRefund = totalRefund,
+            formattedProductsRefund = formatCurrency(totalRefund),
             selectedItemsHeader = resourceProvider.getString(
                 R.string.order_refunds_items_selected,
                 items.sumOf { it.quantity }
@@ -309,7 +307,7 @@ class IssueRefundViewModel @Inject constructor(
         refundableFeeLineIds: List<Long>,
     ): FeesRefundSection {
         val selectedFees = feeLines.filter { it.isSelected }
-        val totalRefund = selectedFees.sumOf { it.feeLine.getTotalValue() }
+        val totalRefund = selectedFees.sumOf { it.total }
 
         return FeesRefundSection(
             feeRefundLines = feeLines,
@@ -328,7 +326,7 @@ class IssueRefundViewModel @Inject constructor(
         isShippingMainSwitchChecked: Boolean
     ): ShippingRefundSection {
         val selectedShipping = shippingLines.filter { it.isSelected }
-        val totalRefund = selectedShipping.sumOf { it.shippingLine.total + it.shippingLine.totalTax }
+        val totalRefund = selectedShipping.sumOf { it.total }
         return ShippingRefundSection(
             shippingRefundLines = shippingLines,
             // We only support refunding an Order with one shipping refund for now.
@@ -633,9 +631,11 @@ class IssueRefundViewModel @Inject constructor(
                 var newItem = it.copy(quantity = newQuantity)
 
                 // Update the subtotal and taxes based on the new quantity
-                val subtotal = newItem.calculateTotalSubtotal()
-                val taxes = newItem.calculateTaxesList()
-                newItem = newItem.copy(subtotal = subtotal, taxes = taxes)
+                newItem = newItem.copy(
+                    subtotal = newItem.calculateTotalSubtotal(),
+                    totalTax = newItem.calculateTotalTaxes(),
+                    taxes = newItem.calculateTaxesList()
+                )
 
                 newItems.add(newItem)
             } else {

@@ -11,7 +11,11 @@ sealed class RefundItem : Parcelable {
     abstract val itemId: Long
     abstract val quantity: Int?
     abstract val subtotal: BigDecimal
+    abstract val totalTax: BigDecimal
     abstract val taxes: List<TaxRefund>
+
+    val total: BigDecimal
+        get() = subtotal + totalTax
 
     fun toDataModel(): RefundRequestItem {
         return RefundRequestItem(
@@ -40,6 +44,7 @@ data class ProductRefundListItem(
     val maxQuantity: Float = 0f,
     override val quantity: Int = 0,
     override val subtotal: BigDecimal = BigDecimal.ZERO,
+    override val totalTax: BigDecimal = BigDecimal.ZERO,
     override val taxes: List<TaxRefund> = emptyList()
 ) : RefundItem() {
     override val itemId: Long
@@ -63,6 +68,8 @@ data class ShippingRefundListItem(
         get() = null
     override val subtotal: BigDecimal
         get() = shippingLine.total
+    override val totalTax: BigDecimal
+        get() = shippingLine.totalTax
     override val taxes: List<TaxRefund>
         get() = shippingLine.taxes.map {
             TaxRefund(
@@ -83,6 +90,8 @@ data class FeeRefundListItem(
         get() = null
     override val subtotal: BigDecimal
         get() = feeLine.total
+    override val totalTax: BigDecimal
+        get() = feeLine.totalTax
     override val taxes: List<TaxRefund>
         get() = feeLine.taxes.map {
             TaxRefund(
