@@ -110,7 +110,7 @@ class WooPosProductsViewModel @Inject constructor(
                                 id = event.item.id,
                                 name = event.item.name,
                                 numOfVariations = event.item.numOfVariations,
-                                source = WooPosItemSource.PRODUCT_LIST
+                                sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST,
                             )
                         )
                     )
@@ -272,7 +272,11 @@ class WooPosProductsViewModel @Inject constructor(
         sendEventToParent(
             ChildToParentEvent.ItemClickedInProductSelector(
                 itemData = itemData,
-                source = WooPosItemSource.PRODUCT_LIST
+                eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
+                    item = itemData,
+                    source = WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT,
+                    sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST,
+                ),
             )
         )
     }

@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.woopos.home
 
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart.WooPosItemSource
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import dagger.hilt.android.scopes.ActivityRetainedScoped
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -28,7 +28,7 @@ sealed class ChildToParentEvent {
     data object BackFromCheckoutToCartClicked : ChildToParentEvent()
     data class ItemClickedInProductSelector(
         val itemData: WooPosItemsViewModel.ItemClickedData,
-        val source: WooPosItemSource
+        val eventForTracking: WooPosAnalyticsEvent.Event.ItemAddedToCart
     ) : ChildToParentEvent()
     data object NewTransactionClicked : ChildToParentEvent()
     data object PaymentCollecting : ChildToParentEvent()
