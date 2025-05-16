@@ -16,12 +16,9 @@ import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.getMaxRefundQuantities
 import com.woocommerce.android.model.toAppModel
-import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.OpenUrl
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.ShowNumberPicker
-import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.max
 import com.woocommerce.android.util.min
@@ -45,7 +42,6 @@ import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.store.WCGatewayStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCRefundStore
 import java.math.BigDecimal
@@ -60,15 +56,10 @@ class IssueRefundViewModel @Inject constructor(
     private val currencyFormatter: CurrencyFormatter,
     private val orderStore: WCOrderStore,
     private val selectedSite: SelectedSite,
-    private val networkStatus: NetworkStatus,
     private val resourceProvider: ResourceProvider,
-    private val orderDetailRepository: OrderDetailRepository,
-    private val gatewayStore: WCGatewayStore,
-    private val refundStore: WCRefundStore,
-    private val paymentChargeRepository: PaymentChargeRepository,
+    refundStore: WCRefundStore,
     private val orderMapper: OrderMapper,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    private val coroutineDispatchers: CoroutineDispatchers
 ) : ScopedViewModel(savedState) {
     private val orderFlow: SharedFlow<Order> = flow {
         val order = requireNotNull(
