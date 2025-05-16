@@ -38,6 +38,7 @@ import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRef
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.max
+import com.woocommerce.android.util.min
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -170,7 +171,8 @@ class IssueRefundViewModel @Inject constructor(
             productsSection = productsSection,
             feesSection = feesSection,
             shippingSection = shippingSection,
-            refundNotice = refundNotice
+            refundNotice = refundNotice,
+            maxRefund = order.maxRefund
         )
     }
         .onEach { updateRefundTotal(it.grandTotalRefund) }
@@ -746,13 +748,17 @@ class IssueRefundViewModel @Inject constructor(
         val productsSection: ProductsRefundSection,
         val feesSection: FeesRefundSection,
         val shippingSection: ShippingRefundSection,
-        val refundNotice: String?
+        val refundNotice: String?,
+        val maxRefund: BigDecimal
     ) {
         val grandTotalRefund: BigDecimal
-            get() = max(
-                productsSection.productsRefund + shippingSection.shippingRefund + feesSection.feesRefund,
-                BigDecimal.ZERO
-            )
+            get() {
+                val refundTotal = max(
+                    productsSection.productsRefund + shippingSection.shippingRefund + feesSection.feesRefund,
+                    BigDecimal.ZERO
+                )
+                return min(refundTotal, maxRefund)
+            }
 
         val isNextButtonEnabled: Boolean
             get() = grandTotalRefund > BigDecimal.ZERO
