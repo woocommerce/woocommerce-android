@@ -14,7 +14,8 @@ data class PackageDAO(
     val isLetter: Boolean,
     val dimensionUnit: String,
     val weightUnit: String,
-    val groupName: String? = null
+    val groupName: String? = null,
+    val saved: Boolean,
 )
 
 data class CarrierDAO(

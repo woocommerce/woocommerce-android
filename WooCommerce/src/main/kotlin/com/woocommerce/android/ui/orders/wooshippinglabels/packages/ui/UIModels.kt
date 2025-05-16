@@ -75,7 +75,8 @@ data class PackageData(
             isLetter = dao.isLetter,
             dimensionUnit = dao.dimensionUnit,
             weightUnit = dao.weightUnit,
-            groupName = dao.groupName
+            groupName = dao.groupName,
+            isStarred = dao.saved
         )
     }
 }

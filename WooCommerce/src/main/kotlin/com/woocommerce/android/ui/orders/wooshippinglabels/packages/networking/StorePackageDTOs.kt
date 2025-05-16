@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 class SavedPackageInfoDTO {
     val custom: List<CustomPackageDTO>? = null
+    val predefined: PredefinedSavedPackageIdsDTO? = null
 }
 
 class CustomPackageDTO {
@@ -23,4 +24,10 @@ class CustomPackageDTO {
 
     @SerializedName("is_user_defined")
     val isUserDefined: Boolean? = null
+}
+
+class PredefinedSavedPackageIdsDTO {
+    val usps: List<String>? = null
+    val dhlexpress: List<String>? = null
+    val upsdap: List<String>? = null
 }
