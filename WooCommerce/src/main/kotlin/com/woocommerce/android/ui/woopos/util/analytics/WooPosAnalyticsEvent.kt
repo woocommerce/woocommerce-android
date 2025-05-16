@@ -273,7 +273,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             val millisecondsSinceRequestSent: Long,
             val source: ItemsListSource,
         ) : Event() {
-            override val name: String = "pos_search_remote_results_fetched"
+            override val name: String = "search_remote_results_fetched"
 
             init {
                 addProperties(
