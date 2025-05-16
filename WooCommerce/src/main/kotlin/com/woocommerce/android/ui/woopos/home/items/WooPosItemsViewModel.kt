@@ -10,10 +10,10 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState.Tab
 import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationFacade
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart.WooPosItemSource
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SearchButtonTapped
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ITEM_LIST_TYPE
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ITEM_LIST_TYPE_PRODUCTS
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -105,11 +105,27 @@ class WooPosItemsViewModel @Inject constructor(
             R.string.woopos_products_screen_title -> WooPosItemsViewState.ProductList(
                 tabs = tabsHelper.selectTab(state.tabs, selectedTab),
                 search = searchHelper.getInitialSearchState(),
-            )
+            ).also {
+                viewModelScope.launch {
+                    analyticsTracker.track(
+                        WooPosAnalyticsEvent.Event.ItemsHeaderTapped(
+                            WooPosAnalyticsEventConstant.ItemsHeaderType.PRODUCT
+                        )
+                    )
+                }
+            }
 
             R.string.woopos_coupons_screen_title -> WooPosItemsViewState.CouponList(
                 tabs = tabsHelper.selectTab(state.tabs, selectedTab),
-            )
+            ).also {
+                viewModelScope.launch {
+                    analyticsTracker.track(
+                        WooPosAnalyticsEvent.Event.ItemsHeaderTapped(
+                            WooPosAnalyticsEventConstant.ItemsHeaderType.COUPON
+                        )
+                    )
+                }
+            }
 
             else -> error("Invalid tab $selectedTab")
         }
