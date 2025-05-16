@@ -132,6 +132,7 @@ class WooPosItemsViewModel @Inject constructor(
 
     private fun createAndAddCoupon() {
         viewModelScope.launch {
+            analyticsTracker.track(WooPosAnalyticsEvent.Event.CouponsCreateTapped)
             val coupon = couponCreationFacade.createCoupon()
             if (coupon != null) {
                 val itemData = ItemClickedData.Coupon(coupon.id, coupon.code ?: "")

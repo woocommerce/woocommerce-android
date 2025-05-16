@@ -95,6 +95,10 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "interaction_with_customer_started"
         }
 
+        data object CouponsCreateTapped: Event() {
+            override val name: String = "coupons_create_tapped"
+        }
+
         @ExposedCopyVisibility
         data class ItemAddedToCart private constructor(
             val source: ItemsListSource,
