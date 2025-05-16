@@ -16,7 +16,6 @@ import org.wordpress.android.fluxc.generated.SiteActionBuilder
 import org.wordpress.android.fluxc.generated.endpoint.WPCOMREST
 import org.wordpress.android.fluxc.generated.endpoint.WPCOMV2
 import org.wordpress.android.fluxc.model.JetpackCapability
-import org.wordpress.android.fluxc.model.RoleModel
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.SitesModel
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
@@ -30,7 +29,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder.Re
 import org.wordpress.android.fluxc.network.rest.wpcom.auth.AccessToken
 import org.wordpress.android.fluxc.network.rest.wpcom.auth.AppSecrets
 import org.wordpress.android.fluxc.network.rest.wpcom.site.SiteWPComRestResponse.SitesResponse
-import org.wordpress.android.fluxc.network.rest.wpcom.site.UserRoleWPComRestResponse.UserRolesResponse
 import org.wordpress.android.fluxc.store.SiteStore.AccessCookieErrorType
 import org.wordpress.android.fluxc.store.SiteStore.AutomatedTransferEligibilityResponsePayload
 import org.wordpress.android.fluxc.store.SiteStore.AutomatedTransferError
@@ -54,7 +52,6 @@ import org.wordpress.android.fluxc.store.SiteStore.DomainSupportedStatesResponse
 import org.wordpress.android.fluxc.store.SiteStore.FetchedJetpackCapabilitiesPayload
 import org.wordpress.android.fluxc.store.SiteStore.FetchedPlansPayload
 import org.wordpress.android.fluxc.store.SiteStore.FetchedPrivateAtomicCookiePayload
-import org.wordpress.android.fluxc.store.SiteStore.FetchedUserRolesPayload
 import org.wordpress.android.fluxc.store.SiteStore.InitiateAutomatedTransferResponsePayload
 import org.wordpress.android.fluxc.store.SiteStore.JetpackCapabilitiesError
 import org.wordpress.android.fluxc.store.SiteStore.JetpackCapabilitiesErrorType
@@ -79,8 +76,6 @@ import org.wordpress.android.fluxc.store.SiteStore.SiteVisibility.PUBLIC
 import org.wordpress.android.fluxc.store.SiteStore.SuggestDomainError
 import org.wordpress.android.fluxc.store.SiteStore.SuggestDomainErrorType.EMPTY_RESULTS
 import org.wordpress.android.fluxc.store.SiteStore.SuggestDomainsResponsePayload
-import org.wordpress.android.fluxc.store.SiteStore.UserRolesError
-import org.wordpress.android.fluxc.store.SiteStore.UserRolesErrorType
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.AppLog.T.API
@@ -353,37 +348,6 @@ class SiteRestClient @Inject constructor(
             body = mapOf("site" to site.siteId),
             Unit::class.java
         )
-    }
-
-    @Suppress("ForbiddenComment")
-    fun fetchUserRoles(site: SiteModel) {
-        val url = WPCOMREST.sites.site(site.siteId).roles.urlV1_1
-        val request = WPComGsonRequest.buildGetRequest(url, null,
-                UserRolesResponse::class.java,
-                { response ->
-                    val roleArray = mutableListOf<RoleModel>()
-                    for (roleResponse in response.roles) {
-                        val roleModel = RoleModel()
-                        roleModel.name = roleResponse.name
-                        roleModel.displayName = StringEscapeUtils.unescapeHtml4(roleResponse.display_name)
-                        roleArray.add(roleModel)
-                    }
-                    mDispatcher.dispatch(
-                            SiteActionBuilder.newFetchedUserRolesAction(
-                                    FetchedUserRolesPayload(
-                                            site,
-                                            roleArray
-                                    )
-                            )
-                    )
-                }
-        ) {
-            val payload = FetchedUserRolesPayload(site, emptyList())
-            // TODO: what other kind of error could we get here?
-            payload.error = UserRolesError(UserRolesErrorType.GENERIC_ERROR)
-            mDispatcher.dispatch(SiteActionBuilder.newFetchedUserRolesAction(payload))
-        }
-        add(request)
     }
 
     fun fetchPlans(site: SiteModel) {

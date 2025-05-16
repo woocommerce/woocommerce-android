@@ -4,13 +4,11 @@ import android.content.ContentValues
 import android.database.Cursor
 import android.database.sqlite.SQLiteConstraintException
 import com.wellsql.generated.AccountModelTable
-import com.wellsql.generated.RoleModelTable
 import com.wellsql.generated.SiteModelTable
 import com.yarolegovich.wellsql.SelectQuery
 import com.yarolegovich.wellsql.WellSql
 import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
-import org.wordpress.android.fluxc.model.RoleModel
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.AppLog.T.DB
@@ -263,26 +261,6 @@ class SiteSqlUtils
                 .equals(SiteModelTable.ORIGIN, SiteModel.ORIGIN_WPCOM_REST)
                 .equals(SiteModelTable.IS_VISIBLE, true)
                 .endGroup().endWhere()
-
-    fun getUserRoles(site: SiteModel): List<RoleModel> {
-        return WellSql.select(RoleModel::class.java)
-                .where()
-                .equals(RoleModelTable.SITE_ID, site.id)
-                .endWhere().asModel
-    }
-
-    fun insertOrReplaceUserRoles(site: SiteModel, roles: List<RoleModel>) {
-        // Remove previous roles for this site
-        WellSql.delete(RoleModel::class.java)
-                .where()
-                .equals(RoleModelTable.SITE_ID, site.id)
-                .endWhere().execute()
-        // Insert new user roles for this site
-        for (role in roles) {
-            role.siteId = site.id
-        }
-        WellSql.insert(roles).execute()
-    }
 
     /**
      * Removes all sites from local database with the following criteria:

@@ -25,7 +25,6 @@ import org.wordpress.android.fluxc.store.SiteStore.FetchWPAPISitePayload;
 import org.wordpress.android.fluxc.store.SiteStore.FetchedJetpackCapabilitiesPayload;
 import org.wordpress.android.fluxc.store.SiteStore.FetchedPlansPayload;
 import org.wordpress.android.fluxc.store.SiteStore.FetchedPrivateAtomicCookiePayload;
-import org.wordpress.android.fluxc.store.SiteStore.FetchedUserRolesPayload;
 import org.wordpress.android.fluxc.store.SiteStore.InitiateAutomatedTransferPayload;
 import org.wordpress.android.fluxc.store.SiteStore.InitiateAutomatedTransferResponsePayload;
 import org.wordpress.android.fluxc.store.SiteStore.NewSitePayload;
@@ -49,8 +48,6 @@ public enum SiteAction implements IAction {
     FETCH_SITE_WP_API,
     @Action(payloadType = NewSitePayload.class)
     CREATE_NEW_SITE,
-    @Action(payloadType = SiteModel.class)
-    FETCH_USER_ROLES,
     @Action(payloadType = SiteModel.class)
     DELETE_SITE,
     @Action(payloadType = SiteModel.class)
@@ -87,8 +84,6 @@ public enum SiteAction implements IAction {
     // Remote responses
     @Action(payloadType = SiteModel.class)
     FETCHED_PROFILE_XML_RPC,
-    @Action(payloadType = FetchedUserRolesPayload.class)
-    FETCHED_USER_ROLES,
     @Action(payloadType = DeleteSiteResponsePayload.class)
     DELETED_SITE,
     @Action(payloadType = ExportSiteResponsePayload.class)

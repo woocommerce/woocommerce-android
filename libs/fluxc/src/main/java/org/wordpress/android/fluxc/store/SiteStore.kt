@@ -32,7 +32,6 @@ import org.wordpress.android.fluxc.action.SiteAction.FETCHED_JETPACK_CAPABILITIE
 import org.wordpress.android.fluxc.action.SiteAction.FETCHED_PLANS
 import org.wordpress.android.fluxc.action.SiteAction.FETCHED_PRIVATE_ATOMIC_COOKIE
 import org.wordpress.android.fluxc.action.SiteAction.FETCHED_PROFILE_XML_RPC
-import org.wordpress.android.fluxc.action.SiteAction.FETCHED_USER_ROLES
 import org.wordpress.android.fluxc.action.SiteAction.FETCHED_WPCOM_SITE_BY_URL
 import org.wordpress.android.fluxc.action.SiteAction.FETCH_CONNECT_SITE_INFO
 import org.wordpress.android.fluxc.action.SiteAction.FETCH_DOMAIN_SUPPORTED_COUNTRIES
@@ -45,7 +44,6 @@ import org.wordpress.android.fluxc.action.SiteAction.FETCH_SITE
 import org.wordpress.android.fluxc.action.SiteAction.FETCH_SITES
 import org.wordpress.android.fluxc.action.SiteAction.FETCH_SITES_XML_RPC
 import org.wordpress.android.fluxc.action.SiteAction.FETCH_SITE_WP_API
-import org.wordpress.android.fluxc.action.SiteAction.FETCH_USER_ROLES
 import org.wordpress.android.fluxc.action.SiteAction.FETCH_WPCOM_SITE_BY_URL
 import org.wordpress.android.fluxc.action.SiteAction.HIDE_SITES
 import org.wordpress.android.fluxc.action.SiteAction.INITIATED_AUTOMATED_TRANSFER
@@ -63,7 +61,6 @@ import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.DomainModel
 import org.wordpress.android.fluxc.model.JetpackCapability
 import org.wordpress.android.fluxc.model.PlanModel
-import org.wordpress.android.fluxc.model.RoleModel
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.SitesModel
 import org.wordpress.android.fluxc.model.asDomainModel
@@ -220,11 +217,6 @@ open class SiteStore @Inject constructor(
             dryRun: Boolean
         ) : this(siteName, siteTitle, language, timeZoneId, visibility, null, null, dryRun, findAvailableUrl)
     }
-
-    data class FetchedUserRolesPayload(
-        @JvmField val site: SiteModel,
-        @JvmField val roles: List<RoleModel>
-    ) : Payload<UserRolesError>()
 
     data class FetchedPlansPayload(
         @JvmField val site: SiteModel,
@@ -429,13 +421,6 @@ open class SiteStore @Inject constructor(
         @JvmField val selfHostedErrorType: SelfHostedErrorType = NOT_SET
     ) : OnChangedError
 
-    data class UserRolesError internal constructor(
-        @JvmField val type: UserRolesErrorType?,
-        @JvmField val message: String
-    ) : OnChangedError {
-        constructor(type: UserRolesErrorType?) : this(type, "")
-    }
-
     data class NewSiteError(@JvmField val type: NewSiteErrorType, @JvmField val message: String) : OnChangedError
     data class DeleteSiteError(
         @JvmField val type: DeleteSiteErrorType,
@@ -517,7 +502,6 @@ open class SiteStore @Inject constructor(
         }
     }
 
-    data class OnUserRolesChanged(@JvmField val site: SiteModel) : OnChanged<UserRolesError>()
     data class OnPlansFetched(
         @JvmField val site: SiteModel,
         @JvmField val plans: List<PlanModel>?
@@ -829,10 +813,6 @@ open class SiteStore @Inject constructor(
 
     enum class AccessCookieErrorType {
         GENERIC_ERROR, INVALID_RESPONSE, SITE_MISSING_FROM_STORE, NON_PRIVATE_AT_SITE
-    }
-
-    enum class UserRolesErrorType {
-        GENERIC_ERROR
     }
 
     enum class JetpackCapabilitiesErrorType {
@@ -1185,10 +1165,6 @@ open class SiteStore @Inject constructor(
         }
     }
 
-    fun getUserRoles(site: SiteModel?): List<RoleModel> {
-        return siteSqlUtils.getUserRoles(site!!)
-    }
-
     suspend fun getJetpackCPConnectedSites(): List<JetpackCPConnectedSiteModel> {
         return jetpackCPConnectedSitesDao.getAll().map { it.toJetpackCPConnectedSite() }
     }
@@ -1236,8 +1212,6 @@ open class SiteStore @Inject constructor(
             CREATE_NEW_SITE -> coroutineEngine.launch(T.MAIN, this, "Create a new site") {
                 emitChange(createNewSite(action.payload as NewSitePayload))
             }
-            FETCH_USER_ROLES -> fetchUserRoles(action.payload as SiteModel)
-            FETCHED_USER_ROLES -> updateUserRoles(action.payload as FetchedUserRolesPayload)
             FETCH_CONNECT_SITE_INFO -> fetchConnectSiteInfo(action.payload as String)
             FETCHED_CONNECT_SITE_INFO -> handleFetchedConnectSiteInfo(action.payload as ConnectSiteInfoPayload)
             FETCH_WPCOM_SITE_BY_URL -> fetchWPComSiteByUrl(action.payload as String)
@@ -1535,22 +1509,6 @@ open class SiteStore @Inject constructor(
 
     private fun handleCreateNewSiteCompleted(payload: NewSiteResponsePayload): OnNewSiteCreated {
         return OnNewSiteCreated(payload.dryRun, payload.siteUrl, payload.newSiteRemoteId, payload.error)
-    }
-
-    private fun fetchUserRoles(site: SiteModel) {
-        if (site.isUsingWpComRestApi) {
-            siteRestClient.fetchUserRoles(site)
-        }
-    }
-
-    private fun updateUserRoles(payload: FetchedUserRolesPayload) {
-        val event = OnUserRolesChanged(payload.site)
-        if (payload.isError) {
-            event.error = payload.error
-        } else {
-            siteSqlUtils.insertOrReplaceUserRoles(payload.site, payload.roles)
-        }
-        emitChange(event)
     }
 
     private fun removeSites(sites: List<SiteModel>): Int {
