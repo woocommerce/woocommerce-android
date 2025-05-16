@@ -1,11 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-04-21 13:54:04+0000
+Translation-Revision-Date: 2025-05-05 13:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_split_shipment_merge_unfulfilled_button">دمج جميع الشحنات</string>
+    <string name="woo_shipping_split_shipment_merge_unfulfilled_desc">سيؤدي هذا إلى إزالة جميع الشحنات المقسمة غير المستوفاة ونقل جميع العناصر إلى شحنة واحدة.</string>
+    <string name="woo_shipping_split_shipment_merge_unfulfilled_title">دمج جميع الشحنات غير المستوفاة</string>
+    <string name="woo_shipping_split_shipment_merge_unfulfilled_menu">دمج كل الشحات غير المستوفاة</string>
+    <string name="woo_shipping_labels_package_creation_unstarred">إلغاء وضع علامة نجمة على هذا العنصر</string>
+    <string name="woo_shipping_labels_package_creation_starred">وضع علامة نجمة على هذا العنصر</string>
+    <string name="woopos_coupons_pagination_error_content_description">\"فشل تحميل مزيد من القسائم. انقر نقرًا مزدوجًا للمحاولة مجددًا\".</string>
+    <string name="woopos_coupons_pagination_error_description">\"حدث خطأ في أثناء تحميل القسائم\".</string>
+    <string name="woopos_coupons_pagination_error_title">فشل تحميل مزيد من العناصر\"</string>
+    <string name="woopos_coupons_pagination_try_again_label">المحاولة مجددًا</string>
+    <string name="woopos_coupons_loading_error_retry_button">إعادة المحاولة</string>
+    <string name="woopos_coupons_loading_error_message">هل تريد المحاولة مرة أخرى؟</string>
+    <string name="woopos_coupons_loading_error_title">خطأ في أثناء تحميل القسائم</string>
+    <string name="woopos_coupons_empty_list_message">عزز أعمالك عن طريق إرسال عروض وخصومات خاصة إلى العملاء.</string>
+    <string name="woopos_coupons_empty_list_title">لم يتم العثور على قسائم</string>
+    <string name="woopos_coupons_empty_list_image_description">لا توجد قسائم</string>
+    <string name="woopos_coupons_screen_title">القسائم</string>
+    <string name="woopos_product_limitations_title">أين منتجاتي؟</string>
+    <string name="woopos_coupon_item_content_description">القسيمة %s</string>
     <string name="woo_shipping_split_shipment_bottom_sheet_remove_button">إزالة الشحنة</string>
     <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_plural">اختر المكان الذي يتم نقل العناصر %d إليه في هذه الشحنة.</string>
     <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_one">اختر المكان الذي يتم نقل العنصر %d إليه في هذه الشحنة.</string>
@@ -37,7 +56,7 @@ Language: ar
     <string name="woopos_search_empty_image_content_description">لم يتم العثور على عناصر</string>
     <string name="woopos_search_empty_description">لم نتمكن من العثور على أي شيء يطابق بحثك.</string>
     <string name="woopos_search_items_empty_title">لم يتم العثور على نتائج</string>
-    <string name="woopos_payment_discount_label">الخصم</string>
+    <string name="woopos_payment_discount_label">إجمالي الخصم</string>
     <string name="woopos_cart_item_coupon_content_description">القسيمة في عربة التسوق %s</string>
     <string name="shipping_label_package_title">تحديد طرد</string>
     <string name="receipt_preview_toolbar_title">معاينة الإيصال</string>
@@ -55,9 +74,9 @@ Language: ar
     <string name="woo_shipping_labels_shipping_rates_missing_destination_desc">يتعين علينا معرفة المسار الذي يذهب إليه هذا الطرد قبل أن نتمكن من عرض أسعار الشحن المتوفرة.</string>
     <string name="woo_shipping_labels_shipping_rates_missing_destination">إضافة عنوان وجهة للحصول على أسعار الشحن</string>
     <string name="woopos_search_recent_searches_title">آخر عمليات بحث</string>
-    <string name="woopos_search_popular_items_title">العناصر الشائعة</string>
+    <string name="woopos_search_popular_items_title">المنتجات الرائجة</string>
     <string name="woopos_search_products">البحث عن المنتجات…</string>
-    <string name="woopos_clear_back_content_description">مسح</string>
+    <string name="woopos_search_clear_content_description">مسح</string>
     <string name="woopos_search_back_content_description">رجوع</string>
     <string name="card_reader_connect_failed_battery_low_hint">بطارية القارئ منخفضة. يرجى شحن القارئ والمحاولة مجددًا</string>
     <string name="login_site_credentials_invalid_response">فشل تسجيل الدخول مع وجود استجابة غير متوقعة من موقعك.</string>
@@ -358,8 +377,6 @@ Language: ar
     <string name="woopos_dialog_products_info_background_content_description">خلفية خافتة. انقر لتجاهل مربع الحوار.</string>
     <string name="woopos_banner_simple_products_dialog_primary_button_content_description">انقر نقرًا مزدوجًا لتجاهل مربع الحوار</string>
     <string name="woopos_banner_simple_products_dialog_content_description">مربع حوار المنتجات البسيطة والمتغيرة والافتراضية فقط</string>
-    <string name="woopos_banner_simple_products_learn_more_content_description">النقر نقرًا مزدوجًا للتعرف على المزيد</string>
-    <string name="woopos_banner_simple_products_content_description">شعار المنتجات البسيطة والمتغيرة والافتراضية فقط</string>
     <string name="local_notification_blaze_no_campaign_reminder_description">روِّج لمنتجاتك من خلال Blaze Ads وارفع مبيعاتك الآن.</string>
     <string name="local_notification_blaze_no_campaign_reminder_title">تعزيز مبيعاتك</string>
     <string name="more_menu_button_payments_description">تلقي المدفوعات في أثناء التنقل</string>
@@ -373,11 +390,6 @@ Language: ar
     <string name="woopos_dialog_products_info_secondary_message_action_label">+ إنشاء طلب في إدارة المتجر</string>
     <string name="woopos_dialog_products_info_tertiary_message">لتلقي دفعة مقابل منتج آخر، اخرج من نقطة البيع وأنشئ طلبًا جديدًا من علامة تبويب الطلبات.</string>
     <string name="woopos_dialog_products_info_heading">لماذا يتعذر علي رؤية منتجاتي؟</string>
-    <string name="woopos_banner_simple_products_info_content_description">معلومات</string>
-    <string name="woopos_banner_simple_products_close_content_description">إغلاق</string>
-    <string name="woopos_banner_simple_products_only_message_learn_more">معرفة المزيد</string>
-    <string name="woopos_banner_simple_products_only_message">تكون المنتجات المادية والمتغيرة والافتراضية فقط متوافقة مع نقطة بيع الآن. أما أنواع المنتجات الأخرى، فستصبح التحديثات المستقبلية متوفرة. </string>
-    <string name="woopos_banner_simple_products_only_title">إظهار المنتجات البسيطة والمتغيرة والافتراضية فقط</string>
     <string name="support_request_site_address">عنوان الموقع</string>
     <string name="analytics_google_ads_cta_web_view_title">Google for WooCommerce</string>
     <string name="analytics_google_ads_cta_action">إضافة حملة مدفوعة</string>
@@ -2520,7 +2532,7 @@ Language: ar
     <string name="print_receipt_label_info_step_4">قم بإقران الطابعة وربطها بهاتفك المحمول عندما يُطلب منك ذلك.</string>
     <string name="print_receipt_label_info_step_3">عند تحديد \"طباعة إيصال\" بعد قبول عملية الدفع، استبدل \"حفظ كملف PDF\" بـ \"جميع الطابعات\"، وابحث عن طابعة جديدة.</string>
     <string name="print_receipt_label_info_step_2">قم بتمكين البلوتوث أو اتصال الواي فاي على طابعتك.</string>
-    <string name="print_receipt_label_info_step_1">تأكَّد من تثبيت إضافة خدمة الطباعة لطابعتك.</string>
+    <string name="print_receipt_label_info_step_1">تأكد من تثبيت إضافة خدمة الطباعة لطابعتك.</string>
     <string name="orderdetail_printing_instructions_button">معرفة المزيد حول طباعة الإيصال باستخدام جهازك</string>
     <string name="product_create_attribute_helper">لإنشاء مجموعة، ستحتاج إلى تعيين سماتها (أي \"اللون\"، \"والحجم\") أولاً</string>
     <string name="product_variation_single_count">مجموعة واحدة</string>
