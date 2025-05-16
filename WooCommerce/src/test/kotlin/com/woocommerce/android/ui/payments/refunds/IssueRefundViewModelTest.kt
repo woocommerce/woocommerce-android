@@ -23,8 +23,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
-import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -1222,7 +1222,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             initViewModel()
             viewModel.onSelectButtonTapped()
 
-            val items = viewModel.refundItems.getOrAwaitValue()
+            val items = viewModel.refundByItemsStateLiveData.getOrAwaitValue().productsSection.refundItems
             items.map { it.toDataModel() }.forEach { refundItem ->
                 val item = order.getLineItemList().first { it.id == refundItem.itemId }
                 assertThat(refundItem.refundTax).allMatch { refundTaxItem ->
@@ -1243,7 +1243,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             initViewModel()
             viewModel.onSelectButtonTapped()
 
-            val shippingLines = viewModel.refundShippingLines.getOrAwaitValue()
+            val shippingLines = viewModel.refundByItemsStateLiveData.getOrAwaitValue().shippingSection.shippingRefundLines
             shippingLines.map { it.toDataModel() }.forEach { refundItem ->
                 val shippingLine = order.getShippingLineList().first { it.id == refundItem.itemId }
                 assertThat(refundItem.refundTax).allMatch { refundTaxItem ->
@@ -1264,7 +1264,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             initViewModel()
             viewModel.onSelectButtonTapped()
 
-            val feeLines = viewModel.refundFeeLines.getOrAwaitValue()
+            val feeLines = viewModel.refundByItemsStateLiveData.getOrAwaitValue().feesSection.feeRefundLines
             feeLines.map { it.toDataModel() }.forEach { refundItem ->
                 val feeLine = order.getFeeLineList().first { it.id == refundItem.itemId }
                 assertThat(refundItem.refundTax).allMatch { refundTaxItem ->
