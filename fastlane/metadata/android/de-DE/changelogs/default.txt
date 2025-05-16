@@ -1,2 +1,0 @@
-22.3:
-Wir haben die WooCommerce-Mobil-App optimiert! Produkttypen sind jetzt nahtlos in das POS-Menü integriert. Durch dieses aktualisierte Design ist die Verwaltung von Produktinformationen während des Bezahlvorgangs einfach und intuitiv.
