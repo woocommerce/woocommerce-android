@@ -30,11 +30,12 @@ import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.mockito.kotlin.any
-import org.mockito.kotlin.argThat
+import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
@@ -58,7 +59,6 @@ class WooPosCartViewModelTest {
         on { events }.thenReturn(parentToChildrenMutableSharedFlow)
     }
     private val getProductById: WooPosGetProductById = mock()
-
     private val getCouponById: WooPosGetCouponById = mock {
         onBlocking { invoke(any()) }.thenReturn(
             Coupon(
@@ -312,17 +312,15 @@ class WooPosCartViewModelTest {
         // GIVEN
         val (sut, states) = createSutWithItemsInCart()
         assertThat(states.last().body).isInstanceOf(WooPosCartState.Body.WithItems::class.java)
+        simulateCouponClicked()
 
         // WHEN
-        val itemsInCartCount = states.last().body.amountOfItems
+        clearInvocations(analyticsTracker)
         sut.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
+        advanceUntilIdle()
 
         // THEN
-        verify(analyticsTracker).track(
-            argThat { event ->
-                event is CheckoutTapped && event.properties["items_in_cart"] == "$itemsInCartCount"
-            }
-        )
+        verify(analyticsTracker).track(CheckoutTapped(productsInCart = 1, couponsInCart = 1))
     }
 
     @Test

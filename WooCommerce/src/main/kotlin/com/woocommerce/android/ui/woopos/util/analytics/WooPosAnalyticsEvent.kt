@@ -52,8 +52,17 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
         data object CashPaymentFailed : Event() {
             override val name: String = "cash_payment_failed"
         }
-        data object CheckoutTapped : Event() {
+        data class CheckoutTapped(val productsInCart: Int, val couponsInCart: Int) : Event() {
             override val name: String = "checkout_tapped"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "products_in_cart" to productsInCart.toString(),
+                        "coupons_in_cart" to couponsInCart.toString()
+                    )
+                )
+            }
         }
         data object ClearCartTapped : Event() {
             override val name: String = "clear_cart_tapped"
@@ -84,6 +93,10 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
         }
         data object InteractionWithCustomerStarted : Event() {
             override val name: String = "interaction_with_customer_started"
+        }
+
+        data object CouponsCreateTapped : Event() {
+            override val name: String = "coupons_create_tapped"
         }
 
         @ExposedCopyVisibility
@@ -239,9 +252,9 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             }
         }
 
-        class ItemsNextPageLoaded(
-            source: ItemsListSource,
-            sourceType: ItemsListSourceType
+        data class ItemsNextPageLoaded(
+            val source: ItemsListSource,
+            val sourceType: ItemsListSourceType
         ) : Event() {
             override val name: String = "items_next_page_loaded"
 
@@ -260,7 +273,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             val millisecondsSinceRequestSent: Long,
             val source: ItemsListSource,
         ) : Event() {
-            override val name: String = "pos_search_remote_results_fetched"
+            override val name: String = "search_remote_results_fetched"
 
             init {
                 addProperties(

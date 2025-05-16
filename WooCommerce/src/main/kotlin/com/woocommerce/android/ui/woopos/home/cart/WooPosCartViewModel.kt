@@ -134,7 +134,10 @@ class WooPosCartViewModel @Inject constructor(
         val itemClickedDataList = getCartItemsDataList()
         sendEventToParent(ChildToParentEvent.CheckoutClicked(itemClickedDataList))
         _state.value = _state.value.copy(cartStatus = CHECKOUT)
-        trackCheckoutTapped(itemClickedDataList.size)
+        trackCheckoutTapped(
+            itemClickedDataList.filterIsInstance<WooPosItemsViewModel.ItemClickedData.Product>().size,
+            itemClickedDataList.filterIsInstance<WooPosItemsViewModel.ItemClickedData.Coupon>().size
+        )
     }
 
     private fun getCartItemsDataList(): List<WooPosItemsViewModel.ItemClickedData> {
@@ -152,9 +155,9 @@ class WooPosCartViewModel @Inject constructor(
         return itemClickedDataList
     }
 
-    private fun trackCheckoutTapped(itemsInCart: Int) {
+    private fun trackCheckoutTapped(productsInCart: Int, couponsInCart: Int) {
         viewModelScope.launch {
-            analyticsTracker.track(CheckoutTapped.apply { addProperties(mapOf("items_in_cart" to "$itemsInCart")) })
+            analyticsTracker.track(CheckoutTapped(productsInCart, couponsInCart))
         }
     }
 

@@ -75,6 +75,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -562,7 +563,15 @@ class WooPosTotalsViewModelTest {
         val errorMessage = "Order creation failed"
         val totalsRepository: WooPosTotalsRepository = mock {
             onBlocking { createOrderFromCartItems(itemClickedData) }.thenReturn(
-                Result.failure(Exception(errorMessage))
+                Result.failure(
+                    WooException(
+                        WooError(
+                            WooErrorType.INVALID_COUPON,
+                            BaseRequest.GenericErrorType.INVALID_RESPONSE,
+                            errorMessage
+                        )
+                    )
+                )
             )
         }
 
@@ -581,7 +590,7 @@ class WooPosTotalsViewModelTest {
         ).track(
             WooPosAnalyticsEvent.Error.OrderCreationError(
                 WooPosTotalsViewModel::class,
-                Exception::class.java.simpleName,
+                "INVALID_COUPON",
                 errorMessage
             )
         )
