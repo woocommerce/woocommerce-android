@@ -75,7 +75,10 @@ class IssueRefundFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ShowRefundSummary -> {
-                    val action = IssueRefundFragmentDirections.actionIssueRefundFragmentToRefundSummaryFragment()
+                    val action = IssueRefundFragmentDirections.actionIssueRefundFragmentToRefundSummaryFragment(
+                        orderId = event.orderId,
+                        refundItems = event.refundItems.toTypedArray()
+                    )
                     findNavController().navigateSafely(action)
                 }
 

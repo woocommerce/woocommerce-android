@@ -11,6 +11,12 @@
         <action
             android:id="@+id/action_refundSummaryFragment_to_refundConfirmationDialog"
             app:destination="@id/refundConfirmationDialog" />
+        <argument
+            android:name="orderId"
+            app:argType="long" />
+        <argument
+            android:name="refundItems"
+            app:argType="com.woocommerce.android.ui.payments.refunds.RefundItem[]" />
     </fragment>
     <fragment
         android:id="@+id/issueRefundFragment"

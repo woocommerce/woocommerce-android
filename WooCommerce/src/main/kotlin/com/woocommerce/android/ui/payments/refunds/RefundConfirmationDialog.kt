@@ -11,7 +11,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class RefundConfirmationDialog : ConfirmationDialog() {
-    private val viewModel: IssueRefundViewModel by fixedHiltNavGraphViewModels(R.id.nav_graph_refunds)
+    private val viewModel: RefundSummaryViewModel by fixedHiltNavGraphViewModels(R.id.nav_graph_refunds)
 
     override fun returnResult(result: Boolean) {
         viewModel.onRefundConfirmed(result)

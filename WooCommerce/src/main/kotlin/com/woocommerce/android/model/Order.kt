@@ -85,6 +85,9 @@ data class Order(
     @IgnoredOnParcel
     val shippingAddress = customer?.shippingAddress ?: Address.EMPTY
 
+    val maxRefund: BigDecimal
+        get() = total - refundTotal
+
     @Parcelize
     data class ShippingMethod(
         val id: String,
