@@ -541,7 +541,7 @@ class IssueRefundViewModel @Inject constructor(
 
                 // Update the subtotal and taxes based on the new quantity
                 val subtotal = newItem.calculateTotalSubtotal()
-                val taxes = newItem.calculateTotalTaxes()
+                val taxes = newItem.calculateTaxesList()
                 newItem = newItem.copy(subtotal = subtotal, taxes = taxes)
 
                 newItems.add(newItem)
