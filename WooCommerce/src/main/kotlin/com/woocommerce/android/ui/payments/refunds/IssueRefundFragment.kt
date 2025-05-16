@@ -77,6 +77,7 @@ class IssueRefundFragment : BaseFragment() {
                 is ShowRefundSummary -> {
                     val action = IssueRefundFragmentDirections.actionIssueRefundFragmentToRefundSummaryFragment(
                         orderId = event.orderId,
+                        refundAmount = event.refundAmount.toString(),
                         refundItems = event.refundItems.toTypedArray()
                     )
                     findNavController().navigateSafely(action)

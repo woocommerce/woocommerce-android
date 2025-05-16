@@ -343,6 +343,7 @@ class IssueRefundViewModel @Inject constructor(
         triggerEvent(
             IssueRefundEvent.ShowRefundSummary(
                 orderId = arguments.orderId,
+                refundAmount = commonState.refundTotal,
                 refundItems = productItems + shippingLines + feeLines
             )
         )
@@ -509,6 +510,7 @@ class IssueRefundViewModel @Inject constructor(
         data class OpenUrl(val url: String) : IssueRefundEvent()
         data class ShowRefundSummary(
             val orderId: Long,
+            val refundAmount: BigDecimal,
             val refundItems: List<RefundItem>
         ) : IssueRefundEvent()
     }

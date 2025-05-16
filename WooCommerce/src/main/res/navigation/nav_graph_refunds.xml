@@ -23,6 +23,9 @@
             android:name="orderId"
             app:argType="long" />
         <argument
+            android:name="refundAmount"
+            app:argType="string" />
+        <argument
             android:name="refundItems"
             app:argType="com.woocommerce.android.ui.payments.refunds.RefundItem[]" />
     </fragment>

@@ -161,6 +161,14 @@ class RefundSummaryViewModel @Inject constructor(
 
     private suspend fun initRefundSummaryState() {
         if (refundSummaryStateLiveData.hasInitialValue) {
+            val refundAmount = navArgs.refundAmount.toBigDecimal()
+            refundSummaryState = refundSummaryState.copy(
+                refundAmount = refundAmount,
+                refundAmountFormatted = formatCurrency(refundAmount),
+                previouslyRefunded = formatCurrency(order.refundTotal),
+                isFormEnabled = true
+            )
+
             val manualRefundMethod = resourceProvider.getString(R.string.order_refunds_manual_refund)
             if (!order.paymentMethod.isCashPayment && (!gateway.isEnabled || !gateway.supportsRefunds)) {
                 val paymentTitle = if (gateway.title.isNotBlank()) {
