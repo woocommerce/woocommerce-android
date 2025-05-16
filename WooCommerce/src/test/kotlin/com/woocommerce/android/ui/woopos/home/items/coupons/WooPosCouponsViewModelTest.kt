@@ -18,8 +18,10 @@ import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNaviga
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -41,6 +43,7 @@ class WooPosCouponsViewModelTest {
     private val listViewStateManager: WooPosCouponsListViewStateManager = mock()
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val navigator: WooPosItemsNavigator = mock()
+    private val analyticsTracker: WooPosAnalyticsTracker = mock()
 
     private lateinit var viewModel: WooPosCouponsViewModel
 
@@ -161,11 +164,29 @@ class WooPosCouponsViewModelTest {
         )
     }
 
+    @Test
+    fun `when pull to refresh triggered, then event tracked`() = runTest {
+        // WHEN
+        viewModel.onUIEvent(PullToRefreshTriggered)
+
+        // THEN
+        advanceUntilIdle()
+        verify(analyticsTracker).track(
+            eq(
+                WooPosAnalyticsEvent.Event.PullToRefreshTriggered(
+                    source = WooPosAnalyticsEventConstant.ItemsListSource.COUPON,
+                    sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST
+                )
+            )
+        )
+    }
+
     private fun createViewModel() =
         WooPosCouponsViewModel(
             listViewStateManager,
             fromChildToParentEventSender,
             couponCreationFacade,
             navigator,
+            analyticsTracker
         )
 }
