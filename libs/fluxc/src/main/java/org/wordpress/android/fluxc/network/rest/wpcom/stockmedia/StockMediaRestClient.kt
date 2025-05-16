@@ -81,7 +81,6 @@ class StockMediaRestClient @Inject constructor(
     /**
      * Gets a list of stock media items matching a query string
      */
-
     suspend fun uploadStockMedia(
         site: SiteModel,
         stockMediaList: List<StockMediaUploadItem>

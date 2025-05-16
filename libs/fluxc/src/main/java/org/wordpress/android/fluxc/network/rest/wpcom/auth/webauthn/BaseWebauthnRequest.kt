@@ -34,11 +34,11 @@ abstract class BaseWebauthnRequest<T>(
                 .let { JSONObject(it).getJSONObject(WEBAUTHN_DATA) }
                 .let { serializeResponse(it.toString()) }
                 .let { Response.success(it, headers) }
-        } catch (
-            exception: UnsupportedEncodingException
-        ) { Response.error(ParseError(exception)) } catch (
-            exception: JSONException
-        ) { Response.error(ParseError(exception)) }
+        } catch (exception: UnsupportedEncodingException) {
+            Response.error(ParseError(exception))
+        } catch (exception: JSONException) {
+            Response.error(ParseError(exception))
+        }
     }
 
     override fun getParams() = parameters
