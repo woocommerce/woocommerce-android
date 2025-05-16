@@ -17,6 +17,9 @@ import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsListVie
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsListViewStateManager.FetchingCouponsState.PTR_FETCHING_FIRST_PAGE
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsListViewStateManager.FetchingCouponsState.RETRY_FETCHING_FIRST_PAGE
 import com.woocommerce.android.ui.woopos.util.WooPosGetCachedStoreCurrency
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosCouponsFormatter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -36,6 +39,7 @@ class WooPosCouponsListViewStateManager @Inject constructor(
     private val couponsFormatter: WooPosCouponsFormatter,
     private val getCachedStoreCurrency: WooPosGetCachedStoreCurrency,
     private val cachedCouponEnabledChecker: CachedCouponEnabledChecker,
+    private val analyticsTracker: WooPosAnalyticsTracker,
 ) {
     private val fetchingState: MutableStateFlow<FetchingCouponsState> = MutableStateFlow(IDLE)
 
@@ -60,6 +64,7 @@ class WooPosCouponsListViewStateManager @Inject constructor(
                     createContentViewState(coupons, fetchingState)
                 }
             }
+
             RETRY_FETCHING_FIRST_PAGE -> {
                 createLoadingState(fetchingState)
             }
@@ -145,6 +150,12 @@ class WooPosCouponsListViewStateManager @Inject constructor(
             } else {
                 canLoadMore = result.getOrNull() ?: false
                 fetchingState.emit(IDLE)
+                analyticsTracker.track(
+                    WooPosAnalyticsEvent.Event.ItemsNextPageLoaded(
+                        source = WooPosAnalyticsEventConstant.ItemsListSource.COUPON,
+                        sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST
+                    )
+                )
             }
         }
     }

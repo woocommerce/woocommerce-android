@@ -9,6 +9,9 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.WooPosGetCachedStoreCurrency
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosCouponsFormatter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -23,7 +26,9 @@ import org.junit.Test
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doSuspendableAnswer
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.mockito.kotlin.wheneverBlocking
 import java.util.Date
@@ -44,6 +49,7 @@ class WooPosCouponsListViewStateManagerTest {
     private val couponFormatter: WooPosCouponsFormatter = mock()
     private val getCachedStoreCurrency: WooPosGetCachedStoreCurrency = mock()
     private val couponsDataFlow = MutableStateFlow<List<CouponDBModel>>(emptyList())
+    private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private val cachedCouponEnabledChecker: CachedCouponEnabledChecker = mock {
         onBlocking { isEnabled() } doReturn true
     }
@@ -56,7 +62,8 @@ class WooPosCouponsListViewStateManagerTest {
         couponsDataSource,
         couponFormatter,
         getCachedStoreCurrency,
-        cachedCouponEnabledChecker
+        cachedCouponEnabledChecker,
+        analyticsTracker,
     )
 
     @Before
@@ -659,4 +666,39 @@ class WooPosCouponsListViewStateManagerTest {
                 cancelAndIgnoreRemainingEvents()
             }
         }
+
+    @Test
+    fun `when next page loads, then tracks evnet`() = runTest {
+        // GIVEN
+        whenever(couponsDataSource.clearCacheAndFetchFirstPage()).doSuspendableAnswer {
+            couponsDataFlow.emit(listOf(CouponTestUtils.generateTestCoupon(0L))) // cache
+            delay(1) // workaround for bug in mockito
+            Result.success(MORE_PAGES_AVAILABLE)
+        }
+        sat.fetchCoupons(testViewModelScope, WooPosCouponsListViewStateManager.WooPosCouponsListRefreshType.INITIAL)
+        advanceUntilIdle()
+        whenever(couponsDataSource.loadMore()).doSuspendableAnswer {
+            delay(1) // workaround for bug in mockito
+            Result.success(MORE_PAGES_AVAILABLE)
+        }
+
+        sat.viewState.test {
+            // WHEN
+            sat.endOfListReached(testViewModelScope)
+
+            advanceUntilIdle()
+
+            // THEN
+            verify(analyticsTracker).track(
+                eq(
+                    WooPosAnalyticsEvent.Event.ItemsNextPageLoaded(
+                        source = WooPosAnalyticsEventConstant.ItemsListSource.COUPON,
+                        sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST
+                    )
+                )
+            )
+
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
 }

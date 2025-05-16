@@ -53,7 +53,7 @@ fun List<ProductTag>.addTags(product: Product?): List<ProductTag> {
 
 fun WCProductTagModel.toProductTag(): ProductTag {
     return ProductTag(
-        remoteTagId = this.remoteTagId,
+        remoteTagId = this.remoteTagId.value,
         name = this.name,
         slug = this.slug,
         description = this.description

@@ -16,8 +16,9 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosProductsViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateToVariationsScreen
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart.WooPosItemSource
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ProductsPullToRefreshTriggered
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.PullToRefreshTriggered
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -104,7 +105,14 @@ class WooPosProductsViewModel @Inject constructor(
                     forceRefreshProducts = true,
                     withPullToRefresh = true,
                 )
-                viewModelScope.launch { analyticsTracker.track(ProductsPullToRefreshTriggered) }
+                viewModelScope.launch {
+                    analyticsTracker.track(
+                        PullToRefreshTriggered(
+                            WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT,
+                            WooPosAnalyticsEventConstant.ItemsListSourceType.LIST
+                        )
+                    )
+                }
             }
 
             WooPosProductsUIEvent.ProductsLoadingErrorRetryButtonClicked -> {
@@ -134,7 +142,7 @@ class WooPosProductsViewModel @Inject constructor(
                                 id = event.item.id,
                                 name = event.item.name,
                                 numOfVariations = event.item.numOfVariations,
-                                source = WooPosItemSource.PRODUCT_LIST
+                                sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST,
                             )
                         )
                     )
@@ -278,7 +286,14 @@ class WooPosProductsViewModel @Inject constructor(
         loadMoreProductsJob = viewModelScope.launch {
             val result = productsDataSource.loadMore()
             _viewState.value = if (result.isSuccess) {
-                result.getOrThrow().toContentState()
+                result.getOrThrow().toContentState().also {
+                    analyticsTracker.track(
+                        WooPosAnalyticsEvent.Event.ItemsNextPageLoaded(
+                            source = WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT,
+                            sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST
+                        )
+                    )
+                }
             } else {
                 currentState.copy(paginationState = WooPosPaginationState.Error)
             }
@@ -289,7 +304,11 @@ class WooPosProductsViewModel @Inject constructor(
         sendEventToParent(
             ChildToParentEvent.ItemClickedInProductSelector(
                 itemData = itemData,
-                source = WooPosItemSource.PRODUCT_LIST
+                eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
+                    item = itemData,
+                    source = WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT,
+                    sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST,
+                ),
             )
         )
     }

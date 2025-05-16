@@ -6,6 +6,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.sumByFloat
 import com.woocommerce.android.ui.orders.wooshippinglabels.ShippableItemUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShippingLabelsSnackbarData
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.toSelectableUIModel
 import com.woocommerce.android.util.CurrencyFormatter
@@ -32,7 +33,7 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
     private val storeOptions = navArgs.shipmentArgs.storeOptions
 
     private val currentShipments = MutableStateFlow(
-        navArgs.shipmentArgs.shipments.withIndex().associate { (index, shipment) -> index to shipment.items }
+        navArgs.shipmentArgs.shipments.withIndex().associate { (index, shipment) -> index to shipment }
     )
     private val shipmentsUIMap: MutableStateFlow<Map<Int, SelectableShippableItemsUI>?> = MutableStateFlow(null)
 
@@ -51,7 +52,8 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
                     it.value.toSelectableUIModel(
                         currencyFormatter = currencyFormatter,
                         dimensionUnit = storeOptions.dimensionUnit,
-                        weightUnit = storeOptions.weightUnit
+                        weightUnit = storeOptions.weightUnit,
+                        purchased = it.value.purchased
                     )
                 }
 
@@ -70,10 +72,11 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
         removeShipmentSheet,
         splitMessage
     ) { shipmentSelected, selectableItems, sheet, message ->
+        val unfulfilledShipmentKeys = selectableItems.keys.filterNot { selectableItems.getValue(it).purchased }
         SplitShipmentViewState(
             shipmentSelected = shipmentSelected,
             selectableItems = selectableItems,
-            overflowMenuItems = getOverflowMenuItems(selectableItems.keys.toList()),
+            overflowMenuItems = getOverflowMenuItems(unfulfilledShipmentKeys),
             splitMovements = getSplitMovements(
                 sourceShipmentKey = shipmentSelected,
                 shipments = currentShipments.value,
@@ -113,14 +116,14 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
         val shipmentsMap = shipmentsUIMap.value ?: return
         removeShipmentSheet.value = RemoveShipmentSheet(
             removingShipments = shipmentsMap.filter { it.key in shipmentKeys },
-            otherShipments = shipmentsMap.filter { it.key !in shipmentKeys },
+            otherShipments = shipmentsMap.filter { it.key !in shipmentKeys && !it.value.purchased },
         )
     }
 
     fun onRemoveShipments(removingShipmentKeys: List<Int>, destinationShipmentKey: Int?) {
         if (destinationShipmentKey != null && removingShipmentKeys.size == 1) {
             val removingShipmentKey = removingShipmentKeys.first()
-            val movingShipmentItems = currentShipments.value[removingShipmentKey] ?: return
+            val movingShipmentItems = currentShipments.value[removingShipmentKey]?.items ?: return
             onUpdateShipment(
                 SplitMovement(
                     sourceShipmentKey = removingShipmentKey,
@@ -136,11 +139,14 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
     }
 
     private fun mergeUnfulfilledShipments() {
-        currentShipments.value = currentShipments.value.run {
-            // TODO Once the purchasing shipments feature is implemented, exclude purchased shipments from the merging
-            //  action.
-            mapOf(keys.first() to values.reduce(List<ShippableItemModel>::combine))
-        }
+        val fulfilledShipments = currentShipments.value.filter { it.value.purchased }
+        val unfulfilledShipments = currentShipments.value.filterNot { it.value.purchased }
+        val firstUnfulfilledShipmentKey = unfulfilledShipments.keys.first()
+        val firstUnfulfilledShipmentValue = unfulfilledShipments.values.first()
+        val mergedShipmentUIModel = firstUnfulfilledShipmentValue.copy(
+            items = unfulfilledShipments.values.map { it.items }.reduce(List<ShippableItemModel>::combine)
+        )
+        currentShipments.value = fulfilledShipments + mapOf(firstUnfulfilledShipmentKey to mergedShipmentUIModel)
     }
 
     fun onDismissRemoveSheet() {
@@ -175,15 +181,27 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
         val currentShipmentBackup = currentShipments.value
         currentShipments.update {
             val shipments = it.toMutableMap()
+
+            // Update the source shipment
             if (splitMovement.updatedSourceShipmentItems.isEmpty()) {
                 shipments.remove(splitMovement.sourceShipmentKey)
             } else {
-                shipments[splitMovement.sourceShipmentKey] = splitMovement.updatedSourceShipmentItems
+                shipments[splitMovement.sourceShipmentKey] = shipments[splitMovement.sourceShipmentKey]?.copy(
+                    items = splitMovement.updatedSourceShipmentItems
+                ) ?: return
             }
-            shipments[splitMovement.destinationShipmentKey] = shipments[splitMovement.destinationShipmentKey]
-                ?.takeIf { it.isNotEmpty() }
-                ?.combine(splitMovement.movingShipmentItems)
-                ?: splitMovement.movingShipmentItems
+
+            // Update the destination shipment
+            shipments[splitMovement.destinationShipmentKey] = shipments[splitMovement.destinationShipmentKey]?.copy(
+                items = shipments[splitMovement.destinationShipmentKey]?.items
+                    ?.takeIf { it.isNotEmpty() }
+                    ?.combine(splitMovement.movingShipmentItems)
+                    ?: splitMovement.movingShipmentItems
+            ) ?: ShipmentUIModel(
+                id = splitMovement.destinationShipmentKey.toString(),
+                items = splitMovement.movingShipmentItems
+            )
+
             reindexShipments(shipments)
         }
 
@@ -205,7 +223,7 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
      * as "Shipment 0, Shipment 1".
      */
     private fun reindexShipments(
-        shipments: Map<Int, List<ShippableItemModel>>
+        shipments: Map<Int, ShipmentUIModel>
     ) = shipments.values.mapIndexed { index, items -> index to items }.toMap()
 
     private fun showUndoSnackbar(splitMovement: SplitMovement, undoAction: () -> Unit) {
@@ -246,7 +264,8 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
 data class SelectableShippableItemsUI(
     val shippableItems: List<SelectableShippableItemUI>,
     val formattedTotalWeight: String,
-    val formattedTotalPrice: String
+    val formattedTotalPrice: String,
+    val purchased: Boolean
 ) {
     val totalItemQuantity: Int
         get() = shippableItems.sumByFloat { it.shippableItem.quantity }.toInt()
