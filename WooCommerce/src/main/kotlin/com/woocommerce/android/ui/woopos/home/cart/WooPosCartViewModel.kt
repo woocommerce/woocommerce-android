@@ -319,9 +319,33 @@ class WooPosCartViewModel @Inject constructor(
     private fun updateStateWithNewItem(newItem: WooPosCartItemViewState): WooPosCartState {
         return when (val currentState = _state.value.body) {
             is WooPosCartState.Body.Empty -> _state.value.copy(body = WooPosCartState.Body.WithItems(listOf(newItem)))
-            is WooPosCartState.Body.WithItems -> _state.value.copy(
-                body = currentState.copy(itemsInCart = listOf(newItem) + currentState.itemsInCart)
-            )
+            is WooPosCartState.Body.WithItems -> {
+                val updatedItemsList = placeItemInList(currentState, newItem)
+
+                _state.value.copy(body = currentState.copy(itemsInCart = updatedItemsList))
+            }
+        }
+    }
+
+    private fun placeItemInList(
+        currentState: WooPosCartState.Body.WithItems,
+        newItem: WooPosCartItemViewState
+    ): List<WooPosCartItemViewState> {
+        val (existingCoupons, existingProducts) = currentState.itemsInCart
+            .partition { it is WooPosCartItemViewState.Coupon }
+
+        return if (newItem is WooPosCartItemViewState.Coupon) {
+            val couponAlreadyInCart = existingCoupons.any {
+                (it as WooPosCartItemViewState.Coupon).id == newItem.id
+            }
+
+            if (couponAlreadyInCart) {
+                currentState.itemsInCart
+            } else {
+                listOf(newItem) + existingCoupons + existingProducts
+            }
+        } else {
+            existingCoupons + listOf(newItem) + existingProducts
         }
     }
 
