@@ -76,8 +76,8 @@ internal class JetpackApplicationPasswordsRestClient @Inject constructor(
 
         return when (response) {
             is JetpackSuccess -> {
-                response.data?.firstOrNull { it.name == applicationName }?.let {
-                    ApplicationPasswordUUIDFetchPayload(it.uuid)
+                response.data?.firstOrNull { it.name == applicationName }?.uuid?.let {
+                    ApplicationPasswordUUIDFetchPayload(it)
                 } ?: ApplicationPasswordUUIDFetchPayload(
                     BaseNetworkError(
                         GenericErrorType.UNKNOWN,

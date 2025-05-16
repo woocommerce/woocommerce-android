@@ -181,8 +181,6 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
                             selectedSite.reset()
                             restartMainActivity()
-                        } else {
-                            selectedSite.set(it)
                         }
                     }
                     wooCommerceStore.fetchSiteGeneralSettings(it)

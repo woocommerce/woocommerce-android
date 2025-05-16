@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ui.woopos.common.util.WooPosSoundHelper
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.CheckoutClicked
+import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.CouponsRemoved
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.ItemClickedInProductSelector
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderCreated
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccessfullyPaid.PaymentMethod
@@ -129,7 +130,10 @@ class WooPosHomeViewModel @Inject constructor(
 
                     is ChildToParentEvent.ItemClickedInProductSelector -> {
                         sendEventToChildren(
-                            ItemClickedInProductSelector(itemData = event.itemData, source = event.source)
+                            ItemClickedInProductSelector(
+                                itemData = event.itemData,
+                                eventForTracking = event.eventForTracking
+                            )
                         )
                     }
 
@@ -202,7 +206,11 @@ class WooPosHomeViewModel @Inject constructor(
                         sendEventToChildren(ParentToChildrenEvent.RemoveCouponsClicked)
                     }
                     is ChildToParentEvent.CouponsRemoved -> {
-                        sendEventToChildren(ParentToChildrenEvent.CouponsRemoved(event.cartDataList))
+                        sendEventToChildren(CouponsRemoved(event.cartDataList))
+                    }
+
+                    ChildToParentEvent.RefreshProductList -> {
+                        sendEventToChildren(ParentToChildrenEvent.RefreshProductList)
                     }
                 }
             }

@@ -137,7 +137,7 @@ class ApplicationPasswordsNetwork @Inject constructor(
                 "Authentication failure using application password, maybe revoked?" +
                     " Delete the saved one then retry"
             )
-            mApplicationPasswordsManager.deleteLocalApplicationPassword(site)
+            mApplicationPasswordsManager.deleteLocalApplicationPassword(site, credentials)
             executeGsonRequest(site, method, path, clazz, params, body, isRegeneratingApplicationPassword = true)
         } else {
             response

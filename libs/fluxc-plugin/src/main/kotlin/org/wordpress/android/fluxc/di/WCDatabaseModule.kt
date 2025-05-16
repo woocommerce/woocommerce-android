@@ -80,6 +80,8 @@ interface WCDatabaseModule {
         @Provides internal fun provideProductVariationsDao(database: WCAndroidDatabase) = database.productVariationsDao
 
         @Provides internal fun provideProductCategoriesDao(database: WCAndroidDatabase) = database.productCategoriesDao
+
+        @Provides internal fun provideProductTagsDao(database: WCAndroidDatabase) = database.productTagsDao
     }
     @Binds fun bindTransactionExecutor(database: WCAndroidDatabase): TransactionExecutor
 }

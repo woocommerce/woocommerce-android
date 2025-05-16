@@ -4,6 +4,7 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditRepository
+import com.woocommerce.android.ui.orders.creation.OrderCreationSource
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -85,7 +86,13 @@ class WooPosEmailReceiptRepositoryTest {
         }
         whenever(orderStore.getOrderByIdAndSite(orderId, siteModel)).thenReturn(mock())
         whenever(orderMapper.toAppModel(any())).thenReturn(mockOrder)
-        whenever(orderCreateEditRepository.createOrUpdateOrder(any(), eq(""))).thenReturn(Result.success(mockOrder))
+        whenever(
+            orderCreateEditRepository.createOrUpdateOrder(
+                any(),
+                eq(OrderCreationSource.POINT_OF_SALE),
+                eq("")
+            )
+        ).thenReturn(Result.success(mockOrder))
         val sendOrderReceiptResult = WooPayload<Unit>(Unit)
         whenever(orderStore.sendOrderReceipt(siteModel, orderId)).thenReturn(sendOrderReceiptResult)
 
@@ -124,7 +131,13 @@ class WooPosEmailReceiptRepositoryTest {
         whenever(selectedSite.get()).thenReturn(siteModel)
         whenever(orderStore.getOrderByIdAndSite(orderId, siteModel)).thenReturn(mock())
         whenever(orderMapper.toAppModel(any())).thenReturn(mockOrder)
-        whenever(orderCreateEditRepository.createOrUpdateOrder(anyOrNull(), eq(""))).thenReturn(
+        whenever(
+            orderCreateEditRepository.createOrUpdateOrder(
+                anyOrNull(),
+                eq(OrderCreationSource.POINT_OF_SALE),
+                eq("")
+            )
+        ).thenReturn(
             Result.failure(Exception("Update failed"))
         )
 
@@ -147,7 +160,13 @@ class WooPosEmailReceiptRepositoryTest {
         whenever(selectedSite.get()).thenReturn(siteModel)
         whenever(orderStore.getOrderByIdAndSite(orderId, siteModel)).thenReturn(mock())
         whenever(orderMapper.toAppModel(any())).thenReturn(mockOrder)
-        whenever(orderCreateEditRepository.createOrUpdateOrder(any(), eq(""))).thenReturn(
+        whenever(
+            orderCreateEditRepository.createOrUpdateOrder(
+                any(),
+                eq(OrderCreationSource.POINT_OF_SALE),
+                eq("")
+            )
+        ).thenReturn(
             Result.success(mockOrder)
         )
         val sendOrderReceiptResult = WooPayload<Unit>(

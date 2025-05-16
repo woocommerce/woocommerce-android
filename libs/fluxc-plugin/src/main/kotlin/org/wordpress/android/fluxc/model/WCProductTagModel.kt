@@ -1,28 +1,19 @@
 package org.wordpress.android.fluxc.model
 
-import com.yarolegovich.wellsql.core.Identifiable
-import com.yarolegovich.wellsql.core.annotation.Column
-import com.yarolegovich.wellsql.core.annotation.PrimaryKey
-import com.yarolegovich.wellsql.core.annotation.RawConstraints
-import com.yarolegovich.wellsql.core.annotation.Table
-import org.wordpress.android.fluxc.persistence.WellSqlConfig
+import androidx.room.Entity
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 
-@Table(addOn = WellSqlConfig.ADDON_WOOCOMMERCE)
-@RawConstraints(
-        "FOREIGN KEY(LOCAL_SITE_ID) REFERENCES SiteModel(_id) ON DELETE CASCADE",
-        "UNIQUE (REMOTE_TAG_ID, LOCAL_SITE_ID) ON CONFLICT REPLACE"
+//todo: as soon as SiteModel is migrated to Room, add foreign key constraint
+@Entity(
+    tableName = "ProductTagEntity",
+    primaryKeys = ["localSiteId", "remoteTagId"],
 )
-class WCProductTagModel(@PrimaryKey @Column private var id: Int = 0) : Identifiable {
-    @Column var localSiteId = 0
-    @Column var remoteTagId = 0L // The unique identifier for this tag on the server
-    @Column var name = ""
-    @Column var slug = ""
-    @Column var description = ""
-    @Column var count = 0
-
-    override fun getId() = id
-
-    override fun setId(id: Int) {
-        this.id = id
-    }
-}
+data class WCProductTagModel(
+    val localSiteId: LocalId = LocalId(0),
+    val remoteTagId: RemoteId = RemoteId(0L), // The unique identifier for this tag on the server
+    val name: String = "",
+    val slug: String = "",
+    val description: String = "",
+    val count: Int = 0,
+)

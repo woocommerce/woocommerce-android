@@ -7,10 +7,10 @@ import java.math.BigDecimal
 import java.util.Date
 
 object CouponTestUtils {
-    fun generateTestCoupon(couponId: Long): Coupon {
+    fun generateTestCoupon(couponId: Long, code: String = "code1337"): Coupon {
         return Coupon(
             id = couponId,
-            code = "code1337",
+            code = code,
             amount = BigDecimal.TEN,
             dateCreatedGmt = Date(),
             type = Coupon.Type.FixedCart,
