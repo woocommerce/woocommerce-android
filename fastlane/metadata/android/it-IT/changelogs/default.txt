@@ -1,0 +1,2 @@
+22.3:
+Abbiamo ottimizzato l'app WooCommerce per dispositivi mobili. I tipi di prodotto sono ora perfettamente integrati nel menu POS. Questo design aggiornato rende semplice e intuitiva la gestione delle informazioni sui prodotti al momento del pagamento.

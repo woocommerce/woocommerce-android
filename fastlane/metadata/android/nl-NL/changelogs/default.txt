@@ -1,0 +1,2 @@
+22.3:
+We hebben de mobiele WooCommerce-app gestroomlijnd! Producttypen zijn nu naadloos geïntegreerd in het POS-menu. Dit bijgewerkte ontwerp maakt productinformatie beheren tijdens het afrekenen eenvoudig en intuïtief.
