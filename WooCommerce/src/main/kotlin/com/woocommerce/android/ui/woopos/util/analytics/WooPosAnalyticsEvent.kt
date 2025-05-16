@@ -52,8 +52,17 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
         data object CashPaymentFailed : Event() {
             override val name: String = "cash_payment_failed"
         }
-        data object CheckoutTapped : Event() {
+        data class CheckoutTapped(val itemsInCart: Int, val couponsInCart: Int) : Event() {
             override val name: String = "checkout_tapped"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "items_in_cart" to itemsInCart.toString(),
+                        "coupons_in_cart" to couponsInCart.toString()
+                    )
+                )
+            }
         }
         data object ClearCartTapped : Event() {
             override val name: String = "clear_cart_tapped"
