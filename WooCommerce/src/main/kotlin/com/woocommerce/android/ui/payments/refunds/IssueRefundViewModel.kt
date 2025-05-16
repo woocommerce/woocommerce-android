@@ -165,8 +165,9 @@ class IssueRefundViewModel @Inject constructor(
 
     val IssueRefundViewState.screenTitle: String
         get() = resourceProvider.getString(
-                R.string.order_refunds_title_with_amount, formatCurrency(this.grandTotalRefund)
-            )
+            R.string.order_refunds_title_with_amount,
+            formatCurrency(this.grandTotalRefund)
+        )
 
     init {
         refunds = refundStore.getAllRefunds(selectedSite.get(), arguments.orderId).map { it.toAppModel() }

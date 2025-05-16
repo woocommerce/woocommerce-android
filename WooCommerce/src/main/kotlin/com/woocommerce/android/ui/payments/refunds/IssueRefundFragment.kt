@@ -131,6 +131,7 @@ class IssueRefundFragment :
         }
     }
 
+    @Suppress("LongMethod")
     private fun setupObservers() {
         viewModel.viewState.withOldValue().observe(viewLifecycleOwner) { (old, new) ->
             with(viewModel) {
