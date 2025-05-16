@@ -81,7 +81,6 @@ class WooPosItemsViewModel @Inject constructor(
         viewModelScope.launch {
             val event = SearchButtonTapped(
                 source = WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT,
-                sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST,
             )
             analyticsTracker.track(event)
         }
