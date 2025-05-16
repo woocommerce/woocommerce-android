@@ -273,20 +273,23 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
         }
         launch {
             if (isStarred) {
-                packageRepository.saveCarrierPackage(
-                    carrierSelectedPackages =
-                        _viewState.value.predefinedPackagesData?.carrierPackages?.entries?.associate { entry ->
-                            entry.key.id to entry.value.flatMap { carrierPackageGroup ->
-                                carrierPackageGroup.packages
-                                    .filter { it.isStarred }
-                                    .map { it.id }
-                            }
-                        } ?: emptyMap(),
-                )
+                packageRepository.saveCarrierPackage(packageData.id, findCarrierIdForPackageId(packageData.id) ?: "")
             } else {
-                //TODO REMOVE STARRED CARRIER PACKAGE
+                packageRepository.deleteSavedCarrierPackage(packageId = packageData.id)
             }
         }
+    }
+
+    private fun findCarrierIdForPackageId(packageId: String): String? {
+        return _viewState.value.predefinedPackagesData
+            ?.carrierPackages
+            ?.entries
+            ?.firstNotNullOfOrNull { (carrier, packageGroupList) ->
+                packageGroupList
+                    .flatMap { it.packages }
+                    .find { it.id == packageId }
+                    ?.let { carrier.id }
+            }
     }
 
     @Parcelize

@@ -24,8 +24,8 @@ class WooShippingLabelPackageRepository @Inject constructor(
     }
 
     suspend fun createCustomPackage(
+        requestData: List<CustomPackageCreationRequestData>,
         site: SiteModel = selectedSite.get(),
-        requestData: List<CustomPackageCreationRequestData>
     ) = with(packageRestClient.postNewCustomPackage(site, requestData)) {
         result.takeIf { isError.not() }
             ?.let { packageMapper(it) }
@@ -34,9 +34,24 @@ class WooShippingLabelPackageRepository @Inject constructor(
     }
 
     suspend fun saveCarrierPackage(
+        savedPackageId: String,
+        parentCarrierId: String,
         site: SiteModel = selectedSite.get(),
-        carrierSelectedPackages: Map<String, List<String>>
-    ) = with(packageRestClient.postPredefinedPackages(site, carrierSelectedPackages)) {
+    ) = with(
+        packageRestClient.postPredefinedPackages(
+            site, mapOf(parentCarrierId to listOf(savedPackageId))
+        )
+    ) {
+        result.takeIf { isError.not() }
+            ?.let { packageMapper(it) }
+            ?.let { WooResult(it) }
+            ?: WooResult(error)
+    }
+
+    suspend fun deleteSavedCarrierPackage(
+        packageId: String,
+        site: SiteModel = selectedSite.get(),
+    ) = with(packageRestClient.deleteSavedCarrierPackage(site, packageId)) {
         result.takeIf { isError.not() }
             ?.let { packageMapper(it) }
             ?.let { WooResult(it) }

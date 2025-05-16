@@ -49,6 +49,17 @@ class WooShippingLabelPackageRestClient @Inject constructor(
         ).toWooPayload()
     }
 
+    suspend fun deleteSavedCarrierPackage(
+        site: SiteModel,
+        packageId: String
+    ): WooPayload<PackageCreationResponse> {
+        return wooNetwork.executeDeleteGsonRequest(
+            site = site,
+            path = "$URL/predefined/$packageId",
+            clazz = PackageCreationResponse::class.java,
+        ).toWooPayload()
+    }
+
 
     companion object {
         private const val URL = "/wcshipping/v1/packages"
