@@ -1,0 +1,2 @@
+22.3:
+Hemos optimizado la aplicación para móviles de WooCommerce. Ahora, los tipos de productos se integran a la perfección en el menú del TPV. Este diseño actualizado hace que gestionar la información del producto durante el proceso de tramitación de la compra sea sencillo e intuitivo.
