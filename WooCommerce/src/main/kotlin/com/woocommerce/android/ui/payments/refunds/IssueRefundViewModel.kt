@@ -307,7 +307,7 @@ class IssueRefundViewModel @Inject constructor(
         feeLines: List<FeeRefundListItem>,
         refundableFeeLineIds: List<Long>,
     ): FeesRefundSection {
-        val selectedFees = feeLines.filter { it.isSelected }
+        val selectedFees = feeLines.takeIf { isFeesMainSwitchChecked }.orEmpty().filter { it.isSelected }
         val totalRefund = selectedFees.sumOf { it.total }
 
         return FeesRefundSection(
@@ -326,7 +326,7 @@ class IssueRefundViewModel @Inject constructor(
         refundableShippingLineIds: List<Long>,
         isShippingMainSwitchChecked: Boolean
     ): ShippingRefundSection {
-        val selectedShipping = shippingLines.filter { it.isSelected }
+        val selectedShipping = shippingLines.takeIf { isShippingMainSwitchChecked }.orEmpty().filter { it.isSelected }
         val totalRefund = selectedShipping.sumOf { it.total }
         return ShippingRefundSection(
             shippingRefundLines = shippingLines,
