@@ -29,6 +29,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ClearCartTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.InteractionWithCustomerStarted
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemRemovedFromCart
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTrackingDataKeeper
 import com.woocommerce.android.ui.woopos.util.format.WooPosCouponsFormatter
@@ -83,7 +84,7 @@ class WooPosCartViewModel @Inject constructor(
             }
 
             is WooPosCartUIEvent.ItemRemovedFromCart -> {
-                removeItemsFromCart(setOf(event.item))
+                removeItemsFromCart(setOf(event.item), WooPosAnalyticsEventConstant.CartSource.CART)
             }
 
             WooPosCartUIEvent.BackClicked -> {
@@ -109,7 +110,10 @@ class WooPosCartViewModel @Inject constructor(
         }
     }
 
-    private fun removeItemsFromCart(items: Set<WooPosCartItemViewState>) {
+    private fun removeItemsFromCart(
+        items: Set<WooPosCartItemViewState>,
+        source: WooPosAnalyticsEventConstant.CartSource
+    ) {
         val currentState = _state.value
         _state.value = if (currentState.body.amountOfItems == items.size) {
             currentState.copy(body = WooPosCartState.Body.Empty)
@@ -120,7 +124,9 @@ class WooPosCartViewModel @Inject constructor(
             )
         }
         viewModelScope.launch {
-            analyticsTracker.track(ItemRemovedFromCart)
+            items.forEach { item ->
+                analyticsTracker.track(ItemRemovedFromCart(item = item, source = source))
+            }
         }
     }
 
@@ -215,7 +221,7 @@ class WooPosCartViewModel @Inject constructor(
         cartBody?.itemsInCart
             ?.filterIsInstance<WooPosCartItemViewState.Coupon>()
             ?.toSet()?.let { couponsToRemove ->
-                removeItemsFromCart(couponsToRemove)
+                removeItemsFromCart(couponsToRemove, WooPosAnalyticsEventConstant.CartSource.ERROR)
             }
         sendEventToParent(CouponsRemoved(getCartItemsDataList()))
     }

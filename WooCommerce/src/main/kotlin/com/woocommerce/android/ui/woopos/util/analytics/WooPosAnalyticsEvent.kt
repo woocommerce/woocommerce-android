@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.util.analytics
 import com.woocommerce.android.analytics.IAnalyticsEvent
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.CartSource
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ItemsHeaderType
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ItemsListItemType
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ItemsListProductType
@@ -126,12 +127,12 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
         }
 
         class ItemRemovedFromCart private constructor(
-            source: ItemsListSource,
+            source: CartSource,
             itemType: ItemsListItemType,
             productType: ItemsListProductType?
         ) : Event() {
             constructor(
-                source: ItemsListSource,
+                source: CartSource,
                 item: WooPosCartItemViewState
             ) : this(
                 source,

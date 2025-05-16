@@ -69,4 +69,17 @@ object WooPosAnalyticsEventConstant {
             const val HEADER_TYPE = "type"
         }
     }
+
+    enum class CartSource(val value: String) {
+        CART("cart"),
+        ERROR("error");
+
+        override fun toString(): String {
+            return value
+        }
+
+        companion object {
+            const val CART_SOURCE = "source"
+        }
+    }
 }
