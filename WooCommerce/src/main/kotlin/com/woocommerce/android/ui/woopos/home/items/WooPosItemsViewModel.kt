@@ -11,7 +11,6 @@ import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCoupo
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart.WooPosItemSource
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SearchButtonTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
@@ -135,10 +134,15 @@ class WooPosItemsViewModel @Inject constructor(
         viewModelScope.launch {
             val coupon = couponCreationFacade.createCoupon()
             if (coupon != null) {
+                val itemData = ItemClickedData.Coupon(coupon.id, coupon.code ?: "")
                 fromChildToParentEventSender.sendToParent(
                     ChildToParentEvent.ItemClickedInProductSelector(
-                        itemData = ItemClickedData.Coupon(coupon.id, coupon.code ?: ""),
-                        source = WooPosItemSource.COUPON_LIST
+                        itemData = itemData,
+                        eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
+                            item = itemData,
+                            source = WooPosAnalyticsEventConstant.ItemsListSource.COUPON,
+                            sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST
+                        )
                     )
                 )
             }
