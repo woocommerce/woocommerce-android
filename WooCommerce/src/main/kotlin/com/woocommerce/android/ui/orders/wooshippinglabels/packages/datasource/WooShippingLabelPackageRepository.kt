@@ -32,4 +32,14 @@ class WooShippingLabelPackageRepository @Inject constructor(
             ?.let { WooResult(it) }
             ?: WooResult(error)
     }
+
+    suspend fun saveCarrierPackage(
+        site: SiteModel = selectedSite.get(),
+        carrierSelectedPackages: Map<String, List<String>>
+    ) = with(packageRestClient.postPredefinedPackages(site, carrierSelectedPackages)) {
+        result.takeIf { isError.not() }
+            ?.let { packageMapper(it) }
+            ?.let { WooResult(it) }
+            ?: WooResult(error)
+    }
 }

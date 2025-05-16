@@ -4,6 +4,7 @@ import android.os.Parcelable
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PackageType
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.datasource.CarrierType
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.datasource.PackageDAO
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
@@ -140,13 +141,13 @@ sealed class Carrier(
     val logoRes: Int? = null,
 ) : Parcelable {
     data object USPS : Carrier(
-        id = "usps",
+        id = CarrierType.USPS.id,
         name = "USPS",
         logoRes = R.drawable.usps_logo
     )
 
     data object DHL : Carrier(
-        id = "dhl",
+        id = CarrierType.DHL.id,
         name = "DHL",
         logoRes = R.drawable.dhl_logo
     )

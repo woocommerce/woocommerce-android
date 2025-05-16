@@ -271,6 +271,22 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
                 predefinedPackagesState = predefinedPackages.copy(carrierPackages = updatedCarrierPackages)
             )
         }
+        launch {
+            if (isStarred) {
+                packageRepository.saveCarrierPackage(
+                    carrierSelectedPackages =
+                        _viewState.value.predefinedPackagesData?.carrierPackages?.entries?.associate { entry ->
+                            entry.key.id to entry.value.flatMap { carrierPackageGroup ->
+                                carrierPackageGroup.packages
+                                    .filter { it.isStarred }
+                                    .map { it.id }
+                            }
+                        } ?: emptyMap(),
+                )
+            } else {
+                //TODO REMOVE STARRED CARRIER PACKAGE
+            }
+        }
     }
 
     @Parcelize
