@@ -1374,7 +1374,11 @@ class OrderCreateEditViewModel @Inject constructor(
         launch {
             viewState = viewState.copy(isProgressDialogShown = true)
             val giftCard = _selectedGiftCard.value
-            orderCreateEditRepository.createOrUpdateOrder(order, giftCard).fold(
+            orderCreateEditRepository.createOrUpdateOrder(
+                order,
+                source = OrderCreationSource.STORE_MANAGEMENT,
+                giftCard
+            ).fold(
                 onSuccess = {
                     trackOrderCreationSuccess()
                     onSuccess(it)

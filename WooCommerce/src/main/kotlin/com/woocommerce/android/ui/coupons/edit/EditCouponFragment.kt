@@ -6,9 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.woocommerce.android.R
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.ui.base.BaseFragment
@@ -19,11 +19,11 @@ import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.products.categories.selector.ProductCategorySelectorFragment
 import com.woocommerce.android.ui.products.selector.ProductSelectorFragment
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
+import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationActivity
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUiStringSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
-import kotlin.properties.Delegates.observable
 
 @AndroidEntryPoint
 class EditCouponFragment : BaseFragment() {
@@ -32,15 +32,7 @@ class EditCouponFragment : BaseFragment() {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     override val activityAppBarStatus: AppBarStatus
-        get() = AppBarStatus.Visible(
-            navigationIcon = R.drawable.ic_gridicons_cross_24dp
-        )
-
-    private var screenTitle: String by observable("") { _, oldValue, newValue ->
-        if (oldValue != newValue) {
-            updateActivityTitle()
-        }
-    }
+        get() = AppBarStatus.Hidden
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return ComposeView(requireContext()).apply {
@@ -60,14 +52,13 @@ class EditCouponFragment : BaseFragment() {
     }
 
     private fun setupObservers() {
-        viewModel.viewState.observe(viewLifecycleOwner) {
-            screenTitle = it.screenTitle
-        }
-
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is EditCouponNavigationTarget -> EditCouponNavigator.navigate(this, event)
                 is Exit -> findNavController().navigateUp()
+                is EditCouponViewModel.NavigateBackToPOS -> {
+                    setNewCouponIdAsResultIfAvailable(event)
+                }
                 is ShowUiStringSnackbar -> uiMessageResolver.showSnack(event.message)
             }
         }
@@ -91,5 +82,15 @@ class EditCouponFragment : BaseFragment() {
         }
     }
 
-    override fun getFragmentTitle() = screenTitle
+    private fun setNewCouponIdAsResultIfAvailable(event: EditCouponViewModel.NavigateBackToPOS) {
+        val bundle = event.couponId?.let {
+            Bundle().apply {
+                putLong(
+                    WooPosCouponCreationActivity.WOO_POS_COUPON_CREATION_NEW_COUPON_ID,
+                    it
+                )
+            }
+        } ?: Bundle()
+        setFragmentResult(WooPosCouponCreationActivity.WOO_POS_COUPON_CREATION_REQUEST_KEY, bundle)
+    }
 }

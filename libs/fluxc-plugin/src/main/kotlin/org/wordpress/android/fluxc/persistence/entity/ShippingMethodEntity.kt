@@ -5,7 +5,7 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.WCShippingMethod
 
 @Entity(tableName = "ShippingMethod", primaryKeys = ["localSiteId", "id"])
-data class ShippingMethodEntity (
+data class ShippingMethodEntity(
     val id: String,
     val localSiteId: LocalId,
     val title: String

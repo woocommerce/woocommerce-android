@@ -167,7 +167,7 @@ class BlazeCampaignsStoreTest {
         test {
             whenever(
                 blazeCampaignsRestClient.fetchBlazeCampaigns(
-                    any(), any(), any(), any(),  eq(null)
+                    any(), any(), any(), any(), eq(null)
                 )
             ).thenReturn(
                 BlazeCampaignsFetchedPayload(errorResponse)

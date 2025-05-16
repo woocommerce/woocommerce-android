@@ -238,7 +238,9 @@ class WCStatsStore @Inject constructor(
     }
 
     private fun getVisitorsMap(
-        periodIndex: Int, fieldIndex: Int, dataList: List<List<Any>>
+        periodIndex: Int,
+        fieldIndex: Int,
+        dataList: List<List<Any>>
     ): Map<String, Int> {
         return dataList.associate {
             // Years are returned as numbers by the API, and Gson interprets them as floats - clean up the decimal
@@ -297,7 +299,7 @@ class WCStatsStore @Inject constructor(
         startDate: String,
         endDate: String,
         quantity: Int
-    ): WooResult<List<WCProductBundleItemReport>>{
+    ): WooResult<List<WCProductBundleItemReport>> {
         return coroutineEngine.withDefaultContext(T.API, this, "fetchProductBundlesReport") {
             val response = bundleStatsRestClient.fetchBundleReport(
                 site = site,

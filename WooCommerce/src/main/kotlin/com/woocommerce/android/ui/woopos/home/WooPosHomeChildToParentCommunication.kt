@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.home
 
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import dagger.hilt.android.scopes.ActivityRetainedScoped
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -25,7 +26,10 @@ sealed class ChildToParentEvent {
     ) : ChildToParentEvent()
 
     data object BackFromCheckoutToCartClicked : ChildToParentEvent()
-    data class ItemClickedInProductSelector(val itemData: WooPosItemsViewModel.ItemClickedData) : ChildToParentEvent()
+    data class ItemClickedInProductSelector(
+        val itemData: WooPosItemsViewModel.ItemClickedData,
+        val eventForTracking: WooPosAnalyticsEvent.Event.ItemAddedToCart
+    ) : ChildToParentEvent()
     data object NewTransactionClicked : ChildToParentEvent()
     data object PaymentCollecting : ChildToParentEvent()
     data object PaymentInProgress : ChildToParentEvent()
@@ -35,8 +39,15 @@ sealed class ChildToParentEvent {
     data object OrderSuccessfullyPaidByCard : ChildToParentEvent()
     data object ExitPosClicked : ChildToParentEvent()
     data object SimpleProductExplanationMenuItemClicked : ChildToParentEvent()
+    data object CouponsValidationFailed : ChildToParentEvent()
+    data object RemoveCouponsClicked : ChildToParentEvent()
+    data class CouponsRemoved(
+        val cartDataList: List<WooPosItemsViewModel.ItemClickedData>
+    ) : ChildToParentEvent()
 
     data class ToastMessageDisplayed(val message: String) : ChildToParentEvent()
+    data object RefreshProductList : ChildToParentEvent()
+
     sealed class NavigationEvent : ChildToParentEvent() {
         data class ToCashPayment(val orderId: Long) : NavigationEvent()
         data class ToEmailReceipt(val orderId: Long) : NavigationEvent()
@@ -58,23 +69,26 @@ sealed class ChildToParentEvent {
         sealed class ProductInfo(
             open val id: Long,
             open val name: String,
-            open val price: BigDecimal,
+            open val finalPrice: BigDecimal,
+            open val basePrice: BigDecimal,
             open val quantity: Float,
         ) {
             data class Simple(
                 override val id: Long,
                 override val name: String,
-                override val price: BigDecimal,
+                override val finalPrice: BigDecimal,
+                override val basePrice: BigDecimal,
                 override val quantity: Float,
-            ) : ProductInfo(id, name, price, quantity)
+            ) : ProductInfo(id, name, finalPrice, basePrice, quantity)
 
             data class Variation(
                 override val id: Long,
                 override val name: String,
-                override val price: BigDecimal,
+                override val finalPrice: BigDecimal,
+                override val basePrice: BigDecimal,
                 override val quantity: Float,
                 val variationId: Long,
-            ) : ProductInfo(id, name, price, quantity)
+            ) : ProductInfo(id, name, finalPrice, basePrice, quantity)
         }
 
         data class CouponInfo(

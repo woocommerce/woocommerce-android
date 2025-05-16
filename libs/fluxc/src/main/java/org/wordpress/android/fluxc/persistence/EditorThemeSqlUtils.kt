@@ -14,7 +14,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 
 enum class EditorThemeElementType(val value: String) {
     COLOR("color"),
-    GRADIENT("gradient");
+    GRADIENT("gradient")
 }
 
 class EditorThemeSqlUtils {

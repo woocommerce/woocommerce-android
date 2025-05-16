@@ -1,8 +1,8 @@
 package org.wordpress.android.fluxc.store.mobile
 
+import org.wordpress.android.fluxc.network.rest.wpcom.mobile.RemoteConfigError
 import org.wordpress.android.fluxc.network.rest.wpcom.mobile.RemoteConfigErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.mobile.RemoteConfigRestClient
-import org.wordpress.android.fluxc.network.rest.wpcom.mobile.RemoteConfigError
 import org.wordpress.android.fluxc.persistence.RemoteConfigDao
 import org.wordpress.android.fluxc.persistence.RemoteConfigDao.RemoteConfig
 import org.wordpress.android.fluxc.persistence.RemoteConfigDao.RemoteConfigValueSource.BUILD_CONFIG

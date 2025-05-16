@@ -44,11 +44,6 @@ class WooPosProductsInMemoryCache @Inject constructor() : WooPosProductsCache {
         productsCache.clear()
     }
 
-    override suspend fun setAll(products: List<Product>) = mutex.withLock {
-        productsCache.clear()
-        addAllInternal(products)
-    }
-
     private fun addAllInternal(products: List<Product>) {
         products.forEach { product ->
             productsCache[product.remoteId] = product

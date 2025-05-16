@@ -138,7 +138,7 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
         )
 
         // When the createOrUpdateOrder method is call
-        sut.createOrUpdateOrder(order)
+        sut.createOrUpdateOrder(order, source = OrderCreationSource.STORE_MANAGEMENT)
 
         // Then the order status is changed to PENDING
         val request = UpdateOrderRequest(
@@ -168,7 +168,7 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
         )
 
         // When the createOrUpdateOrder method is call
-        sut.createOrUpdateOrder(order)
+        sut.createOrUpdateOrder(order, source = OrderCreationSource.STORE_MANAGEMENT)
 
         // Then the order status is not changed
         val request = UpdateOrderRequest(
@@ -180,6 +180,63 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
             shippingLines = emptyList(),
             feeLines = emptyList(),
             couponLines = emptyList(),
+        )
+
+        verify(orderUpdateStore).createOrder(defaultSiteModel, request, OrderAttributionOrigin.Mobile.SOURCE_TYPE_VALUE)
+    }
+
+    @Test
+    fun `given the order is updated, when source is store management then createdVia value is null`() = testBlocking {
+        // GIVEN
+        whenever(orderUpdateStore.createOrder(any(), any(), anyOrNull()))
+            .thenReturn(WooResult(OrderTestUtils.generateOrder()))
+
+        val order = Order.getEmptyOrder(Date(), Date()).copy(
+            id = 0L
+        )
+
+        // WHEN the createOrUpdateOrder method is call
+        sut.createOrUpdateOrder(order, source = OrderCreationSource.STORE_MANAGEMENT)
+
+        // THEN the order status is not changed
+        val request = UpdateOrderRequest(
+            status = WCOrderStatusModel(Order.Status.AUTO_DRAFT),
+            lineItems = emptyList(),
+            shippingAddress = null,
+            billingAddress = null,
+            customerNote = order.customerNote,
+            shippingLines = emptyList(),
+            feeLines = emptyList(),
+            couponLines = emptyList(),
+            createdVia = null,
+        )
+
+        verify(orderUpdateStore).createOrder(defaultSiteModel, request, OrderAttributionOrigin.Mobile.SOURCE_TYPE_VALUE)
+    }
+
+    @Test
+    fun `when source is point of sale then createdVia value is pos-rest-api`() = testBlocking {
+        whenever(orderUpdateStore.createOrder(any(), any(), anyOrNull()))
+            .thenReturn(WooResult(OrderTestUtils.generateOrder()))
+
+        val order = Order.getEmptyOrder(Date(), Date()).copy(
+            id = 0L
+        )
+
+        // When the createOrUpdateOrder method is call
+        sut.createOrUpdateOrder(order, source = OrderCreationSource.POINT_OF_SALE)
+
+        // Then the order status is not changed
+        val request = UpdateOrderRequest(
+            status = WCOrderStatusModel(Order.Status.AUTO_DRAFT),
+            lineItems = emptyList(),
+            shippingAddress = null,
+            billingAddress = null,
+            customerNote = order.customerNote,
+            shippingLines = emptyList(),
+            feeLines = emptyList(),
+            couponLines = emptyList(),
+            createdVia = "pos-rest-api",
         )
 
         verify(orderUpdateStore).createOrder(defaultSiteModel, request, OrderAttributionOrigin.Mobile.SOURCE_TYPE_VALUE)

@@ -22,7 +22,7 @@ class FirebaseRemoteConfigRepository @Inject constructor(
         private const val DEBUG_INTERVAL = 10L
         private const val RELEASE_INTERVAL = 31200L
 
-        const val KEY_ENABLE_JETPACK_APP_PASSWORDS_EXPERIMENT = "wcandroid_enable_jetpack_app_passwords_experiment"
+        const val KEY_ENABLE_JETPACK_APP_PASSWORDS_EXPERIMENT = "wcandroid_enable_jetpack_app_passwords_experiment_2"
     }
 
     private val minimumFetchIntervalInSeconds =

@@ -1,20 +1,15 @@
 package com.woocommerce.android.ui.woopos.home.cart
 
 import com.automattic.android.tracks.crashlogging.CrashLogging
-import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
-import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
-import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
+import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState.Coupon.CouponValidationState
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooLogWrapper
-import com.woocommerce.android.viewmodel.ResourceProvider
 import javax.inject.Inject
 
 class WooPosCartItemsUpdater @Inject constructor(
-    private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
-    private val resourceProvider: ResourceProvider,
     private val formatPrice: WooPosFormatPrice,
     private val productsCache: WooPosProductsCache,
     private val wooLogWrapper: WooLogWrapper,
@@ -24,7 +19,7 @@ class WooPosCartItemsUpdater @Inject constructor(
         itemsInCart: List<WooPosCartItemViewState>,
         updatedProducts: List<ParentToChildrenEvent.OrderCreated.ProductInfo>,
         updatedCoupons: List<ParentToChildrenEvent.OrderCreated.CouponInfo>,
-    ): List<WooPosCartItemViewState> {
+    ): CartItemsUpdaterResult {
         val mutableCurrentBodyList = itemsInCart.toMutableList()
         var productsChanged = false
 
@@ -71,30 +66,21 @@ class WooPosCartItemsUpdater @Inject constructor(
             }
         }
 
-        if (productsChanged) {
-            notifyParentAboutChanges()
-        }
-
-        return mutableCurrentBodyList
+        return CartItemsUpdaterResult(
+            updatedItems = mutableCurrentBodyList,
+            productsChanged = productsChanged,
+        )
     }
 
     private suspend fun updateCouponsWithFormattedDiscount(
         updatedCoupons: List<ParentToChildrenEvent.OrderCreated.CouponInfo>,
         item: WooPosCartItemViewState.Coupon,
     ) = updatedCoupons.find { it.code == item.name }?.let {
-        item.copy(formattedDiscount = "-${formatPrice(it.discountAmount)}")
+        item.copy(validationState = CouponValidationState.Valid("-${formatPrice(it.discountAmount)}"))
     } ?: item.also {
         val message = "Coupon not found in the cart"
         wooLogWrapper.e(T.POS, message)
         crashLogger.sendReport(IllegalStateException(message))
-    }
-
-    private suspend fun notifyParentAboutChanges() {
-        childrenToParentEventSender.sendToParent(
-            ChildToParentEvent.ToastMessageDisplayed(
-                message = resourceProvider.getString(R.string.woopos_cart_changes_in_the_cart)
-            )
-        )
     }
 
     private suspend fun updateProductInCache(
@@ -105,7 +91,7 @@ class WooPosCartItemsUpdater @Inject constructor(
             productsCache.updateProduct(
                 product.copy(
                     name = updatedItem.name,
-                    price = updatedProduct.price,
+                    price = updatedProduct.subtotalPricePerItem(),
                 )
             )
         }
@@ -168,7 +154,7 @@ class WooPosCartItemsUpdater @Inject constructor(
                 if (updatedProduct is ParentToChildrenEvent.OrderCreated.ProductInfo.Simple) {
                     item.copy(
                         name = updatedProduct.name,
-                        price = formatPrice(updatedProduct.price)
+                        price = formatPrice(updatedProduct.subtotalPricePerItem()),
                     )
                 } else {
                     item
@@ -179,7 +165,7 @@ class WooPosCartItemsUpdater @Inject constructor(
                 if (updatedProduct is ParentToChildrenEvent.OrderCreated.ProductInfo.Variation) {
                     item.copy(
                         name = updatedProduct.name,
-                        price = formatPrice(updatedProduct.price)
+                        price = formatPrice(updatedProduct.subtotalPricePerItem())
                     )
                 } else {
                     item
@@ -196,4 +182,12 @@ class WooPosCartItemsUpdater @Inject constructor(
             is WooPosCartItemViewState.Product.Variation -> item.copy(productDoesNotExist = true)
         }
     }
+
+    private fun ParentToChildrenEvent.OrderCreated.ProductInfo.subtotalPricePerItem() =
+        basePrice.div(quantity.toBigDecimal())
+
+    data class CartItemsUpdaterResult(
+        val updatedItems: List<WooPosCartItemViewState>,
+        val productsChanged: Boolean,
+    )
 }

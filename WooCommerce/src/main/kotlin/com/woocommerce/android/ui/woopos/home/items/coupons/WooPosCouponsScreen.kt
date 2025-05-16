@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
@@ -35,9 +36,9 @@ import kotlinx.coroutines.flow.StateFlow
 @Composable
 fun WooPosCouponsScreen(
     modifier: Modifier = Modifier,
+    listState: LazyListState,
 ) {
     val vm: WooPosCouponsViewModel = hiltViewModel()
-    val listState = rememberLazyListState()
     WooPosCouponsScreen(
         modifier = modifier,
         listState = listState,
@@ -75,7 +76,7 @@ private fun WooPosCouponsScreen(
                     modifier = Modifier.padding(top = WooPosSpacing.Large.value),
                     state = itemsState,
                     listState = listState,
-                    onItemClicked = { item -> onUIEvent(WooPosCouponsUIEvent.CouponClicked(item.id)) },
+                    onItemClicked = { item -> onUIEvent(WooPosCouponsUIEvent.CouponClicked(item.id, item.name)) },
                     onEndOfProductsListReached = { onUIEvent(WooPosCouponsUIEvent.EndOfListReached) },
                 ) {
                     CouponsPaginationError(
@@ -91,13 +92,25 @@ private fun WooPosCouponsScreen(
             )
 
             is WooPosCouponsViewState.Empty -> WooPosItemsEmptyList(
+                modifier = Modifier.fillMaxSize(),
                 title = stringResource(id = R.string.woopos_coupons_empty_list_title),
                 message = stringResource(id = R.string.woopos_coupons_empty_list_message),
                 contentDescription = stringResource(id = R.string.woopos_coupons_empty_list_image_description),
+                actionLabel = stringResource(id = R.string.woopos_coupons_empty_list_create_coupon_label),
+                onActionClicked = { onUIEvent(WooPosCouponsUIEvent.CreateCouponClicked) }
             )
 
-            is WooPosCouponsViewState.Error -> CouponsError { onUIEvent(WooPosCouponsUIEvent.RetryTriggered) }
+            is WooPosCouponsViewState.Error.GenericError -> {
+                CouponsError { onUIEvent(WooPosCouponsUIEvent.RetryTriggered) }
+            }
+
+            is WooPosCouponsViewState.Error.CouponsDisabledError -> CouponsDisabledError()
         }
+        PullRefreshIndicator(
+            modifier = Modifier.align(Alignment.TopCenter),
+            refreshing = state.value.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
+            state = pullToRefreshState
+        )
     }
 }
 
@@ -130,6 +143,19 @@ fun CouponsError(onRetryClicked: () -> Unit) {
     }
 }
 
+@Composable
+fun CouponsDisabledError() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
+    ) {
+        WooPosErrorScreen(
+            message = stringResource(id = R.string.woopos_coupons_loading_error_coupons_disabled_title),
+            reason = stringResource(id = R.string.woopos_coupons_loading_error_coupons_disabled_message),
+        )
+    }
+}
+
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 @WooPosPreview
@@ -143,11 +169,15 @@ fun WooPosCouponsScreenContentPreview() {
                         "Coupon 1 Coupon 1 Coupon 1 Coupon 1 Coupon 1 Coupon 1 Coupon 1 Coupon 1 Coupon 1 Coupon 1",
                     summary = "10% off 10% off 10% off 10% off 10% off 10% off 10% off 10% off 10% off 10% off " +
                         "10% off 10% off 10% off 10% off 10% off 10% off 10% off 10% off 10% off 10% off 10% off",
+                    expiredState = WooPosItemSelectionViewState.Coupon.ExpiredState.NotExpired,
                 ),
                 WooPosItemSelectionViewState.Coupon(
                     id = 2L,
                     name = "Coupon 2",
                     summary = "20% off",
+                    expiredState = WooPosItemSelectionViewState.Coupon.ExpiredState.Expired(
+                        formattedDate = "24 Apr 2025",
+                    ),
                 ),
             ),
             paginationState = WooPosPaginationState.None,
@@ -175,6 +205,7 @@ fun WooPosCouponsScreenLoadingMorePreview() {
                     id = 1L,
                     name = "Coupon 1",
                     summary = "20% off",
+                    expiredState = WooPosItemSelectionViewState.Coupon.ExpiredState.NotExpired,
                 ),
             ),
             paginationState = WooPosPaginationState.Loading,
@@ -230,7 +261,24 @@ fun WooPosCouponsEmptyListPreview() {
 @WooPosPreview
 fun WooPosCouponsUIEventScreenErrorPreview() {
     val productState = MutableStateFlow(
-        WooPosCouponsViewState.Error()
+        WooPosCouponsViewState.Error.GenericError()
+    )
+    WooPosTheme {
+        WooPosCouponsScreen(
+            modifier = Modifier,
+            listState = rememberLazyListState(),
+            viewStateFlow = productState,
+            onUIEvent = {},
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+@WooPosPreview
+fun WooPosCouponsUIEventScreenCouponsDisabledErrorPreview() {
+    val productState = MutableStateFlow(
+        WooPosCouponsViewState.Error.CouponsDisabledError()
     )
     WooPosTheme {
         WooPosCouponsScreen(

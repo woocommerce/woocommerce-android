@@ -18,7 +18,7 @@ import javax.inject.Inject
 class WooPosItemsSearchHelper @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val childToParentEventSender: WooPosChildrenToParentEventSender,
-    private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver
+    private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
 ) {
     private lateinit var coroutineScope: CoroutineScope
     private lateinit var viewStateFlow: MutableStateFlow<WooPosItemsViewState>
@@ -32,6 +32,7 @@ class WooPosItemsSearchHelper @Inject constructor(
         listenEventsFromParent()
     }
 
+    @Suppress("CyclomaticComplexMethod")
     private fun listenEventsFromParent() {
         coroutineScope.launch {
             parentToChildrenEventReceiver.events.collect { event ->
@@ -51,12 +52,20 @@ class WooPosItemsSearchHelper @Inject constructor(
                     is ParentToChildrenEvent.SearchEvent.RecentSearchSelected -> {
                         onSearchChanged(event.query, event.query.length)
                     }
+                    is ParentToChildrenEvent.RefreshProductList -> {
+                        if (isSearchOpen()) {
+                            onSearchChanged("", 0)
+                        }
+                    }
 
                     is ParentToChildrenEvent.BackFromCheckoutToCartClicked -> Unit
                     is ParentToChildrenEvent.ItemClickedInProductSelector -> Unit
                     is ParentToChildrenEvent.CheckoutClicked -> Unit
                     is ParentToChildrenEvent.SearchEvent.ChangedQuery -> Unit
                     is ParentToChildrenEvent.OrderCreated -> Unit
+                    is ParentToChildrenEvent.CouponsRemoved -> Unit
+                    is ParentToChildrenEvent.RemoveCouponsClicked -> Unit
+                    is ParentToChildrenEvent.CouponsValidationFailed -> Unit
                 }
             }
         }
@@ -140,15 +149,10 @@ class WooPosItemsSearchHelper @Inject constructor(
         )
     }
 
-    fun getInitialSearchState(isProductsSearchEnabled: Boolean): SearchState {
-        return when (isProductsSearchEnabled) {
-            true -> SearchState.Visible(
-                state = WooPosSearchInputState.Closed
-            )
-
-            false -> SearchState.Hidden
-        }
-    }
+    fun getInitialSearchState(): SearchState =
+        SearchState.Visible(
+            state = WooPosSearchInputState.Closed
+        )
 
     @Suppress("ReturnCount")
     private fun updateLoadingState(isLoading: Boolean) {

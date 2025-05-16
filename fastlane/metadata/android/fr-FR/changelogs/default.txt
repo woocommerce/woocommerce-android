@@ -1,2 +1,2 @@
-22.2 :
-Cette mise à jour apporte d’importantes améliorations ! Les incidents liés au formatage des devises, à l’écran « Ajouter un montant personnalisé » et à l’écran d’installation de Jetpack ont tous été résolus pour une expérience plus fluide et plus fiable. Profitez d’une stabilité accrue dans votre application mobile WooCommerce !
+22.3 :
+Nous avons simplifié l’application mobile WooCommerce ! Les types de produits sont désormais intégrés en toute fluidité dans le menu PDV. Grâce à cette mise à jour du design, la gestion des informations produit lors de la validation de la commande est simple et intuitive.

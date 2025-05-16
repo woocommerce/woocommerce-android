@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ui.woopos.common.util.WooPosSoundHelper
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.CheckoutClicked
+import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.CouponsRemoved
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.ItemClickedInProductSelector
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderCreated
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccessfullyPaid.PaymentMethod
@@ -129,7 +130,10 @@ class WooPosHomeViewModel @Inject constructor(
 
                     is ChildToParentEvent.ItemClickedInProductSelector -> {
                         sendEventToChildren(
-                            ItemClickedInProductSelector(event.itemData)
+                            ItemClickedInProductSelector(
+                                itemData = event.itemData,
+                                eventForTracking = event.eventForTracking
+                            )
                         )
                     }
 
@@ -195,6 +199,19 @@ class WooPosHomeViewModel @Inject constructor(
                     }
 
                     is ChildToParentEvent.OrderCreated -> handleOrderCreated(event)
+                    is ChildToParentEvent.CouponsValidationFailed -> {
+                        sendEventToChildren(ParentToChildrenEvent.CouponsValidationFailed)
+                    }
+                    is ChildToParentEvent.RemoveCouponsClicked -> {
+                        sendEventToChildren(ParentToChildrenEvent.RemoveCouponsClicked)
+                    }
+                    is ChildToParentEvent.CouponsRemoved -> {
+                        sendEventToChildren(CouponsRemoved(event.cartDataList))
+                    }
+
+                    ChildToParentEvent.RefreshProductList -> {
+                        sendEventToChildren(ParentToChildrenEvent.RefreshProductList)
+                    }
                 }
             }
         }
@@ -209,7 +226,8 @@ class WooPosHomeViewModel @Inject constructor(
                             OrderCreated.ProductInfo.Simple(
                                 id = it.id,
                                 name = it.name,
-                                price = it.price,
+                                finalPrice = it.finalPrice,
+                                basePrice = it.basePrice,
                                 quantity = it.quantity
                             )
                         }
@@ -218,7 +236,8 @@ class WooPosHomeViewModel @Inject constructor(
                             OrderCreated.ProductInfo.Variation(
                                 id = it.id,
                                 name = it.name,
-                                price = it.price,
+                                finalPrice = it.finalPrice,
+                                basePrice = it.basePrice,
                                 quantity = it.quantity,
                                 variationId = it.variationId
                             )

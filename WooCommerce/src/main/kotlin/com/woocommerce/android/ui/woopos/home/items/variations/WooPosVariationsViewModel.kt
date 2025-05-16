@@ -14,7 +14,9 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.home.items.WooPosVariationsViewState
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.VariationsPullToRefreshTriggered
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemsNextPageLoaded
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -47,11 +49,16 @@ class WooPosVariationsViewModel @Inject constructor(
         )
 
     private var fetchJob: Job? = null
+    private lateinit var sourceType: WooPosAnalyticsEventConstant.ItemsListSourceType
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     internal var loadMoreJob: Job? = null
 
-    fun init(productId: Long) {
+    fun init(
+        productId: Long,
+        sourceType: WooPosAnalyticsEventConstant.ItemsListSourceType
+    ) {
+        this.sourceType = sourceType
         viewModelScope.launch {
             variationsDataSource.resetState()
         }
@@ -140,12 +147,15 @@ class WooPosVariationsViewModel @Inject constructor(
             is WooPosVariationsViewState.Content -> state.copy(
                 pullToRefreshState = WooPosPullToRefreshState.Refreshing
             )
+
             is WooPosVariationsViewState.Loading -> state.copy(
                 pullToRefreshState = WooPosPullToRefreshState.Refreshing
             )
+
             is WooPosVariationsViewState.Error -> state.copy(
                 pullToRefreshState = WooPosPullToRefreshState.Refreshing,
             )
+
             is WooPosVariationsViewState.Empty -> state.copy(
                 pullToRefreshState = WooPosPullToRefreshState.Refreshing,
             )
@@ -167,6 +177,7 @@ class WooPosVariationsViewModel @Inject constructor(
         loadMoreJob = viewModelScope.launch {
             val result = variationsDataSource.loadMore(productId)
             _viewState.value = if (result.isSuccess) {
+                trackItemsNextPageLoaded()
                 WooPosVariationsViewState.Content(
                     items = result.getOrThrow().map {
                         WooPosItemSelectionViewState.Product.Variation(
@@ -184,6 +195,15 @@ class WooPosVariationsViewModel @Inject constructor(
         }
     }
 
+    private suspend fun trackItemsNextPageLoaded() {
+        analyticsTracker.track(
+            ItemsNextPageLoaded(
+                source = WooPosAnalyticsEventConstant.ItemsListSource.VARIATION,
+                sourceType = this.sourceType,
+            )
+        )
+    }
+
     fun onUIEvent(event: WooPosVariationsUIEvents) {
         when (event) {
             is WooPosVariationsUIEvents.EndOfItemsListReached -> {
@@ -192,7 +212,14 @@ class WooPosVariationsViewModel @Inject constructor(
 
             is WooPosVariationsUIEvents.PullToRefreshTriggered -> {
                 loadVariations(event.productId, forceRefresh = true, withPullToRefresh = true)
-                viewModelScope.launch { analyticsTracker.track(VariationsPullToRefreshTriggered) }
+                viewModelScope.launch {
+                    analyticsTracker.track(
+                        WooPosAnalyticsEvent.Event.PullToRefreshTriggered(
+                            source = WooPosAnalyticsEventConstant.ItemsListSource.VARIATION,
+                            sourceType = sourceType,
+                        )
+                    )
+                }
             }
 
             is WooPosVariationsUIEvents.VariationsLoadingErrorRetryButtonClicked -> {
@@ -206,9 +233,15 @@ class WooPosVariationsViewModel @Inject constructor(
     }
 
     private fun onVariationClicked(productId: Long, variationId: Long) {
+        val item = WooPosItemsViewModel.ItemClickedData.Product.Variation(productId, variationId)
         sendEventToParent(
             ChildToParentEvent.ItemClickedInProductSelector(
-                WooPosItemsViewModel.ItemClickedData.Product.Variation(productId, variationId)
+                itemData = WooPosItemsViewModel.ItemClickedData.Product.Variation(productId, variationId),
+                eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
+                    item = item,
+                    source = WooPosAnalyticsEventConstant.ItemsListSource.VARIATION,
+                    sourceType = this.sourceType,
+                ),
             )
         )
     }

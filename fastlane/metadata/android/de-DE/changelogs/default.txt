@@ -1,2 +1,2 @@
-22.2:
-In diesem Update haben wir wichtige Verbesserungen vorgenommen! Abstürze im Zusammenhang mit der Währungsformatierung, dem Bildschirm „Individuellen Betrag hinzufügen“ und dem Bildschirm zur Jetpack-Installation wurden behoben, damit ein reibungsloseres und zuverlässigeres Erlebnis möglich ist. Genieße die verbesserte Stabilität deiner mobilen WooCommerce-Mobil-App!
+22.3:
+Wir haben die WooCommerce-Mobil-App optimiert! Produkttypen sind jetzt nahtlos in das POS-Menü integriert. Durch dieses aktualisierte Design ist die Verwaltung von Produktinformationen während des Bezahlvorgangs einfach und intuitiv.

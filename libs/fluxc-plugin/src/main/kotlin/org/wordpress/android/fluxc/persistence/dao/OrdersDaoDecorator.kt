@@ -4,9 +4,9 @@ import kotlinx.coroutines.flow.Flow
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.ListActionBuilder
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
-import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.fluxc.model.WCOrderListDescriptor
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
+import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -82,7 +82,8 @@ class OrdersDaoDecorator @Inject constructor(
     ): List<OrderEntity> = ordersDao.getPaidOrdersForSiteDesc(localSiteId, status)
 
     suspend fun getOrdersForSite(
-        localSiteId: LocalOrRemoteId.LocalId, status: List<String>
+        localSiteId: LocalOrRemoteId.LocalId,
+        status: List<String>
     ): List<OrderEntity> = ordersDao.getOrdersForSite(localSiteId, status)
 
     suspend fun getOrdersForSite(localSiteId: LocalOrRemoteId.LocalId): List<OrderEntity> =
@@ -92,11 +93,13 @@ class OrdersDaoDecorator @Inject constructor(
         ordersDao.observeOrdersForSite(localSiteId)
 
     fun observeOrdersForSite(
-        localSiteId: LocalOrRemoteId.LocalId, status: List<String>
+        localSiteId: LocalOrRemoteId.LocalId,
+        status: List<String>
     ): Flow<List<OrderEntity>> = ordersDao.observeOrdersForSite(localSiteId, status)
 
     fun getOrdersForSiteByRemoteIds(
-        localSiteId: LocalOrRemoteId.LocalId, orderIds: List<Long>
+        localSiteId: LocalOrRemoteId.LocalId,
+        orderIds: List<Long>
     ): List<OrderEntity> = ordersDao.getOrdersForSiteByRemoteIds(localSiteId, orderIds)
 
     fun deleteOrdersForSite(localSiteId: LocalOrRemoteId.LocalId) {
@@ -142,10 +145,13 @@ class OrdersDaoDecorator @Inject constructor(
 
     enum class ListUpdateStrategy {
         DEFAULT,
+
         // Re-fetch the order list
         REFRESH,
+
         // Re-load the order list from the DB
         INVALIDATE,
+
         // Do not update the list
         SUPPRESS
     }
@@ -154,5 +160,3 @@ class OrdersDaoDecorator @Inject constructor(
         UPDATED, INSERTED, UNCHANGED
     }
 }
-
-

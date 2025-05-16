@@ -8,7 +8,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 
 @RunWith(RobolectricTestRunner::class)
-class WPComRestClientUtilsTest  {
+class WPComRestClientUtilsTest {
     companion object {
         private const val LOCALE_PARAM = "locale"
         private const val UNDERSCORE_LOCALE_PARAM = "_locale"

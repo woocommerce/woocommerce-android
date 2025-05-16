@@ -59,6 +59,7 @@ import com.woocommerce.android.ui.dashboard.stats.DashboardStatsCard
 import com.woocommerce.android.ui.dashboard.stock.DashboardProductStockCard
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersWidgetCard
 import com.woocommerce.android.ui.main.MainActivityViewModel
+import com.woocommerce.android.util.WooLog
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -68,9 +69,21 @@ fun DashboardContainer(
     blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher,
 ) {
     dashboardViewModel.dashboardCardsState.observeAsState().value?.let { state ->
+        WooLog.d(
+            WooLog.T.DASHBOARD,
+            "DashboardCardsState observed: widgets=${state.widgets.size}, refreshing=${state.isRefreshing}"
+        )
 
         val pullRefreshState = rememberPullRefreshState(state.isRefreshing, dashboardViewModel::onPullToRefresh)
-        BoxWithConstraints(Modifier.pullRefresh(pullRefreshState)) {
+        BoxWithConstraints(
+            modifier = Modifier
+                .pullRefresh(pullRefreshState)
+                .fillMaxSize()
+        ) {
+            WooLog.d(
+                WooLog.T.DASHBOARD,
+                "BoxWithConstraints: maxWidth=${maxWidth.value}, maxHeight=${maxHeight.value}"
+            )
             val boxWithConstraintsScope = this
             DashboardWidgets(
                 widgetUiModels = state.widgets,
@@ -162,13 +175,22 @@ private fun DashboardWidgets(
 private fun calculateColumnNumber(
     availableWidthInDp: Dp,
     state: DashboardCardsState
-) = when {
-    availableWidthInDp < 600.dp -> 1 // 600dp covers 99.96% of phones in portrait
-    availableWidthInDp < 1000.dp -> 2 // 1000dp should be enough to avoid 3 columns on big phones in landscape
-    else -> 3 // 3 columns should only display on tablets in landscape
-}.coerceAtMost(
-    maximumValue = state.widgets.filter { it.isVisible }.size
-)
+): Int {
+    val columns = when {
+        availableWidthInDp < 600.dp -> 1 // 600dp covers 99.96% of phones in portrait
+        availableWidthInDp < 1000.dp -> 2 // 1000dp should be enough to avoid 3 columns on big phones in landscape
+        else -> 3 // 3 columns should only display on tablets in landscape
+    }
+
+    val visibleWidgetsCount = state.widgets.count { it.isVisible }
+    WooLog.d(
+        WooLog.T.DASHBOARD,
+        "calculateColumnNumber: availableWidthInDp=$availableWidthInDp, " +
+            "columns=$columns, " +
+            "visibleWidgetsCount=$visibleWidgetsCount"
+    )
+    return columns.coerceAtMost(maximumValue = maxOf(visibleWidgetsCount, 1))
+}
 
 private fun splitWidgetsIntoColumns(
     numberOfColumns: Int,
@@ -225,7 +247,7 @@ private fun DashboardWidgetCard(
 
 @Composable
 private fun ConfigurableWidgetCard(
-    widgetUiModel: DashboardWidgetUiModel.ConfigurableWidget,
+    widgetUiModel: ConfigurableWidget,
     mainActivityViewModel: MainActivityViewModel,
     dashboardViewModel: DashboardViewModel,
     blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher,
@@ -333,7 +355,7 @@ private fun ShareStoreCard(
 
 @Composable
 private fun FeedbackCard(
-    widget: DashboardWidgetUiModel.FeedbackWidget,
+    widget: FeedbackWidget,
     modifier: Modifier
 ) {
     LaunchedEffect(Unit) {
@@ -377,7 +399,7 @@ private fun FeedbackCard(
 
 @Composable
 private fun NewWidgetsCard(
-    state: DashboardWidgetUiModel.NewWidgetsCard,
+    state: NewWidgetsCard,
     modifier: Modifier
 ) {
     Column(

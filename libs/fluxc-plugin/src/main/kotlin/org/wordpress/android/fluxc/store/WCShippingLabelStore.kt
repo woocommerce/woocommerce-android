@@ -517,7 +517,8 @@ class WCShippingLabelStore @Inject constructor(
     suspend fun createPackages(
         site: SiteModel,
         customPackages: List<CustomPackage> = emptyList(),
-        predefinedPackages: List<PredefinedOption> = emptyList()): WooResult<Boolean> {
+        predefinedPackages: List<PredefinedOption> = emptyList()
+    ): WooResult<Boolean> {
         require(!(customPackages.isEmpty() && predefinedPackages.isEmpty())) {
             "customPackages and predefinedPackages can't both be an empty list."
         }

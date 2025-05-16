@@ -29,9 +29,8 @@ class FeatureFlagsStoreTest {
     private lateinit var store: FeatureFlagsStore
 
     private val successResponse = mapOf("flag-1" to true, "flag-2" to false)
-    private val errorResponse = FeatureFlagsError( type = GENERIC_ERROR)
-    private val errorResult = FeatureFlagsError( type = GENERIC_ERROR)
-
+    private val errorResponse = FeatureFlagsError(type = GENERIC_ERROR)
+    private val errorResult = FeatureFlagsError(type = GENERIC_ERROR)
 
     @Before
     fun setUp() {

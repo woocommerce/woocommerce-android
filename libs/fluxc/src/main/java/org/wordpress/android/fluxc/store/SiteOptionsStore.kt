@@ -146,7 +146,7 @@ class SiteOptionsStore
         API_ERROR,
         INVALID_RESPONSE,
         AUTHORIZATION_REQUIRED,
-        GENERIC_ERROR;
+        GENERIC_ERROR
     }
 }
 

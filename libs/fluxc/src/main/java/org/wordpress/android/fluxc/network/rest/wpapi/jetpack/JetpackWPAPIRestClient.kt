@@ -261,7 +261,7 @@ class JetpackWPAPIRestClient @Inject constructor(
     }
 
     private fun SiteModel.buildUrl(path: String): String {
-        val baseUrl = wpApiRestUrl ?: "${url}/wp-json"
+        val baseUrl = wpApiRestUrl ?: "$url/wp-json"
         return "${baseUrl.trimEnd('/')}/${path.trimStart('/')}"
     }
 

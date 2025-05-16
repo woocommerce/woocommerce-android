@@ -46,7 +46,7 @@ data class MediaWPRESTResponse(
         val medium: ImageSize?,
         val thumbnail: ImageSize?,
         val full: ImageSize?
-    ): JsonObjectOrEmptyArray()
+    ) : JsonObjectOrEmptyArray()
 
     data class ImageSize(
         val path: String?,

@@ -1,7 +1,15 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.networking
 
+import com.google.gson.Gson
+import com.google.gson.JsonDeserializationContext
+import com.google.gson.JsonDeserializer
+import com.google.gson.JsonElement
+import com.google.gson.JsonParser
+import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
+import com.google.gson.reflect.TypeToken
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.DestinationAddressDTO
+import java.lang.reflect.Type
 import java.math.BigDecimal
 
 data class AccountSettingsDTO(
@@ -14,6 +22,25 @@ data class StoreOptionsDTO(
     @SerializedName("weight_unit") val weightUnit: String? = null,
     @SerializedName("origin_country") val originCountry: String? = null
 )
+
+data class ConfigResponse(
+    @SerializedName("success") val success: Boolean? = null,
+    @SerializedName("config") val config: ConfigDTO
+)
+
+/**
+ * Alias for a mapping of shipment id (as String) to the list of items contained in each shipment.
+ */
+typealias ShipmentMap = Map<String, List<Item>>
+
+data class ConfigDTO(
+    @SerializedName("shipments")
+    @JsonAdapter(ShipmentMapDeserializer::class)
+    val shipments: ShipmentMap? = null,
+    @SerializedName("shippingLabelData") val shippingLabelData: ShippingLabelDTO,
+)
+
+data class Item(@SerializedName("id") val id: Long?, @SerializedName("subItems") val subItems: List<String>?)
 
 data class GetShippingLabelResponse(
     @SerializedName("success") val success: Boolean? = null,
@@ -46,7 +73,10 @@ data class ShippingLabelDTO(
     @SerializedName("rate") val rate: BigDecimal? = null,
     @SerializedName("currency") val currency: String? = null,
     @SerializedName("expiry_date") val expiryDate: Long? = null,
+    @SerializedName("currentOrderLabels") val currentOrderLabels: List<OrderLabel>? = null,
 )
+
+data class OrderLabel(@SerializedName("id") val id: Long)
 
 data class PurchasedShippingLabelResponseDTO(
     val success: Boolean,
@@ -133,3 +163,17 @@ data class CustomsItemDTO(
     @SerializedName("origin_country") val originCountry: String,
     @SerializedName("product_id") val productId: Long
 )
+
+private class ShipmentMapDeserializer : JsonDeserializer<ShipmentMap> {
+    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): ShipmentMap {
+        // Handle string-encoded JSON or direct JSON object
+        val jsonObject = if (json.isJsonPrimitive && json.asJsonPrimitive.isString) {
+            JsonParser.parseString(json.asString).asJsonObject
+        } else {
+            json.asJsonObject
+        }
+
+        val mapType = object : TypeToken<ShipmentMap>() {}.type
+        return Gson().fromJson(jsonObject, mapType)
+    }
+}

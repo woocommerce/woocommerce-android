@@ -1,2 +1,2 @@
-22.2:
-We hebben belangrijke verbeteringen aangebracht in deze update! Crashes met betrekking tot valuta-opmaak, het scherm 'Aangepast bedrag toevoegen' en het Jetpack-installatiescherm zijn allemaal opgelost voor een soepelere en betrouwbaardere ervaring. Geniet van de verbeterde stabiliteit in je mobiele WooCommerce-app!
+22.3:
+We hebben de mobiele WooCommerce-app gestroomlijnd! Producttypen zijn nu naadloos geïntegreerd in het POS-menu. Dit bijgewerkte ontwerp maakt productinformatie beheren tijdens het afrekenen eenvoudig en intuïtief.

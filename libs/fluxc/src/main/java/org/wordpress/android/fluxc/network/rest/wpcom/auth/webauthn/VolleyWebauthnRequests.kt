@@ -20,7 +20,7 @@ class WebauthnChallengeRequest(
     clientSecret: String,
     listener: Response.Listener<JSONObject>,
     errorListener: ErrorListener
-): BaseWebauthnRequest<JSONObject>(webauthnChallengeEndpointUrl, errorListener, listener) {
+) : BaseWebauthnRequest<JSONObject>(webauthnChallengeEndpointUrl, errorListener, listener) {
     override val parameters: Map<String, String> = mapOf(
         CLIENT_ID.value to clientId,
         CLIENT_SECRET.value to clientSecret,

@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.wooshippinglabels
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.extensions.sumByFloat
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel.Companion.SINGLE_QUANTITY
 import com.woocommerce.android.ui.orders.wooshippinglabels.split.SelectableShippableItemUI
@@ -74,19 +75,21 @@ fun ShippableItemModel.toSelectableUIModel(
     }
 }
 
-fun List<ShippableItemModel>.toSelectableUIModel(
+fun ShipmentUIModel.toSelectableUIModel(
     currencyFormatter: CurrencyFormatter,
     dimensionUnit: String,
-    weightUnit: String
+    weightUnit: String,
+    purchased: Boolean
 ): SelectableShippableItemsUI {
-    val shippableItemsUI = map { item -> item.toSelectableUIModel(currencyFormatter, dimensionUnit, weightUnit) }
-    val formattedTotalPrice = getFormattedTotalPrice(currencyFormatter)
-    val formattedTotalWeight = getFormattedTotalWeight(weightUnit)
+    val shippableItemsUI = items.map { item -> item.toSelectableUIModel(currencyFormatter, dimensionUnit, weightUnit) }
+    val formattedTotalPrice = items.getFormattedTotalPrice(currencyFormatter)
+    val formattedTotalWeight = items.getFormattedTotalWeight(weightUnit)
 
     return SelectableShippableItemsUI(
         shippableItems = shippableItemsUI,
         formattedTotalWeight = formattedTotalWeight,
-        formattedTotalPrice = formattedTotalPrice
+        formattedTotalPrice = formattedTotalPrice,
+        purchased = purchased
     )
 }
 

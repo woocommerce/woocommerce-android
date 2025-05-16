@@ -1,22 +1,14 @@
 package com.woocommerce.android.ui.woopos.home.items
 
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.woopos.featureflags.WooPosIsCouponsEnabled
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.whenever
 
 class WooPosItemsTabsHelperTest {
-    private val isCouponsEnabled: WooPosIsCouponsEnabled = mock()
-
     @Test
-    fun `given coupons feature is enabled, when helper initialized, then default tabs include products and coupons`() {
-        // GIVEN
-        whenever(isCouponsEnabled()).thenReturn(true)
-
+    fun `when helper initialized, then default tabs include products and coupons`() {
         // WHEN
-        val tabsHelper = WooPosItemsTabsHelper(isCouponsEnabled)
+        val tabsHelper = WooPosItemsTabsHelper()
 
         // THEN
         assertThat(tabsHelper.defaultTabs).hasSize(2)
@@ -27,24 +19,9 @@ class WooPosItemsTabsHelperTest {
     }
 
     @Test
-    fun `given coupons feature is disabled, when helper initialized, then default tabs include only products`() {
-        // GIVEN
-        whenever(isCouponsEnabled()).thenReturn(false)
-
-        // WHEN
-        val tabsHelper = WooPosItemsTabsHelper(isCouponsEnabled)
-
-        // THEN
-        assertThat(tabsHelper.defaultTabs).hasSize(1)
-        assertThat(tabsHelper.defaultTabs[0].stringId).isEqualTo(R.string.woopos_products_screen_title)
-        assertThat(tabsHelper.defaultTabs[0].highlightLevel).isEqualTo(WooPosItemsViewState.Tab.HighlightLevel.Full)
-    }
-
-    @Test
     fun `when tab is selected, then selected tab has Full highlight level and others have Normal`() {
         // GIVEN
-        whenever(isCouponsEnabled()).thenReturn(true)
-        val tabsHelper = WooPosItemsTabsHelper(isCouponsEnabled)
+        val tabsHelper = WooPosItemsTabsHelper()
         val tabs = tabsHelper.defaultTabs
         val tabToSelect = tabs[1]
 
@@ -60,8 +37,7 @@ class WooPosItemsTabsHelperTest {
     @Test
     fun `when already selected tab is selected again, then highlight levels remain unchanged`() {
         // GIVEN
-        whenever(isCouponsEnabled()).thenReturn(true)
-        val tabsHelper = WooPosItemsTabsHelper(isCouponsEnabled)
+        val tabsHelper = WooPosItemsTabsHelper()
         val tabs = tabsHelper.defaultTabs
         val tabToSelect = tabs[0]
 

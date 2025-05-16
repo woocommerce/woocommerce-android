@@ -35,13 +35,13 @@ import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder.Re
 import org.wordpress.android.fluxc.network.rest.wpcom.activity.ActivityLogRestClient.ActivitiesResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.auth.AccessToken
 import org.wordpress.android.fluxc.network.rest.wpcom.dashboard.CardsRestClient.CardsResponse
+import org.wordpress.android.fluxc.network.rest.wpcom.dashboard.CardsRestClient.DynamicCardResponse
+import org.wordpress.android.fluxc.network.rest.wpcom.dashboard.CardsRestClient.DynamicCardRowResponse
+import org.wordpress.android.fluxc.network.rest.wpcom.dashboard.CardsRestClient.FetchCardsPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.dashboard.CardsRestClient.PageResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.dashboard.CardsRestClient.PostResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.dashboard.CardsRestClient.PostsResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.dashboard.CardsRestClient.TodaysStatsResponse
-import org.wordpress.android.fluxc.network.rest.wpcom.dashboard.CardsRestClient.DynamicCardResponse
-import org.wordpress.android.fluxc.network.rest.wpcom.dashboard.CardsRestClient.DynamicCardRowResponse
-import org.wordpress.android.fluxc.network.rest.wpcom.dashboard.CardsRestClient.FetchCardsPayload
 import org.wordpress.android.fluxc.store.dashboard.CardsStore.ActivityCardError
 import org.wordpress.android.fluxc.store.dashboard.CardsStore.ActivityCardErrorType
 import org.wordpress.android.fluxc.store.dashboard.CardsStore.CardsErrorType
@@ -428,8 +428,10 @@ class CardsRestClientTest {
         }
     }
 
-    private fun assertSuccessActivityResponse(expected: ActivitiesResponse.ActivityResponse,
-                                              actual: ActivitiesResponse.ActivityResponse) {
+    private fun assertSuccessActivityResponse(
+        expected: ActivitiesResponse.ActivityResponse,
+                                              actual: ActivitiesResponse.ActivityResponse
+    ) {
         with(actual) {
             assertEquals(expected.activity_id, this.activity_id)
             assertEquals(expected.is_rewindable, this.is_rewindable)

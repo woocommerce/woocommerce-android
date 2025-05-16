@@ -39,7 +39,7 @@ class MigrationTests {
     @Test
     fun testRoomDBSchemasUnchanged() {
         val context = InstrumentationRegistry.getInstrumentation().context
-        for(i in 3..WC_DATABASE_VERSION){
+        for (i in 3..WC_DATABASE_VERSION) {
             val currentHash = MigrationSchemasUtils.getIdentityHash(i, context)
             val expectedHash = MigrationSchemasUtils.DB_HASHES.getValue(
                 MigrationSchemasUtils.getDBHashKey(i)

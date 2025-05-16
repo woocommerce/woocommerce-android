@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.split
 
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.SplitShipmentArgs
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.StoreOptionsModel
 import com.woocommerce.android.util.CurrencyFormatter
@@ -27,7 +28,7 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
         shipmentArgs: SplitShipmentArgs = SplitShipmentArgs(
             orderId = 1L,
             storeOptions = StoreOptionsModel.EMPTY,
-            shipments = defaultShipment
+            shipments = defaultShipments
         )
     ) {
         val savedState = WooShippingSplitShipmentFragmentArgs(shipmentArgs).toSavedStateHandle()
@@ -58,7 +59,7 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
             val shipmentArgs = SplitShipmentArgs(
                 orderId = 1L,
                 storeOptions = StoreOptionsModel.EMPTY,
-                shipments = defaultShipment
+                shipments = defaultShipments
             )
 
             createViewModel(shipmentArgs)
@@ -135,8 +136,8 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when moving a shippable item to a new shipment, then a new shipment is created`() = testBlocking {
-        val updatedCurrentShipmentItems = defaultShipment[0]!!.subList(fromIndex = 1, toIndex = 3)
-        val updatedShipmentItems = defaultShipment[0]!!.subList(fromIndex = 0, toIndex = 1)
+        val updatedCurrentShipmentItems = defaultShipments[0].items.subList(fromIndex = 1, toIndex = 3)
+        val updatedShipmentItems = defaultShipments[0].items.subList(fromIndex = 0, toIndex = 1)
 
         val movement = SplitMovement(
             sourceShipmentKey = 0,
@@ -167,7 +168,7 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
                 storeOptions = StoreOptionsModel.EMPTY,
                 shipments = twoShipments
             )
-            val updatedCurrentShipmentItems = defaultShipment[0]!!
+            val updatedCurrentShipmentItems = defaultShipments[0].items
             val updatedShipmentItems = listOf(
                 ShippableItemModel(
                     itemId = 3L,
@@ -210,8 +211,8 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when moving a shippable item to new shipment, then show singular snackbar`() = testBlocking {
-        val updatedCurrentShipmentItems = defaultShipment[0]!!.subList(fromIndex = 1, toIndex = 3)
-        val updatedShipmentItems = defaultShipment[0]!!.subList(fromIndex = 0, toIndex = 1)
+        val updatedCurrentShipmentItems = defaultShipments[0].items.subList(fromIndex = 1, toIndex = 3)
+        val updatedShipmentItems = defaultShipments[0].items.subList(fromIndex = 0, toIndex = 1)
 
         val movement = SplitMovement(
             sourceShipmentKey = 0,
@@ -237,8 +238,8 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when moving shippable items to new shipment, then show plural snackbar`() = testBlocking {
-        val updatedCurrentShipmentItems = defaultShipment[0]!!.subList(fromIndex = 0, toIndex = 1)
-        val updatedShipmentItems = defaultShipment[0]!!.subList(fromIndex = 1, toIndex = 2)
+        val updatedCurrentShipmentItems = defaultShipments[0].items.subList(fromIndex = 0, toIndex = 1)
+        val updatedShipmentItems = defaultShipments[0].items.subList(fromIndex = 1, toIndex = 2)
 
         val movement = SplitMovement(
             sourceShipmentKey = 0,
@@ -284,7 +285,7 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when removing a shipment, then the total shipment count is reduced by 1`() = testBlocking {
-        val movingItems = twoShipments[1]!!
+        val movingItems = twoShipments[1].items
 
         // Removing "Shipment 2"
         val movement = SplitMovement(
@@ -312,7 +313,7 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
             storeOptions = StoreOptionsModel.EMPTY,
             shipments = twoShipments
         )
-        val movingItems = twoShipments[1]!!
+        val movingItems = twoShipments[1].items
 
         // Removing "Shipment 2"
         val movement = SplitMovement(
@@ -321,7 +322,7 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
             destinationShipmentKey = 0,
             movingShipmentItems = movingItems
         )
-        val expectedItemCount = twoShipments[0]!!.size + twoShipments[1]!!.size
+        val expectedItemCount = twoShipments[0].items.size + twoShipments[1].items.size
 
         createViewModel(shipmentArgs)
 
@@ -351,6 +352,24 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
 
         assertThat(state.overflowMenuItems.size).isEqualTo(2)
     }
+
+    @Test
+    fun `when there are 2 shipments and 1 purchased shipment, then do not display the Merge all unfulfilled option`() =
+        testBlocking {
+            val shipmentArgs = SplitShipmentArgs(
+                orderId = 1L,
+                storeOptions = StoreOptionsModel.EMPTY,
+                shipments = twoShipments + purchasedShipmentUIModel
+            )
+
+            createViewModel(shipmentArgs)
+
+            sut.viewState.observeForTesting { }
+
+            val state = sut.viewState.value!!
+
+            assertThat(state.overflowMenuItems.size).isEqualTo(2)
+        }
 
     @Test
     fun `when there are 3 shipments, then display the Merge all unfulfilled option`() = testBlocking {
@@ -386,7 +405,10 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
         createViewModel(shipmentArgs)
 
         // Trigger merging all shipments
-        sut.onRemoveShipments(removingShipmentKeys = threeShipments.keys.toList(), destinationShipmentKey = null)
+        sut.onRemoveShipments(
+            removingShipmentKeys = (0 until threeShipments.size).toList(),
+            destinationShipmentKey = null
+        )
 
         sut.viewState.observeForTesting { }
 
@@ -400,96 +422,207 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
         assertThat(currentShipments.values.first().totalItemQuantity).isEqualTo(expectedItemQuantity)
     }
 
-    private val defaultShipment = mapOf(
-        0 to listOf(
-            ShippableItemModel(
-                itemId = 1L,
-                productId = 1L,
-                title = "A product with quantity 1",
-                price = BigDecimal(30),
-                quantity = 1f,
-                imageUrl = null,
-                currency = "USD",
-                length = 3f,
-                width = 3f,
-                height = 3f,
-                weight = 8f
-            ),
-            ShippableItemModel(
-                itemId = 2L,
-                productId = 2L,
-                title = "A product with quantity 5",
-                price = BigDecimal(10),
-                quantity = 5f,
-                imageUrl = null,
-                currency = "USD",
-                length = 3f,
-                width = 3f,
-                height = 3f,
-                weight = 8f
-            ),
-            ShippableItemModel(
-                itemId = 3L,
-                productId = 3L,
-                title = "Another product with quantity 3",
-                price = BigDecimal(10),
-                quantity = 3f,
-                imageUrl = null,
-                currency = "USD",
-                length = 3f,
-                width = 3f,
-                height = 3f,
-                weight = 8f
+    @Test
+    fun `when merging unfulfilled shipments, do not merge purchased shipments`() =
+        testBlocking {
+            val shipmentArgs = SplitShipmentArgs(
+                orderId = 1L,
+                storeOptions = StoreOptionsModel.EMPTY,
+                shipments = listOf(purchasedShipmentUIModel) + threeShipments
+            )
+
+            createViewModel(shipmentArgs)
+
+            // Trigger merging all shipments
+            sut.onRemoveShipments(
+                removingShipmentKeys = (0 until shipmentArgs.shipments.size).toList(),
+                destinationShipmentKey = null
+            )
+
+            sut.viewState.observeForTesting { }
+
+            val state = sut.viewState.value!!
+            val currentShipments = state.selectableItems
+            val expectedItemQuantity = 10 // All items from `threeShipments`
+
+            // Verify there are two shipments
+            assertThat(currentShipments.size).isEqualTo(2)
+
+            assertThat(currentShipments.values.toList()[1].totalItemQuantity).isEqualTo(expectedItemQuantity)
+        }
+
+    private val defaultShipments = listOf(
+        ShipmentUIModel(
+            id = "0",
+            items = listOf(
+                ShippableItemModel(
+                    itemId = 1L,
+                    productId = 1L,
+                    title = "A product with quantity 1",
+                    price = BigDecimal(30),
+                    quantity = 1f,
+                    imageUrl = null,
+                    currency = "USD",
+                    length = 3f,
+                    width = 3f,
+                    height = 3f,
+                    weight = 8f
+                ),
+                ShippableItemModel(
+                    itemId = 2L,
+                    productId = 2L,
+                    title = "A product with quantity 5",
+                    price = BigDecimal(10),
+                    quantity = 5f,
+                    imageUrl = null,
+                    currency = "USD",
+                    length = 3f,
+                    width = 3f,
+                    height = 3f,
+                    weight = 8f
+                ),
+                ShippableItemModel(
+                    itemId = 3L,
+                    productId = 3L,
+                    title = "Another product with quantity 3",
+                    price = BigDecimal(10),
+                    quantity = 3f,
+                    imageUrl = null,
+                    currency = "USD",
+                    length = 3f,
+                    width = 3f,
+                    height = 3f,
+                    weight = 8f
+                )
             )
         )
     )
-    private val twoShipments = mapOf(
-        0 to listOf(
-            ShippableItemModel(
-                itemId = 1L,
-                productId = 1L,
-                title = "A product with quantity 1",
-                price = BigDecimal(30),
-                quantity = 1f,
-                imageUrl = null,
-                currency = "USD",
-                length = 3f,
-                width = 3f,
-                height = 3f,
-                weight = 8f
-            ),
-            ShippableItemModel(
-                itemId = 2L,
-                productId = 2L,
-                title = "A product with quantity 5",
-                price = BigDecimal(10),
-                quantity = 5f,
-                imageUrl = null,
-                currency = "USD",
-                length = 3f,
-                width = 3f,
-                height = 3f,
-                weight = 8f
+
+    private val twoShipments = listOf(
+        ShipmentUIModel(
+            id = "0",
+            items = listOf(
+                ShippableItemModel(
+                    itemId = 1L,
+                    productId = 1L,
+                    title = "A product with quantity 1",
+                    price = BigDecimal(30),
+                    quantity = 1f,
+                    imageUrl = null,
+                    currency = "USD",
+                    length = 3f,
+                    width = 3f,
+                    height = 3f,
+                    weight = 8f
+                ),
+                ShippableItemModel(
+                    itemId = 2L,
+                    productId = 2L,
+                    title = "A product with quantity 5",
+                    price = BigDecimal(10),
+                    quantity = 5f,
+                    imageUrl = null,
+                    currency = "USD",
+                    length = 3f,
+                    width = 3f,
+                    height = 3f,
+                    weight = 8f
+                )
             )
         ),
-        1 to listOf(
-            ShippableItemModel(
-                itemId = 3L,
-                productId = 3L,
-                title = "Another product with quantity 3",
-                price = BigDecimal(10),
-                quantity = 3f,
-                imageUrl = null,
-                currency = "USD",
-                length = 3f,
-                width = 3f,
-                height = 3f,
-                weight = 8f
+        ShipmentUIModel(
+            id = "1",
+            items = listOf(
+                ShippableItemModel(
+                    itemId = 3L,
+                    productId = 3L,
+                    title = "Another product with quantity 3",
+                    price = BigDecimal(10),
+                    quantity = 3f,
+                    imageUrl = null,
+                    currency = "USD",
+                    length = 3f,
+                    width = 3f,
+                    height = 3f,
+                    weight = 8f
+                )
             )
         )
     )
-    private val threeShipments = mapOf(
-        0 to listOf(
+
+    private val threeShipments = listOf(
+        ShipmentUIModel(
+            id = "0",
+            items = listOf(
+                ShippableItemModel(
+                    itemId = 1L,
+                    productId = 1L,
+                    title = "A product with quantity 1",
+                    price = BigDecimal(30),
+                    quantity = 1f,
+                    imageUrl = null,
+                    currency = "USD",
+                    length = 3f,
+                    width = 3f,
+                    height = 3f,
+                    weight = 8f
+                ),
+                ShippableItemModel(
+                    itemId = 2L,
+                    productId = 2L,
+                    title = "A product with quantity 5",
+                    price = BigDecimal(10),
+                    quantity = 5f,
+                    imageUrl = null,
+                    currency = "USD",
+                    length = 3f,
+                    width = 3f,
+                    height = 3f,
+                    weight = 8f
+                )
+            )
+        ),
+        ShipmentUIModel(
+            id = "1",
+            items = listOf(
+                ShippableItemModel(
+                    itemId = 3L,
+                    productId = 3L,
+                    title = "Another product with quantity 3",
+                    price = BigDecimal(10),
+                    quantity = 3f,
+                    imageUrl = null,
+                    currency = "USD",
+                    length = 3f,
+                    width = 3f,
+                    height = 3f,
+                    weight = 8f
+                )
+            )
+        ),
+        ShipmentUIModel(
+            id = "2",
+            items = listOf(
+                ShippableItemModel(
+                    itemId = 3L,
+                    productId = 3L,
+                    title = "Another product with quantity 3",
+                    price = BigDecimal(10),
+                    quantity = 1f,
+                    imageUrl = null,
+                    currency = "USD",
+                    length = 3f,
+                    width = 3f,
+                    height = 3f,
+                    weight = 8f
+                )
+            )
+        )
+    )
+
+    val purchasedShipmentUIModel = ShipmentUIModel(
+        id = "10",
+        items = listOf(
             ShippableItemModel(
                 itemId = 1L,
                 productId = 1L,
@@ -502,50 +635,8 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
                 width = 3f,
                 height = 3f,
                 weight = 8f
-            ),
-            ShippableItemModel(
-                itemId = 2L,
-                productId = 2L,
-                title = "A product with quantity 5",
-                price = BigDecimal(10),
-                quantity = 5f,
-                imageUrl = null,
-                currency = "USD",
-                length = 3f,
-                width = 3f,
-                height = 3f,
-                weight = 8f
             )
         ),
-        1 to listOf(
-            ShippableItemModel(
-                itemId = 3L,
-                productId = 3L,
-                title = "Another product with quantity 3",
-                price = BigDecimal(10),
-                quantity = 3f,
-                imageUrl = null,
-                currency = "USD",
-                length = 3f,
-                width = 3f,
-                height = 3f,
-                weight = 8f
-            )
-        ),
-        2 to listOf(
-            ShippableItemModel(
-                itemId = 3L,
-                productId = 3L,
-                title = "Another product with quantity 3",
-                price = BigDecimal(10),
-                quantity = 1f,
-                imageUrl = null,
-                currency = "USD",
-                length = 3f,
-                width = 3f,
-                height = 3f,
-                weight = 8f
-            )
-        )
+        purchased = true
     )
 }

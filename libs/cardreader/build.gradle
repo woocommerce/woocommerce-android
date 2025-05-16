@@ -28,7 +28,7 @@ android {
 }
 
 dependencies {
-    implementation(libs.stripe.terminal.localmobile)
+    implementation(libs.stripe.terminal.taptopay)
     implementation(libs.stripe.terminal.core)
 
     // Coroutines

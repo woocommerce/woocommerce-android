@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.home.items.navigation
 
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemNavigationData.VariableProductData
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.test.runTest
@@ -41,14 +42,13 @@ class WooPosLeftPaneScreensViewModelTest {
             1L,
             "Product Name",
             numOfVariations = 10,
+            sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST,
         )
         navigationEvents.emit(WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateToVariationsScreen(product))
 
         assert(viewModel.screenState.value is WooPosItemsScreenViewModel.ItemsScreens.VariationsScreen)
         assert(
-            (
-                viewModel.screenState.value as WooPosItemsScreenViewModel.ItemsScreens.VariationsScreen
-                ).product == product
+            (viewModel.screenState.value as WooPosItemsScreenViewModel.ItemsScreens.VariationsScreen).product == product
         )
     }
 
@@ -58,6 +58,7 @@ class WooPosLeftPaneScreensViewModelTest {
             1L,
             "Product Name",
             numOfVariations = 10,
+            sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST,
         )
         navigationEvents.emit(WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateToVariationsScreen(product))
         navigationEvents.emit(WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateBackToItemListScreen)
@@ -71,6 +72,7 @@ class WooPosLeftPaneScreensViewModelTest {
             1L,
             "Product Name",
             numOfVariations = 10,
+            sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST,
         )
         navigationEvents.emit(WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateToVariationsScreen(product))
 

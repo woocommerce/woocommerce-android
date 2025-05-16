@@ -1,17 +1,14 @@
 package org.wordpress.android.fluxc.model
 
+import androidx.room.Entity
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.JsonParseException
-import com.google.gson.reflect.TypeToken
-import com.yarolegovich.wellsql.core.Identifiable
-import com.yarolegovich.wellsql.core.annotation.Column
-import com.yarolegovich.wellsql.core.annotation.PrimaryKey
-import com.yarolegovich.wellsql.core.annotation.Table
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.WCProductVariationModel.ProductVariantOption
 import org.wordpress.android.fluxc.network.utils.getLong
 import org.wordpress.android.fluxc.network.utils.getString
-import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.AppLog.T
 import java.lang.IllegalStateException
@@ -22,77 +19,58 @@ typealias VariationAttributes = List<ProductVariantOption>
  * Product variations - see http://woocommerce.github.io/woocommerce-rest-api-docs/#product-variations
  * As with WCProductModel, the backend returns more properties than are supported below
  */
-@Table(addOn = WellSqlConfig.ADDON_WOOCOMMERCE)
-data class WCProductVariationModel(@PrimaryKey @Column private var id: Int = 0) : Identifiable {
-    @Column var localSiteId = 0
-    @Column var remoteProductId = 0L
-    @Column var remoteVariationId = 0L
-
-    @Column var dateCreated = ""
-    @Column var dateModified = ""
-
-    @Column var description = ""
-    @Column var permalink = ""
-    @Column var sku = ""
-    @Column var globalUniqueId = ""
-    @Column var status = ""
-
-    @Column var price = ""
-    @Column var regularPrice = ""
-    @Column var salePrice = ""
-
-    @Column var dateOnSaleFrom = ""
-    @Column var dateOnSaleTo = ""
-    @Column var dateOnSaleFromGmt = ""
-    @Column var dateOnSaleToGmt = ""
-
-    @Column var taxStatus = "" // taxable, shipping, none
-    @Column var taxClass = ""
-
-    @Column var onSale = false
-    @Column var purchasable = false
-    @Column var virtual = false
-    @Column var downloadable = false
-
-    @Column var downloadLimit = 0L
-    @Column var downloadExpiry = 0
-
-    @Column var downloads = "" // array of downloadable files
-    @Column var backorders = "" // no, notify, yes
-
-    @Column var backordersAllowed = false
-    @Column var backordered = false
-
-    @Column var shippingClass = ""
-    @Column var shippingClassId = 0
-
-    @Column var manageStock = false
-    @Column var stockQuantity = 0.0
-    @Column var stockStatus = ""
-
-    @Column var image = ""
-
-    @Column var weight = ""
-    @Column var length = ""
-    @Column var width = ""
-    @Column var height = ""
-
-    @Column var minAllowedQuantity = -1
-    @Column var maxAllowedQuantity = -1
-    @Column var groupOfQuantity = -1
-    @Column var overrideProductQuantities = false
-
-    @Column var menuOrder = 0
-
-    @Column var attributes = ""
-
-    @Column var metadata: String? = null
-
-    override fun getId() = id
-
-    override fun setId(id: Int) {
-        this.id = id
-    }
+@Entity(
+    tableName = "ProductVariationEntity",
+    primaryKeys = ["localSiteId", "remoteProductId", "remoteVariationId"],
+)
+data class WCProductVariationModel(
+    val localSiteId: LocalId = LocalId(0),
+    val remoteProductId: RemoteId = RemoteId(0),
+    val remoteVariationId: RemoteId = RemoteId(0),
+    val dateCreated: String = "",
+    val dateModified: String = "",
+    val description: String = "",
+    val permalink: String = "",
+    val sku: String = "",
+    val globalUniqueId: String = "",
+    val status: String = "",
+    val price: String = "",
+    val regularPrice: String = "",
+    val salePrice: String = "",
+    val dateOnSaleFrom: String = "",
+    val dateOnSaleTo: String = "",
+    val dateOnSaleFromGmt: String = "",
+    val dateOnSaleToGmt: String = "",
+    val taxStatus: String = "", // taxable, shipping, none
+    val taxClass: String = "",
+    val onSale: Boolean = false,
+    val purchasable: Boolean = false,
+    val virtual: Boolean = false,
+    val downloadable: Boolean = false,
+    val downloadLimit: Long = 0L,
+    val downloadExpiry: Int = 0,
+    val downloads: String = "", // array of downloadable files
+    val backorders: String = "", // no, notify, yes
+    val backordersAllowed: Boolean = false,
+    val backordered: Boolean = false,
+    val shippingClass: String = "",
+    val shippingClassId: Int = 0,
+    val manageStock: Boolean = false,
+    val stockQuantity: Double = 0.0,
+    val stockStatus: String = "",
+    val image: String = "",
+    val weight: String = "",
+    val length: String = "",
+    val width: String = "",
+    val height: String = "",
+    val minAllowedQuantity: Int = -1,
+    val maxAllowedQuantity: Int = -1,
+    val groupOfQuantity: Int = -1,
+    val overrideProductQuantities: Boolean = false,
+    val menuOrder: Int = 0,
+    val attributes: String = "",
+    val metadata: String? = null,
+) {
 
     data class ProductVariantOption(
         val id: Long? = null,
@@ -104,23 +82,6 @@ data class WCProductVariationModel(@PrimaryKey @Column private var id: Int = 0) 
 
     val attributeList
         get() = gson.fromJson(attributes, Array<ProductVariantOption>::class.java)
-
-    fun addVariant(newAttribute: ProductVariantOption) =
-            mutableListOf<ProductVariantOption>()
-                    .apply {
-                        attributeList
-                                ?.takeIf { it.isNotEmpty() }
-                                ?.let { addAll(it) }
-                        add(newAttribute)
-                    }.also { attributes = gson.toJson(it) }
-
-    fun removeVariant(removableAttribute: ProductVariantOption) =
-            mutableListOf<ProductVariantOption>().apply {
-                attributeList
-                        ?.takeIf { it.isNotEmpty() }
-                        ?.filter { removableAttribute.id != it.id }
-                        ?.let { addAll(it) }
-            }.also { attributes = gson.toJson(it) }
 
     /**
      * Parses the images json array into a list of product images
@@ -146,13 +107,5 @@ data class WCProductVariationModel(@PrimaryKey @Column private var id: Int = 0) 
             }
         }
         return null
-    }
-
-    /**
-     * Deserializes the JSON contained in [attributes] into a list of [ProductVariantOption] objects.
-     */
-    fun getProductVariantOptions(): List<ProductVariantOption> {
-        val responseType = object : TypeToken<List<ProductVariantOption>>() {}.type
-        return gson.fromJson(attributes, responseType) as? List<ProductVariantOption> ?: emptyList()
     }
 }

@@ -1,10 +1,10 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.wc.addons.mappers
 
 import org.wordpress.android.fluxc.domain.Addon
+import org.wordpress.android.fluxc.model.addons.RemoteAddonDto.RemoteOption
 import org.wordpress.android.fluxc.model.addons.RemoteAddonDto.RemotePriceType.FlatFee
 import org.wordpress.android.fluxc.model.addons.RemoteAddonDto.RemotePriceType.PercentageBased
 import org.wordpress.android.fluxc.model.addons.RemoteAddonDto.RemotePriceType.QuantityBased
-import org.wordpress.android.fluxc.model.addons.RemoteAddonDto.RemoteOption
 
 object RemoteAddonOptionDtoMapper {
     fun toDomainModel(dto: RemoteOption): Addon.HasOptions.Option {

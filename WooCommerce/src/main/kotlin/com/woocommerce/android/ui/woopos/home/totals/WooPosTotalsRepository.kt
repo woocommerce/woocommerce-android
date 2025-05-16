@@ -4,7 +4,7 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditRepository
-import com.woocommerce.android.ui.woopos.common.data.WooPosGetCouponById
+import com.woocommerce.android.ui.orders.creation.OrderCreationSource
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetVariationById
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
@@ -23,7 +23,6 @@ class WooPosTotalsRepository @Inject constructor(
     private val orderCreateEditRepository: OrderCreateEditRepository,
     private val dateUtils: DateUtils,
     private val getProductById: WooPosGetProductById,
-    private val getCouponById: WooPosGetCouponById,
     private val getVariationById: WooPosGetVariationById,
     private val orderStore: WCOrderStore,
     private val selectedSite: SelectedSite,
@@ -43,7 +42,7 @@ class WooPosTotalsRepository @Inject constructor(
             check(itemClickedDataList.all { it.id >= 0 }) { "Invalid item ID" }
             orderCreationJob = async {
                 val order = createOrder(itemClickedDataList)
-                orderCreateEditRepository.createOrUpdateOrder(order)
+                orderCreateEditRepository.createOrUpdateOrder(order, source = OrderCreationSource.POINT_OF_SALE)
             }
             orderCreationJob!!.await()
         }
@@ -83,19 +82,13 @@ class WooPosTotalsRepository @Inject constructor(
             }
     }
 
-    private suspend fun createCouponLines(coupons: List<WooPosItemsViewModel.ItemClickedData.Coupon>):
-        List<Order.CouponLine> {
-        return coupons.map { (id) ->
-            createCouponOrderItem(id)
+    private fun createCouponLines(coupons: List<WooPosItemsViewModel.ItemClickedData.Coupon>): List<Order.CouponLine> {
+        return coupons.map { item ->
+            Order.CouponLine(
+                id = item.id,
+                code = item.couponCode,
+            )
         }
-    }
-
-    private suspend fun createCouponOrderItem(id: Long): Order.CouponLine {
-        val couponResult = getCouponById(id)!!
-        return Order.CouponLine(
-            id = id,
-            code = couponResult.code ?: "",
-        )
     }
 
     private suspend fun createSimpleProductOrderItem(

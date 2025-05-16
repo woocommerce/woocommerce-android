@@ -85,6 +85,7 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
+import kotlinx.coroutines.runBlocking
 import java.math.BigDecimal
 
 @Suppress("LargeClass", "LongParameterList")
@@ -518,9 +519,11 @@ class ProductDetailCardBuilder(
                                         subscription?.supportsOneTimeShipping ?: false
                                     } else {
                                         // For variable subscription products, we need to check against the variations
-                                        variationRepository.getProductVariationList(product.remoteId).all {
-                                            (it as? SubscriptionProductVariation)?.subscriptionDetails
-                                                ?.supportsOneTimeShipping ?: false
+                                        runBlocking {
+                                            variationRepository.getProductVariationList(product.remoteId).all {
+                                                (it as? SubscriptionProductVariation)?.subscriptionDetails
+                                                    ?.supportsOneTimeShipping ?: false
+                                            }
                                         }
                                     }
                                 )
@@ -951,7 +954,7 @@ class ProductDetailCardBuilder(
         }
     )
 
-    private fun Product.warning(): ProductProperty? {
+    private suspend fun Product.warning(): ProductProperty? {
         val variations = variationRepository.getProductVariationList(this.remoteId)
 
         val missingPriceVariation = variations

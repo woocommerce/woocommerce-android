@@ -13,4 +13,3 @@ data class TaskDto(
     val canView: Boolean = false,
     val actionUrl: String?
 )
-
