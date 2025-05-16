@@ -216,7 +216,7 @@ class WooPosVariationsViewModel @Inject constructor(
                     analyticsTracker.track(
                         WooPosAnalyticsEvent.Event.PullToRefreshTriggered(
                             source = WooPosAnalyticsEventConstant.ItemsListSource.VARIATION,
-                            sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST,
+                            sourceType = sourceType,
                         )
                     )
                 }
