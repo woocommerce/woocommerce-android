@@ -4,8 +4,6 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.PreSearchRecentTermTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SearchRemoteResultsFetched
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ITEM_LIST_TYPE
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ITEM_LIST_TYPE_PRODUCTS
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosGetTotalProductCount
 import java.util.concurrent.atomic.AtomicReference
@@ -27,11 +25,7 @@ class WooPosItemsSearchAnalyticsTracker @Inject constructor(
     }
 
     suspend fun trackRecentSearchSelected() {
-        val event = PreSearchRecentTermTapped.apply {
-            addProperties(
-                mapOf(ITEM_LIST_TYPE to ITEM_LIST_TYPE_PRODUCTS)
-            )
-        }
+        val event = PreSearchRecentTermTapped(source = WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT)
         analyticsTracker.track(event)
     }
 
@@ -39,7 +33,8 @@ class WooPosItemsSearchAnalyticsTracker @Inject constructor(
         val totalProductsCount = getTotalProductCount()
         val event = SearchRemoteResultsFetched(
             totalProductsCount = totalProductsCount,
-            millisecondsSinceRequestSent = searchTimeMillis
+            millisecondsSinceRequestSent = searchTimeMillis,
+            source = WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT,
         )
         analyticsTracker.track(event)
     }

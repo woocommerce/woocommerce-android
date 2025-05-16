@@ -227,7 +227,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             }
         }
 
-        data object PreSearchRecentTermTapped : Event() {
+        class PreSearchRecentTermTapped(source: ItemsListSource) : Event() {
             override val name: String = "pre_search_recent_term_tapped"
         }
 
