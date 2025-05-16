@@ -334,12 +334,16 @@ class IssueRefundViewModel @Inject constructor(
     }
 
     private fun showRefundSummary() {
+        val productItems = refundItems.value.orEmpty()
+        val shippingLines = refundShippingLines.value.takeIf { isShippingMainSwitchChecked.value }.orEmpty()
+            .filter { it.isSelected }
+        val feeLines = refundFeeLines.value.takeIf { isFeesMainSwitchChecked.value }.orEmpty()
+            .filter { it.isSelected }
+
         triggerEvent(
             IssueRefundEvent.ShowRefundSummary(
                 orderId = arguments.orderId,
-                refundItems = refundItems.value.orEmpty() +
-                    refundShippingLines.value.orEmpty() +
-                    refundFeeLines.value.orEmpty()
+                refundItems = productItems + shippingLines + feeLines
             )
         )
     }
