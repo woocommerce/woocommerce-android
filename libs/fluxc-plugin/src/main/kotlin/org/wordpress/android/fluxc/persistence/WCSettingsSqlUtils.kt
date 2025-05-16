@@ -7,10 +7,10 @@ import com.yarolegovich.wellsql.core.Identifiable
 import com.yarolegovich.wellsql.core.annotation.Column
 import com.yarolegovich.wellsql.core.annotation.PrimaryKey
 import com.yarolegovich.wellsql.core.annotation.Table
-import java.util.Locale
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCSettingsModel
 import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition
+import java.util.Locale
 
 object WCSettingsSqlUtils {
     fun insertOrUpdateSettings(settings: WCSettingsModel): Int {

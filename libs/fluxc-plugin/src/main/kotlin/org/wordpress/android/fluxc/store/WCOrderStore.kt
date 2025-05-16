@@ -1030,7 +1030,7 @@ class WCOrderStore @Inject constructor(
                     )
                 )
             } else {
-                val errorType = if(payload.error.type == PARSE_ERROR){
+                val errorType = if (payload.error.type == PARSE_ERROR) {
                     ListErrorType.PARSE_ERROR
                 } else {
                     ListErrorType.GENERIC_ERROR

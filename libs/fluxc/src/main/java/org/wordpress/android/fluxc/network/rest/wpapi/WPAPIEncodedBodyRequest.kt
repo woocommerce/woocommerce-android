@@ -31,7 +31,7 @@ class WPAPIEncodedBodyRequest(
     }
 
     override fun deliverBaseNetworkError(error: BaseNetworkError): BaseNetworkError {
-        val authenticationError = when(error.volleyError?.networkResponse?.statusCode){
+        val authenticationError = when (error.volleyError?.networkResponse?.statusCode) {
             UNAUTHORIZED -> AuthenticationErrorType.AUTHORIZATION_REQUIRED
             FORBIDDEN -> AuthenticationErrorType.NOT_AUTHENTICATED
             else -> null

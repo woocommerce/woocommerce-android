@@ -1,8 +1,8 @@
 package org.wordpress.android.fluxc.persistence
 
-import org.wordpress.android.fluxc.model.metadata.MetaDataParentItemType
 import org.wordpress.android.fluxc.model.ProductWithMetaData
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.metadata.MetaDataParentItemType
 import org.wordpress.android.fluxc.model.metadata.WCMetaData
 import org.wordpress.android.fluxc.persistence.dao.MetaDataDao
 import org.wordpress.android.fluxc.persistence.dao.ProductsDao

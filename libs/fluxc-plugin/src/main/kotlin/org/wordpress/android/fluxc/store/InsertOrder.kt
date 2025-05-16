@@ -3,14 +3,14 @@ package org.wordpress.android.fluxc.store
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.ListActionBuilder
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
-import org.wordpress.android.fluxc.model.metadata.MetaDataParentItemType
-import org.wordpress.android.fluxc.persistence.entity.OrderEntity
-import org.wordpress.android.fluxc.model.metadata.WCMetaData
 import org.wordpress.android.fluxc.model.WCOrderListDescriptor
+import org.wordpress.android.fluxc.model.metadata.MetaDataParentItemType
+import org.wordpress.android.fluxc.model.metadata.WCMetaData
 import org.wordpress.android.fluxc.persistence.TransactionExecutor
 import org.wordpress.android.fluxc.persistence.dao.MetaDataDao
 import org.wordpress.android.fluxc.persistence.dao.OrdersDaoDecorator
 import org.wordpress.android.fluxc.persistence.entity.MetaDataEntity
+import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import javax.inject.Inject
 
 class InsertOrder @Inject internal constructor(

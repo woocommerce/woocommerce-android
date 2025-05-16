@@ -246,8 +246,7 @@ class InPersonPaymentsRestClient @Inject constructor(
         }
     }
 
-    private fun mapToStoreLocationForSiteError(error: WPAPINetworkError?, message: String):
-        WCTerminalStoreLocationError {
+    private fun mapToStoreLocationForSiteError(error: WPAPINetworkError?, message: String): WCTerminalStoreLocationError {
         val type = when {
             error == null -> WCTerminalStoreLocationErrorType.GenericError
             error.errorCode == "store_address_is_incomplete" -> {

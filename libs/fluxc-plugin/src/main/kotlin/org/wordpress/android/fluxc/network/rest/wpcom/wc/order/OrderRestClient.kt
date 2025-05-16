@@ -1289,7 +1289,7 @@ class OrderRestClient @Inject constructor(
 
     enum class SortOrder(val value: String) {
         ASCENDING("asc"),
-        DESCENDING("desc");
+        DESCENDING("desc")
     }
 
     enum class OrderBy(val value: String) {
@@ -1297,7 +1297,7 @@ class OrderRestClient @Inject constructor(
         ID("id"),
         INCLUDE("include"),
         TITLE("title"),
-        SLUG("slug");
+        SLUG("slug")
     }
 
     data class OrderUpdatePaymentDetails(

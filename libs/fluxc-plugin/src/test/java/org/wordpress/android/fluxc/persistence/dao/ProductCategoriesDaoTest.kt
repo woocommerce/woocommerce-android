@@ -3,10 +3,6 @@ package org.wordpress.android.fluxc.persistence.dao
 import android.app.Application
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import java.io.IOException
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
@@ -18,6 +14,10 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
 import org.wordpress.android.fluxc.store.WCProductStore.ProductCategorySorting.NAME_ASC
 import org.wordpress.android.fluxc.wc.product.ProductTestUtils
+import java.io.IOException
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 class ProductCategoriesDaoTest {
@@ -99,7 +99,7 @@ class ProductCategoriesDaoTest {
     }
 
     @Test
-    fun testDeleteAllProductCategories() = runTest{
+    fun testDeleteAllProductCategories() = runTest {
         val categories = ProductTestUtils.getProductCategories(site.id)
         assertTrue(categories.isNotEmpty())
         sut.upsertProductCategories(categories)
@@ -137,5 +137,4 @@ class ProductCategoriesDaoTest {
     fun closeDb() {
         database.close()
     }
-
 }

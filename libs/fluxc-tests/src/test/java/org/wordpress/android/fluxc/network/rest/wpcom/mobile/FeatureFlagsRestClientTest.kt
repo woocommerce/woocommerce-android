@@ -44,7 +44,7 @@ class FeatureFlagsRestClientTest {
     private lateinit var urlCaptor: KArgumentCaptor<String>
     private lateinit var paramsCaptor: KArgumentCaptor<Map<String, String>>
     private lateinit var restClient: FeatureFlagsRestClient
-    
+
     private val successResponse = mapOf("flag-1" to true, "flag-2" to false)
 
     @Before
@@ -190,7 +190,6 @@ class FeatureFlagsRestClientTest {
 
         assertError(FeatureFlagsErrorType.GENERIC_ERROR, result)
     }
-
 
     private suspend fun initFetchFeatureFlags(
         data: Map<*, *>? = null,

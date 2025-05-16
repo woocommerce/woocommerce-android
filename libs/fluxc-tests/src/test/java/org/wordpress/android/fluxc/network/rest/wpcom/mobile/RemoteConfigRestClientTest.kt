@@ -42,7 +42,7 @@ class RemoteConfigRestClientTest {
     private lateinit var urlCaptor: KArgumentCaptor<String>
     private lateinit var paramsCaptor: KArgumentCaptor<Map<String, String>>
     private lateinit var restClient: RemoteConfigRestClient
-    
+
     private val successResponse = mapOf("jp-deadline" to "2022-10-10")
 
     @Before
@@ -116,7 +116,6 @@ class RemoteConfigRestClientTest {
 
         assertError(RemoteConfigErrorType.GENERIC_ERROR, result)
     }
-
 
     private suspend fun initFetchRemoteConfig(
         data: Map<*, *>? = null,

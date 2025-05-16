@@ -354,7 +354,7 @@ class SiteRestClient @Inject constructor(
         }
     }
 
-    suspend fun launchSite(site: SiteModel) : Response<Unit>{
+    suspend fun launchSite(site: SiteModel): Response<Unit> {
         val url = WPCOMV2.sites.site(site.siteId).launch.url
         return wpComGsonRequestBuilder.syncPostRequest(
             restClient = this,

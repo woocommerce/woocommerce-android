@@ -248,7 +248,7 @@ abstract class WPAndroidDatabase : RoomDatabase() {
             }
         }
 
-        val MIGRATION_14_15 = object : Migration(14,15){
+        val MIGRATION_14_15 = object : Migration(14,15) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.apply {
                     execSQL(
@@ -258,7 +258,7 @@ abstract class WPAndroidDatabase : RoomDatabase() {
             }
         }
 
-        val MIGRATION_15_16 = object : Migration(15,16){
+        val MIGRATION_15_16 = object : Migration(15,16) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.apply {
                     execSQL(

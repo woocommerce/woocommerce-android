@@ -53,6 +53,7 @@ import org.wordpress.android.fluxc.persistence.ProductSqlUtils.observeBundledPro
 import org.wordpress.android.fluxc.persistence.ProductStorageHelper
 import org.wordpress.android.fluxc.persistence.dao.AddonsDao
 import org.wordpress.android.fluxc.persistence.dao.ProductCategoriesDao
+import org.wordpress.android.fluxc.persistence.dao.ProductTagsDao
 import org.wordpress.android.fluxc.persistence.dao.ProductVariationsDao
 import org.wordpress.android.fluxc.persistence.dao.ProductsDao
 import org.wordpress.android.fluxc.store.WCProductStore.ProductCategorySorting.NAME_ASC
@@ -69,7 +70,6 @@ import org.wordpress.android.util.AppLog.T.API
 import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
-import org.wordpress.android.fluxc.persistence.dao.ProductTagsDao
 
 @Suppress("LargeClass")
 @Singleton
@@ -99,9 +99,8 @@ class WCProductStore @Inject internal constructor(
         fun categoryFilter(jsonCategory: String): String {
             // Building a custom filter, because in the table a product's categories are saved as JSON string, e.g:
             // [{"id":1377,"name":"Decor","slug":"decor"},{"id":1374,"name":"Hoodies","slug":"hoodies"}]
-            return "\"id\":${jsonCategory},"
+            return "\"id\":$jsonCategory,"
         }
-
     }
 
     sealed class IncludeType(val value: String) {
@@ -1604,8 +1603,9 @@ class WCProductStore @Inject internal constructor(
      * @param payload Instance of [BatchUpdateVariationsPayload]. It can be produced using
      * [BatchUpdateVariationsPayload.Builder] class.
      */
-    suspend fun batchUpdateVariations(payload: BatchUpdateVariationsPayload):
-        WooResult<BatchProductVariationsApiResponse> =
+    suspend fun batchUpdateVariations(
+        payload: BatchUpdateVariationsPayload
+    ): WooResult<BatchProductVariationsApiResponse> =
         coroutineEngine.withDefaultContext(API, this, "batchUpdateVariations") {
             with(payload) {
                 val updateVariations: List<Map<String, Any>> = remoteVariationsIds.map { variationId ->

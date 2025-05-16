@@ -1,8 +1,8 @@
 package org.wordpress.android.fluxc.network
 
+import okhttp3.Protocol
 import okhttp3.Request
 import okhttp3.Response
-import okhttp3.Protocol
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
