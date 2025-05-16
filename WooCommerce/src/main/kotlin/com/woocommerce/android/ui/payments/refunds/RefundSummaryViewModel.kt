@@ -41,6 +41,7 @@ import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCGatewayStore
+import org.wordpress.android.fluxc.store.WCRefundStore
 import java.math.BigDecimal
 import javax.inject.Inject
 
@@ -55,6 +56,7 @@ class RefundSummaryViewModel @Inject constructor(
     private val networkStatus: NetworkStatus,
     private val currencyFormatter: CurrencyFormatter,
     private val gatewayStore: WCGatewayStore,
+    private val refundStore: WCRefundStore,
     private val coroutineDispatchers: CoroutineDispatchers
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
@@ -263,35 +265,15 @@ class RefundSummaryViewModel @Inject constructor(
     }
 
     private suspend fun initiateRefund(): WooResult<WCRefundModel> {
-        TODO("Implement the refund logic here")
-//        val allItems = mutableListOf<RefundRequestItem>()
-//        refundItems.value?.let {
-//            it.forEach { item -> allItems.add(item.toDataModel()) }
-//        }
-//
-//        val selectedShipping = if (isShippingMainSwitchChecked.value) {
-//            refundShippingLines.value?.filter { it.isSelected }
-//        } else {
-//            emptyList()
-//        }
-//        selectedShipping?.forEach { allItems.add(it.toDataModel()) }
-//
-//        val selectedFees = if (isFeesMainSwitchChecked.value) {
-//            refundFeeLines.value?.filter { it.isSelected }
-//        } else {
-//            emptyList()
-//        }
-//        selectedFees?.forEach { allItems.add(it.toDataModel()) }
-//
-//        return refundStore.createItemsRefund(
-//            site = selectedSite.get(),
-//            orderId = order.id,
-//            amount = refundSummaryState.refundAmount,
-//            reason = refundSummaryState.refundReason ?: "",
-//            restockItems = true,
-//            autoRefund = gateway.supportsRefunds,
-//            items = allItems
-//        )
+        return refundStore.createItemsRefund(
+            site = selectedSite.get(),
+            orderId = order.id,
+            amount = refundSummaryState.refundAmount,
+            reason = refundSummaryState.refundReason ?: "",
+            restockItems = true,
+            autoRefund = gateway.supportsRefunds,
+            items = navArgs.refundItems.map { it.toDataModel() }
+        )
     }
 
     private fun trackRefundError(result: WooResult<WCRefundModel>) {
