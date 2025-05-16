@@ -418,7 +418,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
                 statusModel,
             )
         } else {
-            orderStore.updateOrderStatusAndPaymentMethod(
+            orderStore.updateOrderStatusAndPaymentDetails(
                 cardReaderPaymentFlowParam.orderId,
                 selectedSite.get(),
                 statusModel,

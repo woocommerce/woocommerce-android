@@ -631,21 +631,34 @@ class OrderRestClient @Inject constructor(
         }
     }
 
-    suspend fun updateOrderStatusAndPaymentMethod(
+    suspend fun updateOrderStatusAndPaymentDetails(
         orderToUpdate: OrderEntity,
         site: SiteModel,
         status: String,
-        paymentMethodId: String? = null,
-        paymentMethodTitle: String? = null,
+        paymentDetails: OrderUpdatePaymentDetails? = null
     ): RemoteOrderPayload.Updating {
         val updatePayload = mutableMapOf<String, Any>()
         updatePayload["status"] = status
-        paymentMethodId?.let {
-            updatePayload["payment_method"] = paymentMethodId
+        paymentDetails?.paymentMethodId?.let {
+            updatePayload["payment_method"] = it
         }
-        paymentMethodTitle?.let {
-            updatePayload["payment_method_title"] = paymentMethodTitle
+        paymentDetails?.paymentMethodTitle?.let {
+            updatePayload["payment_method_title"] = it
         }
+
+        paymentDetails?.cashPaymentChangeDueAmount?.let {
+            val metaData = mapOf(
+                "meta_data" to listOfNotNull(
+                        mapOf(
+                            "key" to "_cash_change_amount",
+                            "value" to it
+                        )
+                )
+            )
+
+            updatePayload += metaData
+        }
+
         return updateOrder(orderToUpdate, site, updatePayload)
     }
 
@@ -1151,6 +1164,7 @@ class OrderRestClient @Inject constructor(
             shippingLines?.let { put("shipping_lines", it) }
             customerNote?.let { put("customer_note", it) }
             couponLines?.let { put("coupon_lines", it) }
+            createdVia?.let { put("created_via", it) }
             giftCard
                 ?.takeIf { it.isNotEmpty() }
                 ?.let { mapOf("code" to it) }
@@ -1285,4 +1299,10 @@ class OrderRestClient @Inject constructor(
         TITLE("title"),
         SLUG("slug");
     }
+
+    data class OrderUpdatePaymentDetails(
+        val paymentMethodId: String? = null,
+        val paymentMethodTitle: String? = null,
+        val cashPaymentChangeDueAmount: String? = null
+    )
 }
