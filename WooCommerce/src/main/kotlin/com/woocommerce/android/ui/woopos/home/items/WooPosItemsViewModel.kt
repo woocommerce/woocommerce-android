@@ -80,9 +80,10 @@ class WooPosItemsViewModel @Inject constructor(
 
     private fun trackSearchIconClicked() {
         viewModelScope.launch {
-            val event = SearchButtonTapped.apply {
-                addProperties(mapOf(ITEM_LIST_TYPE to ITEM_LIST_TYPE_PRODUCTS))
-            }
+            val event = SearchButtonTapped(
+                source = WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT,
+                sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST,
+            )
             analyticsTracker.track(event)
         }
     }
