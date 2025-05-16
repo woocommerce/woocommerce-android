@@ -60,7 +60,6 @@ class WooShippingLabelPackageRestClient @Inject constructor(
         ).toWooPayload()
     }
 
-
     companion object {
         private const val URL = "/wcshipping/v1/packages"
     }

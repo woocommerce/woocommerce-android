@@ -39,7 +39,8 @@ class WooShippingLabelPackageRepository @Inject constructor(
         site: SiteModel,
     ) = with(
         packageRestClient.postPredefinedPackages(
-            site, mapOf(parentCarrierId to listOf(savedPackageId))
+            site,
+            mapOf(parentCarrierId to listOf(savedPackageId))
         )
     ) {
         result.takeIf { isError.not() }
