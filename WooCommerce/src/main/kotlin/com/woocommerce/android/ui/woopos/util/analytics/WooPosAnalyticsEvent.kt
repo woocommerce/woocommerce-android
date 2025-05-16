@@ -250,9 +250,9 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             }
         }
 
-        class ItemsNextPageLoaded(
-            source: ItemsListSource,
-            sourceType: ItemsListSourceType
+        data class ItemsNextPageLoaded(
+            val source: ItemsListSource,
+            val sourceType: ItemsListSourceType
         ) : Event() {
             override val name: String = "items_next_page_loaded"
 
