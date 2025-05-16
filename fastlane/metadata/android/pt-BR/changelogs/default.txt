@@ -1,2 +1,0 @@
-22.3:
-Simplificamos o aplicativo móvel do WooCommerce! Os tipos de produto agora estão perfeitamente integrados ao menu de PDV. Este design atualizado deixa o gerenciamento de informações do produto na finalização da compra mais simples e intuitivo.
