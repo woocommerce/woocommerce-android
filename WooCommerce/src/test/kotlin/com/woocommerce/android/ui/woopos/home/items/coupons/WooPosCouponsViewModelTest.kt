@@ -16,7 +16,8 @@ import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCoupo
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart.WooPosItemSource
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
@@ -59,10 +60,17 @@ class WooPosCouponsViewModelTest {
         viewModel.onUIEvent(CouponClicked(couponId, couponCode))
 
         // THEN
+        val item = ItemClickedData.Coupon(couponId, couponCode)
         verify(fromChildToParentEventSender).sendToParent(
-            ChildToParentEvent.ItemClickedInProductSelector(
-                itemData = ItemClickedData.Coupon(couponId, couponCode),
-                source = WooPosItemSource.COUPON_LIST
+            eq(
+                ChildToParentEvent.ItemClickedInProductSelector(
+                    itemData = ItemClickedData.Coupon(couponId, couponCode),
+                    eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
+                        item = item,
+                        source = WooPosAnalyticsEventConstant.ItemsListSource.COUPON,
+                        sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST,
+                    ),
+                )
             )
         )
     }
@@ -140,10 +148,15 @@ class WooPosCouponsViewModelTest {
         viewModel.onUIEvent(WooPosCouponsUIEvent.CreateCouponClicked)
 
         // THEN
+        val item = ItemClickedData.Coupon(1L, "test coupon")
         verify(fromChildToParentEventSender).sendToParent(
             ChildToParentEvent.ItemClickedInProductSelector(
-                itemData = ItemClickedData.Coupon(1L, "test coupon"),
-                source = WooPosItemSource.COUPON_LIST
+                itemData = item,
+                eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
+                    item = item,
+                    source = WooPosAnalyticsEventConstant.ItemsListSource.COUPON,
+                    sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST,
+                ),
             )
         )
     }

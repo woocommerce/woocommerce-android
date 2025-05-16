@@ -21,8 +21,6 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.CheckoutTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ClearCartTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.InteractionWithCustomerStarted
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart.WooPosItemSource
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart.WooPosItemSource.Companion.toAnalyticsString
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTrackingDataKeeper
@@ -121,7 +119,7 @@ class WooPosCartViewModelTest {
                 WooPosItemsViewModel.ItemClickedData.Product.Simple(
                     id = product.remoteId
                 ),
-                source = WooPosItemSource.PRODUCT_LIST
+                eventForTracking = mock()
             )
         )
 
@@ -159,7 +157,7 @@ class WooPosCartViewModelTest {
                     id = variation.remoteVariationId,
                     productId = variation.remoteProductId
                 ),
-                source = WooPosItemSource.PRODUCT_LIST
+                eventForTracking = mock()
             )
         )
 
@@ -205,7 +203,7 @@ class WooPosCartViewModelTest {
                     WooPosItemsViewModel.ItemClickedData.Product.Simple(
                         id = product.remoteId
                     ),
-                    source = WooPosItemSource.PRODUCT_LIST
+                    eventForTracking = mock()
                 )
             )
 
@@ -258,7 +256,7 @@ class WooPosCartViewModelTest {
         }
 
     @Test
-    fun `given items in cart, when item remove button clicked in cart, then should track envent`() = runTest {
+    fun `given items in cart, when item remove button clicked in cart, then should track event`() = runTest {
         // GIVEN
         val product = ProductTestUtils.generateProduct(
             productId = 23L,
@@ -269,31 +267,44 @@ class WooPosCartViewModelTest {
         whenever(getProductById(eq(product.remoteId))).thenReturn(product)
         val sut = createSut()
 
-        parentToChildrenMutableSharedFlow.emit(
-            ParentToChildrenEvent.ItemClickedInProductSelector(
-                WooPosItemsViewModel.ItemClickedData.Product.Simple(
-                    id = product.remoteId
-                ),
-                source = WooPosItemSource.PRODUCT_LIST
-            )
+        val item = WooPosCartItemViewState.Product.Simple(
+            itemNumber = 1,
+            id = product.remoteId,
+            name = product.name,
+            price = "10.0$",
+            imageUrl = product.firstImageUrl,
+            description = null,
         )
 
-        // WHEN
-        sut.onUIEvent(
-            WooPosCartUIEvent.ItemRemovedFromCart(
-                WooPosCartItemViewState.Product.Simple(
-                    itemNumber = 1,
-                    id = product.remoteId,
-                    name = product.name,
-                    price = "10.0$",
-                    imageUrl = product.firstImageUrl,
-                    description = null,
+        val itemClickedData = WooPosItemsViewModel.ItemClickedData.Product.Simple(
+            id = item.id
+        )
+        parentToChildrenMutableSharedFlow.emit(
+            ParentToChildrenEvent.ItemClickedInProductSelector(
+                itemClickedData,
+                eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
+                    item = itemClickedData,
+                    source = WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT,
+                    sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST,
                 )
             )
         )
 
+        // WHEN
+
+        sut.onUIEvent(
+            WooPosCartUIEvent.ItemRemovedFromCart(item = item)
+        )
+
         // THEN
-        verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.ItemRemovedFromCart)
+        verify(analyticsTracker).track(
+            eq(
+                WooPosAnalyticsEvent.Event.ItemRemovedFromCart(
+                    source = WooPosAnalyticsEventConstant.CartSource.CART,
+                    item = item
+                )
+            )
+        )
     }
 
     @Test
@@ -365,7 +376,7 @@ class WooPosCartViewModelTest {
                     WooPosItemsViewModel.ItemClickedData.Product.Simple(
                         id = product.remoteId
                     ),
-                    source = WooPosItemSource.PRODUCT_LIST
+                    eventForTracking = mock()
                 )
             )
 
@@ -427,7 +438,7 @@ class WooPosCartViewModelTest {
                     WooPosItemsViewModel.ItemClickedData.Product.Simple(
                         id = product1.remoteId
                     ),
-                    source = WooPosItemSource.PRODUCT_LIST
+                    eventForTracking = mock()
                 )
             )
             parentToChildrenMutableSharedFlow.emit(
@@ -435,7 +446,7 @@ class WooPosCartViewModelTest {
                     WooPosItemsViewModel.ItemClickedData.Product.Simple(
                         id = product2.remoteId
                     ),
-                    source = WooPosItemSource.PRODUCT_LIST
+                    eventForTracking = mock()
                 )
             )
 
@@ -457,7 +468,7 @@ class WooPosCartViewModelTest {
                     WooPosItemsViewModel.ItemClickedData.Product.Simple(
                         id = product3.remoteId
                     ),
-                    source = WooPosItemSource.PRODUCT_LIST
+                    eventForTracking = mock()
                 )
             )
 
@@ -498,7 +509,7 @@ class WooPosCartViewModelTest {
                 WooPosItemsViewModel.ItemClickedData.Product.Simple(
                     id = product.remoteId
                 ),
-                source = WooPosItemSource.PRODUCT_LIST
+                eventForTracking = mock()
             )
         )
 
@@ -563,7 +574,7 @@ class WooPosCartViewModelTest {
                 WooPosItemsViewModel.ItemClickedData.Product.Simple(
                     id = product.remoteId
                 ),
-                source = WooPosItemSource.PRODUCT_LIST
+                eventForTracking = mock()
             )
         )
 
@@ -618,129 +629,18 @@ class WooPosCartViewModelTest {
         sut.state.captureValues()
 
         // WHEN
+        val itemAddedToCartEvent = mock<WooPosAnalyticsEvent.Event.ItemAddedToCart>()
         parentToChildrenMutableSharedFlow.emit(
             ParentToChildrenEvent.ItemClickedInProductSelector(
                 WooPosItemsViewModel.ItemClickedData.Product.Simple(
                     id = product.remoteId
                 ),
-                source = WooPosItemSource.PRODUCT_LIST
+                eventForTracking = itemAddedToCartEvent
             )
         )
 
         // THEN
-        verify(analyticsTracker)
-            .track(
-                WooPosAnalyticsEvent.Event.ItemAddedToCart(source = toAnalyticsString(WooPosItemSource.PRODUCT_LIST))
-            )
-    }
-
-    @Test
-    fun `when coupon added to cart, then should track analytics event`() = runTest {
-        // GIVEN
-        val sut = createSut()
-        sut.state.captureValues()
-
-        // WHEN
-        simulateCouponClicked()
-
-        // THEN
-        verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.ItemAddedToCart(source = "coupons"))
-    }
-
-    @Test
-    fun `when simple product added to cart, then should track analytics event with product type simple`() = runTest {
-        // GIVEN
-        val product = ProductTestUtils.generateProduct(
-            productId = 23L,
-            productName = "title",
-            amount = "10.0"
-        ).copy(firstImageUrl = "url")
-
-        whenever(getProductById(eq(product.remoteId))).thenReturn(product)
-        val sut = createSut()
-        sut.state.captureValues()
-
-        // WHEN
-        parentToChildrenMutableSharedFlow.emit(
-            ParentToChildrenEvent.ItemClickedInProductSelector(
-                WooPosItemsViewModel.ItemClickedData.Product.Simple(
-                    id = product.remoteId
-                ),
-                source = WooPosItemSource.PRODUCT_LIST
-            )
-        )
-
-        // THEN
-        verify(analyticsTracker).track(
-            argThat {
-                this == WooPosAnalyticsEvent.Event.ItemAddedToCart() &&
-                    (
-                        this as WooPosAnalyticsEvent.Event.ItemAddedToCart
-                        ).properties[WooPosAnalyticsEventConstant.PRODUCT_TYPE] == "simple"
-            }
-        )
-    }
-
-    @Test
-    fun `when variation added to cart, then should track analytics event with product type variation`() = runTest {
-        // GIVEN
-        val variation = ProductTestUtils.generateProductVariation(
-            productId = 23L,
-            amount = "10.0",
-        )
-        val product = ProductTestUtils.generateProduct(
-            productId = 23L,
-            productName = "title",
-            amount = "10.0"
-        ).copy(firstImageUrl = "url")
-
-        whenever(
-            getVariationsById(any(), any())
-        ).thenReturn(variation)
-        whenever(getProductById(any())).thenReturn(product)
-        val sut = createSut()
-        sut.state.captureValues()
-
-        // WHEN
-        parentToChildrenMutableSharedFlow.emit(
-            ParentToChildrenEvent.ItemClickedInProductSelector(
-                WooPosItemsViewModel.ItemClickedData.Product.Variation(
-                    id = variation.remoteProductId,
-                    productId = variation.remoteProductId
-                ),
-                source = WooPosItemSource.PRODUCT_LIST
-            )
-        )
-
-        // THEN
-        verify(analyticsTracker).track(
-            argThat {
-                this == WooPosAnalyticsEvent.Event.ItemAddedToCart() &&
-                    (
-                        this as WooPosAnalyticsEvent.Event.ItemAddedToCart
-                        ).properties[WooPosAnalyticsEventConstant.PRODUCT_TYPE] == "variation"
-            }
-        )
-    }
-
-    @Test
-    fun `when coupon added to cart, then should track analytics event with item type coupon`() = runTest {
-        // GIVEN
-        val sut = createSut()
-        sut.state.captureValues()
-
-        // WHEN
-        simulateCouponClicked()
-
-        // THEN
-        verify(analyticsTracker).track(
-            argThat {
-                this == WooPosAnalyticsEvent.Event.ItemAddedToCart(source = "coupons") &&
-                    (
-                        this as WooPosAnalyticsEvent.Event.ItemAddedToCart
-                        ).properties[WooPosAnalyticsEventConstant.PRODUCT_TYPE] == "coupon"
-            }
-        )
+        verify(analyticsTracker).track(itemAddedToCartEvent)
     }
 
     @Test
@@ -753,7 +653,7 @@ class WooPosCartViewModelTest {
         parentToChildrenEventsMutableFlow.emit(
             ParentToChildrenEvent.ItemClickedInProductSelector(
                 itemData = WooPosItemsViewModel.ItemClickedData.Coupon(id = 1L, couponCode = ""),
-                source = WooPosItemSource.COUPON_LIST,
+                eventForTracking = mock(),
             )
         )
         sut.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
@@ -778,13 +678,13 @@ class WooPosCartViewModelTest {
         parentToChildrenEventsMutableFlow.emit(
             ParentToChildrenEvent.ItemClickedInProductSelector(
                 itemData = WooPosItemsViewModel.ItemClickedData.Coupon(id = 1L, couponCode = ""),
-                source = WooPosItemSource.COUPON_LIST
+                eventForTracking = mock()
             )
         )
         parentToChildrenEventsMutableFlow.emit(
             ParentToChildrenEvent.ItemClickedInProductSelector(
                 itemData = WooPosItemsViewModel.ItemClickedData.Coupon(id = 2L, couponCode = ""),
-                source = WooPosItemSource.COUPON_LIST
+                eventForTracking = mock()
             )
         )
 
@@ -797,7 +697,7 @@ class WooPosCartViewModelTest {
         parentToChildrenEventsMutableFlow.emit(
             ParentToChildrenEvent.ItemClickedInProductSelector(
                 itemData = WooPosItemsViewModel.ItemClickedData.Product.Simple(id = product.remoteId),
-                source = WooPosItemSource.PRODUCT_LIST
+                eventForTracking = mock()
             )
         )
         sut.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
@@ -824,7 +724,7 @@ class WooPosCartViewModelTest {
         parentToChildrenEventsMutableFlow.emit(
             ParentToChildrenEvent.ItemClickedInProductSelector(
                 itemData = WooPosItemsViewModel.ItemClickedData.Coupon(id = 2L, couponCode = ""),
-                source = WooPosItemSource.COUPON_LIST
+                eventForTracking = mock()
             )
         )
 
@@ -837,7 +737,7 @@ class WooPosCartViewModelTest {
         parentToChildrenEventsMutableFlow.emit(
             ParentToChildrenEvent.ItemClickedInProductSelector(
                 itemData = WooPosItemsViewModel.ItemClickedData.Product.Simple(id = product.remoteId),
-                source = WooPosItemSource.PRODUCT_LIST
+                eventForTracking = mock()
             )
         )
 
@@ -858,7 +758,7 @@ class WooPosCartViewModelTest {
         parentToChildrenEventsMutableFlow.emit(
             ParentToChildrenEvent.ItemClickedInProductSelector(
                 itemData = WooPosItemsViewModel.ItemClickedData.Coupon(id = 1L, couponCode = ""),
-                source = WooPosItemSource.COUPON_LIST
+                eventForTracking = mock()
             )
         )
         sut.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
@@ -916,7 +816,7 @@ class WooPosCartViewModelTest {
                 WooPosItemsViewModel.ItemClickedData.Product.Simple(
                     id = product.remoteId
                 ),
-                source = WooPosItemSource.PRODUCT_LIST
+                eventForTracking = mock()
             )
         )
 
@@ -946,7 +846,7 @@ class WooPosCartViewModelTest {
                 WooPosItemsViewModel.ItemClickedData.Product.Simple(
                     id = product.remoteId
                 ),
-                source = WooPosItemSource.PRODUCT_LIST
+                eventForTracking = mock()
             )
         )
 
@@ -973,7 +873,7 @@ class WooPosCartViewModelTest {
                 WooPosItemsViewModel.ItemClickedData.Product.Simple(
                     id = product.remoteId
                 ),
-                source = WooPosItemSource.PRODUCT_LIST
+                eventForTracking = mock()
             )
         )
 
@@ -991,9 +891,8 @@ class WooPosCartViewModelTest {
         parentToChildrenMutableSharedFlow.emit(
             ParentToChildrenEvent.ItemClickedInProductSelector(
                 itemData = WooPosItemsViewModel.ItemClickedData.Coupon(id = couponId, couponCode = ""),
-                source = WooPosItemSource.COUPON_LIST
+                eventForTracking = mock()
             ),
-
         )
     }
 
@@ -1041,7 +940,7 @@ class WooPosCartViewModelTest {
                 WooPosItemsViewModel.ItemClickedData.Product.Simple(
                     id = product.remoteId
                 ),
-                source = WooPosItemSource.PRODUCT_LIST
+                eventForTracking = mock()
             )
         )
         return Pair(sut, states)

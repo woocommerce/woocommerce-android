@@ -86,11 +86,12 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "interaction_with_customer_started"
         }
 
-        class ItemAddedToCart private constructor(
-            source: ItemsListSource,
-            sourceType: ItemsListSourceType,
-            itemType: ItemsListItemType,
-            productType: ItemsListProductType?
+        @ExposedCopyVisibility
+        data class ItemAddedToCart private constructor(
+            val source: ItemsListSource,
+            val sourceType: ItemsListSourceType,
+            val itemType: ItemsListItemType,
+            val productType: ItemsListProductType?
         ) : Event() {
             override val name: String = "item_added_to_cart"
 
@@ -126,10 +127,11 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             }
         }
 
-        class ItemRemovedFromCart private constructor(
-            source: CartSource,
-            itemType: ItemsListItemType,
-            productType: ItemsListProductType?
+        @ExposedCopyVisibility
+        data class ItemRemovedFromCart private constructor(
+            val source: CartSource,
+            val itemType: ItemsListItemType,
+            val productType: ItemsListProductType?
         ) : Event() {
             constructor(
                 source: CartSource,
@@ -170,9 +172,9 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "order_creation_success"
         }
 
-        class PullToRefreshTriggered(
-            source: ItemsListSource,
-            sourceType: ItemsListSourceType
+        data class PullToRefreshTriggered(
+            val source: ItemsListSource,
+            val sourceType: ItemsListSourceType
         ) : Event() {
             override val name: String = "items_pull_to_refresh"
 
@@ -199,9 +201,9 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "simple_products_explanation_dialog_shown"
         }
 
-        class SearchButtonTapped(
-            source: ItemsListSource,
-            sourceType: ItemsListSourceType,
+        data class SearchButtonTapped(
+            val source: ItemsListSource,
+            val sourceType: ItemsListSourceType,
         ) : Event() {
             override val name: String = "search_button_tapped"
 
@@ -229,6 +231,14 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
 
         class PreSearchRecentTermTapped(source: ItemsListSource) : Event() {
             override val name: String = "pre_search_recent_term_tapped"
+
+            init {
+                addProperties(
+                    mapOf(
+                        ItemsListSource.SOURCE to source.toString(),
+                    )
+                )
+            }
         }
 
         class ItemsNextPageLoaded(

@@ -15,8 +15,8 @@ import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsU
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsViewModel
 import com.woocommerce.android.ui.woopos.home.items.variations.getNameForPOS
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart.WooPosItemSource
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.VariationsPullToRefreshTriggered
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -68,7 +68,7 @@ class WooPosVariationsViewModelTest {
 
         // WHEN
         val viewModel = createViewModel()
-        viewModel.init(1L, WooPosItemSource.PRODUCT_LIST)
+        viewModel.init(1L, sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST)
 
         viewModel.viewState.test {
             // THEN
@@ -91,7 +91,7 @@ class WooPosVariationsViewModelTest {
 
         // WHEN
         val viewModel = createViewModel()
-        viewModel.init(1L, WooPosItemSource.PRODUCT_LIST)
+        viewModel.init(1L, sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST)
 
         viewModel.viewState.test {
             // THEN
@@ -114,7 +114,7 @@ class WooPosVariationsViewModelTest {
 
         // WHEN
         val viewModel = createViewModel()
-        viewModel.init(1L, WooPosItemSource.PRODUCT_LIST)
+        viewModel.init(1L, sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST)
 
         viewModel.viewState.test {
             // THEN
@@ -134,7 +134,7 @@ class WooPosVariationsViewModelTest {
 
         // WHEN
         val viewModel = createViewModel()
-        viewModel.init(1L, WooPosItemSource.PRODUCT_LIST)
+        viewModel.init(1L, sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST)
         viewModel.viewState.test {
             // THEN
             assertThat(awaitItem()).isEqualTo(WooPosVariationsViewState.Empty())
@@ -150,7 +150,7 @@ class WooPosVariationsViewModelTest {
 
         // WHEN
         val viewModel = createViewModel()
-        viewModel.init(1L, WooPosItemSource.PRODUCT_LIST)
+        viewModel.init(1L, sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST)
 
         viewModel.viewState.test {
             // THEN
@@ -188,7 +188,12 @@ class WooPosVariationsViewModelTest {
         viewModel.onUIEvent(WooPosVariationsUIEvents.PullToRefreshTriggered(123L))
 
         // THEN
-        verify(analyticsTracker).track(VariationsPullToRefreshTriggered)
+        verify(analyticsTracker).track(
+            WooPosAnalyticsEvent.Event.PullToRefreshTriggered(
+                source = WooPosAnalyticsEventConstant.ItemsListSource.VARIATION,
+                sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST
+            )
+        )
     }
 
     @Test
@@ -205,7 +210,7 @@ class WooPosVariationsViewModelTest {
         whenever(variationsDataSource.loadMore(any())).thenReturn(Result.success(emptyList()))
 
         val viewModel = createViewModel()
-        viewModel.init(1L, WooPosItemSource.PRODUCT_LIST)
+        viewModel.init(1L, sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST)
         advanceUntilIdle()
 
         // WHEN
@@ -242,7 +247,7 @@ class WooPosVariationsViewModelTest {
         )
 
         val viewModel = createViewModel()
-        viewModel.init(1L, WooPosItemSource.PRODUCT_LIST)
+        viewModel.init(1L, sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST)
         viewModel.onUIEvent(WooPosVariationsUIEvents.EndOfItemsListReached(123L, 10))
 
         // THEN
@@ -274,7 +279,7 @@ class WooPosVariationsViewModelTest {
         )
 
         val viewModel = createViewModel()
-        viewModel.init(1L, WooPosItemSource.PRODUCT_LIST)
+        viewModel.init(1L, sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST)
         advanceUntilIdle()
         viewModel.onUIEvent(WooPosVariationsUIEvents.EndOfItemsListReached(123L, 10))
         advanceUntilIdle()
@@ -302,7 +307,7 @@ class WooPosVariationsViewModelTest {
             val viewModel = createViewModel()
             val activeJob = Job()
             viewModel.loadMoreJob = activeJob
-            viewModel.init(1L, WooPosItemSource.PRODUCT_LIST)
+            viewModel.init(1L, sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST)
             viewModel.onUIEvent(WooPosVariationsUIEvents.EndOfItemsListReached(1L, 10))
 
             viewModel.viewState.test {
@@ -326,7 +331,7 @@ class WooPosVariationsViewModelTest {
 
             // WHEN
             val viewModel = createViewModel()
-            viewModel.init(1L, WooPosItemSource.PRODUCT_LIST)
+            viewModel.init(1L, sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST)
 
             viewModel.viewState.test {
                 // THEN
@@ -336,40 +341,52 @@ class WooPosVariationsViewModelTest {
         }
 
     @Test
-    fun `given variation clicked and source is product list, when item clicked, then sends event with product list source`() = runTest {
-        // GIVEN
-        val viewModel = createViewModel()
-        viewModel.init(123L, WooPosItemSource.PRODUCT_LIST)
+    fun `given variation clicked and source is product list, when item clicked, then sends event with product list source`() =
+        runTest {
+            // GIVEN
+            val viewModel = createViewModel()
+            viewModel.init(123L, sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST)
 
-        // WHEN
-        viewModel.onUIEvent(WooPosVariationsUIEvents.OnItemClicked(123L, 1L))
+            // WHEN
+            viewModel.onUIEvent(WooPosVariationsUIEvents.OnItemClicked(123L, 1L))
 
-        // THEN
-        verify(fromChildToParentEventSender).sendToParent(
-            ChildToParentEvent.ItemClickedInProductSelector(
-                itemData = WooPosItemsViewModel.ItemClickedData.Product.Variation(123L, 1L),
-                source = WooPosItemSource.PRODUCT_LIST
+            // THEN
+            val item = WooPosItemsViewModel.ItemClickedData.Product.Variation(123L, 1L)
+            verify(fromChildToParentEventSender).sendToParent(
+                ChildToParentEvent.ItemClickedInProductSelector(
+                    itemData = item,
+                    eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
+                        item = item,
+                        source = WooPosAnalyticsEventConstant.ItemsListSource.VARIATION,
+                        sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST
+                    ),
+                )
             )
-        )
-    }
+        }
 
     @Test
-    fun `given search results screen, when variation clicked, then sends event with search results as source`() = runTest {
-        // GIVEN
-        val viewModel = createViewModel()
-        viewModel.init(123L, WooPosItemSource.SEARCH_RESULT)
+    fun `given search results screen, when variation clicked, then sends event with search results as source`() =
+        runTest {
+            // GIVEN
+            val viewModel = createViewModel()
+            viewModel.init(123L, sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.SEARCH_RESULT)
 
-        // WHEN
-        viewModel.onUIEvent(WooPosVariationsUIEvents.OnItemClicked(123L, 1L))
+            // WHEN
+            viewModel.onUIEvent(WooPosVariationsUIEvents.OnItemClicked(123L, 1L))
 
-        // THEN
-        verify(fromChildToParentEventSender).sendToParent(
-            ChildToParentEvent.ItemClickedInProductSelector(
-                itemData = WooPosItemsViewModel.ItemClickedData.Product.Variation(123L, 1L),
-                source = WooPosItemSource.SEARCH_RESULT
+            // THEN
+            val item = WooPosItemsViewModel.ItemClickedData.Product.Variation(123L, 1L)
+            verify(fromChildToParentEventSender).sendToParent(
+                ChildToParentEvent.ItemClickedInProductSelector(
+                    itemData = item,
+                    eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
+                        item = item,
+                        source = WooPosAnalyticsEventConstant.ItemsListSource.VARIATION,
+                        sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.SEARCH_RESULT
+                    ),
+                )
             )
-        )
-    }
+        }
 
     @Test
     fun `given variable product, getNameForPOS returns correct name when parent product has variation enabled attributes`() =
