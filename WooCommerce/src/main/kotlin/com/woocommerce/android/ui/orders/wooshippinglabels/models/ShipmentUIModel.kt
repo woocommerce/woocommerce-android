@@ -8,5 +8,5 @@ data class ShipmentUIModel(
     // If id is null, it indicates that no shipment has been fetched from the backend.
     val id: String?,
     val items: List<ShippableItemModel>,
-    val purchased: Boolean
+    val purchased: Boolean = false
 ) : Parcelable
