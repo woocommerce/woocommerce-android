@@ -1,8 +1,6 @@
 package com.woocommerce.android.ui.woopos.util.analytics
 
 object WooPosAnalyticsEventConstant {
-    const val IS_SEARCH = "search"
-
     enum class ItemsListProductType(val value: String) {
         SIMPLE("simple"),
         VARIABLE("variable");

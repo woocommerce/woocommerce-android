@@ -147,12 +147,15 @@ class WooPosVariationsViewModel @Inject constructor(
             is WooPosVariationsViewState.Content -> state.copy(
                 pullToRefreshState = WooPosPullToRefreshState.Refreshing
             )
+
             is WooPosVariationsViewState.Loading -> state.copy(
                 pullToRefreshState = WooPosPullToRefreshState.Refreshing
             )
+
             is WooPosVariationsViewState.Error -> state.copy(
                 pullToRefreshState = WooPosPullToRefreshState.Refreshing,
             )
+
             is WooPosVariationsViewState.Empty -> state.copy(
                 pullToRefreshState = WooPosPullToRefreshState.Refreshing,
             )
@@ -209,12 +212,14 @@ class WooPosVariationsViewModel @Inject constructor(
 
             is WooPosVariationsUIEvents.PullToRefreshTriggered -> {
                 loadVariations(event.productId, forceRefresh = true, withPullToRefresh = true)
-                viewModelScope.launch { analyticsTracker.track(
-                    WooPosAnalyticsEvent.Event.PullToRefreshTriggered(
-                        source = WooPosAnalyticsEventConstant.ItemsListSource.VARIATION,
-                        sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST,
+                viewModelScope.launch {
+                    analyticsTracker.track(
+                        WooPosAnalyticsEvent.Event.PullToRefreshTriggered(
+                            source = WooPosAnalyticsEventConstant.ItemsListSource.VARIATION,
+                            sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST,
+                        )
                     )
-                ) }
+                }
             }
 
             is WooPosVariationsUIEvents.VariationsLoadingErrorRetryButtonClicked -> {

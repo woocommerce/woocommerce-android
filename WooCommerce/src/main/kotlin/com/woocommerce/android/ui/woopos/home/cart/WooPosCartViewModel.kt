@@ -418,11 +418,3 @@ class WooPosCartViewModel @Inject constructor(
     private fun cartContainsPurchasableItems(body: WooPosCartState.Body.WithItems) =
         body.itemsInCart.filterIsInstance<WooPosCartItemViewState.Product>().isNotEmpty()
 }
-
-private fun WooPosItemsViewModel.ItemClickedData.posItemNameForAnalytics(): String {
-    return when (this) {
-        is WooPosItemsViewModel.ItemClickedData.Product.Simple -> "simple"
-        is WooPosItemsViewModel.ItemClickedData.Product.Variation -> "variation"
-        is WooPosItemsViewModel.ItemClickedData.Coupon -> "coupon"
-    }
-}

@@ -152,7 +152,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             init {
                 addProperties(
                     buildMap {
-                        put(ItemsListSource.SOURCE, source.toString())
+                        put(CartSource.CART_SOURCE, source.toString())
                         put(ItemsListItemType.ITEM_TYPE, itemType.toString())
                         if (productType != null) {
                             put(ItemsListProductType.PRODUCT_TYPE, productType.toString())
