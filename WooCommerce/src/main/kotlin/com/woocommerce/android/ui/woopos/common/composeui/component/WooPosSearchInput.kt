@@ -261,38 +261,36 @@ private fun SearchInput(
                 focusedTextColor = MaterialTheme.colorScheme.onSurface,
             ),
             leadingIcon = {
-                IconButton(
-                    onClick = {},
-                    modifier = Modifier.size(32.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurface,
+                if (state.isLoading) {
+                    WooPosCircularLoadingIndicator(
+                        modifier = Modifier.size(24.dp)
                     )
+                } else {
+                    IconButton(
+                        onClick = {},
+                        modifier = Modifier.size(32.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurface,
+                        )
+                    }
                 }
             },
             trailingIcon = {
-                when {
-                    state.isLoading -> {
-                        WooPosCircularLoadingIndicator(
-                            modifier = Modifier.size(24.dp)
+                if (textFieldValue.text.isNotEmpty()) {
+                    IconButton(
+                        onClick = { onEvent(WooPosSearchUIEvent.Clear) },
+                        modifier = Modifier.size(32.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.Cancel,
+                            contentDescription = stringResource(
+                                R.string.woopos_search_clear_content_description
+                            ),
+                            tint = MaterialTheme.colorScheme.onSurface,
                         )
-                    }
-
-                    textFieldValue.text.isNotEmpty() -> {
-                        IconButton(
-                            onClick = { onEvent(WooPosSearchUIEvent.Clear) },
-                            modifier = Modifier.size(32.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Outlined.Cancel,
-                                contentDescription = stringResource(
-                                    R.string.woopos_search_clear_content_description
-                                ),
-                                tint = MaterialTheme.colorScheme.onSurface,
-                            )
-                        }
                     }
                 }
             },
