@@ -216,7 +216,6 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
 
         data class SearchButtonTapped(
             val source: ItemsListSource,
-            val sourceType: ItemsListSourceType,
         ) : Event() {
             override val name: String = "search_button_tapped"
 
@@ -224,7 +223,6 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                 addProperties(
                     mapOf(
                         ItemsListSource.SOURCE to source.toString(),
-                        ItemsListSourceType.SOURCE_TYPE to sourceType.toString()
                     )
                 )
             }

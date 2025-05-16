@@ -171,25 +171,14 @@ class WooPosCartViewModel @Inject constructor(
 
                     is ParentToChildrenEvent.OrderSuccessfullyPaid -> clearCart()
 
-                    is ParentToChildrenEvent.OrderCreated -> {
-                        val body = _state.value.body as? WooPosCartState.Body.WithItems ?: return@collect
-                        val updateCartItems = updateCartItemsWithChanges(
-                            itemsInCart = body.itemsInCart,
-                            updatedProducts = event.updatedProducts,
-                            updatedCoupons = event.updatedCoupons,
-                        )
-                        _state.value = _state.value.copy(
-                            body = body.copy(
-                                itemsInCart = updateCartItems,
-                            ),
-                        )
-                    }
+                    is ParentToChildrenEvent.OrderCreated -> onOrderCreated(event)
 
                     is ParentToChildrenEvent.SearchEvent.RecentSearchSelected,
                     is ParentToChildrenEvent.CheckoutClicked,
                     is ParentToChildrenEvent.SearchEvent.ChangedQuery,
                     ParentToChildrenEvent.SearchEvent.Finished,
                     ParentToChildrenEvent.SearchEvent.Started,
+                    ParentToChildrenEvent.RefreshProductList,
                     is ParentToChildrenEvent.CouponsRemoved -> Unit
                     is ParentToChildrenEvent.CouponsValidationFailed -> {
                         onCouponsValidationFails()
@@ -199,6 +188,30 @@ class WooPosCartViewModel @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    private suspend fun onOrderCreated(event: ParentToChildrenEvent.OrderCreated) {
+        val body = _state.value.body as? WooPosCartState.Body.WithItems ?: return
+        val updateCartItemsResult = updateCartItemsWithChanges(
+            itemsInCart = body.itemsInCart,
+            updatedProducts = event.updatedProducts,
+            updatedCoupons = event.updatedCoupons,
+        )
+        if (updateCartItemsResult.productsChanged) {
+            _state.value = _state.value.copy(
+                body = body.copy(
+                    itemsInCart = updateCartItemsResult.updatedItems,
+                ),
+            )
+            childrenToParentEventSender.sendToParent(
+                ChildToParentEvent.ToastMessageDisplayed(
+                    message = resourceProvider.getString(R.string.woopos_cart_changes_in_the_cart)
+                )
+            )
+            childrenToParentEventSender.sendToParent(
+                ChildToParentEvent.RefreshProductList
+            )
         }
     }
 
@@ -306,9 +319,33 @@ class WooPosCartViewModel @Inject constructor(
     private fun updateStateWithNewItem(newItem: WooPosCartItemViewState): WooPosCartState {
         return when (val currentState = _state.value.body) {
             is WooPosCartState.Body.Empty -> _state.value.copy(body = WooPosCartState.Body.WithItems(listOf(newItem)))
-            is WooPosCartState.Body.WithItems -> _state.value.copy(
-                body = currentState.copy(itemsInCart = listOf(newItem) + currentState.itemsInCart)
-            )
+            is WooPosCartState.Body.WithItems -> {
+                val updatedItemsList = placeItemInList(currentState, newItem)
+
+                _state.value.copy(body = currentState.copy(itemsInCart = updatedItemsList))
+            }
+        }
+    }
+
+    private fun placeItemInList(
+        currentState: WooPosCartState.Body.WithItems,
+        newItem: WooPosCartItemViewState
+    ): List<WooPosCartItemViewState> {
+        val (existingCoupons, existingProducts) = currentState.itemsInCart
+            .partition { it is WooPosCartItemViewState.Coupon }
+
+        return if (newItem is WooPosCartItemViewState.Coupon) {
+            val couponAlreadyInCart = existingCoupons.any {
+                (it as WooPosCartItemViewState.Coupon).id == newItem.id
+            }
+
+            if (couponAlreadyInCart) {
+                currentState.itemsInCart
+            } else {
+                listOf(newItem) + existingCoupons + existingProducts
+            }
+        } else {
+            existingCoupons + listOf(newItem) + existingProducts
         }
     }
 

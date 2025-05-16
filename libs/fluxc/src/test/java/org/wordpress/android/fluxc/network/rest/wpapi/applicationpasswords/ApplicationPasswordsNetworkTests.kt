@@ -75,7 +75,7 @@ class ApplicationPasswordsNetworkTests {
 
         network.executeGetGsonRequest(testSite, "path", TestResponse::class.java)
 
-        verify(mApplicationPasswordsManager).deleteLocalApplicationPassword(testSite)
+        verify(mApplicationPasswordsManager).deleteLocalApplicationPassword(testSite, testCredentials)
         verify(mApplicationPasswordsManager, times(2)).getApplicationCredentials(testSite)
     }
 

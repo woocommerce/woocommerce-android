@@ -887,15 +887,6 @@ class WooPosCartViewModelTest {
         assertThat(finalState.isCheckoutButtonVisible).isFalse()
     }
 
-    private suspend fun simulateCouponClicked(couponId: Long = 1L) {
-        parentToChildrenMutableSharedFlow.emit(
-            ParentToChildrenEvent.ItemClickedInProductSelector(
-                itemData = WooPosItemsViewModel.ItemClickedData.Coupon(id = couponId, couponCode = ""),
-                eventForTracking = mock()
-            ),
-        )
-    }
-
     @Test
     fun `given cart with products, when navigated to checkout, then checkout button not visible`() = runTest {
         // GIVEN
@@ -925,6 +916,85 @@ class WooPosCartViewModelTest {
         assertThat(finalState.isCheckoutButtonVisible).isTrue()
     }
 
+    @Test
+    fun `given cart with products, when coupon added, then coupon added to the beginning`() = runTest {
+        // GIVEN
+        val sut = createSut()
+        val states = sut.state.captureValues()
+        simulateProductClicked(23L)
+
+        // WHEN
+        simulateCouponClicked()
+
+        // THEN
+        val itemsInCart = (states.last().body as WooPosCartState.Body.WithItems).itemsInCart
+        assertThat(itemsInCart).hasSize(2)
+        assertThat(itemsInCart[0]).isInstanceOf(WooPosCartItemViewState.Coupon::class.java)
+        assertThat(itemsInCart[1]).isInstanceOf(WooPosCartItemViewState.Product.Simple::class.java)
+    }
+
+    @Test
+    fun `given cart with coupons, when new coupon added, then new coupon added to the beginning`() =
+        runTest {
+            // GIVEN
+            val sut = createSut()
+            val states = sut.state.captureValues()
+
+            simulateCouponClicked(couponId = 1L)
+
+            // WHEN
+            simulateCouponClicked(couponId = 2L)
+
+            // THEN
+            val itemsInCart = (states.last().body as WooPosCartState.Body.WithItems).itemsInCart
+            assertThat(itemsInCart).hasSize(2)
+            assertThat(itemsInCart[0]).isInstanceOf(WooPosCartItemViewState.Coupon::class.java)
+            assertThat(itemsInCart[1]).isInstanceOf(WooPosCartItemViewState.Coupon::class.java)
+            assertThat((itemsInCart[0] as WooPosCartItemViewState.Coupon).id).isEqualTo(2L)
+            assertThat((itemsInCart[1] as WooPosCartItemViewState.Coupon).id).isEqualTo(1L)
+        }
+
+    @Test
+    fun `given cart with coupons and products, when new product added, then added after coupons before products`() =
+        runTest {
+            // GIVEN
+            val sut = createSut()
+            val states = sut.state.captureValues()
+
+            simulateCouponClicked()
+            simulateProductClicked(999L)
+
+            // WHEN
+            simulateProductClicked(1L)
+
+            // THEN
+            val itemsInCart = (states.last().body as WooPosCartState.Body.WithItems).itemsInCart
+            assertThat(itemsInCart).hasSize(3)
+            assertThat(itemsInCart[0]).isInstanceOf(WooPosCartItemViewState.Coupon::class.java)
+            assertThat(itemsInCart[1]).isInstanceOf(WooPosCartItemViewState.Product.Simple::class.java)
+            assertThat(itemsInCart[2]).isInstanceOf(WooPosCartItemViewState.Product.Simple::class.java)
+            assertThat((itemsInCart[1] as WooPosCartItemViewState.Product.Simple).id).isEqualTo(1L)
+            assertThat((itemsInCart[2] as WooPosCartItemViewState.Product.Simple).id).isEqualTo(999L)
+        }
+
+    @Test
+    fun `given coupon in cart, when same coupon clicked again, then coupon not duplicated`() = runTest {
+        // GIVEN
+        val sut = createSut()
+        val states = sut.state.captureValues()
+
+        simulateCouponClicked(couponId = 1L)
+
+        // WHEN
+        simulateCouponClicked(couponId = 1L)
+
+        // THEN
+        val itemsAfterSecondAdd = (states.last().body as WooPosCartState.Body.WithItems).itemsInCart
+        assertThat(itemsAfterSecondAdd).hasSize(1)
+        assertThat(itemsAfterSecondAdd[0]).isInstanceOf(WooPosCartItemViewState.Coupon::class.java)
+        assertThat((itemsAfterSecondAdd[0] as WooPosCartItemViewState.Coupon).id).isEqualTo(1L)
+    }
+
     private suspend fun createSutWithItemsInCart(): Pair<WooPosCartViewModel, List<WooPosCartState>> {
         val product = ProductTestUtils.generateProduct(
             productId = 23L,
@@ -944,6 +1014,34 @@ class WooPosCartViewModelTest {
             )
         )
         return Pair(sut, states)
+    }
+
+    private suspend fun simulateCouponClicked(couponId: Long = 1L) {
+        parentToChildrenMutableSharedFlow.emit(
+            ParentToChildrenEvent.ItemClickedInProductSelector(
+                itemData = WooPosItemsViewModel.ItemClickedData.Coupon(id = couponId, couponCode = ""),
+                eventForTracking = mock()
+            ),
+        )
+    }
+
+    private suspend fun simulateProductClicked(productId: Long = 1L) {
+        val product = ProductTestUtils.generateProduct(
+            productId = productId,
+            productName = "title",
+            amount = "10.0"
+        ).copy(firstImageUrl = "url")
+
+        whenever(getProductById(eq(product.remoteId))).thenReturn(product)
+
+        parentToChildrenMutableSharedFlow.emit(
+            ParentToChildrenEvent.ItemClickedInProductSelector(
+                WooPosItemsViewModel.ItemClickedData.Product.Simple(
+                    id = productId
+                ),
+                eventForTracking = mock()
+            )
+        )
     }
 
     private fun createSut(): WooPosCartViewModel {

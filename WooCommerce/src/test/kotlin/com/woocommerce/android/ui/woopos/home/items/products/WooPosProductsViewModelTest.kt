@@ -4,6 +4,7 @@ import app.cash.turbine.test
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
+import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.home.items.WooPosContentViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemNavigationData
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
@@ -47,6 +48,7 @@ class WooPosProductsViewModelTest {
         onBlocking { invoke(BigDecimal("20.0")) }.thenReturn("$20.0")
     }
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender = mock()
+    private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock()
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private val productsDataSource: WooPosProductsDataSource = mock()
     private val wooPosItemsNavigator: WooPosItemsNavigator = mock()
@@ -519,6 +521,7 @@ class WooPosProductsViewModelTest {
             priceFormat = priceFormat,
             analyticsTracker = analyticsTracker,
             fromChildToParentEventSender = fromChildToParentEventSender,
+            parentToChildrenEventReceiver = parentToChildrenEventReceiver,
             navigator = wooPosItemsNavigator,
         )
     }

@@ -180,7 +180,6 @@ class WooPosItemsViewModelTest {
             eq(
                 SearchButtonTapped(
                     source = WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT,
-                    sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST
                 )
             )
         )

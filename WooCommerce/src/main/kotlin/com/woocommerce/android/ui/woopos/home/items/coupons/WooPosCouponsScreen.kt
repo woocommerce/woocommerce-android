@@ -36,9 +36,9 @@ import kotlinx.coroutines.flow.StateFlow
 @Composable
 fun WooPosCouponsScreen(
     modifier: Modifier = Modifier,
+    listState: LazyListState,
 ) {
     val vm: WooPosCouponsViewModel = hiltViewModel()
-    val listState = rememberLazyListState()
     WooPosCouponsScreen(
         modifier = modifier,
         listState = listState,
