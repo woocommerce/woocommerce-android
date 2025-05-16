@@ -59,7 +59,6 @@ class WooPosCartViewModelTest {
         on { events }.thenReturn(parentToChildrenMutableSharedFlow)
     }
     private val getProductById: WooPosGetProductById = mock()
-
     private val getCouponById: WooPosGetCouponById = mock {
         onBlocking { invoke(any()) }.thenReturn(
             Coupon(
