@@ -192,7 +192,6 @@ class IssueRefundViewModel @Inject constructor(
     @Suppress("OPT_IN_USAGE")
     val refundSummaryStateLiveData = LiveDataDelegate(savedState, RefundSummaryViewState())
 
-
     private var commonState by commonStateLiveData
     private var refundSummaryState by refundSummaryStateLiveData
 

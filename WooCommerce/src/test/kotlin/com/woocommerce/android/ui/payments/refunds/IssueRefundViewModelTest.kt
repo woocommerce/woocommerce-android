@@ -1243,7 +1243,9 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             initViewModel()
             viewModel.onSelectButtonTapped()
 
-            val shippingLines = viewModel.refundByItemsStateLiveData.getOrAwaitValue().shippingSection.shippingRefundLines
+            val shippingLines = viewModel.refundByItemsStateLiveData.getOrAwaitValue()
+                .shippingSection
+                .shippingRefundLines
             shippingLines.map { it.toDataModel() }.forEach { refundItem ->
                 val shippingLine = order.getShippingLineList().first { it.id == refundItem.itemId }
                 assertThat(refundItem.refundTax).allMatch { refundTaxItem ->

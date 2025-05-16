@@ -50,7 +50,7 @@ fun <T : Any?> SavedStateHandle.getNullableStateFlow(
     return getStateFlowInternal(scope, initialValue, key)
 }
 
-fun <T: Any> SavedStateHandle.getNullableListStateFlow(
+fun <T : Any> SavedStateHandle.getNullableListStateFlow(
     scope: CoroutineScope,
     initialValue: List<T>?,
     clazz: Class<out T>,
