@@ -101,4 +101,3 @@ interface WooPaymentsDepositsOverviewDao {
     @Query("DELETE FROM WooPaymentsDepositsOverview WHERE localSiteId = :localSiteId")
     suspend fun delete(localSiteId: LocalId)
 }
-

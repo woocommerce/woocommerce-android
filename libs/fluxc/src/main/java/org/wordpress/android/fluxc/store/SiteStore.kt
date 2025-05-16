@@ -286,7 +286,7 @@ open class SiteStore @Inject constructor(
             @JvmField val jetpackSocial: JetpackSocial,
         ) : FetchedJetpackSocialResult()
 
-        data class Error(val error: SiteError): FetchedJetpackSocialResult()
+        data class Error(val error: SiteError) : FetchedJetpackSocialResult()
     }
 
     data class DesignateMobileEditorForAllSitesResponsePayload(
@@ -780,7 +780,7 @@ open class SiteStore @Inject constructor(
     }
 
     data class OnApplicationPasswordDeleted(val site: SiteModel) : OnChanged<OnApplicationPasswordDeleteError>() {
-        constructor(site: SiteModel, error: BaseNetworkError): this(site) {
+        constructor(site: SiteModel, error: BaseNetworkError) : this(site) {
             this.error = OnApplicationPasswordDeleteError(error)
         }
     }

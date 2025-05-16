@@ -108,5 +108,4 @@ data class WCProductVariationModel(
         }
         return null
     }
-
 }

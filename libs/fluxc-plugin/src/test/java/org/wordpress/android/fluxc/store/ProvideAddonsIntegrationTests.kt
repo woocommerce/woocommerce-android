@@ -606,7 +606,7 @@ class ProvideAddonsIntegrationTests {
             siteId = 1
         }
 
-        val product = WCProductModel().copy (
+        val product = WCProductModel().copy(
             // language=JSON
             categories = """
                         [

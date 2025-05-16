@@ -26,7 +26,7 @@ import java.net.UnknownHostException
 import javax.inject.Inject
 import javax.inject.Named
 
-class JetpackAITranscriptionRestClient  @Inject constructor(
+class JetpackAITranscriptionRestClient @Inject constructor(
     private val appContext: Context,
     private val userAgent: UserAgent,
     @Named("regular") private val okHttpClient: OkHttpClient,
@@ -42,7 +42,7 @@ class JetpackAITranscriptionRestClient  @Inject constructor(
         feature: String?,
         audioFile: File,
         audioFileSizeLimit: Long = DEFAULT_AUDIO_FILE_SIZE_LIMIT
-    ) : JetpackAITranscriptionResponse {
+    ): JetpackAITranscriptionResponse {
         if (!jetpackAIUtils.isFileEligibleForTranscription(audioFile, audioFileSizeLimit)) {
             JetpackAITranscriptionResponse.Error(
                 JetpackAITranscriptionErrorType.INELIGIBLE_AUDIO_FILE)
@@ -63,7 +63,7 @@ class JetpackAITranscriptionRestClient  @Inject constructor(
                 url(it)
             } ?: url(url)
             addHeader("Authorization", "Bearer ${jwtToken.value}")
-            addHeader("User-Agent",  userAgent.toString())
+            addHeader("User-Agent", userAgent.toString())
             post(requestBody)
         }.build()
 
@@ -124,8 +124,7 @@ class JetpackAITranscriptionRestClient  @Inject constructor(
         val status: Int
     )
 
-    private fun JetpackAITranscriptionDto?.toJetpackAITranscriptionResponse():
-        JetpackAITranscriptionResponse {
+    private fun JetpackAITranscriptionDto?.toJetpackAITranscriptionResponse(): JetpackAITranscriptionResponse {
         return when (this) {
             null -> {
                 JetpackAITranscriptionResponse.Error(
@@ -152,8 +151,7 @@ class JetpackAITranscriptionRestClient  @Inject constructor(
         }
     }
 
-    internal class JetpackAITranscriptionDeserializer : JsonDeserializer<JetpackAITranscriptionDto>
-    {
+    internal class JetpackAITranscriptionDeserializer : JsonDeserializer<JetpackAITranscriptionDto> {
         override fun deserialize(
             json: JsonElement?,
             typeOfT: Type?,

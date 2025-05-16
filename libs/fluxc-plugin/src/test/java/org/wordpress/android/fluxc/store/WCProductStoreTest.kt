@@ -32,7 +32,6 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.ProductWithMetaData
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.WCProductCategoryModel
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.WCProductReviewModel
 import org.wordpress.android.fluxc.model.WCProductVariationModel
@@ -86,7 +85,6 @@ class WCProductStoreTest {
         val config = SingleStoreWellSqlConfigForTests(
             appContext,
             listOf(
-                WCProductCategoryModel::class.java,
                 WCProductReviewModel::class.java,
                 SiteModel::class.java,
                 AccountModel::class.java
@@ -115,7 +113,9 @@ class WCProductStoreTest {
             productStorageHelper = productStorageHelper,
             coroutineEngine = initCoroutineEngine(),
             productsDao = productsDao,
-            productVariationsDao = productsVariationsDao
+            productVariationsDao = productsVariationsDao,
+            productCategoriesDao = roomDb.productCategoriesDao,
+            productTagsDao = roomDb.productTagsDao
         )
     }
 

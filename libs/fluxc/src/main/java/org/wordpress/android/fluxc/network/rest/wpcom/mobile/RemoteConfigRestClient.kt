@@ -51,15 +51,14 @@ class RemoteConfigRestClient @Inject constructor(
         }
     }
 
-    private fun buildRemoteConfigFetchedPayload(featureFlags: Map<*, *>?)
-        : RemoteConfigFetchedPayload {
+    private fun buildRemoteConfigFetchedPayload(featureFlags: Map<*, *>?): RemoteConfigFetchedPayload {
         return RemoteConfigFetchedPayload(featureFlags?.map { e ->
                 e.key.toString() to e.value.toString()
         }?.toMap())
     }
 }
 
-data class RemoteConfigFetchedPayload (
+data class RemoteConfigFetchedPayload(
     val remoteConfig: Map<String, String>? = null
 ) : Payload<RemoteConfigError>() {
     constructor(error: RemoteConfigError) : this() {

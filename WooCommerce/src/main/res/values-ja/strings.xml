@@ -1,11 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-04-22 09:54:04+0000
+Translation-Revision-Date: 2025-05-07 09:54:07+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_split_shipment_merge_unfulfilled_button">すべての配送をマージ</string>
+    <string name="woo_shipping_split_shipment_merge_unfulfilled_desc">これにより未処理の分割配送がすべて削除され、すべてのアイテムが1つの配送に移動します。</string>
+    <string name="woo_shipping_split_shipment_merge_unfulfilled_title">未処理の配送をすべてマージ</string>
+    <string name="woo_shipping_split_shipment_merge_unfulfilled_menu">すべての未処理をマージ</string>
+    <string name="woo_shipping_labels_package_creation_unstarred">このアイテムのスターを解除</string>
+    <string name="woo_shipping_labels_package_creation_starred">このアイテムにスターを付ける</string>
+    <string name="woopos_coupons_pagination_error_content_description">「クーポンをこれ以上読み込めませんでした。 ダブルタップしてもう一度お試しください」</string>
+    <string name="woopos_coupons_pagination_error_description">「クーポンの読み込み中にエラーが発生しました」</string>
+    <string name="woopos_coupons_pagination_error_title">その他のアイテムの読み込みに失敗しました」</string>
+    <string name="woopos_coupons_pagination_try_again_label">もう一度お試しください</string>
+    <string name="woopos_coupons_loading_error_retry_button">再試行</string>
+    <string name="woopos_coupons_loading_error_message">もう一度試しますか ?</string>
+    <string name="woopos_coupons_loading_error_title">クーポンの読み込み中にエラーが発生しました</string>
+    <string name="woopos_coupons_empty_list_message">顧客に特別オファーや割引を提供して売上を向上</string>
+    <string name="woopos_coupons_empty_list_title">クーポンが見つかりません</string>
+    <string name="woopos_coupons_empty_list_image_description">クーポンがありません</string>
+    <string name="woopos_coupons_screen_title">クーポン</string>
+    <string name="woopos_product_limitations_title">商品はどこにありますか ?</string>
+    <string name="woopos_coupon_item_content_description">クーポン %s</string>
     <string name="woo_shipping_split_shipment_bottom_sheet_remove_button">配送を削除</string>
     <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_plural">この配送の%d件のアイテムの移動先を選択します。</string>
     <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_one">この配送の%d件のアイテムの移動先を選択します。</string>
@@ -37,7 +56,7 @@ Language: ja_JP
     <string name="woopos_search_empty_image_content_description">項目が見つかりませんでした</string>
     <string name="woopos_search_empty_description">検索に一致するものが見つかりませんでした。</string>
     <string name="woopos_search_items_empty_title">見つかりません</string>
-    <string name="woopos_payment_discount_label">割引</string>
+    <string name="woopos_payment_discount_label">割引合計</string>
     <string name="woopos_cart_item_coupon_content_description">お買い物カゴ %s のクーポン </string>
     <string name="shipping_label_package_title">荷物を選択</string>
     <string name="receipt_preview_toolbar_title">領収書のプレビュー</string>
@@ -55,9 +74,9 @@ Language: ja_JP
     <string name="woo_shipping_labels_shipping_rates_missing_destination_desc">利用可能な配送料金を表示するには、この荷物の配送先を入力する必要があります。</string>
     <string name="woo_shipping_labels_shipping_rates_missing_destination">配送先住所を追加して配送料金を取得</string>
     <string name="woopos_search_recent_searches_title">最近の検索</string>
-    <string name="woopos_search_popular_items_title">人気のアイテム</string>
+    <string name="woopos_search_popular_items_title">人気商品</string>
     <string name="woopos_search_products">商品を検索…</string>
-    <string name="woopos_clear_back_content_description">消去</string>
+    <string name="woopos_search_clear_content_description">消去</string>
     <string name="woopos_search_back_content_description">戻る</string>
     <string name="card_reader_connect_failed_battery_low_hint">リーダーのバッテリー残量が少なくなっています。 リーダーを充電してもう一度お試しください。</string>
     <string name="login_site_credentials_invalid_response">サイトからの予期しない応答のためログインに失敗しました。</string>
@@ -358,8 +377,6 @@ Language: ja_JP
     <string name="woopos_dialog_products_info_background_content_description">背景を暗くしました。 タップしてダイアログを閉じます。</string>
     <string name="woopos_banner_simple_products_dialog_primary_button_content_description">ダブルタップしてダイアログを閉じる</string>
     <string name="woopos_banner_simple_products_dialog_content_description">シンプルな商品、バリエーションのある商品、仮想商品のみのダイアログ</string>
-    <string name="woopos_banner_simple_products_learn_more_content_description">ダブルタップして詳しく確認</string>
-    <string name="woopos_banner_simple_products_content_description">シンプルな商品、バリエーションのある商品、仮想商品のみのバナー</string>
     <string name="local_notification_blaze_no_campaign_reminder_description">Blaze 広告で商品を宣伝し、今すぐ売上を増やしましょう。</string>
     <string name="local_notification_blaze_no_campaign_reminder_title">売上を増やす</string>
     <string name="more_menu_button_payments_description">外出先で支払いを受け取る</string>
@@ -373,11 +390,6 @@ Language: ja_JP
     <string name="woopos_dialog_products_info_secondary_message_action_label">+ ストア管理で注文を作成</string>
     <string name="woopos_dialog_products_info_tertiary_message">他の商品の支払いを受け取るには、POS を終了して注文タブから新しい注文を作成します。</string>
     <string name="woopos_dialog_products_info_heading">商品が表示されないのはなぜですか ?</string>
-    <string name="woopos_banner_simple_products_info_content_description">情報</string>
-    <string name="woopos_banner_simple_products_close_content_description">閉じる</string>
-    <string name="woopos_banner_simple_products_only_message_learn_more">さらに詳しく</string>
-    <string name="woopos_banner_simple_products_only_message">現在、POS で対応できるのはシンプルな物理的商品、バリエーションのある商品、仮想商品のみです。 他の商品タイプは今後のアップデートで利用可能になります。 </string>
-    <string name="woopos_banner_simple_products_only_title">シンプルな商品、バリエーションのある商品、仮想商品のみ表示中</string>
     <string name="support_request_site_address">サイトのアドレス</string>
     <string name="analytics_google_ads_cta_web_view_title">Google for WooCommerce</string>
     <string name="analytics_google_ads_cta_action">有料キャンペーンを追加</string>

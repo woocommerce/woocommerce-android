@@ -5,7 +5,7 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.taxes.TaxRateEntity
 
-data class TaxRateDto (
+data class TaxRateDto(
     val id: Long,
     val country: String?,
     val state: String?,
@@ -34,5 +34,3 @@ data class TaxRateDto (
             taxClass = taxClass,
         )
 }
-
-

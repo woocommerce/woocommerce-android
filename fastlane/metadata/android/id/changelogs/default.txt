@@ -1,0 +1,2 @@
+22.3:
+Kami telah menyederhanakan aplikasi seluler WooCommerce! Jenis produk kini terintegrasi dengan mulus ke menu POS. Pembaruan desain ini membuat pengelolaan informasi produk saat checkout mudah dan intuitif.

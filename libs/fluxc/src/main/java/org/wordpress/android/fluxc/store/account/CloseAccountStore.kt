@@ -48,7 +48,6 @@ class CloseAccountStore @Inject constructor(
         val message: String? = null
     ) : OnChangedError
 
-
     enum class CloseAccountErrorType(val errorKey: String) {
         EXISTING_ATOMIC_SITES("atomic-site"),
         GENERIC_ERROR("generic-error")

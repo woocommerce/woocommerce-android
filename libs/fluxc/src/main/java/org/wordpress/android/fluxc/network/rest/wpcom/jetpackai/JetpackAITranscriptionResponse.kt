@@ -8,7 +8,6 @@ sealed class JetpackAITranscriptionResponse {
     ) : JetpackAITranscriptionResponse()
 }
 
-
 enum class JetpackAITranscriptionErrorType {
     API_ERROR,
     AUTH_ERROR,
@@ -17,9 +16,11 @@ enum class JetpackAITranscriptionErrorType {
     TIMEOUT,
     NETWORK_ERROR,
     CONNECTION_ERROR,
+
     // local errors
     INELIGIBLE_AUDIO_FILE,
     PARSE_ERROR,
+
     // HTTP
     BAD_REQUEST,
     NOT_FOUND,

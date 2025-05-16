@@ -14,7 +14,6 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.generated.endpoint.WOOCOMMERCE
-import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCProductModel
@@ -30,7 +29,7 @@ class ProductRestClientTest {
 
     private val productId = 5L
     private val site = SiteModel()
-    private val wooNetwork: WooNetwork = mock() {
+    private val wooNetwork: WooNetwork = mock {
         onBlocking {
             executePostGsonRequest(
                 any(), any(), eq(BatchProductApiResponse::class.java), any()

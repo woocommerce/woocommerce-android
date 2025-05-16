@@ -12,6 +12,7 @@ class OrderNoteApiResponse : Response {
     val date_created_gmt: String? = null
     val note: String? = null
     val author: String? = null
+
     // If true, the note will be shown to customers and they will be notified. If false, the note will be for admin
     // reference only. Default is false.
     val customer_note: Boolean = false

@@ -129,44 +129,23 @@ object ProductTestUtils {
         }
     }
 
-    fun generateCategory(siteId: Int, remoteId: Long) =
-        WCProductCategoryModel().apply {
-            localSiteId = siteId
-            remoteCategoryId = remoteId
-            name = "Category $remoteId"
-            slug = "category$remoteId"
-            parent = 0L
-        }
-
-    fun generateCategoryList(siteId: Int): List<WCProductCategoryModel> {
-        return List(5) {
-            WCProductCategoryModel().apply {
-                localSiteId = siteId
-                remoteCategoryId = it.toLong()
-                name = "Category $it"
-                slug = "category$it"
-                parent = 0L
-            }
-        }
-    }
-
     fun getProductCategories(siteId: Int): List<WCProductCategoryModel> {
         val categoryJson =
             UnitTestUtils.getStringFromResourceFile(this.javaClass, "wc/product-categories.json")
         val responseType = object : TypeToken<List<ProductCategoryApiResponse>>() {}.type
         val converted = Gson().fromJson(categoryJson, responseType) as? List<ProductCategoryApiResponse> ?: emptyList()
         return converted.map {
-            WCProductCategoryModel().apply {
-                localSiteId = siteId
-                remoteCategoryId = it.id
-                name = it.name ?: ""
-                slug = it.slug ?: ""
-                parent = it.parent ?: 0L
-            }
+            WCProductCategoryModel(
+                localSiteId = LocalId(siteId),
+                remoteCategoryId = RemoteId(it.id),
+                name = it.name ?: "",
+                slug = it.slug ?: "",
+                parent = it.parent ?: 0L,
+            )
         }
     }
 
-    fun generateSampleProductTag(
+    private fun generateSampleProductTag(
         remoteId: Long = 1L,
         name: String = "",
         slug: String = "",
@@ -174,14 +153,14 @@ object ProductTestUtils {
         count: Int = 3,
         siteId: Int = 6
     ): WCProductTagModel {
-        return WCProductTagModel().apply {
-            remoteTagId = remoteId
-            localSiteId = siteId
-            this.name = name
-            this.slug = slug
-            this.description = description
-            this.count = count
-        }
+        return WCProductTagModel(
+            remoteTagId = RemoteId(remoteId),
+            localSiteId = LocalId(siteId),
+            name = name,
+            slug = slug,
+            description = description,
+            count = count,
+        )
     }
 
     fun generateProductTags(siteId: Int = 6): List<WCProductTagModel> {
@@ -194,7 +173,7 @@ object ProductTestUtils {
                     name = "$i",
                     slug = "$i",
                     description = "$i"
-            )
+                )
             )
         }
         return tagList

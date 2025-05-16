@@ -1,0 +1,2 @@
+22.3:
+Vi har effektiviserat WooCommerce-mobilappen. Produkttyper är nu sömlöst integrerade i POS-menyn. Denna uppdaterade design gör hanteringen av produktinformation i kassan enkel och intuitiv.
