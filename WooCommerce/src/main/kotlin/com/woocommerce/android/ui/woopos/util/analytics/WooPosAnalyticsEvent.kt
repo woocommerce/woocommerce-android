@@ -58,7 +58,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             init {
                 addProperties(
                     mapOf(
-                        "items_in_cart" to itemsInCart.toString(),
+                        "products_in_cart" to itemsInCart.toString(),
                         "coupons_in_cart" to couponsInCart.toString()
                     )
                 )
