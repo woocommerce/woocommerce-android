@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.woopos.util.analytics
 object WooPosAnalyticsEventConstant {
     enum class ItemsListProductType(val value: String) {
         SIMPLE("simple"),
-        VARIABLE("variable");
+        VARIATION("variation");
 
         override fun toString(): String {
             return value

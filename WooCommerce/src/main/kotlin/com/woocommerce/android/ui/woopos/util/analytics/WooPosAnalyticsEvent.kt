@@ -121,7 +121,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                 },
                 productType = when (item) {
                     is WooPosItemsViewModel.ItemClickedData.Product.Simple -> ItemsListProductType.SIMPLE
-                    is WooPosItemsViewModel.ItemClickedData.Product.Variation -> ItemsListProductType.VARIABLE
+                    is WooPosItemsViewModel.ItemClickedData.Product.Variation -> ItemsListProductType.VARIATION
                     is WooPosItemsViewModel.ItemClickedData.Coupon -> null
                 }
             )
@@ -157,7 +157,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                 },
                 productType = when (item) {
                     is WooPosCartItemViewState.Product.Simple -> ItemsListProductType.SIMPLE
-                    is WooPosCartItemViewState.Product.Variation -> ItemsListProductType.VARIABLE
+                    is WooPosCartItemViewState.Product.Variation -> ItemsListProductType.VARIATION
                     is WooPosCartItemViewState.Coupon -> null
                 }
             )
