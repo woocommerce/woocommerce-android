@@ -34,7 +34,7 @@ data class StoreOptionsDAO(
     val originCountry: String
 )
 
-enum class CarrierType {
-    USPS,
-    DHL
+enum class CarrierType(val id: String) {
+    USPS(id = "usps"),
+    DHL(id = "dhlexpress")
 }
