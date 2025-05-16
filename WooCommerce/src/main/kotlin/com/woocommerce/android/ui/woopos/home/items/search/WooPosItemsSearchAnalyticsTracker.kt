@@ -3,9 +3,7 @@ package com.woocommerce.android.ui.woopos.home.items.search
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemsNextPageLoaded
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.PreSearchRecentTermTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SearchRemoteResultsFetched
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.IS_SEARCH
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ITEM_LIST_TYPE
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ITEM_LIST_TYPE_PRODUCTS
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosGetTotalProductCount
 import java.util.concurrent.atomic.AtomicReference
@@ -18,23 +16,16 @@ class WooPosItemsSearchAnalyticsTracker @Inject constructor(
     private val localSearchProductIds = AtomicReference<List<Long>>(emptyList())
 
     suspend fun trackItemsNextPageLoaded() {
-        val event = ItemsNextPageLoaded.apply {
-            addProperties(
-                mapOf(
-                    ITEM_LIST_TYPE to ITEM_LIST_TYPE_PRODUCTS,
-                    IS_SEARCH to "true"
-                )
-            )
-        }
+        val event = ItemsNextPageLoaded(
+            source = WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT,
+            sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.SEARCH_RESULT,
+        )
+
         analyticsTracker.track(event)
     }
 
     suspend fun trackRecentSearchSelected() {
-        val event = PreSearchRecentTermTapped.apply {
-            addProperties(
-                mapOf(ITEM_LIST_TYPE to ITEM_LIST_TYPE_PRODUCTS)
-            )
-        }
+        val event = PreSearchRecentTermTapped(source = WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT)
         analyticsTracker.track(event)
     }
 
@@ -42,7 +33,8 @@ class WooPosItemsSearchAnalyticsTracker @Inject constructor(
         val totalProductsCount = getTotalProductCount()
         val event = SearchRemoteResultsFetched(
             totalProductsCount = totalProductsCount,
-            millisecondsSinceRequestSent = searchTimeMillis
+            millisecondsSinceRequestSent = searchTimeMillis,
+            source = WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT,
         )
         analyticsTracker.track(event)
     }

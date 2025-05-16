@@ -24,12 +24,10 @@ import com.woocommerce.android.ui.woopos.home.cart.WooPosCartStatus.EMPTY
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.home.items.variations.getNameForPOS
 import com.woocommerce.android.ui.woopos.util.WooPosGetCachedStoreCurrency
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCartTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.CheckoutTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ClearCartTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.InteractionWithCustomerStarted
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart.WooPosItemSource
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemRemovedFromCart
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
@@ -86,7 +84,7 @@ class WooPosCartViewModel @Inject constructor(
             }
 
             is WooPosCartUIEvent.ItemRemovedFromCart -> {
-                removeItemsFromCart(setOf(event.item))
+                removeItemsFromCart(setOf(event.item), WooPosAnalyticsEventConstant.CartSource.CART)
             }
 
             WooPosCartUIEvent.BackClicked -> {
@@ -112,7 +110,10 @@ class WooPosCartViewModel @Inject constructor(
         }
     }
 
-    private fun removeItemsFromCart(items: Set<WooPosCartItemViewState>) {
+    private fun removeItemsFromCart(
+        items: Set<WooPosCartItemViewState>,
+        source: WooPosAnalyticsEventConstant.CartSource
+    ) {
         val currentState = _state.value
         _state.value = if (currentState.body.amountOfItems == items.size) {
             currentState.copy(body = WooPosCartState.Body.Empty)
@@ -123,7 +124,9 @@ class WooPosCartViewModel @Inject constructor(
             )
         }
         viewModelScope.launch {
-            analyticsTracker.track(ItemRemovedFromCart)
+            items.forEach { item ->
+                analyticsTracker.track(ItemRemovedFromCart(item = item, source = source))
+            }
         }
     }
 
@@ -231,7 +234,7 @@ class WooPosCartViewModel @Inject constructor(
         cartBody?.itemsInCart
             ?.filterIsInstance<WooPosCartItemViewState.Coupon>()
             ?.toSet()?.let { couponsToRemove ->
-                removeItemsFromCart(couponsToRemove)
+                removeItemsFromCart(couponsToRemove, WooPosAnalyticsEventConstant.CartSource.ERROR)
             }
         sendEventToParent(CouponsRemoved(getCartItemsDataList()))
     }
@@ -271,13 +274,7 @@ class WooPosCartViewModel @Inject constructor(
             }
             _state.value = updateStateWithNewItem(itemClicked.await())
 
-            val source = WooPosItemSource.toAnalyticsString(event.source)
-            val itemAddedEvent = WooPosAnalyticsEvent.Event.ItemAddedToCart(source).apply {
-                addProperties(
-                    mapOf(WooPosAnalyticsEventConstant.PRODUCT_TYPE to event.itemData.posItemNameForAnalytics())
-                )
-            }
-            analyticsTracker.track(itemAddedEvent)
+            analyticsTracker.track(event.eventForTracking)
         }
     }
 
@@ -457,12 +454,4 @@ class WooPosCartViewModel @Inject constructor(
 
     private fun cartContainsPurchasableItems(body: WooPosCartState.Body.WithItems) =
         body.itemsInCart.filterIsInstance<WooPosCartItemViewState.Product>().isNotEmpty()
-}
-
-private fun WooPosItemsViewModel.ItemClickedData.posItemNameForAnalytics(): String {
-    return when (this) {
-        is WooPosItemsViewModel.ItemClickedData.Product.Simple -> "simple"
-        is WooPosItemsViewModel.ItemClickedData.Product.Variation -> "variation"
-        is WooPosItemsViewModel.ItemClickedData.Coupon -> "coupon"
-    }
 }
