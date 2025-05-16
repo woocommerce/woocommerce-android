@@ -32,6 +32,7 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val resourceProvider: ResourceProvider,
     private val fetchPredefinedPackages: FetchPredefinedPackagesFromStore,
+    private val updateSavedCarrierPackages: UpdateSavedCarrierPackages,
     private val packageRepository: WooShippingLabelPackageRepository
 ) : ScopedViewModel(savedState) {
 
@@ -272,24 +273,12 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
             )
         }
         launch {
-            if (isStarred) {
-                packageRepository.saveCarrierPackage(packageData.id, findCarrierIdForPackageId(packageData.id) ?: "")
-            } else {
-                packageRepository.deleteSavedCarrierPackage(packageId = packageData.id)
-            }
+            updateSavedCarrierPackages(
+                savePackage = isStarred,
+                packageId = packageData.id,
+                carrierPackages = _viewState.value.predefinedPackagesData?.carrierPackages ?: emptyMap()
+            )
         }
-    }
-
-    private fun findCarrierIdForPackageId(packageId: String): String? {
-        return _viewState.value.predefinedPackagesData
-            ?.carrierPackages
-            ?.entries
-            ?.firstNotNullOfOrNull { (carrier, packageGroupList) ->
-                packageGroupList
-                    .flatMap { it.packages }
-                    .find { it.id == packageId }
-                    ?.let { carrier.id }
-            }
     }
 
     @Parcelize
