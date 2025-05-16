@@ -12,18 +12,25 @@ class WooPosProductSearchPredicate @Inject constructor(
     private val whitespaceRegex = "\\s+".toRegex()
     private var cachedSupportsNameOrSkuSearch: Boolean? = null
 
-    operator fun invoke(query: String): (Product) -> Boolean {
-        if (query.isBlank()) return { true }
+    operator fun invoke(query: String): (Product) -> Boolean =
+        when {
+            query.isBlank() -> { _ -> true }
+            !isWooCoreSupportsNameOrSkuSearch() -> simpleSearchPredicate(query)
+            else -> tokenizedSkuOrNameSearchPredicate(query)
+        }
 
+    private fun simpleSearchPredicate(query: String): (Product) -> Boolean = { product ->
+        product.name.lowercase().contains(query.lowercase().trim())
+    }
+
+    private fun tokenizedSkuOrNameSearchPredicate(query: String): (Product) -> Boolean {
         val searchTerms = query.lowercase().split(whitespaceRegex).filter { it.isNotBlank() }
-
         return { product ->
             searchTerms.all { term ->
-                if (!isWooCoreSupportsNameOrSkuSearch()) {
-                    product.name.lowercase().contains(term)
-                } else {
-                    product.name.lowercase().contains(term) || product.sku.lowercase().contains(term)
-                }
+                product.sku.lowercase().contains(term) ||
+                    product.name.lowercase().contains(term) ||
+                    product.description.lowercase().contains(term) ||
+                    product.shortDescription.lowercase().contains(term)
             }
         }
     }
