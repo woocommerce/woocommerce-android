@@ -36,7 +36,7 @@ class WooShippingLabelPackageRepository @Inject constructor(
     suspend fun saveCarrierPackage(
         savedPackageId: String,
         parentCarrierId: String,
-        site: SiteModel = selectedSite.get(),
+        site: SiteModel,
     ) = with(
         packageRestClient.postPredefinedPackages(
             site, mapOf(parentCarrierId to listOf(savedPackageId))
@@ -50,7 +50,7 @@ class WooShippingLabelPackageRepository @Inject constructor(
 
     suspend fun deleteSavedCarrierPackage(
         packageId: String,
-        site: SiteModel = selectedSite.get(),
+        site: SiteModel,
     ) = with(packageRestClient.deleteSavedCarrierPackage(site, packageId)) {
         result.takeIf { isError.not() }
             ?.let { packageMapper(it) }

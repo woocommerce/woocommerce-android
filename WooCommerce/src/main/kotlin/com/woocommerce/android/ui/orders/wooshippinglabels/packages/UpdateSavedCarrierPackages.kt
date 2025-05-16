@@ -1,12 +1,14 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.packages
 
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.datasource.WooShippingLabelPackageRepository
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.Carrier
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.CarrierPackageGroup
 import javax.inject.Inject
 
 class UpdateSavedCarrierPackages @Inject constructor(
-    private val repository: WooShippingLabelPackageRepository
+    private val repository: WooShippingLabelPackageRepository,
+    private val selectedSite: SelectedSite
 ) {
     suspend operator fun invoke(
         savePackage: Boolean,
@@ -15,10 +17,15 @@ class UpdateSavedCarrierPackages @Inject constructor(
     ) {
         if (savePackage) {
             repository.saveCarrierPackage(
-                packageId, findCarrierIdForPackageId(packageId, carrierPackages)
+                packageId,
+                findCarrierIdForPackageId(packageId, carrierPackages),
+                selectedSite.get()
             )
         } else {
-            repository.deleteSavedCarrierPackage(packageId = packageId)
+            repository.deleteSavedCarrierPackage(
+                packageId,
+                selectedSite.get()
+            )
         }
     }
 
