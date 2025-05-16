@@ -4,19 +4,21 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PackageSelected
-import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PackageType
-import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PredefinedPackagesState
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PackageType.ENVELOPE
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PredefinedPackagesState.Data
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.ShowPackageTypeDialog
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.ViewState
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.datasource.FetchPredefinedPackagesFromStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.datasource.WooShippingLabelPackageRepository
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.Carrier
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.Carrier.DHL
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.Carrier.USPS
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.CarrierPackageGroup
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.CustomPackageCreationData
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.StoreOptionsForPackages
 import com.woocommerce.android.viewmodel.BaseUnitTest
-import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -67,11 +69,11 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
 
     @Test
     fun `onAddPackageClick triggers PackageSelected event`() = testBlocking {
-        var lastEvent: MultiLiveEvent.Event? = null
+        var lastEvent: Event? = null
         sut.event.observeForever { lastEvent = it }
 
         val customPackageData = CustomPackageCreationData(
-            type = PackageType.ENVELOPE,
+            type = ENVELOPE,
             length = "10",
             width = "10",
             height = "10",
@@ -86,7 +88,7 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
         sut.onWeightChange("20")
         sut.onPackageNameChange("Test Package")
         sut.onSavePackageChanged(true)
-        sut.onPackageTypeSelected(PackageType.ENVELOPE)
+        sut.onPackageTypeSelected(ENVELOPE)
 
         sut.onAddCustomPackageClick(savePackageAsTemplate = false)
 
@@ -110,22 +112,22 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
 
     @Test
     fun `onPackageTypeSpinnerClick triggers ShowPackageTypeDialog event`() = testBlocking {
-        var lastEvent: MultiLiveEvent.Event? = null
+        var lastEvent: Event? = null
         sut.event.observeForever { lastEvent = it }
-        sut.onPackageTypeSelected(PackageType.ENVELOPE)
+        sut.onPackageTypeSelected(ENVELOPE)
 
         sut.onPackageTypeSpinnerClick()
 
         assertThat(
             lastEvent
-        ).isEqualTo(ShowPackageTypeDialog(PackageType.ENVELOPE))
+        ).isEqualTo(ShowPackageTypeDialog(ENVELOPE))
     }
 
     @Test
     fun `onPackageTypeSelected updates viewState with new type`() = testBlocking {
         var lastViewState: ViewState? = null
         sut.viewState.observeForever { lastViewState = it }
-        val newType = PackageType.ENVELOPE
+        val newType = ENVELOPE
         sut.onPackageTypeSelected(newType)
 
         assertThat(lastViewState?.customPackageCreationData?.type).isEqualTo(newType)
@@ -191,7 +193,7 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             isLetter = true,
         )
         whenever(fetchPredefinedPackages()).thenReturn(
-            PredefinedPackagesState.Data(
+            Data(
                 storeOptions = StoreOptionsForPackages.DEFAULT,
                 carrierPackages = emptyMap(),
                 savedPackages = listOf(package1, package2)
@@ -218,7 +220,7 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
     @Test
     fun `onCarrierPackageSelected selects only one package at a time`() = testBlocking {
         var lastViewState: ViewState? = null
-        val carrier: Carrier = Carrier.DHL
+        val carrier: Carrier = DHL
         val package1 = PackageData(
             id = "1",
             name = "Package 1",
@@ -244,7 +246,7 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             )
         )
         whenever(fetchPredefinedPackages()).thenReturn(
-            PredefinedPackagesState.Data(
+            Data(
                 storeOptions = StoreOptionsForPackages.DEFAULT,
                 carrierPackages = carrierPackages,
                 savedPackages = emptyList()
@@ -279,8 +281,8 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
     @Suppress("LongMethod")
     fun `onCarrierPackageSelected selects only one package at a time with multiple carriers`() = testBlocking {
         var lastViewState: ViewState? = null
-        val carrier1: Carrier = Carrier.DHL
-        val carrier2: Carrier = Carrier.USPS
+        val carrier1: Carrier = DHL
+        val carrier2: Carrier = USPS
         val package1 = PackageData(
             id = "1",
             name = "Package 1 - Carrier 1",
@@ -328,7 +330,7 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
             )
         )
         whenever(fetchPredefinedPackages()).thenReturn(
-            PredefinedPackagesState.Data(
+            Data(
                 storeOptions = StoreOptionsForPackages.DEFAULT,
                 carrierPackages = carrierPackages,
                 savedPackages = emptyList()
@@ -361,4 +363,68 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
         assertThat(selectedPackages).size().isEqualTo(1)
         assertThat(selectedPackages?.first()).isEqualTo(package2.copy(isSelected = true))
     }
+
+    @Test
+    fun `When starring a carrier package, update UI status and invoke updateSavedCarrierPackages use case`() =
+        testBlocking {
+            val carrier: Carrier = USPS
+            val packageToStar = PackageData(
+                id = "1",
+                name = "Package 1 - Carrier 1",
+                dimensions = "10 x 10 x 10",
+                weight = "10",
+                isSelected = false,
+                isLetter = false,
+                isStarred = false // Initially not starred
+            )
+            val initialCarrierPackages = mapOf(
+                carrier to listOf(
+                    CarrierPackageGroup(
+                        groupName = "Group A",
+                        packages = listOf(packageToStar)
+                    )
+                )
+            )
+            whenever(fetchPredefinedPackages()).thenReturn(
+                Data(
+                    storeOptions = StoreOptionsForPackages.DEFAULT,
+                    carrierPackages = initialCarrierPackages,
+                    savedPackages = emptyList()
+                )
+            )
+
+            sut = WooShippingLabelPackageCreationViewModel(
+                SavedStateHandle(),
+                selectedSite,
+                resourceProvider,
+                fetchPredefinedPackages,
+                updateSavedCarrierPackages,
+                packageRepository
+            )
+            advanceUntilIdle()
+
+            var lastViewState: ViewState? = null
+            sut.viewState.observeForever { lastViewState = it }
+            // When
+            sut.onCarrierPackageStarred(packageToStar, true)
+            advanceUntilIdle()
+
+            // Then
+            verify(updateSavedCarrierPackages, times(1)).invoke(
+                true,
+                packageToStar.id,
+                lastViewState?.predefinedPackagesData?.carrierPackages!!
+            )
+
+            // Verify viewState is updated
+            val updatedPackage = lastViewState
+                ?.predefinedPackagesData
+                ?.carrierPackages
+                ?.get(carrier)
+                ?.flatMap { it.packages }
+                ?.find { it.id == packageToStar.id }
+
+            assertThat(updatedPackage).isNotNull
+            assertThat(updatedPackage?.isStarred).isTrue
+        }
 }
