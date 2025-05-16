@@ -41,7 +41,7 @@ open class WellSqlConfig : DefaultWellConfig {
     annotation class AddOn
 
     override fun getDbVersion(): Int {
-        return 211
+        return 212
     }
 
     override fun getDbName(): String {
@@ -2137,6 +2137,41 @@ open class WellSqlConfig : DefaultWellConfig {
 
                 210 -> migrateAddOn(ADDON_WOOCOMMERCE, version) {
                     db.execSQL("DROP TABLE IF EXISTS WCProductTagModel")
+                }
+
+                211 -> migrate(version) {
+                    db.execSQL("DROP TABLE IF EXISTS ActivityLog")
+                    db.execSQL("DROP TABLE IF EXISTS BackupDownloadStatus")
+                    db.execSQL("DROP TABLE IF EXISTS CommentModel")
+                    db.execSQL("DROP TABLE IF EXISTS EditorTheme")
+                    db.execSQL("DROP TABLE IF EXISTS EditorThemeElement")
+                    db.execSQL("DROP TABLE IF EXISTS GutenbergLayoutCategoriesModel")
+                    db.execSQL("DROP TABLE IF EXISTS GutenbergLayoutCategoryModel")
+                    db.execSQL("DROP TABLE IF EXISTS GutenbergLayoutModel")
+                    db.execSQL("DROP TABLE IF EXISTS InsightTypes")
+                    db.execSQL("DROP TABLE IF EXISTS LikeModel")
+                    db.execSQL("DROP TABLE IF EXISTS LocalDiffModel")
+                    db.execSQL("DROP TABLE IF EXISTS LocalRevisionModel")
+                    db.execSQL("DROP TABLE IF EXISTS PostFormatModel")
+                    db.execSQL("DROP TABLE IF EXISTS PostModel")
+                    db.execSQL("DROP TABLE IF EXISTS PostUploadModel")
+                    db.execSQL("DROP TABLE IF EXISTS PostSchedulingReminder")
+                    db.execSQL("DROP TABLE IF EXISTS QuickStartStatusModel")
+                    db.execSQL("DROP TABLE IF EXISTS QuickStartTaskModel")
+                    db.execSQL("DROP TABLE IF EXISTS RewindStatus")
+                    db.execSQL("DROP TABLE IF EXISTS RewindStatusCredentials")
+                    db.execSQL("DROP TABLE IF EXISTS RoleModel")
+                    db.execSQL("DROP TABLE IF EXISTS ScanState")
+                    db.execSQL("DROP TABLE IF EXISTS ThreatModel")
+                    db.execSQL("DROP TABLE IF EXISTS StatsBlock")
+                    db.execSQL("DROP TABLE IF EXISTS StatsRequest")
+                    db.execSQL("DROP TABLE IF EXISTS StockMedia")
+                    db.execSQL("DROP TABLE IF EXISTS StockMediaPage")
+                    db.execSQL("DROP TABLE IF EXISTS SubscriptionModel")
+                    db.execSQL("DROP TABLE IF EXISTS TaxonomyModel")
+                    db.execSQL("DROP TABLE IF EXISTS TermModel")
+                    db.execSQL("DROP TABLE IF EXISTS XPostSites")
+                    db.execSQL("DROP TABLE IF EXISTS XPosts")
                 }
             }
         }
