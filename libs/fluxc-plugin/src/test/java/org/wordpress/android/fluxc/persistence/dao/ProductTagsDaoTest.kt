@@ -3,10 +3,7 @@ package org.wordpress.android.fluxc.persistence.dao
 import android.app.Application
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import java.io.IOException
 import junit.framework.TestCase.assertTrue
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
@@ -20,6 +17,9 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.persistence.SiteSqlUtils
 import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
 import org.wordpress.android.fluxc.wc.product.ProductTestUtils
+import java.io.IOException
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 
 @RunWith(RobolectricTestRunner::class)
 class ProductTagsDaoTest {
@@ -136,7 +136,7 @@ class ProductTagsDaoTest {
 
     @Test
     @Ignore("This test is ignored until SiteModel is moved to Room and foreign key constraints are added")
-    fun testDeleteSiteDeletesProductTags() = runTest{
+    fun testDeleteSiteDeletesProductTags() = runTest {
         val tags = ProductTestUtils.generateProductTags(site.id)
         assertTrue(tags.isNotEmpty())
 
