@@ -11,7 +11,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.databinding.FragmentRefundByItemsBinding
+import com.woocommerce.android.databinding.FragmentIssueRefundBinding
 import com.woocommerce.android.databinding.RefundByItemsFeesBinding
 import com.woocommerce.android.databinding.RefundByItemsProductsBinding
 import com.woocommerce.android.databinding.RefundByItemsShippingBinding
@@ -38,15 +38,15 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class RefundByItemsFragment :
-    BaseFragment(R.layout.fragment_refund_by_items),
+class IssueRefundFragment :
+    BaseFragment(R.layout.fragment_issue_refund),
     OnCheckedChangeListener,
     OnFeeLineCheckedChangeListener {
     @Inject lateinit var currencyFormatter: CurrencyFormatter
 
     @Inject lateinit var imageMap: ProductImageMap
 
-    private var _binding: FragmentRefundByItemsBinding? = null
+    private var _binding: FragmentIssueRefundBinding? = null
     private val binding get() = _binding!!
 
     private var _productsBinding: RefundByItemsProductsBinding? = null
@@ -71,7 +71,7 @@ class RefundByItemsFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        _binding = FragmentRefundByItemsBinding.bind(view)
+        _binding = FragmentIssueRefundBinding.bind(view)
         _productsBinding = binding.issueRefundProductsList
         _shippingLinesBinding = binding.issueRefundShippingSection
         _feeLinesBinding = binding.issueRefundFeesSection
