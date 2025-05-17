@@ -121,14 +121,14 @@ class IssueRefundViewModel @Inject constructor(
 
     private val refundNotice = orderFlow.map { order -> prepareRefundNotice(order) }
 
-    val refundByItemsStateLiveData = combine(
+    val viewState = combine(
         orderFlow,
         productsRefundSection,
         shippingRefundSection,
         feesRefundSection,
         refundNotice
     ) { order, productsSection, shippingSection, feesSection, refundNotice ->
-        RefundByItemsViewState(
+        IssueRefundViewState(
             currency = order.currency,
             productsSection = productsSection,
             feesSection = feesSection,
@@ -163,7 +163,7 @@ class IssueRefundViewModel @Inject constructor(
         get() = currencyFormatter.buildBigDecimalFormatter(order.currency)
     private val arguments: RefundsArgs by savedState.navArgs()
 
-    val RefundByItemsViewState.screenTitle: String
+    val IssueRefundViewState.screenTitle: String
         get() = resourceProvider.getString(
                 R.string.order_refunds_title_with_amount, formatCurrency(this.grandTotalRefund)
             )
@@ -314,7 +314,7 @@ class IssueRefundViewModel @Inject constructor(
         triggerEvent(
             IssueRefundEvent.ShowRefundSummary(
                 orderId = arguments.orderId,
-                refundAmount = refundByItemsStateLiveData.value!!.grandTotalRefund,
+                refundAmount = viewState.value!!.grandTotalRefund,
                 refundItems = productItems + shippingLines + feeLines
             )
         )
@@ -409,7 +409,7 @@ class IssueRefundViewModel @Inject constructor(
         }
     }
 
-    data class RefundByItemsViewState(
+    data class IssueRefundViewState(
         val currency: String,
         val productsSection: ProductsRefundSection,
         val feesSection: FeesRefundSection,

@@ -11,7 +11,7 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
-import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.RefundByItemsViewState
+import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundViewState
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -92,8 +92,8 @@ class IssueRefundViewModelTest : BaseUnitTest() {
 
             initViewModel()
 
-            var viewState: RefundByItemsViewState? = null
-            viewModel.refundByItemsStateLiveData.observeForever { new -> viewState = new }
+            var viewState: IssueRefundViewState? = null
+            viewModel.viewState.observeForever { new -> viewState = new }
 
             viewState!!.feesSection.isFeesRefundAvailable.let { assertTrue(it) }
             assertTrue(viewState!!.feesSection.isFeesMainSwitchChecked)
@@ -107,8 +107,8 @@ class IssueRefundViewModelTest : BaseUnitTest() {
 
             initViewModel()
 
-            var viewState: RefundByItemsViewState? = null
-            viewModel.refundByItemsStateLiveData.observeForever { new -> viewState = new }
+            var viewState: IssueRefundViewState? = null
+            viewModel.viewState.observeForever { new -> viewState = new }
 
             assertFalse(viewState!!.isRefundNoticeVisible)
         }
@@ -122,8 +122,8 @@ class IssueRefundViewModelTest : BaseUnitTest() {
 
             initViewModel()
 
-            var viewState: RefundByItemsViewState? = null
-            viewModel.refundByItemsStateLiveData.observeForever { new -> viewState = new }
+            var viewState: IssueRefundViewState? = null
+            viewModel.viewState.observeForever { new -> viewState = new }
 
             assertFalse(viewState!!.isRefundNoticeVisible)
         }
@@ -137,8 +137,8 @@ class IssueRefundViewModelTest : BaseUnitTest() {
 
             initViewModel()
 
-            var viewState: RefundByItemsViewState? = null
-            viewModel.refundByItemsStateLiveData.observeForever { new -> viewState = new }
+            var viewState: IssueRefundViewState? = null
+            viewModel.viewState.observeForever { new -> viewState = new }
 
             assertTrue(viewState!!.isRefundNoticeVisible)
             assertEquals("You can refund multiple shipping lines", viewState!!.refundNotice)
@@ -236,7 +236,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
         initViewModel(orderMapper)
 
         // THEN
-        val viewState = viewModel.refundByItemsStateLiveData.getOrAwaitValue()
+        val viewState = viewModel.viewState.getOrAwaitValue()
         assertThat(viewState.productsSection.refundItems).hasSize(3)
     }
 
@@ -300,7 +300,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
         initViewModel(orderMapper)
 
         // THEN
-        val viewState = viewModel.refundByItemsStateLiveData.getOrAwaitValue()
+        val viewState = viewModel.viewState.getOrAwaitValue()
         assertThat(viewState.productsSection.refundItems).hasSize(2)
     }
 
@@ -376,7 +376,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             initViewModel(orderMapper)
 
             // THEN
-            val viewState = viewModel.refundByItemsStateLiveData.getOrAwaitValue()
+            val viewState = viewModel.viewState.getOrAwaitValue()
             assertThat(viewState.productsSection.refundItems).hasSize(1)
             assertThat(viewState.productsSection.refundItems.first().maxQuantity).isEqualTo(2.0F)
         }
@@ -475,7 +475,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             initViewModel(orderMapper)
 
             // THEN
-            val viewState = viewModel.refundByItemsStateLiveData.getOrAwaitValue()
+            val viewState = viewModel.viewState.getOrAwaitValue()
             assertThat(viewState.productsSection.refundItems).hasSize(3)
             assertThat(viewState.productsSection.refundItems[0].maxQuantity).isEqualTo(1.0F)
             assertThat(viewState.productsSection.refundItems[1].maxQuantity).isEqualTo(2.0F)
@@ -491,7 +491,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             initViewModel()
             viewModel.onSelectButtonTapped()
 
-            val items = viewModel.refundByItemsStateLiveData.getOrAwaitValue().productsSection.refundItems
+            val items = viewModel.viewState.getOrAwaitValue().productsSection.refundItems
             items.map { it.toDataModel() }.forEach { refundItem ->
                 val lineItem = order.getLineItemList().first { it.id == refundItem.itemId }
                 assertThat(refundItem.refundTax).allMatch { refundTaxItem ->
@@ -512,7 +512,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             initViewModel()
             viewModel.onSelectButtonTapped()
 
-            val shippingLines = viewModel.refundByItemsStateLiveData.getOrAwaitValue()
+            val shippingLines = viewModel.viewState.getOrAwaitValue()
                 .shippingSection
                 .shippingRefundLines
             shippingLines.map { it.toDataModel() }.forEach { refundItem ->
@@ -535,7 +535,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             initViewModel()
             viewModel.onSelectButtonTapped()
 
-            val feeLines = viewModel.refundByItemsStateLiveData.getOrAwaitValue().feesSection.feeRefundLines
+            val feeLines = viewModel.viewState.getOrAwaitValue().feesSection.feeRefundLines
             feeLines.map { it.toDataModel() }.forEach { refundItem ->
                 val feeLine = order.getFeeLineList().first { it.id == refundItem.itemId }
                 assertThat(refundItem.refundTax).allMatch { refundTaxItem ->

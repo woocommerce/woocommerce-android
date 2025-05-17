@@ -132,7 +132,7 @@ class IssueRefundFragment :
     }
 
     private fun setupObservers() {
-        viewModel.refundByItemsStateLiveData.withOldValue().observe(viewLifecycleOwner) { (old, new) ->
+        viewModel.viewState.withOldValue().observe(viewLifecycleOwner) { (old, new) ->
             with(viewModel) {
                 new.screenTitle.takeIfNotEqualTo(old?.screenTitle) {
                     binding.toolbar.title = it
