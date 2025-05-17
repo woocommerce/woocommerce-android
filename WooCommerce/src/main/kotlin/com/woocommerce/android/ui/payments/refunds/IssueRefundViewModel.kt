@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.payments.refunds
 
-import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -22,7 +21,6 @@ import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRef
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.max
 import com.woocommerce.android.util.min
-import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -37,11 +35,9 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCRefundStore
 import java.math.BigDecimal
@@ -140,19 +136,7 @@ class IssueRefundViewModel @Inject constructor(
             refundNotice = refundNotice,
             maxRefund = order.maxRefund
         )
-    }
-        .onEach { updateRefundTotal(it.grandTotalRefund) }
-        .asLiveData()
-
-    /**
-     * Saving more data than necessary into the SavedState has associated risks which were not known at the time this
-     * field was implemented - after we ensure we don't save unnecessary data, we can replace @Suppress("OPT_IN_USAGE")
-     * with @OptIn(LiveDelegateSavedStateAPI::class).
-     */
-    @Suppress("OPT_IN_USAGE")
-    val commonStateLiveData = LiveDataDelegate(savedState, CommonViewState())
-
-    private var commonState by commonStateLiveData
+    }.asLiveData()
 
     private val order: Order
         get() = requireNotNull(orderFlow.replayCache.firstOrNull()) {
@@ -178,6 +162,11 @@ class IssueRefundViewModel @Inject constructor(
     private val formatCurrency: (BigDecimal) -> String
         get() = currencyFormatter.buildBigDecimalFormatter(order.currency)
     private val arguments: RefundsArgs by savedState.navArgs()
+
+    val RefundByItemsViewState.screenTitle: String
+        get() = resourceProvider.getString(
+                R.string.order_refunds_title_with_amount, formatCurrency(this.grandTotalRefund)
+            )
 
     init {
         refunds = refundStore.getAllRefunds(selectedSite.get(), arguments.orderId).map { it.toAppModel() }
@@ -300,15 +289,6 @@ class IssueRefundViewModel @Inject constructor(
         }
     }
 
-    private fun updateRefundTotal(amount: BigDecimal) {
-        commonState = commonState.copy(
-            refundTotal = amount,
-            screenTitle = resourceProvider.getString(
-                R.string.order_refunds_title_with_amount, formatCurrency(amount)
-            )
-        )
-    }
-
     fun onNextButtonTappedFromItems() {
         analyticsTrackerWrapper.track(
             CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED,
@@ -334,7 +314,7 @@ class IssueRefundViewModel @Inject constructor(
         triggerEvent(
             IssueRefundEvent.ShowRefundSummary(
                 orderId = arguments.orderId,
-                refundAmount = commonState.refundTotal,
+                refundAmount = refundByItemsStateLiveData.value!!.grandTotalRefund,
                 refundItems = productItems + shippingLines + feeLines
             )
         )
@@ -483,12 +463,6 @@ class IssueRefundViewModel @Inject constructor(
         val shippingTaxesFormatted: String,
         val shippingRefundTotalFormatted: String,
     )
-
-    @Parcelize
-    data class CommonViewState(
-        val refundTotal: BigDecimal = BigDecimal.ZERO,
-        val screenTitle: String? = null
-    ) : Parcelable
 
     sealed class IssueRefundEvent : Event() {
         data class ShowNumberPicker(val refundItem: ProductRefundListItem) : IssueRefundEvent()

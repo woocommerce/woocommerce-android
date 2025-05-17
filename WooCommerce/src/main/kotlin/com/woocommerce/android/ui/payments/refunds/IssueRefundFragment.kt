@@ -132,12 +132,12 @@ class IssueRefundFragment :
     }
 
     private fun setupObservers() {
-        viewModel.commonStateLiveData.observe(viewLifecycleOwner) { old, new ->
-            new.screenTitle?.takeIfNotEqualTo(old?.screenTitle) {
-                binding.toolbar.title = it
-            }
-        }
         viewModel.refundByItemsStateLiveData.withOldValue().observe(viewLifecycleOwner) { (old, new) ->
+            with(viewModel) {
+                new.screenTitle.takeIfNotEqualTo(old?.screenTitle) {
+                    binding.toolbar.title = it
+                }
+            }
             new.currency.takeIfNotEqualTo(old?.currency) {
                 productsBinding.issueRefundProducts.adapter = RefundProductListAdapter(
                     currencyFormatter.buildBigDecimalFormatter(new.currency),
