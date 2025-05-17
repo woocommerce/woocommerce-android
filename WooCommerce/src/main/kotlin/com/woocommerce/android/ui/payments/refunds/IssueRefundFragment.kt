@@ -6,6 +6,7 @@ import android.text.SpannableString
 import android.text.method.LinkMovementMethod
 import android.view.View
 import android.widget.TextView
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -26,6 +27,7 @@ import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.FeesRefundSection
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.OpenUrl
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.ShowNumberPicker
+import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundSummary
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.ProductsRefundSection
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.ShippingRefundSection
 import com.woocommerce.android.ui.payments.refunds.RefundFeeListAdapter.OnFeeLineCheckedChangeListener
@@ -89,6 +91,7 @@ class IssueRefundFragment :
     }
 
     private fun initializeViews() {
+        setupToolbar()
         productsBinding.issueRefundProducts.layoutManager = LinearLayoutManager(context)
         productsBinding.issueRefundProducts.setHasFixedSize(true)
         productsBinding.issueRefundProducts.isMotionEventSplittingEnabled = false
@@ -118,7 +121,22 @@ class IssueRefundFragment :
         }
     }
 
+    private fun setupToolbar() {
+        binding.toolbar.navigationIcon = AppCompatResources.getDrawable(
+            requireActivity(),
+            R.drawable.ic_back_24dp
+        )
+        binding.toolbar.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
+    }
+
     private fun setupObservers() {
+        viewModel.commonStateLiveData.observe(viewLifecycleOwner) { old, new ->
+            new.screenTitle?.takeIfNotEqualTo(old?.screenTitle) {
+                binding.toolbar.title = it
+            }
+        }
         viewModel.refundByItemsStateLiveData.withOldValue().observe(viewLifecycleOwner) { (old, new) ->
             new.currency.takeIfNotEqualTo(old?.currency) {
                 productsBinding.issueRefundProducts.adapter = RefundProductListAdapter(
@@ -166,6 +184,15 @@ class IssueRefundFragment :
                         uniqueId = event.refundItem.orderItem.itemId,
                         maxValue = event.refundItem.availableRefundQuantity,
                         currentValue = event.refundItem.quantity
+                    )
+                    findNavController().navigateSafely(action)
+                }
+
+                is ShowRefundSummary -> {
+                    val action = IssueRefundFragmentDirections.actionIssueRefundFragmentToRefundSummaryFragment(
+                        orderId = event.orderId,
+                        refundAmount = event.refundAmount.toString(),
+                        refundItems = event.refundItems.toTypedArray()
                     )
                     findNavController().navigateSafely(action)
                 }
