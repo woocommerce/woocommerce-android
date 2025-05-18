@@ -446,6 +446,10 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         } ?: originAddresses.first()
     }
 
+    fun onSelectedShipmentChanged(index: Int) {
+        selectedShipmentIndex.value = index
+    }
+
     fun onShippingFromAddressChange(address: OriginShippingAddress) {
         shippingAddresses.value?.let {
             shippingAddresses.value = it.copy(shipFrom = address)
