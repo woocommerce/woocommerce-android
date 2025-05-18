@@ -504,45 +504,27 @@ private fun LabelCreationScreenWithBottomSheet(
                     }
                 }
 
-                ShippingProductsCard(
-                    shippableItems = shipmentUI,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            start = dimensionResource(R.dimen.major_100),
-                            end = dimensionResource(R.dimen.major_100),
-                            bottom = dimensionResource(R.dimen.major_100)
-                        ),
-                    isExpanded = isExpanded.value,
-                    onExpand = { isExpanded.value = it }
-                )
-                HazmatCard(
-                    onClick = onHazmatNoticeClick,
-                    selectedCategory = hazmatState.hazmatSelection,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 4.dp, end = 8.dp)
-                )
-                CustomsCard(
-                    customsState = customsState,
-                    onEditCustomsClick = onEditCustomsClick,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                )
-                PackageCard(
-                    modifier = Modifier.padding(16.dp),
-                    packageSelectionState = packageSelectionState,
-                    onSelectPackageClick = onSelectPackageClick,
-                    customWeight = customWeight,
-                    onCustomWeightChange = onCustomWeightChange
-                )
-                ShippingRatesSection(
-                    shippingRatesState = shippingRatesState,
-                    onSelectedRateSortOrderChanged = onSelectedRateSortOrderChanged,
-                    onRefreshShippingRates = onRefreshShippingRates,
-                    onSelectedSippingRateChanged = onSelectedSippingRateChanged
-                )
+                HorizontalPager(
+                    state = pagerState,
+                    modifier = modifier.fillMaxSize(),
+                    verticalAlignment = Alignment.Top,
+                ) { page ->
+                    CreateShippingCards(
+                        shipmentUI = shipmentUIList[page],
+                        onHazmatNoticeClick = onHazmatNoticeClick,
+                        hazmatState = hazmatState,
+                        customsState = customsState,
+                        onEditCustomsClick = onEditCustomsClick,
+                        packageSelectionState = packageSelectionState,
+                        onSelectPackageClick = onSelectPackageClick,
+                        customWeight = customWeight,
+                        onCustomWeightChange = onCustomWeightChange,
+                        shippingRatesState = shippingRatesState,
+                        onSelectedRateSortOrderChanged = onSelectedRateSortOrderChanged,
+                        onRefreshShippingRates = onRefreshShippingRates,
+                        onSelectedShippingRateChanged = onSelectedShippingRateChanged,
+                    )
+                }
             }
 
             val actionSnackbarMessage = snackbarData?.let { stringResource(it.message) }
@@ -562,6 +544,67 @@ private fun LabelCreationScreenWithBottomSheet(
                 } ?: snackbarHostState.currentSnackbarData?.dismiss()
             }
         }
+    }
+}
+
+@Composable
+private fun CreateShippingCards(
+    shipmentUI: ShipmentUI,
+    onHazmatNoticeClick: () -> Unit = {},
+    hazmatState: HazmatState,
+    customsState: CustomsState,
+    onEditCustomsClick: () -> Unit,
+    packageSelectionState: PackageSelectionState,
+    onSelectPackageClick: () -> Unit,
+    customWeight: String,
+    onCustomWeightChange: (String) -> Unit,
+    shippingRatesState: WooShippingLabelCreationViewModel.ShippingRatesState,
+    onSelectedRateSortOrderChanged: (ShippingSortOption) -> Unit,
+    onRefreshShippingRates: () -> Unit,
+    onSelectedShippingRateChanged: (rate: ShippingRateUI) -> Unit,
+) {
+    Column {
+        val isExpanded = remember { mutableStateOf(false) }
+
+        ShippingProductsCard(
+            shippableItems = shipmentUI,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = dimensionResource(R.dimen.major_100),
+                    end = dimensionResource(R.dimen.major_100),
+                    bottom = dimensionResource(R.dimen.major_100)
+                ),
+            isExpanded = isExpanded.value,
+            onExpand = { isExpanded.value = it }
+        )
+        HazmatCard(
+            onClick = onHazmatNoticeClick,
+            selectedCategory = hazmatState.hazmatSelection,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 4.dp, end = 8.dp)
+        )
+        CustomsCard(
+            customsState = customsState,
+            onEditCustomsClick = onEditCustomsClick,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        )
+        PackageCard(
+            modifier = Modifier.padding(16.dp),
+            packageSelectionState = packageSelectionState,
+            onSelectPackageClick = onSelectPackageClick,
+            customWeight = customWeight,
+            onCustomWeightChange = onCustomWeightChange
+        )
+        ShippingRatesSection(
+            shippingRatesState = shippingRatesState,
+            onSelectedRateSortOrderChanged = onSelectedRateSortOrderChanged,
+            onRefreshShippingRates = onRefreshShippingRates,
+            onSelectedSippingRateChanged = onSelectedShippingRateChanged
+        )
     }
 }
 
