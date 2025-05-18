@@ -491,6 +491,16 @@ private fun LabelCreationScreenWithBottomSheet(
                                 )
                             }
                         }
+                        IconButton(
+                            onClick = onSplitShipment,
+                            modifier = Modifier.align(Alignment.CenterVertically)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Edit,
+                                tint = colorResource(id = R.color.color_icon_menu),
+                                contentDescription = stringResource(id = R.string.woo_shipping_split_shipment)
+                            )
+                        }
                     }
                 }
 
