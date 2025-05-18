@@ -60,6 +60,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.joinAll
@@ -309,7 +310,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         combine(
             shippingAddresses,
             customsFormData,
-            shipmentItems
+            shipmentItems.filter { it.isNotEmpty() }
         ) { addresses, customsData, shipmentItems ->
             val customsRequired = addresses != null && shouldRequireCustoms(addresses)
             val itnMissing = customsFormData.value?.itn.isNullOrEmpty() &&
