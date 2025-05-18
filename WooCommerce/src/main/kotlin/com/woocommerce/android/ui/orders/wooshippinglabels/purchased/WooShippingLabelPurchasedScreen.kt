@@ -402,7 +402,8 @@ internal fun WooShippingLabelPurchasedScreenPreview() {
                     items = ShipmentUI(
                         shippableItems = generateItems(6),
                         formattedTotalWeight = "8.5kg",
-                        formattedTotalPrice = "$92.78"
+                        formattedTotalPrice = "$92.78",
+                        purchased = false
                     ),
                     addresses = WooShippingAddresses.EMPTY,
                     rateSummary = ShippingRateSummaryUI(serviceName = "", total = ""),

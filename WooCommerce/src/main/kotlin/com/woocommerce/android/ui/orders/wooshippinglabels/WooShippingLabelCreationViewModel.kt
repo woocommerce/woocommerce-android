@@ -415,8 +415,13 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             shipmentItems.value = shipments.value.map { it.items }
 
             val shippingLineSummary = order.getShippingLinesSummary(currencyFormatter)
-            val shipmentUIList = shipmentItems.value.map {
-                it.toUIModel(currencyFormatter, storeOptions.dimensionUnit, storeOptions.weightUnit)
+            val shipmentUIList = shipmentItems.value.mapIndexed { index, shippableItemModels ->
+                shippableItemModels.toUIModel(
+                    currencyFormatter,
+                    storeOptions.dimensionUnit,
+                    storeOptions.weightUnit,
+                    shipments.value[index].purchased
+                )
             }
 
             return@combine WooShippingViewState.DataState(
@@ -897,7 +902,8 @@ data class ShippableItemUI(
 data class ShipmentUI(
     val shippableItems: List<ShippableItemUI>,
     val formattedTotalWeight: String,
-    val formattedTotalPrice: String
+    val formattedTotalPrice: String,
+    val purchased: Boolean
 ) : Parcelable {
     val totalItemQuantity
         get() = shippableItems.sumByFloat { it.quantity }.toInt()

@@ -95,7 +95,8 @@ private fun ShippingProductsCardPreview(@PreviewParameter(IsExpandedProvider::cl
                 shippableItems = ShipmentUI(
                     shippableItems = generateItems(6),
                     formattedTotalWeight = "8.5kg",
-                    formattedTotalPrice = "$92.78"
+                    formattedTotalPrice = "$92.78",
+                    purchased = false
                 ),
                 isExpanded = isExpanded
             )
@@ -165,7 +166,8 @@ private fun ShippingProductsCardHeaderPreview() {
     val shippableItems = ShipmentUI(
         shippableItems = generateItems(4),
         formattedTotalWeight = "8.5kg",
-        formattedTotalPrice = "$92.78"
+        formattedTotalPrice = "$92.78",
+        purchased = false
     )
     val isExpanded = remember { mutableStateOf(false) }
 
