@@ -497,10 +497,12 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         )
         whenever(shouldRequireCustomsForm.invoke(any())) doReturn false
         whenever(orderDetailRepository.getOrderById(any())) doReturn order
+        whenever(getShipments(any())) doReturn defaultShipments
         whenever(observeOriginAddresses()) doReturn flowOf(defaultOriginAddresses)
         whenever(
             getShippingRates(any(), any(), any(), any(), any(), any(), isNull(), isNull())
         ) doReturn Result.success(defaultShippingRates)
+        whenever(observeStoreOptions()) doReturn flowOf(defaultStoreOptions)
 
         createViewModel()
 
@@ -512,8 +514,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
         advanceUntilIdle()
 
-        verify(getShippingRates, times(2))
-            .invoke(any(), any(), any(), any(), any(), any(), isNull(), isNull())
+        verify(getShippingRates, times(2)).invoke(any(), any(), any(), any(), any(), any(), isNull(), isNull())
     }
 
     @Test
@@ -527,10 +528,12 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         )
         whenever(shouldRequireCustomsForm.invoke(any())) doReturn false
         whenever(orderDetailRepository.getOrderById(any())) doReturn order
+        whenever(getShipments(any())) doReturn defaultShipments
         whenever(observeOriginAddresses()) doReturn flowOf(defaultOriginAddresses)
         whenever(
             getShippingRates(any(), any(), any(), any(), any(), any(), isNull(), isNull())
         ) doReturn Result.success(defaultShippingRates)
+        whenever(observeStoreOptions()) doReturn flowOf(defaultStoreOptions)
 
         createViewModel()
 
@@ -557,10 +560,12 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         )
         whenever(shouldRequireCustomsForm.invoke(any())) doReturn false
         whenever(orderDetailRepository.getOrderById(any())) doReturn order
+        whenever(getShipments(any())) doReturn defaultShipments
         whenever(observeOriginAddresses()) doReturn flowOf(defaultOriginAddresses)
         whenever(
             getShippingRates(any(), any(), any(), any(), any(), any(), isNull(), isNull())
         ) doReturn Result.success(defaultShippingRates)
+        whenever(observeStoreOptions()) doReturn flowOf(defaultStoreOptions)
 
         createViewModel()
 
