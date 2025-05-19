@@ -1,6 +1,5 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.wc.orderstats
 
-import java.util.Locale
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.WCStatsActionBuilder
 import org.wordpress.android.fluxc.generated.endpoint.WOOCOMMERCE
@@ -24,6 +23,7 @@ import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.util.AppLog
+import java.util.Locale
 import javax.inject.Inject
 
 class OrderStatsRestClient @Inject constructor(
@@ -253,7 +253,7 @@ class OrderStatsRestClient @Inject constructor(
 
     private fun WPAPINetworkError.toOrderError() = networkErrorToOrderError(errorCode, message)
     private fun WPComGsonNetworkError.toOrderError() = networkErrorToOrderError(apiError, message)
-    
+
     private fun networkErrorToOrderError(errorCode: String?, message: String?): OrderStatsError {
         val orderStatsErrorType = when (errorCode) {
             "rest_invalid_param" -> OrderStatsErrorType.INVALID_PARAM

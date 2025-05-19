@@ -16,9 +16,12 @@ import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCoupo
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart.WooPosItemSource
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -40,6 +43,7 @@ class WooPosCouponsViewModelTest {
     private val listViewStateManager: WooPosCouponsListViewStateManager = mock()
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val navigator: WooPosItemsNavigator = mock()
+    private val analyticsTracker: WooPosAnalyticsTracker = mock()
 
     private lateinit var viewModel: WooPosCouponsViewModel
 
@@ -59,10 +63,17 @@ class WooPosCouponsViewModelTest {
         viewModel.onUIEvent(CouponClicked(couponId, couponCode))
 
         // THEN
+        val item = ItemClickedData.Coupon(couponId, couponCode)
         verify(fromChildToParentEventSender).sendToParent(
-            ChildToParentEvent.ItemClickedInProductSelector(
-                itemData = ItemClickedData.Coupon(couponId, couponCode),
-                source = WooPosItemSource.COUPON_LIST
+            eq(
+                ChildToParentEvent.ItemClickedInProductSelector(
+                    itemData = ItemClickedData.Coupon(couponId, couponCode),
+                    eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
+                        item = item,
+                        source = WooPosAnalyticsEventConstant.ItemsListSource.COUPON,
+                        sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST,
+                    ),
+                )
             )
         )
     }
@@ -140,10 +151,32 @@ class WooPosCouponsViewModelTest {
         viewModel.onUIEvent(WooPosCouponsUIEvent.CreateCouponClicked)
 
         // THEN
+        val item = ItemClickedData.Coupon(1L, "test coupon")
         verify(fromChildToParentEventSender).sendToParent(
             ChildToParentEvent.ItemClickedInProductSelector(
-                itemData = ItemClickedData.Coupon(1L, "test coupon"),
-                source = WooPosItemSource.COUPON_LIST
+                itemData = item,
+                eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
+                    item = item,
+                    source = WooPosAnalyticsEventConstant.ItemsListSource.COUPON,
+                    sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST,
+                ),
+            )
+        )
+    }
+
+    @Test
+    fun `when pull to refresh triggered, then event tracked`() = runTest {
+        // WHEN
+        viewModel.onUIEvent(PullToRefreshTriggered)
+
+        // THEN
+        advanceUntilIdle()
+        verify(analyticsTracker).track(
+            eq(
+                WooPosAnalyticsEvent.Event.PullToRefreshTriggered(
+                    source = WooPosAnalyticsEventConstant.ItemsListSource.COUPON,
+                    sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST
+                )
             )
         )
     }
@@ -154,5 +187,6 @@ class WooPosCouponsViewModelTest {
             fromChildToParentEventSender,
             couponCreationFacade,
             navigator,
+            analyticsTracker
         )
 }

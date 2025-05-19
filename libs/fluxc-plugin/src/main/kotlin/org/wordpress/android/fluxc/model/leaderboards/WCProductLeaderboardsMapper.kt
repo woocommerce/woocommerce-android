@@ -42,7 +42,7 @@ class WCProductLeaderboardsMapper @Inject constructor() {
         productStore: WCProductStore
     ): List<WCProductModel> {
         val locallyFetchedProducts = this
-            //This logic is repeated in ProductsMapper
+            // This logic is repeated in ProductsMapper
                 .filter { productStore.getProductExistsByRemoteId(site, it) }
                 .mapNotNull { productStore.getProduct(site, it) }
 

@@ -62,15 +62,14 @@ class FeatureFlagsRestClient @Inject constructor(
         val osVersion: String = Build.VERSION.RELEASE,
     )
 
-    private fun buildFeatureFlagsFetchedPayload(featureFlags: Map<*, *>?)
-        : FeatureFlagsFetchedPayload {
+    private fun buildFeatureFlagsFetchedPayload(featureFlags: Map<*, *>?): FeatureFlagsFetchedPayload {
         return FeatureFlagsFetchedPayload(featureFlags?.map { e ->
                 e.key.toString() to e.value.toString().toBoolean()
             }?.toMap())
     }
 }
 
-data class FeatureFlagsFetchedPayload (
+data class FeatureFlagsFetchedPayload(
     val featureFlags: Map<String, Boolean>? = null
 ) : Payload<FeatureFlagsError>() {
     constructor(error: FeatureFlagsError) : this() {

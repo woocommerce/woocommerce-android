@@ -44,7 +44,7 @@ class WCProductModelTest {
 
     @Test
     fun `isConfigurable should return false when bundledItems is malformed JSON`() {
-        val sut = WCProductModel().copy (
+        val sut = WCProductModel().copy(
             type = CoreProductType.BUNDLE.value,
             bundledItems = "malformed: [#ˆ%*(!@*#ˆ%(*!#ˆ(%*!]"
         )

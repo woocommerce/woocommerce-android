@@ -12,12 +12,9 @@ import org.wordpress.android.fluxc.TestSiteSqlUtils
 import org.wordpress.android.fluxc.UnitTestUtils
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCProductReviewModel
-import org.wordpress.android.fluxc.model.WCProductShippingClassModel
-import org.wordpress.android.fluxc.model.WCProductTagModel
 import org.wordpress.android.fluxc.wc.product.ProductTestUtils
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
-import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @Suppress("LargeClass")
@@ -182,7 +179,6 @@ class ProductSqlUtilsTest {
         savedReviews = ProductSqlUtils.getProductReviewsForSite(site)
         assertEquals(0, savedReviews.size)
     }
-
 
     private fun getProductReviews(localSiteId: Int): List<WCProductReviewModel> {
         val reviewJson = UnitTestUtils.getStringFromResourceFile(this.javaClass, "wc/product-reviews.json")

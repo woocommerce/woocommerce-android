@@ -8,7 +8,7 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
     tableName = "TaxRate",
     primaryKeys = ["id", "localSiteId"],
 )
-data class TaxRateEntity (
+data class TaxRateEntity(
     val id: RemoteId,
     val localSiteId: LocalId,
     val country: String? = null,

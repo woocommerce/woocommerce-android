@@ -6,8 +6,8 @@ import com.yarolegovich.wellsql.core.Identifiable
 import com.yarolegovich.wellsql.core.annotation.Column
 import com.yarolegovich.wellsql.core.annotation.PrimaryKey
 import com.yarolegovich.wellsql.core.annotation.Table
-import java.util.Locale
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
+import java.util.Locale
 
 @Table(addOn = WellSqlConfig.ADDON_WOOCOMMERCE)
 data class WCNewVisitorStatsModel(@PrimaryKey @Column private var id: Int = 0) : Identifiable {

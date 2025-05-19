@@ -27,9 +27,8 @@ class RemoteConfigStoreTest {
     private lateinit var store: RemoteConfigStore
 
     private val successResponse = mapOf("jp-deadline" to "2022-10-10")
-    private val errorResponse = RemoteConfigError( type = GENERIC_ERROR)
-    private val errorResult = RemoteConfigError( type = GENERIC_ERROR)
-
+    private val errorResponse = RemoteConfigError(type = GENERIC_ERROR)
+    private val errorResult = RemoteConfigError(type = GENERIC_ERROR)
 
     @Before
     fun setUp() {

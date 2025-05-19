@@ -14,7 +14,7 @@ class RootWPAPIRestResponse(
 ) : Response {
     class Authentication(
         @SerializedName("application-passwords") val applicationPasswords: ApplicationPasswords? = null
-    ): JsonObjectOrEmptyArray() {
+    ) : JsonObjectOrEmptyArray() {
         class ApplicationPasswords(
             val endpoints: Endpoints?
         ) {

@@ -75,7 +75,7 @@ class ReactNativeWPAPIRestClientTest {
         val mockedRestCallResponse = Error<JsonElement>(expectedBaseNetworkError)
         verifyGETRequest(successHandler, errorHandler, mockedRestCallResponse, expected)
     }
-    
+
     @Test
     fun `POST request handles successful response`() = test {
         val errorHandler: (BaseNetworkError) -> ReactNativeFetchResponse = { _ ->

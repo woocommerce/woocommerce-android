@@ -13,8 +13,7 @@ class JetpackMigrationStore @Inject constructor(
     private val jetpackMigrationClient: JetpackMigrationRestClient,
     private val coroutineEngine: CoroutineEngine
 ) {
-    suspend fun migrationComplete(
-    ) = coroutineEngine.withDefaultContext(AppLog.T.API, this, "post migration-complete") {
+    suspend fun migrationComplete() = coroutineEngine.withDefaultContext(AppLog.T.API, this, "post migration-complete") {
         return@withDefaultContext jetpackMigrationClient.migrationComplete(::Error)
     }
 }

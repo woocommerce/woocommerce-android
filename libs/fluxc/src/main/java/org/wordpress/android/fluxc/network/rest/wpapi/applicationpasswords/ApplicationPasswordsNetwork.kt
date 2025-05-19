@@ -62,8 +62,10 @@ class ApplicationPasswordsNetwork @Inject constructor(
                 params,
                 body,
                 clazz,
-                /* listener = */ { continuation.resume(WPAPIResponse.Success(it)) },
-                /* errorListener = */ { continuation.resume(WPAPIResponse.Error(it)) }
+                /* listener = */
+                { continuation.resume(WPAPIResponse.Success(it)) },
+                /* errorListener = */
+                { continuation.resume(WPAPIResponse.Error(it)) }
             )
 
             request.addHeader(AUTHORIZATION_HEADER, authorizationHeader)

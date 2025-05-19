@@ -264,7 +264,6 @@ class ShippingLabelRestClient @Inject constructor(private val wooNetwork: WooNet
                 //  For example, "USPS Priority Mail Express Boxes" and "USPS Priority Mail Boxes" are two separate
                 //  options having the same carrier: "usps".
                 .groupBy { it.carrier }
-
                 // Next, build a predefinedParam Map replicating the required JSON request structure.
                 // Example structure:
                 //

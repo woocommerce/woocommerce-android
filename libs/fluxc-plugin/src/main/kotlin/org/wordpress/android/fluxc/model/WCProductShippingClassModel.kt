@@ -5,7 +5,7 @@ import com.yarolegovich.wellsql.core.annotation.Column
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 
-//todo: as soon as SiteModel is migrated to Room, add foreign key constraint
+// todo: as soon as SiteModel is migrated to Room, add foreign key constraint
 @Entity(
     tableName = "ProductShippingClassEntity",
     primaryKeys = ["localSiteId", "remoteShippingClassId"],

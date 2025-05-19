@@ -76,7 +76,7 @@ class WCGoogleStoreTest {
     }
 
     @Test
-    fun `when programs response is paginated, requested everything and return the sum`() = runBlockingTest  {
+    fun `when programs response is paginated, requested everything and return the sum`() = runBlockingTest {
         // Given
         val mapper = WCGoogleAdsProgramsMapper()
         val firstPage = createProgramsPage(pageNumber = 1, hasNextPage = true)
@@ -137,7 +137,7 @@ class WCGoogleStoreTest {
         campaigns = listOf(
             GoogleAdsCampaignDTO(
                 id = pageNumber.toLong(),
-                name = "campaign${pageNumber}",
+                name = "campaign$pageNumber",
                 status = "enabled",
                 subtotals = GoogleAdsTotalsDTO(
                     sales = pageNumber * 100.0,

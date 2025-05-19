@@ -168,7 +168,7 @@ class ListItemSqlUtilsTest {
          * 4. Verify that the remaining items are unchanged for lists that are not picked to be
          * deleted from and SQLiteException for too many variables isn't thrown.
          */
-        val remoteItemIdsToDelete = items.map{ it.remoteItemId }.take(1)
+        val remoteItemIdsToDelete = items.map { it.remoteItemId }.take(1)
         val listIdsToDeleteFrom = lists.map { it.id }.take(999)
         listItemSqlUtils.deleteItemsFromLists(listIdsToDeleteFrom, remoteItemIdsToDelete)
         items.groupBy { it.listId }.forEach { (listId, itemList) ->

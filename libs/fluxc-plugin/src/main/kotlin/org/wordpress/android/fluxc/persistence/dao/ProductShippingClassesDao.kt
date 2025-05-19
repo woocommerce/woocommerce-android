@@ -30,7 +30,6 @@ internal abstract class ProductShippingClassesDao {
         remoteShippingClassId: RemoteId,
     ): WCProductShippingClassModel?
 
-
     @Query(
         """
             DELETE FROM ProductShippingClassEntity

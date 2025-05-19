@@ -49,9 +49,11 @@ class OrderDto : Response {
     val date_modified_gmt: String? = null
     val date_paid_gmt: String? = null
     val discount_total: String? = null
+
     // Same as shipping_lines, it's a list of objects
     val fee_lines: JsonElement? = null
     val id: Long? = null
+
     // This is actually a list of objects. We're storing this as JSON initially, and it will be deserialized on demand.
     // See OrderEntity.LineItem
     val line_items: JsonElement? = null
@@ -61,6 +63,7 @@ class OrderDto : Response {
     val prices_include_tax: Boolean = false
     val refunds: List<Refund>? = null
     val shipping: Shipping? = null
+
     // This is actually a list of objects. We're storing this as JSON initially, and it will be deserialized on demand.
     // See OrderEntity.ShippingLines
     val shipping_lines: JsonElement? = null

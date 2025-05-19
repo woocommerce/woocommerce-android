@@ -2,7 +2,6 @@ package org.wordpress.android.fluxc.model
 
 import androidx.room.Entity
 import androidx.room.Ignore
-import androidx.room.Index
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement

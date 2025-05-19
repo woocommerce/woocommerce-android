@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.split
 
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.toSelectableUIModel
 import com.woocommerce.android.util.CurrencyFormatter
@@ -150,6 +151,35 @@ class GetSplitMovementsTest : BaseUnitTest() {
         assertThat(hasNewKey).isTrue
     }
 
+    @Test
+    fun `when the selection is a remove movement, then do NOT include purchased keys`() {
+        val allItemsSelected = twoShipmentsSelection.getValue(0).shippableItems.map {
+            when (it) {
+                is SelectableShippableItemUI.SingleSelectableShippableItemUI -> {
+                    it.copy(isSelected = true)
+                }
+
+                is SelectableShippableItemUI.ExpandableSelectableShippableItemUI -> {
+                    it.copy(
+                        selectedIndexes = List(it.shippableItem.quantity.toInt()) { it }.toSet()
+                    )
+                }
+            }
+        }
+        val selection = twoShipmentsSelection.toMutableMap()
+        selection[0] = defaultSelection.getValue(0).copy(shippableItems = allItemsSelected)
+
+        val result = sut.invoke(
+            sourceShipmentKey = 0,
+            shipments = purchasedShipment + twoShipments,
+            selection = selection
+        )
+
+        assertThat(result.size).isEqualTo(1)
+        val isAnExistingKey = result.first().destinationShipmentKey in twoShipments.keys
+        assertThat(isAnExistingKey).isTrue
+    }
+
     private val defaultShippableItems = List(3) {
         ShippableItemModel(
             itemId = it.toLong(),
@@ -166,24 +196,30 @@ class GetSplitMovementsTest : BaseUnitTest() {
         )
     }
 
-    private val defaultShipments = mapOf(0 to defaultShippableItems)
+    private val defaultShipments = mapOf(0 to ShipmentUIModel(id = null, items = defaultShippableItems))
     val defaultSelection = defaultShipments.mapValues {
         it.value.toSelectableUIModel(
             currencyFormatter = currencyFormatter,
             dimensionUnit = "cm",
-            weightUnit = "kg"
+            weightUnit = "kg",
+            purchased = false
         )
     }
 
     private val twoShipments = mapOf(
-        0 to defaultShippableItems,
-        1 to defaultShippableItems
+        0 to ShipmentUIModel(id = null, items = defaultShippableItems),
+        1 to ShipmentUIModel(id = null, items = defaultShippableItems)
     )
     val twoShipmentsSelection = twoShipments.mapValues {
         it.value.toSelectableUIModel(
             currencyFormatter = currencyFormatter,
             dimensionUnit = "cm",
-            weightUnit = "kg"
+            weightUnit = "kg",
+            purchased = false
         )
     }
+
+    private val purchasedShipment = mapOf(
+        10 to ShipmentUIModel(id = null, items = defaultShippableItems, purchased = true)
+    )
 }

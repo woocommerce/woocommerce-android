@@ -34,6 +34,7 @@ class ListSqlUtilsTest {
     @Test
     fun testInsertAndUpdateList() {
         val listDescriptor = PostListDescriptorForRestSite(testSite())
+
         /**
          * 1. Insert a test list
          * 2. Wait 1 second before the update to ensure `lastModified` value will be different

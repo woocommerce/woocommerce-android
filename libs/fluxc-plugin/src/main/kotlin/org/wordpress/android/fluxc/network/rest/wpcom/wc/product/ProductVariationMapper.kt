@@ -28,7 +28,7 @@ object ProductVariationMapper {
     ): HashMap<String, Any> {
         val body = HashMap<String, Any>()
 
-        val storedVariationModel = variationModel ?: WCProductVariationModel().copy (
+        val storedVariationModel = variationModel ?: WCProductVariationModel().copy(
             remoteProductId = updatedVariationModel.remoteProductId,
             remoteVariationId = updatedVariationModel.remoteVariationId
         )

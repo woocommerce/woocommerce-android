@@ -5,10 +5,10 @@ import com.google.gson.JsonPrimitive
 import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.wordpress.android.fluxc.model.StripProductMetaData
+import org.wordpress.android.fluxc.model.WCProductModel.SubscriptionMetadataKeys
 import org.wordpress.android.fluxc.model.metadata.WCMetaData
 import org.wordpress.android.fluxc.model.metadata.WCMetaData.AddOnsMetadataKeys
 import org.wordpress.android.fluxc.model.metadata.WCMetaDataValue
-import org.wordpress.android.fluxc.model.WCProductModel.SubscriptionMetadataKeys
 
 class StripProductMetaDataTest {
     private val gson = Gson()
