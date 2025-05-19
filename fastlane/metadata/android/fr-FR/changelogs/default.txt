@@ -1,2 +1,0 @@
-22.3 :
-Nous avons simplifié l’application mobile WooCommerce ! Les types de produits sont désormais intégrés en toute fluidité dans le menu PDV. Grâce à cette mise à jour du design, la gestion des informations produit lors de la validation de la commande est simple et intuitive.
