@@ -64,5 +64,4 @@ internal abstract class ProductReviewsDao {
         """
     )
     abstract suspend fun deleteProductReviewsForSite(siteId: LocalId): Int
-
 }

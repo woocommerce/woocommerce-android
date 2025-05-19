@@ -3,9 +3,6 @@ package org.wordpress.android.fluxc.persistence.dao
 import android.app.Application
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import java.io.IOException
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
@@ -22,6 +19,9 @@ import org.wordpress.android.fluxc.model.WCProductReviewModel
 import org.wordpress.android.fluxc.persistence.SiteSqlUtils
 import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
 import org.wordpress.android.fluxc.wc.product.ProductTestUtils
+import java.io.IOException
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 class ProductReviewsDaoTest {
@@ -44,7 +44,6 @@ class ProductReviewsDaoTest {
         sut = database.productReviewsDao
     }
 
-
     @Test
     fun testInsertProductReview() = runTest {
         val review = getProductReviews(site.id)[0]
@@ -54,7 +53,6 @@ class ProductReviewsDaoTest {
         assertThat(
             sut.getProductReview(site.localId(), review.remoteProductReviewId)
         ).isEqualTo(review)
-
     }
 
     @Test

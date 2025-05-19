@@ -15,7 +15,6 @@ import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.REVIEWS
 import com.woocommerce.android.util.dispatchAndAwait
-import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -37,6 +36,7 @@ import org.wordpress.android.fluxc.store.NotificationStore.*
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.FetchProductsPayload
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
+import javax.inject.Inject
 
 class ReviewListRepository @Inject constructor(
     private val dispatcher: Dispatcher,
