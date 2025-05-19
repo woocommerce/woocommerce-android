@@ -24,8 +24,6 @@ import org.wordpress.android.fluxc.persistence.blaze.BlazeTargetingDao
 import org.wordpress.android.fluxc.persistence.blaze.BlazeTargetingDeviceEntity
 import org.wordpress.android.fluxc.persistence.blaze.BlazeTargetingLanguageEntity
 import org.wordpress.android.fluxc.persistence.blaze.BlazeTargetingTopicEntity
-import org.wordpress.android.fluxc.persistence.comments.CommentsDao
-import org.wordpress.android.fluxc.persistence.comments.CommentsDao.CommentEntity
 import org.wordpress.android.fluxc.persistence.coverters.StringListConverter
 import org.wordpress.android.fluxc.persistence.dashboard.CardsDao
 import org.wordpress.android.fluxc.persistence.dashboard.CardsDao.CardEntity
@@ -40,7 +38,6 @@ import org.wordpress.android.fluxc.persistence.jetpacksocial.JetpackSocialDao.Je
             PlanOffer::class,
             PlanOfferId::class,
             PlanOfferFeature::class,
-            CommentEntity::class,
             CardEntity::class,
             FeatureFlag::class,
             RemoteConfig::class,
@@ -74,8 +71,6 @@ import org.wordpress.android.fluxc.persistence.jetpacksocial.JetpackSocialDao.Je
 )
 abstract class WPAndroidDatabase : RoomDatabase() {
     abstract fun planOffersDao(): PlanOffersDao
-
-    abstract fun commentsDao(): CommentsDao
 
     abstract fun dashboardCardsDao(): CardsDao
 
