@@ -1,75 +1,69 @@
 package org.wordpress.android.fluxc.model
 
+import androidx.room.Entity
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.annotations.SerializedName
-import com.yarolegovich.wellsql.core.Identifiable
-import com.yarolegovich.wellsql.core.annotation.Column
-import com.yarolegovich.wellsql.core.annotation.PrimaryKey
-import com.yarolegovich.wellsql.core.annotation.RawConstraints
-import com.yarolegovich.wellsql.core.annotation.Table
-import org.wordpress.android.fluxc.persistence.WellSqlConfig
 
-@Table(addOn = WellSqlConfig.ADDON_WOOCOMMERCE)
-@RawConstraints(
-        "FOREIGN KEY(LOCAL_SITE_ID) REFERENCES SiteModel(_id) ON DELETE CASCADE",
-        "UNIQUE (REMOTE_PRODUCT_REVIEW_ID, REMOTE_PRODUCT_ID, LOCAL_SITE_ID) ON CONFLICT REPLACE"
+// todo: as soon as SiteModel is migrated to Room, add foreign key constraint
+@Entity(
+    tableName = "ProductReviewEntity",
+    primaryKeys = ["localSiteId", "remoteProductReviewId"],
 )
-data class WCProductReviewModel(@PrimaryKey @Column private var id: Int = 0) : Identifiable {
-    companion object {
-        private val json by lazy { Gson() }
-    }
-
-    @Column var localSiteId = 0
-
+data class WCProductReviewModel(
+    val localSiteId: Int = 0,
     /**
      * Remote unique identifier for this product review
      */
-    @Column var remoteProductReviewId = 0L // The unique ID for this product review on the server
+    val remoteProductReviewId: Long = 0L, // The unique ID for this product review on the server,
 
     /**
      * Unique identifier for the product this review belongs to
      */
-    @Column var remoteProductId = 0L
+    val remoteProductId: Long = 0L,
 
     /**
      * The date the review was created, in UTC, ISO8601 formatted
      */
-    @Column var dateCreated = ""
+    val dateCreated: String = "",
 
     /**
      * Status of the review. Options: approved, hold, spam, unspam, trash, and untrash.
      */
-    @Column var status = ""
+    val status: String = "",
 
     /**
      * Name of the reviewer
      */
     @SerializedName("reviewer")
-    @Column var reviewerName = ""
+    val reviewerName: String = "",
 
     /**
      * Reviewer email address
      */
-    @Column var reviewerEmail = ""
+    val reviewerEmail: String = "",
 
     /**
      * The content of the review
      */
-    @Column var review = ""
+    val review: String = "",
 
     /**
      * Review rating (0 to 5)
      */
-    @Column var rating = 0
+    val rating: Int = 0,
 
     /**
      * True if the reviewer purchased the product being reviewed, else false
      */
-    @Column var verified = false
+    val verified: Boolean = false,
 
     @SerializedName("reviewer_avatar_urls")
-    @Column var reviewerAvatarsJson = ""
+    val reviewerAvatarsJson: String = "",
+) {
+    companion object {
+        private val json by lazy { Gson() }
+    }
 
     /**
      * A mapping of reviewer avatar URL's by their size:
@@ -87,26 +81,5 @@ data class WCProductReviewModel(@PrimaryKey @Column private var id: Int = 0) : I
             }
         }
         result
-    }
-
-    override fun setId(id: Int) {
-        this.id = id
-    }
-
-    override fun getId() = this.id
-
-    enum class AvatarSize(val size: Int) {
-        SMALL(24), MEDIUM(48), LARGE(96);
-
-        companion object {
-            fun getAvatarSizeForValue(size: Int): AvatarSize {
-                return when (size) {
-                    SMALL.size -> SMALL
-                    MEDIUM.size -> MEDIUM
-                    LARGE.size -> LARGE
-                    else -> MEDIUM
-                }
-            }
-        }
     }
 }

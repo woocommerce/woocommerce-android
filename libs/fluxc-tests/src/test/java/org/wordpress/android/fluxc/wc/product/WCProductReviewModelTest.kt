@@ -2,9 +2,9 @@ package org.wordpress.android.fluxc.wc.product
 
 import org.junit.Test
 import org.wordpress.android.fluxc.UnitTestUtils
-import org.wordpress.android.fluxc.model.WCProductReviewModel.AvatarSize.LARGE
-import org.wordpress.android.fluxc.model.WCProductReviewModel.AvatarSize.MEDIUM
-import org.wordpress.android.fluxc.model.WCProductReviewModel.AvatarSize.SMALL
+import org.wordpress.android.fluxc.model.AvatarSize.LARGE
+import org.wordpress.android.fluxc.model.AvatarSize.MEDIUM
+import org.wordpress.android.fluxc.model.AvatarSize.SMALL
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 import kotlin.test.assertNotNull

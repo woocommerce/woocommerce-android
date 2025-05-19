@@ -3,7 +3,7 @@ package com.woocommerce.android.model
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.WCProductReviewModel
-import org.wordpress.android.fluxc.model.WCProductReviewModel.AvatarSize.SMALL
+import org.wordpress.android.fluxc.model.AvatarSize.SMALL
 import org.wordpress.android.util.DateTimeUtils
 import java.util.Date
 

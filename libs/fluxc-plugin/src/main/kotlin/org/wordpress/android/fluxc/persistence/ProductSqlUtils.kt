@@ -4,8 +4,6 @@ package org.wordpress.android.fluxc.persistence
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.wellsql.generated.WCProductReviewModelTable
-import com.yarolegovich.wellsql.SelectQuery
 import com.yarolegovich.wellsql.WellSql
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -62,90 +60,97 @@ internal object ProductSqlUtils {
     }
 
     fun insertOrUpdateProductReview(productReview: WCProductReviewModel): Int {
-        val result = WellSql.select(WCProductReviewModel::class.java)
-            .where().beginGroup()
-            .equals(WCProductReviewModelTable.ID, productReview.id)
-            .or()
-            .beginGroup()
-            .equals(WCProductReviewModelTable.REMOTE_PRODUCT_REVIEW_ID, productReview.remoteProductReviewId)
-            .equals(WCProductReviewModelTable.LOCAL_SITE_ID, productReview.localSiteId)
-            .endGroup()
-            .endGroup().endWhere()
-            .asModel.firstOrNull()
-
-        return if (result == null) {
-            // Insert
-            WellSql.insert(productReview).execute()
-            1
-        } else {
-            // Update
-            val oldId = result.id
-            WellSql.update(WCProductReviewModel::class.java).whereId(oldId)
-                .put(productReview, UpdateAllExceptId(WCProductReviewModel::class.java)).execute()
-        }
+//        val result = WellSql.select(WCProductReviewModel::class.java)
+//            .where().beginGroup()
+//            .equals(WCProductReviewModelTable.ID, productReview.id)
+//            .or()
+//            .beginGroup()
+//            .equals(WCProductReviewModelTable.REMOTE_PRODUCT_REVIEW_ID, productReview.remoteProductReviewId)
+//            .equals(WCProductReviewModelTable.LOCAL_SITE_ID, productReview.localSiteId)
+//            .endGroup()
+//            .endGroup().endWhere()
+//            .asModel.firstOrNull()
+//
+//        return if (result == null) {
+//            // Insert
+//            WellSql.insert(productReview).execute()
+//            1
+//        } else {
+//            // Update
+//            val oldId = result.id
+//            WellSql.update(WCProductReviewModel::class.java).whereId(oldId)
+//                .put(productReview, UpdateAllExceptId(WCProductReviewModel::class.java)).execute()
+//        }
+        return 1
     }
 
-    fun deleteProductReview(productReview: WCProductReviewModel) =
-        WellSql.delete(WCProductReviewModel::class.java)
-            .where()
-            .equals(WCProductReviewModelTable.REMOTE_PRODUCT_REVIEW_ID, productReview.remoteProductReviewId)
-            .endWhere().execute()
+    fun deleteProductReview(productReview: WCProductReviewModel) = Unit
+//        WellSql.delete(WCProductReviewModel::class.java)
+//            .where()
+//            .equals(WCProductReviewModelTable.REMOTE_PRODUCT_REVIEW_ID, productReview.remoteProductReviewId)
+//            .endWhere().execute()
 
     fun getProductReviewByRemoteId(
         localSiteId: Int,
         remoteReviewId: Long
     ): WCProductReviewModel? {
-        return WellSql.select(WCProductReviewModel::class.java)
-            .where()
-            .beginGroup()
-            .equals(WCProductReviewModelTable.LOCAL_SITE_ID, localSiteId)
-            .equals(WCProductReviewModelTable.REMOTE_PRODUCT_REVIEW_ID, remoteReviewId)
-            .endGroup()
-            .endWhere()
-            .asModel.firstOrNull()
+        return null
+//        return WellSql.select(WCProductReviewModel::class.java)
+//            .where()
+//            .beginGroup()
+//            .equals(WCProductReviewModelTable.LOCAL_SITE_ID, localSiteId)
+//            .equals(WCProductReviewModelTable.REMOTE_PRODUCT_REVIEW_ID, remoteReviewId)
+//            .endGroup()
+//            .endWhere()
+//            .asModel.firstOrNull()
     }
 
     fun getProductReviewsForSite(site: SiteModel): List<WCProductReviewModel> {
-        return WellSql.select(WCProductReviewModel::class.java)
-            .where()
-            .equals(WCProductReviewModelTable.LOCAL_SITE_ID, site.id)
-            .endWhere()
-            .orderBy(WCProductReviewModelTable.DATE_CREATED, SelectQuery.ORDER_DESCENDING)
-            .asModel
+        return emptyList()
+//        return WellSql.select(WCProductReviewModel::class.java)
+//            .where()
+//            .equals(WCProductReviewModelTable.LOCAL_SITE_ID, site.id)
+//            .endWhere()
+//            .orderBy(WCProductReviewModelTable.DATE_CREATED, SelectQuery.ORDER_DESCENDING)
+//            .asModel
     }
 
     fun getProductReviewsByReviewIds(reviewIds: List<Long>): List<WCProductReviewModel> {
-        return WellSql.select(WCProductReviewModel::class.java)
-            .where()
-            .isIn(WCProductReviewModelTable.REMOTE_PRODUCT_REVIEW_ID, reviewIds)
-            .endWhere()
-            .orderBy(WCProductReviewModelTable.DATE_CREATED, SelectQuery.ORDER_DESCENDING)
-            .asModel
+        return emptyList()
+//        return WellSql.select(WCProductReviewModel::class.java)
+//            .where()
+//            .isIn(WCProductReviewModelTable.REMOTE_PRODUCT_REVIEW_ID, reviewIds)
+//            .endWhere()
+//            .orderBy(WCProductReviewModelTable.DATE_CREATED, SelectQuery.ORDER_DESCENDING)
+//            .asModel
     }
 
     fun getProductReviewsForProductAndSiteId(
         localSiteId: Int,
         remoteProductId: Long
     ): List<WCProductReviewModel> {
-        return WellSql.select(WCProductReviewModel::class.java)
-            .where().beginGroup()
-            .equals(WCProductReviewModelTable.REMOTE_PRODUCT_ID, remoteProductId)
-            .equals(WCProductReviewModelTable.LOCAL_SITE_ID, localSiteId)
-            .endGroup().endWhere()
-            .orderBy(WCProductReviewModelTable.DATE_CREATED, SelectQuery.ORDER_DESCENDING)
-            .asModel
+        return emptyList()
+//        return WellSql.select(WCProductReviewModel::class.java)
+//            .where().beginGroup()
+//            .equals(WCProductReviewModelTable.REMOTE_PRODUCT_ID, remoteProductId)
+//            .equals(WCProductReviewModelTable.LOCAL_SITE_ID, localSiteId)
+//            .endGroup().endWhere()
+//            .orderBy(WCProductReviewModelTable.DATE_CREATED, SelectQuery.ORDER_DESCENDING)
+//            .asModel
     }
 
     fun deleteAllProductReviewsForSite(site: SiteModel): Int {
-        return WellSql.delete(WCProductReviewModel::class.java)
-            .where()
-            .equals(WCProductReviewModelTable.LOCAL_SITE_ID, site.id)
-            .or()
-            .equals(WCProductReviewModelTable.LOCAL_SITE_ID, 0) // Should never happen, but sanity cleanup
-            .endWhere().execute()
+        return 0
+//        return WellSql.delete(WCProductReviewModel::class.java)
+//            .where()
+//            .equals(WCProductReviewModelTable.LOCAL_SITE_ID, site.id)
+//            .or()
+//            .equals(WCProductReviewModelTable.LOCAL_SITE_ID, 0) // Should never happen, but sanity cleanup
+//            .endWhere().execute()
     }
 
-    fun deleteAllProductReviews() = WellSql.delete(WCProductReviewModel::class.java).execute()
+    fun deleteAllProductReviews() = Unit
+//        WellSql.delete(WCProductReviewModel::class.java).execute()
 
     private fun executeInTransaction(block: () -> Unit) {
         val db = WellSql.giveMeWritableDb()
