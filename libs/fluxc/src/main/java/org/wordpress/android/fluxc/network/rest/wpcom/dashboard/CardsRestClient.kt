@@ -7,7 +7,7 @@ import com.google.gson.annotations.SerializedName
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.endpoint.WPCOMV2
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.activity.ActivityLogModel
+import org.wordpress.android.fluxc.model.dashboard.ActivityLogModel
 import org.wordpress.android.fluxc.model.dashboard.CardModel
 import org.wordpress.android.fluxc.model.dashboard.CardModel.ActivityCardModel
 import org.wordpress.android.fluxc.model.dashboard.CardModel.DynamicCardsModel
@@ -26,7 +26,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.WPComGson
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder.Response.Error
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder.Response.Success
-import org.wordpress.android.fluxc.network.rest.wpcom.activity.ActivityLogRestClient.ActivitiesResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.auth.AccessToken
 import org.wordpress.android.fluxc.store.dashboard.CardsStore.ActivityCardError
 import org.wordpress.android.fluxc.store.dashboard.CardsStore.ActivityCardErrorType
@@ -37,6 +36,8 @@ import org.wordpress.android.fluxc.store.dashboard.CardsStore.PostCardError
 import org.wordpress.android.fluxc.store.dashboard.CardsStore.PostCardErrorType
 import org.wordpress.android.fluxc.store.dashboard.CardsStore.TodaysStatsCardError
 import org.wordpress.android.fluxc.store.dashboard.CardsStore.TodaysStatsCardErrorType
+import org.wordpress.android.fluxc.tools.FormattableContent
+import java.util.Date
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
@@ -298,4 +299,43 @@ fun toActivityCardError(error: String): ActivityCardError {
         else -> ActivityCardErrorType.GENERIC_ERROR
     }
     return ActivityCardError(errorType, error)
+}
+
+@Suppress("ConstructorParameterNaming")
+class ActivitiesResponse(
+    val totalItems: Int?,
+    val summary: String?,
+    val current: Page?,
+    // This class is reused in CardsRestClient, the error field is not used for activity log
+    val error: String? = null
+) {
+    class Page(val orderedItems: List<ActivityResponse>)
+
+    data class ActivityResponse(
+        val summary: String?,
+        val content: FormattableContent?,
+        val name: String?,
+        val actor: Actor?,
+        val type: String?,
+        val published: Date?,
+        val generator: Generator?,
+        val is_rewindable: Boolean?,
+        val rewind_id: String?,
+        val gridicon: String?,
+        val status: String?,
+        val activity_id: String?
+    )
+
+    class Actor(
+        val type: String?,
+        val name: String?,
+        val external_user_id: Long?,
+        val wpcom_user_id: Long?,
+        val icon: Icon?,
+        val role: String?
+    )
+
+    class Icon(val type: String?, val url: String?, val width: Int?, val height: Int?)
+
+    class Generator(val jetpack_version: Float?, val blog_id: Long?)
 }

@@ -7,12 +7,13 @@ import org.junit.runners.Parameterized.Parameters
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.list.ListDescriptorUnitTestCase
-import org.wordpress.android.fluxc.list.post.LIST_DESCRIPTOR_TEST_FIRST_MOCK_SITE_LOCAL_SITE_ID
-import org.wordpress.android.fluxc.list.post.LIST_DESCRIPTOR_TEST_QUERY_1
-import org.wordpress.android.fluxc.list.post.LIST_DESCRIPTOR_TEST_QUERY_2
-import org.wordpress.android.fluxc.list.post.LIST_DESCRIPTOR_TEST_SECOND_MOCK_SITE_LOCAL_SITE_ID
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderListDescriptor
+
+const val LIST_DESCRIPTOR_TEST_FIRST_MOCK_SITE_LOCAL_SITE_ID = 1
+const val LIST_DESCRIPTOR_TEST_SECOND_MOCK_SITE_LOCAL_SITE_ID = 2
+const val LIST_DESCRIPTOR_TEST_QUERY_1 = "some query"
+const val LIST_DESCRIPTOR_TEST_QUERY_2 = "another query"
 
 private typealias WCOrderListDescriptorTestCase = ListDescriptorUnitTestCase<WCOrderListDescriptor>
 
