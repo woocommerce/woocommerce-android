@@ -37,7 +37,7 @@ class ReviewDetailRepository @Inject constructor(
     suspend fun fetchProductReview(remoteReviewId: Long): RequestResult {
         if (fetchProductReviewFromApi(remoteReviewId)) {
             getProductReviewFromDb(remoteReviewId)?.let {
-                if (fetchProductByRemoteId(it.remoteProductId, remoteReviewId)) {
+                if (fetchProductByRemoteId(it.remoteProductId.value, remoteReviewId)) {
                     return SUCCESS
                 }
             }

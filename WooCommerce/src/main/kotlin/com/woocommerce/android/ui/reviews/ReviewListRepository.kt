@@ -15,6 +15,7 @@ import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.REVIEWS
 import com.woocommerce.android.util.dispatchAndAwait
+import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -28,6 +29,7 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCTS
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.WCProductReviewModel
 import org.wordpress.android.fluxc.model.notification.NotificationModel.Subkind.STORE_REVIEW
 import org.wordpress.android.fluxc.store.NotificationStore
@@ -35,7 +37,6 @@ import org.wordpress.android.fluxc.store.NotificationStore.*
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.FetchProductsPayload
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
-import javax.inject.Inject
 
 class ReviewListRepository @Inject constructor(
     private val dispatcher: Dispatcher,
@@ -97,7 +98,7 @@ class ReviewListRepository @Inject constructor(
                         if (wasFetchReviewsSuccess) {
                             getProductReviewsFromDB().map { it.remoteProductId }
                                 .distinct()
-                                .takeIf { it.isNotEmpty() }?.let { fetchProductsByRemoteId(it) }
+                                .takeIf { it.isNotEmpty() }?.let { fetchProductsByRemoteId(it.map(RemoteId::value)) }
                         }
                         send(FetchReviewsResult.ReviewsFetched(if (wasFetchReviewsSuccess) SUCCESS else ERROR))
                     }
