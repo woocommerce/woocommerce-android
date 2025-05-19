@@ -252,33 +252,34 @@ class WooPosCartItemsUpdaterTest {
     }
 
     @Test
-    fun `given no changes in product info, when called, then cache is not updated and products not changed`() = runTest {
-        // GIVEN
-        val simpleProduct = WooPosCartItemViewState.Product.Simple(
-            itemNumber = 1,
-            id = 1L,
-            name = "Product",
-            price = "10.0$",
-            imageUrl = "url",
-            description = null
-        )
-        val itemsInCart = listOf(simpleProduct)
-        val updatedInfo = ParentToChildrenEvent.OrderCreated.ProductInfo.Simple(
-            id = 1L,
-            name = "Product",
-            finalPrice = BigDecimal("10.0"),
-            basePrice = BigDecimal("10.0"),
-            quantity = 1f
-        )
+    fun `given no changes in product info, when called, then cache is not updated and products not changed`() =
+        runTest {
+            // GIVEN
+            val simpleProduct = WooPosCartItemViewState.Product.Simple(
+                itemNumber = 1,
+                id = 1L,
+                name = "Product",
+                price = "10.0$",
+                imageUrl = "url",
+                description = null
+            )
+            val itemsInCart = listOf(simpleProduct)
+            val updatedInfo = ParentToChildrenEvent.OrderCreated.ProductInfo.Simple(
+                id = 1L,
+                name = "Product",
+                finalPrice = BigDecimal("10.0"),
+                basePrice = BigDecimal("10.0"),
+                quantity = 1f
+            )
 
-        // WHEN
-        val result = updater.invoke(itemsInCart, listOf(updatedInfo), emptyList())
+            // WHEN
+            val result = updater.invoke(itemsInCart, listOf(updatedInfo), emptyList())
 
-        // THEN
-        assertThat(result.updatedItems).hasSize(1)
-        verify(productsCache, never()).updateProduct(any())
-        assertThat(result.productsChanged).isFalse()
-    }
+            // THEN
+            assertThat(result.updatedItems).hasSize(1)
+            verify(productsCache, never()).updateProduct(any())
+            assertThat(result.productsChanged).isFalse()
+        }
 
     @Test
     fun `given product deleted, when called, then cache is updated correctly`() = runTest {
@@ -412,6 +413,49 @@ class WooPosCartItemsUpdaterTest {
             val updatedCoupon2 = result.updatedItems[1] as WooPosCartItemViewState.Coupon
             assertThat(updatedCoupon2.validationState).isEqualTo(CouponValidationState.Valid("-10.0$"))
         }
+
+    @Test
+    fun `given cart with coupon, when called, then couponsChanged is true`() = runTest {
+        // GIVEN
+        val coupon = generateCoupon(code = "COUPON1")
+        val itemsInCart = listOf(coupon)
+        val updatedCoupons = listOf(
+            generateCouponLine(
+                code = "COUPON1",
+                discountAmount = "5.0"
+            )
+        )
+
+        // WHEN
+        val result = updater.invoke(itemsInCart, emptyList(), updatedCoupons)
+
+        // THEN
+        assertThat(result.couponsChanged).isTrue()
+    }
+
+    @Test
+    fun `given cart without coupon, when called, then couponsChanged is false`() = runTest {
+        // GIVEN
+
+        // WHEN
+        val result = updater.invoke(emptyList(), emptyList(), emptyList())
+
+        // THEN
+        assertThat(result.couponsChanged).isFalse()
+    }
+
+    @Test
+    fun `given empty cart, when called, then productsChanged and couponsChanged flags are false`() = runTest {
+        // GIVEN
+        val itemsInCart = emptyList<WooPosCartItemViewState>()
+
+        // WHEN
+        val result = updater.invoke(itemsInCart, emptyList(), emptyList())
+
+        // THEN
+        assertThat(result.productsChanged).isFalse()
+        assertThat(result.couponsChanged).isFalse()
+    }
 
     private fun generateCoupon(
         code: String = "COUPON1",

@@ -22,6 +22,7 @@ class WooPosCartItemsUpdater @Inject constructor(
     ): CartItemsUpdaterResult {
         val mutableCurrentBodyList = itemsInCart.toMutableList()
         var productsChanged = false
+        var couponsChanged = false
 
         val availableProductsMap = createAvailableProductsMap(updatedProducts)
 
@@ -61,6 +62,7 @@ class WooPosCartItemsUpdater @Inject constructor(
                 }
 
                 is WooPosCartItemViewState.Coupon -> {
+                    couponsChanged = true
                     mutableCurrentBodyList[index] = updateCouponsWithFormattedDiscount(updatedCoupons, item)
                 }
             }
@@ -69,6 +71,7 @@ class WooPosCartItemsUpdater @Inject constructor(
         return CartItemsUpdaterResult(
             updatedItems = mutableCurrentBodyList,
             productsChanged = productsChanged,
+            couponsChanged = couponsChanged,
         )
     }
 
@@ -189,5 +192,6 @@ class WooPosCartItemsUpdater @Inject constructor(
     data class CartItemsUpdaterResult(
         val updatedItems: List<WooPosCartItemViewState>,
         val productsChanged: Boolean,
+        val couponsChanged: Boolean,
     )
 }
