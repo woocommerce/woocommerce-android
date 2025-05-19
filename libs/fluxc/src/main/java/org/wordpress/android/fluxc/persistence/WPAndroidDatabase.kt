@@ -26,8 +26,6 @@ import org.wordpress.android.fluxc.persistence.blaze.BlazeTargetingTopicEntity
 import org.wordpress.android.fluxc.persistence.coverters.StringListConverter
 import org.wordpress.android.fluxc.persistence.domains.DomainDao
 import org.wordpress.android.fluxc.persistence.domains.DomainDao.DomainEntity
-import org.wordpress.android.fluxc.persistence.jetpacksocial.JetpackSocialDao
-import org.wordpress.android.fluxc.persistence.jetpacksocial.JetpackSocialDao.JetpackSocialEntity
 
 @Database(
         version = 29,
@@ -39,7 +37,6 @@ import org.wordpress.android.fluxc.persistence.jetpacksocial.JetpackSocialDao.Je
             RemoteConfig::class,
             DomainEntity::class,
             BlazeCampaignEntity::class,
-            JetpackSocialEntity::class,
             BlazeCampaignObjectiveEntity::class,
             BlazeTargetingLanguageEntity::class,
             BlazeTargetingDeviceEntity::class,
@@ -76,8 +73,6 @@ abstract class WPAndroidDatabase : RoomDatabase() {
     abstract fun blazeCampaignsDao(): BlazeCampaignsDao
 
     abstract fun blazeTargetingDao(): BlazeTargetingDao
-
-    abstract fun jetpackSocialDao(): JetpackSocialDao
 
     abstract fun blazeObjectivesDao(): BlazeObjectivesDao
 
