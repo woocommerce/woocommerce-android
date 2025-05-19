@@ -4,6 +4,7 @@ import androidx.room.Entity
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.annotations.SerializedName
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.*
 
 // todo: as soon as SiteModel is migrated to Room, add foreign key constraint
 @Entity(
@@ -11,16 +12,16 @@ import com.google.gson.annotations.SerializedName
     primaryKeys = ["localSiteId", "remoteProductReviewId"],
 )
 data class WCProductReviewModel(
-    val localSiteId: Int = 0,
+    val localSiteId: LocalId = LocalId(0),
     /**
      * Remote unique identifier for this product review
      */
-    val remoteProductReviewId: Long = 0L, // The unique ID for this product review on the server,
+    val remoteProductReviewId: RemoteId = RemoteId(0L), // The unique ID for this product review on the server,
 
     /**
      * Unique identifier for the product this review belongs to
      */
-    val remoteProductId: Long = 0L,
+    val remoteProductId: RemoteId = RemoteId(0L),
 
     /**
      * The date the review was created, in UTC, ISO8601 formatted

@@ -75,6 +75,7 @@ class WCLeaderboardsStoreTest {
                 productCategoriesDao = database.productCategoriesDao,
                 productTagsDao = database.productTagsDao,
                 productShippingClassesDao = database.productShippingClassesDao,
+                productReviewsDao = database.productReviewsDao,
             )
         )
         prepareMocks()
