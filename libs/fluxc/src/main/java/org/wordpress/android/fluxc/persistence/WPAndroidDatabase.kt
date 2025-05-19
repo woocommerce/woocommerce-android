@@ -11,7 +11,6 @@ import androidx.room.migration.AutoMigrationSpec
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import org.wordpress.android.fluxc.persistence.FeatureFlagConfigDao.FeatureFlag
-import org.wordpress.android.fluxc.persistence.JetpackCPConnectedSitesDao.JetpackCPConnectedSiteEntity
 import org.wordpress.android.fluxc.persistence.PlanOffersDao.PlanOffer
 import org.wordpress.android.fluxc.persistence.PlanOffersDao.PlanOfferFeature
 import org.wordpress.android.fluxc.persistence.PlanOffersDao.PlanOfferId
@@ -38,7 +37,6 @@ import org.wordpress.android.fluxc.persistence.jetpacksocial.JetpackSocialDao.Je
             PlanOfferFeature::class,
             FeatureFlag::class,
             RemoteConfig::class,
-            JetpackCPConnectedSiteEntity::class,
             DomainEntity::class,
             BlazeCampaignEntity::class,
             JetpackSocialEntity::class,
@@ -74,8 +72,6 @@ abstract class WPAndroidDatabase : RoomDatabase() {
     abstract fun remoteConfigDao(): RemoteConfigDao
 
     abstract fun domainDao(): DomainDao
-
-    abstract fun jetpackCPConnectedSitesDao(): JetpackCPConnectedSitesDao
 
     abstract fun blazeCampaignsDao(): BlazeCampaignsDao
 
