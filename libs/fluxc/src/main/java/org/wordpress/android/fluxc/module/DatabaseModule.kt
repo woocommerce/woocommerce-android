@@ -12,7 +12,6 @@ import org.wordpress.android.fluxc.persistence.WPAndroidDatabase.Companion.build
 import org.wordpress.android.fluxc.persistence.blaze.BlazeCampaignsDao
 import org.wordpress.android.fluxc.persistence.blaze.BlazeObjectivesDao
 import org.wordpress.android.fluxc.persistence.blaze.BlazeTargetingDao
-import org.wordpress.android.fluxc.persistence.dashboard.CardsDao
 import org.wordpress.android.fluxc.persistence.domains.DomainDao
 import org.wordpress.android.fluxc.persistence.jetpacksocial.JetpackSocialDao
 import javax.inject.Singleton
@@ -29,12 +28,6 @@ class DatabaseModule {
     @Provides
     fun providePlanOffersDao(wpAndroidDatabase: WPAndroidDatabase): PlanOffersDao {
         return wpAndroidDatabase.planOffersDao()
-    }
-
-    @Singleton
-    @Provides
-    fun provideDashboardCardsDao(wpAndroidDatabase: WPAndroidDatabase): CardsDao {
-        return wpAndroidDatabase.dashboardCardsDao()
     }
 
     @Singleton
