@@ -382,7 +382,7 @@ class ReviewListRepository @Inject constructor(
     private suspend fun getProductReviewsFromDB(productId: Long? = null): List<WCProductReviewModel> {
         return withContext(Dispatchers.IO) {
             productId?.let { productId ->
-                productStore.getProductReviewsForProductAndSiteId(selectedSite.get().id, productId)
+                productStore.getProductReviewsForProductAndSiteId(selectedSite.get(), productId)
             } ?: productStore.getProductReviewsForSite(selectedSite.get())
         }
     }

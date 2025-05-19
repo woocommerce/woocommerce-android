@@ -174,7 +174,7 @@ class ReviewDetailRepository @Inject constructor(
 
     private suspend fun getProductReviewFromDb(remoteId: Long): WCProductReviewModel? {
         return withContext(Dispatchers.IO) {
-            productStore.getProductReviewByRemoteId(selectedSite.get().id, remoteId)
+            productStore.getProductReviewByRemoteId(selectedSite.get().localId(), RemoteId(remoteId))
         }
     }
 

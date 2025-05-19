@@ -71,6 +71,7 @@ import org.wordpress.android.util.AppLog.T.API
 import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
+import org.wordpress.android.fluxc.persistence.dao.ProductReviewsDao
 
 @Suppress("LargeClass")
 @Singleton
@@ -86,6 +87,7 @@ class WCProductStore @Inject internal constructor(
     private val productCategoriesDao: ProductCategoriesDao,
     private val productTagsDao: ProductTagsDao,
     private val productShippingClassesDao: ProductShippingClassesDao,
+    private val productReviewsDao: ProductReviewsDao,
 ) : Store(dispatcher) {
     companion object {
         const val NUM_REVIEWS_PER_FETCH = 25
@@ -763,7 +765,6 @@ class WCProductStore @Inject internal constructor(
     ) : OnChanged<ProductError>()
 
     class OnProductReviewChanged(
-        var rowsAffected: Int,
         var canLoadMore: Boolean = false
     ) : OnChanged<ProductError>() {
         var causeOfChange: WCProductAction? = null
@@ -913,14 +914,14 @@ class WCProductStore @Inject internal constructor(
         return productsDao.getProduct(site.id, remoteProductId) != null
     }
 
-    fun getProductReviewsForSite(site: SiteModel): List<WCProductReviewModel> =
-        ProductSqlUtils.getProductReviewsForSite(site)
+    suspend fun getProductReviewsForSite(site: SiteModel): List<WCProductReviewModel> =
+        productReviewsDao.getProductReviews(site.localId())
 
-    fun getProductReviewsByReviewId(reviewIds: List<Long>): List<WCProductReviewModel> =
-        ProductSqlUtils.getProductReviewsByReviewIds(reviewIds)
+    suspend fun getProductReviewsByReviewId(reviewIds: List<Long>): List<WCProductReviewModel> =
+        productReviewsDao.getProductReviews(ids = reviewIds.map { RemoteId(it) })
 
-    fun getProductReviewsForProductAndSiteId(localSiteId: Int, remoteProductId: Long): List<WCProductReviewModel> =
-        ProductSqlUtils.getProductReviewsForProductAndSiteId(localSiteId, remoteProductId)
+    suspend fun getProductReviewsForProductAndSiteId(site: SiteModel, remoteProductId: Long): List<WCProductReviewModel> =
+        productReviewsDao.getProductReviews(siteId = site.localId(), RemoteId(remoteProductId))
 
     /**
      * returns the count of products for the given [SiteModel] and [remoteProductIds]
@@ -948,11 +949,11 @@ class WCProductStore @Inject internal constructor(
     suspend fun getProductTagByName(site: SiteModel, tagName: String) =
         productTagsDao.getProductTag(siteId = site.localId(), name = tagName)
 
-    fun getProductReviewByRemoteId(
-        localSiteId: Int,
-        remoteReviewId: Long
-    ): WCProductReviewModel? = ProductSqlUtils
-        .getProductReviewByRemoteId(localSiteId, remoteReviewId)
+    suspend fun getProductReviewByRemoteId(
+        localSiteId: LocalId,
+        remoteReviewId: RemoteId
+    ): WCProductReviewModel? = productReviewsDao
+        .getProductReview(siteId = localSiteId, id = remoteReviewId)
 
     suspend fun getProductCategoriesForSite(site: SiteModel, sortType: ProductCategorySorting = DEFAULT_CATEGORY_SORTING) =
         productCategoriesDao.getProductCategories(site.localId(), sortType)
@@ -1350,16 +1351,17 @@ class WCProductStore @Inject internal constructor(
             }
 
             val onProductReviewChanged = if (response.isError) {
-                OnProductReviewChanged(0).also { it.error = response.error }
+                OnProductReviewChanged().also { it.error = response.error }
             } else {
                 // Clear existing product reviews if this is a fresh fetch (loadMore = false).
                 // This is the simplest way to keep our local reviews in sync with remote reviews
                 // in case of deletions or status updates.
                 if (deletePreviouslyCachedReviews) {
-                    ProductSqlUtils.deleteAllProductReviewsForSite(response.site)
+                    productReviewsDao.deleteProductReviewsForSite(response.site.localId())
                 }
-                val rowsAffected = ProductSqlUtils.insertOrUpdateProductReviews(response.reviews)
-                OnProductReviewChanged(rowsAffected, canLoadMore = response.canLoadMore)
+
+                productReviewsDao.upsertProductReviews(response.reviews)
+                OnProductReviewChanged(canLoadMore = response.canLoadMore)
             }
 
             onProductReviewChanged
@@ -1371,12 +1373,12 @@ class WCProductStore @Inject internal constructor(
             val result = wcProductRestClient.fetchProductReviewById(payload.site, payload.remoteReviewId)
 
             return@withDefaultContext if (result.isError) {
-                OnProductReviewChanged(0).also { it.error = result.error }
+                OnProductReviewChanged().also { it.error = result.error }
             } else {
-                val rowsAffected = result.productReview?.let {
-                    ProductSqlUtils.insertOrUpdateProductReview(it)
-                } ?: 0
-                OnProductReviewChanged(rowsAffected)
+                result.productReview?.let {
+                    productReviewsDao.upsertProductReview(it)
+                }
+                OnProductReviewChanged()
             }
         }
     }
@@ -1399,10 +1401,10 @@ class WCProductStore @Inject internal constructor(
                 result.result?.let { review ->
                     if (review.status == "spam" || review.status == "trash") {
                         // Delete this review from the database
-                        ProductSqlUtils.deleteProductReview(review)
+                        productReviewsDao.deleteProductReview(review)
                     } else {
                         // Insert or update in the database
-                        ProductSqlUtils.insertOrUpdateProductReview(review)
+                        productReviewsDao.upsertProductReview(review)
                     }
                 }
                 WooResult(result.result)
