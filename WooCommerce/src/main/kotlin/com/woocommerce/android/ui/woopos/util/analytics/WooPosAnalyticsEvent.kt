@@ -99,6 +99,18 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "coupons_create_tapped"
         }
 
+        data object CouponCreationInitiated : PaymentFlowTrackerEvent() {
+            override val name: String = "coupon_creation_initiated"
+        }
+
+        data object CouponCreationSuccess : PaymentFlowTrackerEvent() {
+            override val name: String = "coupon_creation_success"
+        }
+
+        data object CouponCreationFailed : PaymentFlowTrackerEvent() {
+            override val name: String = "coupon_creation_failed"
+        }
+
         @ExposedCopyVisibility
         data class ItemAddedToCart private constructor(
             val source: ItemsListSource,
