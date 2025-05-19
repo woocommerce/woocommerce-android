@@ -10,7 +10,6 @@ import androidx.room.TypeConverters
 import androidx.room.migration.AutoMigrationSpec
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import org.wordpress.android.fluxc.persistence.BloggingRemindersDao.BloggingReminders
 import org.wordpress.android.fluxc.persistence.FeatureFlagConfigDao.FeatureFlag
 import org.wordpress.android.fluxc.persistence.JetpackCPConnectedSitesDao.JetpackCPConnectedSiteEntity
 import org.wordpress.android.fluxc.persistence.PlanOffersDao.PlanOffer
@@ -38,7 +37,6 @@ import org.wordpress.android.fluxc.persistence.jetpacksocial.JetpackSocialDao.Je
 @Database(
         version = 29,
         entities = [
-            BloggingReminders::class,
             PlanOffer::class,
             PlanOfferId::class,
             PlanOfferFeature::class,
@@ -75,8 +73,6 @@ import org.wordpress.android.fluxc.persistence.jetpacksocial.JetpackSocialDao.Je
     ]
 )
 abstract class WPAndroidDatabase : RoomDatabase() {
-    abstract fun bloggingRemindersDao(): BloggingRemindersDao
-
     abstract fun planOffersDao(): PlanOffersDao
 
     abstract fun commentsDao(): CommentsDao
