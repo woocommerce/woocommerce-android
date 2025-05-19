@@ -198,7 +198,7 @@ class WooPosCartViewModel @Inject constructor(
             updatedProducts = event.updatedProducts,
             updatedCoupons = event.updatedCoupons,
         )
-        if(result.productsChanged || result.couponsChanged) {
+        if (result.productsChanged || result.couponsChanged) {
             _state.value = _state.value.copy(
                 body = body.copy(
                     itemsInCart = result.updatedItems,
