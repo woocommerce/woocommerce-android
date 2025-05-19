@@ -1,2 +1,0 @@
-22.3:
-WooCommerce mobil uygulamasını kolaylaştırdık! Ürün türleri artık POS menüsüne sorunsuz bir şekilde entegre edildi. Güncellenen bu tasarım ödeme işlemi sırasında ürün bilgilerini yönetmeyi basit ve sezgisel hale getirir.

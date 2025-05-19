@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 22.4
+This update brings product search and coupon support to Woo POS, making in-person selling smoother than ever. We've also polished the coupon creation flow and improved the "Custom amount" UI. Plus, a pesky crash caused by malformed tax data is now fixed for a more stable experience.
+
 ## 22.3
 We've streamlined the WooCommerce mobile app! Product types are now seamlessly integrated into the POS menu. This updated design makes managing product information during checkout simple and intuitive.
 
