@@ -3,7 +3,7 @@
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 22.5
 -----
-
+- [*] Added missing toolbar in tablet layout to Variation Attributes screen [https://github.com/woocommerce/woocommerce-android/pull/14097]
 
 22.4
 -----
