@@ -414,7 +414,6 @@ private fun LabelCreationScreenWithBottomSheet(
                 val scope = rememberCoroutineScope()
                 val pagerState = rememberPagerState { shipmentUIList.size }
 
-
                 LaunchedEffect(pagerState.targetPage) {
                     onSelectedShipmentChanged(pagerState.targetPage)
                 }
