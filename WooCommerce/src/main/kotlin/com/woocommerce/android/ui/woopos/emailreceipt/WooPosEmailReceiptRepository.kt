@@ -40,12 +40,9 @@ class WooPosEmailReceiptRepository @Inject constructor(
     private suspend fun triggerOrderReceiptSending(orderId: Long): Result<Unit> {
         val posReceiptsAreEnabled = FeatureFlag.POS_RECEIPTS.isEnabled() && wooCommercePluginSupportsPOSReceipts()
         val sendOrderResult = if (posReceiptsAreEnabled) {
-            orderStore.sendOrderReceipt(
-                selectedSite.get(),
-                orderId
-            )
-        } else {
             orderStore.sendOrderPOSReceipt(selectedSite.get(), orderId)
+        } else {
+            orderStore.sendOrderReceipt(selectedSite.get(), orderId)
         }
         return if (sendOrderResult.isError) {
             Result.failure(Exception("Failed to send order receipt"))
