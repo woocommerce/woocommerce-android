@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 44,
-    "identityHash": "79ca81473403482ccbb262a0f57948e5",
+    "identityHash": "cb01e6f797bcc7d5356515cbd72e4176",
     "entities": [
       {
         "tableName": "AddonEntity",
@@ -2689,7 +2689,7 @@
       },
       {
         "tableName": "ProductReviewEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`localSiteId` INTEGER NOT NULL, `remoteProductReviewId` INTEGER NOT NULL, `remoteProductId` INTEGER NOT NULL, `dateCreated` TEXT NOT NULL, `status` TEXT NOT NULL, `reviewerName` TEXT NOT NULL, `reviewerEmail` TEXT NOT NULL, `review` TEXT NOT NULL, `rating` INTEGER NOT NULL, `verified` INTEGER NOT NULL, `reviewerAvatarsJson` TEXT NOT NULL, PRIMARY KEY(`localSiteId`, `remoteProductReviewId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`localSiteId` INTEGER NOT NULL, `remoteProductReviewId` INTEGER NOT NULL, `remoteProductId` INTEGER NOT NULL, `dateCreated` TEXT NOT NULL, `status` TEXT NOT NULL, `reviewerName` TEXT NOT NULL, `reviewerEmail` TEXT NOT NULL, `review` TEXT NOT NULL, `rating` INTEGER NOT NULL, `verified` INTEGER NOT NULL, `reviewerAvatarsJson` TEXT NOT NULL, PRIMARY KEY(`localSiteId`, `remoteProductReviewId`, `remoteProductId`))",
         "fields": [
           {
             "fieldPath": "localSiteId",
@@ -2762,7 +2762,8 @@
           "autoGenerate": false,
           "columnNames": [
             "localSiteId",
-            "remoteProductReviewId"
+            "remoteProductReviewId",
+            "remoteProductId"
           ]
         },
         "indices": [],
@@ -2772,7 +2773,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '79ca81473403482ccbb262a0f57948e5')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'cb01e6f797bcc7d5356515cbd72e4176')"
     ]
   }
 }
