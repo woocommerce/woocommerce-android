@@ -119,9 +119,7 @@ class ProductRestClient @Inject constructor(
             when (response) {
                 is WPAPIResponse.Success -> {
                     response.data?.let {
-                        val newModel = productShippingClassResponseToProductShippingClassModel(
-                            it, site
-                        ).copy(localSiteId = site.localId())
+                        val newModel = productShippingClassResponseToProductShippingClassModel(it, site)
                         val payload = RemoteProductShippingClassPayload(newModel, site)
                         dispatcher.dispatch(
                             WCProductActionBuilder.newFetchedSingleProductShippingClassAction(
@@ -135,7 +133,7 @@ class ProductRestClient @Inject constructor(
                     val productError = wpAPINetworkErrorToProductError(response.error)
                     val payload = RemoteProductShippingClassPayload(
                         productError,
-                        WCProductShippingClassModel().copy(remoteShippingClassId = RemoteId(remoteShippingClassId)),
+                        WCProductShippingClassModel(remoteShippingClassId = RemoteId(remoteShippingClassId)),
                         site
                     )
                     dispatcher.dispatch(
@@ -2114,7 +2112,7 @@ class ProductRestClient @Inject constructor(
         response: ProductShippingClassApiResponse,
         site: SiteModel
     ): WCProductShippingClassModel {
-        return WCProductShippingClassModel().copy(
+        return WCProductShippingClassModel(
             remoteShippingClassId = RemoteId(response.id),
             localSiteId = site.localId(),
             name = response.name ?: "",
