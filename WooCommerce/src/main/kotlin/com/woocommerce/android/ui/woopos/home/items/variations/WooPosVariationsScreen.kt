@@ -187,7 +187,7 @@ fun VariationsError(modifier: Modifier, onRetryClicked: () -> Unit) {
         WooPosErrorScreen(
             modifier = modifier,
             message = stringResource(id = R.string.woopos_variations_loading_error_title),
-            reason = stringResource(id = R.string.woopos_products_loading_error_message),
+            reason = stringResource(id = R.string.woopos_variations_loading_error_message),
             primaryButton = Button(
                 text = stringResource(id = R.string.woopos_products_loading_error_retry_button),
                 click = onRetryClicked
