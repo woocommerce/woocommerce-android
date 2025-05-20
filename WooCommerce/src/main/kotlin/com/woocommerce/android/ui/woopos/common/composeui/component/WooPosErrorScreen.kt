@@ -31,7 +31,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiv
 @Composable
 fun WooPosErrorScreen(
     modifier: Modifier = Modifier,
-    icon: Painter = painterResource(id = R.drawable.ic_woo_pos_error_x),
+    icon: Painter = painterResource(id = R.drawable.ic_woo_pos_error),
     message: String,
     reason: String,
     primaryButton: Button? = null,

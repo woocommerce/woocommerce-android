@@ -16,6 +16,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
@@ -162,6 +163,7 @@ fun ProductsError(onRetryClicked: () -> Unit) {
         WooPosErrorScreen(
             message = stringResource(id = R.string.woopos_products_loading_error_title),
             reason = stringResource(id = R.string.woopos_products_loading_error_message),
+            icon = painterResource(id = R.drawable.ic_woo_pos_error_x),
             primaryButton = Button(
                 text = stringResource(id = R.string.woopos_products_loading_error_retry_button),
                 click = onRetryClicked
@@ -175,6 +177,7 @@ private fun ProductsPaginationError(onRetryClicked: () -> Unit) {
     WooPosPaginationErrorIndicator(
         message = stringResource(id = R.string.woopos_items_pagination_error_title),
         description = stringResource(id = R.string.woopos_items_pagination_error_description),
+        icon = painterResource(id = R.drawable.ic_woo_pos_error_x),
         primaryButton = Button(
             text = stringResource(id = R.string.woopos_items_pagination_try_again_label),
             click = onRetryClicked

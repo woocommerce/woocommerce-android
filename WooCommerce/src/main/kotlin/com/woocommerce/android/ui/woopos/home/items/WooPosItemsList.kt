@@ -36,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -516,12 +517,14 @@ fun WooPosItemsEmptyList(
     title: String,
     message: String,
     contentDescription: String,
+    icon: Painter = painterResource(R.drawable.ic_not_found),
 ) {
     WooPosItemsEmptyListInternal(
         modifier = modifier,
         title = title,
         message = message,
         contentDescription = contentDescription,
+        icon = icon,
         actionLabel = null,
         onActionClicked = null
     )
@@ -533,6 +536,7 @@ fun WooPosItemsEmptyList(
     title: String,
     message: String,
     contentDescription: String,
+    icon: Painter = painterResource(R.drawable.ic_not_found),
     actionLabel: String,
     onActionClicked: (() -> Unit),
 ) {
@@ -541,6 +545,7 @@ fun WooPosItemsEmptyList(
         title = title,
         message = message,
         contentDescription = contentDescription,
+        icon = icon,
         actionLabel = actionLabel,
         onActionClicked = onActionClicked
     )
@@ -552,6 +557,7 @@ private fun WooPosItemsEmptyListInternal(
     title: String,
     message: String,
     contentDescription: String,
+    icon: Painter = painterResource(R.drawable.ic_not_found),
     actionLabel: String?,
     onActionClicked: (() -> Unit)? = null,
 ) {
@@ -565,7 +571,7 @@ private fun WooPosItemsEmptyListInternal(
         ) {
             Image(
                 modifier = Modifier.size(104.dp),
-                imageVector = ImageVector.vectorResource(id = R.drawable.ic_not_found),
+                painter = icon,
                 contentDescription = contentDescription,
             )
 
