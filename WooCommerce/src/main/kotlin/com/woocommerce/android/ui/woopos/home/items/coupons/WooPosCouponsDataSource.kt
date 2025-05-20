@@ -12,10 +12,10 @@ class WooPosCouponsDataSource @Inject constructor(private val handler: CouponLis
     val couponsFlow: Flow<List<Coupon>> = handler.couponsFlow
 
     suspend fun clearCacheAndFetchFirstPage(): Result<CanLoadMore> {
-        return handler.fetchCoupons(searchQuery = null, forceRefresh = true)
+        return handler.fetchCoupons(searchQuery = null, forceRefresh = true, isPos = true)
     }
 
     suspend fun loadMore(): Result<CanLoadMore> {
-        return handler.loadMore()
+        return handler.loadMore(isPos = true)
     }
 }
