@@ -121,7 +121,6 @@ private fun CouponsPaginationError(onRetryClicked: () -> Unit) {
     WooPosPaginationErrorIndicator(
         message = stringResource(id = R.string.woopos_coupons_pagination_error_title),
         description = stringResource(id = R.string.woopos_coupons_pagination_error_description),
-        icon = painterResource(id = R.drawable.ic_woo_pos_error_x),
         primaryButton = Button(
             text = stringResource(id = R.string.woopos_coupons_pagination_try_again_label),
             click = onRetryClicked
