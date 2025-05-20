@@ -14,6 +14,7 @@ import com.woocommerce.android.databinding.FragmentEditVariationAttributesBindin
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.variations.attributes.edit.EditVariationAttributesViewModel.ViewState
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -39,6 +40,9 @@ class EditVariationAttributesFragment :
 
     private val skeletonView = SkeletonView()
 
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
+
     private var isLoadingSkeletonVisible: Boolean = false
         set(show) {
             field = show
@@ -61,6 +65,7 @@ class EditVariationAttributesFragment :
         _binding = FragmentEditVariationAttributesBinding.bind(view)
         setupObservers()
         setupViews()
+        setupToolbar()
         viewModel.start(navArgs.remoteProductId, navArgs.remoteVariationId)
     }
 
@@ -76,6 +81,15 @@ class EditVariationAttributesFragment :
     }
 
     override fun getFragmentTitle() = getString(R.string.product_attributes)
+
+    private fun setupToolbar() {
+        val toolbar = binding.toolbar
+        toolbar.title = getString(R.string.product_attributes)
+
+        toolbar.setNavigationOnClickListener {
+            viewModel.exit()
+        }
+    }
 
     private fun setupObservers() = viewModel.apply {
         viewStateLiveData.observe(viewLifecycleOwner, ::handleViewStateChanges)
