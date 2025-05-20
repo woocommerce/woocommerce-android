@@ -1687,7 +1687,7 @@ class ProductRestClient @Inject constructor(
                 val productData = response.data
                 if (productData != null) {
                     val reviews = productData.map { review ->
-                        productReviewResponseToProductReviewModel(review).copy(localSiteId = site.localId())
+                        productReviewResponseToProductReviewModel(response = review, siteId = site.localId())
                     }
                     FetchProductReviewsResponsePayload(
                         site,
@@ -1737,7 +1737,7 @@ class ProductRestClient @Inject constructor(
         return when (response) {
             is WPAPIResponse.Success -> {
                 response.data?.let {
-                    val review = productReviewResponseToProductReviewModel(it).copy(localSiteId = site.localId())
+                    val review = productReviewResponseToProductReviewModel(response = it, siteId = site.localId())
                     RemoteProductReviewPayload(site, review)
                 } ?: RemoteProductReviewPayload(
                     error = ProductError(GENERIC_ERROR, "Success response with empty data"),
@@ -1777,7 +1777,7 @@ class ProductRestClient @Inject constructor(
         )
 
         return response.toWooPayload {
-            productReviewResponseToProductReviewModel(it).copy(localSiteId = site.localId())
+            productReviewResponseToProductReviewModel(response = it, siteId = site.localId())
         }
     }
 
@@ -2123,8 +2123,12 @@ class ProductRestClient @Inject constructor(
         )
     }
 
-    private fun productReviewResponseToProductReviewModel(response: ProductReviewApiResponse): WCProductReviewModel {
+    private fun productReviewResponseToProductReviewModel(
+        response: ProductReviewApiResponse,
+        siteId: LocalId,
+    ): WCProductReviewModel {
         return WCProductReviewModel(
+            localSiteId = siteId,
             remoteProductReviewId = RemoteId(response.id),
             remoteProductId = RemoteId(response.product_id),
             dateCreated = response.date_created_gmt?.let { "${it}Z" } ?: "",
