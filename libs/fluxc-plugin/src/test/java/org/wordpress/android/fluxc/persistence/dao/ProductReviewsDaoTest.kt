@@ -58,6 +58,7 @@ class ProductReviewsDaoTest {
     @Test
     fun testUpdateProductReview() = runTest {
         val review = getProductReviews(site.id)[0]
+        sut.upsertProductReview(review)
 
         val updatedContent = "Updated content"
         val updatedReview = review.copy(review = updatedContent)
@@ -135,7 +136,6 @@ class ProductReviewsDaoTest {
         sut.upsertProductReviews(reviews)
 
         // Verify products inserted
-
         var savedReviews = sut.getProductReviews(siteId = site.localId())
         assertEquals(reviews.size, savedReviews.size)
 
