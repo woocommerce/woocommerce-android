@@ -517,7 +517,7 @@ fun WooPosItemsEmptyList(
     title: String,
     message: String,
     contentDescription: String,
-    icon: Painter = painterResource(R.drawable.ic_not_found),
+    icon: Painter = painterResource(R.drawable.ic_woo_pos_not_found),
 ) {
     WooPosItemsEmptyListInternal(
         modifier = modifier,
@@ -536,7 +536,7 @@ fun WooPosItemsEmptyList(
     title: String,
     message: String,
     contentDescription: String,
-    icon: Painter = painterResource(R.drawable.ic_not_found),
+    icon: Painter = painterResource(R.drawable.ic_woo_pos_not_found),
     actionLabel: String,
     onActionClicked: (() -> Unit),
 ) {
@@ -557,7 +557,7 @@ private fun WooPosItemsEmptyListInternal(
     title: String,
     message: String,
     contentDescription: String,
-    icon: Painter = painterResource(R.drawable.ic_not_found),
+    icon: Painter = painterResource(R.drawable.ic_woo_pos_not_found),
     actionLabel: String?,
     onActionClicked: (() -> Unit)? = null,
 ) {

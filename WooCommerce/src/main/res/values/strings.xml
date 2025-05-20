@@ -4385,17 +4385,17 @@
     <string name="woopos_no_internet_message">It looks like you\'re not connected to the internet. Ensure your Wi-Fi is turned on. If you\'re using mobile data, make sure it\'s enabled in your device settings.</string>
 
     <string name="woopos_variations_back_content_description">Back</string>
-    <string name="woopos_items_pagination_try_again_label">Try again</string>
-    <string name="woopos_items_pagination_error_title">"Failed to load more items"</string>
-    <string name="woopos_items_pagination_error_description">"An error occurred while loading products."</string>
+    <string name="woopos_items_pagination_try_again_label">Retry</string>
+    <string name="woopos_items_pagination_error_title">Unable to load more products</string>
+    <string name="woopos_items_pagination_error_description">Please check your internet connection and try again.</string>
     <string name="woopos_items_pagination_error_content_description">"Failed to load more items. Double tap to try again."</string>
     <string name="woopos_variations_loading_error_title">Error loading variations</string>
     <string name="woopos_variations_options_available_text">Options available</string>
 
-    <string name="woopos_coupons_pagination_try_again_label">Try again</string>
-    <string name="woopos_coupons_pagination_error_title">Failed to load more items"</string>
-    <string name="woopos_coupons_pagination_error_description">"An error occurred while loading coupons."</string>
-    <string name="woopos_coupons_pagination_error_content_description">"Failed to load more coupons. Double tap to try again."</string>
+    <string name="woopos_coupons_pagination_try_again_label">Retry</string>
+    <string name="woopos_coupons_pagination_error_title">Unable to load more coupons</string>
+    <string name="woopos_coupons_pagination_error_description">Please check your internet connection and try again.</string>
+    <string name="woopos_coupons_pagination_error_content_description">Unable to load more coupons. Double tap to try again.</string>
 
     <string name="woopos_cash_payment_title">Cash payment</string>
     <string name="woopos_complete_cash_order_button">Mark payment as complete</string>
@@ -4415,11 +4415,11 @@
     <string name="woopos_search_products">Search products</string>
     <string name="woopos_search_popular_items_title">Popular products</string>
     <string name="woopos_search_recent_searches_title">Recent searches</string>
-    <string name="woopos_search_items_empty_title">Nothing found</string>
-    <string name="woopos_search_empty_description">We couldn\'t find anything matching your search.</string>
+    <string name="woopos_search_items_empty_title">No products found</string>
+    <string name="woopos_search_empty_description">We couldn\'t find any matching products – try adjusting your search term.</string>
     <string name="woopos_search_empty_image_content_description">No items found</string>
-    <string name="woopos_search_items_error_title">We couldn\'t load your items</string>
-    <string name="woopos_search_items_error_description">Give it another go?</string>
+    <string name="woopos_search_items_error_title">Unable to load products</string>
+    <string name="woopos_search_items_error_description">Please try again.</string>
 
     <string name="customers_details_customer_section">Customer</string>
     <string name="customers_details_orders_section">Orders</string>
