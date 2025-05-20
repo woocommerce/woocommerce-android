@@ -11,9 +11,6 @@ import androidx.room.migration.AutoMigrationSpec
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import org.wordpress.android.fluxc.persistence.FeatureFlagConfigDao.FeatureFlag
-import org.wordpress.android.fluxc.persistence.PlanOffersDao.PlanOffer
-import org.wordpress.android.fluxc.persistence.PlanOffersDao.PlanOfferFeature
-import org.wordpress.android.fluxc.persistence.PlanOffersDao.PlanOfferId
 import org.wordpress.android.fluxc.persistence.RemoteConfigDao.RemoteConfig
 import org.wordpress.android.fluxc.persistence.blaze.BlazeCampaignsDao
 import org.wordpress.android.fluxc.persistence.blaze.BlazeCampaignsDao.BlazeCampaignEntity
@@ -30,9 +27,6 @@ import org.wordpress.android.fluxc.persistence.domains.DomainDao.DomainEntity
 @Database(
         version = 29,
         entities = [
-            PlanOffer::class,
-            PlanOfferId::class,
-            PlanOfferFeature::class,
             FeatureFlag::class,
             RemoteConfig::class,
             DomainEntity::class,
@@ -62,8 +56,6 @@ import org.wordpress.android.fluxc.persistence.domains.DomainDao.DomainEntity
     ]
 )
 abstract class WPAndroidDatabase : RoomDatabase() {
-    abstract fun planOffersDao(): PlanOffersDao
-
     abstract fun featureFlagConfigDao(): FeatureFlagConfigDao
 
     abstract fun remoteConfigDao(): RemoteConfigDao

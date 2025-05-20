@@ -4,7 +4,6 @@ import android.content.Context
 import dagger.Module
 import dagger.Provides
 import org.wordpress.android.fluxc.persistence.FeatureFlagConfigDao
-import org.wordpress.android.fluxc.persistence.PlanOffersDao
 import org.wordpress.android.fluxc.persistence.RemoteConfigDao
 import org.wordpress.android.fluxc.persistence.WPAndroidDatabase
 import org.wordpress.android.fluxc.persistence.WPAndroidDatabase.Companion.buildDb
@@ -20,12 +19,6 @@ class DatabaseModule {
     @Provides
     fun provideDatabase(context: Context): WPAndroidDatabase {
         return buildDb(context)
-    }
-
-    @Singleton
-    @Provides
-    fun providePlanOffersDao(wpAndroidDatabase: WPAndroidDatabase): PlanOffersDao {
-        return wpAndroidDatabase.planOffersDao()
     }
 
     @Singleton
