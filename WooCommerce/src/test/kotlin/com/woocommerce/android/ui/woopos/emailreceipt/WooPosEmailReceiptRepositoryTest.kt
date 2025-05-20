@@ -19,6 +19,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.util.regex.Pattern
 
 class WooPosEmailReceiptRepositoryTest {
@@ -27,6 +28,7 @@ class WooPosEmailReceiptRepositoryTest {
         on { get() }.thenReturn(siteModel)
     }
     private val orderStore: WCOrderStore = mock()
+    private val wooCommercerStore: WooCommerceStore = mock()
     private val orderCreateEditRepository: OrderCreateEditRepository = mock()
     private val orderMapper: OrderMapper = mock()
     private val provideEmailPattern: WooPosProvideEmailPattern = mock {
@@ -46,6 +48,7 @@ class WooPosEmailReceiptRepositoryTest {
     private val repository = WooPosEmailReceiptRepository(
         selectedSite,
         orderStore,
+        wooCommercerStore,
         orderCreateEditRepository,
         orderMapper,
         provideEmailPattern
@@ -84,6 +87,7 @@ class WooPosEmailReceiptRepositoryTest {
             on { billingAddress }.thenReturn(mock())
             on { customer }.thenReturn(mock())
         }
+        whenever(wooCommercerStore.fetchSystemPlugins(siteModel)).thenReturn(mock())
         whenever(orderStore.getOrderByIdAndSite(orderId, siteModel)).thenReturn(mock())
         whenever(orderMapper.toAppModel(any())).thenReturn(mockOrder)
         whenever(
@@ -158,6 +162,7 @@ class WooPosEmailReceiptRepositoryTest {
             on { customer }.thenReturn(mock())
         }
         whenever(selectedSite.get()).thenReturn(siteModel)
+        whenever(wooCommercerStore.fetchSystemPlugins(siteModel)).thenReturn(mock())
         whenever(orderStore.getOrderByIdAndSite(orderId, siteModel)).thenReturn(mock())
         whenever(orderMapper.toAppModel(any())).thenReturn(mockOrder)
         whenever(
