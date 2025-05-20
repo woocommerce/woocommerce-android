@@ -24,7 +24,7 @@ import org.wordpress.android.fluxc.persistence.domains.DomainDao
 import org.wordpress.android.fluxc.persistence.domains.DomainDao.DomainEntity
 
 @Database(
-        version = 29,
+        version = 30,
         entities = [
             FeatureFlag::class,
             DomainEntity::class,
@@ -46,6 +46,7 @@ import org.wordpress.android.fluxc.persistence.domains.DomainDao.DomainEntity
             AutoMigration(from = 25, to = 26, spec = AutoMigration25to26::class),
             AutoMigration(from = 27, to = 28),
             AutoMigration(from = 28, to = 29),
+            AutoMigration(from = 29, to = 30, spec = AutoMigration29to30::class),
         ]
 )
 @TypeConverters(
@@ -326,3 +327,17 @@ abstract class WPAndroidDatabase : RoomDatabase() {
     DeleteTable(tableName = "BlazeAdSuggestions")
 )
 internal class AutoMigration25to26 : AutoMigrationSpec
+
+@DeleteTable.Entries(
+    DeleteTable(tableName = "BloggingPrompts"),
+    DeleteTable(tableName = "BloggingReminders"),
+    DeleteTable(tableName = "Comments"),
+    DeleteTable(tableName = "DashboardCards"),
+    DeleteTable(tableName = "JetpackCPConnectedSites"),
+    DeleteTable(tableName = "JetpackSocial"),
+    DeleteTable(tableName = "PlanOfferFeatures"),
+    DeleteTable(tableName = "PlanOfferIds"),
+    DeleteTable(tableName = "PlanOffers"),
+    DeleteTable(tableName = "RemoteConfigurations"),
+)
+internal class AutoMigration29to30 : AutoMigrationSpec
