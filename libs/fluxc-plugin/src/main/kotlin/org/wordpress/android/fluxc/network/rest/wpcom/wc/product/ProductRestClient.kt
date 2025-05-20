@@ -119,9 +119,7 @@ class ProductRestClient @Inject constructor(
             when (response) {
                 is WPAPIResponse.Success -> {
                     response.data?.let {
-                        val newModel = productShippingClassResponseToProductShippingClassModel(
-                            it, site
-                        ).apply { localSiteId = site.id }
+                        val newModel = productShippingClassResponseToProductShippingClassModel(it, site)
                         val payload = RemoteProductShippingClassPayload(newModel, site)
                         dispatcher.dispatch(
                             WCProductActionBuilder.newFetchedSingleProductShippingClassAction(
@@ -135,7 +133,7 @@ class ProductRestClient @Inject constructor(
                     val productError = wpAPINetworkErrorToProductError(response.error)
                     val payload = RemoteProductShippingClassPayload(
                         productError,
-                        WCProductShippingClassModel().apply { this.remoteShippingClassId = remoteShippingClassId },
+                        WCProductShippingClassModel(remoteShippingClassId = RemoteId(remoteShippingClassId)),
                         site
                     )
                     dispatcher.dispatch(
@@ -2118,13 +2116,13 @@ class ProductRestClient @Inject constructor(
         response: ProductShippingClassApiResponse,
         site: SiteModel
     ): WCProductShippingClassModel {
-        return WCProductShippingClassModel().apply {
-            remoteShippingClassId = response.id
-            localSiteId = site.id
-            name = response.name ?: ""
-            slug = response.slug ?: ""
-            description = response.description ?: ""
-        }
+        return WCProductShippingClassModel(
+            remoteShippingClassId = RemoteId(response.id),
+            localSiteId = site.localId(),
+            name = response.name ?: "",
+            slug = response.slug ?: "",
+            description = response.description ?: "",
+        )
     }
 
     private fun productReviewResponseToProductReviewModel(response: ProductReviewApiResponse): WCProductReviewModel {

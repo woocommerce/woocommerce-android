@@ -1,27 +1,19 @@
 package org.wordpress.android.fluxc.model
 
-import com.yarolegovich.wellsql.core.Identifiable
+import androidx.room.Entity
 import com.yarolegovich.wellsql.core.annotation.Column
-import com.yarolegovich.wellsql.core.annotation.PrimaryKey
-import com.yarolegovich.wellsql.core.annotation.RawConstraints
-import com.yarolegovich.wellsql.core.annotation.Table
-import org.wordpress.android.fluxc.persistence.WellSqlConfig
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 
-@Table(addOn = WellSqlConfig.ADDON_WOOCOMMERCE)
-@RawConstraints(
-        "FOREIGN KEY(LOCAL_SITE_ID) REFERENCES SiteModel(_id) ON DELETE CASCADE",
-        "UNIQUE (REMOTE_SHIPPING_CLASS_ID, LOCAL_SITE_ID) ON CONFLICT REPLACE"
+// todo: as soon as SiteModel is migrated to Room, add foreign key constraint
+@Entity(
+    tableName = "ProductShippingClassEntity",
+    primaryKeys = ["localSiteId", "remoteShippingClassId"],
 )
-class WCProductShippingClassModel(@PrimaryKey @Column private var id: Int = 0) : Identifiable {
-    @Column var localSiteId = 0
-    @Column var remoteShippingClassId = 0L // The unique identifier for this shipping class on the server
-    @Column var name = ""
-    @Column var slug = ""
-    @Column var description = ""
-
-    override fun getId() = id
-
-    override fun setId(id: Int) {
-        this.id = id
-    }
-}
+data class WCProductShippingClassModel(
+    @Column val localSiteId: LocalId = LocalId(0),
+    @Column val remoteShippingClassId: RemoteId = RemoteId(0L), // The unique identifier for this shipping class on the server
+    @Column val name: String = "",
+    @Column val slug: String = "",
+    @Column val description: String = "",
+)

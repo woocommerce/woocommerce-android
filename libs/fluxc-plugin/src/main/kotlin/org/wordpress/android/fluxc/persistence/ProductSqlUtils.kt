@@ -5,7 +5,6 @@ package org.wordpress.android.fluxc.persistence
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.wellsql.generated.WCProductReviewModelTable
-import com.wellsql.generated.WCProductShippingClassModelTable
 import com.yarolegovich.wellsql.SelectQuery
 import com.yarolegovich.wellsql.WellSql
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -16,7 +15,6 @@ import org.wordpress.android.fluxc.model.WCBundledProduct
 import org.wordpress.android.fluxc.model.WCProductComponent
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.WCProductReviewModel
-import org.wordpress.android.fluxc.model.WCProductShippingClassModel
 import org.wordpress.android.fluxc.persistence.dao.ProductsDao
 
 @Suppress("LargeClass")
@@ -148,71 +146,6 @@ internal object ProductSqlUtils {
     }
 
     fun deleteAllProductReviews() = WellSql.delete(WCProductReviewModel::class.java).execute()
-
-    fun getProductShippingClassListForSite(
-        localSiteId: Int
-    ): List<WCProductShippingClassModel> {
-        return WellSql.select(WCProductShippingClassModel::class.java)
-            .where().beginGroup()
-            .equals(WCProductShippingClassModelTable.LOCAL_SITE_ID, localSiteId)
-            .endGroup().endWhere()
-            .asModel
-    }
-
-    fun getProductShippingClassByRemoteId(
-        remoteShippingClassId: Long,
-        localSiteId: Int
-    ): WCProductShippingClassModel? {
-        return WellSql.select(WCProductShippingClassModel::class.java)
-            .where().beginGroup()
-            .equals(WCProductShippingClassModelTable.REMOTE_SHIPPING_CLASS_ID, remoteShippingClassId)
-            .equals(WCProductShippingClassModelTable.LOCAL_SITE_ID, localSiteId)
-            .endGroup().endWhere()
-            .asModel.firstOrNull()
-    }
-
-    fun deleteProductShippingClassListForSite(site: SiteModel): Int {
-        return WellSql.delete(WCProductShippingClassModel::class.java)
-            .where()
-            .equals(WCProductShippingClassModelTable.LOCAL_SITE_ID, site.id)
-            .or()
-            .equals(WCProductShippingClassModelTable.LOCAL_SITE_ID, 0) // Should never happen, but sanity cleanup
-            .endWhere().execute()
-    }
-
-    fun insertOrUpdateProductShippingClassList(shippingClassList: List<WCProductShippingClassModel>): Int {
-        var rowsAffected = 0
-        executeInTransaction {
-            shippingClassList.forEach {
-                rowsAffected += insertOrUpdateProductShippingClass(it)
-            }
-        }
-        return rowsAffected
-    }
-
-    fun insertOrUpdateProductShippingClass(shippingClass: WCProductShippingClassModel): Int {
-        val result = WellSql.select(WCProductShippingClassModel::class.java)
-            .where().beginGroup()
-            .equals(WCProductShippingClassModelTable.ID, shippingClass.id)
-            .or()
-            .beginGroup()
-            .equals(WCProductShippingClassModelTable.LOCAL_SITE_ID, shippingClass.localSiteId)
-            .equals(WCProductShippingClassModelTable.REMOTE_SHIPPING_CLASS_ID, shippingClass.remoteShippingClassId)
-            .endGroup()
-            .endGroup().endWhere()
-            .asModel.firstOrNull()
-
-        return if (result == null) {
-            // Insert
-            WellSql.insert(shippingClass).execute()
-            1
-        } else {
-            // Update
-            val oldId = result.id
-            WellSql.update(WCProductShippingClassModel::class.java).whereId(oldId)
-                .put(shippingClass, UpdateAllExceptId(WCProductShippingClassModel::class.java)).execute()
-        }
-    }
 
     private fun executeInTransaction(block: () -> Unit) {
         val db = WellSql.giveMeWritableDb()
