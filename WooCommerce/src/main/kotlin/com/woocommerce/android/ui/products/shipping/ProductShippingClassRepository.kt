@@ -61,7 +61,7 @@ class ProductShippingClassRepository @Inject constructor(
     /**
      * Returns a list of cached (SQLite) shipping classes for the current site
      */
-    fun getProductShippingClassesForSite(): List<ShippingClass> =
+    suspend fun getProductShippingClassesForSite(): List<ShippingClass> =
         productStore.getShippingClassListForSite(selectedSite.get()).map { it.toAppModel() }
 
     /**

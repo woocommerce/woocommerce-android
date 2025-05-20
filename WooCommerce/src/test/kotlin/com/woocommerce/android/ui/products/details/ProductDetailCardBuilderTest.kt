@@ -46,7 +46,7 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
     @Before
     fun setUp() {
         val viewModel: ProductDetailViewModel = mock {
-            on { getShippingClassByRemoteShippingClassId(any()) } doReturn ""
+            onBlocking { getShippingClassByRemoteShippingClassId(any()) } doReturn ""
         }
 
         val resources: ResourceProvider = mock {

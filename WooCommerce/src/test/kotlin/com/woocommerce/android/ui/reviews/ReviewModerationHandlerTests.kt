@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.TestCoroutineScope
-import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.test.setMain
@@ -26,6 +25,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCProductReviewModel
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.UNKNOWN
@@ -101,10 +101,10 @@ class ReviewModerationHandlerTests {
             setup {
                 whenever(productStore.updateProductReviewStatus(any(), any(), any())).thenReturn(
                     WooResult(
-                        WCProductReviewModel(0).apply {
-                            remoteProductReviewId = this@ReviewModerationHandlerTests.review.remoteId
-                            status = HOLD.toString()
-                        }
+                        WCProductReviewModel(
+                            remoteProductReviewId = RemoteId(this@ReviewModerationHandlerTests.review.remoteId),
+                            status = HOLD.toString(),
+                        )
                     )
                 )
             }
@@ -126,10 +126,10 @@ class ReviewModerationHandlerTests {
             setup {
                 whenever(productStore.updateProductReviewStatus(any(), any(), any())).thenReturn(
                     WooResult(
-                        WCProductReviewModel(0).apply {
-                            remoteProductReviewId = this@ReviewModerationHandlerTests.review.remoteId
+                        WCProductReviewModel(
+                            remoteProductReviewId = RemoteId(this@ReviewModerationHandlerTests.review.remoteId),
                             status = HOLD.toString()
-                        }
+                        )
                     )
                 )
             }
@@ -218,10 +218,10 @@ class ReviewModerationHandlerTests {
             setup {
                 whenever(productStore.updateProductReviewStatus(any(), any(), any())).thenReturn(
                     WooResult(
-                        WCProductReviewModel(0).apply {
-                            remoteProductReviewId = this@ReviewModerationHandlerTests.review.remoteId
+                        WCProductReviewModel(
+                            remoteProductReviewId = RemoteId(this@ReviewModerationHandlerTests.review.remoteId),
                             status = HOLD.toString()
-                        }
+                        )
                     )
                 )
             }
@@ -243,10 +243,10 @@ class ReviewModerationHandlerTests {
             setup {
                 whenever(productStore.updateProductReviewStatus(any(), any(), any())).thenReturn(
                     WooResult(
-                        WCProductReviewModel(0).apply {
-                            remoteProductReviewId = this@ReviewModerationHandlerTests.review.remoteId
+                        WCProductReviewModel(
+                            remoteProductReviewId = RemoteId(this@ReviewModerationHandlerTests.review.remoteId),
                             status = HOLD.toString()
-                        }
+                        )
                     )
                 )
             }
@@ -268,10 +268,10 @@ class ReviewModerationHandlerTests {
             setup {
                 whenever(productStore.updateProductReviewStatus(any(), any(), any())).thenReturn(
                     WooResult(
-                        WCProductReviewModel(0).apply {
-                            remoteProductReviewId = this@ReviewModerationHandlerTests.review.remoteId
+                        WCProductReviewModel(
+                            remoteProductReviewId = RemoteId(this@ReviewModerationHandlerTests.review.remoteId),
                             status = HOLD.toString()
-                        }
+                        )
                     )
                 )
             }
