@@ -106,6 +106,19 @@ public class MediaStore extends Store {
         public FetchMediaListPayload(@NonNull SiteModel site) {
             this.site = site;
         }
+
+        // WARN: This constructor is used within WordPress-MediaPicker-Android, do not remove!
+        @SuppressWarnings("unused")
+        public FetchMediaListPayload(
+                @NonNull SiteModel site,
+                int number,
+                boolean loadMore,
+                @NonNull MimeType.Type mimeType) {
+            this.site = site;
+            this.loadMore = loadMore;
+            this.mimeType = mimeType;
+            this.number = number;
+        }
     }
 
     /**
