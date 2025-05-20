@@ -6,14 +6,18 @@ import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditRepository
 import com.woocommerce.android.ui.orders.creation.OrderCreationSource
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.isGreaterThanPluginVersion
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 class WooPosEmailReceiptRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val orderStore: WCOrderStore,
+    private val wooCommerceStore: WooCommerceStore,
     private val orderCreateEditRepository: OrderCreateEditRepository,
     private val orderMapper: OrderMapper,
     private val provideEmailPattern: WooPosProvideEmailPattern,
@@ -34,7 +38,15 @@ class WooPosEmailReceiptRepository @Inject constructor(
     fun isEmailValid(email: String): Boolean = provideEmailPattern().matcher(email).matches()
 
     private suspend fun triggerOrderReceiptSending(orderId: Long): Result<Unit> {
-        val sendOrderResult = orderStore.sendOrderReceipt(selectedSite.get(), orderId)
+        val posReceiptsAreEnabled = FeatureFlag.POS_RECEIPTS.isEnabled() && wooCommercePluginSupportsPOSReceipts()
+        val sendOrderResult = if (posReceiptsAreEnabled) {
+            orderStore.sendOrderReceipt(
+                selectedSite.get(),
+                orderId
+            )
+        } else {
+            orderStore.sendOrderPOSReceipt(selectedSite.get(), orderId)
+        }
         return if (sendOrderResult.isError) {
             Result.failure(Exception("Failed to send order receipt"))
         } else {
@@ -55,6 +67,18 @@ class WooPosEmailReceiptRepository @Inject constructor(
         orderStore.getOrderByIdAndSite(orderId, selectedSite.get())?.let {
             orderMapper.toAppModel(it)
         }
+
+    private suspend fun wooCommercePluginSupportsPOSReceipts(): Boolean {
+        val response = wooCommerceStore.fetchSystemPlugins(selectedSite.get())
+        val plugins = response.model ?: return false
+
+        val supportsReceipts = plugins.firstOrNull { plugin ->
+            plugin.name == "WooCommerce" &&
+                plugin.version.isGreaterThanPluginVersion("9.9.9")
+        }
+
+        return supportsReceipts != null
+    }
 }
 
 class WooPosProvideEmailPattern @Inject constructor() {
