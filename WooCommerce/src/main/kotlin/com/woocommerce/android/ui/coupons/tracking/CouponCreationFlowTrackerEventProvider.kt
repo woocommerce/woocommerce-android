@@ -10,4 +10,6 @@ interface CouponCreationFlowTrackerEventProvider {
     val COUPON_UPDATE_SUCCESS: IAnalyticsEvent
     val COUPON_UPDATE_FAILED: IAnalyticsEvent
     val COUPON_UPDATE_INITIATED: IAnalyticsEvent
+    val COUPONS_LOAD_FAILED: IAnalyticsEvent
+    val COUPONS_LOADED: IAnalyticsEvent
 }

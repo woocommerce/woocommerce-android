@@ -18,4 +18,8 @@ class StoreManagementCouponCreationFlowTrackerEventProvider @Inject constructor(
         get() = AnalyticsEvent.COUPON_UPDATE_FAILED
     override val COUPON_UPDATE_INITIATED: IAnalyticsEvent
         get() = AnalyticsEvent.COUPON_UPDATE_INITIATED
+    override val COUPONS_LOAD_FAILED: IAnalyticsEvent
+        get() = AnalyticsEvent.COUPONS_LOAD_FAILED
+    override val COUPONS_LOADED: IAnalyticsEvent
+        get() = AnalyticsEvent.COUPONS_LOADED
 }

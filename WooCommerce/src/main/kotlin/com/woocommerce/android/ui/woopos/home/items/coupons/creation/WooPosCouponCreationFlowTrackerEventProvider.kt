@@ -18,4 +18,8 @@ class WooPosCouponCreationFlowTrackerEventProvider @Inject constructor() : Coupo
         get() = error("Event unreachable in POS")
     override val COUPON_UPDATE_INITIATED: IAnalyticsEvent
         get() = error("Event unreachable in POS")
+    override val COUPONS_LOAD_FAILED: IAnalyticsEvent
+        get() = WooPosAnalyticsEvent.Event.CouponsLoadFailed
+    override val COUPONS_LOADED: IAnalyticsEvent
+        get() = WooPosAnalyticsEvent.Event.CouponsLoaded
 }
