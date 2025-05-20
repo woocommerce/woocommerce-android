@@ -4389,7 +4389,8 @@
     <string name="woopos_items_pagination_error_title">Unable to load more products</string>
     <string name="woopos_items_pagination_error_description">Please check your internet connection and try again.</string>
     <string name="woopos_items_pagination_error_content_description">"Failed to load more items. Double tap to try again."</string>
-    <string name="woopos_variations_loading_error_title">Error loading variations</string>
+    <string name="woopos_variations_loading_error_title">Unable to load variations</string>
+    <string name="woopos_variations_loading_error_message">Please check your internet connection and try again.</string>
     <string name="woopos_variations_options_available_text">Options available</string>
 
     <string name="woopos_coupons_pagination_try_again_label">Retry</string>
