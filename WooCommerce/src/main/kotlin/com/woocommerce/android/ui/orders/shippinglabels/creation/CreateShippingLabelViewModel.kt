@@ -140,6 +140,7 @@ import java.math.BigDecimal
 import java.text.DecimalFormat
 import javax.inject.Inject
 import kotlin.system.measureTimeMillis
+import kotlinx.coroutines.runBlocking
 
 @HiltViewModel
 class CreateShippingLabelViewModel @Inject constructor(
@@ -598,7 +599,7 @@ class CreateShippingLabelViewModel @Inject constructor(
                     )
                 }
 
-                val weightDimension = wooStore.getProductSettings(site.get())?.weightUnit ?: ""
+                val weightDimension = runBlocking { wooStore.getProductSettings(site.get())?.weightUnit ?: "" }
                 val stringResource = if (data.size == 1) {
                     string.shipping_label_single_package_total_weight
                 } else {
