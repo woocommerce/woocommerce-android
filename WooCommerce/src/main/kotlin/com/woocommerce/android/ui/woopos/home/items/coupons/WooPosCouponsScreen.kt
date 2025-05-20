@@ -138,7 +138,6 @@ fun CouponsError(onRetryClicked: () -> Unit) {
         WooPosErrorScreen(
             message = stringResource(id = R.string.woopos_coupons_loading_error_title),
             reason = stringResource(id = R.string.woopos_coupons_loading_error_message),
-            icon = painterResource(id = R.drawable.ic_woo_pos_error_x),
             primaryButton = Button(
                 text = stringResource(id = R.string.woopos_products_loading_error_retry_button),
                 click = onRetryClicked
