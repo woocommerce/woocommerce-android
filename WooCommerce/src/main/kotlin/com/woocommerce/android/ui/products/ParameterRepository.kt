@@ -11,10 +11,10 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
-import kotlinx.coroutines.runBlocking
 
 class ParameterRepository @Inject constructor(
     private val wooCommerceStore: WooCommerceStore,

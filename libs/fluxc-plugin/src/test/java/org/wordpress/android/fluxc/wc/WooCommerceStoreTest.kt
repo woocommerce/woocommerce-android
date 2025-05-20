@@ -5,7 +5,8 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.yarolegovich.wellsql.WellSql
 import kotlinx.coroutines.runBlocking
-import org.assertj.core.api.Assertions.assertThat
+import kotlinx.coroutines.test.runTest
+import org.assertj.core.api.Assertions
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -28,32 +29,28 @@ import org.wordpress.android.fluxc.model.WCSettingsModel
 import org.wordpress.android.fluxc.model.plugin.SitePluginModel
 import org.wordpress.android.fluxc.model.settings.WCSettingsMapper
 import org.wordpress.android.fluxc.model.taxes.TaxBasedOnSettingEntity
-import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.NETWORK_ERROR
+import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.discovery.RootWPAPIRestResponse
-import org.wordpress.android.fluxc.network.discovery.RootWPAPIRestResponse.Authentication
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooCommerceRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.INVALID_RESPONSE
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WCApiVersionResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WCSystemPluginResponse
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WCSystemPluginResponse.SystemPluginModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WooSystemRestClient
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WooSystemRestClient.WPSiteSettingsResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.toDomainModel
 import org.wordpress.android.fluxc.persistence.PluginSqlUtilsWrapper
+import org.wordpress.android.fluxc.persistence.SiteSqlUtils
 import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
-import org.wordpress.android.fluxc.persistence.WCSettingsSqlUtils.WCSettingsBuilder
+import org.wordpress.android.fluxc.persistence.WCSettingsSqlUtils
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.fluxc.persistence.dao.TaxBasedOnDao
 import org.wordpress.android.fluxc.site.SiteUtils
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.SiteStore
-import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import org.wordpress.android.fluxc.test
-import org.wordpress.android.fluxc.tools.initCoroutineEngine
+import org.wordpress.android.fluxc.utils.initCoroutineEngine
 import org.wordpress.android.fluxc.wc.settings.WCSettingsTestUtils
 import java.io.IOException
 import kotlin.test.assertEquals
@@ -85,14 +82,19 @@ class WooCommerceStoreTest {
             siteStore = siteStore,
             systemRestClient = restClient,
             wcCoreRestClient = wcrestClient,
-            siteSqlUtils = TestSiteSqlUtils.siteSqlUtils,
+            siteSqlUtils = SiteSqlUtils(),
             settingsMapper = settingsMapper,
             accountStore = accountStore,
             taxBasedOnDao = taxBasedOnDao,
             pluginSqlUtils = PluginSqlUtilsWrapper(),
+            productSettingsDao = db.productSettingsDao
         )
     }
-    private val error = WooError(INVALID_RESPONSE, NETWORK_ERROR, "Invalid site ID")
+    private val error = WooError(
+        WooErrorType.INVALID_RESPONSE,
+        BaseRequest.GenericErrorType.NETWORK_ERROR,
+        "Invalid site ID"
+    )
     private val site = SiteModel().apply {
         id = 1
         siteId = TEST_SITE_REMOTE_ID
@@ -100,13 +102,13 @@ class WooCommerceStoreTest {
 
     private val response = WCSystemPluginResponse(
         listOf(
-            SystemPluginModel(
+            WCSystemPluginResponse.SystemPluginModel(
                 plugin = "woocommerce-services/woocommerce-services",
                 name = "WooCommerce Shipping &amp; Tax",
                 version = "1.0",
                 url = "url"
             ),
-            SystemPluginModel(
+            WCSystemPluginResponse.SystemPluginModel(
                 plugin = "other-plugin/other-plugin",
                 name = "Other Plugin",
                 version = "2.0",
@@ -114,7 +116,12 @@ class WooCommerceStoreTest {
             )
         ),
         listOf(
-            SystemPluginModel(plugin = "inactive", name = "Inactive", version = "1.0", url = "url")
+            WCSystemPluginResponse.SystemPluginModel(
+                plugin = "inactive",
+                name = "Inactive",
+                version = "1.0",
+                url = "url"
+            )
         )
     )
 
@@ -129,8 +136,7 @@ class WooCommerceStoreTest {
             listOf(
                 SitePluginModel::class.java,
                 SiteModel::class.java,
-                WCProductSettingsModel::class.java,
-                WCSettingsBuilder::class.java,
+                WCSettingsSqlUtils.WCSettingsBuilder::class.java,
             ),
             WellSqlConfig.ADDON_WOOCOMMERCE
         )
@@ -173,22 +179,22 @@ class WooCommerceStoreTest {
     }
 
     @Test
-    fun `when fetching plugin fails, then error returned`() = test {
+    fun `when fetching plugin fails, then error returned`() = runTest {
         val result = getPlugin(isError = true)
 
-        assertThat(result.error).isEqualTo(error)
+        Assertions.assertThat(result.error).isEqualTo(error)
     }
 
     @Test
-    fun `when fetching plugin succeeds, then success returned`() = test {
+    fun `when fetching plugin succeeds, then success returned`() = runTest {
         val result = getPlugin(isError = false)
 
-        assertThat(result.isError).isFalse
-        assertThat(result.model).isNotNull
+        Assertions.assertThat(result.isError).isFalse
+        Assertions.assertThat(result.model).isNotNull
     }
 
     @Test
-    fun `when fetching plugin succeeds, then plugins inserted into db`() = test {
+    fun `when fetching plugin succeeds, then plugins inserted into db`() = runTest {
         getPlugin(isError = false)
         val expectedModel = response.plugins.mapIndexed { index, model ->
             model.toDomainModel(site.id).apply { id = index + 1 }
@@ -196,7 +202,7 @@ class WooCommerceStoreTest {
 
         val result = wooCommerceStore.getSitePlugins(site)
 
-        assertThat(result)
+        Assertions.assertThat(result)
             .hasSameSizeAs(expectedModel)
             .allMatch { model ->
                 expectedModel.any { model.id == it.id && model.name == it.name && model.isActive == it.isActive }
@@ -204,27 +210,27 @@ class WooCommerceStoreTest {
     }
 
     @Test
-    fun `when fetching ssr fails, then error returned`() = test {
+    fun `when fetching ssr fails, then error returned`() = runTest {
         val result = fetchSSR(isError = true)
 
-        assertThat(result.error).isEqualTo(error)
+        Assertions.assertThat(result.error).isEqualTo(error)
     }
 
     @Test
-    fun `when fetching ssr succeeds, then success returned`() = test {
+    fun `when fetching ssr succeeds, then success returned`() = runTest {
         val result = fetchSSR(isError = false)
 
-        assertThat(result.isError).isFalse
-        assertThat(result.model).isNotNull
+        Assertions.assertThat(result.isError).isFalse
+        Assertions.assertThat(result.model).isNotNull
     }
 
     @Test
-    fun `when fetch site settings succeeds, then success returned`() = test {
+    fun `when fetch site settings succeeds, then success returned`() = runTest {
         val result: WooResult<WCSettingsModel> = fetchSiteSettings()
 
-        assertThat(result.isError).isFalse
-        assertThat(result.model).isNotNull
-        assertThat(result.model).isEqualTo(
+        Assertions.assertThat(result.isError).isFalse
+        Assertions.assertThat(result.model).isNotNull
+        Assertions.assertThat(result.model).isEqualTo(
             settingsMapper.mapSiteSettings(siteSettingsResponse!!, site)
         )
     }
@@ -233,23 +239,25 @@ class WooCommerceStoreTest {
     fun `when fetch site settings fails, then error returned`() {
         runBlocking {
             val result: WooResult<WCSettingsModel> = fetchSiteSettings(isError = true)
-            assertThat(result.error).isEqualTo(error)
-            assertThat(result.model).isNull()
+            Assertions.assertThat(result.error).isEqualTo(error)
+            Assertions.assertThat(result.model).isNull()
         }
     }
 
     @Test
     fun `when fetch site product settings succeeds, then success returned`() {
         runBlocking {
-            val expectedModel = settingsMapper.mapProductSettings(siteProductSettingsResponse!!, site)
+            val expectedModel =
+                settingsMapper.mapProductSettings(siteProductSettingsResponse!!, site)
 
             val result: WooResult<WCProductSettingsModel> = fetchSiteProductSettings()
 
-            assertThat(result.isError).isFalse
-            assertThat(result.model).isNotNull
-            assertThat(result.model?.localSiteId).isEqualTo(expectedModel.localSiteId)
-            assertThat(result.model?.weightUnit).isEqualTo(expectedModel.weightUnit)
-            assertThat(result.model?.dimensionUnit).isEqualTo(expectedModel.dimensionUnit)
+            Assertions.assertThat(result.isError).isFalse
+            Assertions.assertThat(result.model).isNotNull
+            Assertions.assertThat(result.model?.localSiteId).isEqualTo(expectedModel.localSiteId)
+            Assertions.assertThat(result.model?.weightUnit).isEqualTo(expectedModel.weightUnit)
+            Assertions.assertThat(result.model?.dimensionUnit)
+                .isEqualTo(expectedModel.dimensionUnit)
         }
     }
 
@@ -257,8 +265,8 @@ class WooCommerceStoreTest {
     fun `when fetch site product settings fails, then error returned`() {
         runBlocking {
             val result: WooResult<WCProductSettingsModel> = fetchSiteProductSettings(isError = true)
-            assertThat(result.error).isEqualTo(error)
-            assertThat(result.model).isNull()
+            Assertions.assertThat(result.error).isEqualTo(error)
+            Assertions.assertThat(result.model).isNull()
         }
     }
 
@@ -266,20 +274,21 @@ class WooCommerceStoreTest {
     fun `when fetch tax based on settings fails, the error returned`() {
         runBlocking {
             val result = fetchTaxBasedOnSettings(isError = true)
-            assertThat(result.error).isEqualTo(error)
+            Assertions.assertThat(result.error).isEqualTo(error)
         }
     }
 
     @Test
     fun `when fetch tax based on settings succeeds, the success returned`() {
         runBlocking {
-            val expectedModel = settingsMapper.mapTaxBasedOnSettings(taxBasedOnSettingsResponse!!, site.localId())
+            val expectedModel =
+                settingsMapper.mapTaxBasedOnSettings(taxBasedOnSettingsResponse!!, site.localId())
             val result = fetchTaxBasedOnSettings()
-            assertThat(result.isError).isFalse
+            Assertions.assertThat(result.isError).isFalse
             with(result.model) {
-                assertThat(this).isNotNull
-                assertThat(this?.localSiteId).isEqualTo(expectedModel.localSiteId)
-                assertThat(this?.selectedOption).isEqualTo(expectedModel.selectedOption)
+                Assertions.assertThat(this).isNotNull
+                Assertions.assertThat(this?.localSiteId).isEqualTo(expectedModel.localSiteId)
+                Assertions.assertThat(this?.selectedOption).isEqualTo(expectedModel.selectedOption)
             }
         }
     }
@@ -287,13 +296,14 @@ class WooCommerceStoreTest {
     @Test
     fun `when fetch tax based on settings succeeds, the setting is saved in db`() {
         runBlocking {
-            val expectedModel = settingsMapper.mapTaxBasedOnSettings(taxBasedOnSettingsResponse!!, site.localId())
+            val expectedModel =
+                settingsMapper.mapTaxBasedOnSettings(taxBasedOnSettingsResponse!!, site.localId())
             val result = fetchTaxBasedOnSettings()
-            assertThat(result.isError).isFalse
+            Assertions.assertThat(result.isError).isFalse
             taxBasedOnDao.getTaxBasedOnSetting(site.localId()).let {
-                assertThat(it).isNotNull
-                assertThat(it?.localSiteId).isEqualTo(expectedModel.localSiteId)
-                assertThat(it?.selectedOption).isEqualTo(expectedModel.selectedOption)
+                Assertions.assertThat(it).isNotNull
+                Assertions.assertThat(it?.localSiteId).isEqualTo(expectedModel.localSiteId)
+                Assertions.assertThat(it?.selectedOption).isEqualTo(expectedModel.selectedOption)
             }
         }
     }
@@ -305,10 +315,10 @@ class WooCommerceStoreTest {
                 response = WCSettingsTestUtils.getSupportedApiVersionResponse()
             )
 
-            assertThat(result.isError).isFalse
-            assertThat(result.model).isNotNull
-            assertThat(result.model?.apiVersion).isEqualTo(SUPPORTED_API_VERSION)
-            assertThat(result.model?.siteModel).isEqualTo(site)
+            Assertions.assertThat(result.isError).isFalse
+            Assertions.assertThat(result.model).isNotNull
+            Assertions.assertThat(result.model?.apiVersion).isEqualTo(SUPPORTED_API_VERSION)
+            Assertions.assertThat(result.model?.siteModel).isEqualTo(site)
         }
     }
 
@@ -316,23 +326,26 @@ class WooCommerceStoreTest {
     fun `when fetching api version succeeds, then update application passwords authorization URL`() {
         runBlocking {
             // Sanity check
-            assertThat(site.applicationPasswordsAuthorizeUrl).isNull()
+            Assertions.assertThat(site.applicationPasswordsAuthorizeUrl).isNull()
 
             val authorizationUrl = "https://example.com/authorization-url"
             TestSiteSqlUtils.siteSqlUtils.insertOrUpdateSite(site)
 
             fetchSupportedWooApiVersion(
                 response = RootWPAPIRestResponse(
-                    authentication = Authentication(
-                        applicationPasswords = Authentication.ApplicationPasswords(
-                            endpoints = Authentication.ApplicationPasswords.Endpoints(authorizationUrl)
+                    authentication = RootWPAPIRestResponse.Authentication(
+                        applicationPasswords = RootWPAPIRestResponse.Authentication.ApplicationPasswords(
+                            endpoints = RootWPAPIRestResponse.Authentication.ApplicationPasswords.Endpoints(
+                                authorizationUrl
+                            )
                         )
                     )
                 )
             )
 
             val updateSite = TestSiteSqlUtils.siteSqlUtils.getSiteWithLocalId(site.localId())
-            assertThat(updateSite!!.applicationPasswordsAuthorizeUrl).isEqualTo(authorizationUrl)
+            Assertions.assertThat(updateSite!!.applicationPasswordsAuthorizeUrl)
+                .isEqualTo(authorizationUrl)
         }
     }
 
@@ -343,9 +356,9 @@ class WooCommerceStoreTest {
                 response = RootWPAPIRestResponse()
             )
 
-            assertThat(result.isError).isFalse
-            assertThat(result.model).isNotNull
-            assertThat(result.model?.apiVersion).isBlank
+            Assertions.assertThat(result.isError).isFalse
+            Assertions.assertThat(result.model).isNotNull
+            Assertions.assertThat(result.model?.apiVersion).isBlank
         }
     }
 
@@ -356,7 +369,7 @@ class WooCommerceStoreTest {
                 isError = true,
                 response = WCSettingsTestUtils.getUnsupportedApiVersionResponse()
             )
-            assertThat(result.error).isEqualTo(error)
+            Assertions.assertThat(result.error).isEqualTo(error)
         }
     }
 
@@ -364,7 +377,12 @@ class WooCommerceStoreTest {
     fun `when the user is signed in using WPCom, then fetch sites using WPCom API`() {
         runBlocking {
             whenever(accountStore.hasAccessToken()).thenReturn(true)
-            whenever(siteStore.fetchSites(any())).thenReturn(OnSiteChanged(1, updatedSites = listOf(site)))
+            whenever(siteStore.fetchSites(any())).thenReturn(
+                SiteStore.OnSiteChanged(
+                    1,
+                    updatedSites = listOf(site)
+                )
+            )
 
             wooCommerceStore.fetchWooCommerceSites()
 
@@ -388,11 +406,16 @@ class WooCommerceStoreTest {
         runBlocking {
             val site = SiteUtils.generateJetpackCPSite()
             whenever(accountStore.hasAccessToken()).thenReturn(true)
-            whenever(siteStore.fetchSites(any())).thenReturn(OnSiteChanged(1, updatedSites = listOf(site)))
+            whenever(siteStore.fetchSites(any())).thenReturn(
+                SiteStore.OnSiteChanged(
+                    1,
+                    updatedSites = listOf(site)
+                )
+            )
             whenever(siteStore.sites).thenReturn(listOf(site))
             whenever(restClient.fetchSiteSettings(site)).thenReturn(
                 WooPayload(
-                    WPSiteSettingsResponse(title = "new title")
+                    WooSystemRestClient.WPSiteSettingsResponse(title = "new title")
                 )
             )
             whenever(restClient.checkIfWooCommerceIsAvailable(site)).thenReturn(WooPayload(true))
@@ -401,8 +424,8 @@ class WooCommerceStoreTest {
 
             verify(restClient).fetchSiteSettings(site)
             verify(restClient).checkIfWooCommerceIsAvailable(site)
-            assertThat(sites.first().hasWooCommerce).isTrue
-            assertThat(sites.first().name).isEqualTo("new title")
+            Assertions.assertThat(sites.first().hasWooCommerce).isTrue
+            Assertions.assertThat(sites.first().name).isEqualTo("new title")
         }
     }
 
@@ -419,11 +442,11 @@ class WooCommerceStoreTest {
                 SiteUtils.generateJetpackCPSite().apply { siteId = it.toLong() }
             }
             whenever(siteStore.fetchSites(any())).thenReturn(
-                OnSiteChanged(3, updatedSites = updatedSites)
+                SiteStore.OnSiteChanged(3, updatedSites = updatedSites)
             )
             sites.forEach {
                 whenever(restClient.fetchSiteSettings(it)).thenReturn(
-                    WooPayload(WPSiteSettingsResponse(title = "new title"))
+                    WooPayload(WooSystemRestClient.WPSiteSettingsResponse(title = "new title"))
                 )
             }
             whenever(restClient.checkIfWooCommerceIsAvailable(sites[0])).thenReturn(WooPayload(true))
@@ -434,9 +457,9 @@ class WooCommerceStoreTest {
 
             wooCommerceStore.fetchWooCommerceSites()
 
-            val eventCaptor = argumentCaptor<OnSiteChanged>()
+            val eventCaptor = argumentCaptor<SiteStore.OnSiteChanged>()
             verify(dispatcher).emitChange(eventCaptor.capture())
-            assertThat(eventCaptor.firstValue.rowsAffected).isEqualTo(6)
+            Assertions.assertThat(eventCaptor.firstValue.rowsAffected).isEqualTo(6)
         }
     }
 
@@ -445,7 +468,12 @@ class WooCommerceStoreTest {
         runBlocking {
             val site = SiteUtils.generateSelfHostedNonJPSite()
             whenever(accountStore.hasAccessToken()).thenReturn(false)
-            whenever(siteStore.fetchSite(any())).thenReturn(OnSiteChanged(1, updatedSites = listOf(site)))
+            whenever(siteStore.fetchSite(any())).thenReturn(
+                SiteStore.OnSiteChanged(
+                    1,
+                    updatedSites = listOf(site)
+                )
+            )
             whenever(siteStore.sites).thenReturn(listOf(site))
             whenever(siteStore.getSiteByLocalId(any())).thenReturn(site)
             whenever(restClient.checkIfWooCommerceIsAvailable(site)).thenReturn(WooPayload(true))
@@ -463,7 +491,12 @@ class WooCommerceStoreTest {
         runBlocking {
             val site = SiteUtils.generateJetpackSiteOverXMLRPC()
             whenever(accountStore.hasAccessToken()).thenReturn(false)
-            whenever(siteStore.fetchSite(any())).thenReturn(OnSiteChanged(1, updatedSites = listOf(site)))
+            whenever(siteStore.fetchSite(any())).thenReturn(
+                SiteStore.OnSiteChanged(
+                    1,
+                    updatedSites = listOf(site)
+                )
+            )
             whenever(siteStore.sites).thenReturn(listOf(site))
             whenever(siteStore.getSiteByLocalId(any())).thenReturn(site)
             whenever(restClient.checkIfWooCommerceIsAvailable(site)).thenReturn(WooPayload(true))
@@ -481,7 +514,7 @@ class WooCommerceStoreTest {
         runBlocking {
             whenever(wcrestClient.enableCoupons(site)).thenReturn(WooPayload(true))
             val result = wooCommerceStore.enableCoupons(site)
-            assertThat(result).isTrue
+            Assertions.assertThat(result).isTrue
         }
     }
 
@@ -490,7 +523,7 @@ class WooCommerceStoreTest {
         runBlocking {
             whenever(wcrestClient.enableCoupons(site)).thenReturn(WooPayload(false))
             val result = wooCommerceStore.enableCoupons(site)
-            assertThat(result).isFalse
+            Assertions.assertThat(result).isFalse
         }
     }
 
@@ -520,7 +553,11 @@ class WooCommerceStoreTest {
     ): WooResult<WCApiVersionResponse> {
         val payload = WooPayload(response)
         if (isError) {
-            whenever(wcrestClient.fetchSiteRootAPIEndpoint(any(), any())).thenReturn(WooPayload(error))
+            whenever(wcrestClient.fetchSiteRootAPIEndpoint(any(), any())).thenReturn(
+                WooPayload(
+                    error
+                )
+            )
         } else {
             whenever(wcrestClient.fetchSiteRootAPIEndpoint(any(), any())).thenReturn(payload)
         }

@@ -129,6 +129,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
@@ -140,7 +141,6 @@ import java.math.BigDecimal
 import java.text.DecimalFormat
 import javax.inject.Inject
 import kotlin.system.measureTimeMillis
-import kotlinx.coroutines.runBlocking
 
 @HiltViewModel
 class CreateShippingLabelViewModel @Inject constructor(
