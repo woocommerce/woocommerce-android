@@ -36,13 +36,15 @@ class WooPosProductSearchPredicate @Inject constructor(
     }
 
     private fun tokenizedSkuOrNameSearchPredicate(query: String): (Product) -> Boolean {
-        val searchTerms = query.lowercase().split(whitespaceRegex).filter { it.isNotBlank() }
+        val tokens: List<String> = query
+            .trim()
+            .split("\\s+".toRegex())
+            .filter { it.isNotEmpty() }
+            .map { it.lowercase() }
+
         return { product ->
-            searchTerms.all { term ->
-                product.sku.lowercase().contains(term) ||
-                    product.name.lowercase().contains(term) ||
-                    product.description.lowercase().contains(term) ||
-                    product.shortDescription.lowercase().contains(term)
+            tokens.all { token ->
+                product.name.contains(token, ignoreCase = true) || product.sku.contains(token, ignoreCase = true)
             }
         }
     }
