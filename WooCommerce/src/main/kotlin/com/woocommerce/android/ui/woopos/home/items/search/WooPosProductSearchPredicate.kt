@@ -19,8 +19,20 @@ class WooPosProductSearchPredicate @Inject constructor(
             else -> tokenizedSkuOrNameSearchPredicate(query)
         }
 
-    private fun simpleSearchPredicate(query: String): (Product) -> Boolean = { product ->
-        product.name.lowercase().contains(query.lowercase().trim())
+    private fun simpleSearchPredicate(query: String): (Product) -> Boolean {
+        val terms: List<String> = query.split("\\s+".toRegex()).filter { it.isNotBlank() }.map { it.lowercase() }
+
+        return { product ->
+            if (terms.isEmpty()) true
+
+            val searchable = listOf(
+                product.name,
+                product.description,
+                product.shortDescription
+            ).joinToString(" ").lowercase()
+
+            terms.all { term -> searchable.contains(term) }
+        }
     }
 
     private fun tokenizedSkuOrNameSearchPredicate(query: String): (Product) -> Boolean {
