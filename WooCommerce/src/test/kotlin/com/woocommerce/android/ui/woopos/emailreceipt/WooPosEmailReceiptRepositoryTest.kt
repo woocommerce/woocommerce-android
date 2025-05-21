@@ -18,6 +18,8 @@ import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WCSystemPluginResponse.SystemPluginModel
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.util.regex.Pattern
@@ -79,7 +81,7 @@ class WooPosEmailReceiptRepositoryTest {
     }
 
     @Test
-    fun `given valid order id and email, when sendReceiptByEmail, then return success`() = runTest {
+    fun `given valid orderId and email, when WC plugin version is lower than 10, then sendReceiptByEmail returns success`() = runTest {
         // GIVEN
         val orderId = 1L
         val email = "test@example.com"
@@ -87,6 +89,10 @@ class WooPosEmailReceiptRepositoryTest {
             on { billingAddress }.thenReturn(mock())
             on { customer }.thenReturn(mock())
         }
+
+        val wooCommercePlugin = SystemPluginModel("WooCommerce", name = "WooCommerce", "9.9.9", null)
+
+        whenever(wooCommercerStore.fetchSystemPlugins(siteModel)).thenReturn(WooResult(listOf(wooCommercePlugin)))
         whenever(wooCommercerStore.fetchSystemPlugins(siteModel)).thenReturn(mock())
         whenever(orderStore.getOrderByIdAndSite(orderId, siteModel)).thenReturn(mock())
         whenever(orderMapper.toAppModel(any())).thenReturn(mockOrder)
@@ -99,6 +105,38 @@ class WooPosEmailReceiptRepositoryTest {
         ).thenReturn(Result.success(mockOrder))
         val sendOrderReceiptResult = WooPayload<Unit>(Unit)
         whenever(orderStore.sendOrderReceipt(siteModel, orderId)).thenReturn(sendOrderReceiptResult)
+
+        // WHEN
+        val result = repository.sendReceiptByEmail(orderId, email)
+
+        // THEN
+        assertThat(result.isSuccess).isTrue()
+    }
+
+    @Test
+    fun `given valid order id and email, when sendReceiptByEmail and WC version is 10 or higher, it calls for POS receipts then return success`() = runTest {
+        // GIVEN
+        val orderId = 1L
+        val email = "test@example.com"
+        val mockOrder: Order = mock {
+            on { billingAddress }.thenReturn(mock())
+            on { customer }.thenReturn(mock())
+        }
+
+        val wooCommercePlugin = SystemPluginModel("WooCommerce", name = "WooCommerce", "10.0.0", null)
+
+        whenever(wooCommercerStore.fetchSystemPlugins(siteModel)).thenReturn(WooResult(listOf(wooCommercePlugin)))
+        whenever(orderStore.getOrderByIdAndSite(orderId, siteModel)).thenReturn(mock())
+        whenever(orderMapper.toAppModel(any())).thenReturn(mockOrder)
+        whenever(
+            orderCreateEditRepository.createOrUpdateOrder(
+                any(),
+                eq(OrderCreationSource.POINT_OF_SALE),
+                eq("")
+            )
+        ).thenReturn(Result.success(mockOrder))
+        val sendOrderReceiptResult = WooPayload<Unit>(Unit)
+        whenever(orderStore.sendOrderPOSReceipt(siteModel, orderId)).thenReturn(sendOrderReceiptResult)
 
         // WHEN
         val result = repository.sendReceiptByEmail(orderId, email)
