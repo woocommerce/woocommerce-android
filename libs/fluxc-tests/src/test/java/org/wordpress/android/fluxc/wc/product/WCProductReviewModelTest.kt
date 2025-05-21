@@ -2,9 +2,9 @@ package org.wordpress.android.fluxc.wc.product
 
 import org.junit.Test
 import org.wordpress.android.fluxc.UnitTestUtils
-import org.wordpress.android.fluxc.model.WCProductReviewModel.AvatarSize.LARGE
-import org.wordpress.android.fluxc.model.WCProductReviewModel.AvatarSize.MEDIUM
-import org.wordpress.android.fluxc.model.WCProductReviewModel.AvatarSize.SMALL
+import org.wordpress.android.fluxc.model.AvatarSize.LARGE
+import org.wordpress.android.fluxc.model.AvatarSize.MEDIUM
+import org.wordpress.android.fluxc.model.AvatarSize.SMALL
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 import kotlin.test.assertNotNull
@@ -20,15 +20,14 @@ class WCProductReviewModelTest {
         assertTrue(reviews.isNotEmpty(), "Reviews should not be empty")
 
         val review = reviews[0]
-        assertEquals(0, review.id)
         assertEquals("2019-07-09T15:48:07Z", review.dateCreated)
-        assertEquals(18, review.remoteProductId)
+        assertEquals(18, review.remoteProductId.value)
         assertEquals("Johnny", review.reviewerName)
         assertEquals("johnny@gmail.com", review.reviewerEmail)
         assertEquals("<p>What a lovely cap!</p>\n", review.review)
         assertEquals(4, review.rating)
         assertEquals(false, review.verified)
-        assertEquals(5499, review.remoteProductReviewId)
+        assertEquals(5499, review.remoteProductReviewId.value)
         assertNotNull(review.reviewerAvatarsJson)
         assertNotEquals("", review.reviewerAvatarsJson)
     }

@@ -38,7 +38,7 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 @Composable
 fun WooPosPaginationErrorIndicator(
     modifier: Modifier = Modifier,
-    icon: Painter = painterResource(id = R.drawable.ic_woo_pos_error),
+    icon: Painter = painterResource(id = R.drawable.ic_woo_pos_error_x),
     message: String,
     description: String,
     primaryButton: Button,

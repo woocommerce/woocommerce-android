@@ -11,7 +11,6 @@ import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argWhere
 import org.mockito.kotlin.inOrder
-import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
@@ -33,7 +32,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.site.PrivateAtomicCookie
 import org.wordpress.android.fluxc.network.rest.wpcom.site.SiteRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.site.SiteRestClient.NewSiteResponsePayload
 import org.wordpress.android.fluxc.network.xmlrpc.site.SiteXMLRPCClient
-import org.wordpress.android.fluxc.persistence.JetpackCPConnectedSitesDao
 import org.wordpress.android.fluxc.persistence.SiteSqlUtils
 import org.wordpress.android.fluxc.persistence.domains.DomainDao
 import org.wordpress.android.fluxc.store.SiteStore.AllDomainsError
@@ -63,7 +61,6 @@ class SiteStoreTest {
     @Mock lateinit var siteWPAPIClient: SiteWPAPIRestClient
     @Mock lateinit var privateAtomicCookie: PrivateAtomicCookie
     @Mock lateinit var siteSqlUtils: SiteSqlUtils
-    @Mock lateinit var jetpackCPConnectedSitesDao: JetpackCPConnectedSitesDao
     @Mock lateinit var domainsDao: DomainDao
     @Mock lateinit var domainsSuccessResponse: Response.Success<DomainsResponse>
     @Mock lateinit var allDomainsSuccessResponse: Response.Success<AllDomainsResponse>
@@ -82,7 +79,6 @@ class SiteStoreTest {
             siteWPAPIClient,
             privateAtomicCookie,
             siteSqlUtils,
-            jetpackCPConnectedSitesDao,
             domainsDao,
             initCoroutineEngine()
         )
@@ -173,74 +169,6 @@ class SiteStoreTest {
         inOrder.verify(siteSqlUtils).insertOrUpdateSite(siteA)
         inOrder.verify(siteSqlUtils).insertOrUpdateSite(siteB)
         inOrder.verify(siteSqlUtils).removeWPComRestSitesAbsentFromList(sitesModel.sites)
-    }
-
-    @Test
-    fun `fetchSites saves jetpack CP connected sites to DB`() = test {
-        val payload = FetchSitesPayload(listOf(WPCOM))
-        val sitesModel = SitesModel()
-        val siteA = SiteModel().apply {
-            siteId = 1
-            url = "http://A"
-            name = "A"
-            description = "A description"
-            setIsJetpackCPConnected(false)
-        }
-        val siteB = SiteModel().apply {
-            siteId = 2
-            url = "http://B"
-            name = "B"
-            description = "B description"
-            setIsJetpackCPConnected(false)
-        }
-        val siteC = SiteModel().apply {
-            siteId = 3
-            url = "http://C"
-            name = "C"
-            description = "C description"
-            activeJetpackConnectionPlugins = "jetpack-boost"
-            setIsJetpackCPConnected(true)
-        }
-        sitesModel.sites = listOf(siteA, siteB)
-        sitesModel.jetpackCPSites = listOf(siteC)
-        whenever(siteRestClient.fetchSites(payload.filters, false)).thenReturn(sitesModel)
-        whenever(siteSqlUtils.insertOrUpdateSite(siteA)).thenReturn(1)
-        whenever(siteSqlUtils.insertOrUpdateSite(siteB)).thenReturn(1)
-
-        siteStore.fetchSites(payload)
-
-        val inOrder = inOrder(jetpackCPConnectedSitesDao)
-        inOrder.verify(jetpackCPConnectedSitesDao).deleteAll()
-        inOrder.verify(jetpackCPConnectedSitesDao).insert(argWhere { it.size == 1 })
-    }
-
-    @Test
-    fun `fetchSites doesn't save jetpack CP connected sites to DB`() = test {
-        val payload = FetchSitesPayload(listOf(WPCOM))
-        val sitesModel = SitesModel()
-        val siteA = SiteModel().apply {
-            siteId = 1
-            url = "http://A"
-            name = "A"
-            description = "A description"
-            setIsJetpackCPConnected(false)
-        }
-        val siteB = SiteModel().apply {
-            siteId = 2
-            url = "http://B"
-            name = "B"
-            description = "B description"
-            setIsJetpackCPConnected(false)
-        }
-        sitesModel.sites = listOf(siteA, siteB)
-        whenever(siteRestClient.fetchSites(payload.filters, false)).thenReturn(sitesModel)
-        whenever(siteSqlUtils.insertOrUpdateSite(siteA)).thenReturn(1)
-        whenever(siteSqlUtils.insertOrUpdateSite(siteB)).thenReturn(1)
-
-        siteStore.fetchSites(payload)
-
-        verify(jetpackCPConnectedSitesDao, never()).deleteAll()
-        verify(jetpackCPConnectedSitesDao, never()).insert(argWhere { it.size == 1 })
     }
 
     @Test

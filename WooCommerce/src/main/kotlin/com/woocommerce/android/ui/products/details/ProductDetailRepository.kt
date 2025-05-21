@@ -340,7 +340,7 @@ class ProductDetailRepository @Inject constructor(
     /**
      * Returns the cached (SQLite) shipping class for the given [remoteShippingClassId]
      */
-    fun getProductShippingClassByRemoteId(remoteShippingClassId: Long) =
+    suspend fun getProductShippingClassByRemoteId(remoteShippingClassId: Long) =
         productStore.getShippingClassByRemoteId(selectedSite.get(), remoteShippingClassId)?.toAppModel()
 
     fun getQuantityRules(remoteProductId: Long): QuantityRules? {

@@ -484,7 +484,7 @@ class ProductDetailCardBuilder(
                 put(resources.getString(string.product_dimensions), sizeWithUnits)
                 put(
                     resources.getString(string.product_shipping_class),
-                    viewModel.getShippingClassByRemoteShippingClassId(currentProduct.shippingClassId)
+                    runBlocking { viewModel.getShippingClassByRemoteShippingClassId(currentProduct.shippingClassId) }
                 )
 
                 // Only add "One time shipping" info if product is Subscription types
