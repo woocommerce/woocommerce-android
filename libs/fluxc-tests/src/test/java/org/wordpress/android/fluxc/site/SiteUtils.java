@@ -1,10 +1,6 @@
 package org.wordpress.android.fluxc.site;
 
-import org.wordpress.android.fluxc.model.PostFormatModel;
 import org.wordpress.android.fluxc.model.SiteModel;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class SiteUtils {
     private static final String ZENDESK_PLAN_BUSINESS_PROFESSIONAL = "business_professional";
@@ -98,17 +94,6 @@ public class SiteUtils {
         example.setXmlRpcUrl("http://jetpack2.url/xmlrpc.php");
         example.setOrigin(SiteModel.ORIGIN_XMLRPC);
         return example;
-    }
-
-    public static List<PostFormatModel> generatePostFormats(String... names) {
-        List<PostFormatModel> res = new ArrayList<>();
-        for (String name : names) {
-            PostFormatModel postFormat = new PostFormatModel();
-            postFormat.setSlug(name.toLowerCase());
-            postFormat.setDisplayName(name);
-            res.add(postFormat);
-        }
-        return res;
     }
 
     public static SiteModel generateSiteWithZendeskMetaData() {

@@ -4,7 +4,6 @@ import org.wordpress.android.fluxc.annotations.Action;
 import org.wordpress.android.fluxc.annotations.ActionEnum;
 import org.wordpress.android.fluxc.annotations.action.IAction;
 import org.wordpress.android.fluxc.model.AccountModel;
-import org.wordpress.android.fluxc.model.SubscriptionsModel;
 import org.wordpress.android.fluxc.network.rest.wpcom.account.AccountRestClient.AccountFetchUsernameSuggestionsResponsePayload;
 import org.wordpress.android.fluxc.network.rest.wpcom.account.AccountRestClient.AccountPushSettingsResponsePayload;
 import org.wordpress.android.fluxc.network.rest.wpcom.account.AccountRestClient.AccountPushSocialResponsePayload;
@@ -14,7 +13,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.account.AccountRestClient.
 import org.wordpress.android.fluxc.network.rest.wpcom.account.AccountRestClient.FetchAuthOptionsResponsePayload;
 import org.wordpress.android.fluxc.network.rest.wpcom.account.AccountRestClient.IsAvailableResponsePayload;
 import org.wordpress.android.fluxc.network.rest.wpcom.account.AccountRestClient.NewAccountResponsePayload;
-import org.wordpress.android.fluxc.store.AccountStore.AddOrDeleteSubscriptionPayload;
 import org.wordpress.android.fluxc.store.AccountStore.FetchAuthOptionsPayload;
 import org.wordpress.android.fluxc.store.AccountStore.FetchUsernameSuggestionsPayload;
 import org.wordpress.android.fluxc.store.AccountStore.NewAccountPayload;
@@ -23,8 +21,6 @@ import org.wordpress.android.fluxc.store.AccountStore.PushSocialAuthPayload;
 import org.wordpress.android.fluxc.store.AccountStore.PushSocialPayload;
 import org.wordpress.android.fluxc.store.AccountStore.PushSocialSmsPayload;
 import org.wordpress.android.fluxc.store.AccountStore.PushUsernamePayload;
-import org.wordpress.android.fluxc.store.AccountStore.SubscriptionResponsePayload;
-import org.wordpress.android.fluxc.store.AccountStore.UpdateSubscriptionPayload;
 import org.wordpress.android.fluxc.store.AccountStore.UpdateTokenPayload;
 
 @ActionEnum
@@ -61,16 +57,6 @@ public enum AccountAction implements IAction {
     @Action(payloadType = String.class)
     IS_AVAILABLE_USERNAME,
     @Action
-    FETCH_SUBSCRIPTIONS,
-    @Action(payloadType = AddOrDeleteSubscriptionPayload.class)
-    UPDATE_SUBSCRIPTION_EMAIL_COMMENT,
-    @Action(payloadType = AddOrDeleteSubscriptionPayload.class)
-    UPDATE_SUBSCRIPTION_EMAIL_POST,
-    @Action(payloadType = UpdateSubscriptionPayload.class)
-    UPDATE_SUBSCRIPTION_EMAIL_POST_FREQUENCY,
-    @Action(payloadType = AddOrDeleteSubscriptionPayload.class)
-    UPDATE_SUBSCRIPTION_NOTIFICATION_POST,
-    @Action
     FETCH_DOMAIN_CONTACT,
     @Action(payloadType = FetchAuthOptionsPayload.class)
     FETCH_AUTH_OPTIONS,
@@ -94,10 +80,6 @@ public enum AccountAction implements IAction {
     CREATED_NEW_ACCOUNT,    // create a new account response
     @Action(payloadType = IsAvailableResponsePayload.class)
     CHECKED_IS_AVAILABLE,
-    @Action(payloadType = SubscriptionsModel.class)
-    FETCHED_SUBSCRIPTIONS,
-    @Action(payloadType = SubscriptionResponsePayload.class)
-    UPDATED_SUBSCRIPTION,
     @Action(payloadType = DomainContactPayload.class)
     FETCHED_DOMAIN_CONTACT,
     @Action(payloadType = FetchAuthOptionsResponsePayload.class)
