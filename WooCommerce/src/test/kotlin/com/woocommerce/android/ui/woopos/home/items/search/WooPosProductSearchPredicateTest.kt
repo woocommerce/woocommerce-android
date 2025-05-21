@@ -109,7 +109,7 @@ class WooPosProductSearchPredicateTest {
     fun `given newer WC version, when search predicate is invoked with matching description, then it should match`() {
         // GIVEN
         whenever(getWooCoreVersion()).thenReturn("9.9.0")
-        val query = "product description"
+        val query = "product est"
 
         // WHEN
         val result = searchPredicate(query)
@@ -119,7 +119,7 @@ class WooPosProductSearchPredicateTest {
     }
 
     @Test
-    fun `given newer WC version, when search predicate is invoked with matching short description, then it should match`() {
+    fun `given newer WC version, when search predicate is invoked with matching short description, then it should not match`() {
         // GIVEN
         whenever(getWooCoreVersion()).thenReturn("9.9.0")
         val query = "short desc"
@@ -128,7 +128,7 @@ class WooPosProductSearchPredicateTest {
         val result = searchPredicate(query)
 
         // THEN
-        assertTrue(result(mockProduct))
+        assertFalse(result(mockProduct))
     }
 
     @Test
