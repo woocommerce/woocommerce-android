@@ -16,8 +16,8 @@ class WooPosProductSearchPredicate @Inject constructor(
     operator fun invoke(query: String): (Product) -> Boolean =
         when {
             query.isBlank() -> { _ -> true }
-            !isWooCoreSupportsNameOrSkuSearch() -> simpleSearchPredicate(query)
-            else -> tokenizedSkuOrNameSearchPredicate(query)
+            isWooCoreSupportsNameOrSkuSearch() -> tokenizedSkuOrNameSearchPredicate(query)
+            else -> simpleSearchPredicate(query)
         }
 
     private fun simpleSearchPredicate(query: String): (Product) -> Boolean {
