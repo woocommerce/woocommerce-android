@@ -208,4 +208,22 @@ class WooPosProductSearchPredicateTest {
         // THEN
         assertTrue(result(mockProduct))
     }
+
+    @Test
+    fun `given WC version, when isWooCoreSupportsNameOrSkuSearch invoked multiple times, it should cache the result`() {
+        // GIVEN
+        whenever(getWooCoreVersion()).thenReturn("9.9.0")
+
+        val query1 = "test"
+        searchPredicate(query1)
+
+        whenever(getWooCoreVersion()).thenReturn("9.8.0")
+
+        // WHEN
+        val query2 = "abc123"
+        val result = searchPredicate(query2)
+
+        // THEN
+        assertTrue(result(mockProduct))
+    }
 }
