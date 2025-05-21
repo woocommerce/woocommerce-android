@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.home.items.search
 
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
+import com.woocommerce.android.util.isGreaterThanPluginVersion
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -53,7 +54,7 @@ class WooPosProductSearchPredicate @Inject constructor(
     private fun isWooCoreSupportsNameOrSkuSearch(): Boolean {
         cachedSupportsNameOrSkuSearch?.let { return it }
         val wooCoreVersion = getWooCoreVersion() ?: return false
-        val supportsNameOrSkuSearch = wooCoreVersion >= WC_VERSION_SUPPORTS_NAME_OR_SKU_SEARCH
+        val supportsNameOrSkuSearch = wooCoreVersion.isGreaterThanPluginVersion(WC_VERSION_SUPPORTS_NAME_OR_SKU_SEARCH)
         cachedSupportsNameOrSkuSearch = supportsNameOrSkuSearch
         return supportsNameOrSkuSearch
     }
