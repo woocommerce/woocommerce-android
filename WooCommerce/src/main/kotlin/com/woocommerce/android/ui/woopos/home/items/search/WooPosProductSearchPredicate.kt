@@ -20,7 +20,7 @@ class WooPosProductSearchPredicate @Inject constructor(
         }
 
     private fun simpleSearchPredicate(query: String): (Product) -> Boolean {
-        val terms: List<String> = query.split("\\s+".toRegex()).filter { it.isNotBlank() }.map { it.lowercase() }
+        val terms: List<String> = query.split(whitespaceRegex).filter { it.isNotBlank() }.map { it.lowercase() }
 
         return { product ->
             if (terms.isEmpty()) true
@@ -38,7 +38,7 @@ class WooPosProductSearchPredicate @Inject constructor(
     private fun tokenizedSkuOrNameSearchPredicate(query: String): (Product) -> Boolean {
         val tokens: List<String> = query
             .trim()
-            .split("\\s+".toRegex())
+            .split(whitespaceRegex)
             .filter { it.isNotEmpty() }
             .map { it.lowercase() }
 
