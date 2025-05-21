@@ -652,6 +652,22 @@ class WCOrderStoreTest {
     }
 
     @Test
+    fun `given valid site and orderId, when sendOrderPOSReceipt is called, then sendOrderPOSReceipt in the rest client is triggered`() {
+        runBlocking {
+            // GIVEN
+            val orderModel = OrderTestUtils.generateSampleOrder(42)
+            val site = SiteModel().apply { id = orderModel.localSiteId.value }
+            val orderId = 42L
+
+            // WHEN
+            orderStore.sendOrderPOSReceipt(site, orderId)
+
+            // THEN
+            verify(orderRestClient).sendOrderPOSReceipt(site, orderId)
+        }
+    }
+
+    @Test
     fun `given successful response for all orders when batch updating status then returns successful orders`() {
         runBlocking {
             // Given
