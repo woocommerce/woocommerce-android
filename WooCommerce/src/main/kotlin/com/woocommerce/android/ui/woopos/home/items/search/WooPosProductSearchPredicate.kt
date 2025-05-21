@@ -54,7 +54,9 @@ class WooPosProductSearchPredicate @Inject constructor(
     private fun isWooCoreSupportsNameOrSkuSearch(): Boolean {
         cachedSupportsNameOrSkuSearch?.let { return it }
         val wooCoreVersion = getWooCoreVersion() ?: return false
-        val supportsNameOrSkuSearch = wooCoreVersion.isGreaterThanPluginVersion(WC_LAST_VERSION_WITHOUT_NAME_OR_SKU_SUPPORT)
+        val supportsNameOrSkuSearch = wooCoreVersion.isGreaterThanPluginVersion(
+            WC_LAST_VERSION_WITHOUT_NAME_OR_SKU_SUPPORT
+        )
         cachedSupportsNameOrSkuSearch = supportsNameOrSkuSearch
         return supportsNameOrSkuSearch
     }
