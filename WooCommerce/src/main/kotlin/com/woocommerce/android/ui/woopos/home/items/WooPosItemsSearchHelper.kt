@@ -136,11 +136,16 @@ class WooPosItemsSearchHelper @Inject constructor(
 
     private fun updateToInitialOpenState() {
         val currentState = getCurrentContentState()
+        val searchHintStringRes = when (currentState) {
+            is WooPosItemsViewState.ProductList -> R.string.woopos_search_products
+            is WooPosItemsViewState.CouponList -> R.string.woopos_search_coupons
+        }
+        
         viewStateFlow.value = currentState.copy(
             search = SearchState.Visible(
                 state = WooPosSearchInputState.Open(
                     input = WooPosSearchInputState.Open.Input.Hint(
-                        resourceProvider.getString(R.string.woopos_search_products)
+                        resourceProvider.getString(searchHintStringRes)
                     ),
                     isLoading = false,
                     hasAnimationPlayed = false
