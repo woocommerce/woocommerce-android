@@ -14,8 +14,6 @@ import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -146,7 +144,6 @@ private fun Content(
         listState = listState,
         onItemClicked = onItemClicked,
         onEndOfProductsListReached = onEndOfItemListReached,
-        animateItems = false,
     ) {
         ProductsPaginationError(
             onRetryClicked = {
