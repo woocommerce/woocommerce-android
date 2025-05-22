@@ -110,6 +110,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
     }
 
     private fun performSearch(query: String) {
+
         localSearchJob?.cancel()
         remoteSearchJob?.cancel()
 

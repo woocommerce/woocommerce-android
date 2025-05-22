@@ -142,6 +142,7 @@ private fun MainItemsList(
                         ),
                         listState = couponsListState,
                     )
+                    ScreenState.COUPONS_SEARCH -> WooPosCouponsSearchScreen()
                 }
             }
         }
@@ -149,7 +150,7 @@ private fun MainItemsList(
 }
 
 private enum class ScreenState {
-    PRODUCTS, PRODUCTS_SEARCH, COUPONS
+    PRODUCTS, PRODUCTS_SEARCH, COUPONS, COUPONS_SEARCH
 }
 
 private fun getScreenState(state: WooPosItemsViewState): ScreenState {
@@ -166,7 +167,17 @@ private fun getScreenState(state: WooPosItemsViewState): ScreenState {
             }
         }
 
-        is WooPosItemsViewState.CouponList -> ScreenState.COUPONS
+        is WooPosItemsViewState.CouponList -> {
+            when (val searchState = state.search) {
+                WooPosItemsViewState.SearchState.Hidden -> ScreenState.COUPONS
+                is WooPosItemsViewState.SearchState.Visible -> {
+                    when (searchState.state) {
+                        WooPosSearchInputState.Closed -> ScreenState.COUPONS
+                        is WooPosSearchInputState.Open -> ScreenState.COUPONS_SEARCH
+                    }
+                }
+            }
+        }
     }
 }
 
