@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.woopos.home.items.search
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
-import com.woocommerce.android.util.isGreaterThanPluginVersion
 import javax.inject.Inject
 import javax.inject.Singleton
 
