@@ -136,7 +136,7 @@ class WooPosEmailReceiptRepositoryTest {
             )
         ).thenReturn(Result.success(mockOrder))
         val sendOrderReceiptResult = WooPayload<Unit>(Unit)
-        whenever(orderStore.sendOrderPOSReceipt(siteModel, orderId)).thenReturn(sendOrderReceiptResult)
+        whenever(orderStore.sendOrderPOSSpecificReceipt(siteModel, orderId)).thenReturn(sendOrderReceiptResult)
 
         // WHEN
         val result = repository.sendReceiptByEmail(orderId, email)

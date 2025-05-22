@@ -1059,7 +1059,7 @@ class OrderRestClient @Inject constructor(
         return response.toWooPayload { it }
     }
 
-    suspend fun sendOrderPOSReceipt(
+    suspend fun sendOrderPOSSpecificReceipt(
         site: SiteModel,
         orderId: Long,
     ): WooPayload<Unit> {

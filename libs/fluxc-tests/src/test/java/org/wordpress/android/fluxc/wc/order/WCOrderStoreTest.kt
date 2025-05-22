@@ -652,7 +652,7 @@ class WCOrderStoreTest {
     }
 
     @Test
-    fun `given valid site and orderId, when sendOrderPOSReceipt is called, then sendOrderPOSReceipt in the rest client is triggered`() {
+    fun `given valid site and orderId, when sendOrderPOSSpecificReceipt is called, then sendOrderPOSSpecificReceipt in the rest client is triggered`() {
         runBlocking {
             // GIVEN
             val orderModel = OrderTestUtils.generateSampleOrder(42)
@@ -660,10 +660,10 @@ class WCOrderStoreTest {
             val orderId = 42L
 
             // WHEN
-            orderStore.sendOrderPOSReceipt(site, orderId)
+            orderStore.sendOrderPOSSpecificReceipt(site, orderId)
 
             // THEN
-            verify(orderRestClient).sendOrderPOSReceipt(site, orderId)
+            verify(orderRestClient).sendOrderPOSSpecificReceipt(site, orderId)
         }
     }
 
