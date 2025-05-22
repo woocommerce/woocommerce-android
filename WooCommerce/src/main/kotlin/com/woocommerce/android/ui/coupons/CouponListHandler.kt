@@ -32,7 +32,8 @@ class CouponListHandler @Inject constructor(private val repository: CouponReposi
 
     suspend fun fetchCoupons(
         searchQuery: String? = null,
-        forceRefresh: Boolean = false
+        forceRefresh: Boolean = false,
+        isPos: Boolean = false
     ): Result<Boolean> = mutex.withLock {
         // Reset pagination attributes
         page = 1
@@ -41,7 +42,7 @@ class CouponListHandler @Inject constructor(private val repository: CouponReposi
         this.searchQuery.value = searchQuery
         return if (searchQuery == null) {
             if (forceRefresh) {
-                loadCoupons()
+                loadCoupons(isPos)
             } else {
                 Result.success(canLoadMore)
             }
@@ -57,17 +58,17 @@ class CouponListHandler @Inject constructor(private val repository: CouponReposi
         }
     }
 
-    suspend fun loadMore(): Result<Boolean> = mutex.withLock {
+    suspend fun loadMore(isPos: Boolean = false): Result<Boolean> = mutex.withLock {
         if (!canLoadMore) return@withLock Result.success(canLoadMore)
         return if (searchQuery.value == null) {
-            loadCoupons()
+            loadCoupons(isPos)
         } else {
             searchCoupons()
         }
     }
 
-    private suspend fun loadCoupons(): Result<Boolean> {
-        return repository.fetchCoupons(page, PAGE_SIZE).onSuccess {
+    private suspend fun loadCoupons(isPos: Boolean): Result<Boolean> {
+        return repository.fetchCoupons(page, PAGE_SIZE, isPosMode = isPos).onSuccess {
             canLoadMore = it
             page++
         }.map { canLoadMore }
