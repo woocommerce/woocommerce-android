@@ -1,11 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-04-22 09:54:04+0000
+Translation-Revision-Date: 2025-05-06 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_split_shipment_merge_unfulfilled_button">合并所有包裹</string>
+    <string name="woo_shipping_split_shipment_merge_unfulfilled_desc">这会移除所有未发货的拆分包裹，并将所有商品移动到一个包裹中。</string>
+    <string name="woo_shipping_split_shipment_merge_unfulfilled_title">合并所有未发货的包裹</string>
+    <string name="woo_shipping_split_shipment_merge_unfulfilled_menu">合并所有未发货包裹</string>
+    <string name="woo_shipping_labels_package_creation_unstarred">为此商品取消星标</string>
+    <string name="woo_shipping_labels_package_creation_starred">为此商品添加星标</string>
+    <string name="woopos_coupons_pagination_error_content_description">“无法加载更多优惠券。 双击以重试。”</string>
+    <string name="woopos_coupons_pagination_error_description">“加载优惠券时出现错误。”</string>
+    <string name="woopos_coupons_pagination_error_title">无法加载更多商品”</string>
+    <string name="woopos_coupons_pagination_try_again_label">请重试</string>
+    <string name="woopos_coupons_loading_error_retry_button">重试</string>
+    <string name="woopos_coupons_loading_error_message">再试一次？</string>
+    <string name="woopos_coupons_loading_error_title">加载优惠券时出错</string>
+    <string name="woopos_coupons_empty_list_message">通过向客户发送特别优惠和折扣来推动您的业务发展。</string>
+    <string name="woopos_coupons_empty_list_title">未找到优惠券</string>
+    <string name="woopos_coupons_empty_list_image_description">没有优惠券</string>
+    <string name="woopos_coupons_screen_title">优惠券</string>
+    <string name="woopos_product_limitations_title">我的产品在哪里？</string>
+    <string name="woopos_coupon_item_content_description">优惠券 %s</string>
     <string name="woo_shipping_split_shipment_bottom_sheet_remove_button">移除包裹</string>
     <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_plural">选择要将此包裹中的 %d 件商品移至何处。</string>
     <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_one">选择要将此包裹中的 %d 件商品移至何处。</string>
@@ -37,7 +56,7 @@ Language: zh_CN
     <string name="woopos_search_empty_image_content_description">未找到商品</string>
     <string name="woopos_search_empty_description">我们找不到符合您搜索条件的任何内容。</string>
     <string name="woopos_search_items_empty_title">未找到任何内容</string>
-    <string name="woopos_payment_discount_label">折扣</string>
+    <string name="woopos_payment_discount_label">折扣总额</string>
     <string name="woopos_cart_item_coupon_content_description">购物车 %s 中的优惠券</string>
     <string name="shipping_label_package_title">选择一个包裹</string>
     <string name="receipt_preview_toolbar_title">收据预览</string>
@@ -55,9 +74,9 @@ Language: zh_CN
     <string name="woo_shipping_labels_shipping_rates_missing_destination_desc">我们需要先了解此包裹的目的地，然后才能显示可用的运费。</string>
     <string name="woo_shipping_labels_shipping_rates_missing_destination">添加目标地址以查看运费</string>
     <string name="woopos_search_recent_searches_title">最近搜索</string>
-    <string name="woopos_search_popular_items_title">热门商品</string>
+    <string name="woopos_search_popular_items_title">热销产品</string>
     <string name="woopos_search_products">搜索产品…</string>
-    <string name="woopos_clear_back_content_description">清除</string>
+    <string name="woopos_search_clear_content_description">清除</string>
     <string name="woopos_search_back_content_description">返回</string>
     <string name="card_reader_connect_failed_battery_low_hint">读卡器电量不足。 请为读卡器充电，然后再试一次</string>
     <string name="login_site_credentials_invalid_response">由于您的站点出现意外响应，登录失败。</string>
@@ -357,8 +376,6 @@ Language: zh_CN
     <string name="woopos_dialog_products_info_background_content_description">背景变暗。 轻点即可关闭对话框。</string>
     <string name="woopos_banner_simple_products_dialog_primary_button_content_description">轻点两下即可关闭对话框</string>
     <string name="woopos_banner_simple_products_dialog_content_description">“仅限简单产品、可变产品和虚拟产品”对话框</string>
-    <string name="woopos_banner_simple_products_learn_more_content_description">轻点两下即可了解更多信息</string>
-    <string name="woopos_banner_simple_products_content_description">“仅限简单产品、可变产品和虚拟产品”横幅</string>
     <string name="local_notification_blaze_no_campaign_reminder_description">立即使用 Blaze Ads 推广您的产品并提高销售额。</string>
     <string name="local_notification_blaze_no_campaign_reminder_title">提高您的销售额</string>
     <string name="more_menu_button_payments_description">随时随地接受付款</string>
@@ -372,11 +389,6 @@ Language: zh_CN
     <string name="woopos_dialog_products_info_secondary_message_action_label">+ 在商店管理中创建订单</string>
     <string name="woopos_dialog_products_info_tertiary_message">要接受其他产品的付款，请退出 POS，然后在订单选项卡中创建新订单。</string>
     <string name="woopos_dialog_products_info_heading">为何看不到我的产品？</string>
-    <string name="woopos_banner_simple_products_info_content_description">信息</string>
-    <string name="woopos_banner_simple_products_close_content_description">关闭</string>
-    <string name="woopos_banner_simple_products_only_message_learn_more">了解更多</string>
-    <string name="woopos_banner_simple_products_only_message">POS 目前仅兼容简单实体产品、可变产品和虚拟产品。 其他产品类型将在今后的更新中得到支持。 </string>
-    <string name="woopos_banner_simple_products_only_title">仅显示简单产品、可变产品和虚拟产品</string>
     <string name="support_request_site_address">站点地址</string>
     <string name="analytics_google_ads_cta_web_view_title">Google for WooCommerce</string>
     <string name="analytics_google_ads_cta_action">添加付费广告活动</string>
@@ -2519,7 +2531,7 @@ Language: zh_CN
     <string name="print_receipt_label_info_step_4">出现提示时，将打印机与您的手机配对并连接。</string>
     <string name="print_receipt_label_info_step_3">接受付款后选择“打印收据”时，将“另存为 PDF”替换为“所有打印机”，并搜索新打印机。</string>
     <string name="print_receipt_label_info_step_2">在打印机上启用蓝牙或 WiFi 连接。</string>
-    <string name="print_receipt_label_info_step_1">确保打印机已安装“打印服务插件”。</string>
+    <string name="print_receipt_label_info_step_1">确保您的打印机已安装“打印服务插件”。</string>
     <string name="orderdetail_printing_instructions_button">了解有关使用您的设备打印收据的更多信息</string>
     <string name="product_create_attribute_helper">要创建变体，您需要先设置它的属性（即“颜色”、“大小”）</string>
     <string name="product_variation_single_count">1 个变体</string>

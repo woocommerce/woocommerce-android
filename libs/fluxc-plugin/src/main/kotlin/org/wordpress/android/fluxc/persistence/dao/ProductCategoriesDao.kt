@@ -21,7 +21,6 @@ internal abstract class ProductCategoriesDao {
                CASE WHEN :sortType = 'NAME_ASC' THEN name COLLATE NOCASE END ASC,
                CASE WHEN :sortType = 'NAME_DESC' THEN name COLLATE NOCASE END DESC
         """
-
     }
 
     @Query(GET_FOR_SITE_QUERY)

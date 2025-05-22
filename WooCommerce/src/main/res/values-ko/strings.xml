@@ -1,11 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-04-22 09:54:08+0000
+Translation-Revision-Date: 2025-05-07 09:54:06+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_split_shipment_merge_unfulfilled_button">모든 배송 병합</string>
+    <string name="woo_shipping_split_shipment_merge_unfulfilled_desc">그러면 처리되지 않은 모든 분할 배송이 제거되고 모든 아이템이 하나의 배송으로 이동합니다.</string>
+    <string name="woo_shipping_split_shipment_merge_unfulfilled_title">이행되지 않은 모든 배송 병합</string>
+    <string name="woo_shipping_split_shipment_merge_unfulfilled_menu">이행되지 않은 모든 항목 병합</string>
+    <string name="woo_shipping_labels_package_creation_unstarred">이 아이템의 별 취소</string>
+    <string name="woo_shipping_labels_package_creation_starred">이 아이템에 별 표시</string>
+    <string name="woopos_coupons_pagination_error_content_description">\"추가 쿠폰이 로드되지 않았습니다. 다시 시도하려면 두 번 누르세요.\"</string>
+    <string name="woopos_coupons_pagination_error_description">\"쿠폰 로드 중 오류가 발생했습니다.</string>
+    <string name="woopos_coupons_pagination_error_title">추가 아이템이 로드되지 않았습니다.\"</string>
+    <string name="woopos_coupons_pagination_try_again_label">다시 시도</string>
+    <string name="woopos_coupons_loading_error_retry_button">다시 시도</string>
+    <string name="woopos_coupons_loading_error_message">한 번 더 시도할까요?</string>
+    <string name="woopos_coupons_loading_error_title">쿠폰 로딩 오류</string>
+    <string name="woopos_coupons_empty_list_message">고객에게 특별한 혜택과 할인을 발송하여 비즈니스를 증진하세요.</string>
+    <string name="woopos_coupons_empty_list_title">쿠폰을 찾을 수 없음</string>
+    <string name="woopos_coupons_empty_list_image_description">쿠폰 없음</string>
+    <string name="woopos_coupons_screen_title">쿠폰</string>
+    <string name="woopos_product_limitations_title">내 상품은 어디에 있나요?</string>
+    <string name="woopos_coupon_item_content_description">쿠폰 %s</string>
     <string name="woo_shipping_split_shipment_bottom_sheet_remove_button">배송 제거</string>
     <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_plural">이 배송 중 %d개를 이동할 위치를 선택하세요.</string>
     <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_one">이 배송 중 %d개를 이동할 위치를 선택하세요.</string>
@@ -37,7 +56,7 @@ Language: ko_KR
     <string name="woopos_search_empty_image_content_description">아이템을 찾을 수 없음</string>
     <string name="woopos_search_empty_description">검색과 일치하는 항목을 찾을 수 없습니다.</string>
     <string name="woopos_search_items_empty_title">찾을 수 없음</string>
-    <string name="woopos_payment_discount_label">할인</string>
+    <string name="woopos_payment_discount_label">할인 합계</string>
     <string name="woopos_cart_item_coupon_content_description">장바구니의 쿠폰 %s</string>
     <string name="shipping_label_package_title">패키지 선택</string>
     <string name="receipt_preview_toolbar_title">영수증 미리보기</string>
@@ -55,9 +74,9 @@ Language: ko_KR
     <string name="woo_shipping_labels_shipping_rates_missing_destination_desc">적용되는 배송비를 표시하려면 이 패키지의 행선지를 알아야 합니다.</string>
     <string name="woo_shipping_labels_shipping_rates_missing_destination">배송비를 확인하려면 목적지 주소를 추가하세요.</string>
     <string name="woopos_search_recent_searches_title">최근 검색 항목</string>
-    <string name="woopos_search_popular_items_title">인기 아이템</string>
+    <string name="woopos_search_popular_items_title">인기 상품</string>
     <string name="woopos_search_products">상품 검색…</string>
-    <string name="woopos_clear_back_content_description">지우기</string>
+    <string name="woopos_search_clear_content_description">지우기</string>
     <string name="woopos_search_back_content_description">뒤로</string>
     <string name="card_reader_connect_failed_battery_low_hint">리더 배터리 잔량이 부족합니다. 리더를 충전하고 다시 시도해 주세요.</string>
     <string name="login_site_credentials_invalid_response">사이트의 예기치 않은 응답으로 인해 로그인에 실패했습니다.</string>
@@ -358,8 +377,6 @@ Language: ko_KR
     <string name="woopos_dialog_products_info_background_content_description">어두워진 배경입니다. 눌러서 대화 상자 무시하기</string>
     <string name="woopos_banner_simple_products_dialog_primary_button_content_description">두 번 눌러 대화 상자 무시하기</string>
     <string name="woopos_banner_simple_products_dialog_content_description">단순, 변형 및 가상 상품 전용 대화 상자</string>
-    <string name="woopos_banner_simple_products_learn_more_content_description">두 번 눌러 자세히 알아보기</string>
-    <string name="woopos_banner_simple_products_content_description">단순, 변형 및 가상 상품 전용 배너</string>
     <string name="local_notification_blaze_no_campaign_reminder_description">지금 Blaze 광고를 통해 제품을 홍보하고 매출을 늘리세요.</string>
     <string name="local_notification_blaze_no_campaign_reminder_title">매출 증대</string>
     <string name="more_menu_button_payments_description">이동 중 결제 처리</string>
@@ -373,11 +390,6 @@ Language: ko_KR
     <string name="woopos_dialog_products_info_secondary_message_action_label">+ 스토어 관리에서 주문 생성</string>
     <string name="woopos_dialog_products_info_tertiary_message">기타 상품에 대한 결제를 받으려면 POS를 종료하고 주문 탭에서 새 주문을 생성하세요.</string>
     <string name="woopos_dialog_products_info_heading">왜 내 상품이 보이지 않나요?</string>
-    <string name="woopos_banner_simple_products_info_content_description">정보</string>
-    <string name="woopos_banner_simple_products_close_content_description">닫기</string>
-    <string name="woopos_banner_simple_products_only_message_learn_more">자세히\u00A0알아보기</string>
-    <string name="woopos_banner_simple_products_only_message">지금은 단순한 실물, 변형 및 가상 상품만 POS와 호환됩니다. 기타 상품 유형은 향후 업데이트에서 이용할 수 있게 될 예정입니다. </string>
-    <string name="woopos_banner_simple_products_only_title">단순, 변형 및 가상 상품만 표시</string>
     <string name="support_request_site_address">사이트 주소</string>
     <string name="analytics_google_ads_cta_web_view_title">우커머스용 Google</string>
     <string name="analytics_google_ads_cta_action">유료 캠페인 추가</string>
@@ -2520,7 +2532,7 @@ Language: ko_KR
     <string name="print_receipt_label_info_step_4">메시지가 표시되면 프린터를 모바일 장치와 페어링하고 연결합니다.</string>
     <string name="print_receipt_label_info_step_3">결제 수락 후 \"영수증 인쇄\"를 선택할 때 \"PDF로 저장\"을 \"모든 프린터\"로 바꾸고 새 프린터를 검색합니다.</string>
     <string name="print_receipt_label_info_step_2">프린터의 블루투스 또는 와이파이 연결을 활성화합니다.</string>
-    <string name="print_receipt_label_info_step_1">프린터의 인쇄 서비스 플러그인이 설치되었는지 확인합니다.</string>
+    <string name="print_receipt_label_info_step_1">해당 프린터용 인쇄 서비스 플러그인이 설치되었는지 확인하세요.</string>
     <string name="orderdetail_printing_instructions_button">기기로 영수증 인쇄하기에 대해 자세히 알아보기</string>
     <string name="product_create_attribute_helper">변형을 만들려면 속성(즉, \"색상\", \"사이즈\")을 먼저 설정해야 합니다.</string>
     <string name="product_variation_single_count">변형 1개</string>

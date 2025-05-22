@@ -11,7 +11,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class WCGoogleRestClient  @Inject constructor(private val wooNetwork: WooNetwork) {
+class WCGoogleRestClient @Inject constructor(private val wooNetwork: WooNetwork) {
     companion object {
         const val GOOGLE_ADS_CONNECTED_STATUS = "connected"
     }
@@ -114,4 +114,3 @@ data class GoogleAdsConnectionStatusResponse(
     @SerializedName("status")
     val status: String
 )
-

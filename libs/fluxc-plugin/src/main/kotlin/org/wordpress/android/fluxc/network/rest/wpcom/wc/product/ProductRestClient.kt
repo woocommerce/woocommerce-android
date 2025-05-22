@@ -119,9 +119,7 @@ class ProductRestClient @Inject constructor(
             when (response) {
                 is WPAPIResponse.Success -> {
                     response.data?.let {
-                        val newModel = productShippingClassResponseToProductShippingClassModel(
-                            it, site
-                        ).apply { localSiteId = site.id }
+                        val newModel = productShippingClassResponseToProductShippingClassModel(it, site)
                         val payload = RemoteProductShippingClassPayload(newModel, site)
                         dispatcher.dispatch(
                             WCProductActionBuilder.newFetchedSingleProductShippingClassAction(
@@ -135,7 +133,7 @@ class ProductRestClient @Inject constructor(
                     val productError = wpAPINetworkErrorToProductError(response.error)
                     val payload = RemoteProductShippingClassPayload(
                         productError,
-                        WCProductShippingClassModel().apply { this.remoteShippingClassId = remoteShippingClassId },
+                        WCProductShippingClassModel(remoteShippingClassId = RemoteId(remoteShippingClassId)),
                         site
                     )
                     dispatcher.dispatch(
@@ -397,7 +395,7 @@ class ProductRestClient @Inject constructor(
                 } else {
                     RemoteVariationPayload(
                         ProductError(GENERIC_ERROR, "Success response with empty data"),
-                        WCProductVariationModel().copy (
+                        WCProductVariationModel().copy(
                             remoteProductId = RemoteId(remoteProductId),
                             remoteVariationId = RemoteId(remoteVariationId)
                     ),
@@ -409,7 +407,7 @@ class ProductRestClient @Inject constructor(
             is WPAPIResponse.Error -> {
                 RemoteVariationPayload(
                     wpAPINetworkErrorToProductError(response.error),
-                    WCProductVariationModel().copy (
+                    WCProductVariationModel().copy(
                         remoteProductId = RemoteId(remoteProductId),
                         remoteVariationId = RemoteId(remoteVariationId)
                     ),
@@ -705,7 +703,6 @@ class ProductRestClient @Inject constructor(
         TITLE_ASC, DATE_ASC, POPULARITY_ASC -> "asc"
         POPULARITY_DESC, TITLE_DESC, DATE_DESC -> "desc"
     }
-
 
     private fun addGlobalUniqueIdSearchQuery(
         params: MutableMap<String, String>,
@@ -1444,7 +1441,7 @@ class ProductRestClient @Inject constructor(
                 is WPAPIResponse.Success -> {
                     response.data?.let {
                         val categories = it.map { category ->
-                            category.asProductCategoryModel().copy (  localSiteId = site.localId()  )
+                            category.asProductCategoryModel().copy(localSiteId = site.localId())
                         }
                         val canLoadMore = categories.size == pageSize
                         val loadedMore = offset > 0
@@ -1508,7 +1505,7 @@ class ProductRestClient @Inject constructor(
                     response.data!!.createdCategories
                         .filter { it.error == null }
                         .map {
-                            it.asProductCategoryModel().copy (localSiteId = site.localId() )
+                            it.asProductCategoryModel().copy(localSiteId = site.localId())
                         }
                 )
             }
@@ -1688,7 +1685,7 @@ class ProductRestClient @Inject constructor(
                 val productData = response.data
                 if (productData != null) {
                     val reviews = productData.map { review ->
-                        productReviewResponseToProductReviewModel(review).apply { localSiteId = site.id }
+                        productReviewResponseToProductReviewModel(response = review, siteId = site.localId())
                     }
                     FetchProductReviewsResponsePayload(
                         site,
@@ -1738,9 +1735,7 @@ class ProductRestClient @Inject constructor(
         return when (response) {
             is WPAPIResponse.Success -> {
                 response.data?.let {
-                    val review = productReviewResponseToProductReviewModel(it).apply {
-                        localSiteId = site.id
-                    }
+                    val review = productReviewResponseToProductReviewModel(response = it, siteId = site.localId())
                     RemoteProductReviewPayload(site, review)
                 } ?: RemoteProductReviewPayload(
                     error = ProductError(GENERIC_ERROR, "Success response with empty data"),
@@ -1780,9 +1775,7 @@ class ProductRestClient @Inject constructor(
         )
 
         return response.toWooPayload {
-            productReviewResponseToProductReviewModel(it).apply {
-                localSiteId = site.id
-            }
+            productReviewResponseToProductReviewModel(response = it, siteId = site.localId())
         }
     }
 
@@ -2105,7 +2098,7 @@ class ProductRestClient @Inject constructor(
         response: ProductTagApiResponse,
         site: SiteModel
     ): WCProductTagModel {
-        return WCProductTagModel (
+        return WCProductTagModel(
             remoteTagId = RemoteId(response.id),
             localSiteId = LocalId(site.id),
             name = response.name ?: "",
@@ -2119,28 +2112,32 @@ class ProductRestClient @Inject constructor(
         response: ProductShippingClassApiResponse,
         site: SiteModel
     ): WCProductShippingClassModel {
-        return WCProductShippingClassModel().apply {
-            remoteShippingClassId = response.id
-            localSiteId = site.id
-            name = response.name ?: ""
-            slug = response.slug ?: ""
-            description = response.description ?: ""
-        }
+        return WCProductShippingClassModel(
+            remoteShippingClassId = RemoteId(response.id),
+            localSiteId = site.localId(),
+            name = response.name ?: "",
+            slug = response.slug ?: "",
+            description = response.description ?: "",
+        )
     }
 
-    private fun productReviewResponseToProductReviewModel(response: ProductReviewApiResponse): WCProductReviewModel {
-        return WCProductReviewModel().apply {
-            remoteProductReviewId = response.id
-            remoteProductId = response.product_id
-            dateCreated = response.date_created_gmt?.let { "${it}Z" } ?: ""
-            status = response.status ?: ""
-            reviewerName = response.reviewer ?: ""
-            reviewerEmail = response.reviewer_email ?: ""
-            review = response.review ?: ""
-            rating = response.rating
-            verified = response.verified
-            reviewerAvatarsJson = response.reviewer_avatar_urls?.toString() ?: ""
-        }
+    private fun productReviewResponseToProductReviewModel(
+        response: ProductReviewApiResponse,
+        siteId: LocalId,
+    ): WCProductReviewModel {
+        return WCProductReviewModel(
+            localSiteId = siteId,
+            remoteProductReviewId = RemoteId(response.id),
+            remoteProductId = RemoteId(response.product_id),
+            dateCreated = response.date_created_gmt?.let { "${it}Z" } ?: "",
+            status = response.status ?: "",
+            reviewerName = response.reviewer ?: "",
+            reviewerEmail = response.reviewer_email ?: "",
+            review = response.review ?: "",
+            rating = response.rating,
+            verified = response.verified,
+            reviewerAvatarsJson = response.reviewer_avatar_urls?.toString() ?: "",
+        )
     }
 
     private fun networkErrorToProductError(wpComError: WPComGsonNetworkError): ProductError {

@@ -1,11 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-04-23 09:54:03+0000
+Translation-Revision-Date: 2025-05-06 17:54:13+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_split_shipment_merge_unfulfilled_button">Alle verzendingen samenvoegen</string>
+    <string name="woo_shipping_split_shipment_merge_unfulfilled_desc">Hierdoor worden alle niet-voltooide gesplitste verzendingen verwijderd en worden alle artikelen in één verzending geplaatst.</string>
+    <string name="woo_shipping_split_shipment_merge_unfulfilled_title">Alle niet-voltooide verzendingen samenvoegen</string>
+    <string name="woo_shipping_split_shipment_merge_unfulfilled_menu">Alle niet-voltooide samenvoegen</string>
+    <string name="woo_shipping_labels_package_creation_unstarred">Dit item uit favorieten verwijderen</string>
+    <string name="woo_shipping_labels_package_creation_starred">Dit item aan favorieten toevoegen</string>
+    <string name="woopos_coupons_pagination_error_content_description">\'Meer coupons laden is mislukt. Tik twee keer om het opnieuw te proberen.\'</string>
+    <string name="woopos_coupons_pagination_error_description">\'Er is een fout opgetreden tijdens het laden van de coupons.\'</string>
+    <string name="woopos_coupons_pagination_error_title">Meer items laden is mislukt\'</string>
+    <string name="woopos_coupons_pagination_try_again_label">Opnieuw proberen</string>
+    <string name="woopos_coupons_loading_error_retry_button">Opnieuw proberen</string>
+    <string name="woopos_coupons_loading_error_message">Nog een keer proberen?</string>
+    <string name="woopos_coupons_loading_error_title">Fout bij laden van coupons</string>
+    <string name="woopos_coupons_empty_list_message">Geef je bedrijf een boost door klanten speciale aanbiedingen en kortingen te geven.</string>
+    <string name="woopos_coupons_empty_list_title">Geen coupons gevonden</string>
+    <string name="woopos_coupons_empty_list_image_description">Geen coupons</string>
+    <string name="woopos_coupons_screen_title">Coupons</string>
+    <string name="woopos_product_limitations_title">Waar zijn mijn producten?</string>
+    <string name="woopos_coupon_item_content_description">Coupon %s</string>
     <string name="woo_shipping_split_shipment_bottom_sheet_remove_button">Zending verwijderen</string>
     <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_plural">Kies waar je de %d artikelen in deze verzending naartoe wilt verplaatsen.</string>
     <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_one">Kies waar je het %d artikel in deze verzending naartoe wilt verplaatsen.</string>
@@ -37,7 +56,7 @@ Language: nl
     <string name="woopos_search_empty_image_content_description">Geen items gevonden</string>
     <string name="woopos_search_empty_description">We konden niets vinden dat aan je zoekopdracht voldoet.</string>
     <string name="woopos_search_items_empty_title">Niets gevonden</string>
-    <string name="woopos_payment_discount_label">Korting</string>
+    <string name="woopos_payment_discount_label">Totaal aan korting</string>
     <string name="woopos_cart_item_coupon_content_description">Coupon in winkelwagen %s</string>
     <string name="shipping_label_package_title">Een pakket selecteren</string>
     <string name="receipt_preview_toolbar_title">Voorbeeld betalingsbewijs</string>
@@ -55,9 +74,9 @@ Language: nl
     <string name="woo_shipping_labels_shipping_rates_missing_destination_desc">We moeten weten waar dit pakket naartoe gaat voordat we de verzendkostenopties kunnen weergeven.</string>
     <string name="woo_shipping_labels_shipping_rates_missing_destination">Voeg een bestemmingsadres toe om verzendkosten op te halen</string>
     <string name="woopos_search_recent_searches_title">Recente zoekopdrachten</string>
-    <string name="woopos_search_popular_items_title">Populaire items</string>
+    <string name="woopos_search_popular_items_title">Populaire producten</string>
     <string name="woopos_search_products">Producten zoeken …</string>
-    <string name="woopos_clear_back_content_description">Wissen</string>
+    <string name="woopos_search_clear_content_description">Wissen</string>
     <string name="woopos_search_back_content_description">Terug</string>
     <string name="card_reader_connect_failed_battery_low_hint">De batterij van de lezer is bijna leeg. Laad de lezer op en probeer het opnieuw</string>
     <string name="login_site_credentials_invalid_response">Vanwege een onverwachte reactie van je website is het niet gelukt om in te loggen.</string>
@@ -358,8 +377,6 @@ Language: nl
     <string name="woopos_dialog_products_info_background_content_description">Achtergrond gedimd. Tik om het dialoogvenster te sluiten.</string>
     <string name="woopos_banner_simple_products_dialog_primary_button_content_description">Tik dubbel om het dialoogvenster te sluiten</string>
     <string name="woopos_banner_simple_products_dialog_content_description">Dialoogvenster voor alleen simpele, variabele en virtuele producten</string>
-    <string name="woopos_banner_simple_products_learn_more_content_description">Tik dubbel voor meer informatie</string>
-    <string name="woopos_banner_simple_products_content_description">Banner voor alleen simpele, variabele en virtuele producten</string>
     <string name="local_notification_blaze_no_campaign_reminder_description">Promoot je producten met Blaze Ads en verhoog nu je omzet.</string>
     <string name="local_notification_blaze_no_campaign_reminder_title">Verhoog je omzet</string>
     <string name="more_menu_button_payments_description">Neem onderweg betalingen aan</string>
@@ -373,11 +390,6 @@ Language: nl
     <string name="woopos_dialog_products_info_secondary_message_action_label">+ Maak een bestelling aan in het winkelbeheer</string>
     <string name="woopos_dialog_products_info_tertiary_message">Verlaat POS en maak een nieuwe bestelling aan vanuit het tabblad Bestellingen om betalingen te ontvangen voor andere producten.</string>
     <string name="woopos_dialog_products_info_heading">Waarom kan ik mijn producten niet zien?</string>
-    <string name="woopos_banner_simple_products_info_content_description">Informatie</string>
-    <string name="woopos_banner_simple_products_close_content_description">Sluiten</string>
-    <string name="woopos_banner_simple_products_only_message_learn_more">Meer\u00A0informatie</string>
-    <string name="woopos_banner_simple_products_only_message">Alleen simpele fysieke, variabele en virtuele producten zijn momenteel compatibel met POS. Andere producttypen zullen in toekomstige updates beschikbaar worden. </string>
-    <string name="woopos_banner_simple_products_only_title">Alleen simpele, variabele en virtuele producten worden weergeven</string>
     <string name="support_request_site_address">Websiteadres</string>
     <string name="analytics_google_ads_cta_web_view_title">Google voor WooCommerce</string>
     <string name="analytics_google_ads_cta_action">Betaalde campagne toevoegen</string>
@@ -2520,7 +2532,7 @@ Language: nl
     <string name="print_receipt_label_info_step_4">Koppel en verbind de printer met je mobiel als je hiervoor de opdracht krijgt.</string>
     <string name="print_receipt_label_info_step_3">Wanneer je op ‘Kwitantie afdrukken’ klikt nadat je een betalingen hebt aangenomen, vervang ‘Opslaan als pdf’ dan door ‘Alle printers’ en zoek naar een nieuwe printer.</string>
     <string name="print_receipt_label_info_step_2">Schakel de bluetooth- of wifiverbinding van je printer in.</string>
-    <string name="print_receipt_label_info_step_1">zorg ervoor dat de Printservice-plugin van je printer is geïnstalleerd.</string>
+    <string name="print_receipt_label_info_step_1">Zorg ervoor dat de printservice-plugin van je printer is geïnstalleerd.</string>
     <string name="orderdetail_printing_instructions_button">Meer informatie over het afdrukken van kwitanties op uw apparaat</string>
     <string name="product_create_attribute_helper">Om een variatie aan te maken moet je de eigenschappen (bv. \'kleur\', \'maat\') eerst instellen</string>
     <string name="product_variation_single_count">1 variatie</string>

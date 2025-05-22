@@ -10,13 +10,7 @@ import androidx.room.TypeConverters
 import androidx.room.migration.AutoMigrationSpec
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import org.wordpress.android.fluxc.persistence.BloggingRemindersDao.BloggingReminders
 import org.wordpress.android.fluxc.persistence.FeatureFlagConfigDao.FeatureFlag
-import org.wordpress.android.fluxc.persistence.JetpackCPConnectedSitesDao.JetpackCPConnectedSiteEntity
-import org.wordpress.android.fluxc.persistence.PlanOffersDao.PlanOffer
-import org.wordpress.android.fluxc.persistence.PlanOffersDao.PlanOfferFeature
-import org.wordpress.android.fluxc.persistence.PlanOffersDao.PlanOfferId
-import org.wordpress.android.fluxc.persistence.RemoteConfigDao.RemoteConfig
 import org.wordpress.android.fluxc.persistence.blaze.BlazeCampaignsDao
 import org.wordpress.android.fluxc.persistence.blaze.BlazeCampaignsDao.BlazeCampaignEntity
 import org.wordpress.android.fluxc.persistence.blaze.BlazeObjectivesDao
@@ -25,34 +19,16 @@ import org.wordpress.android.fluxc.persistence.blaze.BlazeTargetingDao
 import org.wordpress.android.fluxc.persistence.blaze.BlazeTargetingDeviceEntity
 import org.wordpress.android.fluxc.persistence.blaze.BlazeTargetingLanguageEntity
 import org.wordpress.android.fluxc.persistence.blaze.BlazeTargetingTopicEntity
-import org.wordpress.android.fluxc.persistence.bloggingprompts.BloggingPromptsDao
-import org.wordpress.android.fluxc.persistence.bloggingprompts.BloggingPromptsDao.BloggingPromptEntity
-import org.wordpress.android.fluxc.persistence.comments.CommentsDao
-import org.wordpress.android.fluxc.persistence.comments.CommentsDao.CommentEntity
 import org.wordpress.android.fluxc.persistence.coverters.StringListConverter
-import org.wordpress.android.fluxc.persistence.dashboard.CardsDao
-import org.wordpress.android.fluxc.persistence.dashboard.CardsDao.CardEntity
 import org.wordpress.android.fluxc.persistence.domains.DomainDao
 import org.wordpress.android.fluxc.persistence.domains.DomainDao.DomainEntity
-import org.wordpress.android.fluxc.persistence.jetpacksocial.JetpackSocialDao
-import org.wordpress.android.fluxc.persistence.jetpacksocial.JetpackSocialDao.JetpackSocialEntity
 
 @Database(
-        version = 29,
+        version = 30,
         entities = [
-            BloggingReminders::class,
-            PlanOffer::class,
-            PlanOfferId::class,
-            PlanOfferFeature::class,
-            CommentEntity::class,
-            CardEntity::class,
-            BloggingPromptEntity::class,
             FeatureFlag::class,
-            RemoteConfig::class,
-            JetpackCPConnectedSiteEntity::class,
             DomainEntity::class,
             BlazeCampaignEntity::class,
-            JetpackSocialEntity::class,
             BlazeCampaignObjectiveEntity::class,
             BlazeTargetingLanguageEntity::class,
             BlazeTargetingDeviceEntity::class,
@@ -70,6 +46,7 @@ import org.wordpress.android.fluxc.persistence.jetpacksocial.JetpackSocialDao.Je
             AutoMigration(from = 25, to = 26, spec = AutoMigration25to26::class),
             AutoMigration(from = 27, to = 28),
             AutoMigration(from = 28, to = 29),
+            AutoMigration(from = 29, to = 30, spec = AutoMigration29to30::class),
         ]
 )
 @TypeConverters(
@@ -78,29 +55,13 @@ import org.wordpress.android.fluxc.persistence.jetpacksocial.JetpackSocialDao.Je
     ]
 )
 abstract class WPAndroidDatabase : RoomDatabase() {
-    abstract fun bloggingRemindersDao(): BloggingRemindersDao
-
-    abstract fun planOffersDao(): PlanOffersDao
-
-    abstract fun commentsDao(): CommentsDao
-
-    abstract fun dashboardCardsDao(): CardsDao
-
-    abstract fun bloggingPromptsDao(): BloggingPromptsDao
-
     abstract fun featureFlagConfigDao(): FeatureFlagConfigDao
 
-    abstract fun remoteConfigDao(): RemoteConfigDao
-
     abstract fun domainDao(): DomainDao
-
-    abstract fun jetpackCPConnectedSitesDao(): JetpackCPConnectedSitesDao
 
     abstract fun blazeCampaignsDao(): BlazeCampaignsDao
 
     abstract fun blazeTargetingDao(): BlazeTargetingDao
-
-    abstract fun jetpackSocialDao(): JetpackSocialDao
 
     abstract fun blazeObjectivesDao(): BlazeObjectivesDao
 
@@ -248,7 +209,7 @@ abstract class WPAndroidDatabase : RoomDatabase() {
             }
         }
 
-        val MIGRATION_14_15 = object : Migration(14,15){
+        val MIGRATION_14_15 = object : Migration(14,15) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.apply {
                     execSQL(
@@ -258,7 +219,7 @@ abstract class WPAndroidDatabase : RoomDatabase() {
             }
         }
 
-        val MIGRATION_15_16 = object : Migration(15,16){
+        val MIGRATION_15_16 = object : Migration(15,16) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.apply {
                     execSQL(
@@ -366,3 +327,17 @@ abstract class WPAndroidDatabase : RoomDatabase() {
     DeleteTable(tableName = "BlazeAdSuggestions")
 )
 internal class AutoMigration25to26 : AutoMigrationSpec
+
+@DeleteTable.Entries(
+    DeleteTable(tableName = "BloggingPrompts"),
+    DeleteTable(tableName = "BloggingReminders"),
+    DeleteTable(tableName = "Comments"),
+    DeleteTable(tableName = "DashboardCards"),
+    DeleteTable(tableName = "JetpackCPConnectedSites"),
+    DeleteTable(tableName = "JetpackSocial"),
+    DeleteTable(tableName = "PlanOfferFeatures"),
+    DeleteTable(tableName = "PlanOfferIds"),
+    DeleteTable(tableName = "PlanOffers"),
+    DeleteTable(tableName = "RemoteConfigurations"),
+)
+internal class AutoMigration29to30 : AutoMigrationSpec

@@ -5,10 +5,8 @@ import org.apache.commons.text.StringEscapeUtils
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.SiteActionBuilder
 import org.wordpress.android.fluxc.generated.endpoint.XMLRPC.GET_OPTIONS
-import org.wordpress.android.fluxc.generated.endpoint.XMLRPC.GET_POST_FORMATS
 import org.wordpress.android.fluxc.generated.endpoint.XMLRPC.GET_PROFILE
 import org.wordpress.android.fluxc.generated.endpoint.XMLRPC.GET_USERS_SITES
-import org.wordpress.android.fluxc.model.PostFormatModel
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.SitesModel
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
@@ -20,11 +18,6 @@ import org.wordpress.android.fluxc.network.xmlrpc.XMLRPCRequestBuilder
 import org.wordpress.android.fluxc.network.xmlrpc.XMLRPCRequestBuilder.Response.Error
 import org.wordpress.android.fluxc.network.xmlrpc.XMLRPCRequestBuilder.Response.Success
 import org.wordpress.android.fluxc.network.xmlrpc.XMLRPCUtils
-import org.wordpress.android.fluxc.store.SiteStore.FetchedPostFormatsPayload
-import org.wordpress.android.fluxc.store.SiteStore.PostFormatsError
-import org.wordpress.android.fluxc.store.SiteStore.PostFormatsErrorType
-import org.wordpress.android.fluxc.store.SiteStore.PostFormatsErrorType.GENERIC_ERROR
-import org.wordpress.android.fluxc.utils.SiteUtils
 import org.wordpress.android.util.MapUtils
 import java.util.ArrayList
 import javax.inject.Inject
@@ -110,45 +103,6 @@ class SiteXMLRPCClient @Inject constructor(
             }
             is Error -> {
                 SiteModel().apply { error = response.error }
-            }
-        }
-    }
-
-    suspend fun fetchPostFormats(site: SiteModel): FetchedPostFormatsPayload {
-        val params = listOf(site.selfHostedSiteId, site.username, site.password)
-        val response = xmlrpcRequestBuilder.syncGetRequest(
-                this,
-                site.xmlRpcUrl,
-                GET_POST_FORMATS,
-                params,
-                Map::class.java
-        )
-        return when (response) {
-            is Success -> {
-                val postFormats = responseToPostFormats(response.data)
-                if (postFormats != null) {
-                    val payload = FetchedPostFormatsPayload(site, postFormats)
-                    payload
-                } else {
-                    val payload = FetchedPostFormatsPayload(site, emptyList())
-                    payload.error = PostFormatsError(PostFormatsErrorType.INVALID_RESPONSE)
-                    payload
-                }
-            }
-            is Error -> {
-                val postFormatsError: PostFormatsError = when (response.error.type) {
-                    INVALID_RESPONSE -> PostFormatsError(
-                            PostFormatsErrorType.INVALID_RESPONSE,
-                            response.error.message
-                    )
-                    else -> PostFormatsError(
-                            GENERIC_ERROR,
-                            response.error.message
-                    )
-                }
-                val payload = FetchedPostFormatsPayload(site, emptyList())
-                payload.error = postFormatsError
-                payload
             }
         }
     }
@@ -283,9 +237,5 @@ class SiteXMLRPCClient @Inject constructor(
         val isPublic = XMLRPCUtils.safeGetNestedMapValue(response, "blog_public", true)
         oldModel.setIsPrivate(!isPublic)
         return oldModel
-    }
-
-    private fun responseToPostFormats(response: Map<*, *>): List<PostFormatModel>? {
-        return SiteUtils.getValidPostFormatsOrNull(response)
     }
 }

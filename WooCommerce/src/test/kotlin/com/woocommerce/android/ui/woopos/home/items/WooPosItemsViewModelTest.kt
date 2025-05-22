@@ -10,10 +10,9 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemCli
 import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationFacade
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart.WooPosItemSource
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SearchButtonTapped
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ITEM_LIST_TYPE
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ITEM_LIST_TYPE_PRODUCTS
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -178,26 +177,36 @@ class WooPosItemsViewModelTest {
 
         // THEN
         verify(analyticsTracker).track(
-            SearchButtonTapped.apply {
-                addProperties(mapOf(ITEM_LIST_TYPE to ITEM_LIST_TYPE_PRODUCTS))
-            }
+            eq(
+                SearchButtonTapped(
+                    source = WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT,
+                )
+            )
         )
     }
 
     @Test
     fun `when add coupon icon is tapped, then newly created coupon added to cart`() = runTest {
         // GIVEN
-        whenever(couponCreationFacade.createCoupon()).thenReturn(CouponTestUtils.generateTestCoupon(1L, "test"))
+        whenever(couponCreationFacade.createCoupon())
+            .thenReturn(CouponTestUtils.generateTestCoupon(1L, "test"))
         val viewModel = createViewModel()
 
         // WHEN
         viewModel.onUIEvent(WooPosItemsUIEvent.AddCouponIconClicked)
 
         // THEN
+        val item = ItemClickedData.Coupon(1L, "test")
         verify(fromChildToParentEventSender).sendToParent(
-            ChildToParentEvent.ItemClickedInProductSelector(
-                itemData = ItemClickedData.Coupon(1L, "test"),
-                source = WooPosItemSource.COUPON_LIST
+            eq(
+                ChildToParentEvent.ItemClickedInProductSelector(
+                    itemData = item,
+                    eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
+                        item = item,
+                        source = WooPosAnalyticsEventConstant.ItemsListSource.COUPON,
+                        sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST
+                    )
+                )
             )
         )
     }

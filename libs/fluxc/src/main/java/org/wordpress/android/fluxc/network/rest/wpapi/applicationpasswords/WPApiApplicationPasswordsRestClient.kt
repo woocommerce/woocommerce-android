@@ -211,8 +211,10 @@ internal class WPApiApplicationPasswordsRestClient @Inject constructor(
                 emptyMap(),
                 emptyMap(),
                 T::class.java,
-                /* listener = */ { continuation.resume(WPAPIResponse.Success(it)) },
-                /* errorListener = */ { continuation.resume(WPAPIResponse.Error(it)) }
+                /* listener = */
+                { continuation.resume(WPAPIResponse.Success(it)) },
+                /* errorListener = */
+                { continuation.resume(WPAPIResponse.Error(it)) }
             )
 
             request.addHeader("Authorization", Credentials.basic(credentials.userName, credentials.password))

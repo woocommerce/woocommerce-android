@@ -31,7 +31,7 @@ import kotlin.test.assertTrue
 @Config(manifest = Config.NONE)
 @RunWith(RobolectricTestRunner::class)
 class WCUserStoreTest {
-    private val restClient = mock <WCUserRestClient>()
+    private val restClient = mock<WCUserRestClient>()
     private val site = SiteModel().apply { id = 321 }
     private val errorSite = SiteModel().apply { id = 123 }
     private val mapper = WCUserMapper()

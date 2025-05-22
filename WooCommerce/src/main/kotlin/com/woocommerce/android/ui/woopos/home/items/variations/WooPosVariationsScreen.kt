@@ -40,7 +40,7 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsEmptyList
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsLoadingIndicator
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.home.items.WooPosVariationsViewState
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart.WooPosItemSource
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -54,7 +54,7 @@ fun WooPosVariationsScreen(
         key = variableProductData.id.toString()
     )
     LaunchedEffect(variableProductData.id) {
-        viewModel.init(variableProductData.id, variableProductData.source)
+        viewModel.init(variableProductData.id, variableProductData.sourceType)
     }
     val state = viewModel.viewState
     WooPosVariationsScreens(
@@ -187,7 +187,7 @@ fun VariationsError(modifier: Modifier, onRetryClicked: () -> Unit) {
         WooPosErrorScreen(
             modifier = modifier,
             message = stringResource(id = R.string.woopos_variations_loading_error_title),
-            reason = stringResource(id = R.string.woopos_products_loading_error_message),
+            reason = stringResource(id = R.string.woopos_variations_loading_error_message),
             primaryButton = Button(
                 text = stringResource(id = R.string.woopos_products_loading_error_retry_button),
                 click = onRetryClicked
@@ -253,7 +253,7 @@ fun WooPosVariationsScreenPreview() {
                 id = 0,
                 name = "Variable Product",
                 numOfVariations = 20,
-                source = WooPosItemSource.PRODUCT_LIST,
+                sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST,
             ),
             state = productState,
         )

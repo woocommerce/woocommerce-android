@@ -32,9 +32,7 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.ProductWithMetaData
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.WCProductCategoryModel
 import org.wordpress.android.fluxc.model.WCProductModel
-import org.wordpress.android.fluxc.model.WCProductReviewModel
 import org.wordpress.android.fluxc.model.WCProductVariationModel
 import org.wordpress.android.fluxc.model.WCProductVariationModel.ProductVariantOption
 import org.wordpress.android.fluxc.model.metadata.WCMetaData
@@ -86,7 +84,6 @@ class WCProductStoreTest {
         val config = SingleStoreWellSqlConfigForTests(
             appContext,
             listOf(
-                WCProductReviewModel::class.java,
                 SiteModel::class.java,
                 AccountModel::class.java
             ),
@@ -116,7 +113,9 @@ class WCProductStoreTest {
             productsDao = productsDao,
             productVariationsDao = productsVariationsDao,
             productCategoriesDao = roomDb.productCategoriesDao,
-            productTagsDao = roomDb.productTagsDao
+            productTagsDao = roomDb.productTagsDao,
+            productShippingClassesDao = roomDb.productShippingClassesDao,
+            productReviewsDao = roomDb.productReviewsDao,
         )
     }
 
@@ -393,12 +392,12 @@ class WCProductStoreTest {
             123L,
             site.id
         )
-        whenever(productRestClient.fetchProductReviewById(site, reviewModel.remoteProductReviewId))
+        whenever(productRestClient.fetchProductReviewById(site, reviewModel.remoteProductReviewId.value))
             .thenReturn(RemoteProductReviewPayload(site, reviewModel))
 
-        productStore.fetchSingleProductReview(FetchSingleProductReviewPayload(site, reviewModel.remoteProductReviewId))
+        productStore.fetchSingleProductReview(FetchSingleProductReviewPayload(site, reviewModel.remoteProductReviewId.value))
 
-        assertThat(productStore.getProductReviewByRemoteId(site.id, reviewModel.remoteProductReviewId)).isNotNull
+        assertThat(productStore.getProductReviewByRemoteId(site.localId(), reviewModel.remoteProductReviewId)).isNotNull
         Unit
     }
 

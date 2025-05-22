@@ -5,8 +5,8 @@ import org.wordpress.android.fluxc.annotations.ActionEnum
 import org.wordpress.android.fluxc.annotations.action.IAction
 import org.wordpress.android.fluxc.model.list.ListDescriptorTypeIdentifier
 import org.wordpress.android.fluxc.store.ListStore.FetchedListItemsPayload
-import org.wordpress.android.fluxc.store.ListStore.OnListDataFailure
 import org.wordpress.android.fluxc.store.ListStore.ListItemsRemovedPayload
+import org.wordpress.android.fluxc.store.ListStore.OnListDataFailure
 import org.wordpress.android.fluxc.store.ListStore.RemoveExpiredListsPayload
 
 @ActionEnum

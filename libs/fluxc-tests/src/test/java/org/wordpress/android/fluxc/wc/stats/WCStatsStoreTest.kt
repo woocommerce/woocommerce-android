@@ -48,10 +48,10 @@ import org.wordpress.android.fluxc.utils.DateUtils
 import org.wordpress.android.fluxc.utils.SiteUtils.getCurrentDateTimeForSite
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import org.hamcrest.CoreMatchers.`is` as isEqual
-import java.util.Locale
 
 @Suppress("LargeClass")
 @Config(manifest = Config.NONE)

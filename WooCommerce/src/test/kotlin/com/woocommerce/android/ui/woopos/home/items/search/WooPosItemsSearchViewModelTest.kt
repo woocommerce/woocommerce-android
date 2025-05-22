@@ -13,7 +13,8 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateToVariationsScreen
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart.WooPosItemSource
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -29,6 +30,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -304,10 +306,10 @@ class WooPosItemsSearchViewModelTest {
                 val value = awaitItem() as WooPosItemsSearchViewState.Content
                 assertThat(value.items[0]).isInstanceOf(Product.Variable::class.java)
 
-                val variableProduct = value.items[0] as Product.Variable
-                assertThat(variableProduct.name).isEqualTo("Variable Product")
-                assertThat(variableProduct.numOfVariations).isEqualTo(3)
-                assertThat(variableProduct.variationIds).containsExactly(101L, 102L, 103L)
+                val variableProductResult = value.items[0] as Product.Variable
+                assertThat(variableProductResult.name).isEqualTo("Variable Product")
+                assertThat(variableProductResult.numOfVariations).isEqualTo(3)
+                assertThat(variableProductResult.variationIds).containsExactly(101L, 102L, 103L)
             }
         }
 
@@ -611,10 +613,17 @@ class WooPosItemsSearchViewModelTest {
         viewModel.onUIEvent(WooPosItemsSearchUiEvent.OnItemClicked(simpleProduct))
 
         // THEN
+        val item = ItemClickedData.Product.Simple(id = 1)
         verify(mockChildToParentEventSender).sendToParent(
-            ChildToParentEvent.ItemClickedInProductSelector(
-                itemData = ItemClickedData.Product.Simple(id = 1),
-                source = WooPosItemSource.SEARCH_RESULT
+            eq(
+                ChildToParentEvent.ItemClickedInProductSelector(
+                    itemData = item,
+                    eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
+                        item = item,
+                        source = WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT,
+                        sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.SEARCH_RESULT,
+                    )
+                )
             )
         )
     }
@@ -643,7 +652,7 @@ class WooPosItemsSearchViewModelTest {
                     id = 1,
                     name = "Variable Product",
                     numOfVariations = 3,
-                    source = WooPosItemSource.SEARCH_RESULT,
+                    sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.SEARCH_RESULT
                 )
             )
         )
@@ -750,7 +759,11 @@ class WooPosItemsSearchViewModelTest {
             verify(mockChildToParentEventSender).sendToParent(
                 ChildToParentEvent.ItemClickedInProductSelector(
                     ItemClickedData.Product.Simple(id = simpleProduct.id),
-                    source = WooPosItemSource.POPULAR_PRODUCTS
+                    eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
+                        item = ItemClickedData.Product.Simple(id = simpleProduct.id),
+                        source = WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT,
+                        sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.POPULAR_PRODUCTS,
+                    )
                 )
             )
         }
@@ -778,7 +791,7 @@ class WooPosItemsSearchViewModelTest {
                     id = 1L,
                     name = "Product",
                     numOfVariations = 2,
-                    source = WooPosItemSource.SEARCH_RESULT
+                    sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.SEARCH_RESULT
                 )
             )
         )
@@ -796,10 +809,15 @@ class WooPosItemsSearchViewModelTest {
             viewModel.onUIEvent(WooPosItemsSearchUiEvent.OnItemClicked(simpleProduct))
 
             // THEN
+            val item = ItemClickedData.Product.Simple(id = 1)
             verify(mockChildToParentEventSender).sendToParent(
                 ChildToParentEvent.ItemClickedInProductSelector(
-                    itemData = ItemClickedData.Product.Simple(id = 1),
-                    source = WooPosItemSource.SEARCH_RESULT_LOCAL
+                    itemData = item,
+                    eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
+                        item = item,
+                        source = WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT,
+                        sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.SEARCH_RESULT_LOCAL,
+                    ),
                 )
             )
         }
@@ -816,10 +834,15 @@ class WooPosItemsSearchViewModelTest {
             viewModel.onUIEvent(WooPosItemsSearchUiEvent.OnItemClicked(simpleProduct))
 
             // THEN
+            val item = ItemClickedData.Product.Simple(id = 1)
             verify(mockChildToParentEventSender).sendToParent(
                 ChildToParentEvent.ItemClickedInProductSelector(
-                    itemData = ItemClickedData.Product.Simple(id = 1),
-                    source = WooPosItemSource.SEARCH_RESULT
+                    itemData = item,
+                    eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
+                        item = item,
+                        source = WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT,
+                        sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.SEARCH_RESULT,
+                    ),
                 )
             )
         }
