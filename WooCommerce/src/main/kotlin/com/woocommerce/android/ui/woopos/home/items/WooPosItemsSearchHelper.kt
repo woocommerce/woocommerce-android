@@ -186,7 +186,7 @@ class WooPosItemsSearchHelper @Inject constructor(
     private fun WooPosItemsViewState.copy(search: SearchState.Visible): WooPosItemsViewState {
         return when (this) {
             is WooPosItemsViewState.ProductList -> this.copy(search = search)
-            is WooPosItemsViewState.CouponList -> this
+            is WooPosItemsViewState.CouponList -> this.copy(search = search)
         }
     }
 }

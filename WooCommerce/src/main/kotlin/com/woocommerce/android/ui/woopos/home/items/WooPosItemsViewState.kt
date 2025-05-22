@@ -22,7 +22,7 @@ sealed class WooPosItemsViewState(
         override val search: SearchState,
     ) : WooPosItemsViewState(
         tabs = tabs,
-        search = SearchState.Hidden,
+        search = search,
         isAddCouponVisible = true,
     )
 
