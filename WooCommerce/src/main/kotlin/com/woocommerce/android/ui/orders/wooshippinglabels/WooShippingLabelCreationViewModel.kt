@@ -269,7 +269,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     @OptIn(FlowPreview::class)
     private suspend fun observePackageWeight() {
         combine(
-            shipmentItems,
+            shipmentItems.filter { it.isNotEmpty() },
             packageSelected,
             snapshotFlow { customWeight }.debounce(TYPING_DELAY)
         ) { shipmentItems, selectedPackage, customWeightString ->
