@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.home.items.search
 
+import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.isGreaterThanPluginVersion
@@ -54,14 +55,13 @@ class WooPosProductSearchPredicate @Inject constructor(
     private fun isWooCoreSupportsNameOrSkuSearch(): Boolean {
         cachedSupportsNameOrSkuSearch?.let { return it }
         val wooCoreVersion = getWooCoreVersion() ?: return false
-        val supportsNameOrSkuSearch = wooCoreVersion.isGreaterThanPluginVersion(
-            WC_LAST_VERSION_WITHOUT_NAME_OR_SKU_SUPPORT
-        )
+        val supportsNameOrSkuSearch =
+            wooCoreVersion.semverCompareTo(WC_LAST_VERSION_WITHOUT_NAME_OR_SKU_SUPPORT) >= 0
         cachedSupportsNameOrSkuSearch = supportsNameOrSkuSearch
         return supportsNameOrSkuSearch
     }
 
     private companion object {
-        const val WC_LAST_VERSION_WITHOUT_NAME_OR_SKU_SUPPORT = "9.8.5"
+        const val WC_LAST_VERSION_WITHOUT_NAME_OR_SKU_SUPPORT = "9.9.0"
     }
 }
