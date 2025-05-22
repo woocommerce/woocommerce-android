@@ -140,13 +140,11 @@ class WooPosItemsSearchHelper @Inject constructor(
             is WooPosItemsViewState.ProductList -> R.string.woopos_search_products
             is WooPosItemsViewState.CouponList -> R.string.woopos_search_coupons
         }
-        
+
         viewStateFlow.value = currentState.copy(
             search = SearchState.Visible(
                 state = WooPosSearchInputState.Open(
-                    input = WooPosSearchInputState.Open.Input.Hint(
-                        resourceProvider.getString(searchHintStringRes)
-                    ),
+                    input = WooPosSearchInputState.Open.Input.Hint(resourceProvider.getString(searchHintStringRes)),
                     isLoading = false,
                     hasAnimationPlayed = false
                 )
