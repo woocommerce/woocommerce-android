@@ -1,27 +1,27 @@
 package com.woocommerce.android.ui.woopos.emailreceipt
 
 import android.util.Patterns
+import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditRepository
 import com.woocommerce.android.ui.orders.creation.OrderCreationSource
 import com.woocommerce.android.ui.woopos.featureflags.WooPosIsPOSReceiptsEnabled
-import com.woocommerce.android.util.isGreaterThanPluginVersion
+import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.store.WCOrderStore
-import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 class WooPosEmailReceiptRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val orderStore: WCOrderStore,
-    private val wooCommerceStore: WooCommerceStore,
     private val orderCreateEditRepository: OrderCreateEditRepository,
     private val orderMapper: OrderMapper,
     private val provideEmailPattern: WooPosProvideEmailPattern,
     private val isPOSReceiptsEnabled: WooPosIsPOSReceiptsEnabled,
+    private val getWooCoreVersion: GetWooCorePluginCachedVersion
 ) {
     suspend fun sendReceiptByEmail(orderId: Long, email: String): Result<Unit> = withContext(Dispatchers.IO) {
         val order = getOrderById(orderId)
@@ -39,7 +39,7 @@ class WooPosEmailReceiptRepository @Inject constructor(
     fun isEmailValid(email: String): Boolean = provideEmailPattern().matcher(email).matches()
 
     private suspend fun triggerOrderReceiptSending(orderId: Long): Result<Unit> {
-        val posReceiptsAreEnabled = isPOSReceiptsEnabled() && wooCommercePluginSupportsPOSReceipts()
+        val posReceiptsAreEnabled = isPOSReceiptsEnabled() && isWooCoreSupportsPOSReceipts()
         val sendOrderResult = if (posReceiptsAreEnabled) {
             orderStore.sendOrderPOSSpecificReceipt(selectedSite.get(), orderId)
         } else {
@@ -66,19 +66,16 @@ class WooPosEmailReceiptRepository @Inject constructor(
             orderMapper.toAppModel(it)
         }
 
-    private suspend fun wooCommercePluginSupportsPOSReceipts(): Boolean {
-        val response = wooCommerceStore.fetchSystemPlugins(selectedSite.get())
-        val plugins = response.model ?: return false
-
-        val supportsReceipts = plugins.firstOrNull { plugin ->
-            plugin.name == "WooCommerce" &&
-                plugin.version.isGreaterThanPluginVersion("9.9.9")
-        }
-
-        return supportsReceipts != null
+    private fun isWooCoreSupportsPOSReceipts(): Boolean {
+        val wooCoreVersion = getWooCoreVersion() ?: return false
+        return wooCoreVersion.semverCompareTo(WC_VERSION_SUPPORTS_POS_RECEIPTS) >= 0
     }
-}
 
-class WooPosProvideEmailPattern @Inject constructor() {
-    operator fun invoke() = Patterns.EMAIL_ADDRESS
+    private companion object {
+        const val WC_VERSION_SUPPORTS_POS_RECEIPTS = "10.0.0"
+    }
+
+    class WooPosProvideEmailPattern @Inject constructor() {
+        operator fun invoke() = Patterns.EMAIL_ADDRESS
+    }
 }

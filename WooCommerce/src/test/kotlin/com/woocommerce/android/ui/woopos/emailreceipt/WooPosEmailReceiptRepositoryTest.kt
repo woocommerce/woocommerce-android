@@ -5,6 +5,8 @@ import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditRepository
 import com.woocommerce.android.ui.orders.creation.OrderCreationSource
+import com.woocommerce.android.ui.woopos.featureflags.WooPosIsPOSReceiptsEnabled
+import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -18,10 +20,7 @@ import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WCSystemPluginResponse.SystemPluginModel
 import org.wordpress.android.fluxc.store.WCOrderStore
-import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.util.regex.Pattern
 
 class WooPosEmailReceiptRepositoryTest {
@@ -30,10 +29,11 @@ class WooPosEmailReceiptRepositoryTest {
         on { get() }.thenReturn(siteModel)
     }
     private val orderStore: WCOrderStore = mock()
-    private val wooCommercerStore: WooCommerceStore = mock()
     private val orderCreateEditRepository: OrderCreateEditRepository = mock()
     private val orderMapper: OrderMapper = mock()
-    private val provideEmailPattern: WooPosProvideEmailPattern = mock {
+    private val isPOSReceiptsEnabled: WooPosIsPOSReceiptsEnabled = mock()
+    private val getWooCoreVersion: GetWooCorePluginCachedVersion = mock()
+    private val provideEmailPattern: WooPosEmailReceiptRepository.WooPosProvideEmailPattern = mock {
         on { invoke() }.thenReturn(
             Pattern.compile(
                 "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}" +
@@ -50,10 +50,11 @@ class WooPosEmailReceiptRepositoryTest {
     private val repository = WooPosEmailReceiptRepository(
         selectedSite,
         orderStore,
-        wooCommercerStore,
         orderCreateEditRepository,
         orderMapper,
-        provideEmailPattern
+        provideEmailPattern,
+        isPOSReceiptsEnabled,
+        getWooCoreVersion
     )
 
     @Test
@@ -90,10 +91,7 @@ class WooPosEmailReceiptRepositoryTest {
             on { customer }.thenReturn(mock())
         }
 
-        val wooCommercePlugin = SystemPluginModel("WooCommerce", name = "WooCommerce", "9.9.9", null)
-
-        whenever(wooCommercerStore.fetchSystemPlugins(siteModel)).thenReturn(WooResult(listOf(wooCommercePlugin)))
-        whenever(wooCommercerStore.fetchSystemPlugins(siteModel)).thenReturn(mock())
+        whenever(getWooCoreVersion.invoke()).thenReturn("9.9.0")
         whenever(orderStore.getOrderByIdAndSite(orderId, siteModel)).thenReturn(mock())
         whenever(orderMapper.toAppModel(any())).thenReturn(mockOrder)
         whenever(
@@ -114,7 +112,7 @@ class WooPosEmailReceiptRepositoryTest {
     }
 
     @Test
-    fun `given valid order id and email, when sendReceiptByEmail and WC version is 10 or higher, it calls for POS receipts then return success`() = runTest {
+    fun `given valid order id and email, when sendReceiptByEmail and WC version is 10 or higher and POS Receipts is enabled, it calls for POS receipts then return success`() = runTest {
         // GIVEN
         val orderId = 1L
         val email = "test@example.com"
@@ -123,9 +121,8 @@ class WooPosEmailReceiptRepositoryTest {
             on { customer }.thenReturn(mock())
         }
 
-        val wooCommercePlugin = SystemPluginModel("WooCommerce", name = "WooCommerce", "10.0.0", null)
-
-        whenever(wooCommercerStore.fetchSystemPlugins(siteModel)).thenReturn(WooResult(listOf(wooCommercePlugin)))
+        whenever(getWooCoreVersion.invoke()).thenReturn("10.0.0")
+        whenever(isPOSReceiptsEnabled.invoke()).thenReturn(true)
         whenever(orderStore.getOrderByIdAndSite(orderId, siteModel)).thenReturn(mock())
         whenever(orderMapper.toAppModel(any())).thenReturn(mockOrder)
         whenever(
@@ -137,6 +134,37 @@ class WooPosEmailReceiptRepositoryTest {
         ).thenReturn(Result.success(mockOrder))
         val sendOrderReceiptResult = WooPayload<Unit>(Unit)
         whenever(orderStore.sendOrderPOSSpecificReceipt(siteModel, orderId)).thenReturn(sendOrderReceiptResult)
+
+        // WHEN
+        val result = repository.sendReceiptByEmail(orderId, email)
+
+        // THEN
+        assertThat(result.isSuccess).isTrue()
+    }
+
+    @Test
+    fun `given valid order id and email, when sendReceiptByEmail and WC version is 10 or higher and POS Receipts is not enabled, it calls for normal receipts then return success`() = runTest {
+        // GIVEN
+        val orderId = 1L
+        val email = "test@example.com"
+        val mockOrder: Order = mock {
+            on { billingAddress }.thenReturn(mock())
+            on { customer }.thenReturn(mock())
+        }
+
+        whenever(getWooCoreVersion.invoke()).thenReturn("10.0.0")
+        whenever(isPOSReceiptsEnabled.invoke()).thenReturn(false)
+        whenever(orderStore.getOrderByIdAndSite(orderId, siteModel)).thenReturn(mock())
+        whenever(orderMapper.toAppModel(any())).thenReturn(mockOrder)
+        whenever(
+            orderCreateEditRepository.createOrUpdateOrder(
+                any(),
+                eq(OrderCreationSource.POINT_OF_SALE),
+                eq("")
+            )
+        ).thenReturn(Result.success(mockOrder))
+        val sendOrderReceiptResult = WooPayload<Unit>(Unit)
+        whenever(orderStore.sendOrderReceipt(siteModel, orderId)).thenReturn(sendOrderReceiptResult)
 
         // WHEN
         val result = repository.sendReceiptByEmail(orderId, email)
@@ -200,7 +228,6 @@ class WooPosEmailReceiptRepositoryTest {
             on { customer }.thenReturn(mock())
         }
         whenever(selectedSite.get()).thenReturn(siteModel)
-        whenever(wooCommercerStore.fetchSystemPlugins(siteModel)).thenReturn(mock())
         whenever(orderStore.getOrderByIdAndSite(orderId, siteModel)).thenReturn(mock())
         whenever(orderMapper.toAppModel(any())).thenReturn(mockOrder)
         whenever(
