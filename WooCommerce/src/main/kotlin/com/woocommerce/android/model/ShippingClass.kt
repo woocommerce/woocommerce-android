@@ -15,6 +15,6 @@ fun WCProductShippingClassModel.toAppModel(): ShippingClass {
     return ShippingClass(
         name = this.name,
         slug = this.slug,
-        remoteShippingClassId = this.remoteShippingClassId
+        remoteShippingClassId = this.remoteShippingClassId.value
     )
 }

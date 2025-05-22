@@ -104,6 +104,7 @@ General usage and development questions:
 
 - [Mobile blog](https://mobile.blog)
 - [WooCommerce API Documentation (currently v3)](https://woocommerce.github.io/woocommerce-rest-api-docs/#introduction)
+- [FluxC](https://github.com/wordpress-mobile/WordPress-FluxC-Android) Although the FluxC repository is now archived and its functionality has been merged into this project, it still contains valuable documentation on how to work with the underlying architecture and patterns.
 
 ## 📜 License
 
