@@ -10,11 +10,11 @@ enum class FeatureFlag {
     WC_SHIPPING_BANNER,
     BETTER_CUSTOMER_SEARCH_M2,
     ORDER_CREATION_AUTO_TAX_RATE,
+    POS_RECEIPTS,
     NEW_SHIPPING_SUPPORT,
     REVAMP_WOO_SHIPPING,
     BULK_UPDATE_ORDERS_STATUS,
-    HIDE_SITES_FROM_SITE_PICKER,
-    POS_RECEIPTS;
+    HIDE_SITES_FROM_SITE_PICKER;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
