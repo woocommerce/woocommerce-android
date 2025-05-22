@@ -4,8 +4,10 @@ import android.os.Parcelable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState.SearchState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState.Tab
 import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationFacade
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
@@ -115,6 +117,7 @@ class WooPosItemsViewModel @Inject constructor(
 
             R.string.woopos_coupons_screen_title -> WooPosItemsViewState.CouponList(
                 tabs = tabsHelper.selectTab(state.tabs, selectedTab),
+                search = SearchState.Visible(WooPosSearchInputState.Closed)
             ).also {
                 viewModelScope.launch {
                     analyticsTracker.track(

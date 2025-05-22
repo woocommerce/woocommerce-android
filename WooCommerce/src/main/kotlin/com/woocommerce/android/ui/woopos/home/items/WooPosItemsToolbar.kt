@@ -5,6 +5,7 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.icons.Icons
@@ -82,7 +84,7 @@ fun WooPosItemsToolbar(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = WooPosSpacing.Medium.value.toAdaptivePadding()),
+                    .padding(start = WooPosSpacing.Medium.value.toAdaptivePadding(), end = 64.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 LazyRow(
@@ -150,7 +152,7 @@ fun WooPosProductsToolbarPreview() {
         WooPosItemsToolbar(
             state = WooPosItemsViewState.ProductList(
                 tabs = tabs,
-                search = SearchState.Hidden,
+                search = SearchState.Visible(WooPosSearchInputState.Closed)
             ),
             onTabClicked = {},
             onSearchEvent = {},
@@ -169,7 +171,10 @@ fun WooPosCouponsToolbarPreview() {
 
     WooPosTheme {
         WooPosItemsToolbar(
-            state = WooPosItemsViewState.CouponList(tabs = tabs),
+            state = WooPosItemsViewState.CouponList(
+                tabs = tabs,
+                search = SearchState.Visible(WooPosSearchInputState.Closed)
+            ),
             onTabClicked = {},
             onSearchEvent = {},
             onAddCouponEvent = {},

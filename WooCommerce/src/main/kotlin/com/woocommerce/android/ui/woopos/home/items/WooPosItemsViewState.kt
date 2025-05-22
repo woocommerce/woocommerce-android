@@ -14,11 +14,12 @@ sealed class WooPosItemsViewState(
     ) : WooPosItemsViewState(
         tabs = tabs,
         search = search,
-        isAddCouponVisible = true,
+        isAddCouponVisible = false,
     )
 
     data class CouponList(
         override val tabs: List<Tab>,
+        override val search: SearchState,
     ) : WooPosItemsViewState(
         tabs = tabs,
         search = SearchState.Hidden,
