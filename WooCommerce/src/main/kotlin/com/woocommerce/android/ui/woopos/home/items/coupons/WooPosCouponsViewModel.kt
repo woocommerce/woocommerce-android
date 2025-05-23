@@ -98,8 +98,7 @@ class WooPosCouponsViewModel @Inject constructor(
         viewModelScope.launch {
             val itemData = ItemClickedData.Coupon(event.couponId, event.couponCode)
             fromChildToParentEventSender.sendToParent(
-                // CouponsProject: rename ItemClickedInProductSelector to ItemClicked
-                ChildToParentEvent.ItemClickedInProductSelector(
+                ChildToParentEvent.ItemClickedInItemsList(
                     itemData = itemData,
                     eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
                         item = itemData,
@@ -118,7 +117,7 @@ class WooPosCouponsViewModel @Inject constructor(
             if (coupon != null) {
                 val itemData = ItemClickedData.Coupon(coupon.id, coupon.code ?: "")
                 fromChildToParentEventSender.sendToParent(
-                    ChildToParentEvent.ItemClickedInProductSelector(
+                    ChildToParentEvent.ItemClickedInItemsList(
                         itemData = itemData,
                         eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
                             item = itemData,

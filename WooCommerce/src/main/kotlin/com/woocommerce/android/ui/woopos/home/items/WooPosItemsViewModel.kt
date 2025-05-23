@@ -139,7 +139,7 @@ class WooPosItemsViewModel @Inject constructor(
             if (coupon != null) {
                 val itemData = ItemClickedData.Coupon(coupon.id, coupon.code ?: "")
                 fromChildToParentEventSender.sendToParent(
-                    ChildToParentEvent.ItemClickedInProductSelector(
+                    ChildToParentEvent.ItemClickedInItemsList(
                         itemData = itemData,
                         eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
                             item = itemData,

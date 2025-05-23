@@ -66,7 +66,7 @@ class WooPosCouponsViewModelTest {
         val item = ItemClickedData.Coupon(couponId, couponCode)
         verify(fromChildToParentEventSender).sendToParent(
             eq(
-                ChildToParentEvent.ItemClickedInProductSelector(
+                ChildToParentEvent.ItemClickedInItemsList(
                     itemData = ItemClickedData.Coupon(couponId, couponCode),
                     eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
                         item = item,
@@ -153,7 +153,7 @@ class WooPosCouponsViewModelTest {
         // THEN
         val item = ItemClickedData.Coupon(1L, "test coupon")
         verify(fromChildToParentEventSender).sendToParent(
-            ChildToParentEvent.ItemClickedInProductSelector(
+            ChildToParentEvent.ItemClickedInItemsList(
                 itemData = item,
                 eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
                     item = item,

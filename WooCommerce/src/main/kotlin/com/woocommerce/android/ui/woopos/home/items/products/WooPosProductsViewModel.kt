@@ -133,7 +133,7 @@ class WooPosProductsViewModel @Inject constructor(
             is WooPosItemSelectionViewState.Product.Variable -> {
                 viewModelScope.launch {
                     fromChildToParentEventSender.sendToParent(
-                        ChildToParentEvent.ItemClickedInProductSelector(
+                        ChildToParentEvent.ItemClickedInItemsList(
                             itemData = ItemClickedData.VariableProduct(
                                 id = event.item.id,
                                 name = event.item.name,
@@ -299,7 +299,7 @@ class WooPosProductsViewModel @Inject constructor(
 
     private fun onItemClicked(itemData: ItemClickedData) {
         sendEventToParent(
-            ChildToParentEvent.ItemClickedInProductSelector(
+            ChildToParentEvent.ItemClickedInItemsList(
                 itemData = itemData,
                 eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
                     item = itemData,

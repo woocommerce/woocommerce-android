@@ -212,7 +212,7 @@ class WooPosProductsViewModelTest {
         viewModel.viewState.test {
             verify(fromChildToParentEventSender).sendToParent(
                 eq(
-                    ChildToParentEvent.ItemClickedInProductSelector(
+                    ChildToParentEvent.ItemClickedInItemsList(
                         itemData = item,
                         eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
                             item = item,

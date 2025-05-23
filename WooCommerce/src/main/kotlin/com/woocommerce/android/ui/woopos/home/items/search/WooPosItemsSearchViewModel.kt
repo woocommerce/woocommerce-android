@@ -238,7 +238,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
                 viewModelScope.launch {
                     val itemData = ItemClickedData.Product.Simple(id = item.id)
                     childToParentEventSender.sendToParent(
-                        ChildToParentEvent.ItemClickedInProductSelector(
+                        ChildToParentEvent.ItemClickedInItemsList(
                             itemData = itemData,
                             eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
                                 item = itemData,
@@ -255,7 +255,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
             is WooPosItemSelectionViewState.Product.Variable -> {
                 viewModelScope.launch {
                     childToParentEventSender.sendToParent(
-                        ChildToParentEvent.ItemClickedInProductSelector(
+                        ChildToParentEvent.ItemClickedInItemsList(
                             itemData = ItemClickedData.VariableProduct(
                                 id = item.id,
                                 name = item.name,

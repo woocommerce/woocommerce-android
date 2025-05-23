@@ -616,7 +616,7 @@ class WooPosItemsSearchViewModelTest {
         val item = ItemClickedData.Product.Simple(id = 1)
         verify(mockChildToParentEventSender).sendToParent(
             eq(
-                ChildToParentEvent.ItemClickedInProductSelector(
+                ChildToParentEvent.ItemClickedInItemsList(
                     itemData = item,
                     eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
                         item = item,
@@ -757,7 +757,7 @@ class WooPosItemsSearchViewModelTest {
             // THEN
             verify(mockEmptyStateProvider).addPopularItemsToCache()
             verify(mockChildToParentEventSender).sendToParent(
-                ChildToParentEvent.ItemClickedInProductSelector(
+                ChildToParentEvent.ItemClickedInItemsList(
                     ItemClickedData.Product.Simple(id = simpleProduct.id),
                     eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
                         item = ItemClickedData.Product.Simple(id = simpleProduct.id),
@@ -811,7 +811,7 @@ class WooPosItemsSearchViewModelTest {
             // THEN
             val item = ItemClickedData.Product.Simple(id = 1)
             verify(mockChildToParentEventSender).sendToParent(
-                ChildToParentEvent.ItemClickedInProductSelector(
+                ChildToParentEvent.ItemClickedInItemsList(
                     itemData = item,
                     eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
                         item = item,
@@ -836,7 +836,7 @@ class WooPosItemsSearchViewModelTest {
             // THEN
             val item = ItemClickedData.Product.Simple(id = 1)
             verify(mockChildToParentEventSender).sendToParent(
-                ChildToParentEvent.ItemClickedInProductSelector(
+                ChildToParentEvent.ItemClickedInItemsList(
                     itemData = item,
                     eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
                         item = item,

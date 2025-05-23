@@ -126,7 +126,7 @@ class WooPosHomeViewModel @Inject constructor(
                         sendEventToChildren(ParentToChildrenEvent.BackFromCheckoutToCartClicked)
                     }
 
-                    is ChildToParentEvent.ItemClickedInProductSelector -> {
+                    is ChildToParentEvent.ItemClickedInItemsList -> {
                         sendEventToChildren(
                             ItemClickedInItemsList(
                                 itemData = event.itemData,

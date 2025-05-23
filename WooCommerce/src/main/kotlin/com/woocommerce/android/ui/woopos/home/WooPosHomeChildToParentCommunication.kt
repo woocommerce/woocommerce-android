@@ -26,7 +26,7 @@ sealed class ChildToParentEvent {
     ) : ChildToParentEvent()
 
     data object BackFromCheckoutToCartClicked : ChildToParentEvent()
-    data class ItemClickedInProductSelector(
+    data class ItemClickedInItemsList(
         val itemData: WooPosItemsViewModel.ItemClickedData,
         val eventForTracking: WooPosAnalyticsEvent.Event.ItemAddedToCart?
     ) : ChildToParentEvent()
