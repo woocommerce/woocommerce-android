@@ -4,7 +4,7 @@ import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.variations.selector.VariationListHandler
 import com.woocommerce.android.ui.woopos.home.items.variations.FetchResult
-import com.woocommerce.android.ui.woopos.home.items.variations.VariationsLRUCache
+import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsLRUCache
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsDataSource
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import junit.framework.TestCase.assertFalse
@@ -63,7 +63,7 @@ class WooPosVariationsDataSourceTest {
     )
 
     private val handler: VariationListHandler = mock()
-    private val variationsCache: VariationsLRUCache<Long, List<ProductVariation>> = mock()
+    private val variationsCache: WooPosVariationsLRUCache<Long, List<ProductVariation>> = mock()
 
     @Test
     fun `given force refresh, when fetchFirstPage called, then should clear cache`() = runTest {
