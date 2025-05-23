@@ -32,6 +32,7 @@ class WooPosItemsViewModel @Inject constructor(
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
     private val analyticsTracker: WooPosAnalyticsTracker,
 ) : ViewModel() {
+    private var preservedStateBeforeOpeningVariations: WooPosItemsToolbarViewState? = null
     private val _viewState = MutableStateFlow<WooPosItemsToolbarViewState>(
         WooPosItemsToolbarViewState.ProductList(
             tabs = tabsHelper.defaultTabs,
@@ -108,6 +109,7 @@ class WooPosItemsViewModel @Inject constructor(
             is ItemClickedData.Product.Variation -> Unit
 
             is ItemClickedData.VariableProduct -> {
+                preservedStateBeforeOpeningVariations = _viewState.value
                 _viewState.value = WooPosItemsToolbarViewState.VariationList(
                     tabs = listOf(
                         Tab.VariationTab(
@@ -137,10 +139,11 @@ class WooPosItemsViewModel @Inject constructor(
     private fun navigateBackToProductsFromVariations() {
         when (_viewState.value) {
             is WooPosItemsToolbarViewState.VariationList -> {
-                _viewState.value = WooPosItemsToolbarViewState.ProductList(
+                _viewState.value = preservedStateBeforeOpeningVariations ?: WooPosItemsToolbarViewState.ProductList(
                     tabs = tabsHelper.defaultTabs,
                     search = searchHelper.getInitialSearchState(),
                 )
+                preservedStateBeforeOpeningVariations = null
             }
 
             else -> error("Unexpected state: ${_viewState.value}")
