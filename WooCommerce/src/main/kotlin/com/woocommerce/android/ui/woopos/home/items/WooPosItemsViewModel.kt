@@ -55,8 +55,8 @@ class WooPosItemsViewModel @Inject constructor(
 
     fun onUIEvent(event: WooPosItemsUIEvent) {
         when (event) {
-            WooPosItemsUIEvent.BackButtonClicked -> {
-                navigateBackToItemListScreen()
+            WooPosItemsUIEvent.BackFromVariationsClicked -> {
+                navigateBackToProductsFromVariations()
             }
 
             WooPosItemsUIEvent.ClearSearchClicked -> searchHelper.onClearSearchClicked()
@@ -134,17 +134,16 @@ class WooPosItemsViewModel @Inject constructor(
         }
     }
 
-    private fun navigateBackToItemListScreen() {
+    private fun navigateBackToProductsFromVariations() {
         when (_viewState.value) {
-            is WooPosItemsToolbarViewState.ProductList -> {
-            }
-
-            is WooPosItemsToolbarViewState.CouponList -> {
-            }
-
             is WooPosItemsToolbarViewState.VariationList -> {
-
+                _viewState.value = WooPosItemsToolbarViewState.ProductList(
+                    tabs = tabsHelper.defaultTabs,
+                    search = searchHelper.getInitialSearchState(),
+                )
             }
+
+            else -> error("Unexpected state: ${_viewState.value}")
         }
     }
 

@@ -87,7 +87,7 @@ private fun WooPosItemsScreen(
             onUIEvent(WooPosItemsUIEvent.AddCouponIconClicked)
         },
         onTabClicked = { onUIEvent(WooPosItemsUIEvent.OnTabClicked(it)) },
-        onBackClicked = { onUIEvent(WooPosItemsUIEvent.BackButtonClicked) },
+        onBackClicked = { onUIEvent(WooPosItemsUIEvent.BackFromVariationsClicked) },
     )
 }
 

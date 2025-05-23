@@ -68,7 +68,7 @@ class WooPosItemsViewModelTest {
         val viewModel = createViewModel()
 
         // WHEN
-        viewModel.onUIEvent(WooPosItemsUIEvent.BackButtonClicked)
+        viewModel.onUIEvent(WooPosItemsUIEvent.BackFromVariationsClicked)
 
         // THEN
         verify(wooPosItemsNavigator).sendNavigationEvent(
