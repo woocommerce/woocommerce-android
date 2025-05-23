@@ -122,18 +122,25 @@ private fun WooPosVariationsScreens(
             }
 
             is WooPosVariationsViewState.Loading -> {
-                WooPosItemsLoadingIndicator()
+                WooPosItemsLoadingIndicator(
+                    modifier = Modifier.padding(top = WooPosSpacing.Large.value),
+                )
             }
 
             is WooPosVariationsViewState.Error -> {
-                VariationsError(modifier = Modifier.width(640.dp)) {
+                VariationsError(
+                    modifier = Modifier
+                        .width(640.dp)
+                        .padding(top = WooPosSpacing.Large.value)
+                ) {
                     onRetryClicked()
                 }
             }
 
             is WooPosVariationsViewState.Empty -> {
                 WooPosItemsEmptyList(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.fillMaxSize()
+                        .padding(top = WooPosSpacing.Large.value),
                     title = stringResource(id = R.string.woopos_variations_empty_list_title),
                     message = stringResource(id = R.string.woopos_variations_empty_list_message),
                     contentDescription = stringResource(
@@ -152,7 +159,7 @@ private fun WooPosVariationsScreens(
 }
 
 @Composable
-fun VariationsError(modifier: Modifier, onRetryClicked: () -> Unit) {
+private fun VariationsError(modifier: Modifier, onRetryClicked: () -> Unit) {
     Box(
         modifier = Modifier.fillMaxWidth(),
         contentAlignment = Alignment.Center,
@@ -170,7 +177,7 @@ fun VariationsError(modifier: Modifier, onRetryClicked: () -> Unit) {
 }
 
 @Composable
-fun VariationsPaginationError(onRetryClicked: () -> Unit) {
+private fun VariationsPaginationError(onRetryClicked: () -> Unit) {
     WooPosPaginationErrorIndicator(
         message = stringResource(id = R.string.woopos_items_pagination_error_title),
         description = stringResource(id = R.string.woopos_items_pagination_error_description),
