@@ -33,13 +33,13 @@ class WooPosItemsViewModelTest {
     val coroutinesTestRule = WooPosCoroutineTestRule()
 
     private val tabs = listOf(
-        WooPosItemsViewState.Tab(
+        WooPosItemsToolbarViewState.Tab(
             R.string.woopos_products_screen_title,
-            WooPosItemsViewState.Tab.HighlightLevel.Full
+            WooPosItemsToolbarViewState.Tab.HighlightLevel.Full
         ),
-        WooPosItemsViewState.Tab(
+        WooPosItemsToolbarViewState.Tab(
             R.string.woopos_coupons_screen_title,
-            WooPosItemsViewState.Tab.HighlightLevel.Normal
+            WooPosItemsToolbarViewState.Tab.HighlightLevel.Normal
         )
     )
 
@@ -56,7 +56,7 @@ class WooPosItemsViewModelTest {
     @Before
     fun setup() {
         whenever(searchHelper.getInitialSearchState()).thenReturn(
-            WooPosItemsViewState.SearchState.Visible(
+            WooPosItemsToolbarViewState.SearchState.Visible(
                 state = WooPosSearchInputState.Closed
             )
         )
@@ -80,7 +80,7 @@ class WooPosItemsViewModelTest {
     fun `when view model created, then search state is visible`() = runTest {
         // GIVEN
         whenever(searchHelper.getInitialSearchState()).thenReturn(
-            WooPosItemsViewState.SearchState.Visible(
+            WooPosItemsToolbarViewState.SearchState.Visible(
                 state = WooPosSearchInputState.Closed
             )
         )
@@ -90,9 +90,9 @@ class WooPosItemsViewModelTest {
 
         // THEN
         viewModel.viewState.test {
-            val contentState = awaitItem() as WooPosItemsViewState.ProductList
-            assertThat(contentState.search).isInstanceOf(WooPosItemsViewState.SearchState.Visible::class.java)
-            val searchState = contentState.search as WooPosItemsViewState.SearchState.Visible
+            val contentState = awaitItem() as WooPosItemsToolbarViewState.ProductList
+            assertThat(contentState.search).isInstanceOf(WooPosItemsToolbarViewState.SearchState.Visible::class.java)
+            val searchState = contentState.search as WooPosItemsToolbarViewState.SearchState.Visible
             assertThat(searchState.state).isEqualTo(WooPosSearchInputState.Closed)
         }
     }
@@ -137,20 +137,20 @@ class WooPosItemsViewModelTest {
     @Test
     fun `when tab clicked, then tab is selected and state is updated`() = runTest {
         // GIVEN
-        val couponsTab = WooPosItemsViewState.Tab(
+        val couponsTab = WooPosItemsToolbarViewState.Tab(
             R.string.woopos_coupons_screen_title,
-            WooPosItemsViewState.Tab.HighlightLevel.Normal
+            WooPosItemsToolbarViewState.Tab.HighlightLevel.Normal
         )
 
         whenever(tabsHelper.selectTab(any(), eq(couponsTab))).thenReturn(
             listOf(
-                WooPosItemsViewState.Tab(
+                WooPosItemsToolbarViewState.Tab(
                     R.string.woopos_products_screen_title,
-                    WooPosItemsViewState.Tab.HighlightLevel.Normal
+                    WooPosItemsToolbarViewState.Tab.HighlightLevel.Normal
                 ),
-                WooPosItemsViewState.Tab(
+                WooPosItemsToolbarViewState.Tab(
                     R.string.woopos_coupons_screen_title,
-                    WooPosItemsViewState.Tab.HighlightLevel.Full
+                    WooPosItemsToolbarViewState.Tab.HighlightLevel.Full
                 )
             )
         )
@@ -163,7 +163,7 @@ class WooPosItemsViewModelTest {
         // THEN
         viewModel.viewState.test {
             val value = awaitItem()
-            assertThat(value).isInstanceOf(WooPosItemsViewState.CouponList::class.java)
+            assertThat(value).isInstanceOf(WooPosItemsToolbarViewState.CouponList::class.java)
         }
     }
 

@@ -38,9 +38,9 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
-import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState.SearchState
-import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState.Tab.HighlightLevel.Full
-import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState.Tab.HighlightLevel.Normal
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.SearchState
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.Tab.HighlightLevel.Full
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.Tab.HighlightLevel.Normal
 
 private const val ANIMATION_DURATION = 300
 val WOO_POS_ITEMS_TOOLBAR_HEIGHT = 56.dp
@@ -48,8 +48,8 @@ val WOO_POS_ITEMS_TOOLBAR_HEIGHT = 56.dp
 @Composable
 fun WooPosItemsToolbar(
     modifier: Modifier = Modifier,
-    state: WooPosItemsViewState,
-    onTabClicked: (WooPosItemsViewState.Tab) -> Unit,
+    state: WooPosItemsToolbarViewState,
+    onTabClicked: (WooPosItemsToolbarViewState.Tab) -> Unit,
     onSearchEvent: (WooPosSearchUIEvent) -> Unit,
     onAddCouponEvent: () -> Unit,
 ) {
@@ -133,7 +133,7 @@ fun WooPosItemsToolbar(
 }
 
 @Composable
-private fun WooPosItemsViewState.Tab.HighlightLevel.titleColor(): Color = when (this) {
+private fun WooPosItemsToolbarViewState.Tab.HighlightLevel.titleColor(): Color = when (this) {
     Full -> MaterialTheme.colorScheme.onSurface
     Normal -> WooPosTheme.colors.onSurfaceVariantLowest
 }
@@ -142,13 +142,13 @@ private fun WooPosItemsViewState.Tab.HighlightLevel.titleColor(): Color = when (
 @WooPosPreview
 fun WooPosProductsToolbarPreview() {
     val tabs = listOf(
-        WooPosItemsViewState.Tab(R.string.woopos_products_screen_title, highlightLevel = Full),
-        WooPosItemsViewState.Tab(R.string.woopos_coupons_screen_title, highlightLevel = Normal),
+        WooPosItemsToolbarViewState.Tab(R.string.woopos_products_screen_title, highlightLevel = Full),
+        WooPosItemsToolbarViewState.Tab(R.string.woopos_coupons_screen_title, highlightLevel = Normal),
     )
 
     WooPosTheme {
         WooPosItemsToolbar(
-            state = WooPosItemsViewState.ProductList(
+            state = WooPosItemsToolbarViewState.ProductList(
                 tabs = tabs,
                 search = SearchState.Hidden,
             ),
@@ -163,13 +163,13 @@ fun WooPosProductsToolbarPreview() {
 @WooPosPreview
 fun WooPosCouponsToolbarPreview() {
     val tabs = listOf(
-        WooPosItemsViewState.Tab(R.string.woopos_products_screen_title, highlightLevel = Normal),
-        WooPosItemsViewState.Tab(R.string.woopos_coupons_screen_title, highlightLevel = Full),
+        WooPosItemsToolbarViewState.Tab(R.string.woopos_products_screen_title, highlightLevel = Normal),
+        WooPosItemsToolbarViewState.Tab(R.string.woopos_coupons_screen_title, highlightLevel = Full),
     )
 
     WooPosTheme {
         WooPosItemsToolbar(
-            state = WooPosItemsViewState.CouponList(tabs = tabs),
+            state = WooPosItemsToolbarViewState.CouponList(tabs = tabs),
             onTabClicked = {},
             onSearchEvent = {},
             onAddCouponEvent = {},
@@ -181,13 +181,13 @@ fun WooPosCouponsToolbarPreview() {
 @WooPosPreview
 fun WooPosItemsToolbarWithSearchPreview() {
     val tabs = listOf(
-        WooPosItemsViewState.Tab(R.string.woopos_products_screen_title, highlightLevel = Full),
-        WooPosItemsViewState.Tab(R.string.woopos_coupons_screen_title, highlightLevel = Normal),
+        WooPosItemsToolbarViewState.Tab(R.string.woopos_products_screen_title, highlightLevel = Full),
+        WooPosItemsToolbarViewState.Tab(R.string.woopos_coupons_screen_title, highlightLevel = Normal),
     )
 
     WooPosTheme {
         WooPosItemsToolbar(
-            state = WooPosItemsViewState.ProductList(
+            state = WooPosItemsToolbarViewState.ProductList(
                 tabs = tabs,
                 search = SearchState.Visible(
                     state = WooPosSearchInputState.Open(

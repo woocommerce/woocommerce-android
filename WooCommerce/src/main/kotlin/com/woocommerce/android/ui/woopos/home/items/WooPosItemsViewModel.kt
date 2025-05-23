@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
-import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState.Tab
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.Tab
 import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationFacade
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent
@@ -32,13 +32,13 @@ class WooPosItemsViewModel @Inject constructor(
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender,
     private val analyticsTracker: WooPosAnalyticsTracker,
 ) : ViewModel() {
-    private val _viewState = MutableStateFlow<WooPosItemsViewState>(
-        WooPosItemsViewState.ProductList(
+    private val _viewState = MutableStateFlow<WooPosItemsToolbarViewState>(
+        WooPosItemsToolbarViewState.ProductList(
             tabs = tabsHelper.defaultTabs,
             search = searchHelper.getInitialSearchState(),
         )
     )
-    val viewState: StateFlow<WooPosItemsViewState> = _viewState
+    val viewState: StateFlow<WooPosItemsToolbarViewState> = _viewState
         .stateIn(
             viewModelScope,
             started = SharingStarted.WhileSubscribed(),
@@ -100,7 +100,7 @@ class WooPosItemsViewModel @Inject constructor(
         val state = _viewState.value
 
         _viewState.value = when (selectedTab.stringId) {
-            R.string.woopos_products_screen_title -> WooPosItemsViewState.ProductList(
+            R.string.woopos_products_screen_title -> WooPosItemsToolbarViewState.ProductList(
                 tabs = tabsHelper.selectTab(state.tabs, selectedTab),
                 search = searchHelper.getInitialSearchState(),
             ).also {
@@ -113,7 +113,7 @@ class WooPosItemsViewModel @Inject constructor(
                 }
             }
 
-            R.string.woopos_coupons_screen_title -> WooPosItemsViewState.CouponList(
+            R.string.woopos_coupons_screen_title -> WooPosItemsToolbarViewState.CouponList(
                 tabs = tabsHelper.selectTab(state.tabs, selectedTab),
             ).also {
                 viewModelScope.launch {

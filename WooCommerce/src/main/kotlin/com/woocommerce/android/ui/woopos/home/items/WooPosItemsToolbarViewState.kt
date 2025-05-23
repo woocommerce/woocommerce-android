@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.woopos.home.items
 import androidx.annotation.StringRes
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 
-sealed class WooPosItemsViewState(
+sealed class WooPosItemsToolbarViewState(
     open val tabs: List<Tab>,
     open val search: SearchState,
     open val isAddCouponVisible: Boolean,
@@ -11,7 +11,7 @@ sealed class WooPosItemsViewState(
     data class ProductList(
         override val tabs: List<Tab>,
         override val search: SearchState,
-    ) : WooPosItemsViewState(
+    ) : WooPosItemsToolbarViewState(
         tabs = tabs,
         search = search,
         isAddCouponVisible = true,
@@ -19,7 +19,7 @@ sealed class WooPosItemsViewState(
 
     data class CouponList(
         override val tabs: List<Tab>,
-    ) : WooPosItemsViewState(
+    ) : WooPosItemsToolbarViewState(
         tabs = tabs,
         search = SearchState.Hidden,
         isAddCouponVisible = true,

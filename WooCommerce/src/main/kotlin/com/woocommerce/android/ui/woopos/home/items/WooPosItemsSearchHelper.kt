@@ -6,7 +6,7 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
-import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState.SearchState
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.SearchState
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.scopes.ActivityRetainedScoped
 import kotlinx.coroutines.CoroutineScope
@@ -21,11 +21,11 @@ class WooPosItemsSearchHelper @Inject constructor(
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
 ) {
     private lateinit var coroutineScope: CoroutineScope
-    private lateinit var viewStateFlow: MutableStateFlow<WooPosItemsViewState>
+    private lateinit var viewStateFlow: MutableStateFlow<WooPosItemsToolbarViewState>
 
     fun initialize(
         coroutineScope: CoroutineScope,
-        viewStateFlow: MutableStateFlow<WooPosItemsViewState>
+        viewStateFlow: MutableStateFlow<WooPosItemsToolbarViewState>
     ) {
         this.coroutineScope = coroutineScope
         this.viewStateFlow = viewStateFlow
@@ -169,7 +169,7 @@ class WooPosItemsSearchHelper @Inject constructor(
         )
     }
 
-    private fun getCurrentContentState(): WooPosItemsViewState {
+    private fun getCurrentContentState(): WooPosItemsToolbarViewState {
         return viewStateFlow.value
     }
 
@@ -183,10 +183,10 @@ class WooPosItemsSearchHelper @Inject constructor(
         return searchState.state as? WooPosSearchInputState.Open
     }
 
-    private fun WooPosItemsViewState.copy(search: SearchState.Visible): WooPosItemsViewState {
+    private fun WooPosItemsToolbarViewState.copy(search: SearchState.Visible): WooPosItemsToolbarViewState {
         return when (this) {
-            is WooPosItemsViewState.ProductList -> this.copy(search = search)
-            is WooPosItemsViewState.CouponList -> this
+            is WooPosItemsToolbarViewState.ProductList -> this.copy(search = search)
+            is WooPosItemsToolbarViewState.CouponList -> this
         }
     }
 }

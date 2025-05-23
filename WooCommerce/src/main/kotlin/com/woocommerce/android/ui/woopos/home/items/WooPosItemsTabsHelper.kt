@@ -4,24 +4,24 @@ import com.woocommerce.android.R
 import javax.inject.Inject
 
 class WooPosItemsTabsHelper @Inject constructor() {
-    val defaultTabs: List<WooPosItemsViewState.Tab> =
+    val defaultTabs: List<WooPosItemsToolbarViewState.Tab> =
         listOf(
-            WooPosItemsViewState.Tab(
+            WooPosItemsToolbarViewState.Tab(
                 stringId = R.string.woopos_products_screen_title,
-                highlightLevel = WooPosItemsViewState.Tab.HighlightLevel.Full
+                highlightLevel = WooPosItemsToolbarViewState.Tab.HighlightLevel.Full
             ),
-            WooPosItemsViewState.Tab(
+            WooPosItemsToolbarViewState.Tab(
                 stringId = R.string.woopos_coupons_screen_title,
-                highlightLevel = WooPosItemsViewState.Tab.HighlightLevel.Normal
+                highlightLevel = WooPosItemsToolbarViewState.Tab.HighlightLevel.Normal
             ),
         )
 
-    fun selectTab(tabs: List<WooPosItemsViewState.Tab>, tab: WooPosItemsViewState.Tab): List<WooPosItemsViewState.Tab> =
+    fun selectTab(tabs: List<WooPosItemsToolbarViewState.Tab>, tab: WooPosItemsToolbarViewState.Tab): List<WooPosItemsToolbarViewState.Tab> =
         tabs.map {
             if (it == tab) {
-                it.copy(highlightLevel = WooPosItemsViewState.Tab.HighlightLevel.Full)
+                it.copy(highlightLevel = WooPosItemsToolbarViewState.Tab.HighlightLevel.Full)
             } else {
-                it.copy(highlightLevel = WooPosItemsViewState.Tab.HighlightLevel.Normal)
+                it.copy(highlightLevel = WooPosItemsToolbarViewState.Tab.HighlightLevel.Normal)
             }
         }
 }

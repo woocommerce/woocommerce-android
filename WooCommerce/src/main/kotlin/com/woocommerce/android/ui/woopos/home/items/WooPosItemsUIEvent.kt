@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.woopos.home.items
 
 sealed class WooPosItemsUIEvent {
-    data class OnTabClicked(val tab: WooPosItemsViewState.Tab) : WooPosItemsUIEvent()
+    data class OnTabClicked(val tab: WooPosItemsToolbarViewState.Tab) : WooPosItemsUIEvent()
     data object BackButtonClicked : WooPosItemsUIEvent()
 
     data object ClearSearchClicked : WooPosItemsUIEvent()

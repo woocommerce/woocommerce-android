@@ -13,9 +13,9 @@ class WooPosItemsTabsHelperTest {
         // THEN
         assertThat(tabsHelper.defaultTabs).hasSize(2)
         assertThat(tabsHelper.defaultTabs[0].stringId).isEqualTo(R.string.woopos_products_screen_title)
-        assertThat(tabsHelper.defaultTabs[0].highlightLevel).isEqualTo(WooPosItemsViewState.Tab.HighlightLevel.Full)
+        assertThat(tabsHelper.defaultTabs[0].highlightLevel).isEqualTo(WooPosItemsToolbarViewState.Tab.HighlightLevel.Full)
         assertThat(tabsHelper.defaultTabs[1].stringId).isEqualTo(R.string.woopos_coupons_screen_title)
-        assertThat(tabsHelper.defaultTabs[1].highlightLevel).isEqualTo(WooPosItemsViewState.Tab.HighlightLevel.Normal)
+        assertThat(tabsHelper.defaultTabs[1].highlightLevel).isEqualTo(WooPosItemsToolbarViewState.Tab.HighlightLevel.Normal)
     }
 
     @Test
@@ -30,8 +30,8 @@ class WooPosItemsTabsHelperTest {
 
         // THEN
         assertThat(updatedTabs).hasSize(2)
-        assertThat(updatedTabs[0].highlightLevel).isEqualTo(WooPosItemsViewState.Tab.HighlightLevel.Normal)
-        assertThat(updatedTabs[1].highlightLevel).isEqualTo(WooPosItemsViewState.Tab.HighlightLevel.Full)
+        assertThat(updatedTabs[0].highlightLevel).isEqualTo(WooPosItemsToolbarViewState.Tab.HighlightLevel.Normal)
+        assertThat(updatedTabs[1].highlightLevel).isEqualTo(WooPosItemsToolbarViewState.Tab.HighlightLevel.Full)
     }
 
     @Test
@@ -46,7 +46,7 @@ class WooPosItemsTabsHelperTest {
 
         // THEN
         assertThat(updatedTabs).hasSize(2)
-        assertThat(updatedTabs[0].highlightLevel).isEqualTo(WooPosItemsViewState.Tab.HighlightLevel.Full)
-        assertThat(updatedTabs[1].highlightLevel).isEqualTo(WooPosItemsViewState.Tab.HighlightLevel.Normal)
+        assertThat(updatedTabs[0].highlightLevel).isEqualTo(WooPosItemsToolbarViewState.Tab.HighlightLevel.Full)
+        assertThat(updatedTabs[1].highlightLevel).isEqualTo(WooPosItemsToolbarViewState.Tab.HighlightLevel.Normal)
     }
 }

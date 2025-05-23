@@ -51,7 +51,7 @@ fun WooPosItemsScreen(
 @Composable
 private fun WooPosItemsScreen(
     modifier: Modifier = Modifier,
-    itemsStateFlow: StateFlow<WooPosItemsViewState>,
+    itemsStateFlow: StateFlow<WooPosItemsToolbarViewState>,
     productsViewState: LazyListState,
     couponsListState: LazyListState,
     onUIEvent: (WooPosItemsUIEvent) -> Unit,
@@ -92,11 +92,11 @@ private fun WooPosItemsScreen(
 @Composable
 private fun MainItemsList(
     modifier: Modifier,
-    state: State<WooPosItemsViewState>,
+    state: State<WooPosItemsToolbarViewState>,
     productsViewState: LazyListState,
     couponsListState: LazyListState,
     onSearchEvent: (WooPosSearchUIEvent) -> Unit,
-    onTabClicked: (WooPosItemsViewState.Tab) -> Unit,
+    onTabClicked: (WooPosItemsToolbarViewState.Tab) -> Unit,
     onAddCouponEvent: () -> Unit,
 ) {
     Box(
@@ -152,12 +152,12 @@ private enum class ScreenState {
     PRODUCTS, PRODUCTS_SEARCH, COUPONS
 }
 
-private fun getScreenState(state: WooPosItemsViewState): ScreenState {
+private fun getScreenState(state: WooPosItemsToolbarViewState): ScreenState {
     return when (state) {
-        is WooPosItemsViewState.ProductList -> {
+        is WooPosItemsToolbarViewState.ProductList -> {
             when (val searchState = state.search) {
-                WooPosItemsViewState.SearchState.Hidden -> ScreenState.PRODUCTS
-                is WooPosItemsViewState.SearchState.Visible -> {
+                WooPosItemsToolbarViewState.SearchState.Hidden -> ScreenState.PRODUCTS
+                is WooPosItemsToolbarViewState.SearchState.Visible -> {
                     when (searchState.state) {
                         WooPosSearchInputState.Closed -> ScreenState.PRODUCTS
                         is WooPosSearchInputState.Open -> ScreenState.PRODUCTS_SEARCH
@@ -166,7 +166,7 @@ private fun getScreenState(state: WooPosItemsViewState): ScreenState {
             }
         }
 
-        is WooPosItemsViewState.CouponList -> ScreenState.COUPONS
+        is WooPosItemsToolbarViewState.CouponList -> ScreenState.COUPONS
     }
 }
 
@@ -175,8 +175,8 @@ private fun getScreenState(state: WooPosItemsViewState): ScreenState {
 @WooPosPreview
 fun WooPosItemsScreenSearchVisiblePreview(modifier: Modifier = Modifier) {
     val productState = MutableStateFlow(
-        WooPosItemsViewState.ProductList(
-            search = WooPosItemsViewState.SearchState.Visible(
+        WooPosItemsToolbarViewState.ProductList(
+            search = WooPosItemsToolbarViewState.SearchState.Visible(
                 state = WooPosSearchInputState.Open(
                     input = WooPosSearchInputState.Open.Input.Query("", 0),
                     isLoading = false,
@@ -201,8 +201,8 @@ fun WooPosItemsScreenSearchVisiblePreview(modifier: Modifier = Modifier) {
 @WooPosPreview
 fun WooPosItemsScreenSearchHiddenPreview(modifier: Modifier = Modifier) {
     val productState = MutableStateFlow(
-        WooPosItemsViewState.ProductList(
-            search = WooPosItemsViewState.SearchState.Visible(
+        WooPosItemsToolbarViewState.ProductList(
+            search = WooPosItemsToolbarViewState.SearchState.Visible(
                 state = WooPosSearchInputState.Open(
                     input = WooPosSearchInputState.Open.Input.Query("", 0),
                     isLoading = false,
@@ -223,13 +223,13 @@ fun WooPosItemsScreenSearchHiddenPreview(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun tabs(): List<WooPosItemsViewState.Tab> = listOf(
-    WooPosItemsViewState.Tab(
+private fun tabs(): List<WooPosItemsToolbarViewState.Tab> = listOf(
+    WooPosItemsToolbarViewState.Tab(
         stringId = R.string.woopos_products_screen_title,
-        highlightLevel = WooPosItemsViewState.Tab.HighlightLevel.Full
+        highlightLevel = WooPosItemsToolbarViewState.Tab.HighlightLevel.Full
     ),
-    WooPosItemsViewState.Tab(
+    WooPosItemsToolbarViewState.Tab(
         stringId = R.string.woopos_coupons_screen_title,
-        highlightLevel = WooPosItemsViewState.Tab.HighlightLevel.Normal
+        highlightLevel = WooPosItemsToolbarViewState.Tab.HighlightLevel.Normal
     )
 )
