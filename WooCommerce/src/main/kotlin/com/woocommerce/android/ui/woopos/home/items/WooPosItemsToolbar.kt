@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
@@ -86,16 +85,15 @@ fun WooPosItemsToolbar(
         ) {
             Row(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = WooPosSpacing.Medium.value.toAdaptivePadding()),
+                    .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (state.backNavigation) {
+                    Spacer(modifier = Modifier.width(WooPosSpacing.XSmall.value.toAdaptivePadding()))
                     IconButton(
                         onClick = { onBackClicked() },
                         modifier = Modifier
                             .size(48.dp)
-                            .padding(start = WooPosSpacing.Small.value.toAdaptivePadding())
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -106,9 +104,9 @@ fun WooPosItemsToolbar(
                         )
                     }
 
-                    Spacer(
-                        modifier = Modifier.width(WooPosSpacing.Small.value.toAdaptivePadding())
-                    )
+                    Spacer(modifier = Modifier.width(WooPosSpacing.XSmall.value.toAdaptivePadding()))
+                } else {
+                    Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value.toAdaptivePadding()))
                 }
 
                 LazyRow(
