@@ -30,11 +30,14 @@ class WooPosCouponsSearchViewModel @Inject constructor(
     private val childToParentEventSender: WooPosChildrenToParentEventSender,
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
     private val couponsFormatter: WooPosCouponsFormatter,
-    private val getCachedStoreCurrency: WooPosGetCachedStoreCurrency
+    private val getCachedStoreCurrency: WooPosGetCachedStoreCurrency,
+    private val emptyStateRepository: WooPosCouponsSearchEmptyStateRepository,
 ) : ViewModel() {
     private val _viewState =
         MutableStateFlow<WooPosCouponsSearchViewState>(
-            WooPosCouponsSearchViewState.EmptySearchQuery
+            WooPosCouponsSearchViewState.EmptySearchQuery(
+                recentSearches = emptyList()
+            )
         )
     val viewState: StateFlow<WooPosCouponsSearchViewState> = _viewState
         .stateIn(
@@ -49,6 +52,7 @@ class WooPosCouponsSearchViewModel @Inject constructor(
     private val currentQuery = AtomicReference("")
 
     init {
+        setEmptySearchQueryState()
         listenEventsFromParent()
     }
 
@@ -60,6 +64,15 @@ class WooPosCouponsSearchViewModel @Inject constructor(
             }
 
             WooPosCouponsSearchUiEvent.LoadingErrorRetryButtonClicked -> handleLoadingErrorRetryClick()
+            is WooPosCouponsSearchUiEvent.OnRecentSearchClicked -> {
+                viewModelScope.launch {
+                    childToParentEventSender.sendToParent(
+                        ChildToParentEvent.SearchEvent.RecentSearchSelected(
+                            event.recentSearch
+                        )
+                    )
+                }
+            }
         }
     }
 
@@ -72,7 +85,7 @@ class WooPosCouponsSearchViewModel @Inject constructor(
 
     private fun performSearch(query: String) {
         if (query.isBlank()) {
-            _viewState.value = WooPosCouponsSearchViewState.EmptySearchQuery
+            setEmptySearchQueryState()
             return
         }
 
@@ -90,6 +103,15 @@ class WooPosCouponsSearchViewModel @Inject constructor(
             } else {
                 _viewState.value = WooPosCouponsSearchViewState.Error(searchQuery = query)
             }
+        }
+    }
+
+    private fun setEmptySearchQueryState() {
+        viewModelScope.launch {
+            val recentSearches = emptyStateRepository.getLastSearches()
+            _viewState.value = WooPosCouponsSearchViewState.EmptySearchQuery(
+                recentSearches = recentSearches.take(10)
+            )
         }
     }
 
@@ -151,6 +173,15 @@ class WooPosCouponsSearchViewModel @Inject constructor(
                 )
             )
         }
+        storeRecentSearch()
+    }
+
+    private fun storeRecentSearch() {
+        (_viewState.value as? WooPosCouponsSearchViewState.Content)?.let {
+            viewModelScope.launch {
+                emptyStateRepository.addRecentSearch(it.searchQuery)
+            }
+        }
     }
 
     private fun listenEventsFromParent() {
@@ -158,7 +189,7 @@ class WooPosCouponsSearchViewModel @Inject constructor(
             parentToChildrenEventReceiver.events.collect { event ->
                 when (event) {
                     is ParentToChildrenEvent.SearchEvent.ChangedQuery -> performSearch(event.query)
-                    ParentToChildrenEvent.SearchEvent.Finished -> _viewState.value = WooPosCouponsSearchViewState.EmptySearchQuery
+                    ParentToChildrenEvent.SearchEvent.Finished -> setEmptySearchQueryState()
                     else -> {}
                 }
             }

@@ -6,7 +6,9 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 
 sealed class WooPosCouponsSearchViewState {
-    data object EmptySearchQuery : WooPosCouponsSearchViewState()
+    data class EmptySearchQuery(
+        val recentSearches: List<String>,
+    ) : WooPosCouponsSearchViewState()
 
     data class Content(
         val searchQuery: String,
