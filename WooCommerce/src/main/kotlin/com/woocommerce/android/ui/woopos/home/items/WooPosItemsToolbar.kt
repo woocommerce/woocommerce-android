@@ -105,6 +105,10 @@ fun WooPosItemsToolbar(
                                 .size(28.dp)
                         )
                     }
+
+                    Spacer(
+                        modifier = Modifier.width(WooPosSpacing.Small.value.toAdaptivePadding())
+                    )
                 }
 
                 LazyRow(
