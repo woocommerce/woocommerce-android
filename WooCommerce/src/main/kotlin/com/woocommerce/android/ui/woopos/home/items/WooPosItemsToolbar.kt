@@ -104,7 +104,7 @@ fun WooPosItemsToolbar(
                         Spacer(modifier = Modifier.width(WooPosSpacing.Large.value))
                     }
                 }
-                if (state.isAddCouponVisible) {
+                if (state is WooPosItemsToolbarViewState.CouponList) {
                     Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
                     WooPosCircularIconButton(
                         icon = Icons.Default.Add,
