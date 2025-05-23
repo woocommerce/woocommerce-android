@@ -14,7 +14,7 @@ sealed class WooPosItemsToolbarViewState(
     ) : WooPosItemsToolbarViewState(
         tabs = tabs,
         search = search,
-        isAddCouponVisible = true,
+        isAddCouponVisible = false,
     )
 
     data class CouponList(
