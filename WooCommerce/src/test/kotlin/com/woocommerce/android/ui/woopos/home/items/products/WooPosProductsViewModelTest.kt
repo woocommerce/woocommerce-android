@@ -6,7 +6,7 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.home.items.WooPosContentViewState
-import com.woocommerce.android.ui.woopos.home.items.WooPosItemNavigationData
+import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariableProductNavigationData
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
@@ -359,7 +359,7 @@ class WooPosProductsViewModelTest {
         // THEN
         verify(wooPosItemsNavigator).sendNavigationEvent(
             WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateToVariationsScreen(
-                WooPosItemNavigationData.VariableProductData(
+                WooPosVariableProductNavigationData.VariableProductData(
                     id = 1,
                     name = "Product 1",
                     numOfVariations = 10,
@@ -505,7 +505,7 @@ class WooPosProductsViewModelTest {
             // THEN
             verify(wooPosItemsNavigator).sendNavigationEvent(
                 WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateToVariationsScreen(
-                    WooPosItemNavigationData.VariableProductData(
+                    WooPosVariableProductNavigationData.VariableProductData(
                         id = 1L,
                         name = "Product",
                         numOfVariations = 2,

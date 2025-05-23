@@ -34,7 +34,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemList
-import com.woocommerce.android.ui.woopos.home.items.WooPosItemNavigationData.VariableProductData
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsEmptyList
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsLoadingIndicator
@@ -47,7 +46,7 @@ import kotlinx.coroutines.flow.StateFlow
 @Composable
 fun WooPosVariationsScreen(
     modifier: Modifier,
-    variableProductData: VariableProductData,
+    variableProductData: WooPosVariableProductNavigationData,
     onBackClicked: () -> Unit
 ) {
     val viewModel: WooPosVariationsViewModel = hiltViewModel(
@@ -94,7 +93,7 @@ private fun WooPosVariationsScreens(
     onEndOfItemListReached: () -> Unit,
     onPullToRefresh: () -> Unit,
     onRetryClicked: () -> Unit,
-    variableProductData: VariableProductData,
+    variableProductData: WooPosVariableProductNavigationData,
     state: StateFlow<WooPosVariationsViewState>,
 ) {
     val itemState = state.collectAsState()
@@ -249,7 +248,7 @@ fun WooPosVariationsScreenPreview() {
             onEndOfItemListReached = {},
             onPullToRefresh = {},
             onRetryClicked = {},
-            variableProductData = VariableProductData(
+            variableProductData = WooPosVariableProductNavigationData(
                 id = 0,
                 name = "Variable Product",
                 numOfVariations = 20,
