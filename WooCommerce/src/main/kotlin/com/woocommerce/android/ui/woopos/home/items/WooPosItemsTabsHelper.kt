@@ -16,12 +16,14 @@ class WooPosItemsTabsHelper @Inject constructor() {
             ),
         )
 
-    fun selectTab(tabs: List<WooPosItemsToolbarViewState.Tab>, tab: WooPosItemsToolbarViewState.Tab): List<WooPosItemsToolbarViewState.Tab> =
-        tabs.map {
-            if (it == tab) {
-                it.copy(highlightLevel = WooPosItemsToolbarViewState.Tab.HighlightLevel.Full)
-            } else {
-                it.copy(highlightLevel = WooPosItemsToolbarViewState.Tab.HighlightLevel.Normal)
-            }
+    fun selectTab(
+        tabs: List<WooPosItemsToolbarViewState.Tab>,
+        tab: WooPosItemsToolbarViewState.Tab
+    ): List<WooPosItemsToolbarViewState.Tab> = tabs.map {
+        if (it == tab) {
+            it.copy(highlightLevel = WooPosItemsToolbarViewState.Tab.HighlightLevel.Full)
+        } else {
+            it.copy(highlightLevel = WooPosItemsToolbarViewState.Tab.HighlightLevel.Normal)
         }
+    }
 }
