@@ -269,7 +269,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
         }
 
         data class SearchRemoteResultsFetched(
-            val totalProductsCount: Int?,
+            val totalItemsCount: Int?,
             val millisecondsSinceRequestSent: Long,
             val source: ItemsListSource,
         ) : Event() {
@@ -282,8 +282,8 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                         ItemsListSource.SOURCE to source.toString(),
                     )
                 )
-                if (totalProductsCount != null) {
-                    addProperties(mapOf("total_items_count" to totalProductsCount.toString()))
+                if (totalItemsCount != null) {
+                    addProperties(mapOf("total_items_count" to totalItemsCount.toString()))
                 }
             }
         }
