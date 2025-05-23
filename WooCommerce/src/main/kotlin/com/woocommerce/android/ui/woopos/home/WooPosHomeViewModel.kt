@@ -15,7 +15,6 @@ import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.SearchEvent.
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ExitConfirmationDialog
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ProductsInfoDialog
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ScreenPositionState
-import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCartTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
@@ -31,7 +30,6 @@ import javax.inject.Inject
 class WooPosHomeViewModel @Inject constructor(
     private val childrenToParentEventReceiver: WooPosChildrenToParentEventReceiver,
     private val parentToChildrenEventSender: WooPosParentToChildrenEventSender,
-    private val wooPosItemsNavigator: WooPosItemsNavigator,
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val soundHelper: WooPosSoundHelper,
     savedStateHandle: SavedStateHandle,
@@ -264,10 +262,6 @@ class WooPosHomeViewModel @Inject constructor(
     private fun onOrderSuccessfullyPaid(paymentMethod: PaymentMethod) {
         viewModelScope.launch {
             soundHelper.playChaChing()
-
-            wooPosItemsNavigator.sendNavigationEvent(
-                WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateBackToItemListScreen
-            )
         }
         _state.value = _state.value.copy(
             screenPositionState = ScreenPositionState.Checkout.FullScreenTotals

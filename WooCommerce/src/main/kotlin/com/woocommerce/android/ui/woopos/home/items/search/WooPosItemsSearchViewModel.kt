@@ -13,9 +13,6 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsSearchHelper
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
-import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
-import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateToVariationsScreen
-import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsNavigationData
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
@@ -39,7 +36,6 @@ class WooPosItemsSearchViewModel @Inject constructor(
     private val dataSource: WooPosSearchProductsDataSource,
     private val childToParentEventSender: WooPosChildrenToParentEventSender,
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
-    private val navigator: WooPosItemsNavigator,
     private val searchHelper: WooPosItemsSearchHelper,
     private val analyticsTracker: WooPosItemsSearchAnalyticsTracker,
 ) : ViewModel() {
@@ -258,14 +254,15 @@ class WooPosItemsSearchViewModel @Inject constructor(
 
             is WooPosItemSelectionViewState.Product.Variable -> {
                 viewModelScope.launch {
-                    navigator.sendNavigationEvent(
-                        NavigateToVariationsScreen(
-                            WooPosVariationsNavigationData(
+                    childToParentEventSender.sendToParent(
+                        ChildToParentEvent.ItemClickedInProductSelector(
+                            itemData = ItemClickedData.VariableProduct(
                                 id = item.id,
                                 name = item.name,
                                 numOfVariations = item.numOfVariations,
                                 sourceType = sourceType,
-                            )
+                            ),
+                            eventForTracking = null,
                         )
                     )
                 }

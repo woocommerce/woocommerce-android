@@ -13,9 +13,6 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemCli
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosProductsViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
-import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
-import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateToVariationsScreen
-import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsNavigationData
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.PullToRefreshTriggered
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
@@ -36,7 +33,6 @@ class WooPosProductsViewModel @Inject constructor(
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender,
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
     private val priceFormat: WooPosFormatPrice,
-    private val navigator: WooPosItemsNavigator,
     private val analyticsTracker: WooPosAnalyticsTracker,
 ) : ViewModel() {
     private var loadMoreProductsJob: Job? = null
@@ -136,14 +132,15 @@ class WooPosProductsViewModel @Inject constructor(
 
             is WooPosItemSelectionViewState.Product.Variable -> {
                 viewModelScope.launch {
-                    navigator.sendNavigationEvent(
-                        NavigateToVariationsScreen(
-                            WooPosVariationsNavigationData(
+                    fromChildToParentEventSender.sendToParent(
+                        ChildToParentEvent.ItemClickedInProductSelector(
+                            itemData = ItemClickedData.VariableProduct(
                                 id = event.item.id,
                                 name = event.item.name,
                                 numOfVariations = event.item.numOfVariations,
                                 sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST,
-                            )
+                            ),
+                            eventForTracking = null,
                         )
                     )
                 }

@@ -8,8 +8,6 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.Tab
 import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationFacade
-import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
-import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SearchButtonTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
@@ -25,7 +23,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WooPosItemsViewModel @Inject constructor(
-    private val navigator: WooPosItemsNavigator,
     private val searchHelper: WooPosItemsSearchHelper,
     private val tabsHelper: WooPosItemsTabsHelper,
     private val couponCreationFacade: WooPosCouponCreationFacade,
@@ -87,10 +84,16 @@ class WooPosItemsViewModel @Inject constructor(
     }
 
     private fun navigateBackToItemListScreen() {
-        viewModelScope.launch {
-            navigator.sendNavigationEvent(
-                WooPosItemsScreenNavigationEvent.NavigateBackToItemListScreen
-            )
+        when (_viewState.value) {
+            is WooPosItemsToolbarViewState.ProductList -> {
+            }
+
+            is WooPosItemsToolbarViewState.CouponList -> {
+            }
+
+            is WooPosItemsToolbarViewState.VariationList -> {
+
+            }
         }
     }
 

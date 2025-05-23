@@ -34,11 +34,9 @@ import kotlinx.coroutines.flow.StateFlow
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun WooPosItemsScreen(
-    modifier: Modifier = Modifier,
-    productsViewState: LazyListState,
-    couponsListState: LazyListState,
-) {
+fun WooPosItemsScreen(modifier: Modifier = Modifier) {
+    val productsViewState = rememberLazyListState()
+    val couponsListState = rememberLazyListState()
     val productsViewModel: WooPosItemsViewModel = hiltViewModel()
     WooPosItemsScreen(
         modifier = modifier,
@@ -146,6 +144,7 @@ private fun MainItemsList(
                         ),
                         listState = couponsListState,
                     )
+
                     is ScreenState.Variations -> {
                         WooPosVariationsScreen(
                             modifier = Modifier.padding(
@@ -162,10 +161,10 @@ private fun MainItemsList(
 }
 
 private sealed class ScreenState {
-    object Products: ScreenState()
-    object Coupons: ScreenState()
-    object ProductsSearch: ScreenState()
-    data class Variations(val variableProductData: WooPosVariationsNavigationData): ScreenState()
+    object Products : ScreenState()
+    object Coupons : ScreenState()
+    object ProductsSearch : ScreenState()
+    data class Variations(val variableProductData: WooPosVariationsNavigationData) : ScreenState()
 }
 
 private fun getScreenState(state: WooPosItemsToolbarViewState): ScreenState {
