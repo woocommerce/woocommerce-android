@@ -123,31 +123,31 @@ class WooPosProductsViewModel @Inject constructor(
     private fun handleItemClick(event: WooPosProductsUIEvent.ItemClicked) {
         when (event.item) {
             is WooPosItemSelectionViewState.Product.Simple -> {
-                onItemClicked(
-                    ItemClickedData.Product.Simple(
-                        id = event.item.id
-                    )
-                )
+                onSimpleProductClicked(event.item)
             }
 
             is WooPosItemSelectionViewState.Product.Variable -> {
-                viewModelScope.launch {
-                    fromChildToParentEventSender.sendToParent(
-                        ChildToParentEvent.ItemClickedInItemsList(
-                            itemData = ItemClickedData.VariableProduct(
-                                id = event.item.id,
-                                name = event.item.name,
-                                numOfVariations = event.item.numOfVariations,
-                                sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST,
-                            ),
-                            eventForTracking = null,
-                        )
-                    )
-                }
+                onVariableProductClicked(event.item)
             }
 
             is WooPosItemSelectionViewState.Product.Variation -> error("Variation item not supported in products list")
             is WooPosItemSelectionViewState.Coupon -> error("Coupon item isn't supported in products list")
+        }
+    }
+
+    private fun onVariableProductClicked(item: WooPosItemSelectionViewState.Product.Variable) {
+        viewModelScope.launch {
+            fromChildToParentEventSender.sendToParent(
+                ChildToParentEvent.ItemClickedInItemsList(
+                    itemData = ItemClickedData.VariableProduct(
+                        id = item.id,
+                        name = item.name,
+                        numOfVariations = item.numOfVariations,
+                        sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST,
+                    ),
+                    eventForTracking = null,
+                )
+            )
         }
     }
 
@@ -297,7 +297,8 @@ class WooPosProductsViewModel @Inject constructor(
         }
     }
 
-    private fun onItemClicked(itemData: ItemClickedData) {
+    private fun onSimpleProductClicked(product: WooPosItemSelectionViewState.Product.Simple) {
+        val itemData = ItemClickedData.Product.Simple(id = product.id)
         sendEventToParent(
             ChildToParentEvent.ItemClickedInItemsList(
                 itemData = itemData,
