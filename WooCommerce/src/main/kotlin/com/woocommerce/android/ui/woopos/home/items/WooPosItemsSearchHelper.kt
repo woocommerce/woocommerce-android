@@ -149,8 +149,7 @@ class WooPosItemsSearchHelper @Inject constructor(
             state = WooPosSearchInputState.Closed
         )
 
-    @Suppress("ReturnCount")
-    private fun updateLoadingState(isLoading: Boolean) {
+    fun updateLoadingState(isLoading: Boolean) {
         val searchState = getCurrentSearchVisibleState() ?: return
         val searchStateValue = getCurrentSearchOpenState() ?: return
 

@@ -57,7 +57,7 @@ class WooPosItemsViewModel @Inject constructor(
     fun onUIEvent(event: WooPosItemsUIEvent) {
         when (event) {
             WooPosItemsUIEvent.BackFromVariationsClicked -> {
-                navigateBackToProductsFromVariations()
+                navigateBackFromVariations()
             }
 
             WooPosItemsUIEvent.ClearSearchClicked -> searchHelper.onClearSearchClicked()
@@ -109,6 +109,7 @@ class WooPosItemsViewModel @Inject constructor(
             is ItemClickedData.Product.Variation -> Unit
 
             is ItemClickedData.VariableProduct -> {
+                searchHelper.updateLoadingState(isLoading = false)
                 preservedStateBeforeOpeningVariations = _viewState.value
                 _viewState.value = WooPosItemsToolbarViewState.VariationList(
                     tabs = listOf(
@@ -136,7 +137,7 @@ class WooPosItemsViewModel @Inject constructor(
         }
     }
 
-    private fun navigateBackToProductsFromVariations() {
+    private fun navigateBackFromVariations() {
         when (_viewState.value) {
             is WooPosItemsToolbarViewState.VariationList -> {
                 _viewState.value = preservedStateBeforeOpeningVariations ?: WooPosItemsToolbarViewState.ProductList(

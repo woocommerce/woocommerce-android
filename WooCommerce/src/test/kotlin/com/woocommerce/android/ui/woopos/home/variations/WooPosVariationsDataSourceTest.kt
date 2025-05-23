@@ -4,8 +4,8 @@ import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.variations.selector.VariationListHandler
 import com.woocommerce.android.ui.woopos.home.items.variations.FetchResult
-import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsLRUCache
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsDataSource
+import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsLRUCache
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import junit.framework.TestCase.assertFalse
 import kotlinx.coroutines.ExperimentalCoroutinesApi
