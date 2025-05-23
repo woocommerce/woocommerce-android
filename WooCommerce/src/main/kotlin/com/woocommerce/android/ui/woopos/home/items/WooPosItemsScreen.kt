@@ -23,10 +23,12 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearch
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemNavigationData.VariableProductData
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsUIEvent.SearchChanged
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsScreen
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsScreen
 import com.woocommerce.android.ui.woopos.home.items.search.WooPosItemsSearchScreen
+import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsScreen
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -85,6 +87,7 @@ private fun WooPosItemsScreen(
             onUIEvent(WooPosItemsUIEvent.AddCouponIconClicked)
         },
         onTabClicked = { onUIEvent(WooPosItemsUIEvent.OnTabClicked(it)) },
+        onBackClicked = { onUIEvent(WooPosItemsUIEvent.BackButtonClicked) },
     )
 }
 
@@ -98,6 +101,7 @@ private fun MainItemsList(
     onSearchEvent: (WooPosSearchUIEvent) -> Unit,
     onTabClicked: (WooPosItemsToolbarViewState.Tab) -> Unit,
     onAddCouponEvent: () -> Unit,
+    onBackClicked: () -> Unit,
 ) {
     Box(
         modifier = modifier
@@ -128,45 +132,60 @@ private fun MainItemsList(
                 ),
             ) { screenState ->
                 when (screenState) {
-                    ScreenState.PRODUCTS -> WooPosProductsScreen(
+                    ScreenState.Products -> WooPosProductsScreen(
                         modifier = Modifier.padding(
                             horizontal = WooPosSpacing.Medium.value.toAdaptivePadding(),
                         ),
                         listState = productsViewState
                     )
 
-                    ScreenState.PRODUCTS_SEARCH -> WooPosItemsSearchScreen()
-                    ScreenState.COUPONS -> WooPosCouponsScreen(
+                    ScreenState.ProductsSearch -> WooPosItemsSearchScreen()
+                    ScreenState.Coupons -> WooPosCouponsScreen(
                         modifier = Modifier.padding(
                             horizontal = WooPosSpacing.Medium.value.toAdaptivePadding(),
                         ),
                         listState = couponsListState,
                     )
+                    is ScreenState.Variations -> {
+                        WooPosVariationsScreen(
+                            modifier = Modifier.padding(
+                                horizontal = WooPosSpacing.Medium.value.toAdaptivePadding(),
+                            ),
+                            variableProductData = screenState.variableProductData,
+                            onBackClicked = { onBackClicked() },
+                        )
+                    }
                 }
             }
         }
     }
 }
 
-private enum class ScreenState {
-    PRODUCTS, PRODUCTS_SEARCH, COUPONS
+private sealed class ScreenState {
+    object Products: ScreenState()
+    object Coupons: ScreenState()
+    object ProductsSearch: ScreenState()
+    data class Variations(val variableProductData: VariableProductData): ScreenState()
 }
 
 private fun getScreenState(state: WooPosItemsToolbarViewState): ScreenState {
     return when (state) {
         is WooPosItemsToolbarViewState.ProductList -> {
             when (val searchState = state.search) {
-                WooPosItemsToolbarViewState.SearchState.Hidden -> ScreenState.PRODUCTS
+                WooPosItemsToolbarViewState.SearchState.Hidden -> ScreenState.Products
                 is WooPosItemsToolbarViewState.SearchState.Visible -> {
                     when (searchState.state) {
-                        WooPosSearchInputState.Closed -> ScreenState.PRODUCTS
-                        is WooPosSearchInputState.Open -> ScreenState.PRODUCTS_SEARCH
+                        WooPosSearchInputState.Closed -> ScreenState.Products
+                        is WooPosSearchInputState.Open -> ScreenState.ProductsSearch
                     }
                 }
             }
         }
 
-        is WooPosItemsToolbarViewState.CouponList -> ScreenState.COUPONS
+        is WooPosItemsToolbarViewState.CouponList -> ScreenState.Coupons
+        is WooPosItemsToolbarViewState.VariationList -> ScreenState.Variations(
+            variableProductData = state.variableProductData
+        )
     }
 }
 

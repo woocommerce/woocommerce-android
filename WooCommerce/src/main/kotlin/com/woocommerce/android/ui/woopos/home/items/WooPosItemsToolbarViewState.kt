@@ -6,6 +6,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearch
 sealed class WooPosItemsToolbarViewState(
     open val tabs: List<Tab>,
     open val search: SearchState,
+    open val backNavigation: Boolean = false,
 ) {
     data class ProductList(
         override val tabs: List<Tab>,
@@ -20,6 +21,15 @@ sealed class WooPosItemsToolbarViewState(
     ) : WooPosItemsToolbarViewState(
         tabs = tabs,
         search = SearchState.Hidden,
+    )
+
+    data class VariationList(
+        override val tabs: List<Tab>,
+        val variableProductData: WooPosItemNavigationData.VariableProductData,
+    ) : WooPosItemsToolbarViewState(
+        tabs = tabs,
+        search = SearchState.Hidden,
+        backNavigation = true,
     )
 
     data class Tab(@StringRes val stringId: Int, val highlightLevel: HighlightLevel) {
