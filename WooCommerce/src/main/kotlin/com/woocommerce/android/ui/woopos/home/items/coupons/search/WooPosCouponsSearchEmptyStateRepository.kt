@@ -12,4 +12,4 @@ class WooPosCouponsSearchEmptyStateRepository @Inject constructor(
     suspend fun addRecentSearch(search: String) {
         preferencesRepository.addRecentCouponSearch(search)
     }
-} 
+}

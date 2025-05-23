@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.util.WooPosGetCachedStoreCurrency
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import com.woocommerce.android.ui.woopos.util.format.WooPosCouponsFormatter
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -110,7 +111,7 @@ class WooPosCouponsSearchViewModel @Inject constructor(
         viewModelScope.launch {
             val recentSearches = emptyStateRepository.getLastSearches()
             _viewState.value = WooPosCouponsSearchViewState.EmptySearchQuery(
-                recentSearches = recentSearches.take(10)
+                recentSearches = recentSearches.take(MAX_LAST_SEARCHES)
             )
         }
     }
@@ -129,26 +130,21 @@ class WooPosCouponsSearchViewModel @Inject constructor(
         if (loadMoreJob?.isActive == true) return
 
         loadMoreJob = viewModelScope.launch {
-            val currentState = _viewState.value as? WooPosCouponsSearchViewState.Content ?: return@launch
+            val currentState =
+                _viewState.value as? WooPosCouponsSearchViewState.Content ?: return@launch
 
             _viewState.value = currentState.copy(
                 paginationState = WooPosPaginationState.Loading
             )
 
-            try {
-                val result = dataSource.loadMore()
-                if (result.isSuccess) {
-                    val coupons = dataSource.couponsFlow.stateIn(viewModelScope).value
-                    _viewState.value = coupons.toContentState(
-                        currentState.searchQuery,
-                        WooPosPaginationState.None
-                    )
-                } else {
-                    _viewState.value = currentState.copy(
-                        paginationState = WooPosPaginationState.Error
-                    )
-                }
-            } catch (e: Exception) {
+            val result = dataSource.loadMore()
+            if (result.isSuccess) {
+                val coupons = dataSource.couponsFlow.stateIn(viewModelScope).value
+                _viewState.value = coupons.toContentState(
+                    currentState.searchQuery,
+                    WooPosPaginationState.None
+                )
+            } else {
                 _viewState.value = currentState.copy(
                     paginationState = WooPosPaginationState.Error
                 )
@@ -165,7 +161,7 @@ class WooPosCouponsSearchViewModel @Inject constructor(
             childToParentEventSender.sendToParent(
                 ChildToParentEvent.ItemClickedInProductSelector(
                     itemData = itemData,
-                    eventForTracking = com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart(
+                    eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
                         item = itemData,
                         source = WooPosAnalyticsEventConstant.ItemsListSource.COUPON,
                         sourceType = sourceType
@@ -227,5 +223,6 @@ class WooPosCouponsSearchViewModel @Inject constructor(
 
     private companion object {
         const val SEARCH_DEBOUNCING_TIME = 500L
+        const val MAX_LAST_SEARCHES = 10
     }
 }
