@@ -4418,9 +4418,12 @@
     <string name="woopos_search_popular_items_title">Popular products</string>
     <string name="woopos_search_recent_searches_title">Recent searches</string>
     <string name="woopos_search_items_empty_title">No products found</string>
+    <string name="woopos_search_coupons_empty_title">No coupons found</string>
     <string name="woopos_search_empty_description">We couldn\'t find any matching products – try adjusting your search term.</string>
+    <string name="woopos_search_empty_coupons_description">We couldn\'t find any matching coupons – try adjusting your search term.</string>
     <string name="woopos_search_empty_image_content_description">No items found</string>
     <string name="woopos_search_items_error_title">Unable to load products</string>
+    <string name="woopos_search_coupons_error_title">Unable to load coupons</string>
     <string name="woopos_search_items_error_description">Please try again.</string>
 
     <string name="customers_details_customer_section">Customer</string>

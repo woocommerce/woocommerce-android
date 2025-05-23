@@ -25,6 +25,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsUIEvent.SearchChanged
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsScreen
+import com.woocommerce.android.ui.woopos.home.items.coupons.search.WooPosCouponsSearchScreen
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsScreen
 import com.woocommerce.android.ui.woopos.home.items.search.WooPosItemsSearchScreen
 import kotlinx.coroutines.flow.MutableStateFlow
