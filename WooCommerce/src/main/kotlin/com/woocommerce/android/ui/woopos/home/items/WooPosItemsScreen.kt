@@ -27,7 +27,7 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsUIEvent.SearchCha
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsScreen
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsScreen
 import com.woocommerce.android.ui.woopos.home.items.search.WooPosItemsSearchScreen
-import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariableProductNavigationData
+import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsNavigationData
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsScreen
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -165,7 +165,7 @@ private sealed class ScreenState {
     object Products: ScreenState()
     object Coupons: ScreenState()
     object ProductsSearch: ScreenState()
-    data class Variations(val variableProductData: WooPosVariableProductNavigationData): ScreenState()
+    data class Variations(val variableProductData: WooPosVariationsNavigationData): ScreenState()
 }
 
 private fun getScreenState(state: WooPosItemsToolbarViewState): ScreenState {

@@ -46,7 +46,7 @@ import kotlinx.coroutines.flow.StateFlow
 @Composable
 fun WooPosVariationsScreen(
     modifier: Modifier,
-    variableProductData: WooPosVariableProductNavigationData,
+    variableProductData: WooPosVariationsNavigationData,
     onBackClicked: () -> Unit
 ) {
     val viewModel: WooPosVariationsViewModel = hiltViewModel(
@@ -93,7 +93,7 @@ private fun WooPosVariationsScreens(
     onEndOfItemListReached: () -> Unit,
     onPullToRefresh: () -> Unit,
     onRetryClicked: () -> Unit,
-    variableProductData: WooPosVariableProductNavigationData,
+    variableProductData: WooPosVariationsNavigationData,
     state: StateFlow<WooPosVariationsViewState>,
 ) {
     val itemState = state.collectAsState()
@@ -248,7 +248,7 @@ fun WooPosVariationsScreenPreview() {
             onEndOfItemListReached = {},
             onPullToRefresh = {},
             onRetryClicked = {},
-            variableProductData = WooPosVariableProductNavigationData(
+            variableProductData = WooPosVariationsNavigationData(
                 id = 0,
                 name = "Variable Product",
                 numOfVariations = 20,

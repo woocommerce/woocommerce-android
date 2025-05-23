@@ -2,7 +2,7 @@ package com.woocommerce.android.ui.woopos.home.items
 
 import androidx.annotation.StringRes
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
-import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariableProductNavigationData
+import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsNavigationData
 
 sealed class WooPosItemsToolbarViewState(
     open val tabs: List<Tab>,
@@ -26,7 +26,7 @@ sealed class WooPosItemsToolbarViewState(
 
     data class VariationList(
         override val tabs: List<Tab>,
-        val variableProductData: WooPosVariableProductNavigationData,
+        val variableProductData: WooPosVariationsNavigationData,
     ) : WooPosItemsToolbarViewState(
         tabs = tabs,
         search = SearchState.Hidden,

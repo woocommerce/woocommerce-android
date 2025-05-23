@@ -2,7 +2,7 @@ package com.woocommerce.android.ui.woopos.home.items.navigation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariableProductNavigationData
+import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsNavigationData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,7 +22,7 @@ class WooPosItemsScreenViewModel @Inject constructor(
         }
     }
 
-    private fun navigateToVariationsScreen(product: WooPosVariableProductNavigationData) {
+    private fun navigateToVariationsScreen(product: WooPosVariationsNavigationData) {
         _screenState.value = ItemsScreens.VariationsScreen(product)
     }
 
@@ -51,6 +51,6 @@ class WooPosItemsScreenViewModel @Inject constructor(
 
     sealed class ItemsScreens {
         data object ItemListScreen : ItemsScreens()
-        data class VariationsScreen(val product: WooPosVariableProductNavigationData) : ItemsScreens()
+        data class VariationsScreen(val product: WooPosVariationsNavigationData) : ItemsScreens()
     }
 }

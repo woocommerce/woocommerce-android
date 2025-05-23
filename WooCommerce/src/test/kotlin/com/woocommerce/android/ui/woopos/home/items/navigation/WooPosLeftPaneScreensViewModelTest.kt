@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.woopos.home.items.navigation
 
-import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariableProductNavigationData.VariableProductData
+import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsNavigationData.VariableProductData
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import kotlinx.coroutines.ExperimentalCoroutinesApi
