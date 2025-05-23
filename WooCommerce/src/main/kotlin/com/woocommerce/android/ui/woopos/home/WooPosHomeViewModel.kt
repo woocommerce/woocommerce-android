@@ -7,7 +7,7 @@ import com.woocommerce.android.ui.woopos.common.util.WooPosSoundHelper
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.CheckoutClicked
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.CouponsRemoved
-import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.ItemClickedInProductSelector
+import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.ItemClickedInItemsList
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderCreated
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccessfullyPaid.PaymentMethod
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.SearchEvent.ChangedQuery
@@ -130,7 +130,7 @@ class WooPosHomeViewModel @Inject constructor(
 
                     is ChildToParentEvent.ItemClickedInProductSelector -> {
                         sendEventToChildren(
-                            ItemClickedInProductSelector(
+                            ItemClickedInItemsList(
                                 itemData = event.itemData,
                                 eventForTracking = event.eventForTracking
                             )

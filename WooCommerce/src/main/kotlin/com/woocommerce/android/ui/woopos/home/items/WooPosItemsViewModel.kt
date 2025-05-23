@@ -160,6 +160,13 @@ class WooPosItemsViewModel @Inject constructor(
             data class Variation(val productId: Long, override val id: Long) : Product(id), Parcelable
         }
 
+        data class VariableProduct(
+            override val id: Long,
+            val name: String,
+            val numOfVariations: Int,
+            val sourceType: WooPosAnalyticsEventConstant.ItemsListSourceType,
+        ) : ItemClickedData(id)
+
         @Parcelize
         data class Coupon(override val id: Long, val couponCode: String) : ItemClickedData(id), Parcelable
     }

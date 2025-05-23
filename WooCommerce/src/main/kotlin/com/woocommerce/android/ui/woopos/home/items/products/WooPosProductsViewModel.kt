@@ -77,7 +77,7 @@ class WooPosProductsViewModel @Inject constructor(
                     is ParentToChildrenEvent.CheckoutClicked,
                     is ParentToChildrenEvent.CouponsRemoved,
                     ParentToChildrenEvent.CouponsValidationFailed,
-                    is ParentToChildrenEvent.ItemClickedInProductSelector,
+                    is ParentToChildrenEvent.ItemClickedInItemsList,
                     is ParentToChildrenEvent.OrderCreated,
                     is ParentToChildrenEvent.OrderSuccessfullyPaid,
                     ParentToChildrenEvent.RemoveCouponsClicked,

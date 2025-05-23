@@ -138,11 +138,17 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                 itemType = when (item) {
                     is WooPosItemsViewModel.ItemClickedData.Product -> ItemsListItemType.PRODUCT
                     is WooPosItemsViewModel.ItemClickedData.Coupon -> ItemsListItemType.COUPON
+                    is WooPosItemsViewModel.ItemClickedData.VariableProduct -> {
+                        error("VariableProduct is not a valid item type")
+                    }
                 },
                 productType = when (item) {
                     is WooPosItemsViewModel.ItemClickedData.Product.Simple -> ItemsListProductType.SIMPLE
                     is WooPosItemsViewModel.ItemClickedData.Product.Variation -> ItemsListProductType.VARIATION
                     is WooPosItemsViewModel.ItemClickedData.Coupon -> null
+                    is WooPosItemsViewModel.ItemClickedData.VariableProduct -> {
+                        error("VariableProduct is not a valid item type")
+                    }
                 }
             )
 
