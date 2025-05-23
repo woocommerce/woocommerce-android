@@ -4,11 +4,9 @@ import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -29,7 +27,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.Button
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreen
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosPaginationErrorIndicator
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolbar
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
@@ -39,7 +36,6 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsEmptyList
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsLoadingIndicator
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.home.items.WooPosVariationsViewState
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -78,7 +74,6 @@ fun WooPosVariationsScreen(
                 WooPosVariationsUIEvents.VariationsLoadingErrorRetryButtonClicked(variableProductData.id)
             )
         },
-        variableProductData,
         state,
     )
 }
@@ -93,7 +88,6 @@ private fun WooPosVariationsScreens(
     onEndOfItemListReached: () -> Unit,
     onPullToRefresh: () -> Unit,
     onRetryClicked: () -> Unit,
-    variableProductData: WooPosVariationsNavigationData,
     state: StateFlow<WooPosVariationsViewState>,
 ) {
     val itemState = state.collectAsState()
@@ -114,13 +108,6 @@ private fun WooPosVariationsScreens(
         Column(
             modifier = modifier.fillMaxHeight()
         ) {
-            WooPosToolbar(
-                titleText = variableProductData.name,
-                onBackClicked = onBackClicked
-            )
-
-            Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
-
             Box(
                 modifier = Modifier
                     .padding(horizontal = WooPosSpacing.Medium.value.toAdaptivePadding())
@@ -248,12 +235,6 @@ fun WooPosVariationsScreenPreview() {
             onEndOfItemListReached = {},
             onPullToRefresh = {},
             onRetryClicked = {},
-            variableProductData = WooPosVariationsNavigationData(
-                id = 0,
-                name = "Variable Product",
-                numOfVariations = 20,
-                sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST,
-            ),
             state = productState,
         )
     }

@@ -39,8 +39,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.SearchState
-import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.Tab.HighlightLevel.Full
-import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.Tab.HighlightLevel.Normal
 
 private const val ANIMATION_DURATION = 300
 val WOO_POS_ITEMS_TOOLBAR_HEIGHT = 56.dp
@@ -91,7 +89,7 @@ fun WooPosItemsToolbar(
                     items(state.tabs.size) { index ->
                         val tab = state.tabs[index]
                         WooPosText(
-                            text = stringResource(id = tab.stringId),
+                            text = tab.name,
                             style = WooPosTypography.Heading,
                             fontWeight = FontWeight.Bold,
                             color = tab.highlightLevel.titleColor(),
@@ -134,16 +132,22 @@ fun WooPosItemsToolbar(
 
 @Composable
 private fun WooPosItemsToolbarViewState.Tab.HighlightLevel.titleColor(): Color = when (this) {
-    Full -> MaterialTheme.colorScheme.onSurface
-    Normal -> WooPosTheme.colors.onSurfaceVariantLowest
+    WooPosItemsToolbarViewState.Tab.HighlightLevel.Full -> MaterialTheme.colorScheme.onSurface
+    WooPosItemsToolbarViewState.Tab.HighlightLevel.Normal -> WooPosTheme.colors.onSurfaceVariantLowest
 }
 
 @Composable
 @WooPosPreview
 fun WooPosProductsToolbarPreview() {
     val tabs = listOf(
-        WooPosItemsToolbarViewState.Tab(R.string.woopos_products_screen_title, highlightLevel = Full),
-        WooPosItemsToolbarViewState.Tab(R.string.woopos_coupons_screen_title, highlightLevel = Normal),
+        WooPosItemsToolbarViewState.Tab.ProductTab(
+            name = "Products",
+            highlightLevel = WooPosItemsToolbarViewState.Tab.HighlightLevel.Full
+        ),
+        WooPosItemsToolbarViewState.Tab.CouponTab(
+            name = "Coupons",
+            highlightLevel = WooPosItemsToolbarViewState.Tab.HighlightLevel.Normal
+        ),
     )
 
     WooPosTheme {
@@ -163,8 +167,14 @@ fun WooPosProductsToolbarPreview() {
 @WooPosPreview
 fun WooPosCouponsToolbarPreview() {
     val tabs = listOf(
-        WooPosItemsToolbarViewState.Tab(R.string.woopos_products_screen_title, highlightLevel = Normal),
-        WooPosItemsToolbarViewState.Tab(R.string.woopos_coupons_screen_title, highlightLevel = Full),
+        WooPosItemsToolbarViewState.Tab.ProductTab(
+            name = "Products",
+            highlightLevel = WooPosItemsToolbarViewState.Tab.HighlightLevel.Full
+        ),
+        WooPosItemsToolbarViewState.Tab.CouponTab(
+            name = "Coupons",
+            highlightLevel = WooPosItemsToolbarViewState.Tab.HighlightLevel.Normal
+        ),
     )
 
     WooPosTheme {
@@ -181,8 +191,14 @@ fun WooPosCouponsToolbarPreview() {
 @WooPosPreview
 fun WooPosItemsToolbarWithSearchPreview() {
     val tabs = listOf(
-        WooPosItemsToolbarViewState.Tab(R.string.woopos_products_screen_title, highlightLevel = Full),
-        WooPosItemsToolbarViewState.Tab(R.string.woopos_coupons_screen_title, highlightLevel = Normal),
+        WooPosItemsToolbarViewState.Tab.ProductTab(
+            name = "Products",
+            highlightLevel = WooPosItemsToolbarViewState.Tab.HighlightLevel.Full
+        ),
+        WooPosItemsToolbarViewState.Tab.CouponTab(
+            name = "Coupons",
+            highlightLevel = WooPosItemsToolbarViewState.Tab.HighlightLevel.Normal
+        ),
     )
 
     WooPosTheme {

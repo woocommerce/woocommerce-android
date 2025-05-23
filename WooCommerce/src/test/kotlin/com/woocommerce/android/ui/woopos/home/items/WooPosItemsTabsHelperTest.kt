@@ -12,11 +12,11 @@ class WooPosItemsTabsHelperTest {
 
         // THEN
         assertThat(tabsHelper.defaultTabs).hasSize(2)
-        assertThat(tabsHelper.defaultTabs[0].stringId).isEqualTo(R.string.woopos_products_screen_title)
+        assertThat(tabsHelper.defaultTabs[0].name).isEqualTo(R.string.woopos_products_screen_title)
         assertThat(tabsHelper.defaultTabs[0].highlightLevel).isEqualTo(
             WooPosItemsToolbarViewState.Tab.HighlightLevel.Full
         )
-        assertThat(tabsHelper.defaultTabs[1].stringId).isEqualTo(R.string.woopos_coupons_screen_title)
+        assertThat(tabsHelper.defaultTabs[1].name).isEqualTo(R.string.woopos_coupons_screen_title)
         assertThat(tabsHelper.defaultTabs[1].highlightLevel).isEqualTo(
             WooPosItemsToolbarViewState.Tab.HighlightLevel.Normal
         )

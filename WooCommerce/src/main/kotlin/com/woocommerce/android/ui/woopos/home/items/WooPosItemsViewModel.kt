@@ -3,11 +3,13 @@ package com.woocommerce.android.ui.woopos.home.items
 import android.os.Parcelable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
+import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
+import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.Tab
 import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationFacade
+import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsNavigationData
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SearchButtonTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
@@ -27,6 +29,7 @@ class WooPosItemsViewModel @Inject constructor(
     private val tabsHelper: WooPosItemsTabsHelper,
     private val couponCreationFacade: WooPosCouponCreationFacade,
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender,
+    private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
     private val analyticsTracker: WooPosAnalyticsTracker,
 ) : ViewModel() {
     private val _viewState = MutableStateFlow<WooPosItemsToolbarViewState>(
@@ -43,6 +46,7 @@ class WooPosItemsViewModel @Inject constructor(
         )
 
     init {
+        listenUpEvents()
         searchHelper.initialize(
             coroutineScope = viewModelScope,
             viewStateFlow = _viewState
@@ -74,6 +78,53 @@ class WooPosItemsViewModel @Inject constructor(
         }
     }
 
+    private fun listenUpEvents() {
+        viewModelScope.launch {
+            parentToChildrenEventReceiver.events.collect { event ->
+                when (event) {
+                    ParentToChildrenEvent.BackFromCheckoutToCartClicked,
+                    is ParentToChildrenEvent.CheckoutClicked,
+                    is ParentToChildrenEvent.CouponsRemoved,
+                    ParentToChildrenEvent.CouponsValidationFailed,
+                    is ParentToChildrenEvent.OrderCreated,
+                    is ParentToChildrenEvent.OrderSuccessfullyPaid,
+                    ParentToChildrenEvent.RefreshProductList,
+                    ParentToChildrenEvent.RemoveCouponsClicked,
+                    is ParentToChildrenEvent.SearchEvent.ChangedQuery,
+                    ParentToChildrenEvent.SearchEvent.Finished,
+                    is ParentToChildrenEvent.SearchEvent.RecentSearchSelected,
+                    ParentToChildrenEvent.SearchEvent.Started -> Unit
+
+                    is ParentToChildrenEvent.ItemClickedInItemsList -> handleItemClicked(event)
+                }
+            }
+        }
+    }
+
+    private fun handleItemClicked(event: ParentToChildrenEvent.ItemClickedInItemsList) {
+        when (event.itemData) {
+            is ItemClickedData.Coupon,
+            is ItemClickedData.Product.Simple,
+            is ItemClickedData.Product.Variation -> Unit
+
+            is ItemClickedData.VariableProduct -> {
+                _viewState.value = WooPosItemsToolbarViewState.VariationList(
+                    tabs = listOf(
+                        Tab.VariationTab(
+                            name = event.itemData.name,
+                            highlightLevel = Tab.HighlightLevel.Normal
+                        )
+                    ),
+                    variableProductData = WooPosVariationsNavigationData(
+                        id = event.itemData.id,
+                        numOfVariations = event.itemData.numOfVariations,
+                        sourceType = event.itemData.sourceType,
+                    ),
+                )
+            }
+        }
+    }
+
     private fun trackSearchIconClicked() {
         viewModelScope.launch {
             val event = SearchButtonTapped(
@@ -102,8 +153,8 @@ class WooPosItemsViewModel @Inject constructor(
 
         val state = _viewState.value
 
-        _viewState.value = when (selectedTab.stringId) {
-            R.string.woopos_products_screen_title -> WooPosItemsToolbarViewState.ProductList(
+        _viewState.value = when (selectedTab) {
+            is Tab.ProductTab -> WooPosItemsToolbarViewState.ProductList(
                 tabs = tabsHelper.selectTab(state.tabs, selectedTab),
                 search = searchHelper.getInitialSearchState(),
             ).also {
@@ -116,7 +167,7 @@ class WooPosItemsViewModel @Inject constructor(
                 }
             }
 
-            R.string.woopos_coupons_screen_title -> WooPosItemsToolbarViewState.CouponList(
+            is Tab.CouponTab -> WooPosItemsToolbarViewState.CouponList(
                 tabs = tabsHelper.selectTab(state.tabs, selectedTab),
             ).also {
                 viewModelScope.launch {
@@ -128,7 +179,10 @@ class WooPosItemsViewModel @Inject constructor(
                 }
             }
 
-            else -> error("Invalid tab $selectedTab")
+            is Tab.VariationTab -> WooPosItemsToolbarViewState.VariationList(
+                tabs = tabsHelper.selectTab(state.tabs, selectedTab),
+                variableProductData = (state as WooPosItemsToolbarViewState.VariationList).variableProductData,
+            )
         }
     }
 

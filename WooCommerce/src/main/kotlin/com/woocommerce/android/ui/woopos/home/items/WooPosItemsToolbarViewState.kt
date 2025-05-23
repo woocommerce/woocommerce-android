@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.home.items
 
-import androidx.annotation.StringRes
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsNavigationData
 
@@ -33,10 +32,25 @@ sealed class WooPosItemsToolbarViewState(
         backNavigation = true,
     )
 
-    data class Tab(@StringRes val stringId: Int, val highlightLevel: HighlightLevel) {
+    sealed class Tab(open val name: String, open val highlightLevel: HighlightLevel) {
         enum class HighlightLevel {
             Full, Normal
         }
+
+        data class ProductTab(
+            override val name: String,
+            override val highlightLevel: HighlightLevel,
+        ) : Tab(name, highlightLevel)
+
+        data class CouponTab(
+            override val name: String,
+            override val highlightLevel: HighlightLevel,
+        ) : Tab(name, highlightLevel)
+
+        data class VariationTab(
+            override val name: String,
+            override val highlightLevel: HighlightLevel,
+        ) : Tab(name, highlightLevel)
     }
 
     sealed class SearchState {

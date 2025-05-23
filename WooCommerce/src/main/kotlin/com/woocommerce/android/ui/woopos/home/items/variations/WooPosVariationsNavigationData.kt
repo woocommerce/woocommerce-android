@@ -4,7 +4,6 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventCons
 
 data class WooPosVariationsNavigationData(
     val id: Long,
-    val name: String,
     val numOfVariations: Int,
     val sourceType: WooPosAnalyticsEventConstant.ItemsListSourceType,
 )

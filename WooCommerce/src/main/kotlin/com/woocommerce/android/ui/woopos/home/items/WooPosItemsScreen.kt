@@ -16,13 +16,15 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.Tab.CouponTab
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.Tab.HighlightLevel
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.Tab.ProductTab
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsUIEvent.SearchChanged
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsScreen
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsScreen
@@ -242,12 +244,12 @@ fun WooPosItemsScreenSearchHiddenPreview(modifier: Modifier = Modifier) {
 
 @Composable
 private fun tabs(): List<WooPosItemsToolbarViewState.Tab> = listOf(
-    WooPosItemsToolbarViewState.Tab(
-        stringId = R.string.woopos_products_screen_title,
-        highlightLevel = WooPosItemsToolbarViewState.Tab.HighlightLevel.Full
+    ProductTab(
+        name = "Products",
+        highlightLevel = HighlightLevel.Full
     ),
-    WooPosItemsToolbarViewState.Tab(
-        stringId = R.string.woopos_coupons_screen_title,
-        highlightLevel = WooPosItemsToolbarViewState.Tab.HighlightLevel.Normal
-    )
+    CouponTab(
+        name = "Coupons",
+        highlightLevel = HighlightLevel.Normal
+    ),
 )
