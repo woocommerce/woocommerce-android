@@ -112,7 +112,7 @@ class WooPosItemsViewModel @Inject constructor(
                     tabs = listOf(
                         Tab.VariationTab(
                             name = event.itemData.name,
-                            highlightLevel = Tab.HighlightLevel.Normal
+                            highlightLevel = Tab.HighlightLevel.Full
                         )
                     ),
                     variableProductData = WooPosVariationsNavigationData(

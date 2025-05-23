@@ -119,6 +119,7 @@ private fun MainItemsList(
                 state = state.value,
                 onTabClicked = onTabClicked,
                 onSearchEvent = onSearchEvent,
+                onBackClicked = onBackClicked,
                 onAddCouponEvent = onAddCouponEvent,
             )
 

@@ -13,10 +13,14 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -39,6 +43,8 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.SearchState
+import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsNavigationData
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 
 private const val ANIMATION_DURATION = 300
 val WOO_POS_ITEMS_TOOLBAR_HEIGHT = 56.dp
@@ -49,6 +55,7 @@ fun WooPosItemsToolbar(
     state: WooPosItemsToolbarViewState,
     onTabClicked: (WooPosItemsToolbarViewState.Tab) -> Unit,
     onSearchEvent: (WooPosSearchUIEvent) -> Unit,
+    onBackClicked: () -> Unit,
     onAddCouponEvent: () -> Unit,
 ) {
     val isSearchOpen = (state.search as? SearchState.Visible)?.let {
@@ -83,6 +90,23 @@ fun WooPosItemsToolbar(
                     .padding(start = WooPosSpacing.Medium.value.toAdaptivePadding()),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                if (state.backNavigation) {
+                    IconButton(
+                        onClick = { onBackClicked() },
+                        modifier = Modifier
+                            .size(48.dp)
+                            .padding(start = WooPosSpacing.Small.value.toAdaptivePadding())
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.woopos_toolbar_icon_content_description),
+                            tint = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier
+                                .size(28.dp)
+                        )
+                    }
+                }
+
                 LazyRow(
                     modifier = Modifier.weight(1f),
                 ) {
@@ -159,6 +183,7 @@ fun WooPosProductsToolbarPreview() {
             onTabClicked = {},
             onSearchEvent = {},
             onAddCouponEvent = {},
+            onBackClicked = {},
         )
     }
 }
@@ -183,6 +208,7 @@ fun WooPosCouponsToolbarPreview() {
             onTabClicked = {},
             onSearchEvent = {},
             onAddCouponEvent = {},
+            onBackClicked = {},
         )
     }
 }
@@ -219,6 +245,35 @@ fun WooPosItemsToolbarWithSearchPreview() {
             onTabClicked = {},
             onSearchEvent = {},
             onAddCouponEvent = {},
+            onBackClicked = {},
+        )
+    }
+}
+
+@Composable
+@WooPosPreview
+fun WooPosItemsToolbarWithVariationsPreview() {
+    val tabs = listOf(
+        WooPosItemsToolbarViewState.Tab.VariationTab(
+            name = "Variations",
+            highlightLevel = WooPosItemsToolbarViewState.Tab.HighlightLevel.Full
+        ),
+    )
+
+    WooPosTheme {
+        WooPosItemsToolbar(
+            state = WooPosItemsToolbarViewState.VariationList(
+                tabs = tabs,
+                variableProductData = WooPosVariationsNavigationData(
+                    id = 1L,
+                    numOfVariations = 2,
+                    sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST,
+                )
+            ),
+            onTabClicked = {},
+            onSearchEvent = {},
+            onAddCouponEvent = {},
+            onBackClicked = {},
         )
     }
 }
