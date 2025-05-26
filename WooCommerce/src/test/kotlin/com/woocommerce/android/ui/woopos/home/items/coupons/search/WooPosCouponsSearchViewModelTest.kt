@@ -7,12 +7,9 @@ import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.home.items.WooPosCouponsViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
-import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsListViewStateManager
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -74,7 +71,7 @@ class WooPosCouponsSearchViewModelTest {
             val emptyState = value as WooPosCouponsSearchViewState.EmptySearchQuery
             assertThat(emptyState.recentSearches).isEqualTo(recentSearches)
         }
-        
+
         verify(mockViewStateManager).setEmptySearchQueryWithRecentSearches(recentSearches)
     }
 
@@ -115,14 +112,16 @@ class WooPosCouponsSearchViewModelTest {
     fun `given coupon selection, when coupon is clicked, then child to parent event is sent and recent search stored`() = runTest {
         // GIVEN
         val searchQuery = "DISCOUNT"
-        
+
         whenever(mockViewStateManager.getCurrentSearchQuery()).thenReturn(searchQuery)
-        whenever(mockViewStateManager.viewState).thenReturn(flowOf(
-            WooPosCouponsViewState.Content(
-                items = listOf(testCoupon),
-                paginationState = WooPosPaginationState.None
+        whenever(mockViewStateManager.viewState).thenReturn(
+            flowOf(
+                WooPosCouponsViewState.Content(
+                    items = listOf(testCoupon),
+                    paginationState = WooPosPaginationState.None
+                )
             )
-        ))
+        )
 
         val viewModel = createViewModel()
 
@@ -130,7 +129,7 @@ class WooPosCouponsSearchViewModelTest {
         viewModel.viewState.test {
             val initialState = awaitItem()
             assertThat(initialState).isInstanceOf(WooPosCouponsSearchViewState.Content::class.java)
-            
+
             // WHEN
             viewModel.onUIEvent(WooPosCouponsSearchUiEvent.OnCouponClicked(testCoupon))
             advanceUntilIdle()
@@ -198,7 +197,7 @@ class WooPosCouponsSearchViewModelTest {
 
         // THEN
         verify(mockViewStateManager).fetchCoupons(
-            any(), 
+            any(),
             eq(WooPosCouponsListViewStateManager.WooPosCouponsListRefreshType.RETRY)
         )
     }
@@ -211,7 +210,7 @@ class WooPosCouponsSearchViewModelTest {
             items = listOf(testCoupon),
             paginationState = WooPosPaginationState.None
         )
-        
+
         whenever(mockViewStateManager.getCurrentSearchQuery()).thenReturn(searchQuery)
         whenever(mockViewStateManager.viewState).thenReturn(flowOf(contentState))
 
@@ -222,7 +221,7 @@ class WooPosCouponsSearchViewModelTest {
         viewModel.viewState.test {
             val value = awaitItem()
             assertThat(value).isInstanceOf(WooPosCouponsSearchViewState.Content::class.java)
-            
+
             val content = value as WooPosCouponsSearchViewState.Content
             assertThat(content.searchQuery).isEqualTo(searchQuery)
             assertThat(content.items).hasSize(1)

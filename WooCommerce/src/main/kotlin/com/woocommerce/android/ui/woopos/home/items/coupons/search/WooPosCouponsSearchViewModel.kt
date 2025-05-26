@@ -13,10 +13,10 @@ import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsListVie
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -66,7 +66,7 @@ class WooPosCouponsSearchViewModel @Inject constructor(
 
     private fun handleLoadingErrorRetryClick() {
         viewStateManager.fetchCoupons(
-            viewModelScope, 
+            viewModelScope,
             WooPosCouponsListViewStateManager.WooPosCouponsListRefreshType.RETRY
         )
     }
@@ -120,12 +120,12 @@ class WooPosCouponsSearchViewModel @Inject constructor(
 
     private fun WooPosCouponsViewState.toSearchViewState(): WooPosCouponsSearchViewState {
         val currentQuery = viewStateManager.getCurrentSearchQuery()
-        
+
         return when {
             currentQuery.isNullOrBlank() -> {
                 WooPosCouponsSearchViewState.EmptySearchQuery(viewStateManager.getRecentSearches())
             }
-            
+
             this is WooPosCouponsViewState.Loading -> WooPosCouponsSearchViewState.Loading
             this is WooPosCouponsViewState.Empty -> WooPosCouponsSearchViewState.Empty
             this is WooPosCouponsViewState.Content -> WooPosCouponsSearchViewState.Content(
@@ -135,7 +135,9 @@ class WooPosCouponsSearchViewModel @Inject constructor(
                 pullToRefreshState = this.pullToRefreshState
             )
             this is WooPosCouponsViewState.Error.GenericError -> WooPosCouponsSearchViewState.Error(currentQuery)
-            this is WooPosCouponsViewState.Error.CouponsDisabledError -> WooPosCouponsSearchViewState.Error(currentQuery)
+            this is WooPosCouponsViewState.Error.CouponsDisabledError -> WooPosCouponsSearchViewState.Error(
+                currentQuery
+            )
             else -> WooPosCouponsSearchViewState.EmptySearchQuery(emptyList())
         }
     }

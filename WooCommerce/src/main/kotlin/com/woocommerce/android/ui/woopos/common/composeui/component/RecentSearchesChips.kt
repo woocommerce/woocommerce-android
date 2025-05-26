@@ -57,7 +57,6 @@ fun RecentSearchesChips(
     }
 }
 
-
 @Composable
 fun SectionHeader(
     modifier: Modifier = Modifier,
