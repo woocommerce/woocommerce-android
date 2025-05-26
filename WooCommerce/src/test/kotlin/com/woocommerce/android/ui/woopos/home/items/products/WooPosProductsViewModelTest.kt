@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.home.items.products
 import app.cash.turbine.test
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
+import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.home.items.WooPosContentViewState
@@ -69,6 +70,7 @@ class WooPosProductsViewModelTest {
                 )
             )
         )
+        whenever(parentToChildrenEventReceiver.events).thenReturn(flowOf())
     }
 
     @Test
@@ -432,6 +434,94 @@ class WooPosProductsViewModelTest {
 
         // THEN
         verify(productsDataSource, never()).loadMore()
+    }
+
+    @Test
+    fun `when variable product clicked, then send event to parent without tracking event`() = runTest {
+        // GIVEN
+        val variableProduct = WooPosItemSelectionViewState.Product.Variable(
+            id = 123L,
+            name = "Variable Product",
+            price = "$20.0",
+            imageUrl = null,
+            numOfVariations = 5,
+            variationIds = listOf(1, 2, 3)
+        )
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosProductsUIEvent.ItemClicked(variableProduct))
+
+        // THEN
+        verify(fromChildToParentEventSender).sendToParent(
+            eq(
+                ChildToParentEvent.ItemClickedInItemsList(
+                    itemData = WooPosItemsViewModel.ItemClickedData.VariableProduct(
+                        id = 123L,
+                        name = "Variable Product",
+                        numOfVariations = 5,
+                        sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST,
+                    ),
+                    eventForTracking = null,
+                )
+            )
+        )
+    }
+
+    @Test
+    fun `when RefreshProductList event received, then products are reloaded with force refresh`() = runTest {
+        // GIVEN
+        whenever(parentToChildrenEventReceiver.events).thenReturn(
+            flowOf(ParentToChildrenEvent.RefreshProductList)
+        )
+
+        // WHEN
+        createViewModel()
+
+        // THEN
+        verify(productsDataSource).loadProducts(forceRefreshProducts = true)
+    }
+
+    @Test
+    fun `when ProductsLoadingErrorRetryButtonClicked, then products are reloaded without force refresh`() = runTest {
+        // GIVEN
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosProductsUIEvent.ProductsLoadingErrorRetryButtonClicked)
+
+        // THEN
+        verify(productsDataSource, times(2)).loadProducts(forceRefreshProducts = false)
+    }
+
+    @Test
+    fun `when successful load more, then analytics event is tracked`() = runTest {
+        // GIVEN
+        whenever(productsDataSource.hasMorePages).thenReturn(true)
+        whenever(productsDataSource.loadMore()).thenReturn(
+            Result.success(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 2,
+                        productName = "Product 2",
+                        amount = "20.0",
+                        productType = "simple"
+                    )
+                )
+            )
+        )
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosProductsUIEvent.EndOfItemsListReached)
+
+        // THEN
+        verify(analyticsTracker).track(
+            WooPosAnalyticsEvent.Event.ItemsNextPageLoaded(
+                source = WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT,
+                sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST
+            )
+        )
     }
 
     private fun createViewModel(): WooPosProductsViewModel {
