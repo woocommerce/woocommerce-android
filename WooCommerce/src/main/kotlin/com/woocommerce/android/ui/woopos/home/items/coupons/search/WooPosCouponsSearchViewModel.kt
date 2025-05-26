@@ -73,6 +73,8 @@ class WooPosCouponsSearchViewModel @Inject constructor(
     }
 
     private fun performSearch(query: String) {
+        searchJob?.cancel()
+
         if (query.isBlank()) {
             _viewState.value = WooPosCouponsSearchViewState.EmptySearchQuery
             return
@@ -80,7 +82,6 @@ class WooPosCouponsSearchViewModel @Inject constructor(
 
         currentQuery.set(query)
 
-        searchJob?.cancel()
         searchJob = viewModelScope.launch {
             _viewState.value = WooPosCouponsSearchViewState.Loading
 
