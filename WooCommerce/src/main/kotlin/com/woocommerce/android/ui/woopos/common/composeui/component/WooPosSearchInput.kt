@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.common.composeui.component
 
-import android.R.attr.animationDuration
 import android.os.Parcelable
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -99,12 +98,13 @@ private fun SearchInput(
     state: WooPosSearchInputState.Open,
     onEvent: (WooPosSearchUIEvent) -> Unit
 ) {
+    val animationDuration = 200L
     val focusRequester = remember { FocusRequester() }
     var isFocused by remember { mutableStateOf(false) }
 
     val borderColor by animateFloatAsState(
         targetValue = if (isFocused) 1f else 0f,
-        animationSpec = tween(durationMillis = 200, easing = FastOutSlowInEasing),
+        animationSpec = tween(durationMillis = animationDuration.toInt(), easing = FastOutSlowInEasing),
         label = "borderColorAnimation"
     )
 
