@@ -336,7 +336,7 @@ class WooPosItemsViewModelTest {
         // THEN
         val capture = argumentCaptor<WooPosAnalyticsEvent.Event.ItemsHeaderTapped>()
         verify(analyticsTracker).track(capture.capture())
-        assertThat(capture.firstValue.name). isEqualTo("items_header_tapped")
+        assertThat(capture.firstValue.name).isEqualTo("items_header_tapped")
         assertThat(capture.firstValue.properties["type"]).isEqualTo(
             WooPosAnalyticsEventConstant.ItemsHeaderType.PRODUCT.value
         )
