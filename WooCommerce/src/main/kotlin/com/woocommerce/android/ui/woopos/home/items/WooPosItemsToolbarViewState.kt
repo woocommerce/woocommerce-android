@@ -37,17 +37,17 @@ sealed class WooPosItemsToolbarViewState(
             Full, Normal
         }
 
-        data class ProductTab(
+        data class Products(
             override val name: String,
             override val highlightLevel: HighlightLevel,
         ) : Tab(name, highlightLevel)
 
-        data class CouponTab(
+        data class Coupons(
             override val name: String,
             override val highlightLevel: HighlightLevel,
         ) : Tab(name, highlightLevel)
 
-        data class VariationTab(
+        data class Variations(
             override val name: String,
             override val highlightLevel: HighlightLevel,
         ) : Tab(name, highlightLevel)

@@ -32,11 +32,11 @@ class WooPosItemsViewModelTest {
     val coroutinesTestRule = WooPosCoroutineTestRule()
 
     private val tabs = listOf(
-        WooPosItemsToolbarViewState.Tab.ProductTab(
+        WooPosItemsToolbarViewState.Tab.Products(
             "Products",
             WooPosItemsToolbarViewState.Tab.HighlightLevel.Full
         ),
-        WooPosItemsToolbarViewState.Tab.CouponTab(
+        WooPosItemsToolbarViewState.Tab.Coupons(
             "Coupons",
             WooPosItemsToolbarViewState.Tab.HighlightLevel.Normal
         )
@@ -121,18 +121,18 @@ class WooPosItemsViewModelTest {
     @Test
     fun `when tab clicked, then tab is selected and state is updated`() = runTest {
         // GIVEN
-        val couponsTab = WooPosItemsToolbarViewState.Tab.CouponTab(
+        val couponsTab = WooPosItemsToolbarViewState.Tab.Coupons(
             "Coupons",
             WooPosItemsToolbarViewState.Tab.HighlightLevel.Normal
         )
 
         whenever(tabsHelper.selectTab(any(), eq(couponsTab))).thenReturn(
             listOf(
-                WooPosItemsToolbarViewState.Tab.ProductTab(
+                WooPosItemsToolbarViewState.Tab.Products(
                     "Products",
                     WooPosItemsToolbarViewState.Tab.HighlightLevel.Normal
                 ),
-                WooPosItemsToolbarViewState.Tab.CouponTab(
+                WooPosItemsToolbarViewState.Tab.Coupons(
                     "Coupons",
                     WooPosItemsToolbarViewState.Tab.HighlightLevel.Full
                 )

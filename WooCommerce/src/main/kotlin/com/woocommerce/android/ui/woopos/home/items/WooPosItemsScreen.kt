@@ -22,9 +22,9 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearch
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
-import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.Tab.CouponTab
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.Tab.Coupons
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.Tab.HighlightLevel
-import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.Tab.ProductTab
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.Tab.Products
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsUIEvent.SearchChanged
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsScreen
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsScreen
@@ -241,11 +241,11 @@ fun WooPosItemsScreenSearchHiddenPreview(modifier: Modifier = Modifier) {
 
 @Composable
 private fun tabs(): List<WooPosItemsToolbarViewState.Tab> = listOf(
-    ProductTab(
+    Products(
         name = "Products",
         highlightLevel = HighlightLevel.Full
     ),
-    CouponTab(
+    Coupons(
         name = "Coupons",
         highlightLevel = HighlightLevel.Normal
     ),

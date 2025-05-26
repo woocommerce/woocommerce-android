@@ -189,11 +189,11 @@ class WooPosItemsSearchHelperTest {
                 )
             ),
             tabs = listOf(
-                WooPosItemsToolbarViewState.Tab.ProductTab(
+                WooPosItemsToolbarViewState.Tab.Products(
                     "Products",
                     highlightLevel = WooPosItemsToolbarViewState.Tab.HighlightLevel.Full
                 ),
-                WooPosItemsToolbarViewState.Tab.CouponTab(
+                WooPosItemsToolbarViewState.Tab.Coupons(
                     "Coupons",
                     highlightLevel = WooPosItemsToolbarViewState.Tab.HighlightLevel.Normal
                 )

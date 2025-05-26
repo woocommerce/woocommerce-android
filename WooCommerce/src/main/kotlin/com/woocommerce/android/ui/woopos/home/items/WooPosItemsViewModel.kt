@@ -111,7 +111,7 @@ class WooPosItemsViewModel @Inject constructor(
                 preservedStateBeforeOpeningVariations = _viewState.value
                 _viewState.value = WooPosItemsToolbarViewState.VariationList(
                     tabs = listOf(
-                        Tab.VariationTab(
+                        Tab.Variations(
                             name = event.itemData.name,
                             highlightLevel = Tab.HighlightLevel.Full
                         )
@@ -155,7 +155,7 @@ class WooPosItemsViewModel @Inject constructor(
         val state = _viewState.value
 
         _viewState.value = when (selectedTab) {
-            is Tab.ProductTab -> WooPosItemsToolbarViewState.ProductList(
+            is Tab.Products -> WooPosItemsToolbarViewState.ProductList(
                 tabs = tabsHelper.selectTab(state.tabs, selectedTab),
                 search = searchHelper.getInitialSearchState(),
             ).also {
@@ -168,7 +168,7 @@ class WooPosItemsViewModel @Inject constructor(
                 }
             }
 
-            is Tab.CouponTab -> WooPosItemsToolbarViewState.CouponList(
+            is Tab.Coupons -> WooPosItemsToolbarViewState.CouponList(
                 tabs = tabsHelper.selectTab(state.tabs, selectedTab),
             ).also {
                 viewModelScope.launch {
@@ -180,7 +180,7 @@ class WooPosItemsViewModel @Inject constructor(
                 }
             }
 
-            is Tab.VariationTab -> WooPosItemsToolbarViewState.VariationList(
+            is Tab.Variations -> WooPosItemsToolbarViewState.VariationList(
                 tabs = tabsHelper.selectTab(state.tabs, selectedTab),
                 variableProductData = (state as WooPosItemsToolbarViewState.VariationList).variableProductData,
             )

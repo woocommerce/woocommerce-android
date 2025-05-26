@@ -226,11 +226,11 @@ private fun WooPosItemsToolbarViewState.Tab.HighlightLevel.titleColor(): Color =
 @WooPosPreview
 fun WooPosProductsToolbarPreview() {
     val tabs = listOf(
-        WooPosItemsToolbarViewState.Tab.ProductTab(
+        WooPosItemsToolbarViewState.Tab.Products(
             name = "Products",
             highlightLevel = WooPosItemsToolbarViewState.Tab.HighlightLevel.Full
         ),
-        WooPosItemsToolbarViewState.Tab.CouponTab(
+        WooPosItemsToolbarViewState.Tab.Coupons(
             name = "Coupons",
             highlightLevel = WooPosItemsToolbarViewState.Tab.HighlightLevel.Normal
         ),
@@ -254,11 +254,11 @@ fun WooPosProductsToolbarPreview() {
 @WooPosPreview
 fun WooPosCouponsToolbarPreview() {
     val tabs = listOf(
-        WooPosItemsToolbarViewState.Tab.ProductTab(
+        WooPosItemsToolbarViewState.Tab.Products(
             name = "Products",
             highlightLevel = WooPosItemsToolbarViewState.Tab.HighlightLevel.Full
         ),
-        WooPosItemsToolbarViewState.Tab.CouponTab(
+        WooPosItemsToolbarViewState.Tab.Coupons(
             name = "Coupons",
             highlightLevel = WooPosItemsToolbarViewState.Tab.HighlightLevel.Normal
         ),
@@ -279,11 +279,11 @@ fun WooPosCouponsToolbarPreview() {
 @WooPosPreview
 fun WooPosItemsToolbarWithSearchPreview() {
     val tabs = listOf(
-        WooPosItemsToolbarViewState.Tab.ProductTab(
+        WooPosItemsToolbarViewState.Tab.Products(
             name = "Products",
             highlightLevel = WooPosItemsToolbarViewState.Tab.HighlightLevel.Full
         ),
-        WooPosItemsToolbarViewState.Tab.CouponTab(
+        WooPosItemsToolbarViewState.Tab.Coupons(
             name = "Coupons",
             highlightLevel = WooPosItemsToolbarViewState.Tab.HighlightLevel.Normal
         ),
@@ -315,7 +315,7 @@ fun WooPosItemsToolbarWithSearchPreview() {
 @WooPosPreview
 fun WooPosItemsToolbarWithVariationsPreview() {
     val tabs = listOf(
-        WooPosItemsToolbarViewState.Tab.VariationTab(
+        WooPosItemsToolbarViewState.Tab.Variations(
             name = "Variations",
             highlightLevel = WooPosItemsToolbarViewState.Tab.HighlightLevel.Full
         ),
