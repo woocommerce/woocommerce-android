@@ -4,6 +4,7 @@ import app.cash.turbine.test
 import com.woocommerce.android.ui.coupons.CouponTestUtils
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
+import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
@@ -14,12 +15,14 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
@@ -58,6 +61,7 @@ class WooPosItemsViewModelTest {
                 state = WooPosSearchInputState.Closed
             )
         )
+        whenever(parentToChildrenEventReceiver.events).thenReturn(flowOf())
     }
 
     @Test
@@ -93,28 +97,38 @@ class WooPosItemsViewModelTest {
 
     @Test
     fun `given search visible, when search text changed, then search helper is called`() = runTest {
+        // GIVEN
         val query = "test query"
         val viewModel = createViewModel()
 
+        // WHEN
         viewModel.onUIEvent(WooPosItemsUIEvent.SearchChanged(query, 0))
 
+        // THEN
         verify(searchHelper).onSearchChanged(query, 0)
     }
 
     @Test
     fun `given search visible, when clear search clicked, then search helper is called`() = runTest {
+        // GIVEN
         val viewModel = createViewModel()
 
+        // WHEN
         viewModel.onUIEvent(WooPosItemsUIEvent.ClearSearchClicked)
 
+        // THEN
         verify(searchHelper).onClearSearchClicked()
     }
 
     @Test
     fun `given search visible, when close search clicked, then search helper is called`() = runTest {
+        // GIVEN
         val viewModel = createViewModel()
+
+        // WHEN
         viewModel.onUIEvent(WooPosItemsUIEvent.CloseSearchClicked)
 
+        // THEN
         verify(searchHelper).onCloseSearchClicked()
     }
 
@@ -170,6 +184,18 @@ class WooPosItemsViewModelTest {
     }
 
     @Test
+    fun `when search icon is tapped, then search helper is called with empty query`() = runTest {
+        // GIVEN
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosItemsUIEvent.SearchIconClicked)
+
+        // THEN
+        verify(searchHelper).onSearchChanged("", 0)
+    }
+
+    @Test
     fun `when add coupon icon is tapped, then newly created coupon added to cart`() = runTest {
         // GIVEN
         whenever(couponCreationFacade.createCoupon())
@@ -193,6 +219,153 @@ class WooPosItemsViewModelTest {
                 )
             )
         )
+    }
+
+    @Test
+    fun `when add coupon icon is tapped, then track analytics event`() = runTest {
+        // GIVEN
+        whenever(couponCreationFacade.createCoupon())
+            .thenReturn(CouponTestUtils.generateTestCoupon(1L, "test"))
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosItemsUIEvent.AddCouponIconClicked)
+
+        // THEN
+        verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.CouponsCreateTapped)
+    }
+
+    @Test
+    fun `given coupon creation returns null, when add coupon icon is tapped, then no event is sent`() = runTest {
+        // GIVEN
+        whenever(couponCreationFacade.createCoupon()).thenReturn(null)
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosItemsUIEvent.AddCouponIconClicked)
+
+        // THEN
+        verify(fromChildToParentEventSender, org.mockito.kotlin.never()).sendToParent(any())
+    }
+
+    @Test
+    fun `when variable product item clicked, then state changes to variation list`() = runTest {
+        // GIVEN
+        val variableProductData = ItemClickedData.VariableProduct(
+            id = 123L,
+            name = "Test Variable Product",
+            numOfVariations = 5,
+            sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST
+        )
+        whenever(parentToChildrenEventReceiver.events).thenReturn(
+            flowOf(ParentToChildrenEvent.ItemClickedInItemsList(variableProductData, null))
+        )
+        val viewModel = createViewModel()
+
+        // WHEN/THEN
+        viewModel.viewState.test {
+            val state = awaitItem()
+            assertThat(state).isInstanceOf(WooPosItemsToolbarViewState.VariationList::class.java)
+            val variationListState = state as WooPosItemsToolbarViewState.VariationList
+            assertThat(variationListState.variableProductData.id).isEqualTo(123L)
+            assertThat(variationListState.variableProductData.numOfVariations).isEqualTo(5)
+            assertThat(variationListState.tabs).hasSize(1)
+            val tab = variationListState.tabs.first() as WooPosItemsToolbarViewState.Tab.Variations
+            assertThat(tab.name).isEqualTo("Test Variable Product")
+            assertThat(tab.highlightLevel).isEqualTo(WooPosItemsToolbarViewState.Tab.HighlightLevel.Full)
+        }
+    }
+
+    @Test
+    fun `when variable product item clicked, then search helper loading state is updated`() = runTest {
+        // GIVEN
+        val variableProductData = ItemClickedData.VariableProduct(
+            id = 123L,
+            name = "Test Variable Product",
+            numOfVariations = 5,
+            sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST
+        )
+        whenever(parentToChildrenEventReceiver.events).thenReturn(
+            flowOf(ParentToChildrenEvent.ItemClickedInItemsList(variableProductData, null))
+        )
+
+        // WHEN
+        createViewModel()
+
+        // THEN
+        verify(searchHelper).updateLoadingState(isLoading = false)
+    }
+
+    @Test
+    fun `when back from variations clicked, then state changes back to preserved state`() = runTest {
+        // GIVEN
+        val variableProductData = ItemClickedData.VariableProduct(
+            id = 123L,
+            name = "Test Variable Product",
+            numOfVariations = 5,
+            sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST
+        )
+        whenever(parentToChildrenEventReceiver.events).thenReturn(
+            flowOf(ParentToChildrenEvent.ItemClickedInItemsList(variableProductData, null))
+        )
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosItemsUIEvent.BackFromVariationsClicked)
+
+        // THEN
+        viewModel.viewState.test {
+            val state = awaitItem()
+            assertThat(state).isInstanceOf(WooPosItemsToolbarViewState.ProductList::class.java)
+        }
+    }
+
+    @Test
+    fun `when products tab clicked, then analytics event is tracked`() = runTest {
+        // GIVEN
+        val productsTab = WooPosItemsToolbarViewState.Tab.Products(
+            "Products",
+            WooPosItemsToolbarViewState.Tab.HighlightLevel.Normal
+        )
+        whenever(tabsHelper.selectTab(any(), eq(productsTab))).thenReturn(tabs)
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosItemsUIEvent.OnTabClicked(productsTab))
+
+        // THEN
+        val capture = argumentCaptor<WooPosAnalyticsEvent.Event.ItemsHeaderTapped>()
+        verify(analyticsTracker).track(capture.capture())
+        assertThat(capture.firstValue.name). isEqualTo("items_header_tapped")
+        assertThat(capture.firstValue.properties["type"]).isEqualTo(
+            WooPosAnalyticsEventConstant.ItemsHeaderType.PRODUCT.value
+        )
+    }
+
+    @Test
+    fun `when single tab present, then tab selection is ignored`() = runTest {
+        // GIVEN
+        val singleTab = listOf(
+            WooPosItemsToolbarViewState.Tab.Products(
+                "Products",
+                WooPosItemsToolbarViewState.Tab.HighlightLevel.Full
+            )
+        )
+        whenever(tabsHelper.defaultTabs).thenReturn(singleTab)
+        val couponsTab = WooPosItemsToolbarViewState.Tab.Coupons(
+            "Coupons",
+            WooPosItemsToolbarViewState.Tab.HighlightLevel.Normal
+        )
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosItemsUIEvent.OnTabClicked(couponsTab))
+
+        // THEN
+        viewModel.viewState.test {
+            val state = awaitItem()
+            assertThat(state).isInstanceOf(WooPosItemsToolbarViewState.ProductList::class.java)
+        }
     }
 
     private fun createViewModel() =
