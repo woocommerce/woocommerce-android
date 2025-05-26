@@ -76,10 +76,6 @@ private fun WooPosItemsScreen(
                     )
                 )
 
-                is WooPosSearchUIEvent.AnimationComplete -> {
-                    onUIEvent(WooPosItemsUIEvent.SearchAnimationComplete)
-                }
-
                 WooPosSearchUIEvent.SearchIconClicked -> onUIEvent(WooPosItemsUIEvent.SearchIconClicked)
             }
         },

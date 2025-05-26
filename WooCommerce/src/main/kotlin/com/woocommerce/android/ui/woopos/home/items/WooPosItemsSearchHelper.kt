@@ -81,13 +81,11 @@ class WooPosItemsSearchHelper @Inject constructor(
         if (newQuery.isEmpty()) {
             updateToInitialOpenState()
         } else {
-            val currentOpenState = getCurrentSearchOpenState() ?: return
             viewStateFlow.value = viewStateFlow.value.copy(
                 search = SearchState.Visible(
                     state = WooPosSearchInputState.Open(
                         input = WooPosSearchInputState.Open.Input.Query(newQuery, cursorPosition),
                         isLoading = false,
-                        hasAnimationPlayed = currentOpenState.hasAnimationPlayed
                     )
                 )
             )
@@ -111,20 +109,6 @@ class WooPosItemsSearchHelper @Inject constructor(
         updateToInitialOpenState()
     }
 
-    @Suppress("ReturnCount")
-    fun onAnimationComplete() {
-        val searchState = getCurrentSearchVisibleState() ?: return
-        val openState = getCurrentSearchOpenState() ?: return
-
-        viewStateFlow.value = viewStateFlow.value.copy(
-            search = searchState.copy(
-                state = openState.copy(
-                    hasAnimationPlayed = true
-                )
-            )
-        )
-    }
-
     fun isSearchOpen(): Boolean {
         val searchState = getCurrentSearchVisibleState() ?: return false
         return searchState.state is WooPosSearchInputState.Open
@@ -138,7 +122,6 @@ class WooPosItemsSearchHelper @Inject constructor(
                         resourceProvider.getString(R.string.woopos_search_products)
                     ),
                     isLoading = false,
-                    hasAnimationPlayed = false
                 )
             )
         )

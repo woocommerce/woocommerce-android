@@ -67,8 +67,6 @@ class WooPosItemsViewModel @Inject constructor(
                 event.cursorPosition
             )
 
-            WooPosItemsUIEvent.SearchAnimationComplete -> searchHelper.onAnimationComplete()
-
             is WooPosItemsUIEvent.OnTabClicked -> selectTab(event.tab)
             WooPosItemsUIEvent.SearchIconClicked -> {
                 searchHelper.onSearchChanged("", 0)

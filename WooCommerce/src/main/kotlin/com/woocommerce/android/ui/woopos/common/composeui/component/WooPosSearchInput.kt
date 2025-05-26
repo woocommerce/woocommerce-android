@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.common.composeui.component
 
+import android.R.attr.animationDuration
 import android.os.Parcelable
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -98,13 +99,12 @@ private fun SearchInput(
     state: WooPosSearchInputState.Open,
     onEvent: (WooPosSearchUIEvent) -> Unit
 ) {
-    val animationDuration = 200L
     val focusRequester = remember { FocusRequester() }
     var isFocused by remember { mutableStateOf(false) }
 
     val borderColor by animateFloatAsState(
         targetValue = if (isFocused) 1f else 0f,
-        animationSpec = tween(durationMillis = animationDuration.toInt(), easing = FastOutSlowInEasing),
+        animationSpec = tween(durationMillis = 200, easing = FastOutSlowInEasing),
         label = "borderColorAnimation"
     )
 
@@ -256,9 +256,6 @@ private fun SearchInput(
 
         LaunchedEffect(Unit) {
             delay(animationDuration)
-            if (!state.hasAnimationPlayed) {
-                onEvent(WooPosSearchUIEvent.AnimationComplete)
-            }
             focusRequester.requestFocus()
         }
     }
@@ -270,7 +267,6 @@ sealed class WooPosSearchInputState : Parcelable {
     data class Open(
         val input: Input,
         val isLoading: Boolean,
-        val hasAnimationPlayed: Boolean = false,
     ) : WooPosSearchInputState() {
         @Parcelize
         sealed class Input(val text: String, open val cursorPosition: Int) : Parcelable {
@@ -291,7 +287,6 @@ sealed class WooPosSearchUIEvent {
     object SearchIconClicked : WooPosSearchUIEvent()
     data class Search(val query: String, val cursorPosition: Int) : WooPosSearchUIEvent()
     object Close : WooPosSearchUIEvent()
-    object AnimationComplete : WooPosSearchUIEvent()
 }
 
 @WooPosPreview
@@ -310,7 +305,6 @@ fun WooPosSearchInputOpenSearchPreview() {
                         cursorPosition = 0
                     ),
                     isLoading = false,
-                    hasAnimationPlayed = true
                 ),
                 onEvent = {}
             )

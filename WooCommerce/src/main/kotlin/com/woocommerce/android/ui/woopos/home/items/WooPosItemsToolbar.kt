@@ -300,7 +300,6 @@ fun WooPosItemsToolbarWithSearchPreview() {
                             cursorPosition = 1,
                         ),
                         isLoading = false,
-                        hasAnimationPlayed = false,
                     )
                 )
             ),
