@@ -2,53 +2,38 @@ package com.woocommerce.android.ui.woopos.home.items.coupons.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
+import com.woocommerce.android.ui.woopos.home.items.WooPosCouponsViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
-import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
-import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
-import com.woocommerce.android.ui.woopos.util.WooPosGetCachedStoreCurrency
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
+import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsListViewStateManager
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ItemsListSourceType
-import com.woocommerce.android.ui.woopos.util.format.WooPosCouponsFormatter
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.launch
-import java.util.concurrent.atomic.AtomicReference
 import javax.inject.Inject
 
 @HiltViewModel
 class WooPosCouponsSearchViewModel @Inject constructor(
-    private val dataSource: WooPosCouponsSearchDataSource,
+    private val viewStateManager: WooPosCouponsListViewStateManager,
     private val childToParentEventSender: WooPosChildrenToParentEventSender,
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
-    private val couponsFormatter: WooPosCouponsFormatter,
-    private val getCachedStoreCurrency: WooPosGetCachedStoreCurrency
 ) : ViewModel() {
-    private val _viewState =
-        MutableStateFlow<WooPosCouponsSearchViewState>(
-            WooPosCouponsSearchViewState.EmptySearchQuery
-        )
-    val viewState: StateFlow<WooPosCouponsSearchViewState> = _viewState
+
+    val viewState: StateFlow<WooPosCouponsSearchViewState> = viewStateManager.viewState
+        .map { couponsViewState -> couponsViewState.toSearchViewState() }
         .stateIn(
             viewModelScope,
             started = SharingStarted.WhileSubscribed(),
-            initialValue = _viewState.value,
+            initialValue = WooPosCouponsSearchViewState.EmptySearchQuery,
         )
-
-    private var loadMoreJob: Job? = null
-    private var searchJob: Job? = null
-
-    private val currentQuery = AtomicReference("")
 
     init {
         listenEventsFromParent()
@@ -56,91 +41,35 @@ class WooPosCouponsSearchViewModel @Inject constructor(
 
     fun onUIEvent(event: WooPosCouponsSearchUiEvent) {
         when (event) {
-            WooPosCouponsSearchUiEvent.OnNextPageRequested -> onEndOfListReached()
-            is WooPosCouponsSearchUiEvent.OnCouponClicked -> {
-                handleCouponClicked(coupon = event.coupon,)
+            WooPosCouponsSearchUiEvent.OnNextPageRequested -> {
+                viewStateManager.endOfListReached(viewModelScope)
             }
-
-            WooPosCouponsSearchUiEvent.LoadingErrorRetryButtonClicked -> handleLoadingErrorRetryClick()
+            is WooPosCouponsSearchUiEvent.OnCouponClicked -> {
+                handleCouponClicked(coupon = event.coupon)
+            }
+            WooPosCouponsSearchUiEvent.LoadingErrorRetryButtonClicked -> {
+                handleLoadingErrorRetryClick()
+            }
         }
     }
 
     private fun handleLoadingErrorRetryClick() {
-        val currentState = _viewState.value as? WooPosCouponsSearchViewState.Error ?: return
-
-        _viewState.value = WooPosCouponsSearchViewState.Loading
-        performSearch(currentState.searchQuery)
-    }
-
-    private fun performSearch(query: String) {
-        searchJob?.cancel()
-
-        if (query.isBlank()) {
-            _viewState.value = WooPosCouponsSearchViewState.EmptySearchQuery
-            return
-        }
-
-        currentQuery.set(query)
-
-        searchJob = viewModelScope.launch {
-            _viewState.value = WooPosCouponsSearchViewState.Loading
-
-            delay(SEARCH_DEBOUNCING_TIME)
-
-            val searchResult = dataSource.searchCoupons(query)
-            if (searchResult.isSuccess) {
-                handleSearchSuccess(query)
-            } else {
-                _viewState.value = WooPosCouponsSearchViewState.Error(searchQuery = query)
-            }
-        }
-    }
-
-    private suspend fun handleSearchSuccess(query: String) {
-        val coupons = dataSource.couponsFlow.stateIn(viewModelScope).value
-
-        if (coupons.isEmpty()) {
-            _viewState.value = WooPosCouponsSearchViewState.Empty
-        } else {
-            _viewState.value = coupons.toContentState(query)
-        }
-    }
-
-    private fun onEndOfListReached() {
-        if (loadMoreJob?.isActive == true) return
-
-        loadMoreJob = viewModelScope.launch {
-            val currentState = _viewState.value as? WooPosCouponsSearchViewState.Content ?: return@launch
-
-            _viewState.value = currentState.copy(
-                paginationState = WooPosPaginationState.Loading
-            )
-
-            val result = dataSource.loadMore()
-            if (result.isSuccess) {
-                val coupons = dataSource.couponsFlow.stateIn(viewModelScope).value
-                _viewState.value = coupons.toContentState(
-                    currentState.searchQuery,
-                    WooPosPaginationState.None
-                )
-            } else {
-                _viewState.value = currentState.copy(
-                    paginationState = WooPosPaginationState.Error
-                )
-            }
-        }
+        viewStateManager.fetchCoupons(
+            viewModelScope, 
+            WooPosCouponsListViewStateManager.WooPosCouponsListRefreshType.RETRY
+        )
     }
 
     private fun handleCouponClicked(coupon: WooPosItemSelectionViewState.Coupon) {
         viewModelScope.launch {
-            val itemData = WooPosItemsViewModel.ItemClickedData.Coupon(coupon.id, coupon.name)
+            val itemData = ItemClickedData.Coupon(coupon.id, coupon.name)
             childToParentEventSender.sendToParent(
                 ChildToParentEvent.ItemClickedInProductSelector(
                     itemData = itemData,
                     eventForTracking = ItemAddedToCart(
                         item = itemData,
                         source = WooPosAnalyticsEventConstant.ItemsListSource.COUPON,
-                        sourceType = ItemsListSourceType.SEARCH_RESULT
+                        sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.SEARCH_RESULT
                     )
                 )
             )
@@ -151,44 +80,35 @@ class WooPosCouponsSearchViewModel @Inject constructor(
         viewModelScope.launch {
             parentToChildrenEventReceiver.events.collect { event ->
                 when (event) {
-                    is ParentToChildrenEvent.SearchEvent.ChangedQuery -> performSearch(event.query)
-                    ParentToChildrenEvent.SearchEvent.Finished -> _viewState.value = WooPosCouponsSearchViewState.EmptySearchQuery
+                    is ParentToChildrenEvent.SearchEvent.ChangedQuery -> {
+                        viewStateManager.setSearchQuery(event.query, viewModelScope)
+                    }
+                    ParentToChildrenEvent.SearchEvent.Finished -> {
+                        viewStateManager.setSearchQuery(null, viewModelScope)
+                    }
                     else -> {}
                 }
             }
         }
     }
 
-    private suspend fun List<Coupon>.toContentState(
-        searchQuery: String,
-        paginationState: WooPosPaginationState = WooPosPaginationState.None,
-    ): WooPosCouponsSearchViewState.Content {
-        val currency = getCachedStoreCurrency()
-        return WooPosCouponsSearchViewState.Content(
-            items = map { it.toViewState(currency) },
-            searchQuery = searchQuery,
-            paginationState = paginationState,
-        )
-    }
-
-    private fun Coupon.toViewState(currency: String): WooPosItemSelectionViewState.Coupon {
-        val expiredState = if (this.dateExpires != null) {
-            WooPosItemSelectionViewState.Coupon.ExpiredState.Expired(
-                formattedDate = couponsFormatter.formatExpiredText(this.dateExpires!!)
+    private fun WooPosCouponsViewState.toSearchViewState(): WooPosCouponsSearchViewState {
+        val currentQuery = viewStateManager.getCurrentSearchQuery()
+        
+        return when {
+            currentQuery.isNullOrBlank() -> WooPosCouponsSearchViewState.EmptySearchQuery
+            
+            this is WooPosCouponsViewState.Loading -> WooPosCouponsSearchViewState.Loading
+            this is WooPosCouponsViewState.Empty -> WooPosCouponsSearchViewState.Empty
+            this is WooPosCouponsViewState.Content -> WooPosCouponsSearchViewState.Content(
+                items = this.items.filterIsInstance<WooPosItemSelectionViewState.Coupon>(),
+                searchQuery = currentQuery,
+                paginationState = this.paginationState,
+                pullToRefreshState = this.pullToRefreshState
             )
-        } else {
-            WooPosItemSelectionViewState.Coupon.ExpiredState.NotExpired
+            this is WooPosCouponsViewState.Error.GenericError -> WooPosCouponsSearchViewState.Error(currentQuery)
+            this is WooPosCouponsViewState.Error.CouponsDisabledError -> WooPosCouponsSearchViewState.Error(currentQuery)
+            else -> WooPosCouponsSearchViewState.EmptySearchQuery
         }
-
-        return WooPosItemSelectionViewState.Coupon(
-            id = this.id,
-            name = this.code ?: "",
-            summary = couponsFormatter.formatSummary(this, currency),
-            expiredState = expiredState
-        )
-    }
-
-    private companion object {
-        const val SEARCH_DEBOUNCING_TIME = 500L
     }
 }
