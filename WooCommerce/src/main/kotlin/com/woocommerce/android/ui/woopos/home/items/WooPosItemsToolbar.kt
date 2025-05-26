@@ -45,6 +45,50 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventCons
 private const val ANIMATION_DURATION = 300
 val WOO_POS_ITEMS_TOOLBAR_HEIGHT = 56.dp
 
+private sealed class ToolbarLayoutState {
+    data class NormalTabs(
+        val tabs: List<WooPosItemsToolbarViewState.Tab>,
+        val search: SearchState,
+        val showAddCouponButton: Boolean,
+    ) : ToolbarLayoutState()
+
+    data class TabsWithBackButton(
+        val tabs: List<WooPosItemsToolbarViewState.Tab>,
+        val search: SearchState,
+    ) : ToolbarLayoutState()
+
+    data class SearchOpen(
+        val search: SearchState.Visible
+    ) : ToolbarLayoutState()
+}
+
+@Composable
+private fun TabsRow(
+    tabs: List<WooPosItemsToolbarViewState.Tab>,
+    onTabClicked: (WooPosItemsToolbarViewState.Tab) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    LazyRow(
+        modifier = modifier,
+    ) {
+        items(tabs.size) { index ->
+            val tab = tabs[index]
+            WooPosText(
+                text = tab.name,
+                style = WooPosTypography.Heading,
+                fontWeight = FontWeight.Bold,
+                color = tab.highlightLevel.titleColor(),
+                modifier = Modifier.clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                    onClick = { onTabClicked(tab) }
+                )
+            )
+            Spacer(modifier = Modifier.width(WooPosSpacing.Large.value))
+        }
+    }
+}
+
 @Composable
 fun WooPosItemsToolbar(
     modifier: Modifier = Modifier,
@@ -62,11 +106,12 @@ fun WooPosItemsToolbar(
         isSearchOpen -> ToolbarLayoutState.SearchOpen(
             search = state.search as SearchState.Visible
         )
+
         state.backNavigation -> ToolbarLayoutState.TabsWithBackButton(
             tabs = state.tabs,
             search = state.search,
-            showAddCouponButton = state is WooPosItemsToolbarViewState.CouponList,
         )
+
         else -> ToolbarLayoutState.NormalTabs(
             tabs = state.tabs,
             search = state.search,
@@ -84,133 +129,73 @@ fun WooPosItemsToolbar(
             easing = LinearEasing,
         )
     ) { currentLayoutState ->
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            when (currentLayoutState) {
-                is ToolbarLayoutState.SearchOpen -> {
-                    Box {
-                        WooPosSearchInput(
-                            state = currentLayoutState.search.state,
-                            animationDuration = ANIMATION_DURATION,
-                            onEvent = { event ->
-                                onSearchEvent(event)
-                            },
+        when (currentLayoutState) {
+            is ToolbarLayoutState.SearchOpen -> {
+                Box {
+                    WooPosSearchInput(
+                        state = currentLayoutState.search.state,
+                        animationDuration = ANIMATION_DURATION,
+                        onEvent = { event ->
+                            onSearchEvent(event)
+                        },
+                    )
+                }
+            }
+
+            is ToolbarLayoutState.TabsWithBackButton -> {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = WOO_POS_ITEMS_TOOLBAR_HEIGHT),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Spacer(modifier = Modifier.width(WooPosSpacing.XSmall.value.toAdaptivePadding()))
+                    IconButton(
+                        onClick = { onBackClicked() },
+                        modifier = Modifier
+                            .size(48.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.woopos_toolbar_icon_content_description),
+                            tint = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier
+                                .size(28.dp)
                         )
                     }
+
+                    Spacer(modifier = Modifier.width(WooPosSpacing.XSmall.value.toAdaptivePadding()))
+
+                    TabsRow(
+                        tabs = currentLayoutState.tabs,
+                        onTabClicked = onTabClicked,
+                        modifier = Modifier.weight(1f)
+                    )
                 }
+            }
 
-                is ToolbarLayoutState.TabsWithBackButton -> {
-                    Row(
-                        modifier = Modifier
-                            .weight(1f),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Spacer(modifier = Modifier.width(WooPosSpacing.XSmall.value.toAdaptivePadding()))
-                        IconButton(
-                            onClick = { onBackClicked() },
-                            modifier = Modifier
-                                .size(48.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = stringResource(R.string.woopos_toolbar_icon_content_description),
-                                tint = MaterialTheme.colorScheme.onSurface,
-                                modifier = Modifier
-                                    .size(28.dp)
-                            )
-                        }
+            is ToolbarLayoutState.NormalTabs -> {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value.toAdaptivePadding()))
 
-                        Spacer(modifier = Modifier.width(WooPosSpacing.XSmall.value.toAdaptivePadding()))
+                    TabsRow(
+                        tabs = currentLayoutState.tabs,
+                        onTabClicked = onTabClicked,
+                        modifier = Modifier.weight(1f)
+                    )
 
-                        LazyRow(
-                            modifier = Modifier.weight(1f),
-                        ) {
-                            items(currentLayoutState.tabs.size) { index ->
-                                val tab = currentLayoutState.tabs[index]
-                                WooPosText(
-                                    text = tab.name,
-                                    style = WooPosTypography.Heading,
-                                    fontWeight = FontWeight.Bold,
-                                    color = tab.highlightLevel.titleColor(),
-                                    modifier = Modifier.clickable(
-                                        interactionSource = remember { MutableInteractionSource() },
-                                        indication = null,
-                                        onClick = { onTabClicked(tab) }
-                                    )
-                                )
-                                Spacer(modifier = Modifier.width(WooPosSpacing.Large.value))
-                            }
-                        }
-
-                        if (currentLayoutState.showAddCouponButton) {
-                            Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
-                            WooPosCircularIconButton(
-                                icon = Icons.Default.Add,
-                                contentDescription = stringResource(
-                                    id = R.string.woopos_coupons_empty_list_create_coupon_label,
-                                ),
-                                onClick = { onAddCouponEvent() }
-                            )
-                        }
-                    }
-
-                    when (val search = currentLayoutState.search) {
-                        SearchState.Hidden -> Unit
-                        is SearchState.Visible -> {
-                            Box {
-                                WooPosSearchInput(
-                                    state = search.state,
-                                    animationDuration = ANIMATION_DURATION,
-                                    onEvent = { event ->
-                                        onSearchEvent(event)
-                                    },
-                                )
-                            }
-                        }
-                    }
-                }
-
-                is ToolbarLayoutState.NormalTabs -> {
-                    Row(
-                        modifier = Modifier
-                            .weight(1f),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value.toAdaptivePadding()))
-
-                        LazyRow(
-                            modifier = Modifier.weight(1f),
-                        ) {
-                            items(currentLayoutState.tabs.size) { index ->
-                                val tab = currentLayoutState.tabs[index]
-                                WooPosText(
-                                    text = tab.name,
-                                    style = WooPosTypography.Heading,
-                                    fontWeight = FontWeight.Bold,
-                                    color = tab.highlightLevel.titleColor(),
-                                    modifier = Modifier.clickable(
-                                        interactionSource = remember { MutableInteractionSource() },
-                                        indication = null,
-                                        onClick = { onTabClicked(tab) }
-                                    )
-                                )
-                                Spacer(modifier = Modifier.width(WooPosSpacing.Large.value))
-                            }
-                        }
-
-                        if (currentLayoutState.showAddCouponButton) {
-                            Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
-                            WooPosCircularIconButton(
-                                icon = Icons.Default.Add,
-                                contentDescription = stringResource(
-                                    id = R.string.woopos_coupons_empty_list_create_coupon_label,
-                                ),
-                                onClick = { onAddCouponEvent() }
-                            )
-                        }
+                    if (currentLayoutState.showAddCouponButton) {
+                        Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
+                        WooPosCircularIconButton(
+                            icon = Icons.Default.Add,
+                            contentDescription = stringResource(
+                                id = R.string.woopos_coupons_empty_list_create_coupon_label,
+                            ),
+                            onClick = { onAddCouponEvent() }
+                        )
                     }
 
                     when (val search = currentLayoutState.search) {
@@ -231,24 +216,6 @@ fun WooPosItemsToolbar(
             }
         }
     }
-}
-
-private sealed class ToolbarLayoutState {
-    data class NormalTabs(
-        val tabs: List<WooPosItemsToolbarViewState.Tab>,
-        val search: SearchState,
-        val showAddCouponButton: Boolean,
-    ) : ToolbarLayoutState()
-
-    data class TabsWithBackButton(
-        val tabs: List<WooPosItemsToolbarViewState.Tab>,
-        val search: SearchState,
-        val showAddCouponButton: Boolean,
-    ) : ToolbarLayoutState()
-
-    data class SearchOpen(
-        val search: SearchState.Visible
-    ) : ToolbarLayoutState()
 }
 
 @Composable
