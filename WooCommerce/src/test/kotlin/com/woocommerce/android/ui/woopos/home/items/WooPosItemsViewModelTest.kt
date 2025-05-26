@@ -1,14 +1,13 @@
 package com.woocommerce.android.ui.woopos.home.items
 
 import app.cash.turbine.test
-import com.woocommerce.android.R
 import com.woocommerce.android.ui.coupons.CouponTestUtils
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
+import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
 import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationFacade
-import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SearchButtonTapped
@@ -33,17 +32,15 @@ class WooPosItemsViewModelTest {
     val coroutinesTestRule = WooPosCoroutineTestRule()
 
     private val tabs = listOf(
-        WooPosItemsToolbarViewState.Tab(
-            R.string.woopos_products_screen_title,
+        WooPosItemsToolbarViewState.Tab.ProductTab(
+            "Products",
             WooPosItemsToolbarViewState.Tab.HighlightLevel.Full
         ),
-        WooPosItemsToolbarViewState.Tab(
-            R.string.woopos_coupons_screen_title,
+        WooPosItemsToolbarViewState.Tab.CouponTab(
+            "Coupons",
             WooPosItemsToolbarViewState.Tab.HighlightLevel.Normal
         )
     )
-
-    private val wooPosItemsNavigator: WooPosItemsNavigator = mock()
 
     private val searchHelper: WooPosItemsSearchHelper = mock()
     private val tabsHelper: WooPosItemsTabsHelper = mock {
@@ -52,6 +49,7 @@ class WooPosItemsViewModelTest {
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private val couponCreationFacade: WooPosCouponCreationFacade = mock()
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender = mock()
+    private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock()
 
     @Before
     fun setup() {
@@ -59,20 +57,6 @@ class WooPosItemsViewModelTest {
             WooPosItemsToolbarViewState.SearchState.Visible(
                 state = WooPosSearchInputState.Closed
             )
-        )
-    }
-
-    @Test
-    fun `given variations screen, when clicked back, then trigger proper event`() = runTest {
-        // GIVEN
-        val viewModel = createViewModel()
-
-        // WHEN
-        viewModel.onUIEvent(WooPosItemsUIEvent.BackFromVariationsClicked)
-
-        // THEN
-        verify(wooPosItemsNavigator).sendNavigationEvent(
-            WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateBackToItemListScreen
         )
     }
 
@@ -137,19 +121,19 @@ class WooPosItemsViewModelTest {
     @Test
     fun `when tab clicked, then tab is selected and state is updated`() = runTest {
         // GIVEN
-        val couponsTab = WooPosItemsToolbarViewState.Tab(
-            R.string.woopos_coupons_screen_title,
+        val couponsTab = WooPosItemsToolbarViewState.Tab.CouponTab(
+            "Coupons",
             WooPosItemsToolbarViewState.Tab.HighlightLevel.Normal
         )
 
         whenever(tabsHelper.selectTab(any(), eq(couponsTab))).thenReturn(
             listOf(
-                WooPosItemsToolbarViewState.Tab(
-                    R.string.woopos_products_screen_title,
+                WooPosItemsToolbarViewState.Tab.ProductTab(
+                    "Products",
                     WooPosItemsToolbarViewState.Tab.HighlightLevel.Normal
                 ),
-                WooPosItemsToolbarViewState.Tab(
-                    R.string.woopos_coupons_screen_title,
+                WooPosItemsToolbarViewState.Tab.CouponTab(
+                    "Coupons",
                     WooPosItemsToolbarViewState.Tab.HighlightLevel.Full
                 )
             )
@@ -213,11 +197,11 @@ class WooPosItemsViewModelTest {
 
     private fun createViewModel() =
         WooPosItemsViewModel(
-            wooPosItemsNavigator,
             searchHelper,
             tabsHelper,
             couponCreationFacade,
             fromChildToParentEventSender,
+            parentToChildrenEventReceiver,
             analyticsTracker,
         )
 }

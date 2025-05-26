@@ -10,8 +10,6 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosProductsViewState
-import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
-import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsNavigationData
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
@@ -51,7 +49,6 @@ class WooPosProductsViewModelTest {
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock()
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private val productsDataSource: WooPosProductsDataSource = mock()
-    private val wooPosItemsNavigator: WooPosItemsNavigator = mock()
 
     @Before
     fun setup() {
@@ -322,54 +319,6 @@ class WooPosProductsViewModelTest {
     }
 
     @Test
-    fun `given variable product, when clicked on it, then trigger proper event`() = runTest {
-        // GIVEN
-        val products = listOf(
-            ProductTestUtils.generateProduct(
-                productId = 1,
-                productName = "Product 1",
-                amount = "10.0",
-                productType = "variable",
-                isVariable = true
-            )
-        )
-        whenever(productsDataSource.loadProducts(any())).thenReturn(
-            flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
-                    Result.success(products)
-                )
-            )
-        )
-        val viewModel = createViewModel()
-
-        // WHEN
-        viewModel.onUIEvent(
-            WooPosProductsUIEvent.ItemClicked(
-                WooPosItemSelectionViewState.Product.Variable(
-                    id = 1L,
-                    name = "Product 1",
-                    numOfVariations = 10,
-                    variationIds = emptyList(),
-                    price = "$10.0",
-                    imageUrl = null
-                )
-            )
-        )
-
-        // THEN
-        verify(wooPosItemsNavigator).sendNavigationEvent(
-            WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateToVariationsScreen(
-                WooPosVariationsNavigationData.VariableProductData(
-                    id = 1,
-                    name = "Product 1",
-                    numOfVariations = 10,
-                    sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST,
-                )
-            )
-        )
-    }
-
-    @Test
     fun `given variable products from data source, when view model created, then items list updated correctly`() =
         runTest {
             // GIVEN
@@ -485,36 +434,6 @@ class WooPosProductsViewModelTest {
         verify(productsDataSource, never()).loadMore()
     }
 
-    @Test
-    fun `when variable product is clicked from product list, then navigation event uses product list source`() =
-        runTest {
-            // GIVEN
-            val viewModel = createViewModel()
-            val item = WooPosItemSelectionViewState.Product.Variable(
-                id = 1,
-                name = "Product",
-                price = "$10",
-                imageUrl = null,
-                numOfVariations = 2,
-                variationIds = emptyList()
-            )
-
-            // WHEN
-            viewModel.onUIEvent(WooPosProductsUIEvent.ItemClicked(item))
-
-            // THEN
-            verify(wooPosItemsNavigator).sendNavigationEvent(
-                WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateToVariationsScreen(
-                    WooPosVariationsNavigationData.VariableProductData(
-                        id = 1L,
-                        name = "Product",
-                        numOfVariations = 2,
-                        sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST,
-                    )
-                )
-            )
-        }
-
     private fun createViewModel(): WooPosProductsViewModel {
         return WooPosProductsViewModel(
             productsDataSource = productsDataSource,
@@ -522,7 +441,6 @@ class WooPosProductsViewModelTest {
             analyticsTracker = analyticsTracker,
             fromChildToParentEventSender = fromChildToParentEventSender,
             parentToChildrenEventReceiver = parentToChildrenEventReceiver,
-            navigator = wooPosItemsNavigator,
         )
     }
 }
