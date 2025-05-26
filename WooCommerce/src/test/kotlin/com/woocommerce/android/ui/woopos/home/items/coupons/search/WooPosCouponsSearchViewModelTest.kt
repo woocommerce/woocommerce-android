@@ -1,130 +1,239 @@
 package com.woocommerce.android.ui.woopos.home.items.coupons.search
 
+import app.cash.turbine.test
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
+import com.woocommerce.android.ui.woopos.home.items.WooPosCouponsViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
-import com.woocommerce.android.ui.woopos.util.WooPosGetCachedStoreCurrency
-import com.woocommerce.android.ui.woopos.util.format.WooPosCouponsFormatter
-import kotlinx.coroutines.Dispatchers
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
+import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
+import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsListViewStateManager
+import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
-import org.junit.After
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
-@OptIn(ExperimentalCoroutinesApi::class)
+@ExperimentalCoroutinesApi
 class WooPosCouponsSearchViewModelTest {
-    private val dataSource: WooPosCouponsSearchDataSource = mock()
-    private val childToParentEventSender: WooPosChildrenToParentEventSender = mock()
-    private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock()
-    private val couponsFormatter: WooPosCouponsFormatter = mock()
-    private val getCachedStoreCurrency: WooPosGetCachedStoreCurrency = mock()
-    private val emptyStateRepository: WooPosCouponsSearchEmptyStateRepository = mock()
 
-    private val parentToChildrenEvents = MutableSharedFlow<ParentToChildrenEvent>()
-    private val testDispatcher = StandardTestDispatcher()
+    @Rule
+    @JvmField
+    val coroutinesTestRule = WooPosCoroutineTestRule()
 
-    private lateinit var viewModel: WooPosCouponsSearchViewModel
+    private val mockViewStateManager: WooPosCouponsListViewStateManager = mock()
+    private val mockChildToParentEventSender: WooPosChildrenToParentEventSender = mock()
+    private val mockParentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock()
+    private val mockEmptyStateRepository: WooPosCouponsSearchEmptyStateRepository = mock()
+
+    private val testCoupon = WooPosItemSelectionViewState.Coupon(
+        id = 1L,
+        name = "TESTCOUPON",
+        summary = "Test summary",
+        expiredState = WooPosItemSelectionViewState.Coupon.ExpiredState.NotExpired
+    )
 
     @Before
-    fun setUp() {
-        Dispatchers.setMain(testDispatcher)
-        whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenEvents)
+    fun setup() = runTest {
+        whenever(mockParentToChildrenEventReceiver.events).thenReturn(flowOf())
+        whenever(mockViewStateManager.viewState).thenReturn(
+            flowOf(WooPosCouponsViewState.Empty())
+        )
+        whenever(mockViewStateManager.getCurrentSearchQuery()).thenReturn(null)
+        whenever(mockViewStateManager.getRecentSearches()).thenReturn(emptyList())
+        whenever(mockEmptyStateRepository.getLastSearches()).thenReturn(emptyList())
     }
 
-    @After
-    fun tearDown() {
-        Dispatchers.resetMain()
+    @Test
+    fun `given view model initialization, when view model created, then initial state is EmptySearchQuery with recent searches`() = runTest {
+        // GIVEN
+        val recentSearches = listOf("SUMMER", "DISCOUNT")
+        whenever(mockViewStateManager.getRecentSearches()).thenReturn(recentSearches)
+        whenever(mockEmptyStateRepository.getLastSearches()).thenReturn(recentSearches)
+
+        // WHEN
+        val viewModel = createViewModel()
+
+        // THEN
+        viewModel.viewState.test {
+            val value = awaitItem()
+            assertThat(value).isInstanceOf(WooPosCouponsSearchViewState.EmptySearchQuery::class.java)
+            val emptyState = value as WooPosCouponsSearchViewState.EmptySearchQuery
+            assertThat(emptyState.recentSearches).isEqualTo(recentSearches)
+        }
+        
+        verify(mockViewStateManager).setEmptySearchQueryWithRecentSearches(recentSearches)
     }
 
     @Test
     fun `given empty state repository returns empty list, when view model is created, then initial state is empty search query`() = runTest {
         // GIVEN
-        whenever(emptyStateRepository.getLastSearches()).thenReturn(emptyList())
-        whenever(getCachedStoreCurrency()).thenReturn("USD")
+        whenever(mockEmptyStateRepository.getLastSearches()).thenReturn(emptyList())
 
         // WHEN
-        viewModel = createViewModel()
-        testDispatcher.scheduler.advanceUntilIdle()
+        val viewModel = createViewModel()
 
         // THEN
-        assert(viewModel.viewState.value is WooPosCouponsSearchViewState.EmptySearchQuery)
+        viewModel.viewState.test {
+            val value = awaitItem()
+            assertThat(value).isInstanceOf(WooPosCouponsSearchViewState.EmptySearchQuery::class.java)
+            val emptyState = value as WooPosCouponsSearchViewState.EmptySearchQuery
+            assertThat(emptyState.recentSearches).isEmpty()
+        }
     }
 
     @Test
     fun `given search term, when recent search is clicked, then recent search selected event is sent`() = runTest {
         // GIVEN
-        whenever(emptyStateRepository.getLastSearches()).thenReturn(emptyList())
-        whenever(getCachedStoreCurrency()).thenReturn("USD")
-        viewModel = createViewModel()
-        testDispatcher.scheduler.advanceUntilIdle()
+        val viewModel = createViewModel()
         val searchTerm = "SUMMER"
 
         // WHEN
         viewModel.onUIEvent(WooPosCouponsSearchUiEvent.OnRecentSearchClicked(searchTerm))
-        testDispatcher.scheduler.advanceUntilIdle()
+        advanceUntilIdle()
 
         // THEN
-        verify(childToParentEventSender).sendToParent(
+        verify(mockChildToParentEventSender).sendToParent(
             ChildToParentEvent.SearchEvent.RecentSearchSelected(searchTerm)
         )
     }
 
     @Test
-    fun `given coupon selection, when coupon is clicked, then child to parent event is sent`() = runTest {
+    fun `given coupon selection, when coupon is clicked, then child to parent event is sent and recent search stored`() = runTest {
         // GIVEN
-        whenever(emptyStateRepository.getLastSearches()).thenReturn(emptyList())
-        whenever(getCachedStoreCurrency()).thenReturn("USD")
-        viewModel = createViewModel()
-        testDispatcher.scheduler.advanceUntilIdle()
+        val searchQuery = "DISCOUNT"
+        
+        whenever(mockViewStateManager.getCurrentSearchQuery()).thenReturn(searchQuery)
+        whenever(mockViewStateManager.viewState).thenReturn(flowOf(
+            WooPosCouponsViewState.Content(
+                items = listOf(testCoupon),
+                paginationState = WooPosPaginationState.None
+            )
+        ))
 
-        val coupon = WooPosItemSelectionViewState.Coupon(
-            id = 1,
-            name = "SUMMER10",
-            summary = "10% off",
-            expiredState = WooPosItemSelectionViewState.Coupon.ExpiredState.NotExpired
-        )
+        val viewModel = createViewModel()
 
-        // WHEN
-        viewModel.onUIEvent(WooPosCouponsSearchUiEvent.OnCouponClicked(coupon))
-        testDispatcher.scheduler.advanceUntilIdle()
+        // Wait for the view state to be initialized and emit the Content state
+        viewModel.viewState.test {
+            val initialState = awaitItem()
+            assertThat(initialState).isInstanceOf(WooPosCouponsSearchViewState.Content::class.java)
+            
+            // WHEN
+            viewModel.onUIEvent(WooPosCouponsSearchUiEvent.OnCouponClicked(testCoupon))
+            advanceUntilIdle()
 
-        // THEN
-        verify(childToParentEventSender).sendToParent(any<ChildToParentEvent.ItemClickedInProductSelector>())
+            // THEN
+            verify(mockChildToParentEventSender).sendToParent(any<ChildToParentEvent.ItemClickedInProductSelector>())
+            verify(mockEmptyStateRepository).addRecentSearch(searchQuery)
+        }
     }
 
     @Test
-    fun `when search finished event is emitted, then state is updated to empty search query`() = runTest {
+    fun `when search finished event is emitted, then state is updated to empty search query with recent searches`() = runTest {
         // GIVEN
-        whenever(emptyStateRepository.getLastSearches()).thenReturn(emptyList())
-        whenever(getCachedStoreCurrency()).thenReturn("USD")
-        viewModel = createViewModel()
-        testDispatcher.scheduler.advanceUntilIdle()
+        val recentSearches = listOf("WINTER", "SALE")
+        whenever(mockEmptyStateRepository.getLastSearches()).thenReturn(recentSearches)
+        val viewModel = createViewModel()
 
         // WHEN
-        parentToChildrenEvents.emit(ParentToChildrenEvent.SearchEvent.Finished)
-        testDispatcher.scheduler.advanceUntilIdle()
+        whenever(mockParentToChildrenEventReceiver.events).thenReturn(
+            flowOf(ParentToChildrenEvent.SearchEvent.Finished)
+        )
+        advanceUntilIdle()
 
         // THEN
-        assert(viewModel.viewState.value is WooPosCouponsSearchViewState.EmptySearchQuery)
+        verify(mockViewStateManager).setEmptySearchQueryWithRecentSearches(recentSearches)
+    }
+
+    @Test
+    fun `given search query changed event, when received, then setSearchQuery called on ViewStateManager`() = runTest {
+        // GIVEN
+        val searchQuery = "test coupon"
+        whenever(mockParentToChildrenEventReceiver.events).thenReturn(
+            flowOf(ParentToChildrenEvent.SearchEvent.ChangedQuery(searchQuery))
+        )
+
+        // WHEN
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // THEN
+        verify(mockViewStateManager).setSearchQuery(eq(searchQuery), any())
+    }
+
+    @Test
+    fun `given OnNextPageRequested event, when triggered, then endOfListReached called on ViewStateManager`() = runTest {
+        // GIVEN
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosCouponsSearchUiEvent.OnNextPageRequested)
+        advanceUntilIdle()
+
+        // THEN
+        verify(mockViewStateManager).endOfListReached(any())
+    }
+
+    @Test
+    fun `given LoadingErrorRetryButtonClicked event, when triggered, then fetchCoupons with RETRY called on ViewStateManager`() = runTest {
+        // GIVEN
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosCouponsSearchUiEvent.LoadingErrorRetryButtonClicked)
+        advanceUntilIdle()
+
+        // THEN
+        verify(mockViewStateManager).fetchCoupons(
+            any(), 
+            eq(WooPosCouponsListViewStateManager.WooPosCouponsListRefreshType.RETRY)
+        )
+    }
+
+    @Test
+    fun `given content state with search query, when mapped to search view state, then returns Content with query`() = runTest {
+        // GIVEN
+        val searchQuery = "test"
+        val contentState = WooPosCouponsViewState.Content(
+            items = listOf(testCoupon),
+            paginationState = WooPosPaginationState.None
+        )
+        
+        whenever(mockViewStateManager.getCurrentSearchQuery()).thenReturn(searchQuery)
+        whenever(mockViewStateManager.viewState).thenReturn(flowOf(contentState))
+
+        // WHEN
+        val viewModel = createViewModel()
+
+        // THEN
+        viewModel.viewState.test {
+            val value = awaitItem()
+            assertThat(value).isInstanceOf(WooPosCouponsSearchViewState.Content::class.java)
+            
+            val content = value as WooPosCouponsSearchViewState.Content
+            assertThat(content.searchQuery).isEqualTo(searchQuery)
+            assertThat(content.items).hasSize(1)
+            assertThat(content.items[0]).isEqualTo(testCoupon)
+        }
     }
 
     private fun createViewModel() = WooPosCouponsSearchViewModel(
-        dataSource = dataSource,
-        childToParentEventSender = childToParentEventSender,
-        parentToChildrenEventReceiver = parentToChildrenEventReceiver,
-        couponsFormatter = couponsFormatter,
-        getCachedStoreCurrency = getCachedStoreCurrency,
-        emptyStateRepository = emptyStateRepository,
+        viewStateManager = mockViewStateManager,
+        childToParentEventSender = mockChildToParentEventSender,
+        parentToChildrenEventReceiver = mockParentToChildrenEventReceiver,
+        emptyStateRepository = mockEmptyStateRepository
     )
 }
