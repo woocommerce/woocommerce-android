@@ -2,13 +2,9 @@ package com.woocommerce.android.ui.woopos.common.composeui.component
 
 import android.os.Parcelable
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -35,7 +31,6 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -75,71 +70,27 @@ fun WooPosSearchInput(
         onBack = { onEvent(WooPosSearchUIEvent.Close) }
     )
 
-    var lastOpenState by rememberSaveable { mutableStateOf<WooPosSearchInputState.Open?>(null) }
-
-    val searchVisibleState = remember { MutableTransitionState(state is WooPosSearchInputState.Closed) }
-    val inputVisibleState = remember { MutableTransitionState(state is WooPosSearchInputState.Open) }
-
-    LaunchedEffect(state) {
-        searchVisibleState.targetState = state is WooPosSearchInputState.Closed
-        inputVisibleState.targetState = state is WooPosSearchInputState.Open
-
-        if (state is WooPosSearchInputState.Open) {
-            lastOpenState = state
-        }
-    }
-
     Box(
-        modifier = modifier
-            .fillMaxWidth(),
+        modifier = modifier,
         contentAlignment = Alignment.CenterEnd
     ) {
-        AnimatedVisibility(
-            visibleState = inputVisibleState,
-            enter = fadeIn(
-                animationSpec = tween(
-                    durationMillis = animationDuration,
-                    easing = FastOutSlowInEasing
-                )
-            ),
-            exit = fadeOut(
-                animationSpec = tween(
-                    durationMillis = animationDuration / 2,
-                    easing = FastOutSlowInEasing,
-                )
-            ),
-        ) {
-            lastOpenState?.let {
+        when (state) {
+            is WooPosSearchInputState.Open -> {
                 SearchInput(
-                    state = it,
+                    state = state,
                     animationDuration = animationDuration.toLong(),
                     onEvent = onEvent,
                 )
             }
-        }
-
-        AnimatedVisibility(
-            visibleState = searchVisibleState,
-            enter = fadeIn(
-                animationSpec = tween(
-                    durationMillis = animationDuration,
-                    delayMillis = animationDuration / 3,
-                    easing = FastOutSlowInEasing
+            is WooPosSearchInputState.Closed -> {
+                WooPosCircularIconButton(
+                    icon = Icons.Default.Search,
+                    contentDescription = stringResource(
+                        id = R.string.woopos_search_products,
+                    ),
+                    onClick = { onEvent(SearchIconClicked) }
                 )
-            ),
-            exit = fadeOut(
-                animationSpec = tween(
-                    durationMillis = animationDuration / 3
-                )
-            )
-        ) {
-            WooPosCircularIconButton(
-                icon = Icons.Default.Search,
-                contentDescription = stringResource(
-                    id = R.string.woopos_search_products,
-                ),
-                onClick = { onEvent(SearchIconClicked) }
-            )
+            }
         }
     }
 }
