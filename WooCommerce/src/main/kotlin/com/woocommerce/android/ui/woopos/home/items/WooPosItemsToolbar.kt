@@ -134,7 +134,6 @@ fun WooPosItemsToolbar(
                 Box {
                     WooPosSearchInput(
                         state = currentLayoutState.search.state,
-                        animationDuration = ANIMATION_DURATION,
                         onEvent = { event ->
                             onSearchEvent(event)
                         },
@@ -204,7 +203,6 @@ fun WooPosItemsToolbar(
                             Box {
                                 WooPosSearchInput(
                                     state = search.state,
-                                    animationDuration = ANIMATION_DURATION,
                                     onEvent = { event ->
                                         onSearchEvent(event)
                                     },

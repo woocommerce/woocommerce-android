@@ -62,7 +62,6 @@ import kotlinx.parcelize.Parcelize
 fun WooPosSearchInput(
     modifier: Modifier = Modifier,
     state: WooPosSearchInputState = WooPosSearchInputState.Closed,
-    animationDuration: Int = 300,
     onEvent: (WooPosSearchUIEvent) -> Unit = {},
 ) {
     BackHandler(
@@ -78,7 +77,6 @@ fun WooPosSearchInput(
             is WooPosSearchInputState.Open -> {
                 SearchInput(
                     state = state,
-                    animationDuration = animationDuration.toLong(),
                     onEvent = onEvent,
                 )
             }
@@ -98,15 +96,15 @@ fun WooPosSearchInput(
 @Composable
 private fun SearchInput(
     state: WooPosSearchInputState.Open,
-    animationDuration: Long,
     onEvent: (WooPosSearchUIEvent) -> Unit
 ) {
+    val animationDuration = 200L
     val focusRequester = remember { FocusRequester() }
     var isFocused by remember { mutableStateOf(false) }
 
     val borderColor by animateFloatAsState(
         targetValue = if (isFocused) 1f else 0f,
-        animationSpec = tween(durationMillis = 200, easing = FastOutSlowInEasing),
+        animationSpec = tween(durationMillis = animationDuration.toInt(), easing = FastOutSlowInEasing),
         label = "borderColorAnimation"
     )
 
@@ -257,11 +255,11 @@ private fun SearchInput(
         }
 
         LaunchedEffect(Unit) {
+            delay(animationDuration)
             if (!state.hasAnimationPlayed) {
-                delay(animationDuration)
-                focusRequester.requestFocus()
                 onEvent(WooPosSearchUIEvent.AnimationComplete)
             }
+            focusRequester.requestFocus()
         }
     }
 }
