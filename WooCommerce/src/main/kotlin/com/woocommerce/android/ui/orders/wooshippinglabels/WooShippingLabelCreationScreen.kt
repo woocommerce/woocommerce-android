@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
@@ -34,9 +33,7 @@ import androidx.compose.material.ModalBottomSheetDefaults
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Scaffold
-import androidx.compose.material.ScrollableTabRow
 import androidx.compose.material.Surface
-import androidx.compose.material.Tab
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
@@ -59,7 +56,6 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -85,6 +81,8 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.address.AddressSelect
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.AddressStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.getShipFrom
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.getShipTo
+import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShipmentTabData
+import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShipmentsTabRow
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShippingLabelsSnackbarData
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.SuccessSnackbarHost
 import com.woocommerce.android.ui.orders.wooshippinglabels.hazmat.HazmatCard
@@ -437,59 +435,23 @@ private fun LabelCreationScreenWithBottomSheet(
                         )
                     }
                 } else {
-                    val selectedIndex = if (pagerState.currentPage < pagerState.pageCount) pagerState.currentPage else 0
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 16.dp)
                     ) {
-                        ScrollableTabRow(
-                            selectedTabIndex = selectedIndex,
-                            backgroundColor = MaterialTheme.colors.surface,
-                            contentColor = MaterialTheme.colors.primary,
-                            divider = {},
-                            edgePadding = 0.dp,
+                        ShipmentsTabRow(
+                            shipmentTabs = shipmentUIList.mapIndexed { index, shipment ->
+                                ShipmentTabData(shipmentIndex = index + 1, isPurchased = shipment.purchased)
+                            },
+                            selectedTabIndex = if (pagerState.currentPage < pagerState.pageCount) {
+                                pagerState.currentPage
+                            } else {
+                                0
+                            },
+                            onTabSelected = { index -> scope.launch { pagerState.animateScrollToPage(index) } },
                             modifier = modifier.weight(1f)
-                        ) {
-                            shipmentUIList.forEachIndexed { index, _ ->
-                                val textColor = if (index == pagerState.currentPage) {
-                                    MaterialTheme.colors.primary
-                                } else {
-                                    colorResource(id = R.color.color_on_surface_medium)
-                                }
-                                Tab(
-                                    text = {
-                                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                            Text(
-                                                text = stringResource(
-                                                    R.string.woo_shipping_split_shipment_shipment_name,
-                                                    index + 1 // Use 1-based indexing for the shipments
-                                                ),
-                                                color = textColor,
-                                                style = MaterialTheme.typography.subtitle1,
-                                                fontWeight = FontWeight.SemiBold
-                                            )
-                                            if (shipmentUIList[index].purchased) {
-                                                Icon(
-                                                    modifier = Modifier.size(16.dp),
-                                                    painter = painterResource(R.drawable.ic_progress_circle_complete),
-                                                    contentDescription = stringResource(
-                                                        R.string.purchased_shipment_content_description
-                                                    ),
-                                                    tint = colorResource(id = R.color.woo_green_70)
-                                                )
-                                            }
-                                        }
-                                    },
-                                    selected = pagerState.currentPage == index,
-                                    onClick = {
-                                        scope.launch {
-                                            pagerState.animateScrollToPage(index)
-                                        }
-                                    }
-                                )
-                            }
-                        }
+                        )
                         IconButton(
                             onClick = onSplitShipment,
                             modifier = Modifier.align(Alignment.CenterVertically)
