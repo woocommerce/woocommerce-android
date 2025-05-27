@@ -1,8 +1,5 @@
 package com.woocommerce.android.ui.woopos.home.items
 
-import androidx.compose.animation.Crossfade
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -45,12 +42,6 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventCons
 private const val ANIMATION_DURATION = 300
 val WOO_POS_ITEMS_TOOLBAR_HEIGHT = 56.dp
 
-private enum class ToolbarLayoutType {
-    NORMAL_TABS,
-    TABS_WITH_BACK_BUTTON,
-    SEARCH_OPEN
-}
-
 @Composable
 fun WooPosItemsToolbar(
     modifier: Modifier = Modifier,
@@ -64,35 +55,22 @@ fun WooPosItemsToolbar(
         it.state is WooPosSearchInputState.Open
     } == true
 
-    val layoutType = when {
-        isSearchOpen -> ToolbarLayoutType.SEARCH_OPEN
-        state.backNavigation -> ToolbarLayoutType.TABS_WITH_BACK_BUTTON
-        else -> ToolbarLayoutType.NORMAL_TABS
-    }
-
-    Crossfade(
+    Box(
         modifier = modifier
             .fillMaxWidth()
-            .heightIn(min = WOO_POS_ITEMS_TOOLBAR_HEIGHT),
-        targetState = layoutType,
-        animationSpec = tween(
-            durationMillis = ANIMATION_DURATION,
-            easing = LinearEasing,
-        )
-    ) { currentLayoutType ->
-        when (currentLayoutType) {
-            ToolbarLayoutType.SEARCH_OPEN -> {
-                Box {
-                    WooPosSearchInput(
-                        state = (state.search as SearchState.Visible).state,
-                        onEvent = { event ->
-                            onSearchEvent(event)
-                        },
-                    )
-                }
+            .heightIn(min = WOO_POS_ITEMS_TOOLBAR_HEIGHT)
+    ) {
+        when {
+            isSearchOpen -> {
+                WooPosSearchInput(
+                    state = (state.search as SearchState.Visible).state,
+                    onEvent = { event ->
+                        onSearchEvent(event)
+                    },
+                )
             }
 
-            ToolbarLayoutType.TABS_WITH_BACK_BUTTON -> {
+            state.backNavigation -> {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -124,7 +102,7 @@ fun WooPosItemsToolbar(
                 }
             }
 
-            ToolbarLayoutType.NORMAL_TABS -> {
+            else -> {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
