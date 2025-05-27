@@ -113,7 +113,7 @@ class WooPosCouponsListViewStateManager @Inject constructor(
 
     fun getRecentSearches(): List<String> = recentSearches.get()
 
-    fun setEmptySearchQueryWithRecentSearches(searches: List<String>) {
+    fun setRecentSearches(searches: List<String>) {
         recentSearches.set(searches.take(MAX_RECENT_SEARCHES))
     }
 

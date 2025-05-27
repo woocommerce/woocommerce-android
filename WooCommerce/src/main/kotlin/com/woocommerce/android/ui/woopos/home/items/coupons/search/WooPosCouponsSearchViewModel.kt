@@ -98,7 +98,7 @@ class WooPosCouponsSearchViewModel @Inject constructor(
 
     private fun setEmptySearchQueryState() {
         viewModelScope.launch {
-            viewStateManager.setEmptySearchQueryWithRecentSearches(emptyStateRepository.getLastSearches())
+            viewStateManager.setRecentSearches(emptyStateRepository.getLastSearches())
         }
     }
 
