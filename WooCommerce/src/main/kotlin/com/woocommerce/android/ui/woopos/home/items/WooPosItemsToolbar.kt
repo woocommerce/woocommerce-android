@@ -39,7 +39,6 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsNavigationData
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 
-private const val ANIMATION_DURATION = 300
 val WOO_POS_ITEMS_TOOLBAR_HEIGHT = 56.dp
 
 @Composable
