@@ -155,6 +155,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
 
             initViewModel()
+            viewModel.viewState.getOrAwaitValue()
             viewModel.onNextButtonTappedFromItems()
 
             verify(analyticsTrackerWrapper).track(
@@ -220,8 +221,6 @@ class IssueRefundViewModelTest : BaseUnitTest() {
         )
         val order = mock<Order> {
             on { this.items }.thenReturn(items)
-            on { this.total }.thenReturn(BigDecimal.TEN)
-            on { this.refundTotal }.thenReturn(BigDecimal.ZERO)
             on { this.currency }.thenReturn("USD")
             on { maxRefund } doReturn BigDecimal.TEN
         }
@@ -262,8 +261,6 @@ class IssueRefundViewModelTest : BaseUnitTest() {
         )
         val order = mock<Order> {
             on { this.items }.thenReturn(items)
-            on { this.total }.thenReturn(BigDecimal.TEN)
-            on { this.refundTotal }.thenReturn(BigDecimal.ZERO)
             on { this.currency }.thenReturn("USD")
             on { maxRefund } doReturn BigDecimal.TEN
         }
@@ -328,8 +325,6 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             )
             val order = mock<Order> {
                 on { this.items }.thenReturn(items)
-                on { this.total }.thenReturn(BigDecimal.TEN)
-                on { this.refundTotal }.thenReturn(BigDecimal.ZERO)
                 on { this.currency }.thenReturn("USD")
                 on { maxRefund } doReturn BigDecimal.TEN
             }
@@ -415,8 +410,6 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             )
             val order = mock<Order> {
                 on { this.items }.thenReturn(items)
-                on { this.total }.thenReturn(BigDecimal.TEN)
-                on { this.refundTotal }.thenReturn(BigDecimal.ZERO)
                 on { this.currency }.thenReturn("USD")
                 on { maxRefund } doReturn BigDecimal.TEN
             }
