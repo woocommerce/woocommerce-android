@@ -33,12 +33,7 @@ class WooPosItemsViewModel @Inject constructor(
     private val analyticsTracker: WooPosAnalyticsTracker,
 ) : ViewModel() {
     private var preservedStateBeforeOpeningVariations: WooPosItemsToolbarViewState? = null
-    private val _viewState = MutableStateFlow<WooPosItemsToolbarViewState>(
-        WooPosItemsToolbarViewState.ProductList(
-            tabs = tabsHelper.defaultTabs,
-            search = searchHelper.getInitialSearchState(),
-        )
-    )
+    private val _viewState = MutableStateFlow<WooPosItemsToolbarViewState>(initialState())
     val viewState: StateFlow<WooPosItemsToolbarViewState> = _viewState
         .stateIn(
             viewModelScope,
@@ -86,13 +81,14 @@ class WooPosItemsViewModel @Inject constructor(
                     is ParentToChildrenEvent.CouponsRemoved,
                     ParentToChildrenEvent.CouponsValidationFailed,
                     is ParentToChildrenEvent.OrderCreated,
-                    is ParentToChildrenEvent.OrderSuccessfullyPaid,
                     ParentToChildrenEvent.RefreshProductList,
                     ParentToChildrenEvent.RemoveCouponsClicked,
                     is ParentToChildrenEvent.SearchEvent.ChangedQuery,
                     ParentToChildrenEvent.SearchEvent.Finished,
                     is ParentToChildrenEvent.SearchEvent.RecentSearchSelected,
                     ParentToChildrenEvent.SearchEvent.Started -> Unit
+
+                    is ParentToChildrenEvent.OrderSuccessfullyPaid -> _viewState.value = initialState()
 
                     is ParentToChildrenEvent.ItemClickedInItemsList -> handleItemClicked(event)
                 }
@@ -138,10 +134,7 @@ class WooPosItemsViewModel @Inject constructor(
     private fun navigateBackFromVariations() {
         when (_viewState.value) {
             is WooPosItemsToolbarViewState.VariationList -> {
-                _viewState.value = preservedStateBeforeOpeningVariations ?: WooPosItemsToolbarViewState.ProductList(
-                    tabs = tabsHelper.defaultTabs,
-                    search = searchHelper.getInitialSearchState(),
-                )
+                _viewState.value = preservedStateBeforeOpeningVariations ?: initialState()
                 preservedStateBeforeOpeningVariations = null
             }
 
@@ -186,6 +179,11 @@ class WooPosItemsViewModel @Inject constructor(
             )
         }
     }
+
+    private fun initialState(): WooPosItemsToolbarViewState.ProductList = WooPosItemsToolbarViewState.ProductList(
+        tabs = tabsHelper.defaultTabs,
+        search = searchHelper.getInitialSearchState(),
+    )
 
     private fun createAndAddCoupon() {
         viewModelScope.launch {
