@@ -274,7 +274,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     @OptIn(FlowPreview::class)
     private suspend fun observePackageWeight() {
         combine(
-            shipmentItems.filter { it.isNotEmpty() },
+            shipmentItems.filter { it.isNotEmpty() && it.size > selectedShipmentIndex.value },
             packageSelected,
             snapshotFlow { customWeight }.debounce(TYPING_DELAY)
         ) { shipmentItems, selectedPackage, customWeightString ->
@@ -447,6 +447,10 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         }.collectLatest {
             viewState.value = it
         }
+    }
+
+    fun onShipmentSplit(newShipments: List<ShipmentUIModel>) {
+        launch { shipments.value = newShipments }
     }
 
     private fun getSelectedOriginAddress(originAddresses: List<OriginShippingAddress>): OriginShippingAddress {
