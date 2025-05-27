@@ -143,8 +143,4 @@ class WooPosCouponsSearchViewModel @Inject constructor(
             else -> WooPosCouponsSearchViewState.EmptySearchQuery(emptyList())
         }
     }
-
-    private companion object {
-        const val MAX_LAST_SEARCHES = 10
-    }
 }
