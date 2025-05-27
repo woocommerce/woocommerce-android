@@ -344,7 +344,7 @@ fun ShipmentDetailsLandscapePreview() {
         Surface {
             ShipmentDetailsLandscape(
                 totalItems = 6,
-                totalItemsCost = "8.5kg",
+                totalItemsCost = "$92.78",
                 shippingLines = getShippingLines(),
                 shippingAddresses = WooShippingAddresses(
                     shipFrom = getShipFrom(),
