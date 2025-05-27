@@ -35,6 +35,7 @@ import javax.inject.Inject
 
 private const val AVOID_UI_FLICKERING_DELAY = 500L
 private const val SEARCH_DEBOUNCE_TIME = 500L
+private const val MAX_RECENT_SEARCHES = 10
 
 class WooPosCouponsListViewStateManager @Inject constructor(
     private val couponsDataSource: WooPosCouponsDataSource,
@@ -45,6 +46,7 @@ class WooPosCouponsListViewStateManager @Inject constructor(
 ) {
     private val fetchingState: MutableStateFlow<FetchingCouponsState> = MutableStateFlow(IDLE)
     private val currentSearchQuery = AtomicReference<String?>(null)
+    private val recentSearches = AtomicReference<List<String>>(emptyList())
 
     private var loadingMoreJob: Job? = null
     private var fetchingFirstPageJob: Job? = null
@@ -108,6 +110,12 @@ class WooPosCouponsListViewStateManager @Inject constructor(
     val viewState: Flow<WooPosCouponsViewState> = contentFlow
 
     fun getCurrentSearchQuery(): String? = currentSearchQuery.get()
+
+    fun getRecentSearches(): List<String> = recentSearches.get()
+
+    fun setRecentSearches(searches: List<String>) {
+        recentSearches.set(searches.take(MAX_RECENT_SEARCHES))
+    }
 
     fun setSearchQuery(query: String?, viewModelScope: CoroutineScope) {
         searchJob?.cancel()

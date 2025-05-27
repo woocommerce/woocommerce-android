@@ -76,6 +76,7 @@ private fun WooPosCouponsSearchScreen(
                     if (state is WooPosCouponsSearchViewState.EmptySearchQuery) {
                         WooPosCouponsEmptySearchQueryStateScreen(
                             modifier = Modifier.imePadding(),
+                            state = state,
                             onUIEvent = onUIEvent
                         )
                     }

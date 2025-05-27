@@ -13,10 +13,10 @@ import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsListVie
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -25,6 +25,7 @@ class WooPosCouponsSearchViewModel @Inject constructor(
     private val viewStateManager: WooPosCouponsListViewStateManager,
     private val childToParentEventSender: WooPosChildrenToParentEventSender,
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
+    private val emptyStateRepository: WooPosCouponsSearchEmptyStateRepository,
 ) : ViewModel() {
 
     val viewState: StateFlow<WooPosCouponsSearchViewState> = viewStateManager.viewState
@@ -32,10 +33,11 @@ class WooPosCouponsSearchViewModel @Inject constructor(
         .stateIn(
             viewModelScope,
             started = SharingStarted.WhileSubscribed(),
-            initialValue = WooPosCouponsSearchViewState.EmptySearchQuery,
+            initialValue = WooPosCouponsSearchViewState.EmptySearchQuery(emptyList()),
         )
 
     init {
+        setEmptySearchQueryState()
         listenEventsFromParent()
     }
 
@@ -50,12 +52,21 @@ class WooPosCouponsSearchViewModel @Inject constructor(
             WooPosCouponsSearchUiEvent.LoadingErrorRetryButtonClicked -> {
                 handleLoadingErrorRetryClick()
             }
+            is WooPosCouponsSearchUiEvent.OnRecentSearchClicked -> {
+                viewModelScope.launch {
+                    childToParentEventSender.sendToParent(
+                        ChildToParentEvent.SearchEvent.RecentSearchSelected(
+                            event.recentSearch
+                        )
+                    )
+                }
+            }
         }
     }
 
     private fun handleLoadingErrorRetryClick() {
         viewStateManager.fetchCoupons(
-            viewModelScope, 
+            viewModelScope,
             WooPosCouponsListViewStateManager.WooPosCouponsListRefreshType.RETRY
         )
     }
@@ -74,6 +85,23 @@ class WooPosCouponsSearchViewModel @Inject constructor(
                 )
             )
         }
+        storeRecentSearch()
+    }
+
+    private fun storeRecentSearch() {
+        val currentQuery = viewStateManager.getCurrentSearchQuery()
+        if (!currentQuery.isNullOrBlank()) {
+            viewModelScope.launch {
+                emptyStateRepository.addRecentSearch(currentQuery)
+                setEmptySearchQueryState()
+            }
+        }
+    }
+
+    private fun setEmptySearchQueryState() {
+        viewModelScope.launch {
+            viewStateManager.setRecentSearches(emptyStateRepository.getLastSearches())
+        }
     }
 
     private fun listenEventsFromParent() {
@@ -84,7 +112,7 @@ class WooPosCouponsSearchViewModel @Inject constructor(
                         viewStateManager.setSearchQuery(event.query, viewModelScope)
                     }
                     ParentToChildrenEvent.SearchEvent.Finished -> {
-                        viewStateManager.setSearchQuery(null, viewModelScope)
+                        setEmptySearchQueryState()
                     }
                     else -> {}
                 }
@@ -94,10 +122,12 @@ class WooPosCouponsSearchViewModel @Inject constructor(
 
     private fun WooPosCouponsViewState.toSearchViewState(): WooPosCouponsSearchViewState {
         val currentQuery = viewStateManager.getCurrentSearchQuery()
-        
+
         return when {
-            currentQuery.isNullOrBlank() -> WooPosCouponsSearchViewState.EmptySearchQuery
-            
+            currentQuery.isNullOrBlank() -> {
+                WooPosCouponsSearchViewState.EmptySearchQuery(viewStateManager.getRecentSearches())
+            }
+
             this is WooPosCouponsViewState.Loading -> WooPosCouponsSearchViewState.Loading
             this is WooPosCouponsViewState.Empty -> WooPosCouponsSearchViewState.Empty
             this is WooPosCouponsViewState.Content -> WooPosCouponsSearchViewState.Content(
@@ -107,8 +137,10 @@ class WooPosCouponsSearchViewModel @Inject constructor(
                 pullToRefreshState = this.pullToRefreshState
             )
             this is WooPosCouponsViewState.Error.GenericError -> WooPosCouponsSearchViewState.Error(currentQuery)
-            this is WooPosCouponsViewState.Error.CouponsDisabledError -> WooPosCouponsSearchViewState.Error(currentQuery)
-            else -> WooPosCouponsSearchViewState.EmptySearchQuery
+            this is WooPosCouponsViewState.Error.CouponsDisabledError -> WooPosCouponsSearchViewState.Error(
+                currentQuery
+            )
+            else -> WooPosCouponsSearchViewState.EmptySearchQuery(emptyList())
         }
     }
 }
