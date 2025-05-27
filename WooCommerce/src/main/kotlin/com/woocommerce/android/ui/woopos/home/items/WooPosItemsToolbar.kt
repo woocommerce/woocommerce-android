@@ -45,21 +45,126 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventCons
 private const val ANIMATION_DURATION = 300
 val WOO_POS_ITEMS_TOOLBAR_HEIGHT = 56.dp
 
-private sealed class ToolbarLayoutState {
-    data class NormalTabs(
-        val tabs: List<WooPosItemsToolbarViewState.Tab>,
-        val search: SearchState,
-        val showAddCouponButton: Boolean,
-    ) : ToolbarLayoutState()
+private enum class ToolbarLayoutType {
+    NORMAL_TABS,
+    TABS_WITH_BACK_BUTTON,
+    SEARCH_OPEN
+}
 
-    data class TabsWithBackButton(
-        val tabs: List<WooPosItemsToolbarViewState.Tab>,
-        val search: SearchState,
-    ) : ToolbarLayoutState()
+@Composable
+fun WooPosItemsToolbar(
+    modifier: Modifier = Modifier,
+    state: WooPosItemsToolbarViewState,
+    onTabClicked: (WooPosItemsToolbarViewState.Tab) -> Unit,
+    onSearchEvent: (WooPosSearchUIEvent) -> Unit,
+    onBackClicked: () -> Unit,
+    onAddCouponEvent: () -> Unit,
+) {
+    val isSearchOpen = (state.search as? SearchState.Visible)?.let {
+        it.state is WooPosSearchInputState.Open
+    } == true
 
-    data class SearchOpen(
-        val search: SearchState.Visible
-    ) : ToolbarLayoutState()
+    val layoutType = when {
+        isSearchOpen -> ToolbarLayoutType.SEARCH_OPEN
+        state.backNavigation -> ToolbarLayoutType.TABS_WITH_BACK_BUTTON
+        else -> ToolbarLayoutType.NORMAL_TABS
+    }
+
+    Crossfade(
+        modifier = modifier
+            .fillMaxWidth()
+            .heightIn(min = WOO_POS_ITEMS_TOOLBAR_HEIGHT),
+        targetState = layoutType,
+        animationSpec = tween(
+            durationMillis = ANIMATION_DURATION,
+            easing = LinearEasing,
+        )
+    ) { currentLayoutType ->
+        when (currentLayoutType) {
+            ToolbarLayoutType.SEARCH_OPEN -> {
+                Box {
+                    WooPosSearchInput(
+                        state = (state.search as SearchState.Visible).state,
+                        onEvent = { event ->
+                            onSearchEvent(event)
+                        },
+                    )
+                }
+            }
+
+            ToolbarLayoutType.TABS_WITH_BACK_BUTTON -> {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = WOO_POS_ITEMS_TOOLBAR_HEIGHT),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Spacer(modifier = Modifier.width(WooPosSpacing.XSmall.value.toAdaptivePadding()))
+                    IconButton(
+                        onClick = { onBackClicked() },
+                        modifier = Modifier
+                            .size(48.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.woopos_toolbar_icon_content_description),
+                            tint = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier
+                                .size(28.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(WooPosSpacing.XSmall.value.toAdaptivePadding()))
+
+                    TabsRow(
+                        tabs = state.tabs,
+                        onTabClicked = onTabClicked,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
+
+            ToolbarLayoutType.NORMAL_TABS -> {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value.toAdaptivePadding()))
+
+                    TabsRow(
+                        tabs = state.tabs,
+                        onTabClicked = onTabClicked,
+                        modifier = Modifier.weight(1f)
+                    )
+
+                    if (state is WooPosItemsToolbarViewState.CouponList) {
+                        Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
+                        WooPosCircularIconButton(
+                            icon = Icons.Default.Add,
+                            contentDescription = stringResource(
+                                id = R.string.woopos_coupons_empty_list_create_coupon_label,
+                            ),
+                            onClick = { onAddCouponEvent() }
+                        )
+                    }
+
+                    when (val search = state.search) {
+                        SearchState.Hidden -> Unit
+                        is SearchState.Visible -> {
+                            Box {
+                                WooPosSearchInput(
+                                    state = search.state,
+                                    onEvent = { event ->
+                                        onSearchEvent(event)
+                                    },
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 @Composable
@@ -85,133 +190,6 @@ private fun TabsRow(
                 )
             )
             Spacer(modifier = Modifier.width(WooPosSpacing.Large.value))
-        }
-    }
-}
-
-@Composable
-fun WooPosItemsToolbar(
-    modifier: Modifier = Modifier,
-    state: WooPosItemsToolbarViewState,
-    onTabClicked: (WooPosItemsToolbarViewState.Tab) -> Unit,
-    onSearchEvent: (WooPosSearchUIEvent) -> Unit,
-    onBackClicked: () -> Unit,
-    onAddCouponEvent: () -> Unit,
-) {
-    val isSearchOpen = (state.search as? SearchState.Visible)?.let {
-        it.state is WooPosSearchInputState.Open
-    } == true
-
-    val layoutState = when {
-        isSearchOpen -> ToolbarLayoutState.SearchOpen(
-            search = state.search as SearchState.Visible
-        )
-
-        state.backNavigation -> ToolbarLayoutState.TabsWithBackButton(
-            tabs = state.tabs,
-            search = state.search,
-        )
-
-        else -> ToolbarLayoutState.NormalTabs(
-            tabs = state.tabs,
-            search = state.search,
-            showAddCouponButton = state is WooPosItemsToolbarViewState.CouponList,
-        )
-    }
-
-    Crossfade(
-        modifier = modifier
-            .fillMaxWidth()
-            .heightIn(min = WOO_POS_ITEMS_TOOLBAR_HEIGHT),
-        targetState = layoutState,
-        animationSpec = tween(
-            durationMillis = ANIMATION_DURATION,
-            easing = LinearEasing,
-        )
-    ) { currentLayoutState ->
-        when (currentLayoutState) {
-            is ToolbarLayoutState.SearchOpen -> {
-                Box {
-                    WooPosSearchInput(
-                        state = currentLayoutState.search.state,
-                        onEvent = { event ->
-                            onSearchEvent(event)
-                        },
-                    )
-                }
-            }
-
-            is ToolbarLayoutState.TabsWithBackButton -> {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(min = WOO_POS_ITEMS_TOOLBAR_HEIGHT),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Spacer(modifier = Modifier.width(WooPosSpacing.XSmall.value.toAdaptivePadding()))
-                    IconButton(
-                        onClick = { onBackClicked() },
-                        modifier = Modifier
-                            .size(48.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.woopos_toolbar_icon_content_description),
-                            tint = MaterialTheme.colorScheme.onSurface,
-                            modifier = Modifier
-                                .size(28.dp)
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.width(WooPosSpacing.XSmall.value.toAdaptivePadding()))
-
-                    TabsRow(
-                        tabs = currentLayoutState.tabs,
-                        onTabClicked = onTabClicked,
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-            }
-
-            is ToolbarLayoutState.NormalTabs -> {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value.toAdaptivePadding()))
-
-                    TabsRow(
-                        tabs = currentLayoutState.tabs,
-                        onTabClicked = onTabClicked,
-                        modifier = Modifier.weight(1f)
-                    )
-
-                    if (currentLayoutState.showAddCouponButton) {
-                        Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
-                        WooPosCircularIconButton(
-                            icon = Icons.Default.Add,
-                            contentDescription = stringResource(
-                                id = R.string.woopos_coupons_empty_list_create_coupon_label,
-                            ),
-                            onClick = { onAddCouponEvent() }
-                        )
-                    }
-
-                    when (val search = currentLayoutState.search) {
-                        SearchState.Hidden -> Unit
-                        is SearchState.Visible -> {
-                            Box {
-                                WooPosSearchInput(
-                                    state = search.state,
-                                    onEvent = { event ->
-                                        onSearchEvent(event)
-                                    },
-                                )
-                            }
-                        }
-                    }
-                }
-            }
         }
     }
 }

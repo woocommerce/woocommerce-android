@@ -245,6 +245,15 @@ private fun SearchInput(
             },
         )
 
+        LaunchedEffect(query) {
+            if (query != textFieldValue.text) {
+                textFieldValue = TextFieldValue(
+                    text = query,
+                    selection = TextRange(state.input.cursorPosition)
+                )
+            }
+        }
+
         LaunchedEffect(state) {
             if (state.requestFocus) {
                 delay(animationDuration)
