@@ -6,6 +6,7 @@
 /orders/<id>/shipment-trackings/providers/
 /orders/<id>/receipt/
 /orders/<id>/actions/send_order_details
+/orders/<id>/actions/send_email
 /orders/batch
 
 /products/<id>/

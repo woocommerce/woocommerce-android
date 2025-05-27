@@ -25,6 +25,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsUIEvent.SearchChanged
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsScreen
+import com.woocommerce.android.ui.woopos.home.items.coupons.search.WooPosCouponsSearchScreen
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsScreen
 import com.woocommerce.android.ui.woopos.home.items.search.WooPosItemsSearchScreen
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -142,6 +143,7 @@ private fun MainItemsList(
                         ),
                         listState = couponsListState,
                     )
+                    ScreenState.COUPONS_SEARCH -> WooPosCouponsSearchScreen()
                 }
             }
         }
@@ -149,7 +151,7 @@ private fun MainItemsList(
 }
 
 private enum class ScreenState {
-    PRODUCTS, PRODUCTS_SEARCH, COUPONS
+    PRODUCTS, PRODUCTS_SEARCH, COUPONS, COUPONS_SEARCH
 }
 
 private fun getScreenState(state: WooPosItemsViewState): ScreenState {
@@ -166,7 +168,17 @@ private fun getScreenState(state: WooPosItemsViewState): ScreenState {
             }
         }
 
-        is WooPosItemsViewState.CouponList -> ScreenState.COUPONS
+        is WooPosItemsViewState.CouponList -> {
+            when (val searchState = state.search) {
+                WooPosItemsViewState.SearchState.Hidden -> ScreenState.COUPONS
+                is WooPosItemsViewState.SearchState.Visible -> {
+                    when (searchState.state) {
+                        WooPosSearchInputState.Closed -> ScreenState.COUPONS
+                        is WooPosSearchInputState.Open -> ScreenState.COUPONS_SEARCH
+                    }
+                }
+            }
+        }
     }
 }
 
