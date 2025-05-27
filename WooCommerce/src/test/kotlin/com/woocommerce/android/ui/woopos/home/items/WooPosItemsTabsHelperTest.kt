@@ -8,7 +8,7 @@ import org.junit.Test
 import org.mockito.kotlin.mock
 
 class WooPosItemsTabsHelperTest {
-    private val resourceProvider: ResourceProvider = mock() {
+    private val resourceProvider: ResourceProvider = mock {
         on { getString(R.string.woopos_products_screen_title) }.thenReturn("Products")
         on { getString(R.string.woopos_coupons_screen_title) }.thenReturn("Coupons")
     }
