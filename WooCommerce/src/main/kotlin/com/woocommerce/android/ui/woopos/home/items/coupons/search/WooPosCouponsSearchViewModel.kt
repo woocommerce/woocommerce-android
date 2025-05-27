@@ -89,9 +89,11 @@ class WooPosCouponsSearchViewModel @Inject constructor(
     }
 
     private fun storeRecentSearch() {
-        (viewState.value as? WooPosCouponsSearchViewState.Content)?.let {
+        val currentQuery = viewStateManager.getCurrentSearchQuery()
+        if (!currentQuery.isNullOrBlank()) {
             viewModelScope.launch {
-                emptyStateRepository.addRecentSearch(it.searchQuery)
+                emptyStateRepository.addRecentSearch(currentQuery)
+                setEmptySearchQueryState()
             }
         }
     }
