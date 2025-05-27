@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsListViewStateManager
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -19,8 +20,10 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.atLeast
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
@@ -72,7 +75,7 @@ class WooPosCouponsSearchViewModelTest {
             assertThat(emptyState.recentSearches).isEqualTo(recentSearches)
         }
 
-        verify(mockViewStateManager).setEmptySearchQueryWithRecentSearches(recentSearches)
+        verify(mockViewStateManager).setRecentSearches(recentSearches)
     }
 
     @Test
@@ -144,17 +147,18 @@ class WooPosCouponsSearchViewModelTest {
     fun `when search finished event is emitted, then state is updated to empty search query with recent searches`() = runTest {
         // GIVEN
         val recentSearches = listOf("WINTER", "SALE")
+        val mockEvents = MutableSharedFlow<ParentToChildrenEvent>()
+        whenever(mockParentToChildrenEventReceiver.events).thenReturn(mockEvents)
         whenever(mockEmptyStateRepository.getLastSearches()).thenReturn(recentSearches)
-        val viewModel = createViewModel()
+        createViewModel()
+        advanceUntilIdle()
 
         // WHEN
-        whenever(mockParentToChildrenEventReceiver.events).thenReturn(
-            flowOf(ParentToChildrenEvent.SearchEvent.Finished)
-        )
+        mockEvents.emit(ParentToChildrenEvent.SearchEvent.Finished)
         advanceUntilIdle()
 
         // THEN
-        verify(mockViewStateManager).setEmptySearchQueryWithRecentSearches(recentSearches)
+        verify(mockViewStateManager, atLeast(2)).setRecentSearches(recentSearches)
     }
 
     @Test
@@ -227,6 +231,39 @@ class WooPosCouponsSearchViewModelTest {
             assertThat(content.items).hasSize(1)
             assertThat(content.items[0]).isEqualTo(testCoupon)
         }
+    }
+
+    @Test
+    fun `given active search query, when coupon is clicked, then recent search is stored`() = runTest {
+        // GIVEN
+        val searchQuery = "SUMMER20"
+        whenever(mockViewStateManager.getCurrentSearchQuery()).thenReturn(searchQuery)
+
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosCouponsSearchUiEvent.OnCouponClicked(testCoupon))
+        advanceUntilIdle()
+
+        // THEN
+        verify(mockChildToParentEventSender).sendToParent(any<ChildToParentEvent.ItemClickedInProductSelector>())
+        verify(mockEmptyStateRepository).addRecentSearch(searchQuery)
+    }
+
+    @Test
+    fun `given no active search query, when coupon is clicked, then no recent search is stored`() = runTest {
+        // GIVEN
+        whenever(mockViewStateManager.getCurrentSearchQuery()).thenReturn(null)
+
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosCouponsSearchUiEvent.OnCouponClicked(testCoupon))
+        advanceUntilIdle()
+
+        // THEN
+        verify(mockChildToParentEventSender).sendToParent(any<ChildToParentEvent.ItemClickedInProductSelector>())
+        verify(mockEmptyStateRepository, never()).addRecentSearch(any())
     }
 
     private fun createViewModel() = WooPosCouponsSearchViewModel(
