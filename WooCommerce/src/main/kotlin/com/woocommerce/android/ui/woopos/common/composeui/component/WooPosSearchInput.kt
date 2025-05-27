@@ -245,18 +245,11 @@ private fun SearchInput(
             },
         )
 
-        LaunchedEffect(query) {
-            if (query != textFieldValue.text) {
-                textFieldValue = TextFieldValue(
-                    text = query,
-                    selection = TextRange(state.input.cursorPosition)
-                )
+        LaunchedEffect(state) {
+            if (state.requestFocus) {
+                delay(animationDuration)
+                focusRequester.requestFocus()
             }
-        }
-
-        LaunchedEffect(Unit) {
-            delay(animationDuration)
-            focusRequester.requestFocus()
         }
     }
 }
@@ -267,6 +260,7 @@ sealed class WooPosSearchInputState : Parcelable {
     data class Open(
         val input: Input,
         val isLoading: Boolean,
+        val requestFocus: Boolean = false,
     ) : WooPosSearchInputState() {
         @Parcelize
         sealed class Input(val text: String, open val cursorPosition: Int) : Parcelable {

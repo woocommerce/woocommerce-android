@@ -23,6 +23,8 @@ class WooPosItemsSearchHelper @Inject constructor(
     private lateinit var coroutineScope: CoroutineScope
     private lateinit var viewStateFlow: MutableStateFlow<WooPosItemsToolbarViewState>
 
+    private var wasLastStateClosed = true
+
     fun initialize(
         coroutineScope: CoroutineScope,
         viewStateFlow: MutableStateFlow<WooPosItemsToolbarViewState>
@@ -81,18 +83,12 @@ class WooPosItemsSearchHelper @Inject constructor(
         if (newQuery.isEmpty()) {
             updateToInitialOpenState()
         } else {
-            viewStateFlow.value = viewStateFlow.value.copy(
-                search = SearchState.Visible(
-                    state = WooPosSearchInputState.Open(
-                        input = WooPosSearchInputState.Open.Input.Query(newQuery, cursorPosition),
-                        isLoading = false,
-                    )
-                )
-            )
+            updateToOpenStateWithQuery(newQuery, cursorPosition)
         }
     }
 
     fun onCloseSearchClicked() {
+        wasLastStateClosed = true
         viewStateFlow.value = viewStateFlow.value.copy(
             search = SearchState.Visible(
                 state = WooPosSearchInputState.Closed
@@ -115,6 +111,9 @@ class WooPosItemsSearchHelper @Inject constructor(
     }
 
     private fun updateToInitialOpenState() {
+        val shouldRequestFocus = wasLastStateClosed
+        wasLastStateClosed = false
+
         viewStateFlow.value = viewStateFlow.value.copy(
             search = SearchState.Visible(
                 state = WooPosSearchInputState.Open(
@@ -122,6 +121,22 @@ class WooPosItemsSearchHelper @Inject constructor(
                         resourceProvider.getString(R.string.woopos_search_products)
                     ),
                     isLoading = false,
+                    requestFocus = shouldRequestFocus,
+                )
+            )
+        )
+    }
+
+    private fun updateToOpenStateWithQuery(query: String, cursorPosition: Int) {
+        val shouldRequestFocus = wasLastStateClosed
+        wasLastStateClosed = false
+
+        viewStateFlow.value = viewStateFlow.value.copy(
+            search = SearchState.Visible(
+                state = WooPosSearchInputState.Open(
+                    input = WooPosSearchInputState.Open.Input.Query(query, cursorPosition),
+                    isLoading = false,
+                    requestFocus = shouldRequestFocus,
                 )
             )
         )
@@ -129,7 +144,7 @@ class WooPosItemsSearchHelper @Inject constructor(
 
     fun getInitialSearchState(): SearchState =
         SearchState.Visible(
-            state = WooPosSearchInputState.Closed
+            state = WooPosSearchInputState.Closed,
         )
 
     fun updateLoadingState(isLoading: Boolean) {
