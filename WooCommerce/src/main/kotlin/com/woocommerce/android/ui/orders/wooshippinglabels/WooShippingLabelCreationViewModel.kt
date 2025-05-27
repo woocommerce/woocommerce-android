@@ -142,6 +142,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         launch { observeShippingLabelInformation() }
         launch { getStoreOptions() }
         launch { getDestinationAddress() }
+        launch { getSavedShipments() }
         launch { getShippingAddresses() }
         launch { getOrderInformation() }
         launch { observePackageWeight() }
@@ -211,6 +212,10 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    private suspend fun getSavedShipments() {
+        order.drop(1).collectLatest { order -> shipments.value = getShipments(order) }
     }
 
     @Suppress("ComplexCondition")
@@ -388,6 +393,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         combine(
             storeOptions.drop(1),
             order.drop(1),
+            shipments.drop(1),
             shippingAddresses.drop(1),
             shippingRatesState,
             packageSelection,
@@ -395,13 +401,11 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             purchaseState,
             customsState,
             hazmatState
-        ) { storeOptions, order, addresses, shippingRates,
+        ) { storeOptions, order, shipments, addresses, shippingRates,
             packageSelection, uiState, purchaseState, customsState, hazmatState ->
             if (storeOptions == null || addresses == null || purchaseState is PurchaseState.Error) {
                 return@combine WooShippingViewState.Error
             }
-
-            shipments.value = getShipments(order)
 
             val destinationStatus = when {
                 addressValidationHelper.isMissingDestinationAddress(addresses.shipTo.address) -> {
@@ -412,7 +416,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                 else -> AddressStatus.UNVERIFIED
             }
 
-            shipmentItems.value = shipments.value.map { it.items }
+            shipmentItems.value = shipments.map { it.items }
 
             val shippingLineSummary = order.getShippingLinesSummary(currencyFormatter)
             val shipmentUIList = shipmentItems.value.mapIndexed { index, shippableItemModels ->
@@ -420,7 +424,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                     currencyFormatter,
                     storeOptions.dimensionUnit,
                     storeOptions.weightUnit,
-                    shipments.value[index].purchased
+                    shipments[index].purchased
                 )
             }
 
