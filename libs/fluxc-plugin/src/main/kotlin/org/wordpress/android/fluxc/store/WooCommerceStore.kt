@@ -23,8 +23,10 @@ import org.wordpress.android.fluxc.model.plugin.SitePluginModel
 import org.wordpress.android.fluxc.model.settings.WCSettingsMapper
 import org.wordpress.android.fluxc.model.taxes.TaxBasedOnSettingEntity
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.UNKNOWN
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.SiteSettingsFeature
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooCommerceRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WCApiVersionResponse
@@ -513,6 +515,28 @@ open class WooCommerceStore @Inject constructor(
                     val settings = settingsMapper.mapTaxBasedOnSettings(response.result, site.localId())
                     taxBasedOnDao.insertOrUpdate(settings)
                     WooResult(settings)
+                }
+                else -> {
+                    WooResult(WooError(GENERIC_ERROR, UNKNOWN))
+                }
+            }
+        }
+    }
+
+    suspend fun fetchIsFeatureEnabledSetting(site: SiteModel, feature: SiteSettingsFeature): WooResult<Boolean> {
+        return coroutineEngine.withDefaultContext(T.API, this, "fetchIsFeatureEnabledSetting") {
+            val response = wcCoreRestClient.fetchFeatureIsEnabled(site, feature)
+            return@withDefaultContext when {
+                response.isError -> {
+                    AppLog.w(
+                        T.API,
+                        "Failed to fetch Woo \"feature is enabled\" setting for site ${site.siteId}"
+                    )
+                    WooResult(response.error)
+                }
+                response.result != null -> {
+                    val isEnabled = settingsMapper.mapFeatureIsEnabledSettings(response.result)
+                    isEnabled?.let { WooResult(it) } ?: WooResult(WooError(WooErrorType.INVALID_RESPONSE, UNKNOWN))
                 }
                 else -> {
                     WooResult(WooError(GENERIC_ERROR, UNKNOWN))
