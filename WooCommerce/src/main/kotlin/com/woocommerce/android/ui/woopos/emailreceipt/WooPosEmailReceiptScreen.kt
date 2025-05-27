@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.emailreceipt
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -58,7 +59,7 @@ private fun WooPosEmailReceiptScreen(
     onEmailSent: () -> Unit,
     onBackClicked: () -> Unit,
 ) {
-    Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).imePadding()) {
+    Column(modifier = Modifier.fillMaxSize()) {
         WooPosToolbar(
             titleText = stringResource(R.string.woopos_email_receipt_title),
             onBackClicked = onBackClicked,
@@ -93,36 +94,43 @@ private fun EmailState(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .imePadding(),
-        horizontalAlignment = Alignment.CenterHorizontally
+        verticalArrangement = Arrangement.SpaceBetween
     ) {
         Spacer(modifier = Modifier.weight(1f))
 
-        WooPosInputField(
-            value = state.email,
-            onValueChange = onEmailAddressChanged,
-            label = stringResource(R.string.woopos_email_receipt_email_label),
-            contentAlignment = Alignment.Center,
-            textStyle = WooPosTypography.Heading,
-            textColor = MaterialTheme.colorScheme.onSurface,
-            keyboardOptions = KeyboardOptions(
-                autoCorrectEnabled = false,
-                keyboardType = KeyboardType.Email
-            ),
-            modifier = Modifier
-                .focusRequester(focusRequester)
-                .padding(horizontal = WooPosSpacing.Medium.value)
-        )
-
-        if (state.errorMessage != null) {
-            Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
-
-            WooPosText(
-                text = state.errorMessage,
-                color = MaterialTheme.colorScheme.error,
-                style = WooPosTypography.BodyLarge,
-                textAlign = TextAlign.Center,
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            WooPosInputField(
+                value = state.email,
+                onValueChange = onEmailAddressChanged,
+                label = stringResource(R.string.woopos_email_receipt_email_label),
+                contentAlignment = Alignment.Center,
+                textStyle = WooPosTypography.Heading,
+                textColor = MaterialTheme.colorScheme.onSurface,
+                keyboardOptions = KeyboardOptions(
+                    autoCorrectEnabled = false,
+                    keyboardType = KeyboardType.Email
+                ),
+                modifier = Modifier
+                    .focusRequester(focusRequester)
+                    .padding(horizontal = WooPosSpacing.Medium.value)
             )
+
+            if (state.errorMessage != null) {
+                Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+
+                WooPosText(
+                    text = state.errorMessage,
+                    color = MaterialTheme.colorScheme.error,
+                    style = WooPosTypography.BodyLarge,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value)
+                )
+            }
         }
 
         Spacer(modifier = Modifier.weight(1f))
