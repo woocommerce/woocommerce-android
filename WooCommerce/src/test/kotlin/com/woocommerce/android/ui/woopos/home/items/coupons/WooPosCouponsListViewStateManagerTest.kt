@@ -744,7 +744,7 @@ class WooPosCouponsListViewStateManagerTest {
             delay(1) // workaround for bug in mockito
             Result.success(MORE_PAGES_AVAILABLE)
         }
-        
+
         sat.setSearchQuery("test", testViewModelScope)
         advanceUntilIdle()
 
