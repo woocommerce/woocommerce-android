@@ -46,7 +46,6 @@ import javax.inject.Inject
 import org.wordpress.android.fluxc.utils.sumBy as sumByBigDecimal
 
 @HiltViewModel
-@Suppress("LargeClass") // TODO Refactor this class in a follow up PR
 class IssueRefundViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val currencyFormatter: CurrencyFormatter,
