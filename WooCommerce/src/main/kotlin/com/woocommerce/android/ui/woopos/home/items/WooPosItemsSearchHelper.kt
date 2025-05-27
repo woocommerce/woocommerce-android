@@ -97,6 +97,9 @@ class WooPosItemsSearchHelper @Inject constructor(
     }
 
     fun onCloseSearchClicked() {
+        coroutineScope.launch {
+            childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.QueryChanged(query = ""))
+        }
         val currentState = getCurrentContentState()
         viewStateFlow.value = currentState.copy(
             search = SearchState.Visible(
