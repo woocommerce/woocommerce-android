@@ -145,8 +145,7 @@ private fun DashboardWidgets(
         )
         Row(
             modifier = modifier
-                .nestedScroll(nestedScrollInterop)
-                .verticalScroll(rememberScrollState()),
+                .nestedScroll(nestedScrollInterop),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Spacer(modifier = Modifier)
