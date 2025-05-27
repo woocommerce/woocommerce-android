@@ -5,6 +5,7 @@
 22.5
 -----
 - [**] Improved local search algorithms in POS [https://github.com/woocommerce/woocommerce-android/pull/14068]
+- [**] Added Coupons search feature [https://github.com/woocommerce/woocommerce-android/pull/14101]
 
 22.4
 -----

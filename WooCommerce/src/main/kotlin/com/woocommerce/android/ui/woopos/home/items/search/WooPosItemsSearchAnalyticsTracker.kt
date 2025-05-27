@@ -32,7 +32,7 @@ class WooPosItemsSearchAnalyticsTracker @Inject constructor(
     suspend fun trackSearchPerformance(searchTimeMillis: Long) {
         val totalProductsCount = getTotalProductCount()
         val event = SearchRemoteResultsFetched(
-            totalProductsCount = totalProductsCount,
+            totalItemsCount = totalProductsCount,
             millisecondsSinceRequestSent = searchTimeMillis,
             source = WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT,
         )
