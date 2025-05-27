@@ -6,6 +6,7 @@ import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.IsRemoteFeatureFlagEnabled
 import com.woocommerce.android.util.RemoteFeatureFlag.WOO_POS
 import kotlinx.coroutines.coroutineScope
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.SiteSettingsFeature
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -25,6 +26,7 @@ class WooPosIsEnabled @Inject constructor(
         if (!isRemoteFeatureFlagEnabled(WOO_POS)) return@coroutineScope false
         if (!isScreenSizeAllowed()) return@coroutineScope false
         if (!isWooCoreSupportsOrderAutoDraftsAndExtraPaymentsProps()) return@coroutineScope false
+        if (isFeatureSwitchSupported() && !(isPOSFeatureEnabled() ?: false)) return@coroutineScope false
 
         val siteSettings = wooCommerceStore.getSiteSettings(selectedSite) ?: return@coroutineScope false
 
@@ -42,8 +44,21 @@ class WooPosIsEnabled @Inject constructor(
         return wooCoreVersion.semverCompareTo(WC_VERSION_SUPPORTS_POS_PRODUCT_FILTERING) >= 0
     }
 
+    private suspend fun isPOSFeatureEnabled(): Boolean? {
+        return wooCommerceStore.fetchIsFeatureEnabledSetting(
+            selectedSite.get(),
+            SiteSettingsFeature.POINT_OF_SALE
+        ).model
+    }
+
+    private fun isFeatureSwitchSupported(): Boolean {
+        val wooCoreVersion = getWooCoreVersion() ?: return false
+        return wooCoreVersion.semverCompareTo(WC_VERSION_SUPPORTS_POS_FEATURE_SWITCH) >= 0
+    }
+
     private companion object {
         const val WC_VERSION_SUPPORTS_POS_PRODUCT_FILTERING = "9.6.0"
+        const val WC_VERSION_SUPPORTS_POS_FEATURE_SWITCH = "10.0.0"
 
         val SUPPORTED_COUNTRY_CURRENCY_PAIRS = listOf("us" to "usd", "gb" to "gbp")
     }
