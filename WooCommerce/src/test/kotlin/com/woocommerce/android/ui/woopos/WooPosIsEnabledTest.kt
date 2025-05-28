@@ -8,10 +8,13 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
 import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCSettingsModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.SiteSettingsFeature
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import kotlin.test.Test
 import kotlin.test.assertFalse
@@ -117,8 +120,102 @@ class WooPosIsEnabledTest : BaseUnitTest() {
 
     @Test
     fun `given woo version 10_0_1, when invoked, then return true`() = testBlocking {
+        // GIVEN
+        setupPassingConditionsForHigherVersionsCheck()
+        setupPassingConditionsForFeatureSwitchCheck()
+
         whenever(getWooCoreVersion.invoke()).thenReturn("10.0.1")
+
+        // WHEN THEN
         assertTrue(sut())
+    }
+
+    @Test
+    fun `given woo version 10_0_0 and pos switch disabled, when invoked, then return false`() = testBlocking {
+        // GIVEN
+        whenever(getWooCoreVersion.invoke()).thenReturn("10.0.0")
+
+        val mockWooResult = mock<WooResult<Boolean>>()
+        whenever(mockWooResult.model).thenReturn(false)
+
+        whenever(
+            wooCommerceStore.fetchIsFeatureEnabledSetting(any(), eq(SiteSettingsFeature.POINT_OF_SALE))
+        ).thenReturn(mockWooResult)
+
+        setupPassingConditionsForFeatureSwitchCheck()
+
+        // WHEN THEN
+        assertFalse(sut())
+    }
+
+    @Test
+    fun `given woo version 10_0_0 and pos switch enabled, when invoked, then continue to next check`() = testBlocking {
+        // GIVEN
+        whenever(getWooCoreVersion.invoke()).thenReturn("10.0.0")
+
+        val mockWooResult = mock<WooResult<Boolean>>()
+        whenever(mockWooResult.model).thenReturn(true)
+
+        whenever(
+            wooCommerceStore.fetchIsFeatureEnabledSetting(any(), eq(SiteSettingsFeature.POINT_OF_SALE))
+        ).thenReturn(mockWooResult)
+
+        setupPassingConditionsForFeatureSwitchCheck()
+
+        // WHEN THEN
+        assertTrue(sut())
+    }
+
+    @Test
+    fun `given woo version 10_0_0 and pos switch null, when invoked, then return false`() = testBlocking {
+        // GIVEN
+        whenever(getWooCoreVersion.invoke()).thenReturn("10.0.0")
+
+        val mockWooResult = mock<WooResult<Boolean>>()
+        whenever(mockWooResult.model).thenReturn(null)
+
+        whenever(
+            wooCommerceStore.fetchIsFeatureEnabledSetting(any(), eq(SiteSettingsFeature.POINT_OF_SALE))
+        ).thenReturn(mockWooResult)
+
+        setupPassingConditionsForFeatureSwitchCheck()
+
+        // WHEN THEN
+        assertFalse(sut())
+    }
+
+    @Test
+    fun `given woo version 9_9_0, when invoked, then skip feature switch check`() = testBlocking {
+        // GIVEN
+        whenever(getWooCoreVersion.invoke()).thenReturn("9.9.0")
+        setupPassingConditionsForFeatureSwitchCheck()
+
+        // WHEN THEN
+        assertTrue(sut())
+    }
+
+    private suspend fun setupPassingConditionsForHigherVersionsCheck() {
+        val mockWooResult = mock<WooResult<Boolean>>()
+        whenever(mockWooResult.model).thenReturn(true)
+
+        whenever(
+            wooCommerceStore.fetchIsFeatureEnabledSetting(any(), eq(SiteSettingsFeature.POINT_OF_SALE))
+        ).thenReturn(mockWooResult)
+    }
+
+    private suspend fun setupPassingConditionsForFeatureSwitchCheck() {
+        val mockSite = mock<SiteModel>()
+        whenever(selectedSite.getOrNull()).thenReturn(mockSite)
+        whenever(selectedSite.get()).thenReturn(mockSite)
+
+        whenever(isRemoteFeatureFlagEnabled.invoke(WOO_POS)).thenReturn(true)
+
+        whenever(isScreenSizeAllowed()).thenReturn(true)
+
+        val mockSiteSettings = mock<WCSettingsModel>()
+        whenever(mockSiteSettings.countryCode).thenReturn("US")
+        whenever(mockSiteSettings.currencyCode).thenReturn("USD")
+        whenever(wooCommerceStore.getSiteSettings(any())).thenReturn(mockSiteSettings)
     }
 
     private fun buildSiteSettings(
