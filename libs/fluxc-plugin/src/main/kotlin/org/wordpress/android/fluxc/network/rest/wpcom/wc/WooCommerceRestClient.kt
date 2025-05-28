@@ -95,7 +95,7 @@ class WooCommerceRestClient @Inject constructor(private val wooNetwork: WooNetwo
     }
 
     suspend fun fetchFeatureIsEnabled(site: SiteModel, feature: SiteSettingsFeature): WooPayload<SiteSettingOptionResponse> {
-        val url = "${WOOCOMMERCE.settings.group(ADVANCED_SETTING_GROUP)}/woocommerce_feature_${feature.value}_enabled"
+        val url = WOOCOMMERCE.settings.group(ADVANCED_SETTING_GROUP).id("woocommerce_feature_${feature.value}_enabled").pathV3
 
         val response = wooNetwork.executeGetGsonRequest(
             site = site,
