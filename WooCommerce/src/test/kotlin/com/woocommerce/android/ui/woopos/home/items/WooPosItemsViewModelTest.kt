@@ -186,6 +186,43 @@ class WooPosItemsViewModelTest {
     }
 
     @Test
+    fun `when search icon is tapped on coupon tab, then track analytics event with COUPON source`() = runTest {
+        // GIVEN
+        val couponsTab = WooPosItemsViewState.Tab(
+            R.string.woopos_coupons_screen_title,
+            WooPosItemsViewState.Tab.HighlightLevel.Normal
+        )
+
+        whenever(tabsHelper.selectTab(any(), eq(couponsTab))).thenReturn(
+            listOf(
+                WooPosItemsViewState.Tab(
+                    R.string.woopos_products_screen_title,
+                    WooPosItemsViewState.Tab.HighlightLevel.Normal
+                ),
+                WooPosItemsViewState.Tab(
+                    R.string.woopos_coupons_screen_title,
+                    WooPosItemsViewState.Tab.HighlightLevel.Full
+                )
+            )
+        )
+
+        val viewModel = createViewModel()
+        viewModel.onUIEvent(WooPosItemsUIEvent.OnTabClicked(couponsTab))
+
+        // WHEN
+        viewModel.onUIEvent(WooPosItemsUIEvent.SearchIconClicked)
+
+        // THEN
+        verify(analyticsTracker).track(
+            eq(
+                SearchButtonTapped(
+                    source = WooPosAnalyticsEventConstant.ItemsListSource.COUPON,
+                )
+            )
+        )
+    }
+
+    @Test
     fun `when add coupon icon is tapped, then newly created coupon added to cart`() = runTest {
         // GIVEN
         whenever(couponCreationFacade.createCoupon())
