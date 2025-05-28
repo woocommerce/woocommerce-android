@@ -128,14 +128,12 @@ fun WooPosItemsToolbar(
                     when (val search = state.search) {
                         SearchState.Hidden -> Unit
                         is SearchState.Visible -> {
-                            Box {
-                                WooPosSearchInput(
-                                    state = search.state,
-                                    onEvent = { event ->
-                                        onSearchEvent(event)
-                                    },
-                                )
-                            }
+                            WooPosSearchInput(
+                                state = search.state,
+                                onEvent = { event ->
+                                    onSearchEvent(event)
+                                },
+                            )
                         }
                     }
                 }
