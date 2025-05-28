@@ -88,6 +88,9 @@ class WooPosItemsSearchHelper @Inject constructor(
     }
 
     fun onCloseSearchClicked() {
+        coroutineScope.launch {
+            childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.QueryChanged(query = ""))
+        }
         wasLastStateClosed = true
         viewStateFlow.value = viewStateFlow.value.copy(
             search = SearchState.Visible(
@@ -114,12 +117,15 @@ class WooPosItemsSearchHelper @Inject constructor(
         val shouldRequestFocus = wasLastStateClosed
         wasLastStateClosed = false
 
+        val searchHintStringRes = when (currentState) {
+            is WooPosItemsViewState.ProductList -> R.string.woopos_search_products
+            is WooPosItemsViewState.CouponList -> R.string.woopos_search_coupons
+        }
+
         viewStateFlow.value = viewStateFlow.value.copy(
             search = SearchState.Visible(
                 state = WooPosSearchInputState.Open(
-                    input = WooPosSearchInputState.Open.Input.Hint(
-                        resourceProvider.getString(R.string.woopos_search_products)
-                    ),
+                    input = WooPosSearchInputState.Open.Input.Hint(resourceProvider.getString(searchHintStringRes)),
                     isLoading = false,
                     requestFocus = shouldRequestFocus,
                 )
@@ -172,8 +178,8 @@ class WooPosItemsSearchHelper @Inject constructor(
 
     private fun WooPosItemsToolbarViewState.copy(search: SearchState.Visible): WooPosItemsToolbarViewState {
         return when (this) {
-            is WooPosItemsToolbarViewState.ProductList -> this.copy(search = search)
-            is WooPosItemsToolbarViewState.CouponList -> this
+            is WooPosItemsViewState.ProductList -> this.copy(search = search)
+            is WooPosItemsViewState.CouponList -> this.copy(search = search)
             is WooPosItemsToolbarViewState.VariationList -> this
         }
     }

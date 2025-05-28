@@ -44,7 +44,9 @@ class WooShippingLabelPurchasedViewModelTest : BaseUnitTest() {
     )
 
     private val navArgs = WooShippingLabelPurchasedFragmentArgs(
-        purchaseData = mockPurchaseData
+        purchaseData = mockPurchaseData,
+        totalItems = 6,
+        totalItemsCost = "$92.78"
     )
 
     @Test

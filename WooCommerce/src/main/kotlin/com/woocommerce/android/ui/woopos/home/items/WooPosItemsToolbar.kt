@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
@@ -102,11 +103,12 @@ fun WooPosItemsToolbar(
             }
 
             else -> {
+                @Suppress("WooPosDesignSystemSpacingUsageRule")
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value.toAdaptivePadding()))
+                    Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value.toAdaptivePadding()), end = 64.dp)
 
                     TabsRow(
                         tabs = state.tabs,
@@ -193,7 +195,7 @@ fun WooPosProductsToolbarPreview() {
         WooPosItemsToolbar(
             state = WooPosItemsToolbarViewState.ProductList(
                 tabs = tabs,
-                search = SearchState.Hidden,
+                search = SearchState.Visible(WooPosSearchInputState.Closed)
             ),
             onTabClicked = {},
             onSearchEvent = {},
@@ -219,7 +221,10 @@ fun WooPosCouponsToolbarPreview() {
 
     WooPosTheme {
         WooPosItemsToolbar(
-            state = WooPosItemsToolbarViewState.CouponList(tabs = tabs),
+            state = WooPosItemsToolbarViewState.CouponList(
+                tabs = tabs,
+                search = SearchState.Visible(WooPosSearchInputState.Closed)
+            ),
             onTabClicked = {},
             onSearchEvent = {},
             onAddCouponEvent = {},

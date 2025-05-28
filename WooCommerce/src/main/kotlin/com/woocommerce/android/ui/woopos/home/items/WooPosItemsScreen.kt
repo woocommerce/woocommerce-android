@@ -27,6 +27,7 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.Tab.Products
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsUIEvent.SearchChanged
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsScreen
+import com.woocommerce.android.ui.woopos.home.items.coupons.search.WooPosCouponsSearchScreen
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsScreen
 import com.woocommerce.android.ui.woopos.home.items.search.WooPosItemsSearchScreen
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsNavigationData
@@ -153,6 +154,7 @@ private fun MainItemsList(
                             onBackClicked = { onBackClicked() },
                         )
                     }
+                    is ScreenState.CouponsSearch -> WooPosCouponsSearchScreen()
                 }
             }
         }
@@ -163,6 +165,7 @@ private sealed class ScreenState {
     object Products : ScreenState()
     object Coupons : ScreenState()
     object ProductsSearch : ScreenState()
+    object CouponsSearch : ScreenState()
     data class Variations(val variableProductData: WooPosVariationsNavigationData) : ScreenState()
 }
 
@@ -184,6 +187,17 @@ private fun getScreenState(state: WooPosItemsToolbarViewState): ScreenState {
         is WooPosItemsToolbarViewState.VariationList -> ScreenState.Variations(
             variableProductData = state.variableProductData
         )
+        is WooPosItemsViewState.CouponList -> {
+            when (val searchState = state.search) {
+                WooPosItemsViewState.SearchState.Hidden -> ScreenState.COUPONS
+                is WooPosItemsViewState.SearchState.Visible -> {
+                    when (searchState.state) {
+                        WooPosSearchInputState.Closed -> ScreenState.COUPONS
+                        is WooPosSearchInputState.Open -> ScreenState.COUPONS_SEARCH
+                    }
+                }
+            }
+        }
     }
 }
 

@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState.SearchState
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.Tab
@@ -163,6 +164,7 @@ class WooPosItemsViewModel @Inject constructor(
 
             is Tab.Coupons -> WooPosItemsToolbarViewState.CouponList(
                 tabs = tabsHelper.selectTab(state.tabs, selectedTab),
+                search = SearchState.Visible(WooPosSearchInputState.Closed)
             ).also {
                 viewModelScope.launch {
                     analyticsTracker.track(
