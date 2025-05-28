@@ -11,11 +11,11 @@ import kotlin.Boolean as CanLoadMore
 class WooPosCouponsDataSource @Inject constructor(private val handler: CouponListHandler) {
     val couponsFlow: Flow<List<Coupon>> = handler.couponsFlow
 
-    suspend fun clearCacheAndFetchFirstPage(): Result<CanLoadMore> {
-        return handler.fetchCoupons(searchQuery = null, forceRefresh = true)
+    suspend fun clearCacheAndFetchFirstPage(searchQuery: String? = null): Result<CanLoadMore> {
+        return handler.fetchCoupons(searchQuery = searchQuery, forceRefresh = true, isPos = true)
     }
 
     suspend fun loadMore(): Result<CanLoadMore> {
-        return handler.loadMore()
+        return handler.loadMore(isPos = true)
     }
 }
