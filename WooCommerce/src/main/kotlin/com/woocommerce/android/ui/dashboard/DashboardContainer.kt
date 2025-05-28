@@ -161,7 +161,6 @@ private fun DashboardWidgets(
             Row(
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Spacer(modifier = Modifier)
                 widgetColumns.forEachIndexed { columnIndex, columnWidgets ->
                     WooLog.d(WooLog.T.DASHBOARD, "Rendering column $columnIndex with ${columnWidgets.size} widgets")
                     Column(
@@ -179,7 +178,6 @@ private fun DashboardWidgets(
                         }
                     }
                 }
-                Spacer(modifier = Modifier)
             }
         }
     }
