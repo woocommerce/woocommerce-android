@@ -30,16 +30,18 @@ fun ShippableItemModel.toUIModel(
 fun List<ShippableItemModel>.toUIModel(
     currencyFormatter: CurrencyFormatter,
     dimensionUnit: String,
-    weightUnit: String
-): ShippableItemsUI {
+    weightUnit: String,
+    purchased: Boolean
+): ShipmentUI {
     val shippableItemsUI = map { item -> item.toUIModel(currencyFormatter, dimensionUnit, weightUnit) }
     val formattedTotalPrice = getFormattedTotalPrice(currencyFormatter)
     val formattedTotalWeight = getFormattedTotalWeight(weightUnit)
 
-    return ShippableItemsUI(
+    return ShipmentUI(
         shippableItems = shippableItemsUI,
         formattedTotalWeight = formattedTotalWeight,
-        formattedTotalPrice = formattedTotalPrice
+        formattedTotalPrice = formattedTotalPrice,
+        purchased = purchased
     )
 }
 
