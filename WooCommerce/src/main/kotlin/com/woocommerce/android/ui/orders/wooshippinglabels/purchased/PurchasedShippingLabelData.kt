@@ -2,7 +2,7 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.purchased
 
 import android.os.Parcelable
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
-import com.woocommerce.android.ui.orders.wooshippinglabels.ShippableItemsUI
+import com.woocommerce.android.ui.orders.wooshippinglabels.ShipmentUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.ShippingLineSummaryUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.ShippingRateSummaryUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingAddresses
@@ -14,7 +14,7 @@ data class PurchasedShippingLabelData(
     val orderId: Long,
     val carrierId: String,
     val trackingNumber: String,
-    val items: ShippableItemsUI,
+    val items: ShipmentUI,
     val addresses: WooShippingAddresses,
     val rateSummary: ShippingRateSummaryUI,
     val shippingLines: List<ShippingLineSummaryUI>,
