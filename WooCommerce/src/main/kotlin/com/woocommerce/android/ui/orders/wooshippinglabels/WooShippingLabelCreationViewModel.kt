@@ -428,7 +428,8 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                     currencyFormatter,
                     storeOptions.dimensionUnit,
                     storeOptions.weightUnit,
-                    shipments[index].purchased
+                    shipments[index].purchased,
+                    hazmatStatesFlow.value[index].hazmatSelection,
                 )
             }
 
@@ -443,7 +444,6 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                 uiState = uiState,
                 purchaseState = purchaseState,
                 customsState = customsState,
-                hazmatState = hazmatState,
                 destinationStatus = destinationStatus
             )
         }.combine(loadTrigger.onStart { emit(Unit) }) { viewState, _ ->
@@ -528,7 +528,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         val orderId = navArgs.orderId
         val lastOrderComplete = uiState.value.markOrderComplete
         val shippableItemsIdList = shipmentItems.value[selectedShipmentIndex.value].map { it.productId }
-        val hazmatSelection = hazmatState.value.hazmatSelection
+        val hazmatSelection = hazmatStatesFlow.value[selectedShipmentIndex.value].hazmatSelection
 
         val backupPurchaseState = purchaseState.value
         purchaseState.value = PurchaseState.InProgress
@@ -793,7 +793,6 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             val uiState: UIControlsState,
             val purchaseState: PurchaseState,
             val customsState: CustomsState,
-            val hazmatState: HazmatState,
             val destinationStatus: AddressStatus
         ) : WooShippingViewState()
     }
@@ -870,7 +869,8 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         data class DataAvailable(val customsData: CustomsData) : CustomsState()
     }
 
-    sealed class HazmatState {
+    @Parcelize
+    sealed class HazmatState : Parcelable {
         data object NoSelection : HazmatState()
         data class Declared(val hazmatCategory: ShippingLabelHazmatCategory) : HazmatState()
 
@@ -917,7 +917,8 @@ data class ShipmentUI(
     val shippableItems: List<ShippableItemUI>,
     val formattedTotalWeight: String,
     val formattedTotalPrice: String,
-    val purchased: Boolean
+    val purchased: Boolean,
+    val hazmatState: HazmatState
 ) : Parcelable {
     val totalItemQuantity
         get() = shippableItems.sumByFloat { it.quantity }.toInt()
