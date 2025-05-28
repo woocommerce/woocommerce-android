@@ -18,6 +18,7 @@ sealed class WooPosItemsToolbarViewState(
 
     data class CouponList(
         override val tabs: List<Tab>,
+        override val search: SearchState,
     ) : WooPosItemsToolbarViewState(
         tabs = tabs,
         search = SearchState.Hidden,

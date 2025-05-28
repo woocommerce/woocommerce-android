@@ -183,17 +183,16 @@ private fun getScreenState(state: WooPosItemsToolbarViewState): ScreenState {
             }
         }
 
-        is WooPosItemsToolbarViewState.CouponList -> ScreenState.Coupons
         is WooPosItemsToolbarViewState.VariationList -> ScreenState.Variations(
             variableProductData = state.variableProductData
         )
-        is WooPosItemsViewState.CouponList -> {
+        is WooPosItemsToolbarViewState.CouponList -> {
             when (val searchState = state.search) {
-                WooPosItemsViewState.SearchState.Hidden -> ScreenState.COUPONS
-                is WooPosItemsViewState.SearchState.Visible -> {
+                WooPosItemsToolbarViewState.SearchState.Hidden -> ScreenState.Coupons
+                is WooPosItemsToolbarViewState.SearchState.Visible -> {
                     when (searchState.state) {
-                        WooPosSearchInputState.Closed -> ScreenState.COUPONS
-                        is WooPosSearchInputState.Open -> ScreenState.COUPONS_SEARCH
+                        WooPosSearchInputState.Closed -> ScreenState.Coupons
+                        is WooPosSearchInputState.Open -> ScreenState.CouponsSearch
                     }
                 }
             }
