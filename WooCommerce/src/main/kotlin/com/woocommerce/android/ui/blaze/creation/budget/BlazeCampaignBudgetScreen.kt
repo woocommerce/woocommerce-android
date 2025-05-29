@@ -331,27 +331,21 @@ private fun CampaignDurationRow(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            when {
-                isEndlessCampaign ->
-                    Text(
-                        text = stringResource(
-                            id = R.string.blaze_campaign_budget_duration_endless_campaign_value,
-                            formattedStartDate
-                        ),
-                        style = MaterialTheme.typography.h6,
-                        fontWeight = FontWeight.SemiBold,
+            Text(
+                modifier = Modifier.weight(1f),
+                text = when (isEndlessCampaign) {
+                    true -> stringResource(
+                        id = R.string.blaze_campaign_budget_duration_endless_campaign_value,
+                        formattedStartDate
                     )
-
-                else -> {
-                    Text(
-                        text = "$formattedStartDate - $formattedEndDate",
-                        style = MaterialTheme.typography.h6,
-                        fontWeight = FontWeight.SemiBold,
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.weight(1f))
-            WCTextButton(onClick = onEditDurationTapped) {
+                    else -> "$formattedStartDate - $formattedEndDate"
+                },
+                style = MaterialTheme.typography.h6,
+                fontWeight = FontWeight.SemiBold,
+            )
+            WCTextButton(
+                onClick = onEditDurationTapped
+            ) {
                 Text(
                     text = stringResource(id = R.string.blaze_campaign_budget_edit_duration_button),
                     style = MaterialTheme.typography.h6,
