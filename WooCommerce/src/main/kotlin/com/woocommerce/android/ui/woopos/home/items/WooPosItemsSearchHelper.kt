@@ -158,10 +158,16 @@ class WooPosItemsSearchHelper @Inject constructor(
         val searchState = getCurrentSearchVisibleState() ?: return
         val searchStateValue = getCurrentSearchOpenState() ?: return
 
+        val shouldShowLoading = if (viewStateFlow.value is WooPosItemsToolbarViewState.CouponList) {
+            false
+        } else {
+            isLoading
+        }
+
         viewStateFlow.value = viewStateFlow.value.copy(
             search = searchState.copy(
                 state = searchStateValue.copy(
-                    isLoading = isLoading
+                    isLoading = shouldShowLoading
                 )
             )
         )
