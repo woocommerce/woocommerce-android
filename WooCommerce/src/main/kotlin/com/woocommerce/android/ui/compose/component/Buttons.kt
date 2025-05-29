@@ -291,7 +291,7 @@ fun WCTextButton(
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     contentPadding: PaddingValues = ButtonDefaults.TextButtonContentPadding,
     colors: ButtonColors = ButtonDefaults.textButtonColors(
-        disabledContentColor = colorResource(id = R.color.color_on_surface),
+        disabledContentColor = colorResource(id = R.color.color_on_surface_medium),
     ),
 ) {
     TextButton(
