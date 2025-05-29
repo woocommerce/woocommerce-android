@@ -115,7 +115,7 @@ fun WooPosItemsToolbar(
                     )
 
                     if (state is WooPosItemsToolbarViewState.CouponList) {
-                        Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
+                        Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value.toAdaptivePadding()))
                         WooPosCircularIconButton(
                             icon = Icons.Default.Add,
                             contentDescription = stringResource(
@@ -123,6 +123,7 @@ fun WooPosItemsToolbar(
                             ),
                             onClick = { onAddCouponEvent() }
                         )
+                        Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value.toAdaptivePadding()))
                     }
 
                     when (val search = state.search) {
