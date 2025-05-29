@@ -230,7 +230,7 @@ fun WCSelectableChip(
     enabled: Boolean = true,
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     selectedButtonColors: ButtonColors = ButtonDefaults.outlinedButtonColors(
-        backgroundColor = colorResource(id = R.color.woo_purple_40),
+        backgroundColor = colorResource(id = R.color.primary_colored_button_background),
         contentColor = colorResource(id = R.color.woo_white)
     ),
     defaultButtonColors: ButtonColors = ButtonDefaults.outlinedButtonColors(
