@@ -767,6 +767,14 @@ class WCOrderStore @Inject constructor(
         orderId
     )
 
+    suspend fun sendOrderPOSSpecificReceipt(
+        site: SiteModel,
+        orderId: Long,
+    ) = wcOrderRestClient.sendOrderPOSSpecificReceipt(
+        site,
+        orderId
+    )
+
     private suspend fun optimisticallyUpdateOrder(
         orderId: Long,
         localSiteId: LocalId,

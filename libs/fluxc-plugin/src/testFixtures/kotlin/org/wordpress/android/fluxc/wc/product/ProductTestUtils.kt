@@ -80,13 +80,13 @@ object ProductTestUtils {
         description: String = "",
         siteId: Int = 6
     ): WCProductShippingClassModel {
-        return WCProductShippingClassModel().apply {
-            remoteShippingClassId = remoteId
-            localSiteId = siteId
-            this.name = name
-            this.slug = slug
-            this.description = description
-        }
+        return WCProductShippingClassModel(
+            remoteShippingClassId = RemoteId(remoteId),
+            localSiteId = LocalId(siteId),
+            name = name,
+            slug = slug,
+            description = description,
+        )
     }
 
     fun generateSampleProductReview(
@@ -94,11 +94,11 @@ object ProductTestUtils {
         remoteProductReviewId: Long = 2L,
         siteId: Int = 6
     ): WCProductReviewModel {
-        return WCProductReviewModel(1).apply {
-            this.remoteProductId = remoteProductId
-            this.remoteProductReviewId = remoteProductReviewId
-            this.localSiteId = siteId
-        }
+        return WCProductReviewModel(
+            remoteProductId = RemoteId(remoteProductId),
+            remoteProductReviewId = RemoteId(remoteProductReviewId),
+            localSiteId = LocalId(siteId),
+        )
     }
 
     fun generateProductShippingClassList(siteId: Int = 6) = List(5) {
@@ -113,19 +113,19 @@ object ProductTestUtils {
         val responseType = object : TypeToken<List<ProductReviewApiResponse>>() {}.type
         val converted = Gson().fromJson(json, responseType) as? List<ProductReviewApiResponse> ?: emptyList()
         return converted.map {
-            WCProductReviewModel().apply {
-                localSiteId = siteId
-                remoteProductReviewId = it.id
-                remoteProductId = it.product_id
-                dateCreated = it.date_created_gmt?.let { "${it}Z" } ?: ""
-                status = it.status ?: ""
-                reviewerName = it.reviewer ?: ""
-                reviewerEmail = it.reviewer_email ?: ""
-                review = it.review ?: ""
-                rating = it.rating
-                verified = it.verified
-                reviewerAvatarsJson = it.reviewer_avatar_urls.toString()
-            }
+            WCProductReviewModel(
+                localSiteId = LocalId(siteId),
+                remoteProductReviewId = RemoteId(it.id),
+                remoteProductId = RemoteId(it.product_id),
+                dateCreated = it.date_created_gmt?.let { "${it}Z" } ?: "",
+                status = it.status ?: "",
+                reviewerName = it.reviewer ?: "",
+                reviewerEmail = it.reviewer_email ?: "",
+                review = it.review ?: "",
+                rating = it.rating,
+                verified = it.verified,
+                reviewerAvatarsJson = it.reviewer_avatar_urls.toString(),
+ )
         }
     }
 

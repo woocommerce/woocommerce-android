@@ -14,10 +14,17 @@ class WooPosPreferencesRepository @Inject constructor(
     private val dataStore: DataStore<Preferences>
 ) {
     private val recentProductSearchesSiteSpecificKey = buildSiteSpecificKey(RECENT_PRODUCT_SEARCHES_KEY)
+    private val recentCouponSearchesSiteSpecificKey = buildSiteSpecificKey(RECENT_COUPON_SEARCHES_KEY)
 
     val recentProductSearches: Flow<List<String>> = dataStore.data
         .map { preferences ->
             val searchesString = preferences[recentProductSearchesSiteSpecificKey] ?: ""
+            if (searchesString.isEmpty()) emptyList() else searchesString.split(",")
+        }
+
+    val recentCouponSearches: Flow<List<String>> = dataStore.data
+        .map { preferences ->
+            val searchesString = preferences[recentCouponSearchesSiteSpecificKey] ?: ""
             if (searchesString.isEmpty()) emptyList() else searchesString.split(",")
         }
 
@@ -35,11 +42,26 @@ class WooPosPreferencesRepository @Inject constructor(
         }
     }
 
+    suspend fun addRecentCouponSearch(search: String) {
+        dataStore.edit { preferences ->
+            val currentSearches = preferences[recentCouponSearchesSiteSpecificKey]?.let {
+                if (it.isEmpty()) emptyList() else it.split(",")
+            } ?: emptyList()
+
+            val updatedSearches = (listOf(search) + currentSearches)
+                .distinct()
+                .take(MAX_RECENT_SEARCHES_COUNT)
+
+            preferences[recentCouponSearchesSiteSpecificKey] = updatedSearches.joinToString(",")
+        }
+    }
+
     private fun buildSiteSpecificKey(key: String): Preferences.Key<String> =
         stringPreferencesKey("${selectedSite.getOrNull()?.siteId}-$key")
 
     private companion object {
         const val RECENT_PRODUCT_SEARCHES_KEY = "recent_product_searches_key"
+        const val RECENT_COUPON_SEARCHES_KEY = "recent_coupon_searches_key"
 
         const val MAX_RECENT_SEARCHES_COUNT = 10
     }

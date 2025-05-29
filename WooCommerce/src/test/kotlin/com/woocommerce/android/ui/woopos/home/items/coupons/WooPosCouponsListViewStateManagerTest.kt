@@ -384,6 +384,35 @@ class WooPosCouponsListViewStateManagerTest {
     }
 
     @Test
+    fun `when end of list reached and load more fails, then PTR enabled`() = runTest {
+        // GIVEN
+        whenever(couponsDataSource.clearCacheAndFetchFirstPage()).doSuspendableAnswer {
+            couponsDataFlow.emit(listOf(CouponTestUtils.generateTestCoupon(0L))) // cache
+            delay(1) // workaround for bug in mockito
+            Result.success(MORE_PAGES_AVAILABLE)
+        }
+        sat.fetchCoupons(testViewModelScope, WooPosCouponsListViewStateManager.WooPosCouponsListRefreshType.INITIAL)
+        advanceUntilIdle()
+        whenever(couponsDataSource.loadMore()).doSuspendableAnswer {
+            delay(1) // workaround for bug in mockito
+            Result.failure(IllegalArgumentException("Test exception"))
+        }
+
+        sat.viewState.test {
+            // WHEN
+            sat.endOfListReached(testViewModelScope)
+
+            advanceUntilIdle()
+
+            // THEN
+            val state = expectMostRecentItem() as Content
+            assertThat(state.pullToRefreshState).isInstanceOf(WooPosPullToRefreshState.Enabled::class.java)
+
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
     fun `given pagination state error, when end of list reached, then nothing happens`() = runTest {
         // GIVEN
         whenever(couponsDataSource.clearCacheAndFetchFirstPage()).doSuspendableAnswer {

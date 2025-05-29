@@ -131,19 +131,6 @@ public class MediaSqlUtils {
                 .orderBy(MediaModelTable.UPLOAD_DATE, SelectQuery.ORDER_DESCENDING);
     }
 
-    @Nullable
-    public static MediaModel getMediaWithLocalId(int localMediaId) {
-        List<MediaModel> result = WellSql.select(MediaModel.class).where()
-                .equals(MediaModelTable.ID, localMediaId)
-                .endWhere()
-                .getAsModel();
-        if (result.isEmpty()) {
-            return null;
-        } else {
-            return result.get(0);
-        }
-    }
-
     @NonNull
     public static List<MediaModel> searchSiteMedia(
             @NonNull SiteModel siteModel,
@@ -313,30 +300,6 @@ public class MediaSqlUtils {
                 .equals(column, value)
                 .endGroup().endWhere()
                 .orderBy(MediaModelTable.UPLOAD_DATE, SelectQuery.ORDER_DESCENDING);
-    }
-
-    @NonNull
-    public static List<MediaModel> matchPostMedia(
-            int localPostId,
-            @NonNull String column,
-            @NonNull Object value) {
-        return WellSql.select(MediaModel.class)
-                .where().beginGroup()
-                .equals(MediaModelTable.LOCAL_POST_ID, localPostId)
-                .equals(column, value)
-                .endGroup().endWhere()
-                .orderBy(MediaModelTable.UPLOAD_DATE, SelectQuery.ORDER_DESCENDING)
-                .getAsModel();
-    }
-
-    @NonNull
-    public static List<MediaModel> matchPostMedia(int localPostId) {
-        return WellSql.select(MediaModel.class)
-                .where().beginGroup()
-                .equals(MediaModelTable.LOCAL_POST_ID, localPostId)
-                .endGroup().endWhere()
-                .orderBy(MediaModelTable.UPLOAD_DATE, SelectQuery.ORDER_DESCENDING)
-                .getAsModel();
     }
 
     public static int insertOrUpdateMedia(@Nullable MediaModel media) {

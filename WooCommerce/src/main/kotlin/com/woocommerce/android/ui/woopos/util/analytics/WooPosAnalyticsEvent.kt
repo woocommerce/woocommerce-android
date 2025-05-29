@@ -99,6 +99,26 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "coupons_create_tapped"
         }
 
+        data object CouponCreationInitiated : PaymentFlowTrackerEvent() {
+            override val name: String = "coupon_creation_initiated"
+        }
+
+        data object CouponCreationSuccess : PaymentFlowTrackerEvent() {
+            override val name: String = "coupon_creation_success"
+        }
+
+        data object CouponCreationFailed : PaymentFlowTrackerEvent() {
+            override val name: String = "coupon_creation_failed"
+        }
+
+        data object CouponsLoadFailed : PaymentFlowTrackerEvent() {
+            override val name: String = "coupons_load_failed"
+        }
+
+        data object CouponsLoaded : PaymentFlowTrackerEvent() {
+            override val name: String = "coupons_loaded"
+        }
+
         @ExposedCopyVisibility
         data class ItemAddedToCart private constructor(
             val source: ItemsListSource,
@@ -269,7 +289,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
         }
 
         data class SearchRemoteResultsFetched(
-            val totalProductsCount: Int?,
+            val totalItemsCount: Int?,
             val millisecondsSinceRequestSent: Long,
             val source: ItemsListSource,
         ) : Event() {
@@ -282,8 +302,8 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                         ItemsListSource.SOURCE to source.toString(),
                     )
                 )
-                if (totalProductsCount != null) {
-                    addProperties(mapOf("total_items_count" to totalProductsCount.toString()))
+                if (totalItemsCount != null) {
+                    addProperties(mapOf("total_items_count" to totalItemsCount.toString()))
                 }
             }
         }

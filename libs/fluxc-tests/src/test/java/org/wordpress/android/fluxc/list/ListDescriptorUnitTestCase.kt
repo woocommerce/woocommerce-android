@@ -1,9 +1,8 @@
 package org.wordpress.android.fluxc.list
 
-import org.wordpress.android.fluxc.list.post.assertDifferentTypeIdentifiers
-import org.wordpress.android.fluxc.list.post.assertDifferentUniqueIdentifiers
-import org.wordpress.android.fluxc.list.post.assertSameTypeIdentifiers
-import org.wordpress.android.fluxc.list.post.assertSameUniqueIdentifiers
+import org.hamcrest.CoreMatchers.equalTo
+import org.hamcrest.CoreMatchers.not
+import org.hamcrest.MatcherAssert.assertThat
 import org.wordpress.android.fluxc.model.list.ListDescriptor
 
 internal class ListDescriptorUnitTestCase<T : ListDescriptor>(
@@ -45,4 +44,20 @@ internal class ListDescriptorUnitTestCase<T : ListDescriptor>(
             )
         }
     }
+}
+
+fun assertSameTypeIdentifiers(reason: String, descriptor1: ListDescriptor, descriptor2: ListDescriptor) {
+    assertThat(reason, descriptor1.typeIdentifier, equalTo(descriptor2.typeIdentifier))
+}
+
+fun assertDifferentTypeIdentifiers(reason: String, descriptor1: ListDescriptor, descriptor2: ListDescriptor) {
+    assertThat(reason, descriptor1.typeIdentifier, not(equalTo(descriptor2.typeIdentifier)))
+}
+
+fun assertSameUniqueIdentifiers(reason: String, descriptor1: ListDescriptor, descriptor2: ListDescriptor) {
+    assertThat(reason, descriptor1.uniqueIdentifier, equalTo(descriptor2.uniqueIdentifier))
+}
+
+fun assertDifferentUniqueIdentifiers(reason: String, descriptor1: ListDescriptor, descriptor2: ListDescriptor) {
+    assertThat(reason, descriptor1.uniqueIdentifier, not(equalTo(descriptor2.uniqueIdentifier)))
 }

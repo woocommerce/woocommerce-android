@@ -30,9 +30,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import java.util.Date
+import java.util.concurrent.atomic.AtomicReference
 import javax.inject.Inject
 
 private const val AVOID_UI_FLICKERING_DELAY = 500L
+private const val SEARCH_DEBOUNCE_TIME = 500L
+private const val MAX_RECENT_SEARCHES = 10
 
 class WooPosCouponsListViewStateManager @Inject constructor(
     private val couponsDataSource: WooPosCouponsDataSource,
@@ -42,9 +45,12 @@ class WooPosCouponsListViewStateManager @Inject constructor(
     private val analyticsTracker: WooPosAnalyticsTracker,
 ) {
     private val fetchingState: MutableStateFlow<FetchingCouponsState> = MutableStateFlow(IDLE)
+    private val currentSearchQuery = AtomicReference<String?>(null)
+    private val recentSearches = AtomicReference<List<String>>(emptyList())
 
     private var loadingMoreJob: Job? = null
     private var fetchingFirstPageJob: Job? = null
+    private var searchJob: Job? = null
     private var canLoadMore: Boolean = true
 
     enum class FetchingCouponsState {
@@ -103,6 +109,33 @@ class WooPosCouponsListViewStateManager @Inject constructor(
 
     val viewState: Flow<WooPosCouponsViewState> = contentFlow
 
+    fun getCurrentSearchQuery(): String? = currentSearchQuery.get()
+
+    fun getRecentSearches(): List<String> = recentSearches.get()
+
+    fun setRecentSearches(searches: List<String>) {
+        recentSearches.set(searches.take(MAX_RECENT_SEARCHES))
+    }
+
+    fun setSearchQuery(query: String?, viewModelScope: CoroutineScope) {
+        searchJob?.cancel()
+        loadingMoreJob?.cancel()
+        fetchingFirstPageJob?.cancel()
+
+        if (query.isNullOrBlank()) {
+            currentSearchQuery.set(null)
+            fetchCoupons(viewModelScope, WooPosCouponsListRefreshType.INITIAL)
+            return
+        }
+
+        currentSearchQuery.set(query)
+
+        searchJob = viewModelScope.launch {
+            delay(SEARCH_DEBOUNCE_TIME)
+            fetchCoupons(viewModelScope, WooPosCouponsListRefreshType.INITIAL)
+        }
+    }
+
     fun fetchCoupons(viewModelScope: CoroutineScope, refreshType: WooPosCouponsListRefreshType) {
         if (fetchingFirstPageJob?.isActive == true) {
             return
@@ -117,7 +150,7 @@ class WooPosCouponsListViewStateManager @Inject constructor(
                     WooPosCouponsListRefreshType.RETRY -> RETRY_FETCHING_FIRST_PAGE
                 }
             )
-            val result = couponsDataSource.clearCacheAndFetchFirstPage()
+            val result = couponsDataSource.clearCacheAndFetchFirstPage(currentSearchQuery.get())
             if (result.isSuccess) {
                 canLoadMore = result.getOrNull() ?: false
                 fetchingState.emit(IDLE)
@@ -187,8 +220,8 @@ class WooPosCouponsListViewStateManager @Inject constructor(
 
     private fun getPullToRefreshState(fetchingState: FetchingCouponsState) =
         when (fetchingState) {
-            IDLE, FETCHING_MORE -> Enabled
-            FETCHING_FIRST_PAGE, RETRY_FETCHING_FIRST_PAGE, ERROR_FETCHING_MORE -> Disabled
+            IDLE, FETCHING_MORE, ERROR_FETCHING_MORE -> Enabled
+            FETCHING_FIRST_PAGE, RETRY_FETCHING_FIRST_PAGE -> Disabled
             PTR_FETCHING_FIRST_PAGE -> Refreshing
             ERROR_FETCHING_FIRST_PAGE -> error("Full screen error should be displayed")
         }

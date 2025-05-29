@@ -55,7 +55,7 @@ import com.woocommerce.android.util.StringUtils
 
 @Composable
 fun ShippingProductsCard(
-    shippableItems: ShippableItemsUI,
+    shippableItems: ShipmentUI,
     modifier: Modifier = Modifier,
     iconColor: Color = MaterialTheme.colors.primary,
     isExpanded: Boolean = false,
@@ -92,10 +92,11 @@ private fun ShippingProductsCardPreview(@PreviewParameter(IsExpandedProvider::cl
     WooThemeWithBackground {
         Box(modifier = Modifier.padding(dimensionResource(R.dimen.major_100))) {
             ShippingProductsCard(
-                shippableItems = ShippableItemsUI(
+                shippableItems = ShipmentUI(
                     shippableItems = generateItems(6),
                     formattedTotalWeight = "8.5kg",
-                    formattedTotalPrice = "$92.78"
+                    formattedTotalPrice = "$92.78",
+                    purchased = false
                 ),
                 isExpanded = isExpanded
             )
@@ -105,7 +106,7 @@ private fun ShippingProductsCardPreview(@PreviewParameter(IsExpandedProvider::cl
 
 @Composable
 private fun ShippingProductsCardHeader(
-    shippableItems: ShippableItemsUI,
+    shippableItems: ShipmentUI,
     iconColor: Color,
     modifier: Modifier = Modifier,
     isExpanded: Boolean = false
@@ -162,10 +163,11 @@ private fun ShippingProductsCardHeader(
 @Preview
 @Composable
 private fun ShippingProductsCardHeaderPreview() {
-    val shippableItems = ShippableItemsUI(
+    val shippableItems = ShipmentUI(
         shippableItems = generateItems(4),
         formattedTotalWeight = "8.5kg",
-        formattedTotalPrice = "$92.78"
+        formattedTotalPrice = "$92.78",
+        purchased = false
     )
     val isExpanded = remember { mutableStateOf(false) }
 
