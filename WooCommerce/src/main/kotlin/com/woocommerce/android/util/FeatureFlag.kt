@@ -25,10 +25,10 @@ enum class FeatureFlag {
             WC_SHIPPING_BANNER,
             BETTER_CUSTOMER_SEARCH_M2,
             ORDER_CREATION_AUTO_TAX_RATE,
-            REVAMP_WOO_SHIPPING,
-            POS_RECEIPTS -> PackageUtils.isDebugBuild()
+            REVAMP_WOO_SHIPPING -> PackageUtils.isDebugBuild()
 
             NEW_SHIPPING_SUPPORT,
+            POS_RECEIPTS,
             BULK_UPDATE_ORDERS_STATUS,
             HIDE_SITES_FROM_SITE_PICKER -> true
         }
