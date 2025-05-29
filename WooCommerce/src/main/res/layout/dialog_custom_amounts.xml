@@ -64,6 +64,8 @@
                 android:id="@+id/currencyLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginEnd="@dimen/major_100"
                 app:layout_constraintTop_toBottomOf="@id/headerLayout">
 
                 <com.woocommerce.android.widgets.WCMaterialOutlinedCurrencyEditTextView
@@ -93,36 +95,52 @@
                     android:id="@+id/editPercentage"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:maxWidth="@dimen/edit_percentage_max_width"
                     android:gravity="start"
                     android:imeOptions="flagNoFullscreen|actionDone"
                     android:textSize="@dimen/line_height_major_100"
                     android:inputType="numberDecimal"
                     android:hint="@string/custom_amounts_percentage_hint"
                     android:paddingBottom="@dimen/minor_00"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:paddingStart="@dimen/minor_25"
+                    android:paddingEnd="@dimen/minor_25"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    tools:hint="50"/>
+                    app:layout_constraintEnd_toStartOf="@id/percentageSymbolText"
+                    app:layout_constraintWidth_percent="0.6"
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    app:layout_constraintHorizontal_bias="0"
+                    tools:hint="100.00"/>
 
                 <TextView
                     android:id="@+id/percentageSymbolText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:layout_constraintStart_toEndOf="@id/editPercentage"
+                    app:layout_constraintEnd_toStartOf="@id/updatedAmount"
                     app:layout_constraintBottom_toBottomOf="@id/editPercentage"
+                    app:layout_constraintHorizontal_chainStyle="packed"
                     android:textSize="@dimen/line_height_major_100"
+                    android:paddingStart="@dimen/minor_25"
+                    android:paddingEnd="@dimen/minor_100"
                     android:text="@string/custom_amounts_percentage_symbol"/>
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/updatedAmount"
                     style="@style/Woo.TextView.Headline6"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:textSize="@dimen/text_major_25"
                     android:paddingEnd="@dimen/minor_100"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:gravity="end"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/percentageSymbolText"
                     app:layout_constraintBottom_toBottomOf="@id/editPercentage"
-                    tools:text="6.00"/>
+                    app:layout_constraintHorizontal_bias="1"
+                    tools:text="123423453456.99"/>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <View

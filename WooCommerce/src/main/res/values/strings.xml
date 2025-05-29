@@ -677,6 +677,7 @@
     <string name="custom_amounts_percentage_hint">0</string>
     <string name="custom_amounts_percentage_symbol">%</string>
     <string name="custom_amounts_percentage_invalid_value">Invalid value</string>
+    <string name="custom_amounts_save_changes">Save Changes</string>
 
     <!--
          Taxes
