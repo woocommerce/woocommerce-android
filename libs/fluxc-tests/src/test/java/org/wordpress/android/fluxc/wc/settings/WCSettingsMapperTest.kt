@@ -22,7 +22,7 @@ class WCSettingsMapperTest {
 
     @Test
     fun `mapper maps to correct settings model`() {
-        // given
+        // GIVEN
         val expectedModel = WCSettingsModel(
             localSiteId = site.id,
             currencyCode = "USD",
@@ -39,11 +39,11 @@ class WCSettingsMapperTest {
             couponsEnabled = true
         )
 
-        // when
+        // WHEN
         val siteSettingsResponse = WCSettingsTestUtils.getSiteSettingsResponse()
         val result = mapper.mapSiteSettings(siteSettingsResponse!!, site)
 
-        // then
+        // THEN
         with(result) {
             assertEquals(expectedModel.localSiteId, localSiteId)
             assertEquals(expectedModel.currencyCode, currencyCode)
@@ -62,18 +62,18 @@ class WCSettingsMapperTest {
 
     @Test
     fun `mapper maps to correct product settings model`() {
-        // given
+        // GIVEN
         val expectedModel = WCProductSettingsModel().apply {
             localSiteId = site.id
             dimensionUnit = "in"
             weightUnit = "oz"
         }
 
-        // when
+        // WHEN
         val siteProductSettingsResponse = WCSettingsTestUtils.getSiteProductSettingsResponse()
         val result = mapper.mapProductSettings(siteProductSettingsResponse!!, site)
 
-        // then
+        // THEN
         with(result) {
             assertEquals(expectedModel.localSiteId, localSiteId)
             assertEquals(expectedModel.dimensionUnit, dimensionUnit)
@@ -83,79 +83,79 @@ class WCSettingsMapperTest {
 
     @Test
     fun `when mapping feature is enabled settings with yes value, then returns true`() {
-        // Given
+        // GIVEN
         val response = mock<SiteSettingOptionResponse>()
         whenever(response.value).thenReturn("yes")
 
-        // When
+        // WHEN
         val result = mapper.mapFeatureIsEnabledSettings(response)
 
-        // Then
+        // THEN
         assertThat(result).isTrue()
     }
 
     @Test
     fun `when mapping feature is enabled settings with no value, then returns false`() {
-        // Given
+        // GIVEN
         val response = mock<SiteSettingOptionResponse>()
         whenever(response.value).thenReturn("no")
 
-        // When
+        // WHEN
         val result = mapper.mapFeatureIsEnabledSettings(response)
 
-        // Then
+        // THEN
         assertThat(result).isFalse()
     }
 
     @Test
     fun `when mapping feature is enabled settings with empty string, then returns null`() {
-        // Given
+        // GIVEN
         val response = mock<SiteSettingOptionResponse>()
         whenever(response.value).thenReturn("")
 
-        // When
+        // WHEN
         val result = mapper.mapFeatureIsEnabledSettings(response)
 
-        // Then
+        // THEN
         assertThat(result).isNull()
     }
 
     @Test
     fun `when mapping feature is enabled settings with unknown value, then returns null`() {
-        // Given
+        // GIVEN
         val response = mock<SiteSettingOptionResponse>()
         whenever(response.value).thenReturn("maybe")
 
-        // When
+        // WHEN
         val result = mapper.mapFeatureIsEnabledSettings(response)
 
-        // Then
+        // THEN
         assertThat(result).isNull()
     }
 
     @Test
     fun `when mapping feature is enabled settings with different casing, then returns null`() {
-        // Given
+        // GIVEN
         val response = mock<SiteSettingOptionResponse>()
         whenever(response.value).thenReturn("YES")
 
-        // When
+        // WHEN
         val result = mapper.mapFeatureIsEnabledSettings(response)
 
-        // Then
+        // THEN
         assertThat(result).isNull()
     }
 
     @Test
     fun `when mapping feature is enabled settings with whitespace, then returns null`() {
-        // Given
+        // GIVEN
         val response = mock<SiteSettingOptionResponse>()
         whenever(response.value).thenReturn(" yes ")
 
-        // When
+        // WHEN
         val result = mapper.mapFeatureIsEnabledSettings(response)
 
-        // Then
+        // THEN
         assertThat(result).isNull()
     }
 }
