@@ -67,7 +67,7 @@ class WCSettingsMapper
     }
 
     fun mapFeatureIsEnabledSettings(response: SiteSettingOptionResponse): Boolean? {
-        return when (response.value) {
+        return when (response.value?.lowercase()) {
             "yes" -> true
             "no" -> false
             else -> null
