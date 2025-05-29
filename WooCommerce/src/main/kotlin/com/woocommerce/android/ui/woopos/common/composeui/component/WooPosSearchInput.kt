@@ -2,13 +2,9 @@ package com.woocommerce.android.ui.woopos.common.composeui.component
 
 import android.os.Parcelable
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -35,7 +31,6 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -67,7 +62,6 @@ import kotlinx.parcelize.Parcelize
 fun WooPosSearchInput(
     modifier: Modifier = Modifier,
     state: WooPosSearchInputState = WooPosSearchInputState.Closed,
-    animationDuration: Int = 300,
     onEvent: (WooPosSearchUIEvent) -> Unit = {},
 ) {
     BackHandler(
@@ -75,71 +69,26 @@ fun WooPosSearchInput(
         onBack = { onEvent(WooPosSearchUIEvent.Close) }
     )
 
-    var lastOpenState by rememberSaveable { mutableStateOf<WooPosSearchInputState.Open?>(null) }
-
-    val searchVisibleState = remember { MutableTransitionState(state is WooPosSearchInputState.Closed) }
-    val inputVisibleState = remember { MutableTransitionState(state is WooPosSearchInputState.Open) }
-
-    LaunchedEffect(state) {
-        searchVisibleState.targetState = state is WooPosSearchInputState.Closed
-        inputVisibleState.targetState = state is WooPosSearchInputState.Open
-
-        if (state is WooPosSearchInputState.Open) {
-            lastOpenState = state
-        }
-    }
-
     Box(
-        modifier = modifier
-            .fillMaxWidth(),
+        modifier = modifier,
         contentAlignment = Alignment.CenterEnd
     ) {
-        AnimatedVisibility(
-            visibleState = inputVisibleState,
-            enter = fadeIn(
-                animationSpec = tween(
-                    durationMillis = animationDuration,
-                    easing = FastOutSlowInEasing
-                )
-            ),
-            exit = fadeOut(
-                animationSpec = tween(
-                    durationMillis = animationDuration / 2,
-                    easing = FastOutSlowInEasing,
-                )
-            ),
-        ) {
-            lastOpenState?.let {
+        when (state) {
+            is WooPosSearchInputState.Open -> {
                 SearchInput(
-                    state = it,
-                    animationDuration = animationDuration.toLong(),
+                    state = state,
                     onEvent = onEvent,
                 )
             }
-        }
-
-        AnimatedVisibility(
-            visibleState = searchVisibleState,
-            enter = fadeIn(
-                animationSpec = tween(
-                    durationMillis = animationDuration,
-                    delayMillis = animationDuration / 3,
-                    easing = FastOutSlowInEasing
+            is WooPosSearchInputState.Closed -> {
+                WooPosCircularIconButton(
+                    icon = Icons.Default.Search,
+                    contentDescription = stringResource(
+                        id = R.string.woopos_search_products,
+                    ),
+                    onClick = { onEvent(SearchIconClicked) }
                 )
-            ),
-            exit = fadeOut(
-                animationSpec = tween(
-                    durationMillis = animationDuration / 3
-                )
-            )
-        ) {
-            WooPosCircularIconButton(
-                icon = Icons.Default.Search,
-                contentDescription = stringResource(
-                    id = R.string.woopos_search_products,
-                ),
-                onClick = { onEvent(SearchIconClicked) }
-            )
+            }
         }
     }
 }
@@ -147,15 +96,15 @@ fun WooPosSearchInput(
 @Composable
 private fun SearchInput(
     state: WooPosSearchInputState.Open,
-    animationDuration: Long,
     onEvent: (WooPosSearchUIEvent) -> Unit
 ) {
+    val animationDuration = 200L
     val focusRequester = remember { FocusRequester() }
     var isFocused by remember { mutableStateOf(false) }
 
     val borderColor by animateFloatAsState(
         targetValue = if (isFocused) 1f else 0f,
-        animationSpec = tween(durationMillis = 200, easing = FastOutSlowInEasing),
+        animationSpec = tween(durationMillis = animationDuration.toInt(), easing = FastOutSlowInEasing),
         label = "borderColorAnimation"
     )
 
@@ -305,11 +254,10 @@ private fun SearchInput(
             }
         }
 
-        LaunchedEffect(Unit) {
-            if (!state.hasAnimationPlayed) {
+        LaunchedEffect(state) {
+            if (state.requestFocus) {
                 delay(animationDuration)
                 focusRequester.requestFocus()
-                onEvent(WooPosSearchUIEvent.AnimationComplete)
             }
         }
     }
@@ -321,7 +269,7 @@ sealed class WooPosSearchInputState : Parcelable {
     data class Open(
         val input: Input,
         val isLoading: Boolean,
-        val hasAnimationPlayed: Boolean = false,
+        val requestFocus: Boolean = false,
     ) : WooPosSearchInputState() {
         @Parcelize
         sealed class Input(val text: String, open val cursorPosition: Int) : Parcelable {
@@ -342,7 +290,6 @@ sealed class WooPosSearchUIEvent {
     object SearchIconClicked : WooPosSearchUIEvent()
     data class Search(val query: String, val cursorPosition: Int) : WooPosSearchUIEvent()
     object Close : WooPosSearchUIEvent()
-    object AnimationComplete : WooPosSearchUIEvent()
 }
 
 @WooPosPreview
@@ -361,7 +308,6 @@ fun WooPosSearchInputOpenSearchPreview() {
                         cursorPosition = 0
                     ),
                     isLoading = false,
-                    hasAnimationPlayed = true
                 ),
                 onEvent = {}
             )
