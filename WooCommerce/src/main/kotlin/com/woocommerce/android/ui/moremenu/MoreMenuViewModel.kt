@@ -21,12 +21,14 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_M
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_VIEW_STORE
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.adminUrlOrDefault
+import com.woocommerce.android.features.SSRFeatureEvaluator
 import com.woocommerce.android.notifications.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
+import com.woocommerce.android.ui.google.GoogleFeatureChecker
 import com.woocommerce.android.ui.google.HasGoogleAdsCampaigns
 import com.woocommerce.android.ui.google.IsGoogleForWooEnabled
 import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
@@ -69,6 +71,8 @@ class MoreMenuViewModel @Inject constructor(
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus,
     private val isBlazeEnabled: IsBlazeEnabled,
     private val isGoogleForWooEnabled: IsGoogleForWooEnabled,
+    private val googleFeatureChecker: GoogleFeatureChecker,
+    private val ssrFeatureEvaluator: SSRFeatureEvaluator,
     private val hasGoogleAdsCampaigns: HasGoogleAdsCampaigns,
     private val isWooPosEnabled: WooPosIsEnabled,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
@@ -107,6 +111,12 @@ class MoreMenuViewModel @Inject constructor(
                 onSuccess = { storeHasGoogleAdsCampaigns = it },
                 onFailure = { WooLog.e(WooLog.T.GOOGLE_ADS, "Failed to fetch Google Ads campaigns: $it") }
             )
+
+            try {
+                ssrFeatureEvaluator.prepare()
+            } catch (e: SSRFeatureEvaluator.PrepareFailedException) {
+                WooLog.e(WooLog.T.MENU, "Failed to prepare SSR evaluator: $e")
+            }
         }
     }
 
@@ -252,8 +262,8 @@ class MoreMenuViewModel @Inject constructor(
         }
     }
 
-    private suspend fun trackGoogleAdsDisplayed() {
-        if (isGoogleForWooEnabled()) {
+    private fun trackGoogleAdsDisplayed() {
+        if (isGoogleAdsItemVisible()) {
             analyticsTrackerWrapper.track(
                 stat = AnalyticsEvent.GOOGLEADS_ENTRY_POINT_DISPLAYED,
                 properties = mapOf(
@@ -451,6 +461,11 @@ class MoreMenuViewModel @Inject constructor(
         ?.find { it.title == R.string.more_menu_button_payments }
         ?.badgeState != null
 
+    private fun isGoogleAdsItemVisible() = moreMenuViewState.value
+        ?.menuSections
+        ?.filterIsInstance<MoreMenuItemButton>()
+        ?.find { it.title == R.string.more_menu_button_google } != null
+
     private fun loadSitePlanName(): Flow<String> = selectedSite.observe()
         .filterNotNull()
         .map { site ->
@@ -466,7 +481,9 @@ class MoreMenuViewModel @Inject constructor(
 
         return listOf(
             doCheckAvailability(MoreMenuItemButton.Type.Blaze) { isBlazeEnabled() },
-            doCheckAvailability(MoreMenuItemButton.Type.GoogleForWoo) { isGoogleForWooEnabled() },
+            doCheckAvailability(
+                MoreMenuItemButton.Type.GoogleForWoo
+            ) { ssrFeatureEvaluator.checkFeature(googleFeatureChecker) },
             doCheckAvailability(MoreMenuItemButton.Type.Inbox) { moreMenuRepository.isInboxEnabled() },
             doCheckAvailability(MoreMenuItemButton.Type.Settings) { moreMenuRepository.isUpgradesEnabled() },
             doCheckAvailability(MoreMenuItemButton.Type.WooPos) { isWooPosEnabled() }
