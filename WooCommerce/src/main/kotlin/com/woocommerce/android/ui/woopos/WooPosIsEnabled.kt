@@ -26,7 +26,7 @@ class WooPosIsEnabled @Inject constructor(
         if (!isRemoteFeatureFlagEnabled(WOO_POS)) return@coroutineScope false
         if (!isScreenSizeAllowed()) return@coroutineScope false
         if (!isWooCoreSupportsOrderAutoDraftsAndExtraPaymentsProps()) return@coroutineScope false
-        if (isFeatureSwitchSupported() && !(isPOSFeatureEnabled() ?: false)) return@coroutineScope false
+        if (isFeatureSwitchSupported() && isPOSFeatureEnabled() != true) return@coroutineScope false
 
         val siteSettings = wooCommerceStore.getSiteSettings(selectedSite) ?: return@coroutineScope false
 
