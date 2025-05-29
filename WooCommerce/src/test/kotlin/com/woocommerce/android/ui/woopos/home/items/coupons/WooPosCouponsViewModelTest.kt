@@ -6,15 +6,12 @@ import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.WooPosCouponsViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsListViewStateManager.WooPosCouponsListRefreshType
-import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsUIEvent.BackButtonClicked
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsUIEvent.CouponClicked
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsUIEvent.EndOfListReached
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsUIEvent.PullToRefreshTriggered
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsUIEvent.RetryLoadMoreTriggered
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsUIEvent.RetryTriggered
 import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationFacade
-import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
-import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
@@ -42,7 +39,6 @@ class WooPosCouponsViewModelTest {
     private val couponCreationFacade: WooPosCouponCreationFacade = mock()
     private val listViewStateManager: WooPosCouponsListViewStateManager = mock()
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender = mock()
-    private val navigator: WooPosItemsNavigator = mock()
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
 
     private lateinit var viewModel: WooPosCouponsViewModel
@@ -66,7 +62,7 @@ class WooPosCouponsViewModelTest {
         val item = ItemClickedData.Coupon(couponId, couponCode)
         verify(fromChildToParentEventSender).sendToParent(
             eq(
-                ChildToParentEvent.ItemClickedInProductSelector(
+                ChildToParentEvent.ItemClickedInItemsList(
                     itemData = ItemClickedData.Coupon(couponId, couponCode),
                     eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
                         item = item,
@@ -109,17 +105,6 @@ class WooPosCouponsViewModelTest {
     }
 
     @Test
-    fun `when back button clicked, then navigate back to item list screen`() = runTest {
-        // WHEN
-        viewModel.onUIEvent(BackButtonClicked)
-
-        // THEN
-        verify(navigator).sendNavigationEvent(
-            WooPosItemsScreenNavigationEvent.NavigateBackToItemListScreen
-        )
-    }
-
-    @Test
     fun `when retry triggered, then fetch coupons with retry type`() {
         // WHEN
         viewModel.onUIEvent(RetryTriggered)
@@ -153,7 +138,7 @@ class WooPosCouponsViewModelTest {
         // THEN
         val item = ItemClickedData.Coupon(1L, "test coupon")
         verify(fromChildToParentEventSender).sendToParent(
-            ChildToParentEvent.ItemClickedInProductSelector(
+            ChildToParentEvent.ItemClickedInItemsList(
                 itemData = item,
                 eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
                     item = item,
@@ -186,7 +171,6 @@ class WooPosCouponsViewModelTest {
             listViewStateManager,
             fromChildToParentEventSender,
             couponCreationFacade,
-            navigator,
             analyticsTracker
         )
 }

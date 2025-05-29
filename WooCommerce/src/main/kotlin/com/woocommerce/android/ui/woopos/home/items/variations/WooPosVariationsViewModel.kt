@@ -235,7 +235,7 @@ class WooPosVariationsViewModel @Inject constructor(
     private fun onVariationClicked(productId: Long, variationId: Long) {
         val item = WooPosItemsViewModel.ItemClickedData.Product.Variation(productId, variationId)
         sendEventToParent(
-            ChildToParentEvent.ItemClickedInProductSelector(
+            ChildToParentEvent.ItemClickedInItemsList(
                 itemData = WooPosItemsViewModel.ItemClickedData.Product.Variation(productId, variationId),
                 eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
                     item = item,
