@@ -536,7 +536,13 @@ open class WooCommerceStore @Inject constructor(
                 }
                 response.result != null -> {
                     val isEnabled = settingsMapper.mapFeatureIsEnabledSettings(response.result)
-                    isEnabled?.let { WooResult(it) } ?: WooResult(WooError(WooErrorType.INVALID_RESPONSE, UNKNOWN))
+                    isEnabled?.let { WooResult(it) } ?: run {
+                        AppLog.w(
+                            T.API,
+                            "Failed to map Woo \"feature is enabled\" setting to boolean for site ${site.siteId}"
+                        )
+                        WooResult(WooError(WooErrorType.INVALID_RESPONSE, UNKNOWN))
+                    }
                 }
                 else -> {
                     WooResult(WooError(GENERIC_ERROR, UNKNOWN))
