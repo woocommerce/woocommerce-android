@@ -11,7 +11,7 @@
     <color name="color_surface">@color/woo_white</color>
     <color name="color_surface_variant">@color/woo_gray_40</color>
     <color name="color_surface_elevated">@color/woo_white</color>
-    <color name="color_error">@color/woo_red_50</color>
+    <color name="color_error">@color/woo_red_60</color>
     <color name="color_alert">@color/woo_yellow_50</color>
     <color name="color_info">@color/woo_green_50</color>
 
