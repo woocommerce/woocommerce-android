@@ -3,10 +3,8 @@ package com.woocommerce.android.ui.compose.component
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -18,6 +16,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 
 @Composable
@@ -42,7 +41,7 @@ fun FeedbackRequest(
         )
         IconButton(
             onClick = { onFeedbackReceived(true) },
-            modifier = Modifier.size(dimensionResource(id = R.dimen.major_200))
+            modifier = Modifier.size(48.dp)
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_thumb_up),
@@ -51,11 +50,9 @@ fun FeedbackRequest(
             )
         }
 
-        Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.minor_100)))
-
         IconButton(
             onClick = { onFeedbackReceived(false) },
-            modifier = Modifier.size(dimensionResource(id = R.dimen.major_200))
+            modifier = Modifier.size(48.dp)
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_thumb_down),
