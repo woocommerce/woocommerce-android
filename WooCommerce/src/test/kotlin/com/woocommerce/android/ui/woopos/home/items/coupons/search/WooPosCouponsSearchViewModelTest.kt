@@ -162,7 +162,7 @@ class WooPosCouponsSearchViewModelTest {
             advanceUntilIdle()
 
             // THEN
-            verify(mockChildToParentEventSender).sendToParent(any<ChildToParentEvent.ItemClickedInProductSelector>())
+            verify(mockChildToParentEventSender).sendToParent(any<ChildToParentEvent.ItemClickedInItemsList>())
             verify(mockEmptyStateRepository).addRecentSearch(searchQuery)
         }
     }
@@ -270,7 +270,7 @@ class WooPosCouponsSearchViewModelTest {
         advanceUntilIdle()
 
         // THEN
-        verify(mockChildToParentEventSender).sendToParent(any<ChildToParentEvent.ItemClickedInProductSelector>())
+        verify(mockChildToParentEventSender).sendToParent(any<ChildToParentEvent.ItemClickedInItemsList>())
         verify(mockEmptyStateRepository).addRecentSearch(searchQuery)
     }
 
@@ -286,7 +286,7 @@ class WooPosCouponsSearchViewModelTest {
         advanceUntilIdle()
 
         // THEN
-        verify(mockChildToParentEventSender).sendToParent(any<ChildToParentEvent.ItemClickedInProductSelector>())
+        verify(mockChildToParentEventSender).sendToParent(any<ChildToParentEvent.ItemClickedInItemsList>())
         verify(mockEmptyStateRepository, never()).addRecentSearch(any())
     }
 

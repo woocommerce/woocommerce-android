@@ -115,7 +115,7 @@ class WooPosCartViewModelTest {
 
         // WHEN
         parentToChildrenMutableSharedFlow.emit(
-            ParentToChildrenEvent.ItemClickedInProductSelector(
+            ParentToChildrenEvent.ItemClickedInItemsList(
                 WooPosItemsViewModel.ItemClickedData.Product.Simple(
                     id = product.remoteId
                 ),
@@ -152,7 +152,7 @@ class WooPosCartViewModelTest {
 
         // WHEN
         parentToChildrenMutableSharedFlow.emit(
-            ParentToChildrenEvent.ItemClickedInProductSelector(
+            ParentToChildrenEvent.ItemClickedInItemsList(
                 WooPosItemsViewModel.ItemClickedData.Product.Variation(
                     id = variation.remoteVariationId,
                     productId = variation.remoteProductId
@@ -199,7 +199,7 @@ class WooPosCartViewModelTest {
             val states = sut.state.captureValues()
 
             parentToChildrenMutableSharedFlow.emit(
-                ParentToChildrenEvent.ItemClickedInProductSelector(
+                ParentToChildrenEvent.ItemClickedInItemsList(
                     WooPosItemsViewModel.ItemClickedData.Product.Simple(
                         id = product.remoteId
                     ),
@@ -280,7 +280,7 @@ class WooPosCartViewModelTest {
             id = item.id
         )
         parentToChildrenMutableSharedFlow.emit(
-            ParentToChildrenEvent.ItemClickedInProductSelector(
+            ParentToChildrenEvent.ItemClickedInItemsList(
                 itemClickedData,
                 eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
                     item = itemClickedData,
@@ -370,7 +370,7 @@ class WooPosCartViewModelTest {
             val states = sut.state.captureValues()
 
             parentToChildrenMutableSharedFlow.emit(
-                ParentToChildrenEvent.ItemClickedInProductSelector(
+                ParentToChildrenEvent.ItemClickedInItemsList(
                     WooPosItemsViewModel.ItemClickedData.Product.Simple(
                         id = product.remoteId
                     ),
@@ -432,7 +432,7 @@ class WooPosCartViewModelTest {
 
             // WHEN
             parentToChildrenMutableSharedFlow.emit(
-                ParentToChildrenEvent.ItemClickedInProductSelector(
+                ParentToChildrenEvent.ItemClickedInItemsList(
                     WooPosItemsViewModel.ItemClickedData.Product.Simple(
                         id = product1.remoteId
                     ),
@@ -440,7 +440,7 @@ class WooPosCartViewModelTest {
                 )
             )
             parentToChildrenMutableSharedFlow.emit(
-                ParentToChildrenEvent.ItemClickedInProductSelector(
+                ParentToChildrenEvent.ItemClickedInItemsList(
                     WooPosItemsViewModel.ItemClickedData.Product.Simple(
                         id = product2.remoteId
                     ),
@@ -462,7 +462,7 @@ class WooPosCartViewModelTest {
             )
 
             parentToChildrenMutableSharedFlow.emit(
-                ParentToChildrenEvent.ItemClickedInProductSelector(
+                ParentToChildrenEvent.ItemClickedInItemsList(
                     WooPosItemsViewModel.ItemClickedData.Product.Simple(
                         id = product3.remoteId
                     ),
@@ -503,7 +503,7 @@ class WooPosCartViewModelTest {
 
         // WHEN
         parentToChildrenMutableSharedFlow.emit(
-            ParentToChildrenEvent.ItemClickedInProductSelector(
+            ParentToChildrenEvent.ItemClickedInItemsList(
                 WooPosItemsViewModel.ItemClickedData.Product.Simple(
                     id = product.remoteId
                 ),
@@ -568,7 +568,7 @@ class WooPosCartViewModelTest {
         val states = sut.state.captureValues()
 
         parentToChildrenMutableSharedFlow.emit(
-            ParentToChildrenEvent.ItemClickedInProductSelector(
+            ParentToChildrenEvent.ItemClickedInItemsList(
                 WooPosItemsViewModel.ItemClickedData.Product.Simple(
                     id = product.remoteId
                 ),
@@ -629,7 +629,7 @@ class WooPosCartViewModelTest {
         // WHEN
         val itemAddedToCartEvent = mock<WooPosAnalyticsEvent.Event.ItemAddedToCart>()
         parentToChildrenMutableSharedFlow.emit(
-            ParentToChildrenEvent.ItemClickedInProductSelector(
+            ParentToChildrenEvent.ItemClickedInItemsList(
                 WooPosItemsViewModel.ItemClickedData.Product.Simple(
                     id = product.remoteId
                 ),
@@ -649,7 +649,7 @@ class WooPosCartViewModelTest {
         val sut = createSut()
         val states = sut.state.captureValues()
         parentToChildrenEventsMutableFlow.emit(
-            ParentToChildrenEvent.ItemClickedInProductSelector(
+            ParentToChildrenEvent.ItemClickedInItemsList(
                 itemData = WooPosItemsViewModel.ItemClickedData.Coupon(id = 1L, couponCode = ""),
                 eventForTracking = mock(),
             )
@@ -674,13 +674,13 @@ class WooPosCartViewModelTest {
         val sut = createSut()
         val states = sut.state.captureValues()
         parentToChildrenEventsMutableFlow.emit(
-            ParentToChildrenEvent.ItemClickedInProductSelector(
+            ParentToChildrenEvent.ItemClickedInItemsList(
                 itemData = WooPosItemsViewModel.ItemClickedData.Coupon(id = 1L, couponCode = ""),
                 eventForTracking = mock()
             )
         )
         parentToChildrenEventsMutableFlow.emit(
-            ParentToChildrenEvent.ItemClickedInProductSelector(
+            ParentToChildrenEvent.ItemClickedInItemsList(
                 itemData = WooPosItemsViewModel.ItemClickedData.Coupon(id = 2L, couponCode = ""),
                 eventForTracking = mock()
             )
@@ -693,7 +693,7 @@ class WooPosCartViewModelTest {
         ).copy(firstImageUrl = "url")
         whenever(getProductById(eq(product.remoteId))).thenReturn(product)
         parentToChildrenEventsMutableFlow.emit(
-            ParentToChildrenEvent.ItemClickedInProductSelector(
+            ParentToChildrenEvent.ItemClickedInItemsList(
                 itemData = WooPosItemsViewModel.ItemClickedData.Product.Simple(id = product.remoteId),
                 eventForTracking = mock()
             )
@@ -720,7 +720,7 @@ class WooPosCartViewModelTest {
         whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenEventsMutableFlow)
         createSut()
         parentToChildrenEventsMutableFlow.emit(
-            ParentToChildrenEvent.ItemClickedInProductSelector(
+            ParentToChildrenEvent.ItemClickedInItemsList(
                 itemData = WooPosItemsViewModel.ItemClickedData.Coupon(id = 2L, couponCode = ""),
                 eventForTracking = mock()
             )
@@ -733,7 +733,7 @@ class WooPosCartViewModelTest {
         ).copy(firstImageUrl = "url")
         whenever(getProductById(eq(product.remoteId))).thenReturn(product)
         parentToChildrenEventsMutableFlow.emit(
-            ParentToChildrenEvent.ItemClickedInProductSelector(
+            ParentToChildrenEvent.ItemClickedInItemsList(
                 itemData = WooPosItemsViewModel.ItemClickedData.Product.Simple(id = product.remoteId),
                 eventForTracking = mock()
             )
@@ -754,7 +754,7 @@ class WooPosCartViewModelTest {
         val sut = createSut()
         val states = sut.state.captureValues()
         parentToChildrenEventsMutableFlow.emit(
-            ParentToChildrenEvent.ItemClickedInProductSelector(
+            ParentToChildrenEvent.ItemClickedInItemsList(
                 itemData = WooPosItemsViewModel.ItemClickedData.Coupon(id = 1L, couponCode = ""),
                 eventForTracking = mock()
             )
@@ -810,7 +810,7 @@ class WooPosCartViewModelTest {
 
         // WHEN
         parentToChildrenMutableSharedFlow.emit(
-            ParentToChildrenEvent.ItemClickedInProductSelector(
+            ParentToChildrenEvent.ItemClickedInItemsList(
                 WooPosItemsViewModel.ItemClickedData.Product.Simple(
                     id = product.remoteId
                 ),
@@ -840,7 +840,7 @@ class WooPosCartViewModelTest {
         simulateCouponClicked()
 
         parentToChildrenMutableSharedFlow.emit(
-            ParentToChildrenEvent.ItemClickedInProductSelector(
+            ParentToChildrenEvent.ItemClickedInItemsList(
                 WooPosItemsViewModel.ItemClickedData.Product.Simple(
                     id = product.remoteId
                 ),
@@ -867,7 +867,7 @@ class WooPosCartViewModelTest {
         val states = sut.state.captureValues()
         simulateCouponClicked()
         parentToChildrenMutableSharedFlow.emit(
-            ParentToChildrenEvent.ItemClickedInProductSelector(
+            ParentToChildrenEvent.ItemClickedInItemsList(
                 WooPosItemsViewModel.ItemClickedData.Product.Simple(
                     id = product.remoteId
                 ),
@@ -1004,7 +1004,7 @@ class WooPosCartViewModelTest {
         val sut = createSut()
         val states = sut.state.captureValues()
         parentToChildrenMutableSharedFlow.emit(
-            ParentToChildrenEvent.ItemClickedInProductSelector(
+            ParentToChildrenEvent.ItemClickedInItemsList(
                 WooPosItemsViewModel.ItemClickedData.Product.Simple(
                     id = product.remoteId
                 ),
@@ -1016,7 +1016,7 @@ class WooPosCartViewModelTest {
 
     private suspend fun simulateCouponClicked(couponId: Long = 1L) {
         parentToChildrenMutableSharedFlow.emit(
-            ParentToChildrenEvent.ItemClickedInProductSelector(
+            ParentToChildrenEvent.ItemClickedInItemsList(
                 itemData = WooPosItemsViewModel.ItemClickedData.Coupon(id = couponId, couponCode = ""),
                 eventForTracking = mock()
             ),
@@ -1033,7 +1033,7 @@ class WooPosCartViewModelTest {
         whenever(getProductById(eq(product.remoteId))).thenReturn(product)
 
         parentToChildrenMutableSharedFlow.emit(
-            ParentToChildrenEvent.ItemClickedInProductSelector(
+            ParentToChildrenEvent.ItemClickedInItemsList(
                 WooPosItemsViewModel.ItemClickedData.Product.Simple(
                     id = productId
                 ),

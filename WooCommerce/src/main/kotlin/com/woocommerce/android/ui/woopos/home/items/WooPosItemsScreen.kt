@@ -16,28 +16,30 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.Tab.Coupons
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.Tab.HighlightLevel
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.Tab.Products
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsUIEvent.SearchChanged
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsScreen
 import com.woocommerce.android.ui.woopos.home.items.coupons.search.WooPosCouponsSearchScreen
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsScreen
 import com.woocommerce.android.ui.woopos.home.items.search.WooPosItemsSearchScreen
+import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsNavigationData
+import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsScreen
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun WooPosItemsScreen(
-    modifier: Modifier = Modifier,
-    productsViewState: LazyListState,
-    couponsListState: LazyListState,
-) {
+fun WooPosItemsScreen(modifier: Modifier = Modifier) {
+    val productsViewState = rememberLazyListState()
+    val couponsListState = rememberLazyListState()
     val productsViewModel: WooPosItemsViewModel = hiltViewModel()
     WooPosItemsScreen(
         modifier = modifier,
@@ -52,7 +54,7 @@ fun WooPosItemsScreen(
 @Composable
 private fun WooPosItemsScreen(
     modifier: Modifier = Modifier,
-    itemsStateFlow: StateFlow<WooPosItemsViewState>,
+    itemsStateFlow: StateFlow<WooPosItemsToolbarViewState>,
     productsViewState: LazyListState,
     couponsListState: LazyListState,
     onUIEvent: (WooPosItemsUIEvent) -> Unit,
@@ -75,10 +77,6 @@ private fun WooPosItemsScreen(
                     )
                 )
 
-                is WooPosSearchUIEvent.AnimationComplete -> {
-                    onUIEvent(WooPosItemsUIEvent.SearchAnimationComplete)
-                }
-
                 WooPosSearchUIEvent.SearchIconClicked -> onUIEvent(WooPosItemsUIEvent.SearchIconClicked)
             }
         },
@@ -86,6 +84,7 @@ private fun WooPosItemsScreen(
             onUIEvent(WooPosItemsUIEvent.AddCouponIconClicked)
         },
         onTabClicked = { onUIEvent(WooPosItemsUIEvent.OnTabClicked(it)) },
+        onBackClicked = { onUIEvent(WooPosItemsUIEvent.BackFromVariationsClicked) },
     )
 }
 
@@ -93,12 +92,13 @@ private fun WooPosItemsScreen(
 @Composable
 private fun MainItemsList(
     modifier: Modifier,
-    state: State<WooPosItemsViewState>,
+    state: State<WooPosItemsToolbarViewState>,
     productsViewState: LazyListState,
     couponsListState: LazyListState,
     onSearchEvent: (WooPosSearchUIEvent) -> Unit,
-    onTabClicked: (WooPosItemsViewState.Tab) -> Unit,
+    onTabClicked: (WooPosItemsToolbarViewState.Tab) -> Unit,
     onAddCouponEvent: () -> Unit,
+    onBackClicked: () -> Unit,
 ) {
     Box(
         modifier = modifier
@@ -116,6 +116,7 @@ private fun MainItemsList(
                 state = state.value,
                 onTabClicked = onTabClicked,
                 onSearchEvent = onSearchEvent,
+                onBackClicked = onBackClicked,
                 onAddCouponEvent = onAddCouponEvent,
             )
 
@@ -129,52 +130,69 @@ private fun MainItemsList(
                 ),
             ) { screenState ->
                 when (screenState) {
-                    ScreenState.PRODUCTS -> WooPosProductsScreen(
+                    ScreenState.Products -> WooPosProductsScreen(
                         modifier = Modifier.padding(
                             horizontal = WooPosSpacing.Medium.value.toAdaptivePadding(),
                         ),
                         listState = productsViewState
                     )
 
-                    ScreenState.PRODUCTS_SEARCH -> WooPosItemsSearchScreen()
-                    ScreenState.COUPONS -> WooPosCouponsScreen(
+                    ScreenState.ProductsSearch -> WooPosItemsSearchScreen()
+                    ScreenState.Coupons -> WooPosCouponsScreen(
                         modifier = Modifier.padding(
                             horizontal = WooPosSpacing.Medium.value.toAdaptivePadding(),
                         ),
                         listState = couponsListState,
                     )
-                    ScreenState.COUPONS_SEARCH -> WooPosCouponsSearchScreen()
+
+                    is ScreenState.Variations -> {
+                        WooPosVariationsScreen(
+                            modifier = Modifier.padding(
+                                horizontal = WooPosSpacing.Medium.value.toAdaptivePadding(),
+                            ),
+                            variableProductData = screenState.variableProductData,
+                            onBackClicked = { onBackClicked() },
+                        )
+                    }
+                    is ScreenState.CouponsSearch -> WooPosCouponsSearchScreen()
                 }
             }
         }
     }
 }
 
-private enum class ScreenState {
-    PRODUCTS, PRODUCTS_SEARCH, COUPONS, COUPONS_SEARCH
+private sealed class ScreenState {
+    object Products : ScreenState()
+    object Coupons : ScreenState()
+    object ProductsSearch : ScreenState()
+    object CouponsSearch : ScreenState()
+    data class Variations(val variableProductData: WooPosVariationsNavigationData) : ScreenState()
 }
 
-private fun getScreenState(state: WooPosItemsViewState): ScreenState {
+private fun getScreenState(state: WooPosItemsToolbarViewState): ScreenState {
     return when (state) {
-        is WooPosItemsViewState.ProductList -> {
+        is WooPosItemsToolbarViewState.ProductList -> {
             when (val searchState = state.search) {
-                WooPosItemsViewState.SearchState.Hidden -> ScreenState.PRODUCTS
-                is WooPosItemsViewState.SearchState.Visible -> {
+                WooPosItemsToolbarViewState.SearchState.Hidden -> ScreenState.Products
+                is WooPosItemsToolbarViewState.SearchState.Visible -> {
                     when (searchState.state) {
-                        WooPosSearchInputState.Closed -> ScreenState.PRODUCTS
-                        is WooPosSearchInputState.Open -> ScreenState.PRODUCTS_SEARCH
+                        WooPosSearchInputState.Closed -> ScreenState.Products
+                        is WooPosSearchInputState.Open -> ScreenState.ProductsSearch
                     }
                 }
             }
         }
 
-        is WooPosItemsViewState.CouponList -> {
+        is WooPosItemsToolbarViewState.VariationList -> ScreenState.Variations(
+            variableProductData = state.variableProductData
+        )
+        is WooPosItemsToolbarViewState.CouponList -> {
             when (val searchState = state.search) {
-                WooPosItemsViewState.SearchState.Hidden -> ScreenState.COUPONS
-                is WooPosItemsViewState.SearchState.Visible -> {
+                WooPosItemsToolbarViewState.SearchState.Hidden -> ScreenState.Coupons
+                is WooPosItemsToolbarViewState.SearchState.Visible -> {
                     when (searchState.state) {
-                        WooPosSearchInputState.Closed -> ScreenState.COUPONS
-                        is WooPosSearchInputState.Open -> ScreenState.COUPONS_SEARCH
+                        WooPosSearchInputState.Closed -> ScreenState.Coupons
+                        is WooPosSearchInputState.Open -> ScreenState.CouponsSearch
                     }
                 }
             }
@@ -187,8 +205,8 @@ private fun getScreenState(state: WooPosItemsViewState): ScreenState {
 @WooPosPreview
 fun WooPosItemsScreenSearchVisiblePreview(modifier: Modifier = Modifier) {
     val productState = MutableStateFlow(
-        WooPosItemsViewState.ProductList(
-            search = WooPosItemsViewState.SearchState.Visible(
+        WooPosItemsToolbarViewState.ProductList(
+            search = WooPosItemsToolbarViewState.SearchState.Visible(
                 state = WooPosSearchInputState.Open(
                     input = WooPosSearchInputState.Open.Input.Query("", 0),
                     isLoading = false,
@@ -213,8 +231,8 @@ fun WooPosItemsScreenSearchVisiblePreview(modifier: Modifier = Modifier) {
 @WooPosPreview
 fun WooPosItemsScreenSearchHiddenPreview(modifier: Modifier = Modifier) {
     val productState = MutableStateFlow(
-        WooPosItemsViewState.ProductList(
-            search = WooPosItemsViewState.SearchState.Visible(
+        WooPosItemsToolbarViewState.ProductList(
+            search = WooPosItemsToolbarViewState.SearchState.Visible(
                 state = WooPosSearchInputState.Open(
                     input = WooPosSearchInputState.Open.Input.Query("", 0),
                     isLoading = false,
@@ -235,13 +253,13 @@ fun WooPosItemsScreenSearchHiddenPreview(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun tabs(): List<WooPosItemsViewState.Tab> = listOf(
-    WooPosItemsViewState.Tab(
-        stringId = R.string.woopos_products_screen_title,
-        highlightLevel = WooPosItemsViewState.Tab.HighlightLevel.Full
+private fun tabs(): List<WooPosItemsToolbarViewState.Tab> = listOf(
+    Products(
+        name = "Products",
+        highlightLevel = HighlightLevel.Full
     ),
-    WooPosItemsViewState.Tab(
-        stringId = R.string.woopos_coupons_screen_title,
-        highlightLevel = WooPosItemsViewState.Tab.HighlightLevel.Normal
-    )
+    Coupons(
+        name = "Coupons",
+        highlightLevel = HighlightLevel.Normal
+    ),
 )

@@ -5,7 +5,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
 
-class VariationsLRUCache<K, V> @Inject constructor() {
+class WooPosVariationsLRUCache<K, V> @Inject constructor() {
 
     companion object {
         private const val VARIATION_CACHE_MAX_SIZE = 50
