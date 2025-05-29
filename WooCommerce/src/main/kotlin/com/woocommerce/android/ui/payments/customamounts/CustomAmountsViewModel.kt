@@ -55,11 +55,12 @@ class CustomAmountsViewModel @Inject constructor(
         get() {
             val orderTotal = BigDecimal(args.orderTotal ?: "0")
             // When in edit mode for percentage type, adjust the base for percentage calculation
-            val adjustedBase = if (!isInCreateMode() && args.customAmountUIModel.type == CustomAmountType.PERCENTAGE_CUSTOM_AMOUNT) {
-                orderTotal - args.customAmountUIModel.amount
-            } else {
-                orderTotal
-            }
+            val adjustedBase =
+                if (!isInCreateMode() && args.customAmountUIModel.type == CustomAmountType.PERCENTAGE_CUSTOM_AMOUNT) {
+                    orderTotal - args.customAmountUIModel.amount
+                } else {
+                    orderTotal
+                }
 
             return if (adjustedBase > BigDecimal.ZERO) {
                 (
@@ -78,11 +79,12 @@ class CustomAmountsViewModel @Inject constructor(
         set(value) {
             val orderTotal = BigDecimal(args.orderTotal ?: "0")
             // When in edit mode for percentage type, adjust the base for percentage calculation
-            val adjustedBase = if (!isInCreateMode() && args.customAmountUIModel.type == CustomAmountType.PERCENTAGE_CUSTOM_AMOUNT) {
-                orderTotal - args.customAmountUIModel.amount
-            } else {
-                orderTotal
-            }
+            val adjustedBase =
+                if (!isInCreateMode() && args.customAmountUIModel.type == CustomAmountType.PERCENTAGE_CUSTOM_AMOUNT) {
+                    orderTotal - args.customAmountUIModel.amount
+                } else {
+                    orderTotal
+                }
 
             if (adjustedBase > BigDecimal.ZERO) {
                 val percentage = value.setScale(2, RoundingMode.HALF_UP)
