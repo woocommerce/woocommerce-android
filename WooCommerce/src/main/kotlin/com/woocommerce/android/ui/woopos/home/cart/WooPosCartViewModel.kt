@@ -167,7 +167,7 @@ class WooPosCartViewModel @Inject constructor(
                 when (event) {
                     is ParentToChildrenEvent.BackFromCheckoutToCartClicked -> handleBackFromCheckoutToCartClicked()
 
-                    is ParentToChildrenEvent.ItemClickedInProductSelector -> handleItemClickedInItemsSelector(event)
+                    is ParentToChildrenEvent.ItemClickedInItemsList -> handleItemClickedInItemsSelector(event)
 
                     is ParentToChildrenEvent.OrderSuccessfullyPaid -> clearCart()
 
@@ -259,7 +259,7 @@ class WooPosCartViewModel @Inject constructor(
         }
     }
 
-    private fun handleItemClickedInItemsSelector(event: ParentToChildrenEvent.ItemClickedInProductSelector) {
+    private fun handleItemClickedInItemsSelector(event: ParentToChildrenEvent.ItemClickedInItemsList) {
         viewModelScope.launch {
             val itemClicked = async {
                 when (event.itemData) {
@@ -271,15 +271,21 @@ class WooPosCartViewModel @Inject constructor(
 
                     is WooPosItemsViewModel.ItemClickedData.Coupon ->
                         handleCouponClicked(event.itemData.id)
+
+                    is WooPosItemsViewModel.ItemClickedData.VariableProduct -> null
                 }
             }
 
             if (_state.value.body == WooPosCartState.Body.Empty) {
                 analyticsTracker.track(InteractionWithCustomerStarted)
             }
-            _state.value = updateStateWithNewItem(itemClicked.await())
 
-            analyticsTracker.track(event.eventForTracking)
+            itemClicked.await()?.let {
+                _state.value = updateStateWithNewItem(it)
+            }
+            event.eventForTracking?.let {
+                analyticsTracker.track(it)
+            }
         }
     }
 

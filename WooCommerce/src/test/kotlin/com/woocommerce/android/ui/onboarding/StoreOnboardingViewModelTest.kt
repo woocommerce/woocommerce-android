@@ -34,12 +34,6 @@ class StoreOnboardingViewModelTest : BaseUnitTest() {
                 isComplete = false,
                 isVisible = true,
                 isVisited = false
-            ),
-            OnboardingTask(
-                type = OnboardingTaskType.CUSTOMIZE_DOMAIN,
-                isComplete = false,
-                isVisible = true,
-                isVisited = false
             )
         )
         val ONBOARDING_TASK_COMPLETED_LIST = listOf(

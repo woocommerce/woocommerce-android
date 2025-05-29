@@ -45,12 +45,6 @@ data object LaunchStoreTaskRes : OnboardingTaskUiResources(
     description = R.string.store_onboarding_task_launch_store_description
 )
 
-data object CustomizeDomainTaskRes : OnboardingTaskUiResources(
-    icon = R.drawable.ic_onboarding_customize_domain,
-    title = R.string.store_onboarding_task_change_domain_title,
-    description = R.string.store_onboarding_task_change_domain_description
-)
-
 data object SetupPaymentsTaskRes : OnboardingTaskUiResources(
     icon = R.drawable.ic_onboarding_payments_setup,
     title = R.string.store_onboarding_task_payments_setup_title,
@@ -66,7 +60,6 @@ data object SetupWooPaymentsTaskRes : OnboardingTaskUiResources(
 object NavigateToOnboardingFullScreen : MultiLiveEvent.Event()
 object NavigateToSurvey : MultiLiveEvent.Event()
 object NavigateToLaunchStore : MultiLiveEvent.Event()
-object NavigateToDomains : MultiLiveEvent.Event()
 object NavigateToSetupPayments : MultiLiveEvent.Event() {
     val taskId = PAYMENTS.id
 }

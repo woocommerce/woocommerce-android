@@ -53,7 +53,7 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.RoundedCornerBoxWithBorder
 import com.woocommerce.android.ui.orders.wooshippinglabels.ShipmentDetails
-import com.woocommerce.android.ui.orders.wooshippinglabels.ShippableItemsUI
+import com.woocommerce.android.ui.orders.wooshippinglabels.ShipmentUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.ShippingProductsCard
 import com.woocommerce.android.ui.orders.wooshippinglabels.ShippingRateSummaryUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingAddresses
@@ -69,6 +69,8 @@ fun WooShippingLabelPurchasedScreen(viewModel: WooShippingLabelPurchasedViewMode
         isLoading = viewState.value?.isLoadingData == true,
         isPurchaseFinished = viewState.value?.isPurchaseFinished,
         shippingData = viewState.value?.shippingLabelData,
+        totalItems = viewState.value?.totalItems ?: 0,
+        totalItemsCost = viewState.value?.totalItemsCost ?: "",
         selectedLabelPaperSizeOption = viewState.value?.paperSizeOption ?: WooShippingLabelPaperSize.LEGAL,
         onLabelPaperSizeOptionSelected = { viewModel.onLabelPaperSizeOptionSelected(it) },
         onPrintShippingLabelClicked = { viewModel.onPrintShippingLabelClicked() },
@@ -84,6 +86,8 @@ internal fun WooShippingLabelPurchasedScreen(
     isLoading: Boolean,
     isPurchaseFinished: Boolean?,
     shippingData: PurchasedShippingLabelData?,
+    totalItems: Int,
+    totalItemsCost: String,
     selectedLabelPaperSizeOption: WooShippingLabelPaperSize,
     onLabelPaperSizeOptionSelected: (WooShippingLabelPaperSize) -> Unit,
     onPrintShippingLabelClicked: () -> Unit,
@@ -99,7 +103,8 @@ internal fun WooShippingLabelPurchasedScreen(
         sheetContent = {
             shippingData?.let {
                 ShipmentDetails(
-                    shippableItems = shippingData.items,
+                    totalItems = totalItems,
+                    totalItemsCost = totalItemsCost,
                     shippingLines = shippingData.shippingLines,
                     shippingAddresses = shippingData.addresses,
                     shippingRateSummary = shippingData.rateSummary,
@@ -394,16 +399,19 @@ internal fun WooShippingLabelPurchasedScreenPreview() {
                     orderId = 0,
                     carrierId = "",
                     trackingNumber = "",
-                    items = ShippableItemsUI(
+                    items = ShipmentUI(
                         shippableItems = generateItems(6),
                         formattedTotalWeight = "8.5kg",
-                        formattedTotalPrice = "$92.78"
+                        formattedTotalPrice = "$92.78",
+                        purchased = false
                     ),
                     addresses = WooShippingAddresses.EMPTY,
                     rateSummary = ShippingRateSummaryUI(serviceName = "", total = ""),
                     shippingLines = emptyList(),
                     hazmatSelection = null
                 ),
+                totalItems = 6,
+                totalItemsCost = "#92.78",
                 selectedLabelPaperSizeOption = selectedLabelPaperSizeOption.value,
                 onLabelPaperSizeOptionSelected = { selectedLabelPaperSizeOption.value = it },
                 onPrintShippingLabelClicked = {},
