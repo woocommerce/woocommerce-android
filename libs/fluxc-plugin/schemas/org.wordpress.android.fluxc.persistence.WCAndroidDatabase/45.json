@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 45,
-    "identityHash": "2255a6aa4e9e5eca2ce8a754f759b5e0",
+    "identityHash": "69b0d82e79a2859a9fef25d004cc803f",
     "entities": [
       {
         "tableName": "AddonEntity",
@@ -2689,7 +2689,7 @@
       },
       {
         "tableName": "ProductReviewEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`localSiteId` INTEGER NOT NULL, `remoteProductReviewId` INTEGER NOT NULL, `remoteProductId` INTEGER NOT NULL, `dateCreated` TEXT NOT NULL, `status` TEXT NOT NULL, `reviewerName` TEXT NOT NULL, `reviewerEmail` TEXT NOT NULL, `review` TEXT NOT NULL, `rating` INTEGER NOT NULL, `verified` INTEGER NOT NULL, `reviewerAvatarsJson` TEXT NOT NULL, PRIMARY KEY(`localSiteId`, `remoteProductReviewId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`localSiteId` INTEGER NOT NULL, `remoteProductReviewId` INTEGER NOT NULL, `remoteProductId` INTEGER NOT NULL, `dateCreated` TEXT NOT NULL, `status` TEXT NOT NULL, `reviewerName` TEXT NOT NULL, `reviewerEmail` TEXT NOT NULL, `review` TEXT NOT NULL, `rating` INTEGER NOT NULL, `verified` INTEGER NOT NULL, `reviewerAvatarsJson` TEXT NOT NULL, PRIMARY KEY(`localSiteId`, `remoteProductReviewId`, `remoteProductId`))",
         "fields": [
           {
             "fieldPath": "localSiteId",
@@ -2762,14 +2762,15 @@
           "autoGenerate": false,
           "columnNames": [
             "localSiteId",
-            "remoteProductReviewId"
+            "remoteProductReviewId",
+            "remoteProductId"
           ]
         },
         "indices": [],
         "foreignKeys": []
       },
       {
-        "tableName": "WCProductSettingsModel",
+        "tableName": "ProductSettingsEntity",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`localSiteId` INTEGER NOT NULL, `weightUnit` TEXT NOT NULL, `dimensionUnit` TEXT NOT NULL, PRIMARY KEY(`localSiteId`))",
         "fields": [
           {
@@ -2804,7 +2805,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2255a6aa4e9e5eca2ce8a754f759b5e0')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '69b0d82e79a2859a9fef25d004cc803f')"
     ]
   }
 }

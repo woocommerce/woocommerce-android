@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(
-    tableName = "WCProductSettingsModel",
+    tableName = "ProductSettingsEntity",
 )
 data class WCProductSettingsModel(
     // note that there are many more product settings than this, but for now these are all we need

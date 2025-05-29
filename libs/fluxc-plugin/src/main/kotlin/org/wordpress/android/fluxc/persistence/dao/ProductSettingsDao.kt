@@ -14,7 +14,7 @@ abstract class ProductSettingsDao {
 
     @Query(
         """
-            SELECT * FROM WCProductSettingsModel
+            SELECT * FROM ProductSettingsEntity
             WHERE localSiteId = :siteId
         """
     )
