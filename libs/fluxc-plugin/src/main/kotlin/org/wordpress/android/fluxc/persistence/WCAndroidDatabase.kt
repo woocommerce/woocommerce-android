@@ -13,6 +13,7 @@ import org.wordpress.android.fluxc.model.WCProductReviewModel
 import org.wordpress.android.fluxc.model.WCProductShippingClassModel
 import org.wordpress.android.fluxc.model.WCProductTagModel
 import org.wordpress.android.fluxc.model.WCProductVariationModel
+import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 import org.wordpress.android.fluxc.model.taxes.TaxBasedOnSettingEntity
 import org.wordpress.android.fluxc.model.taxes.TaxRateEntity
 import org.wordpress.android.fluxc.persistence.converters.BigDecimalConverter
@@ -22,6 +23,7 @@ import org.wordpress.android.fluxc.persistence.converters.RemoteIdConverter
 import org.wordpress.android.fluxc.persistence.converters.StringListConverter
 import org.wordpress.android.fluxc.persistence.dao.AddonsDao
 import org.wordpress.android.fluxc.persistence.dao.CouponsDao
+import org.wordpress.android.fluxc.persistence.dao.CustomerDao
 import org.wordpress.android.fluxc.persistence.dao.CustomerFromAnalyticsDao
 import org.wordpress.android.fluxc.persistence.dao.InboxNotesDao
 import org.wordpress.android.fluxc.persistence.dao.MetaDataDao
@@ -115,6 +117,7 @@ const val WC_DATABASE_VERSION = 44
         WCProductTagModel::class,
         WCProductShippingClassModel::class,
         WCProductReviewModel::class,
+        WCCustomerModel::class,
     ],
     autoMigrations = [
         AutoMigration(from = 12, to = 13),
@@ -167,6 +170,7 @@ abstract class WCAndroidDatabase : RoomDatabase(), TransactionExecutor {
     abstract val visitorSummaryStatsDao: VisitorSummaryStatsDao
     abstract val shippingMethodDao: ShippingMethodDao
     abstract val customerFromAnalyticsDao: CustomerFromAnalyticsDao
+    internal abstract val customerDao: CustomerDao
     internal abstract val productsDao: ProductsDao
     internal abstract val productVariationsDao: ProductVariationsDao
     internal abstract val productCategoriesDao: ProductCategoriesDao
