@@ -126,9 +126,12 @@ class WooPosItemsViewModel @Inject constructor(
 
     private fun trackSearchIconClicked() {
         viewModelScope.launch {
-            val event = SearchButtonTapped(
-                source = WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT,
-            )
+            val source = when (_viewState.value) {
+                is WooPosItemsToolbarViewState.ProductList -> WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT
+                is WooPosItemsToolbarViewState.CouponList -> WooPosAnalyticsEventConstant.ItemsListSource.COUPON
+                is WooPosItemsToolbarViewState.VariationList -> WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT
+            }
+            val event = SearchButtonTapped(source = source)
             analyticsTracker.track(event)
         }
     }
