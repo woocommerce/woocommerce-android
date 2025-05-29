@@ -75,7 +75,7 @@ class WooPosCouponsSearchViewModel @Inject constructor(
         viewModelScope.launch {
             val itemData = ItemClickedData.Coupon(coupon.id, coupon.name)
             childToParentEventSender.sendToParent(
-                ChildToParentEvent.ItemClickedInProductSelector(
+                ChildToParentEvent.ItemClickedInItemsList(
                     itemData = itemData,
                     eventForTracking = ItemAddedToCart(
                         item = itemData,
