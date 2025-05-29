@@ -115,10 +115,6 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "coupons_load_failed"
         }
 
-        data object CouponsLoaded : PaymentFlowTrackerEvent() {
-            override val name: String = "coupons_loaded"
-        }
-
         @ExposedCopyVisibility
         data class ItemAddedToCart private constructor(
             val source: ItemsListSource,
