@@ -1,9 +1,0 @@
----
-description:
-globs:
-alwaysApply: true
----
-- Please check if the app is compiling after generating code and follow up if it's not compiling until it compiles.
-- Cover new code with tests.
-- make sure tests are passing after adding code changes.
-- test methods should follow convention fun `given ..., when ..., then`()
