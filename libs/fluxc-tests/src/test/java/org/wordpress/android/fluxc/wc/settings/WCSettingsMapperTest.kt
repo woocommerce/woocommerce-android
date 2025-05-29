@@ -1,11 +1,15 @@
 package org.wordpress.android.fluxc.wc.settings
 
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.mockito.Mockito.mock
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCProductSettingsModel
 import org.wordpress.android.fluxc.model.WCSettingsModel
 import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition
 import org.wordpress.android.fluxc.model.settings.WCSettingsMapper
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.SiteSettingOptionResponse
 import kotlin.test.assertEquals
 
 class WCSettingsMapperTest {
@@ -75,5 +79,83 @@ class WCSettingsMapperTest {
             assertEquals(expectedModel.dimensionUnit, dimensionUnit)
             assertEquals(expectedModel.weightUnit, weightUnit)
         }
+    }
+
+    @Test
+    fun `when mapping feature is enabled settings with yes value, then returns true`() {
+        // Given
+        val response = mock<SiteSettingOptionResponse>()
+        whenever(response.value).thenReturn("yes")
+
+        // When
+        val result = mapper.mapFeatureIsEnabledSettings(response)
+
+        // Then
+        assertThat(result).isTrue()
+    }
+
+    @Test
+    fun `when mapping feature is enabled settings with no value, then returns false`() {
+        // Given
+        val response = mock<SiteSettingOptionResponse>()
+        whenever(response.value).thenReturn("no")
+
+        // When
+        val result = mapper.mapFeatureIsEnabledSettings(response)
+
+        // Then
+        assertThat(result).isFalse()
+    }
+
+    @Test
+    fun `when mapping feature is enabled settings with empty string, then returns null`() {
+        // Given
+        val response = mock<SiteSettingOptionResponse>()
+        whenever(response.value).thenReturn("")
+
+        // When
+        val result = mapper.mapFeatureIsEnabledSettings(response)
+
+        // Then
+        assertThat(result).isNull()
+    }
+
+    @Test
+    fun `when mapping feature is enabled settings with unknown value, then returns null`() {
+        // Given
+        val response = mock<SiteSettingOptionResponse>()
+        whenever(response.value).thenReturn("maybe")
+
+        // When
+        val result = mapper.mapFeatureIsEnabledSettings(response)
+
+        // Then
+        assertThat(result).isNull()
+    }
+
+    @Test
+    fun `when mapping feature is enabled settings with different casing, then returns null`() {
+        // Given
+        val response = mock<SiteSettingOptionResponse>()
+        whenever(response.value).thenReturn("YES")
+
+        // When
+        val result = mapper.mapFeatureIsEnabledSettings(response)
+
+        // Then
+        assertThat(result).isNull()
+    }
+
+    @Test
+    fun `when mapping feature is enabled settings with whitespace, then returns null`() {
+        // Given
+        val response = mock<SiteSettingOptionResponse>()
+        whenever(response.value).thenReturn(" yes ")
+
+        // When
+        val result = mapper.mapFeatureIsEnabledSettings(response)
+
+        // Then
+        assertThat(result).isNull()
     }
 }

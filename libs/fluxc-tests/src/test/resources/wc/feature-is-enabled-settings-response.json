@@ -1,0 +1,23 @@
+{
+  "id": "woocommerce_feature_point_of_sale_enabled",
+  "label": "Feature is enabled",
+  "description": "",
+  "type": "select",
+  "default": "no",
+  "options": {},
+  "tip": "This option determines whether the feature is enabled or not.",
+  "value": "yes",
+  "group_id": "advanced",
+  "_links": {
+    "self": [
+      {
+        "href": "https://cool-shop.mystagingwebsite.com/wp-json/wc/v3/settings/tax/woocommerce_tax_based_on"
+      }
+    ],
+    "collection": [
+      {
+        "href": "https://cool-shop.mystagingwebsite.com/wp-json/wc/v3/settings/tax"
+      }
+    ]
+  }
+}

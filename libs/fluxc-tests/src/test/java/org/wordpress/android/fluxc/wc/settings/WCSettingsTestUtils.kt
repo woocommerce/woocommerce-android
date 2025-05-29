@@ -22,6 +22,10 @@ object WCSettingsTestUtils {
         "wc/tax-based-on-settings-response.json"
             .jsonFileAs(SiteSettingOptionResponse::class.java)
 
+    fun getFeatureIsEnabledSettingsResponse() =
+        "wc/feature-is-enabled-settings-response.json"
+            .jsonFileAs(SiteSettingOptionResponse::class.java)
+
     fun getSiteSettingOptionResponse() =
         "wc/site-setting-option-response.json"
             .jsonFileAs(SiteSettingOptionResponse::class.java)

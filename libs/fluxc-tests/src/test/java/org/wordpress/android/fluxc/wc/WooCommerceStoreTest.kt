@@ -31,6 +31,7 @@ import org.wordpress.android.fluxc.model.taxes.TaxBasedOnSettingEntity
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.NETWORK_ERROR
 import org.wordpress.android.fluxc.network.discovery.RootWPAPIRestResponse
 import org.wordpress.android.fluxc.network.discovery.RootWPAPIRestResponse.Authentication
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.SiteSettingsFeature
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooCommerceRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.INVALID_RESPONSE
@@ -119,6 +120,7 @@ class WooCommerceStoreTest {
     private val siteSettingsResponse = WCSettingsTestUtils.getSiteSettingsResponse()
     private val siteProductSettingsResponse = WCSettingsTestUtils.getSiteProductSettingsResponse()
     private val taxBasedOnSettingsResponse = WCSettingsTestUtils.getTaxBasedOnSettingsResponse()
+    private val featureIsEnabledSettingsResponse = WCSettingsTestUtils.getFeatureIsEnabledSettingsResponse()
 
     @Before
     fun setUp() {
@@ -293,6 +295,27 @@ class WooCommerceStoreTest {
                 assertThat(it?.localSiteId).isEqualTo(expectedModel.localSiteId)
                 assertThat(it?.selectedOption).isEqualTo(expectedModel.selectedOption)
             }
+        }
+    }
+
+    @Test
+    fun `when fetch is feature enabled setting succeeds with true, then success is returned with the value`() {
+        runBlocking {
+            val result = fetchIsFeatureEnabledSetting()
+
+            assertThat(result.isError).isFalse
+            assertThat(result.model).isNotNull
+            assertThat(result.model).isEqualTo(
+                settingsMapper.mapFeatureIsEnabledSettings(featureIsEnabledSettingsResponse!!)
+            )
+        }
+    }
+
+    @Test
+    fun `when fetch is feature enabled settings fails, the error returned`() {
+        runBlocking {
+            val result = fetchIsFeatureEnabledSetting(isError = true)
+            assertThat(result.error).isEqualTo(error)
         }
     }
 
@@ -553,5 +576,18 @@ class WooCommerceStoreTest {
             whenever(wcrestClient.fetchSiteSettingsTaxBasedOn(site)).thenReturn(payload)
         }
         return wooCommerceStore.fetchTaxBasedOnSettings(site)
+    }
+
+    private suspend fun fetchIsFeatureEnabledSetting(isError: Boolean = false): WooResult<Boolean> {
+        val response = featureIsEnabledSettingsResponse
+        val payload = WooPayload(response)
+        val siteModel = SiteModel()
+
+        if (isError) {
+            whenever(wcrestClient.fetchFeatureIsEnabled(siteModel, feature = SiteSettingsFeature.POINT_OF_SALE)).thenReturn(WooPayload(error))
+        } else {
+            whenever(wcrestClient.fetchFeatureIsEnabled(siteModel, feature = SiteSettingsFeature.POINT_OF_SALE)).thenReturn(payload)
+        }
+        return wooCommerceStore.fetchIsFeatureEnabledSetting(siteModel, feature = SiteSettingsFeature.POINT_OF_SALE)
     }
 }
