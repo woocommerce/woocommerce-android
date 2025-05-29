@@ -20,7 +20,7 @@ class WooPosEmailReceiptRepository @Inject constructor(
     private val orderCreateEditRepository: OrderCreateEditRepository,
     private val orderMapper: OrderMapper,
     private val provideEmailPattern: WooPosProvideEmailPattern,
-    private val isPOSReceiptsEnabled: WooPosIsPOSReceiptsEnabled,
+    private val isPOSReceiptsEnabledLocally: WooPosIsPOSReceiptsEnabled,
     private val getWooCoreVersion: GetWooCorePluginCachedVersion
 ) {
     suspend fun sendReceiptByEmail(orderId: Long, email: String): Result<Unit> = withContext(Dispatchers.IO) {
@@ -38,9 +38,10 @@ class WooPosEmailReceiptRepository @Inject constructor(
 
     fun isEmailValid(email: String): Boolean = provideEmailPattern().matcher(email).matches()
 
+    fun posReceiptsAreEnabled(): Boolean = isPOSReceiptsEnabledLocally() && isWooCoreSupportsPOSReceipts()
+
     private suspend fun triggerOrderReceiptSending(orderId: Long): Result<Unit> {
-        val posReceiptsAreEnabled = isPOSReceiptsEnabled() && isWooCoreSupportsPOSReceipts()
-        val sendOrderResult = if (posReceiptsAreEnabled) {
+        val sendOrderResult = if (posReceiptsAreEnabled()) {
             orderStore.sendOrderPOSSpecificReceipt(selectedSite.get(), orderId)
         } else {
             orderStore.sendOrderReceipt(selectedSite.get(), orderId)
