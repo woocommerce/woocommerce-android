@@ -2,7 +2,6 @@ package com.woocommerce.android.support.zendesk
 
 import android.content.Context
 import android.os.Parcelable
-import com.woocommerce.android.util.WCSSRModelCachingFetcher
 import com.woocommerce.android.extensions.formatResult
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.zendesk.RequestConstants.requestCreationIdentityNotSetErrorMessage
@@ -13,6 +12,7 @@ import com.woocommerce.android.support.zendesk.ZendeskException.RequestCreationT
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.WCSSRModelCachingFetcher
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLogWrapper
 import com.zendesk.service.ErrorResponse
@@ -25,7 +25,6 @@ import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.SiteStore
-import org.wordpress.android.fluxc.store.WooCommerceStore
 import zendesk.support.CreateRequest
 import zendesk.support.CustomField
 import zendesk.support.Request
@@ -37,7 +36,7 @@ class ZendeskTicketRepository @Inject constructor(
     private val siteStore: SiteStore,
     private val dispatchers: CoroutineDispatchers,
     private val wooLogWrapper: WooLogWrapper,
-    private val wooStore: WooCommerceStore,
+    private val ssrFetcher: WCSSRModelCachingFetcher
 ) {
     /**
      * This function creates a new customer Support Request through the Zendesk API Providers.
@@ -105,7 +104,7 @@ class ZendeskTicketRepository @Inject constructor(
 
     private suspend fun fetchSSR(selectedSite: SiteModel): String? {
         wooLogWrapper.i(WooLog.T.SUPPORT, "Fetching SSR")
-        val result = WCSSRModelCachingFetcher.load(selectedSite, wooStore)
+        val result = ssrFetcher.load(selectedSite)
         if (result.isError) {
             wooLogWrapper.e(WooLog.T.SUPPORT, "Error fetching SSR")
         } else {

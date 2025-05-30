@@ -23,24 +23,26 @@ class WCSSRModelCachingFetcherTest {
     private val siteModel: SiteModel = mock()
     private val ssrModel: WCSSRModel = mock()
 
+    private val sut: WCSSRModelCachingFetcher = WCSSRModelCachingFetcher(wooCommerceStore)
+
     @Before
     fun setUp() {
-        WCSSRModelCachingFetcher.clear()
+        sut.clear()
     }
 
     @After
     fun tearDown() {
-        WCSSRModelCachingFetcher.clear()
+        sut.clear()
     }
 
     @Test
     fun `given cached value when load called again then store is not called`() = runTest {
         // GIVEN
         whenever(wooCommerceStore.fetchSSR(siteModel)).thenReturn(WooResult(ssrModel))
-        WCSSRModelCachingFetcher.load(siteModel, wooCommerceStore) // Populate cache
+        sut.load(siteModel) // Populate cache
 
         // WHEN
-        val result = WCSSRModelCachingFetcher.load(siteModel, wooCommerceStore)
+        val result = sut.load(siteModel)
 
         // THEN
         assertEquals(ssrModel, result.model)
@@ -53,7 +55,7 @@ class WCSSRModelCachingFetcherTest {
         whenever(wooCommerceStore.fetchSSR(siteModel)).thenReturn(WooResult(ssrModel))
 
         // WHEN
-        val result = WCSSRModelCachingFetcher.load(siteModel, wooCommerceStore)
+        val result = sut.load(siteModel)
 
         // THEN
         assertEquals(ssrModel, result.model)
@@ -68,7 +70,7 @@ class WCSSRModelCachingFetcherTest {
         whenever(wooCommerceStore.fetchSSR(siteModel)).thenReturn(WooResult(error))
 
         // WHEN
-        val result = WCSSRModelCachingFetcher.load(siteModel, wooCommerceStore)
+        val result = sut.load(siteModel)
 
         // THEN
         assertNotNull(result.error)

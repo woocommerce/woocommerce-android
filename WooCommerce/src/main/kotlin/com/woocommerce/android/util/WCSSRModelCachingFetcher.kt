@@ -10,12 +10,17 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
+import javax.inject.Singleton
 
-object WCSSRModelCachingFetcher {
+@Singleton
+class WCSSRModelCachingFetcher @Inject constructor(
+    private val wooCommerceStore: WooCommerceStore
+) {
     private val cache = mutableMapOf<Long, CachedSSR>()
     private val mutex = Mutex()
 
-    private val CACHE_TTL_MILLIS = TimeUnit.SECONDS.toMillis(10)
+    private val cacheTTL = TimeUnit.SECONDS.toMillis(10)
 
     data class CachedSSR(
         val data: WCSSRModel,
@@ -23,13 +28,12 @@ object WCSSRModelCachingFetcher {
     )
 
     suspend fun load(
-        siteModel: SiteModel,
-        wooCommerceStore: WooCommerceStore
+        siteModel: SiteModel
     ): WooResult<WCSSRModel> = mutex.withLock {
         val cached = cache[siteModel.siteId]
         val now = System.currentTimeMillis()
 
-        if (cached != null && now - cached.timestamp < CACHE_TTL_MILLIS) {
+        if (cached != null && now - cached.timestamp < cacheTTL) {
             return WooResult(cached.data)
         }
 
