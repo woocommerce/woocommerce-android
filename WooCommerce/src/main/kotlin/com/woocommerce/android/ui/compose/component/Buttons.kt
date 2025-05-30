@@ -135,7 +135,9 @@ fun WCOutlinedButton(
     enabled: Boolean = true,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
-    colors: ButtonColors = ButtonDefaults.outlinedButtonColors(),
+    colors: ButtonColors = ButtonDefaults.outlinedButtonColors(
+        disabledContentColor = colorResource(id = R.color.color_on_surface_medium)
+    ),
     border: BorderStroke? = ButtonDefaults.outlinedBorder,
     content: @Composable RowScope.() -> Unit
 ) {
