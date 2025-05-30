@@ -125,7 +125,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
     private val selectedRatesSortOrdersFlow = MutableStateFlow<List<ShippingSortOption>>(emptyList())
     private val refreshShippingRates = MutableSharedFlow<Unit>()
-    var customWeight by mutableStateOf("")
+    var customWeight by mutableStateOf(emptyList<String>())
         private set
 
     private val purchaseState = MutableStateFlow<PurchaseState>(PurchaseState.NoStarted)
@@ -295,7 +295,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                 PackageWeight(
                     itemsWeight = itemsWeight,
                     packageWeight = packageWeight,
-                    customWeight = customWeightString.toFloatOrNull()
+                    customWeight = customWeightString[index].toFloatOrNull()
                 )
             }
         }.collectLatest { packageWeightsFlow.value = it }
@@ -521,6 +521,9 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         if (shippingRatesStatesFlow.value.isEmpty()) {
             shippingRatesStatesFlow.value = List(shipmentSize) { ShippingRatesState.NoAvailable }
         }
+        if (customWeight.isEmpty()) {
+            customWeight = List(shipmentSize) { "" }
+        }
     }
 
     fun onShipmentSplit(newShipments: List<ShipmentUIModel>) {
@@ -723,7 +726,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     }
 
     fun onCustomWeightChange(input: String) {
-        customWeight = input
+        customWeight = customWeight.toMutableList().apply { set(selectedShipmentIndexFlow.value, input) }
     }
 
     fun onEditCustomsClick() {
