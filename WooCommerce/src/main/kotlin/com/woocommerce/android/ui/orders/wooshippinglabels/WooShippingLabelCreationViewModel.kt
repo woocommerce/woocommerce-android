@@ -114,6 +114,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     private val uiState = MutableStateFlow(
         UIControlsState(
             markOrderComplete = false,
+            selectedIndex = 0,
             isShipmentDetailsExpanded = false,
             isAddressSelectionExpanded = false
         )
@@ -877,6 +878,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
     data class UIControlsState(
         val markOrderComplete: Boolean,
+        val selectedIndex: Int = 0,
         val isShipmentDetailsExpanded: Boolean,
         val isAddressSelectionExpanded: Boolean,
         val noticeBannerUiState: NoticeBannerUiState? = null
