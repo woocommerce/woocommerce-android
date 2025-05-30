@@ -454,7 +454,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     }
 
     fun onShipmentSplit(newShipments: List<ShipmentUIModel>) {
-        launch { shipments.value = newShipments }
+        shipments.value = newShipments
     }
 
     private fun getSelectedOriginAddress(originAddresses: List<OriginShippingAddress>): OriginShippingAddress {
