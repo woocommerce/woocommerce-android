@@ -1,0 +1,18 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="216dp"
+    android:height="216dp"
+    android:viewportWidth="216"
+    android:viewportHeight="216">
+    <group>
+        <clip-path android:pathData="M0,0h216v216H0z" />
+        <path
+            android:fillColor="@color/woo_purple_10"
+            android:pathData="M143.77,36.14h-31.21v-15.02h-6.15c-4.18,0 -5.94,-2.11 -5.94,-6.03 0,-3.92 1.76,-6.03 5.94,-6.03 2.09,0 10.72,-0.07 10.72,-0.07V0l-12.7,0.07C95.4,0.07 90.16,6.13 90.16,15.09c0,8.95 4.96,14.71 13.52,15.04v6.01H72.22s-36.08,16.87 -36.08,17.91h143.94c0,-1.04 -36.33,-17.91 -36.33,-17.91h0.01Z" />
+        <path
+            android:fillColor="@color/woo_purple_40"
+            android:pathData="M216,81.06s-35.49,-34.15 -41.02,-38.44c-4.77,-3.69 -10.6,-6.56 -21.93,-6.56h-9.28c-1.42,18.84 -16.57,33.67 -35.78,33.67 -19.2,0 -34.36,-14.83 -35.78,-33.67h-9.28c-11.34,0 -17.16,2.86 -21.93,6.56C35.49,46.91 0,81.06 0,81.06l12.27,36.02H44.81l-0.03,98.93h126.45l-0.03,-98.93h32.55l12.27,-36.02H216Z" />
+        <path
+            android:fillColor="@color/woo_purple_50"
+            android:pathData="M44.77,117.07V216h64.16l-64.16,-98.93Z" />
+    </group>
+</vector>
