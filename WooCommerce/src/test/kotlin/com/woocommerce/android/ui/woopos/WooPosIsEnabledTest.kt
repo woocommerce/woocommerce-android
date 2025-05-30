@@ -8,13 +8,10 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
 import org.mockito.kotlin.any
-import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCSettingsModel
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.SiteSettingsFeature
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import kotlin.test.Test
 import kotlin.test.assertFalse
@@ -29,6 +26,7 @@ class WooPosIsEnabledTest : BaseUnitTest() {
     private val getWooCoreVersion: GetWooCorePluginCachedVersion = mock {
         on { invoke() }.thenReturn("9.6.0")
     }
+    private val isRemotelyEnabled: WooPOSIsRemotelyEnabled = mock()
 
     private lateinit var sut: WooPosIsEnabled
 
@@ -47,6 +45,7 @@ class WooPosIsEnabledTest : BaseUnitTest() {
             isScreenSizeAllowed = isScreenSizeAllowed,
             isRemoteFeatureFlagEnabled = isRemoteFeatureFlagEnabled,
             getWooCoreVersion = getWooCoreVersion,
+            isRemotelyEnabled = isRemotelyEnabled
         )
     }
 
@@ -135,12 +134,9 @@ class WooPosIsEnabledTest : BaseUnitTest() {
         // GIVEN
         whenever(getWooCoreVersion.invoke()).thenReturn("10.0.0")
 
-        val mockWooResult = mock<WooResult<Boolean>>()
-        whenever(mockWooResult.model).thenReturn(false)
-
         whenever(
-            wooCommerceStore.fetchIsFeatureEnabledSetting(any(), eq(SiteSettingsFeature.POINT_OF_SALE))
-        ).thenReturn(mockWooResult)
+            isRemotelyEnabled.invoke()
+        ).thenReturn(false)
 
         setupPassingConditionsForFeatureSwitchCheck()
 
@@ -153,35 +149,14 @@ class WooPosIsEnabledTest : BaseUnitTest() {
         // GIVEN
         whenever(getWooCoreVersion.invoke()).thenReturn("10.0.0")
 
-        val mockWooResult = mock<WooResult<Boolean>>()
-        whenever(mockWooResult.model).thenReturn(true)
-
         whenever(
-            wooCommerceStore.fetchIsFeatureEnabledSetting(any(), eq(SiteSettingsFeature.POINT_OF_SALE))
-        ).thenReturn(mockWooResult)
+            isRemotelyEnabled.invoke()
+        ).thenReturn(true)
 
         setupPassingConditionsForFeatureSwitchCheck()
 
         // WHEN THEN
         assertTrue(sut())
-    }
-
-    @Test
-    fun `given woo version 10_0_0 and pos switch null, when invoked, then return false`() = testBlocking {
-        // GIVEN
-        whenever(getWooCoreVersion.invoke()).thenReturn("10.0.0")
-
-        val mockWooResult = mock<WooResult<Boolean>>()
-        whenever(mockWooResult.model).thenReturn(null)
-
-        whenever(
-            wooCommerceStore.fetchIsFeatureEnabledSetting(any(), eq(SiteSettingsFeature.POINT_OF_SALE))
-        ).thenReturn(mockWooResult)
-
-        setupPassingConditionsForFeatureSwitchCheck()
-
-        // WHEN THEN
-        assertFalse(sut())
     }
 
     @Test
@@ -195,18 +170,14 @@ class WooPosIsEnabledTest : BaseUnitTest() {
     }
 
     private suspend fun setupPassingConditionsForHigherVersionsCheck() {
-        val mockWooResult = mock<WooResult<Boolean>>()
-        whenever(mockWooResult.model).thenReturn(true)
-
         whenever(
-            wooCommerceStore.fetchIsFeatureEnabledSetting(any(), eq(SiteSettingsFeature.POINT_OF_SALE))
-        ).thenReturn(mockWooResult)
+            isRemotelyEnabled.invoke()
+        ).thenReturn(true)
     }
 
     private suspend fun setupPassingConditionsForFeatureSwitchCheck() {
         val mockSite = mock<SiteModel>()
         whenever(selectedSite.getOrNull()).thenReturn(mockSite)
-        whenever(selectedSite.get()).thenReturn(mockSite)
 
         whenever(isRemoteFeatureFlagEnabled.invoke(WOO_POS)).thenReturn(true)
 
