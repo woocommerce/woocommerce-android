@@ -1,6 +1,0 @@
-22.4：
-- [*] 訂單詳細資料畫面中「自訂金額」區段的 UI 改善項目 [https://github.com/woocommerce/woocommerce-android/pull/13999]
-- [*] 修正稅務排列 JSON 格式錯誤時的當機問題 [https://github.com/woocommerce/woocommerce-android/pull/14049]
-- [*] 微幅調整折價券建立流程的設計。
-- [***] 我們已將產品搜尋新增至 Woo POS [https://github.com/woocommerce/woocommerce-android/pull/14029]
-- [***] 我們已將折價券支援新增至 Woo POS [https://github.com/woocommerce/woocommerce-android/pull/14074]

@@ -1,6 +1,0 @@
-22.4：
-- [*] 改进了订单详情界面上“自定义金额”部分的用户界面 [https://github.com/woocommerce/woocommerce-android/pull/13999]
-- [*] 修复了税项行 JSON 格式错误时的崩溃问题 [https://github.com/woocommerce/woocommerce-android/pull/14049]
-- [*] 对优惠券创建流程的设计进行了细微调整。
-- [***] 我们在 Woo POS 中新增了产品搜索功能 [https://github.com/woocommerce/woocommerce-android/pull/14029]
-- [***] 我们在 Woo POS 中新增了对优惠券的支持 [https://github.com/woocommerce/woocommerce-android/pull/14074]
