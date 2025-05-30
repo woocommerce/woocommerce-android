@@ -4634,4 +4634,8 @@
     <string name="woo_shipping_split_shipment_merge_unfulfilled_desc">This will remove all unfulfilled split shipments and move all items into one shipment.</string>
     <string name="woo_shipping_split_shipment_merge_unfulfilled_button">Merge all shipments</string>
     <string name="purchased_shipment_content_description">Purchased</string>
+
+    <string name="media_library_title">WordPress Media Library</string>
+    <string name="media_loading_failed">Media loading failed</string>
+    <string name="no_network_message">There is no network available</string>
 </resources>
