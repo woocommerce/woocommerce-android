@@ -19,7 +19,7 @@ import org.mockito.kotlin.verifyNoInteractions
 class OrderDetailsTransactionLauncherTest : BaseUnitTest() {
     val transactionId = TransactionId("testTransactionId")
     val performanceTransactionRepository: PerformanceTransactionRepository = mock {
-        on { startTransaction(any(), any()) } doReturn transactionId
+        on { startTransaction(any<String>(), any<TransactionOperation>()) } doReturn transactionId
     }
 
     private val sut = OrderDetailsTransactionLauncher(
