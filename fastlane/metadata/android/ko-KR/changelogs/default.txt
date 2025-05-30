@@ -1,0 +1,6 @@
+22.4:
+- [*] 주문 상세 정보 화면의 "사용자 정의 금액" 섹션에 대한 UI 개선 사항 [https://github.com/woocommerce/woocommerce-android/pull/13999]
+- [*] 세금 라인 JSON의 형식이 잘못된 경우 충돌 문제 해결 [https://github.com/woocommerce/woocommerce-android/pull/14049]
+- [*] 쿠폰 생성 흐름의 사소한 디자인 조정.
+- [***] Woo POS에 상품 검색 추가됨 [https://github.com/woocommerce/woocommerce-android/pull/14029]
+- [***] Woo POS에 쿠폰 지원 추가됨 [https://github.com/woocommerce/woocommerce-android/pull/14074]
