@@ -1,5 +1,6 @@
 package com.woocommerce.android.support
 
+import com.woocommerce.android.cache.SSRCache
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.zendesk.TicketCustomField
 import com.woocommerce.android.support.zendesk.TicketType
@@ -59,6 +60,7 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
             on { sites } doReturn emptyList()
         }
         envDataSource = mockEnvDataSource()
+        SSRCache.clear()
         createSUT()
     }
 
