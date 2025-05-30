@@ -26,8 +26,10 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormFragment.Companion.CUSTOMS_DATA_RESULT
 import com.woocommerce.android.ui.orders.wooshippinglabels.hazmat.WooShippingLabelHazmatFormViewModel.Companion.HAZMAT_CATEGORY_RESULT
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShippingAddress
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationFragment.Companion.PACKAGE_SELECTION_RESULT
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
+import com.woocommerce.android.ui.orders.wooshippinglabels.split.WooShippingSplitShipmentFragment
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -101,12 +103,14 @@ class WooShippingLabelCreationFragment : BaseFragment(), BackPressListener {
                             customsData = event.customData
                         ).let { findNavController().navigateSafely(it) }
                 }
+
                 is MultiLiveEvent.Event.ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is MultiLiveEvent.Event.ShowActionSnackbar -> uiMessageResolver.showActionSnack(
                     event.message,
                     event.actionText,
                     event.action
                 )
+
                 is MultiLiveEvent.Event.Exit -> findNavController().navigateUp()
                 is WooShippingLabelCreationViewModel.StartSplitShipment -> {
                     WooShippingLabelCreationFragmentDirections
@@ -142,6 +146,9 @@ class WooShippingLabelCreationFragment : BaseFragment(), BackPressListener {
         handleResult<String>(HAZMAT_CATEGORY_RESULT) {
             val selectedCategory = runCatching { ShippingLabelHazmatCategory.valueOf(it) }.getOrNull()
             viewModel.onHazmatCategorySelected(selectedCategory)
+        }
+        handleResult<List<ShipmentUIModel>>(WooShippingSplitShipmentFragment.SPLIT_SHIPMENT_RESULT) {
+            viewModel.onShipmentSplit(it)
         }
     }
 

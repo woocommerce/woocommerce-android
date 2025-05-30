@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.split
 
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.orders.wooshippinglabels.SplitShipment
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.SplitShipmentArgs
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
@@ -9,6 +10,7 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.observeForTesting
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestScope
 import org.assertj.core.api.Assertions.assertThat
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doAnswer
@@ -22,6 +24,7 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
         on { formatCurrency(amount = any(), any(), any()) }.doAnswer { it.getArgument<BigDecimal>(0).toString() }
     }
     private val getSplitMovements: GetSplitMovements = mock()
+    private val splitShipment: SplitShipment = mock()
     lateinit var sut: WooShippingSplitShipmentViewModel
 
     private fun createViewModel(
@@ -35,7 +38,9 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
         sut = WooShippingSplitShipmentViewModel(
             savedState,
             currencyFormatter,
-            getSplitMovements
+            getSplitMovements,
+            splitShipment,
+            TestScope(coroutinesTestRule.testDispatcher)
         )
     }
 
