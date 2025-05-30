@@ -15,9 +15,7 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class WooPOSIsRemotelyEnabledTest {
-
     private val selectedSite: SelectedSite = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
     private val siteModel: SiteModel = mock()
