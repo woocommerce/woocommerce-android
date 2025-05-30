@@ -405,7 +405,10 @@ internal fun WooShippingLabelPurchasedScreenPreview() {
                         formattedTotalWeight = "8.5kg",
                         formattedTotalPrice = "$92.78",
                         purchased = false,
-                        hazmatState = WooShippingLabelCreationViewModel.HazmatState.NoSelection
+                        packageSelectionState = WooShippingLabelCreationViewModel.PackageSelectionState.NotSelected,
+                        customsState = WooShippingLabelCreationViewModel.CustomsState.NotRequired,
+                        hazmatState = WooShippingLabelCreationViewModel.HazmatState.NoSelection,
+                        shippingRatesState = WooShippingLabelCreationViewModel.ShippingRatesState.NoAvailable
                     ),
                     addresses = WooShippingAddresses.EMPTY,
                     rateSummary = ShippingRateSummaryUI(serviceName = "", total = ""),
