@@ -103,11 +103,11 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     private val shipments = MutableStateFlow<List<ShipmentUIModel>>(emptyList())
     private val shipmentItems = MutableStateFlow<List<List<ShippableItemModel>>>(emptyList())
 
-    private val packageSelected = MutableStateFlow<PackageData?>(null)
-    private val customsFormData = MutableStateFlow<CustomsData?>(null)
-    private val packageWeight = MutableStateFlow<PackageWeight?>(null)
-    private val packageSelection = MutableStateFlow<PackageSelectionState>(NotSelected)
-    private val customsState = MutableStateFlow<CustomsState>(NotRequired)
+    private val packagesSelectedFlow = MutableStateFlow<List<PackageData?>>(emptyList())
+    private val customsFormDataFlow = MutableStateFlow<List<CustomsData?>>(emptyList())
+    private val packageWeightsFlow = MutableStateFlow<List<PackageWeight?>>(emptyList())
+    private val packageSelectionsFlow = MutableStateFlow<List<PackageSelectionState>>(emptyList())
+    private val customsStatesFlow = MutableStateFlow<List<CustomsState>>(emptyList())
     private val hazmatStatesFlow = MutableStateFlow<List<HazmatState>>(emptyList())
 
     private val uiState = MutableStateFlow(
@@ -118,7 +118,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         )
     )
 
-    private val selectedRatesSortOrder = MutableStateFlow(ShippingSortOption.FASTEST)
+    private val selectedRatesSortOrdersFlow = MutableStateFlow<List<ShippingSortOption>>(emptyList())
     private val refreshShippingRates = MutableSharedFlow<Unit>()
     var customWeight by mutableStateOf("")
         private set
@@ -132,10 +132,10 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         r1.defaultRate.rate.deliveryDays.compareTo(r2.defaultRate.rate.deliveryDays)
     }
 
-    private val selectedShipmentIndex = MutableStateFlow<Int>(0)
-    private val selectedRate = MutableStateFlow<ShippingRateUI?>(null)
-    private val shippingRates = MutableStateFlow<Map<CarrierUI, List<ShippingRateUI>>>(emptyMap())
-    private val shippingRatesState = MutableStateFlow<ShippingRatesState>(ShippingRatesState.NoAvailable)
+    private val selectedShipmentIndexFlow = MutableStateFlow<Int>(0)
+    private val selectedRatesFlow = MutableStateFlow<List<ShippingRateUI?>>(emptyList())
+    private val shippingRatesListFlow = MutableStateFlow<List<Map<CarrierUI, List<ShippingRateUI>>>>(emptyList())
+    private val shippingRatesStatesFlow = MutableStateFlow<List<ShippingRatesState>>(emptyList())
 
     val viewState: MutableStateFlow<WooShippingViewState> = MutableStateFlow(WooShippingViewState.Loading)
 
