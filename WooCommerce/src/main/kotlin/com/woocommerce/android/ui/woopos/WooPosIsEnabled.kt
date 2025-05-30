@@ -2,12 +2,10 @@ package com.woocommerce.android.ui.woopos
 
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.google.WooPOSIsRemotelyEnabled
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.IsRemoteFeatureFlagEnabled
 import com.woocommerce.android.util.RemoteFeatureFlag.WOO_POS
 import kotlinx.coroutines.coroutineScope
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.SiteSettingsFeature
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 import javax.inject.Singleton
