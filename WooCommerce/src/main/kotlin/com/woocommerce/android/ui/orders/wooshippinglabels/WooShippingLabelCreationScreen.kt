@@ -129,7 +129,7 @@ fun WooShippingLabelCreationScreen(viewModel: WooShippingLabelCreationViewModel)
                 onEditDestinationAddress = viewModel::onEditDestinationAddress,
                 destinationStatus = viewState.destinationStatus,
                 snackbarData = viewModel.snackbarData,
-                onSplitShipment = viewModel::onSplitShipment,
+                onSplitShipment = viewModel::onSplitShipmentButtonTapped,
                 onHazmatNoticeClick = viewModel::onHazmatNoticeClick,
             )
         }

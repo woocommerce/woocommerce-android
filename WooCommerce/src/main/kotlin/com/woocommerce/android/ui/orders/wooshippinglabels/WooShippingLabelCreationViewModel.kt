@@ -636,7 +636,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         selectedRate.update { rate }
     }
 
-    fun onSplitShipment() {
+    fun onSplitShipmentButtonTapped() {
         val currentStoreOptions = storeOptions.value
         val currentShipmentItems = shipmentItems.value
         if (currentStoreOptions != null && currentShipmentItems.isNotEmpty()) {
