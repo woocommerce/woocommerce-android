@@ -182,7 +182,7 @@ class WooPosItemsSearchHelperTest {
 
     @Test
     fun `given search with loading state true, when tab switched and search opened, then loading state is reset`() = runTest {
-        // GIVEN - Initialize with products state
+        // GIVEN
         searchHelper.initialize(CoroutineScope(coroutinesTestRule.testDispatcher), viewStateFlow)
 
         whenever(mockParentToChildrenEventReceiver.events).thenReturn(
@@ -218,7 +218,7 @@ class WooPosItemsSearchHelperTest {
 
     @Test
     fun `given coupons screen, when search event started received, then loading state remains false`() = runTest {
-        // GIVEN - Initialize with coupons state
+        // GIVEN
         viewStateFlow.value = WooPosItemsToolbarViewState.CouponList(
             search = WooPosItemsToolbarViewState.SearchState.Visible(
                 state = WooPosSearchInputState.Open(
@@ -246,7 +246,7 @@ class WooPosItemsSearchHelperTest {
         searchHelper.initialize(CoroutineScope(coroutinesTestRule.testDispatcher), viewStateFlow)
         advanceUntilIdle()
 
-        // THEN - Loading state should remain false for coupons
+        // THEN
         val currentState = viewStateFlow.value as WooPosItemsToolbarViewState.CouponList
         val searchState = currentState.search as WooPosItemsToolbarViewState.SearchState.Visible
         val openState = searchState.state as WooPosSearchInputState.Open
