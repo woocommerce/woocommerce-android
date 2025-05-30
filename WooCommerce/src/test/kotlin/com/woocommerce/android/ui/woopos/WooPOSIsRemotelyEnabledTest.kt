@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.woopos
 
 import com.woocommerce.android.cache.SSRCache
 import com.woocommerce.android.tools.SelectedSite
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
