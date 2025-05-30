@@ -184,6 +184,43 @@ class WooPosItemsViewModelTest {
     }
 
     @Test
+    fun `when search icon is tapped on coupon tab, then track analytics event with COUPON source`() = runTest {
+        // GIVEN
+        val couponsTab = WooPosItemsToolbarViewState.Tab.Coupons(
+            "Coupons",
+            WooPosItemsToolbarViewState.Tab.HighlightLevel.Normal
+        )
+
+        whenever(tabsHelper.selectTab(any(), eq(couponsTab))).thenReturn(
+            listOf(
+                WooPosItemsToolbarViewState.Tab.Products(
+                    "Products",
+                    WooPosItemsToolbarViewState.Tab.HighlightLevel.Normal
+                ),
+                WooPosItemsToolbarViewState.Tab.Coupons(
+                    "Coupons",
+                    WooPosItemsToolbarViewState.Tab.HighlightLevel.Full
+                )
+            )
+        )
+
+        val viewModel = createViewModel()
+        viewModel.onUIEvent(WooPosItemsUIEvent.OnTabClicked(couponsTab))
+
+        // WHEN
+        viewModel.onUIEvent(WooPosItemsUIEvent.SearchIconClicked)
+
+        // THEN
+        verify(analyticsTracker).track(
+            eq(
+                SearchButtonTapped(
+                    source = WooPosAnalyticsEventConstant.ItemsListSource.COUPON,
+                )
+            )
+        )
+    }
+
+    @Test
     fun `when search icon is tapped, then search helper is called with empty query`() = runTest {
         // GIVEN
         val viewModel = createViewModel()

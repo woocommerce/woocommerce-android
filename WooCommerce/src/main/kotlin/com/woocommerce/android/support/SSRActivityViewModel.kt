@@ -7,6 +7,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.cache.SSRCache
 import com.woocommerce.android.extensions.formatResult
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -47,7 +48,7 @@ class SSRActivityViewModel @Inject constructor(
         if (networkStatus.isConnected()) {
             viewStateFlow.update { it.copy(isLoading = true) }
             launch(dispatchers.io) {
-                val result = wooCommerceStore.fetchSSR(selectedSite.get())
+                val result = SSRCache.load(selectedSite.get(), wooCommerceStore)
 
                 if (result.isError) {
                     withContext(dispatchers.main) {

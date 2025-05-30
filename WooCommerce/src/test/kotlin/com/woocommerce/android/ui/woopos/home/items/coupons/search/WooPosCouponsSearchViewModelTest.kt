@@ -10,6 +10,9 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsListViewStateManager
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.PreSearchRecentTermTapped
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flowOf
@@ -20,6 +23,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.atLeast
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
@@ -38,6 +42,7 @@ class WooPosCouponsSearchViewModelTest {
     private val mockChildToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val mockParentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock()
     private val mockEmptyStateRepository: WooPosCouponsSearchEmptyStateRepository = mock()
+    private val mockAnalyticsTracker: WooPosAnalyticsTracker = mock()
 
     private val testCoupon = WooPosItemSelectionViewState.Coupon(
         id = 1L,
@@ -109,6 +114,25 @@ class WooPosCouponsSearchViewModelTest {
         verify(mockChildToParentEventSender).sendToParent(
             ChildToParentEvent.SearchEvent.RecentSearchSelected(searchTerm)
         )
+    }
+
+    @Test
+    fun `given search term, when recent search is clicked, then analytics tracked`() = runTest {
+        // GIVEN
+        val viewModel = createViewModel()
+        val searchTerm = "SUMMER"
+
+        // WHEN
+        viewModel.onUIEvent(WooPosCouponsSearchUiEvent.OnRecentSearchClicked(searchTerm))
+        advanceUntilIdle()
+
+        // THEN
+        val analyticsCaptor = argumentCaptor<PreSearchRecentTermTapped>()
+        verify(mockAnalyticsTracker).track(analyticsCaptor.capture())
+
+        val capturedEvent = analyticsCaptor.firstValue
+        assertThat(capturedEvent.properties[WooPosAnalyticsEventConstant.ItemsListSource.SOURCE])
+            .isEqualTo(WooPosAnalyticsEventConstant.ItemsListSource.COUPON.toString())
     }
 
     @Test
@@ -270,6 +294,7 @@ class WooPosCouponsSearchViewModelTest {
         viewStateManager = mockViewStateManager,
         childToParentEventSender = mockChildToParentEventSender,
         parentToChildrenEventReceiver = mockParentToChildrenEventReceiver,
-        emptyStateRepository = mockEmptyStateRepository
+        emptyStateRepository = mockEmptyStateRepository,
+        analyticsTracker = mockAnalyticsTracker
     )
 }
