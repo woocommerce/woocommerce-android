@@ -1,4 +1,1 @@
-- [**] Fix bugs in Order Creation – Custom Amount editing form [https://github.com/woocommerce/woocommerce-android/pull/14016]
-- [*] Added missing toolbar in tablet layout to Variation Attributes screen [https://github.com/woocommerce/woocommerce-android/pull/14097]
-- [**] Improved local search algorithms in POS [https://github.com/woocommerce/woocommerce-android/pull/14068]
-- [**] Added Coupons search feature [https://github.com/woocommerce/woocommerce-android/pull/14101]
+We've enhanced your WooCommerce experience with this update! Enjoy smoother order creation with our improved custom amount editing form, better tablet navigation with the added toolbar for Variation Attributes, faster product searches with our enhanced POS algorithms, and a new Coupons search feature to help you find discounts quickly. Happy selling!
