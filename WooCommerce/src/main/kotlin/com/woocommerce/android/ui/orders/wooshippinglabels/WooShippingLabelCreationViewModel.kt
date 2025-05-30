@@ -820,16 +820,14 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             val totalItemsCost: String,
             val shippingLines: List<ShippingLineSummaryUI>,
             val shippingAddresses: WooShippingAddresses,
-            val shippingRates: ShippingRatesState,
-            val packageSelection: PackageSelectionState,
             val uiState: UIControlsState,
             val purchaseState: PurchaseState,
-            val customsState: CustomsState,
-            val destinationStatus: AddressStatus
+            val destinationStatus: AddressStatus,
         ) : WooShippingViewState()
     }
 
-    sealed class ShippingRatesState {
+    @Parcelize
+    sealed class ShippingRatesState : Parcelable {
         data object NoAvailable : ShippingRatesState()
         data class MissingInfo(
             val missingTitle: Int,
@@ -849,7 +847,8 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         ) : ShippingRatesState()
     }
 
-    sealed class PackageSelectionState {
+    @Parcelize
+    sealed class PackageSelectionState : Parcelable {
         data object NotSelected : PackageSelectionState()
         data class DataAvailable(
             val selectedPackage: PackageData,
@@ -894,7 +893,8 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         val hazmatSelection: ShippingLabelHazmatCategory?
     )
 
-    sealed class CustomsState {
+    @Parcelize
+    sealed class CustomsState : Parcelable {
         data object NotRequired : CustomsState()
         data object ItnMissing : CustomsState()
         data object Unavailable : CustomsState()
@@ -950,7 +950,10 @@ data class ShipmentUI(
     val formattedTotalWeight: String,
     val formattedTotalPrice: String,
     val purchased: Boolean,
-    val hazmatState: HazmatState
+    val packageSelectionState: PackageSelectionState,
+    val customsState: CustomsState,
+    val hazmatState: HazmatState,
+    val shippingRatesState: ShippingRatesState,
 ) : Parcelable {
     val totalItemQuantity
         get() = shippableItems.sumByFloat { it.quantity }.toInt()
