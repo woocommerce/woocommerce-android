@@ -418,9 +418,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             }
 
             shipmentItems.value = shipments.map { it.items }
-            if (hazmatStates.isEmpty()) {
-                hazmatStatesFlow.value = List(shipments.size) { NoSelection }
-            }
+            initFlows(shipments.size)
 
             val shippingLineSummary = order.getShippingLinesSummary(currencyFormatter)
             val shipmentUIList = shipmentItems.value.mapIndexed { index, shippableItemModels ->
@@ -450,6 +448,39 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             viewState
         }.collectLatest {
             viewState.value = it
+        }
+    }
+
+    private fun initFlows(shipmentSize: Int) {
+        if (packagesSelectedFlow.value.isEmpty()) {
+            packagesSelectedFlow.value = List(shipmentSize) { null }
+        }
+        if (customsFormDataFlow.value.isEmpty()) {
+            customsFormDataFlow.value = List(shipmentSize) { null }
+        }
+        if (packageWeightsFlow.value.isEmpty()) {
+            packageWeightsFlow.value = List(shipmentSize) { null }
+        }
+        if (packageSelectionsFlow.value.isEmpty()) {
+            packageSelectionsFlow.value = List(shipmentSize) { NotSelected }
+        }
+        if (customsStatesFlow.value.isEmpty()) {
+            customsStatesFlow.value = List(shipmentSize) { NotRequired }
+        }
+        if (hazmatStatesFlow.value.isEmpty()) {
+            hazmatStatesFlow.value = List(shipmentSize) { NoSelection }
+        }
+        if (selectedRatesSortOrdersFlow.value.isEmpty()) {
+            selectedRatesSortOrdersFlow.value = List(shipmentSize) { ShippingSortOption.FASTEST }
+        }
+        if (selectedRatesFlow.value.isEmpty()) {
+            selectedRatesFlow.value = List(shipmentSize) { null }
+        }
+        if (shippingRatesListFlow.value.isEmpty()) {
+            shippingRatesListFlow.value = List(shipmentSize) { emptyMap() }
+        }
+        if (shippingRatesStatesFlow.value.isEmpty()) {
+            shippingRatesStatesFlow.value = List(shipmentSize) { ShippingRatesState.NoAvailable }
         }
     }
 
