@@ -184,14 +184,12 @@ class WooPosItemsSearchHelperTest {
     fun `given search with loading state true, when tab switched and search opened, then loading state is reset`() = runTest {
         // GIVEN - Initialize with products state
         searchHelper.initialize(CoroutineScope(coroutinesTestRule.testDispatcher), viewStateFlow)
-        
-        // Simulate search in products with loading state true
+
         whenever(mockParentToChildrenEventReceiver.events).thenReturn(
             flowOf(ParentToChildrenEvent.SearchEvent.Started)
         )
         advanceUntilIdle()
-        
-        // Switch to coupons tab
+
         viewStateFlow.value = WooPosItemsToolbarViewState.CouponList(
             search = WooPosItemsToolbarViewState.SearchState.Visible(
                 state = WooPosSearchInputState.Closed
@@ -207,11 +205,11 @@ class WooPosItemsSearchHelperTest {
                 )
             )
         )
-        
-        // WHEN - Open search in coupons
+
+        // WHEN
         searchHelper.onSearchChanged("", 0)
-        
-        // THEN - Loading state should be false
+
+        // THEN
         val currentState = viewStateFlow.value as WooPosItemsToolbarViewState.CouponList
         val searchState = currentState.search as WooPosItemsToolbarViewState.SearchState.Visible
         val openState = searchState.state as WooPosSearchInputState.Open
@@ -239,15 +237,15 @@ class WooPosItemsSearchHelperTest {
                 )
             )
         )
-        
+
         whenever(mockParentToChildrenEventReceiver.events).thenReturn(
             flowOf(ParentToChildrenEvent.SearchEvent.Started)
         )
-        
+
         // WHEN
         searchHelper.initialize(CoroutineScope(coroutinesTestRule.testDispatcher), viewStateFlow)
         advanceUntilIdle()
-        
+
         // THEN - Loading state should remain false for coupons
         val currentState = viewStateFlow.value as WooPosItemsToolbarViewState.CouponList
         val searchState = currentState.search as WooPosItemsToolbarViewState.SearchState.Visible
