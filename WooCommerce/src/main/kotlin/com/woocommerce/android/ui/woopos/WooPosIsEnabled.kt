@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos
 
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.google.WooPOSIsRemotelyEnabled
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.IsRemoteFeatureFlagEnabled
 import com.woocommerce.android.util.RemoteFeatureFlag.WOO_POS
@@ -18,6 +19,7 @@ class WooPosIsEnabled @Inject constructor(
     private val getWooCoreVersion: GetWooCorePluginCachedVersion,
     private val wooCommerceStore: WooCommerceStore,
     private val isRemoteFeatureFlagEnabled: IsRemoteFeatureFlagEnabled,
+    private val isRemotelyEnabled: WooPOSIsRemotelyEnabled
 ) {
     @Suppress("ReturnCount")
     suspend operator fun invoke(): Boolean = coroutineScope {
@@ -26,7 +28,7 @@ class WooPosIsEnabled @Inject constructor(
         if (!isRemoteFeatureFlagEnabled(WOO_POS)) return@coroutineScope false
         if (!isScreenSizeAllowed()) return@coroutineScope false
         if (!isWooCoreSupportsOrderAutoDraftsAndExtraPaymentsProps()) return@coroutineScope false
-        if (isFeatureSwitchSupported() && isPOSFeatureEnabled() != true) return@coroutineScope false
+        if (isFeatureSwitchSupported() && isRemotelyEnabled() != true) return@coroutineScope false
 
         val siteSettings = wooCommerceStore.getSiteSettings(selectedSite) ?: return@coroutineScope false
 
