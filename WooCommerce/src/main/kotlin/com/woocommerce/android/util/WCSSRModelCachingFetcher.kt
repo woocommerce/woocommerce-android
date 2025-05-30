@@ -43,8 +43,4 @@ class WCSSRModelCachingFetcher @Inject constructor(
         cache[siteModel.siteId] = CachedSSR(fetched)
         return WooResult(fetched)
     }
-
-    fun clear() {
-        cache.clear()
-    }
 }

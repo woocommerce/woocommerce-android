@@ -59,7 +59,6 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
             on { sites } doReturn emptyList()
         }
         envDataSource = mockEnvDataSource()
-        ssrFetcher.clear()
         createSUT()
     }
 

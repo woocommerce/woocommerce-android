@@ -25,16 +25,6 @@ class WCSSRModelCachingFetcherTest {
 
     private val sut: WCSSRModelCachingFetcher = WCSSRModelCachingFetcher(wooCommerceStore)
 
-    @Before
-    fun setUp() {
-        sut.clear()
-    }
-
-    @After
-    fun tearDown() {
-        sut.clear()
-    }
-
     @Test
     fun `given cached value when load called again then store is not called`() = runTest {
         // GIVEN
