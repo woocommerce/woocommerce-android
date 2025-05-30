@@ -239,7 +239,9 @@ fun AdPreview(
                     fallback = painterResource(R.drawable.blaze_campaign_product_placeholder),
                     placeholder = painterResource(R.drawable.blaze_campaign_product_placeholder),
                     error = painterResource(R.drawable.blaze_campaign_product_placeholder),
-                    contentDescription = "",
+                    contentDescription = stringResource(
+                        R.string.blaze_campaign_preview_product_image_content_description
+                    ),
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .fillMaxWidth()

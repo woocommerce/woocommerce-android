@@ -115,10 +115,6 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "coupons_load_failed"
         }
 
-        data object CouponsLoaded : PaymentFlowTrackerEvent() {
-            override val name: String = "coupons_loaded"
-        }
-
         @ExposedCopyVisibility
         data class ItemAddedToCart private constructor(
             val source: ItemsListSource,
@@ -138,11 +134,17 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                 itemType = when (item) {
                     is WooPosItemsViewModel.ItemClickedData.Product -> ItemsListItemType.PRODUCT
                     is WooPosItemsViewModel.ItemClickedData.Coupon -> ItemsListItemType.COUPON
+                    is WooPosItemsViewModel.ItemClickedData.VariableProduct -> {
+                        error("VariableProduct is not a valid item type")
+                    }
                 },
                 productType = when (item) {
                     is WooPosItemsViewModel.ItemClickedData.Product.Simple -> ItemsListProductType.SIMPLE
                     is WooPosItemsViewModel.ItemClickedData.Product.Variation -> ItemsListProductType.VARIATION
                     is WooPosItemsViewModel.ItemClickedData.Coupon -> null
+                    is WooPosItemsViewModel.ItemClickedData.VariableProduct -> {
+                        error("VariableProduct is not a valid item type")
+                    }
                 }
             )
 

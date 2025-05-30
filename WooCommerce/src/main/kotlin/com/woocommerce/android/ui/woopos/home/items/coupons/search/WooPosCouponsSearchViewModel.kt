@@ -11,7 +11,9 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsListViewStateManager
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.PreSearchRecentTermTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -26,6 +28,7 @@ class WooPosCouponsSearchViewModel @Inject constructor(
     private val childToParentEventSender: WooPosChildrenToParentEventSender,
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
     private val emptyStateRepository: WooPosCouponsSearchEmptyStateRepository,
+    private val analyticsTracker: WooPosAnalyticsTracker,
 ) : ViewModel() {
 
     val viewState: StateFlow<WooPosCouponsSearchViewState> = viewStateManager.viewState
@@ -54,6 +57,11 @@ class WooPosCouponsSearchViewModel @Inject constructor(
             }
             is WooPosCouponsSearchUiEvent.OnRecentSearchClicked -> {
                 viewModelScope.launch {
+                    analyticsTracker.track(
+                        PreSearchRecentTermTapped(
+                            source = WooPosAnalyticsEventConstant.ItemsListSource.COUPON
+                        )
+                    )
                     childToParentEventSender.sendToParent(
                         ChildToParentEvent.SearchEvent.RecentSearchSelected(
                             event.recentSearch
@@ -75,7 +83,7 @@ class WooPosCouponsSearchViewModel @Inject constructor(
         viewModelScope.launch {
             val itemData = ItemClickedData.Coupon(coupon.id, coupon.name)
             childToParentEventSender.sendToParent(
-                ChildToParentEvent.ItemClickedInProductSelector(
+                ChildToParentEvent.ItemClickedInItemsList(
                     itemData = itemData,
                     eventForTracking = ItemAddedToCart(
                         item = itemData,

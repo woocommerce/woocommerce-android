@@ -313,7 +313,7 @@ class WooPosTotalsViewModel @Inject constructor(
                     }
 
                     is ParentToChildrenEvent.SearchEvent.RecentSearchSelected,
-                    is ParentToChildrenEvent.ItemClickedInProductSelector,
+                    is ParentToChildrenEvent.ItemClickedInItemsList,
                     is ParentToChildrenEvent.SearchEvent.ChangedQuery,
                     ParentToChildrenEvent.SearchEvent.Finished,
                     is ParentToChildrenEvent.OrderCreated,

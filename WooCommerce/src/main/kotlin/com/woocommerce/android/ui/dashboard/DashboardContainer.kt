@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -117,7 +118,13 @@ private fun DashboardWidgets(
 ) {
     val nestedScrollInterop = rememberNestedScrollInteropConnection()
 
+    WooLog.d(
+        WooLog.T.DASHBOARD,
+        "DashboardWidgets: numberOfColumns=$numberOfColumns, visibleWidgets=${widgetUiModels.count { it.isVisible }}"
+    )
+
     if (numberOfColumns == 1) {
+        WooLog.d(WooLog.T.DASHBOARD, "Using single-column layout with Column + verticalScroll")
         Column(
             modifier = modifier
                 .nestedScroll(nestedScrollInterop)
@@ -139,34 +146,39 @@ private fun DashboardWidgets(
             Spacer(modifier = Modifier)
         }
     } else {
+        WooLog.d(WooLog.T.DASHBOARD, "Using multi-column layout with Box + verticalScroll")
         val widgetColumns = splitWidgetsIntoColumns(
             numberOfColumns = numberOfColumns,
             visibleUiWidgets = widgetUiModels.filter { it.isVisible }
         )
-        Row(
+        WooLog.d(WooLog.T.DASHBOARD, "Split widgets into ${widgetColumns.size} columns")
+        Box(
             modifier = modifier
                 .nestedScroll(nestedScrollInterop)
-                .verticalScroll(rememberScrollState()),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+                .verticalScroll(rememberScrollState())
+                .padding(bottom = 16.dp)
         ) {
-            Spacer(modifier = Modifier)
-            widgetColumns.forEach { columnWidgets ->
-                Column(
-                    modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    columnWidgets.forEach { widget ->
-                        DashboardWidgetCard(
-                            widget,
-                            mainActivityViewModel,
-                            dashboardViewModel,
-                            blazeCampaignCreationDispatcher,
-                            Modifier.fillMaxWidth()
-                        )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                widgetColumns.forEachIndexed { columnIndex, columnWidgets ->
+                    WooLog.d(WooLog.T.DASHBOARD, "Rendering column $columnIndex with ${columnWidgets.size} widgets")
+                    Column(
+                        modifier = Modifier.weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        columnWidgets.forEach { widget ->
+                            DashboardWidgetCard(
+                                widget,
+                                mainActivityViewModel,
+                                dashboardViewModel,
+                                blazeCampaignCreationDispatcher,
+                                Modifier.fillMaxWidth()
+                            )
+                        }
                     }
                 }
             }
-            Spacer(modifier = Modifier)
         }
     }
 }

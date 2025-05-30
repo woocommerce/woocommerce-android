@@ -2,8 +2,14 @@
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 
+22.6
+-----
+
+
 22.5
 -----
+- [**] Fix bugs in Order Creation – Custom Amount editing form [https://github.com/woocommerce/woocommerce-android/pull/14016]
+- [*] Added missing toolbar in tablet layout to Variation Attributes screen [https://github.com/woocommerce/woocommerce-android/pull/14097]
 - [**] Improved local search algorithms in POS [https://github.com/woocommerce/woocommerce-android/pull/14068]
 - [**] Added Coupons search feature [https://github.com/woocommerce/woocommerce-android/pull/14101]
 

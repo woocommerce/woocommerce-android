@@ -61,17 +61,19 @@ class CouponRepository @Inject constructor(
                     )
                     Result.failure(WooException(result.error))
                 } else {
-                    analyticsTrackerWrapper.track(
-                        if (isPosMode) {
-                            posTrackingEventProvider.COUPONS_LOADED
-                        } else {
-                            storeManagementTrackingEventProvider.COUPONS_LOADED
-                        },
-                        mapOf(Pair(AnalyticsTracker.KEY_IS_LOADING_MORE, page > 1))
-                    )
+                    trackCouponsLoaded(isPosMode, page)
                     Result.success(result.model!!)
                 }
             }
+    }
+
+    private fun trackCouponsLoaded(isPosMode: Boolean, page: Int) {
+        if (!isPosMode) {
+            analyticsTrackerWrapper.track(
+                storeManagementTrackingEventProvider.COUPONS_LOADED,
+                mapOf(Pair(AnalyticsTracker.KEY_IS_LOADING_MORE, page > 1))
+            )
+        }
     }
 
     suspend fun searchCoupons(

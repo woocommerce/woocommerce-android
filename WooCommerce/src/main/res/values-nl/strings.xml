@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-05-06 17:54:13+0000
+Translation-Revision-Date: 2025-05-21 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="purchased_shipment_content_description">Aangeschaft</string>
+    <string name="woopos_totals_invalid_coupon_error">Kon coupons niet toepassen</string>
+    <string name="woopos_coupons_empty_list_create_coupon_label">Coupon aanmaken</string>
+    <string name="woopos_coupons_loading_error_coupons_disabled_message">Schakel coupons in de WooCommerce-instellingen in.</string>
+    <string name="woopos_coupons_loading_error_coupons_disabled_title">Geen coupons gevonden</string>
+    <string name="woopos_totals_coupons_validation_failed_remove_coupons">Coupons verwijderen</string>
+    <string name="woopos_totals_coupons_validation_failed_edit_order">Bestelling bewerken</string>
+    <string name="woopos_cart_coupon_invalid_subtitle">Coupon niet toegepast</string>
+    <string name="woopos_coupon_item_expired_label">Verlopen op %s</string>
     <string name="woo_shipping_split_shipment_merge_unfulfilled_button">Alle verzendingen samenvoegen</string>
     <string name="woo_shipping_split_shipment_merge_unfulfilled_desc">Hierdoor worden alle niet-voltooide gesplitste verzendingen verwijderd en worden alle artikelen in één verzending geplaatst.</string>
     <string name="woo_shipping_split_shipment_merge_unfulfilled_title">Alle niet-voltooide verzendingen samenvoegen</string>

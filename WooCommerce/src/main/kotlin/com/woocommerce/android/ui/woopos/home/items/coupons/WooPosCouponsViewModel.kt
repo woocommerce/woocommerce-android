@@ -7,15 +7,12 @@ import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.WooPosCouponsViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsListViewStateManager.WooPosCouponsListRefreshType
-import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsUIEvent.BackButtonClicked
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsUIEvent.CouponClicked
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsUIEvent.EndOfListReached
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsUIEvent.PullToRefreshTriggered
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsUIEvent.RetryLoadMoreTriggered
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsUIEvent.RetryTriggered
 import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationFacade
-import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
-import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
@@ -32,7 +29,6 @@ class WooPosCouponsViewModel @Inject constructor(
     private val listViewStateManager: WooPosCouponsListViewStateManager,
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender,
     private val couponCreationFacade: WooPosCouponCreationFacade,
-    private val navigator: WooPosItemsNavigator,
     private val analyticsTracker: WooPosAnalyticsTracker,
 ) : ViewModel() {
     private val _viewState =
@@ -80,10 +76,6 @@ class WooPosCouponsViewModel @Inject constructor(
                 retryLoadMore()
             }
 
-            BackButtonClicked -> {
-                navigateBackToItemListScreen()
-            }
-
             RetryTriggered -> fetchCoupons(WooPosCouponsListRefreshType.RETRY)
 
             is WooPosCouponsUIEvent.CreateCouponClicked -> createAndAddCoupon()
@@ -102,20 +94,11 @@ class WooPosCouponsViewModel @Inject constructor(
         listViewStateManager.retryLoadMore(viewModelScope)
     }
 
-    private fun navigateBackToItemListScreen() {
-        viewModelScope.launch {
-            navigator.sendNavigationEvent(
-                WooPosItemsScreenNavigationEvent.NavigateBackToItemListScreen
-            )
-        }
-    }
-
     private fun handleCouponClicked(event: CouponClicked) {
         viewModelScope.launch {
             val itemData = ItemClickedData.Coupon(event.couponId, event.couponCode)
             fromChildToParentEventSender.sendToParent(
-                // CouponsProject: rename ItemClickedInProductSelector to ItemClicked
-                ChildToParentEvent.ItemClickedInProductSelector(
+                ChildToParentEvent.ItemClickedInItemsList(
                     itemData = itemData,
                     eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
                         item = itemData,
@@ -134,7 +117,7 @@ class WooPosCouponsViewModel @Inject constructor(
             if (coupon != null) {
                 val itemData = ItemClickedData.Coupon(coupon.id, coupon.code ?: "")
                 fromChildToParentEventSender.sendToParent(
-                    ChildToParentEvent.ItemClickedInProductSelector(
+                    ChildToParentEvent.ItemClickedInItemsList(
                         itemData = itemData,
                         eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
                             item = itemData,
