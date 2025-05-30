@@ -60,7 +60,7 @@ class WCSettingsMapperTest {
     fun `mapper maps to correct product settings model`() {
         // given
         val expectedModel = WCProductSettingsModel(
-            localSiteId = site.id,
+            localSiteId = site.localId(),
             dimensionUnit = "in",
             weightUnit = "oz"
         )

@@ -50,7 +50,7 @@ class WCSettingsMapper
         val dimensionUnit = getValueForSettingsField(response, "woocommerce_dimension_unit")
 
         return WCProductSettingsModel(
-            localSiteId = site.id,
+            localSiteId = site.localId(),
             dimensionUnit = dimensionUnit ?: "",
             weightUnit = weightUnit ?: "",
         )
