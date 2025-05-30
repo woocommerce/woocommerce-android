@@ -1,5 +1,1 @@
-- [*] UI improvements for the "Custom amount" section on the order details screen [https://github.com/woocommerce/woocommerce-android/pull/13999]
-- [*] Fixes for the crash when tax lines JSON is malformed [https://github.com/woocommerce/woocommerce-android/pull/14049]
-- [*] Minor design adjustments of the coupon creation flow.
-- [***] We added products search into Woo POS [https://github.com/woocommerce/woocommerce-android/pull/14029]
-- [***] We added support for coupons into Woo POS [https://github.com/woocommerce/woocommerce-android/pull/14074]
+This update brings product search and coupon support to Woo POS, making in-person selling smoother than ever. We've also polished the coupon creation flow and improved the "Custom amount" UI. Plus, a pesky crash caused by malformed tax data is now fixed for a more stable experience.
