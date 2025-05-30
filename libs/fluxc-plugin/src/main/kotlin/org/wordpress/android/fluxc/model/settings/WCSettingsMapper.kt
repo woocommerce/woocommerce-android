@@ -66,14 +66,6 @@ class WCSettingsMapper
         )
     }
 
-    fun mapFeatureIsEnabledSettings(response: SiteSettingOptionResponse): Boolean? {
-        return when (response.value?.lowercase()) {
-            "yes" -> true
-            "no" -> false
-            else -> null
-        }
-    }
-
     private fun getValueForSettingsField(settingsResponse: List<SiteSettingsResponse>, field: String): String? {
         return settingsResponse.find { it.id != null && it.id == field }?.value?.asString
     }

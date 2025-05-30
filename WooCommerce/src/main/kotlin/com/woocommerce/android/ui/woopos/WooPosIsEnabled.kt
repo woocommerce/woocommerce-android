@@ -46,13 +46,6 @@ class WooPosIsEnabled @Inject constructor(
         return wooCoreVersion.semverCompareTo(WC_VERSION_SUPPORTS_POS_PRODUCT_FILTERING) >= 0
     }
 
-    private suspend fun isPOSFeatureEnabled(): Boolean? {
-        return wooCommerceStore.fetchIsFeatureEnabledSetting(
-            selectedSite.get(),
-            SiteSettingsFeature.POINT_OF_SALE
-        ).model
-    }
-
     private fun isFeatureSwitchSupported(): Boolean {
         val wooCoreVersion = getWooCoreVersion() ?: return false
         return wooCoreVersion.semverCompareTo(WC_VERSION_SUPPORTS_POS_FEATURE_SWITCH) >= 0

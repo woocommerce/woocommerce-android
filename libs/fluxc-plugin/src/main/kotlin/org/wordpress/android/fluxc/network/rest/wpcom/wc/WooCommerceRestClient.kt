@@ -16,7 +16,6 @@ class WooCommerceRestClient @Inject constructor(private val wooNetwork: WooNetwo
         const val COUPONS_SETTING_ID = "woocommerce_enable_coupons"
         const val TAX_SETTING_GROUP = "tax"
         const val TAX_SETTING_ID = "woocommerce_tax_based_on"
-        const val ADVANCED_SETTING_GROUP = "advanced"
 
         private const val ROOT_ENDPOINT_TIMEOUT_MS = 15000
     }
@@ -93,22 +92,4 @@ class WooCommerceRestClient @Inject constructor(private val wooNetwork: WooNetwo
         )
         return response.toWooPayload { it }
     }
-
-    suspend fun fetchFeatureIsEnabled(site: SiteModel, feature: SiteSettingsFeature): WooPayload<SiteSettingOptionResponse> {
-        val url = WOOCOMMERCE.settings.group(ADVANCED_SETTING_GROUP).id("woocommerce_feature_${feature.value}_enabled").pathV3
-
-        val response = wooNetwork.executeGetGsonRequest(
-            site = site,
-            path = url,
-            clazz = SiteSettingOptionResponse::class.java
-        )
-        return response.toWooPayload { it }
-    }
-}
-
-/**
- * Features that can be enabled/disabled in core, under WC Settings > Advanced > Features.
- */
-enum class SiteSettingsFeature(val value: String) {
-    POINT_OF_SALE("point_of_sale")
 }
