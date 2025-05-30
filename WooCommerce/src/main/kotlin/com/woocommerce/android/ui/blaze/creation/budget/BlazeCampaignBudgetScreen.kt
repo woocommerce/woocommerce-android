@@ -333,12 +333,13 @@ private fun CampaignDurationRow(
         ) {
             Text(
                 modifier = Modifier.weight(1f),
-                text = when (isEndlessCampaign) {
-                    true -> stringResource(
+                text = if (isEndlessCampaign) {
+                    stringResource(
                         id = R.string.blaze_campaign_budget_duration_endless_campaign_value,
                         formattedStartDate
                     )
-                    else -> "$formattedStartDate - $formattedEndDate"
+                } else {
+                    "$formattedStartDate - $formattedEndDate"
                 },
                 style = MaterialTheme.typography.h6,
                 fontWeight = FontWeight.SemiBold,
