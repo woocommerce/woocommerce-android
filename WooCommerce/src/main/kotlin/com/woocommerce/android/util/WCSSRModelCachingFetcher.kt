@@ -1,4 +1,4 @@
-package com.woocommerce.android.cache
+package com.woocommerce.android.util
 
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -11,7 +11,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.util.concurrent.TimeUnit
 
-object SSRCache {
+object WCSSRModelCachingFetcher {
     private val cache = mutableMapOf<Long, CachedSSR>()
     private val mutex = Mutex()
 

@@ -2,7 +2,7 @@ package com.woocommerce.android.support.zendesk
 
 import android.content.Context
 import android.os.Parcelable
-import com.woocommerce.android.cache.SSRCache
+import com.woocommerce.android.util.WCSSRModelCachingFetcher
 import com.woocommerce.android.extensions.formatResult
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.zendesk.RequestConstants.requestCreationIdentityNotSetErrorMessage
@@ -105,7 +105,7 @@ class ZendeskTicketRepository @Inject constructor(
 
     private suspend fun fetchSSR(selectedSite: SiteModel): String? {
         wooLogWrapper.i(WooLog.T.SUPPORT, "Fetching SSR")
-        val result = SSRCache.load(selectedSite, wooStore)
+        val result = WCSSRModelCachingFetcher.load(selectedSite, wooStore)
         if (result.isError) {
             wooLogWrapper.e(WooLog.T.SUPPORT, "Error fetching SSR")
         } else {

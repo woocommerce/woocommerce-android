@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.google
 
-import com.woocommerce.android.cache.SSRCache
+import com.woocommerce.android.util.WCSSRModelCachingFetcher
 import com.woocommerce.android.extensions.isVersionAtLeast
 import com.woocommerce.android.tools.SelectedSite
 import org.json.JSONArray
@@ -19,7 +19,7 @@ class IsGoogleForWooEnabled @Inject constructor(
     }
 
     suspend operator fun invoke(): Boolean {
-        val result = SSRCache.load(selectedSite.get(), wooCommerceStore)
+        val result = WCSSRModelCachingFetcher.load(selectedSite.get(), wooCommerceStore)
 
         if (!result.isError) {
             result.model?.let { ssr ->
