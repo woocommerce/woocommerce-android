@@ -71,6 +71,7 @@ import java.math.BigDecimal
 import java.util.Date
 import javax.inject.Inject
 
+@SuppressWarnings("LargeClass")
 @HiltViewModel
 class WooShippingLabelCreationViewModel @Inject constructor(
     savedState: SavedStateHandle,
