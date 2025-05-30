@@ -1,6 +1,0 @@
-22.4:
-- [*] 注文詳細画面の「カスタム金額」セクションの UI を改良しました [https://github.com/woocommerce/woocommerce-android/pull/13999]
-- [*] 税行の JSON が不正な形式である場合にクラッシュが発生していた問題を修正しました [https://github.com/woocommerce/woocommerce-android/pull/14049]
-- [*] クーポン作成フローのデザインに軽微な調整を加えました。
-- [***] Woo POS に商品検索を追加しました [https://github.com/woocommerce/woocommerce-android/pull/14029]
-- [***] Woo POS がクーポンをサポートするようになりました [https://github.com/woocommerce/woocommerce-android/pull/14074]
