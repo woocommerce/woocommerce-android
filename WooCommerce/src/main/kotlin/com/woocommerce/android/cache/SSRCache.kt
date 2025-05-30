@@ -1,6 +1,5 @@
 package com.woocommerce.android.cache
 
-import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.wordpress.android.fluxc.model.SiteModel
@@ -16,7 +15,7 @@ object SSRCache {
     private val cache = mutableMapOf<Long, CachedSSR>()
     private val mutex = Mutex()
 
-    private val CACHE_TTL_MILLIS = TimeUnit.MINUTES.toMillis(10)
+    private val CACHE_TTL_MILLIS = TimeUnit.SECONDS.toMillis(10)
 
     data class CachedSSR(
         val data: WCSSRModel,
@@ -39,10 +38,6 @@ object SSRCache {
 
         cache[siteModel.siteId] = CachedSSR(fetched)
         return WooResult(fetched)
-    }
-
-    fun invalidate(siteId: Long) {
-        cache.remove(siteId)
     }
 
     fun clear() {
