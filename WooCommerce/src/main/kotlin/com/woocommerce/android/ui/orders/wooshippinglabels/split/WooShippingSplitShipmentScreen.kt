@@ -105,26 +105,7 @@ fun WooShippingSplitShipmentScreen(
     val snackbarHostState = remember { SnackbarHostState() }
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.woo_shipping_split_shipment)) },
-                navigationIcon = {
-                    IconButton(onBack) {
-                        Icon(
-                            imageVector = Icons.Filled.Close,
-                            contentDescription = stringResource(id = R.string.close)
-                        )
-                    }
-                },
-                backgroundColor = colorResource(id = R.color.color_toolbar),
-                actions = {
-                    WCTextButton(
-                        onClick = onDone,
-                        text = stringResource(id = R.string.done)
-                    )
-                }
-            )
-        },
+        topBar = { TopBar(onBack, onDone) },
         snackbarHost = { SuccessSnackbarHost(snackbarHostState) }
     ) { padding ->
         Surface(
@@ -221,6 +202,29 @@ fun WooShippingSplitShipmentScreen(
             }
         }
     }
+}
+
+@Composable
+private fun TopBar(onBack: (() -> Unit)? = null, onDone: (() -> Unit)? = null) {
+    TopAppBar(
+        title = { Text(stringResource(R.string.woo_shipping_split_shipment)) },
+        navigationIcon = {
+            IconButton(onBack ?: {}) {
+                Icon(
+                    imageVector = Icons.Filled.Close,
+                    contentDescription = stringResource(id = R.string.close)
+                )
+            }
+        },
+        backgroundColor = colorResource(id = R.color.color_toolbar),
+        actions = {
+            WCTextButton(
+                enabled = onDone != null,
+                onClick = onDone ?: {},
+                text = stringResource(id = R.string.done)
+            )
+        }
+    )
 }
 
 @Composable
