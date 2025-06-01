@@ -63,6 +63,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.ProductsSummary
 import com.woocommerce.android.ui.orders.wooshippinglabels.SelectableShippingProduct
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShipmentTabData
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShipmentsTabRow
+import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShippingLabelsSnackbarData
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.SuccessSnackbarHost
 import com.woocommerce.android.ui.orders.wooshippinglabels.split.WooShippingSplitShipmentViewModel.SplitShipmentViewState
 import kotlinx.coroutines.launch
@@ -85,6 +86,7 @@ fun WooShippingSplitShipmentScreen(
             onUpdateSelectedShipment = viewModel::onUpdateSelectedShipment,
             onRemoveShipmentMenuTapped = viewModel::onRemoveShipmentMenuTapped,
             onDismissRemoveSheet = viewModel::onDismissRemoveSheet,
+            snackbarData = viewModel.snackbarData,
             modifier = modifier
         )
     }
@@ -102,7 +104,8 @@ fun WooShippingSplitShipmentScreen(
     onUpdateSelectedShipment: (shipmentKey: Int) -> Unit,
     onRemoveShipmentMenuTapped: (shipmentKeys: List<Int>) -> Unit,
     onDismissRemoveSheet: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    snackbarData: ShippingLabelsSnackbarData? = null,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -182,6 +185,22 @@ fun WooShippingSplitShipmentScreen(
         viewState.removeShipmentSheet?.let { removeShipmentSheet ->
             RemoveShipmentBottomSheet(removeShipmentSheet, onDismissRemoveSheet, onRemoveShipments)
         }
+    }
+
+    val actionSnackbarMessage = snackbarData?.let { stringResource(it.message) }
+    val actionSnackbarActionLabel = snackbarData?.let { stringResource(it.actionLabel) }
+    LaunchedEffect(snackbarData) {
+        snackbarData?.let {
+            val result = snackbarHostState.showSnackbar(
+                message = actionSnackbarMessage ?: "",
+                actionLabel = actionSnackbarActionLabel,
+                duration = snackbarData.duration,
+            )
+            when (result) {
+                SnackbarResult.ActionPerformed -> snackbarData.action()
+                SnackbarResult.Dismissed -> snackbarData.dismissAction()
+            }
+        } ?: snackbarHostState.currentSnackbarData?.dismiss()
     }
 
     val context = LocalContext.current

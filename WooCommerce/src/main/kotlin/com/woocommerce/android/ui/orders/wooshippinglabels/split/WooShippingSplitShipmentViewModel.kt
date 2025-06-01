@@ -37,6 +37,7 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
     @AppCoroutineScope private val appCoroutineScope: CoroutineScope
 ) : ScopedViewModel(savedState) {
     private val navArgs: WooShippingSplitShipmentFragmentArgs by savedState.navArgs()
+    var snackbarData by mutableStateOf<ShippingLabelsSnackbarData?>(null)
     private val storeOptions = navArgs.shipmentArgs.storeOptions
 
     private val currentShipments = MutableStateFlow(
