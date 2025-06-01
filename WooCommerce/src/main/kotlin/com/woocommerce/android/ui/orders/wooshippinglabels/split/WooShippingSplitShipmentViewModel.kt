@@ -1,7 +1,9 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.split
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.extensions.sumByFloat
@@ -46,10 +48,15 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
     private val removeShipmentSheet: MutableStateFlow<RemoveShipmentSheet?> = MutableStateFlow(null)
     private val splitMessage: MutableStateFlow<SplitShipmentMessage?> = MutableStateFlow(null)
 
+    val viewState: MutableStateFlow<SplitShipmentViewState> = MutableStateFlow(SplitShipmentViewState.Loading)
+
     init {
         launch {
             delay(TOOLTIP_DELAY)
             splitMessage.value = SplitShipmentMessage.Instructions
+        }
+        launch {
+            observeShipments()
         }
         launch {
             currentShipments.collectLatest { shipments ->
@@ -71,26 +78,28 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
         }
     }
 
-    val viewState = combine(
-        shipmentSelected,
-        shipmentsUIMap.filterNotNull(),
-        removeShipmentSheet,
-        splitMessage
-    ) { shipmentSelected, selectableItems, sheet, message ->
-        val unfulfilledShipmentKeys = selectableItems.keys.filterNot { selectableItems.getValue(it).purchased }
-        SplitShipmentViewState(
-            shipmentSelected = shipmentSelected,
-            selectableItems = selectableItems,
-            overflowMenuItems = getOverflowMenuItems(unfulfilledShipmentKeys),
-            splitMovements = getSplitMovements(
-                sourceShipmentKey = shipmentSelected,
-                shipments = currentShipments.value,
-                selection = selectableItems
-            ),
-            removeShipmentSheet = sheet,
-            splitMessage = message
-        )
-    }.asLiveData()
+    private suspend fun observeShipments() {
+        combine(
+            shipmentSelected,
+            shipmentsUIMap.filterNotNull(),
+            removeShipmentSheet,
+            splitMessage
+        ) { shipmentSelected, selectableItems, sheet, message ->
+            val unfulfilledShipmentKeys = selectableItems.keys.filterNot { selectableItems.getValue(it).purchased }
+            SplitShipmentViewState.DataState(
+                shipmentSelected = shipmentSelected,
+                selectableItems = selectableItems,
+                overflowMenuItems = getOverflowMenuItems(unfulfilledShipmentKeys),
+                splitMovements = getSplitMovements(
+                    sourceShipmentKey = shipmentSelected,
+                    shipments = currentShipments.value,
+                    selection = selectableItems
+                ),
+                removeShipmentSheet = sheet,
+                splitMessage = message
+            )
+        }.collectLatest { viewState.value = it }
+    }
 
     private fun getOverflowMenuItems(shipmentKeys: List<Int>) = buildList {
         if (shipmentKeys.size >= 2) {
