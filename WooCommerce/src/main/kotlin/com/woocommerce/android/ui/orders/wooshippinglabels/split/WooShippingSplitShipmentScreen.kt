@@ -92,6 +92,7 @@ fun WooShippingSplitShipmentScreen(
     }
 }
 
+@Suppress("CyclomaticComplexMethod")
 @Composable
 fun WooShippingSplitShipmentScreen(
     viewState: SplitShipmentViewState.DataState,
