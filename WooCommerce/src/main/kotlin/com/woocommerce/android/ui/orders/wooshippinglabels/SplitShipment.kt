@@ -18,7 +18,7 @@ class SplitShipment @Inject constructor(
 
     suspend operator fun invoke(orderId: Long, shipments: List<ShipmentUIModel>): Result<Unit> {
         return selectedSite.getOrNull()?.let {
-            val shipmentMap = shipments.toShipmentMap() ?: return Result.failure(Exception("Shipment with null id"))
+            val shipmentMap = shipments.toShipmentMap()
 
             val response = wooShippingLabelRepository.updateShipments(
                 site = it,
@@ -35,11 +35,8 @@ class SplitShipment @Inject constructor(
         } ?: Result.failure(Exception("No site selected"))
     }
 
-    private fun List<ShipmentUIModel>.toShipmentMap(): ShipmentMap? {
-        if (any { it.id == null }) {
-            return null
-        }
-        return associate { it.id!! to it.items.map { item -> Item(id = item.itemId, subItems = item.subItems()) } }
+    private fun List<ShipmentUIModel>.toShipmentMap() = associate {
+        it.id to it.items.map { item -> Item(id = item.itemId, subItems = item.subItems()) }
     }
 
     /**

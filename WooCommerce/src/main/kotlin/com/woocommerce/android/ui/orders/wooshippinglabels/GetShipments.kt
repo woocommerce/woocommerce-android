@@ -45,7 +45,7 @@ class GetShipments @Inject constructor(
         val shipments = config?.shipments
 
         return if (shipments.isNullOrEmpty()) {
-            listOf(ShipmentUIModel(id = null, items = orderItems, purchased = !purchasedLabels.isNullOrEmpty()))
+            listOf(ShipmentUIModel(id = "0", items = orderItems, purchased = !purchasedLabels.isNullOrEmpty()))
         } else {
             shipments.map { (shipmentId, shipmentItems) ->
                 val items = shipmentItems.mapNotNull { (id, subItems) ->
@@ -55,7 +55,7 @@ class GetShipments @Inject constructor(
                         ?.copy(quantity = if (subItems.isNullOrEmpty()) 1f else subItems.size.toFloat())
                 }
                 val purchased = purchasedLabels?.map { it.id.toString() }?.contains(shipmentId) == true
-                ShipmentUIModel(shipmentId, items, purchased)
+                ShipmentUIModel(id = shipmentId, remoteId = shipmentId, items = items, purchased = purchased)
             }
         }
     }
