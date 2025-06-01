@@ -16,7 +16,7 @@ class SplitShipment @Inject constructor(
     private val configDataStore: WooShippingConfigDataStore,
 ) {
 
-    suspend operator fun invoke(orderId: Long, shipments: List<ShipmentUIModel>): Result<Unit> {
+    suspend operator fun invoke(orderId: Long, shipments: List<ShipmentUIModel>): Result<List<ShipmentUIModel>> {
         return selectedSite.getOrNull()?.let {
             val shipmentMap = shipments.toShipmentMap()
 
@@ -24,16 +24,23 @@ class SplitShipment @Inject constructor(
                 site = it,
                 orderId = orderId,
                 shipments = shipmentMap,
+                shipmentIdsToUpdate = getShipmentsToUpdate(shipments)
             )
             val result = response.model
             if (response.isError || result == null) {
                 Result.failure(Exception("Split shipment failed"))
             } else {
                 updateCachedShipments(orderId, result.data)
-                Result.success(Unit)
+                // Update remote ids
+                val newShipments = shipments.map { it.copy(remoteId = it.id) }
+                Result.success(newShipments)
             }
         } ?: Result.failure(Exception("No site selected"))
     }
+
+    private fun getShipmentsToUpdate(shipments: List<ShipmentUIModel>): Map<String, Int> = shipments.filter {
+        it.remoteId != null && it.id != it.remoteId
+    }.associate { it.remoteId!! to it.id.toInt() }
 
     private fun List<ShipmentUIModel>.toShipmentMap() = associate {
         it.id to it.items.map { item -> Item(id = item.itemId, subItems = item.subItems()) }
