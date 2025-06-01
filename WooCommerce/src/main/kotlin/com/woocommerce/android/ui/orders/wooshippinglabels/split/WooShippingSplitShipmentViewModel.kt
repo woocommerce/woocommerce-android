@@ -253,7 +253,9 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
      */
     private fun reindexShipments(
         shipments: Map<Int, ShipmentUIModel>
-    ) = shipments.values.mapIndexed { index, items -> index to items }.toMap()
+    ) = shipments.values.mapIndexed { index, shipmentUIModel ->
+        index to shipmentUIModel.copy(id = index.toString())
+    }.toMap()
 
     private fun showUndoSnackbar(splitMovement: SplitMovement, undoAction: () -> Unit) {
         val snackbarMessage = if (splitMovement.totalItemsToMove > 1) {
