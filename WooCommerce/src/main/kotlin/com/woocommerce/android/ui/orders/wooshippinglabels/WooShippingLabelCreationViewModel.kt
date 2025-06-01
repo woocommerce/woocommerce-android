@@ -65,6 +65,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.joinAll
@@ -286,19 +287,26 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     private suspend fun observePackageWeight() {
         combine(
             shipmentItems.filter { it.isNotEmpty() && it.size > selectedShipmentIndexFlow.value },
-            packagesSelectedFlow.filter { it.isNotEmpty() },
-            snapshotFlow { customWeight }.debounce(TYPING_DELAY)
+            packagesSelectedFlow.filter { it.isNotEmpty() && it.size == shipments.value.size },
+            snapshotFlow { customWeight }
+                .filter { it.isNotEmpty() && it.size == shipments.value.size }
+                .debounce(TYPING_DELAY)
         ) { shipmentItems, selectedPackage, customWeightString ->
-            shipmentItems.mapIndexed { index, shipmentItemModelList ->
-                val itemsWeight = shipmentItemModelList.sumByFloat { it.weight }
-                val packageWeight = selectedPackage[index]?.weight?.toFloatOrNull()
-                PackageWeight(
-                    itemsWeight = itemsWeight,
-                    packageWeight = packageWeight,
-                    customWeight = customWeightString[index].toFloatOrNull()
-                )
+            if (selectedPackage.size == shipments.value.size && customWeightString.size == shipments.value.size) {
+                shipmentItems.mapIndexed { index, shipmentItemModelList ->
+                    val itemsWeight = shipmentItemModelList.sumByFloat { it.weight }
+                    val packageWeight = selectedPackage[index]?.weight?.toFloatOrNull()
+                    PackageWeight(
+                        itemsWeight = itemsWeight,
+                        packageWeight = packageWeight,
+                        customWeight = customWeightString[index].toFloatOrNull()
+                    )
+                }
+            } else {
+                null
             }
-        }.collectLatest { packageWeightsFlow.value = it }
+        }.filterNotNull()
+            .collectLatest { packageWeightsFlow.value = it }
     }
 
     private suspend fun observePackageChanges() {
