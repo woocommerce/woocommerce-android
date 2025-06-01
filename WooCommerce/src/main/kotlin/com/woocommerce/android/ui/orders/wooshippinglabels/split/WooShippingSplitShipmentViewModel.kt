@@ -266,14 +266,17 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
         )
     }
 
-    data class SplitShipmentViewState(
-        val shipmentSelected: Int,
-        val selectableItems: Map<Int, SelectableShippableItemsUI>,
-        val overflowMenuItems: List<List<Int>> = emptyList(), // Each item represents shipments to be removed.
-        val splitMovements: List<SplitMovement> = emptyList(),
-        val removeShipmentSheet: RemoveShipmentSheet? = null,
-        val splitMessage: SplitShipmentMessage? = null
-    )
+    sealed class SplitShipmentViewState {
+        data object Loading : SplitShipmentViewState()
+        data class DataState(
+            val shipmentSelected: Int,
+            val selectableItems: Map<Int, SelectableShippableItemsUI>,
+            val overflowMenuItems: List<List<Int>> = emptyList(), // Each item represents shipments to be removed.
+            val splitMovements: List<SplitMovement> = emptyList(),
+            val removeShipmentSheet: RemoveShipmentSheet? = null,
+            val splitMessage: SplitShipmentMessage? = null
+        ) : SplitShipmentViewState()
+    }
 
     companion object {
         private const val TOOLTIP_DELAY = 800L

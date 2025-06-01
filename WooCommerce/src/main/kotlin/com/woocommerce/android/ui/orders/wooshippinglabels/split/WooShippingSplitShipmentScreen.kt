@@ -90,7 +90,7 @@ fun WooShippingSplitShipmentScreen(
 
 @Composable
 fun WooShippingSplitShipmentScreen(
-    viewState: SplitShipmentViewState,
+    viewState: SplitShipmentViewState.DataState,
     onBack: () -> Unit,
     onDone: () -> Unit,
     onDismissInstructions: () -> Unit,
@@ -225,7 +225,7 @@ fun WooShippingSplitShipmentScreen(
 
 @Composable
 private fun MultipleShipments(
-    viewState: SplitShipmentViewState,
+    viewState: SplitShipmentViewState.DataState,
     shipments: List<Int>,
     productsExtraPadding: Dp,
     onUpdateSelectedShipment: (shipmentKey: Int) -> Unit,
@@ -538,7 +538,7 @@ fun SelectableProductsSection(
 @Composable
 private fun WooShippingSplitShipmentScreenPreview() = WooThemeWithBackground {
     WooShippingSplitShipmentScreen(
-        viewState = SplitShipmentViewState(
+        viewState = SplitShipmentViewState.DataState(
             shipmentSelected = 0,
             selectableItems = mapOf(
                 0 to SelectableShippableItemsUI(
