@@ -499,37 +499,37 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     }
 
     private fun initFlows(shipmentSize: Int) {
-        if (packagesSelectedFlow.value.isEmpty()) {
+        if (packagesSelectedFlow.value.size != shipmentSize) {
             packagesSelectedFlow.value = List(shipmentSize) { null }
         }
-        if (customsFormDataFlow.value.isEmpty()) {
+        if (customsFormDataFlow.value.size != shipmentSize) {
             customsFormDataFlow.value = List(shipmentSize) { null }
         }
-        if (packageWeightsFlow.value.isEmpty()) {
+        if (packageWeightsFlow.value.size != shipmentSize) {
             packageWeightsFlow.value = List(shipmentSize) { null }
         }
-        if (packageSelectionsFlow.value.isEmpty()) {
+        if (packageSelectionsFlow.value.size != shipmentSize) {
             packageSelectionsFlow.value = List(shipmentSize) { NotSelected }
         }
-        if (customsStatesFlow.value.isEmpty()) {
+        if (customsStatesFlow.value.size != shipmentSize) {
             customsStatesFlow.value = List(shipmentSize) { NotRequired }
         }
-        if (hazmatStatesFlow.value.isEmpty()) {
+        if (hazmatStatesFlow.value.size != shipmentSize) {
             hazmatStatesFlow.value = List(shipmentSize) { NoSelection }
         }
-        if (selectedRatesSortOrdersFlow.value.isEmpty()) {
+        if (selectedRatesSortOrdersFlow.value.size != shipmentSize) {
             selectedRatesSortOrdersFlow.value = List(shipmentSize) { ShippingSortOption.FASTEST }
         }
-        if (selectedRatesFlow.value.isEmpty()) {
+        if (selectedRatesFlow.value.size != shipmentSize) {
             selectedRatesFlow.value = List(shipmentSize) { null }
         }
-        if (shippingRatesListFlow.value.isEmpty()) {
+        if (shippingRatesListFlow.value.size != shipmentSize) {
             shippingRatesListFlow.value = List(shipmentSize) { emptyMap() }
         }
-        if (shippingRatesStatesFlow.value.isEmpty()) {
+        if (shippingRatesStatesFlow.value.size != shipmentSize) {
             shippingRatesStatesFlow.value = List(shipmentSize) { ShippingRatesState.NoAvailable }
         }
-        if (customWeight.isEmpty()) {
+        if (customWeight.size != shipmentSize) {
             customWeight = List(shipmentSize) { "" }
         }
     }
