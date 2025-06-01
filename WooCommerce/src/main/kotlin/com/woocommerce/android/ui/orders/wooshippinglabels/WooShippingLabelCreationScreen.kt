@@ -517,32 +517,34 @@ private fun CreateShippingCards(
             onExpand = { isExpanded.value = it }
         )
         HazmatCard(
-            onClick = onHazmatNoticeClick,
+            onClick = if (shipmentUI.purchased) null else onHazmatNoticeClick,
             selectedCategory = shipmentUI.hazmatState.hazmatSelection,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 4.dp, end = 8.dp)
         )
-        CustomsCard(
-            customsState = shipmentUI.customsState,
-            onEditCustomsClick = onEditCustomsClick,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        )
-        PackageCard(
-            modifier = Modifier.padding(16.dp),
-            packageSelectionState = shipmentUI.packageSelectionState,
-            onSelectPackageClick = onSelectPackageClick,
-            customWeight = customWeight,
-            onCustomWeightChange = onCustomWeightChange
-        )
-        ShippingRatesSection(
-            shippingRatesState = shipmentUI.shippingRatesState,
-            onSelectedRateSortOrderChanged = onSelectedRateSortOrderChanged,
-            onRefreshShippingRates = onRefreshShippingRates,
-            onSelectedSippingRateChanged = onSelectedShippingRateChanged
-        )
+        if (!shipmentUI.purchased) {
+            CustomsCard(
+                customsState = shipmentUI.customsState,
+                onEditCustomsClick = onEditCustomsClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            )
+            PackageCard(
+                modifier = Modifier.padding(16.dp),
+                packageSelectionState = shipmentUI.packageSelectionState,
+                onSelectPackageClick = onSelectPackageClick,
+                customWeight = customWeight,
+                onCustomWeightChange = onCustomWeightChange
+            )
+            ShippingRatesSection(
+                shippingRatesState = shipmentUI.shippingRatesState,
+                onSelectedRateSortOrderChanged = onSelectedRateSortOrderChanged,
+                onRefreshShippingRates = onRefreshShippingRates,
+                onSelectedSippingRateChanged = onSelectedShippingRateChanged
+            )
+        }
     }
 }
 
