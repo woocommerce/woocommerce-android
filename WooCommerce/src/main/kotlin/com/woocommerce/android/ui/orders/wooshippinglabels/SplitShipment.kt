@@ -38,6 +38,15 @@ class SplitShipment @Inject constructor(
         } ?: Result.failure(Exception("No site selected"))
     }
 
+    /**
+     * Returns a map of remote shipment IDs to their updated local shipment IDs.
+     *
+     * This is used to inform the backend which existing shipments (identified by `remoteId`)
+     * have been modified (and now have a different local `id`). Only shipments that already exist
+     * remotely (`remoteId != null`) and whose local ID has changed are included in this map.
+     *
+     * This mapping helps the backend update the correct shipment mapping during a split operation.
+     */
     private fun getShipmentsToUpdate(shipments: List<ShipmentUIModel>): Map<String, Int> = shipments.filter {
         it.remoteId != null && it.id != it.remoteId
     }.associate { it.remoteId!! to it.id.toInt() }
