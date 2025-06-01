@@ -5,7 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
-import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.extensions.sumByFloat
 import com.woocommerce.android.ui.orders.wooshippinglabels.ShippableItemUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.SplitShipment
@@ -18,7 +17,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -34,7 +32,6 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
     private val currencyFormatter: CurrencyFormatter,
     private val getSplitMovements: GetSplitMovements,
     private val splitShipment: SplitShipment,
-    @AppCoroutineScope private val appCoroutineScope: CoroutineScope
 ) : ScopedViewModel(savedState) {
     private val navArgs: WooShippingSplitShipmentFragmentArgs by savedState.navArgs()
     var snackbarData by mutableStateOf<ShippingLabelsSnackbarData?>(null)
@@ -121,11 +118,21 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
 
     fun onDoneTapped() {
         if (hasShipmentChange()) {
-            val currentShipmentList = currentShipments.value.values.toList()
-            // Launch splitShipment in the application-level scope
-            appCoroutineScope.launch { splitShipment(navArgs.shipmentArgs.orderId, currentShipmentList) }
-            // Trigger event immediately after starting the task
-            triggerEvent(MultiLiveEvent.Event.ExitWithResult(currentShipmentList))
+            val fallbackViewState = viewState.value
+            viewState.value = SplitShipmentViewState.Loading
+            launch {
+                val currentShipmentList = currentShipments.value.values.toList()
+                val result = splitShipment(navArgs.shipmentArgs.orderId, currentShipmentList)
+                if (result.isSuccess) {
+                    triggerEvent(MultiLiveEvent.Event.ExitWithResult(result.getOrThrow()))
+                } else {
+                    viewState.value = fallbackViewState
+                    snackbarData = ShippingLabelsSnackbarData(
+                        message = R.string.woo_shipping_split_shipment_error,
+                        actionLabel = R.string.retry,
+                    ) { onDoneTapped() }
+                }
+            }
         } else {
             triggerEvent(MultiLiveEvent.Event.Exit)
         }

@@ -4593,6 +4593,7 @@
     <string name="woo_shipping_address_missing_info_hint">Add missing information</string>
     <string name="woo_shipping_labels_loading_order_error">Unable to load the order</string>
     <string name="woo_shipping_labels_purchase_error">We are unable to purchase the shipping label. Please try again.</string>
+    <string name="woo_shipping_split_shipment_error">We were unable to split the shipments. Please try again.</string>
     <string name="woo_shipping_labels_loading_error">Unable to load data</string>
     <string name="woo_shipping_address_save_changes">Save changes</string>
 
