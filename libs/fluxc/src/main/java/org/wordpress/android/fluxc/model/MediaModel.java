@@ -15,6 +15,7 @@ import org.wordpress.android.util.StringUtils;
 
 import java.io.Serializable;
 
+// WARN: This class is used within WordPress-MediaPicker-Android, do not remove!
 @Table
 public class MediaModel extends Payload<BaseNetworkError> implements Identifiable, Serializable {
     private static final long serialVersionUID = -1396457338496002846L;

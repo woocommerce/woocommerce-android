@@ -23,7 +23,6 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.leaderboards.WCProductLeaderboardsMapper
-import org.wordpress.android.fluxc.model.leaderboards.WCTopPerformerProductModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.leaderboards.LeaderboardsApiResponse
@@ -85,7 +84,6 @@ class WCLeaderboardsStoreTest {
             appContext,
             listOf(
                 SiteModel::class.java,
-                WCTopPerformerProductModel::class.java,
             ),
             WellSqlConfig.ADDON_WOOCOMMERCE
         )
