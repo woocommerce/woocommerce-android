@@ -47,8 +47,8 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelS
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus.Purchased
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.StoreOptionsModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
-import com.woocommerce.android.ui.orders.wooshippinglabels.purchased.PurchasedShippingLabelData
-import com.woocommerce.android.ui.orders.wooshippinglabels.purchased.WooShippingLabelPaperSize
+import com.woocommerce.android.ui.orders.wooshippinglabels.purchased.ObserveShippingLabelStatus
+import com.woocommerce.android.ui.orders.wooshippinglabels.purchased.printing.FetchShippingLabelFile
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.domain.GetShippingRates
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.CarrierUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRateUI
@@ -70,6 +70,8 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.joinAll
@@ -97,7 +99,9 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     private val verifyDestinationAddress: VerifyDestinationAddress,
     private val observeShippingLabelNotice: ObserveShippingLabelNotice,
     private val shouldRequireCustoms: ShouldRequireCustomsForm,
-    private val shouldRequireITN: ShouldRequireITN
+    private val shouldRequireITN: ShouldRequireITN,
+    private val fetchShippingLabelFile: FetchShippingLabelFile,
+    private val observeShippingLabelStatus: ObserveShippingLabelStatus
 ) : ScopedViewModel(savedState) {
     private val navArgs: WooShippingLabelCreationFragmentArgs by savedState.navArgs()
 
@@ -203,6 +207,21 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                 )
             }
         }
+
+    private fun observeShippingLabelPurchaseStatus(shipmentId: Int) {
+        launch {
+            val labelId = shipments.value[shipmentId].labelId ?: return@launch
+            observeShippingLabelStatus(orderId = navArgs.orderId, labelId = labelId).onEach { status ->
+                val isPurchaseFinished = when (status) {
+                    PurchaseInProgress -> false
+                    Purchased -> true
+                    else -> null
+                }
+
+                updateShipment(shipmentId, shipments.value[shipmentId].copy(isPurchaseFinished = isPurchaseFinished))
+            }.launchIn(this)
+        }
+    }
 
     private suspend fun getStoreOptions() {
         observeStoreOptions().collectLatest { options ->
@@ -664,31 +683,15 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             ?.labels
             ?.firstOrNull()
             ?.let { purchasedLabel ->
-                val currentViewState = (viewState.value as? WooShippingViewState.DataState)
-                val selectedRate = selectedRatesFlow.value[shipmentId]
-                if (currentViewState != null && selectedRate != null) {
-                    val items = currentViewState.shipmentUIList[shipmentId]
-                    val hazmatSelection = hazmatStatesFlow.value[shipmentId].hazmatSelection
-                    PurchasedShippingLabelData(
+                updateShipment(
+                    shipmentId, shipments.value[shipmentId].copy(
+                        purchased = true,
                         labelId = purchasedLabel.labelId,
-                        orderId = navArgs.orderId,
                         carrierId = purchasedLabel.carrierId,
-                        trackingNumber = purchasedLabel.tracking,
-                        addresses = currentViewState.shippingAddresses,
-                        items = items,
-                        rateSummary = selectedRate.summary,
-                        shippingLines = currentViewState.shippingLines,
-                        hazmatSelection = hazmatSelection
-                    ).let {
-                        triggerEvent(
-                            LabelPurchased(
-                                purchaseData = it,
-                                totalItems = currentViewState.totalItems,
-                                totalItemsCost = currentViewState.totalItemsCost
-                            )
-                        )
-                    }
-                }
+                        trackingNumber = purchasedLabel.tracking
+                    )
+                )
+                observeShippingLabelPurchaseStatus(shipmentId)
             }
     }
 
@@ -970,14 +973,6 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         val hazmatSelection: ShippingLabelHazmatCategory?
             get() = (this as? Declared)?.hazmatCategory
     }
-
-    @Parcelize
-    data class PurchasedShipmentState(
-        val paperSizeOption: WooShippingLabelPaperSize,
-        val shippingLabelData: PurchasedShippingLabelData? = null,
-        val isLoadingData: Boolean = false,
-        val isPurchaseFinished: Boolean? = false
-    ) : Parcelable
 
     data class OpenShippingLabelFile(val file: File) : Event()
     data class OpenUrl(val url: String) : Event()
