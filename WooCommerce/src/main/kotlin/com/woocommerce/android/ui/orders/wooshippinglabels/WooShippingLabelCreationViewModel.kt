@@ -602,22 +602,23 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
     @Suppress("ComplexCondition")
     fun onPurchaseShippingLabel() {
-        val selectedPackage = packagesSelectedFlow.value[selectedShipmentIndexFlow.value]
+        val selectedShipmentIndex = selectedShipmentIndexFlow.value
+        val selectedPackage = packagesSelectedFlow.value[selectedShipmentIndex]
         val addresses = shippingAddresses.value
-        val shippingRate = selectedRatesFlow.value[selectedShipmentIndexFlow.value]?.selectedOption?.rate
-        val weight = packageWeightsFlow.value[selectedShipmentIndexFlow.value]?.totalWeight
+        val shippingRate = selectedRatesFlow.value[selectedShipmentIndex]?.selectedOption?.rate
+        val weight = packageWeightsFlow.value[selectedShipmentIndex]?.totalWeight
 
         if (selectedPackage == null || addresses == null || shippingRate == null || weight == null) return
 
         val orderId = navArgs.orderId
         val lastOrderComplete = uiState.value.markOrderComplete
-        val shippableItemsIdList = shipmentItems.value[selectedShipmentIndexFlow.value].map { it.productId }
-        val hazmatSelection = hazmatStatesFlow.value[selectedShipmentIndexFlow.value].hazmatSelection
+        val shippableItemsIdList = shipmentItems.value[selectedShipmentIndex].map { it.productId }
+        val hazmatSelection = hazmatStatesFlow.value[selectedShipmentIndex].hazmatSelection
 
         val backupPurchaseState = purchaseState.value
         purchaseState.value = PurchaseState.InProgress
 
-        val customsData = customsFormDataFlow.value[selectedShipmentIndexFlow.value]?.let { listOf(it) }
+        val customsData = customsFormDataFlow.value[selectedShipmentIndex]?.let { listOf(it) }
 
         launch {
             val result = purchaseShippingLabel(
@@ -634,7 +635,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             )
 
             if (result.isSuccess) {
-                handlePurchaseSuccess(result)
+                handlePurchaseSuccess(result, selectedShipmentIndex)
             } else {
                 purchaseState.value = backupPurchaseState
                 snackbarData = ShippingLabelsSnackbarData(
@@ -645,17 +646,17 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         }
     }
 
-    private fun handlePurchaseSuccess(result: Result<PurchasedLabelData>) {
+    private fun handlePurchaseSuccess(result: Result<PurchasedLabelData>, shipmentId: Int) {
         purchaseState.value = PurchaseState.Success
         result.getOrNull()
             ?.labels
             ?.firstOrNull()
             ?.let { purchasedLabel ->
                 val currentViewState = (viewState.value as? WooShippingViewState.DataState)
-                val selectedRate = selectedRatesFlow.value[selectedShipmentIndexFlow.value]
+                val selectedRate = selectedRatesFlow.value[shipmentId]
                 if (currentViewState != null && selectedRate != null) {
-                    val items = currentViewState.shipmentUIList[selectedShipmentIndexFlow.value]
-                    val hazmatSelection = hazmatStatesFlow.value[selectedShipmentIndexFlow.value].hazmatSelection
+                    val items = currentViewState.shipmentUIList[shipmentId]
+                    val hazmatSelection = hazmatStatesFlow.value[shipmentId].hazmatSelection
                     PurchasedShippingLabelData(
                         labelId = purchasedLabel.labelId,
                         orderId = navArgs.orderId,
