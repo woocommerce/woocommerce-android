@@ -45,9 +45,9 @@ class WooShippingNetworkingMapper @Inject constructor(
             serviceName = shippingLabelDTO.serviceName.orEmpty(),
             commercialInvoiceUrl = shippingLabelDTO.commercialInvoiceUrl.orEmpty(),
             isCommercialInvoiceSubmittedElectronically =
-            shippingLabelDTO.isCommercialInvoiceSubmittedElectronically ?: false,
+                shippingLabelDTO.isCommercialInvoiceSubmittedElectronically == true,
             packageName = shippingLabelDTO.packageName.orEmpty(),
-            isLetter = shippingLabelDTO.isLetter ?: false,
+            isLetter = shippingLabelDTO.isLetter == true,
             productNames = shippingLabelDTO.productNames.orEmpty(),
             productIds = shippingLabelDTO.productIds.orEmpty(),
             shipmentId = shippingLabelDTO.shipmentId ?: 0,
