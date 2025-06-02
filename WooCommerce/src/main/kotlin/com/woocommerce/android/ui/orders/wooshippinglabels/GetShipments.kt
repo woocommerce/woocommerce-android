@@ -6,6 +6,7 @@ import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ShippingLabelDTO
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
@@ -41,11 +42,11 @@ class GetShipments @Inject constructor(
         }
 
         val config = configDataStore.observeConfig(order.id).first()
-        val purchasedLabels = config?.shippingLabelData?.currentOrderLabels
+
         val shipments = config?.shipments
 
-        return if (shipments.isNullOrEmpty()) {
-            listOf(ShipmentUIModel(id = "0", items = orderItems, purchased = !purchasedLabels.isNullOrEmpty()))
+        val shipmentUIModelList = if (shipments.isNullOrEmpty()) {
+            listOf(ShipmentUIModel(id = "0", items = orderItems))
         } else {
             shipments.map { (shipmentId, shipmentItems) ->
                 val items = shipmentItems.mapNotNull { (id, subItems) ->
@@ -54,9 +55,30 @@ class GetShipments @Inject constructor(
                     orderItems.firstOrNull { it.itemId == id }
                         ?.copy(quantity = if (subItems.isNullOrEmpty()) 1f else subItems.size.toFloat())
                 }
-                val purchased = purchasedLabels?.map { it.id.toString() }?.contains(shipmentId) == true
-                ShipmentUIModel(id = shipmentId, remoteId = shipmentId, items = items, purchased = purchased)
+                ShipmentUIModel(id = shipmentId, remoteId = shipmentId, items = items)
             }
+        }
+
+        // If there are purchased labels, merge their data into the result list
+        return config?.shippingLabelData?.currentOrderLabels?.let { data ->
+            mergePurchaseData(shipmentUIModelList, data)
+        } ?: shipmentUIModelList
+    }
+
+    private fun mergePurchaseData(
+        shipmentUIModelList: List<ShipmentUIModel>,
+        currentOrderLabels: List<ShippingLabelDTO>
+    ) = shipmentUIModelList.map { shipmentUIModel ->
+        val labelForShipment = currentOrderLabels.find { it.shipmentId.toString() == shipmentUIModel.remoteId }
+        if (labelForShipment == null) {
+            shipmentUIModel
+        } else {
+            shipmentUIModel.copy(
+                purchased = true,
+                labelId = labelForShipment.labelId,
+                carrierId = labelForShipment.carrierId,
+                trackingNumber = labelForShipment.tracking,
+            )
         }
     }
 }
