@@ -10,6 +10,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.AddressNormalizationModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PurchasedLabelData
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.PurchasedLabelModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.StoreOptionsModel
@@ -60,6 +61,23 @@ class WooShippingNetworkingMapper @Inject constructor(
         )
     }
 
+    operator fun invoke(purchasedLabelDTO: PurchasedLabelDTO) = PurchasedLabelModel(
+        labelId = purchasedLabelDTO.labelId ?: 0,
+        tracking = purchasedLabelDTO.tracking.orEmpty(),
+        refundableAmount = purchasedLabelDTO.refundableAmount ?: BigDecimal.ZERO,
+        status = mapShippingLabelStatus(purchasedLabelDTO.status),
+        created = purchasedLabelDTO.created?.let { Date(it) },
+        carrierId = purchasedLabelDTO.carrierId.orEmpty(),
+        serviceName = purchasedLabelDTO.serviceName.orEmpty(),
+        commercialInvoiceUrl = purchasedLabelDTO.commercialInvoiceUrl.orEmpty(),
+        isCommercialInvoiceSubmittedElectronically =
+            purchasedLabelDTO.isCommercialInvoiceSubmittedElectronically == true,
+        packageName = purchasedLabelDTO.packageName.orEmpty(),
+        isLetter = purchasedLabelDTO.isLetter == true,
+        productNames = purchasedLabelDTO.productNames.orEmpty(),
+        productIds = purchasedLabelDTO.productIds.orEmpty()
+    )
+
     operator fun invoke(destinationAddressDTO: DestinationAddressDTO): Address {
         val name = destinationAddressDTO.name?.split(" ") ?: listOf("", "")
         return Address(
@@ -100,14 +118,12 @@ class WooShippingNetworkingMapper @Inject constructor(
         )
     }
 
-    operator fun invoke(purchasedShippingLabelResponseDTO: PurchasedShippingLabelResponseDTO): PurchasedLabelData {
-        return PurchasedLabelData(
-            labels = purchasedShippingLabelResponseDTO.labels.map { invoke(it) },
-            destination = purchasedShippingLabelResponseDTO.selectedDestination.mapValues { invoke(it.value) },
-            origin = purchasedShippingLabelResponseDTO.selectedOrigin.mapValues { invoke(it.value) },
-            rates = purchasedShippingLabelResponseDTO.selectedRates.mapValues { ratesMapper(it.key, it.value) }
-        )
-    }
+    operator fun invoke(purchasedShippingLabelResponseDTO: PurchasedShippingLabelResponseDTO) = PurchasedLabelData(
+        labels = purchasedShippingLabelResponseDTO.labels.map { invoke(it) },
+        destination = purchasedShippingLabelResponseDTO.selectedDestination.mapValues { invoke(it.value) },
+        origin = purchasedShippingLabelResponseDTO.selectedOrigin.mapValues { invoke(it.value) },
+        rates = purchasedShippingLabelResponseDTO.selectedRates.mapValues { ratesMapper(it.key, it.value) }
+    )
 
     operator fun invoke(addressListDTO: Array<AddressDTO>): List<OriginShippingAddress> {
         return addressListDTO.map {
