@@ -90,6 +90,7 @@ class WooCommerceStoreTest {
             accountStore = accountStore,
             taxBasedOnDao = taxBasedOnDao,
             pluginSqlUtils = PluginSqlUtilsWrapper(),
+            productSettingsDao = db.productSettingsDao
         )
     }
     private val error = WooError(INVALID_RESPONSE, NETWORK_ERROR, "Invalid site ID")
@@ -129,7 +130,6 @@ class WooCommerceStoreTest {
             listOf(
                 SitePluginModel::class.java,
                 SiteModel::class.java,
-                WCProductSettingsModel::class.java,
                 WCSettingsBuilder::class.java,
             ),
             WellSqlConfig.ADDON_WOOCOMMERCE

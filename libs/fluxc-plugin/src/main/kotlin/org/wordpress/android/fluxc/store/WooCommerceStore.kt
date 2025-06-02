@@ -33,8 +33,8 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WooSystemRestCli
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.toDomainModel
 import org.wordpress.android.fluxc.persistence.PluginSqlUtilsWrapper
 import org.wordpress.android.fluxc.persistence.SiteSqlUtils
-import org.wordpress.android.fluxc.persistence.WCProductSettingsSqlUtils
 import org.wordpress.android.fluxc.persistence.WCSettingsSqlUtils
+import org.wordpress.android.fluxc.persistence.dao.ProductSettingsDao
 import org.wordpress.android.fluxc.persistence.dao.TaxBasedOnDao
 import org.wordpress.android.fluxc.store.SiteStore.FetchSitesPayload
 import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
@@ -61,6 +61,7 @@ open class WooCommerceStore @Inject constructor(
     private val accountStore: AccountStore,
     private val taxBasedOnDao: TaxBasedOnDao,
     private val pluginSqlUtils: PluginSqlUtilsWrapper,
+    private val productSettingsDao: ProductSettingsDao
 ) : Store(dispatcher) {
     enum class WooPlugin(val pluginName: String) {
         WOO_CORE("woocommerce/woocommerce"),
@@ -213,8 +214,8 @@ open class WooCommerceStore @Inject constructor(
     /**
      * Given a [SiteModel], returns its WooCommerce product settings, or null if no settings are stored for this site.
      */
-    open fun getProductSettings(site: SiteModel): WCProductSettingsModel? =
-        WCProductSettingsSqlUtils.getProductSettingsForSite(site)
+    suspend fun getProductSettings(site: SiteModel): WCProductSettingsModel? =
+        productSettingsDao.getProductSettings(site.localId())
 
     suspend fun getTaxBasedOnSettings(site: SiteModel): TaxBasedOnSettingEntity? =
         taxBasedOnDao.getTaxBasedOnSetting(site.localId())
@@ -487,7 +488,7 @@ open class WooCommerceStore @Inject constructor(
 
                 response.result != null -> {
                     val settings = settingsMapper.mapProductSettings(response.result, site)
-                    WCProductSettingsSqlUtils.insertOrUpdateProductSettings(settings)
+                    productSettingsDao.upsertProductSettings(settings)
 
                     WooResult(settings)
                 }
