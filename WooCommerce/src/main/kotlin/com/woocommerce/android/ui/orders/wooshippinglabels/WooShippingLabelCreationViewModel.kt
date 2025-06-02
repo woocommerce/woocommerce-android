@@ -142,6 +142,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         launch { observeShippingLabelInformation() }
         launch { getStoreOptions() }
         launch { getDestinationAddress() }
+        launch { getSavedShipments() }
         launch { getShippingAddresses() }
         launch { getOrderInformation() }
         launch { observePackageWeight() }
@@ -213,6 +214,10 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         }
     }
 
+    private suspend fun getSavedShipments() {
+        order.drop(1).collectLatest { order -> shipments.value = getShipments(order) }
+    }
+
     @Suppress("ComplexCondition")
     @OptIn(FlowPreview::class)
     private suspend fun observeShippingRates() {
@@ -269,7 +274,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     @OptIn(FlowPreview::class)
     private suspend fun observePackageWeight() {
         combine(
-            shipmentItems.filter { it.isNotEmpty() },
+            shipmentItems.filter { it.isNotEmpty() && it.size > selectedShipmentIndex.value },
             packageSelected,
             snapshotFlow { customWeight }.debounce(TYPING_DELAY)
         ) { shipmentItems, selectedPackage, customWeightString ->
@@ -388,6 +393,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         combine(
             storeOptions.drop(1),
             order.drop(1),
+            shipments.drop(1),
             shippingAddresses.drop(1),
             shippingRatesState,
             packageSelection,
@@ -395,13 +401,11 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             purchaseState,
             customsState,
             hazmatState
-        ) { storeOptions, order, addresses, shippingRates,
+        ) { storeOptions, order, shipments, addresses, shippingRates,
             packageSelection, uiState, purchaseState, customsState, hazmatState ->
             if (storeOptions == null || addresses == null || purchaseState is PurchaseState.Error) {
                 return@combine WooShippingViewState.Error
             }
-
-            shipments.value = getShipments(order)
 
             val destinationStatus = when {
                 addressValidationHelper.isMissingDestinationAddress(addresses.shipTo.address) -> {
@@ -412,7 +416,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                 else -> AddressStatus.UNVERIFIED
             }
 
-            shipmentItems.value = shipments.value.map { it.items }
+            shipmentItems.value = shipments.map { it.items }
 
             val shippingLineSummary = order.getShippingLinesSummary(currencyFormatter)
             val shipmentUIList = shipmentItems.value.mapIndexed { index, shippableItemModels ->
@@ -420,7 +424,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                     currencyFormatter,
                     storeOptions.dimensionUnit,
                     storeOptions.weightUnit,
-                    shipments.value[index].purchased
+                    shipments[index].purchased
                 )
             }
 
@@ -443,6 +447,10 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         }.collectLatest {
             viewState.value = it
         }
+    }
+
+    fun onShipmentSplit(newShipments: List<ShipmentUIModel>) {
+        launch { shipments.value = newShipments }
     }
 
     private fun getSelectedOriginAddress(originAddresses: List<OriginShippingAddress>): OriginShippingAddress {
