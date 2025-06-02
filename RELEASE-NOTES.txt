@@ -5,6 +5,7 @@
 22.5
 -----
 - [**] Improved local search algorithms in POS [https://github.com/woocommerce/woocommerce-android/pull/14068]
+- [*] Fix a rare dead-end in the order creation flow. [https://github.com/woocommerce/woocommerce-android/pull/14133]
 
 22.4
 -----
