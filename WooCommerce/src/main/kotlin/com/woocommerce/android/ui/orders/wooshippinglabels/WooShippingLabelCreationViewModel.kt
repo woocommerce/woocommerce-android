@@ -855,11 +855,6 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     }
 
     data object StartPackageSelection : Event()
-    data class LabelPurchased(
-        val purchaseData: PurchasedShippingLabelData,
-        val totalItems: Int,
-        val totalItemsCost: String
-    ) : Event()
 
     data class StartOriginAddressEdit(val originAddress: OriginShippingAddress) : Event()
     data class StartDestinationAddressEdit(

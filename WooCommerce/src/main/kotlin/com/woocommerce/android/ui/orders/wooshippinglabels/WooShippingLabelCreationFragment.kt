@@ -31,7 +31,6 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShi
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationFragment.Companion.PACKAGE_SELECTION_RESULT
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
-import com.woocommerce.android.ui.orders.wooshippinglabels.purchased.WooShippingLabelPurchasedFragmentDirections
 import com.woocommerce.android.ui.orders.wooshippinglabels.split.WooShippingSplitShipmentFragment
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -76,15 +75,6 @@ class WooShippingLabelCreationFragment : BaseFragment(), BackPressListener {
                     WooShippingLabelCreationFragmentDirections
                         .actionWooShippingLabelCreationFragmentToWooShippingLabelPackageCreationFragment()
                         .let { findNavController().navigateSafely(it) }
-
-                is WooShippingLabelCreationViewModel.LabelPurchased -> {
-                    WooShippingLabelCreationFragmentDirections
-                        .actionWooShippingLabelCreationFragmentToWooShippingLabelPurchasedFragment(
-                            purchaseData = event.purchaseData,
-                            totalItems = event.totalItems,
-                            totalItemsCost = event.totalItemsCost
-                        ).let { findNavController().navigateSafely(it) }
-                }
 
                 is WooShippingLabelCreationViewModel.StartOriginAddressEdit ->
                     WooShippingLabelCreationFragmentDirections
@@ -133,6 +123,7 @@ class WooShippingLabelCreationFragment : BaseFragment(), BackPressListener {
                             event.selectedCategory?.name
                         ).let { findNavController().navigateSafely(it) }
                 }
+
                 is WooShippingLabelCreationViewModel.OpenShippingLabelFile -> openShippingLabelPreview(event.file)
                 is WooShippingLabelCreationViewModel.OpenLearnMoreScreen -> openLearnMoreView()
                 is WooShippingLabelCreationViewModel.OpenUrl -> openUrl(event.url)
@@ -169,9 +160,10 @@ class WooShippingLabelCreationFragment : BaseFragment(), BackPressListener {
     }
 
     private fun openLearnMoreView() {
-        WooShippingLabelPurchasedFragmentDirections
-            .actionWooShippingLabelPurchasedFragmentToPrintShippingLabelInfoFragment()
-            .let { findNavController().navigate(it) }
+        findNavController().navigate(
+            WooShippingLabelCreationFragmentDirections
+                .actionWooShippingLabelCreationFragmentToPrintShippingLabelInfoFragment()
+        )
     }
 
     private fun openUrl(url: String) {
