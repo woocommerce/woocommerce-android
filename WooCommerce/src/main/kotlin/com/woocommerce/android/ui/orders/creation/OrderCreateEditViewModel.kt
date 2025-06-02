@@ -1442,7 +1442,11 @@ class OrderCreateEditViewModel @Inject constructor(
                             viewState = viewState.copy(willUpdateOrderDraft = true, showOrderUpdateSnackbar = false)
 
                         OrderUpdateStatus.Ongoing ->
-                            viewState = viewState.copy(willUpdateOrderDraft = false, isUpdatingOrderDraft = true)
+                            viewState = viewState.copy(
+                                willUpdateOrderDraft = false,
+                                isUpdatingOrderDraft = true,
+                                showOrderUpdateSnackbar = false
+                            )
 
                         is OrderUpdateStatus.Failed -> {
                             if (updateStatus.isInvalidCouponFailure()) {
