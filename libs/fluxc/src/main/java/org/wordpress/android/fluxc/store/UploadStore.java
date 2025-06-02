@@ -40,7 +40,7 @@ public class UploadStore extends Store {
         AppLog.d(T.API, "UploadStore onRegister");
     }
 
-    // Ensure that events reach the UploadStore before their main stores (MediaStore, PostStore)
+    // Ensure that events reach the UploadStore before their main stores (MediaStore)
     @Subscribe(threadMode = ThreadMode.ASYNC, priority = 1)
     @Override
     public void onAction(Action action) {

@@ -201,4 +201,24 @@ class WooShippingLabelRestClient @Inject constructor(
             clazz = VerifyDestinationAddressResponseDTO::class.java,
         ).toWooPayload()
     }
+
+    /**
+     * Update the shipments for a specific order.
+     */
+    suspend fun updateShipments(
+        site: SiteModel,
+        orderId: Long,
+        shipments: ShipmentMap,
+    ): WooPayload<UpdateShipmentsResponse> {
+        val url = "/wcshipping/v1/shipments/$orderId"
+
+        val result = wooNetwork.executePostGsonRequest(
+            site = site,
+            path = url,
+            body = mapOf("shipments" to shipments, "shipmentIdsToUpdate" to emptyMap()),
+            clazz = UpdateShipmentsResponse::class.java,
+        )
+
+        return result.toWooPayload()
+    }
 }

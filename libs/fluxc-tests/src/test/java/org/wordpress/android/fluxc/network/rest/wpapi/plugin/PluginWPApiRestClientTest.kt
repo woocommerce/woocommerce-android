@@ -1,6 +1,5 @@
 package org.wordpress.android.fluxc.network.rest.wpapi.plugin
 
-import com.android.volley.VolleyError
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -8,15 +7,12 @@ import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 import org.junit.runners.Parameterized.Parameters
 import org.mockito.kotlin.KArgumentCaptor
-import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.plugin.SitePluginModel
-import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
-import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.NETWORK_ERROR
 import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceWPAPINetwork
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
@@ -55,34 +51,6 @@ class PluginWPApiRestClientTest(private val site: SiteModel) {
     }
 
     @Test
-    fun `fetches plugins`() = test {
-        initFetchPluginsResponse(arrayOf(testPlugin))
-        val responseModel = restClient.fetchPlugins(site, false)
-        assertThat(responseModel.data).isNotNull()
-        assertMappedPlugin(responseModel.data!![0], testPlugin)
-        assertThat(urlCaptor.lastValue)
-            .isEqualTo("wp/v2/plugins/")
-        assertThat(paramsCaptor.lastValue).isEqualTo(emptyMap<String, String>())
-    }
-
-    @Test
-    fun `returns error response on fetch`() = test {
-        val errorMessage = "message"
-        val error = WPAPINetworkError(
-            BaseNetworkError(
-                NETWORK_ERROR,
-                errorMessage,
-                VolleyError(errorMessage)
-            )
-        )
-        initFetchPluginsResponse(
-            error = error
-        )
-        val responseModel = restClient.fetchPlugins(site, false)
-        assertThat(responseModel.error).isEqualTo(error)
-    }
-
-    @Test
     fun `installs a plugin`() = test {
         initInstallPluginResponse(testPlugin)
         val installedPluginSlug = "plugin_slug"
@@ -117,43 +85,6 @@ class PluginWPApiRestClientTest(private val site: SiteModel) {
         assertThat(bodyCaptor.lastValue).isEqualTo(mapOf("status" to "inactive"))
     }
 
-    @Test
-    fun `deletes a plugin`() = test {
-        initDeletePluginResponse(testPlugin)
-        val installedPluginSlug = "plugin_slug"
-        val responseModel = restClient.deletePlugin(site, installedPluginSlug)
-        assertMappedPlugin(responseModel.data!!, testPlugin)
-        assertThat(urlCaptor.lastValue)
-            .isEqualTo("wp/v2/plugins/$installedPluginSlug/")
-        assertThat(bodyCaptor.lastValue).isEqualTo(emptyMap<String, String>())
-    }
-
-    @Test
-    fun `given we already have an app password, when fetching plugins, then use app passwords network`() = test {
-        whenever(applicationPasswordsStore.hasCredentials(site)).thenReturn(true)
-        val testPlugin: PluginResponseModel = testPlugin.copy(
-            plugin = "test-plugin/2",
-        )
-        whenever(
-            applicationPasswordsNetwork.executeGetGsonRequest<Array<PluginResponseModel>>(
-                site = any(),
-                path = any(),
-                clazz = any(),
-                params = any(),
-                enableCaching = any(),
-                cacheTimeToLive = any(),
-                forced = any(),
-                requestTimeout = any(),
-                retries = any()
-            )
-        ).thenReturn(WPAPIResponse.Success(arrayOf(testPlugin)))
-
-        val responseModel = restClient.fetchPlugins(site, false)
-
-        assertThat(responseModel.data).isNotNull()
-        assertMappedPlugin(responseModel.data!![0], testPlugin)
-    }
-
     private fun assertMappedPlugin(
         responseModel: SitePluginModel,
         plugin: PluginResponseModel
@@ -167,36 +98,6 @@ class PluginWPApiRestClientTest(private val site: SiteModel) {
         assertThat(responseModel.pluginUrl).isEqualTo(plugin.pluginUri)
         assertThat(responseModel.version).isEqualTo(plugin.version)
         assertThat(responseModel.slug).isEqualTo(plugin.textDomain)
-    }
-
-    private suspend fun initFetchPluginsResponse(
-        data: Array<PluginResponseModel>? = null,
-        error: WPAPINetworkError? = null
-    ): WPAPIResponse<Array<PluginResponseModel>> {
-        return initSyncGetResponse(data ?: arrayOf(mock()), Array<PluginResponseModel>::class.java, error)
-    }
-
-    private suspend fun <T : Any> initSyncGetResponse(
-        data: T,
-        clazz: Class<T>,
-        error: WPAPINetworkError? = null,
-        cachingEnabled: Boolean = false
-    ): WPAPIResponse<T> {
-        val response = if (error != null) WPAPIResponse.Error(error) else WPAPIResponse.Success(data)
-        whenever(
-            expectedNetwork.executeGetGsonRequest(
-                site = eq(site),
-                path = urlCaptor.capture(),
-                clazz = eq(clazz),
-                params = paramsCaptor.capture(),
-                enableCaching = eq(cachingEnabled),
-                cacheTimeToLive = any(),
-                forced = any(),
-                requestTimeout = any(),
-                retries = any()
-            )
-        ).thenReturn(response)
-        return response
     }
 
     private suspend fun initInstallPluginResponse(
@@ -222,22 +123,6 @@ class PluginWPApiRestClientTest(private val site: SiteModel) {
         val response = if (error != null) WPAPIResponse.Error(error) else WPAPIResponse.Success(data ?: mock())
         whenever(
             expectedNetwork.executePutGsonRequest(
-                eq(site),
-                urlCaptor.capture(),
-                eq(PluginResponseModel::class.java),
-                bodyCaptor.capture()
-            )
-        ).thenReturn(response)
-        return response
-    }
-
-    private suspend fun initDeletePluginResponse(
-        data: PluginResponseModel? = null,
-        error: WPAPINetworkError? = null
-    ): WPAPIResponse<PluginResponseModel> {
-        val response = if (error != null) WPAPIResponse.Error(error) else WPAPIResponse.Success(data ?: mock())
-        whenever(
-            expectedNetwork.executeDeleteGsonRequest(
                 eq(site),
                 urlCaptor.capture(),
                 eq(PluginResponseModel::class.java),

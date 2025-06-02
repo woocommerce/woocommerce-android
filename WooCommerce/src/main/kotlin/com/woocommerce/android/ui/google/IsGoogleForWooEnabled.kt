@@ -2,14 +2,14 @@ package com.woocommerce.android.ui.google
 
 import com.woocommerce.android.extensions.isVersionAtLeast
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.WCSSRModelCachingFetcher
 import org.json.JSONArray
-import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 class IsGoogleForWooEnabled @Inject constructor(
     private val selectedSite: SelectedSite,
     private val googleRepository: GoogleRepository,
-    private val wooCommerceStore: WooCommerceStore
+    private val ssrFetcher: WCSSRModelCachingFetcher
 ) {
 
     companion object {
@@ -18,7 +18,7 @@ class IsGoogleForWooEnabled @Inject constructor(
     }
 
     suspend operator fun invoke(): Boolean {
-        val result = wooCommerceStore.fetchSSR(selectedSite.get())
+        val result = ssrFetcher.load(selectedSite.get())
 
         if (!result.isError) {
             result.model?.let { ssr ->
