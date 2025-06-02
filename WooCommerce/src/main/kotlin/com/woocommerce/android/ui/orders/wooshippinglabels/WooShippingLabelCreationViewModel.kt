@@ -45,6 +45,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemM
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.StoreOptionsModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
 import com.woocommerce.android.ui.orders.wooshippinglabels.purchased.PurchasedShippingLabelData
+import com.woocommerce.android.ui.orders.wooshippinglabels.purchased.WooShippingLabelPaperSize
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.domain.GetShippingRates
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.CarrierUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRateUI
@@ -71,6 +72,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import java.io.File
 import java.math.BigDecimal
 import java.util.Date
 import javax.inject.Inject
@@ -967,6 +969,39 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
         val hazmatSelection: ShippingLabelHazmatCategory?
             get() = (this as? Declared)?.hazmatCategory
+    }
+
+    @Parcelize
+    data class PurchasedShipmentState(
+        val paperSizeOption: WooShippingLabelPaperSize,
+        val shippingLabelData: PurchasedShippingLabelData? = null,
+        val totalItems: Int,
+        val totalItemsCost: String,
+        val isLoadingData: Boolean = false,
+        val isPurchaseFinished: Boolean? = false
+    ) : Parcelable
+
+    data class OpenShippingLabelFile(val file: File) : Event()
+    data class OpenUrl(val url: String) : Event()
+    data class ShowError(val errorResId: Int) : Event()
+    object StartRefundRequest : Event()
+    object OpenLearnMoreScreen : Event()
+
+    enum class Carrier(val pickupUrl: String) {
+        USPS("https://tools.usps.com/schedule-pickup-steps.htm"),
+        UPS("https://wwwapps.ups.com/pickup/request"),
+        DHL("https://mydhl.express.dhl/us/en/schedule-pickup.html#/schedule-pickup#label-reference");
+
+        companion object {
+            fun fromCarrierId(carrierId: String): Carrier? {
+                return when (carrierId) {
+                    "usps" -> USPS
+                    "ups" -> UPS
+                    "dhlexpress" -> DHL
+                    else -> null
+                }
+            }
+        }
     }
 
     companion object {
