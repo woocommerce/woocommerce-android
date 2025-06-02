@@ -14,10 +14,7 @@ class ObserveShippingLabelStatus @Inject constructor(
     private val selectedSite: SelectedSite,
     private val labelRepository: WooShippingLabelRepository
 ) {
-    suspend operator fun invoke(
-        orderId: Long,
-        labelId: Long
-    ): Flow<ShippingLabelStatus> {
+    operator fun invoke(orderId: Long, labelId: Long): Flow<ShippingLabelStatus> {
         return flow {
             var latestStatus = PurchaseInProgress
             emit(latestStatus)
