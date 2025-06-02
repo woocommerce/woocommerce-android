@@ -8,5 +8,18 @@ data class ShipmentUIModel(
     val id: String, // Local id
     val remoteId: String? = null,
     val items: List<ShippableItemModel>,
-    val purchased: Boolean = false
+    val purchased: Boolean = false,
+    val labelId: Long? = null,
+    val carrierId: String? = null,
+    val trackingNumber: String? = null,
+    val purchaseState: PurchaseState = PurchaseState.NoStarted,
+    val isPurchaseFinished: Boolean? = false
 ) : Parcelable
+
+@Parcelize
+sealed class PurchaseState : Parcelable {
+    data object NoStarted : PurchaseState()
+    data object InProgress : PurchaseState()
+    data object Success : PurchaseState()
+    data object Error : PurchaseState()
+}

@@ -88,6 +88,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.components.SuccessSna
 import com.woocommerce.android.ui.orders.wooshippinglabels.hazmat.HazmatCard
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.PurchaseState
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.components.ErrorMessageWithButton
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRateUI
@@ -122,7 +123,6 @@ fun WooShippingLabelCreationScreen(viewModel: WooShippingLabelCreationViewModel)
                 uiState = viewState.uiState,
                 onMarkOrderCompleteChange = viewModel::onMarkOrderCompleteChange,
                 onNavigateBack = viewModel::onNavigateBack,
-                purchaseState = viewState.purchaseState,
                 onShipmentDetailsExpandedChange = viewModel::onShipmentDetailsExpandedChange,
                 onSelectAddressExpandedChange = viewModel::onSelectAddressExpandedChange,
                 onEditCustomsClick = viewModel::onEditCustomsClick,
@@ -166,7 +166,6 @@ fun WooShippingLabelCreationScreen(
     onMarkOrderCompleteChange: (Boolean) -> Unit,
     onShipmentDetailsExpandedChange: (Boolean) -> Boolean,
     onSelectAddressExpandedChange: (Boolean) -> Boolean,
-    purchaseState: WooShippingLabelCreationViewModel.PurchaseState,
     onEditCustomsClick: () -> Unit,
     onNavigateBack: () -> Unit,
     onEditDestinationAddress: (DestinationShippingAddress) -> Unit,
@@ -273,7 +272,8 @@ fun WooShippingLabelCreationScreen(
                 }
             }
         }
-        if (purchaseState is WooShippingLabelCreationViewModel.PurchaseState.InProgress) {
+        val selectedPurchaseState = shipmentUIList[uiState.selectedIndex].purchaseState
+        if (selectedPurchaseState is PurchaseState.InProgress) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -913,7 +913,6 @@ private fun WooShippingLabelCreationScreenPreview() {
             onMarkOrderCompleteChange = {},
             onNavigateBack = {},
             onEditOriginAddress = {},
-            purchaseState = WooShippingLabelCreationViewModel.PurchaseState.NoStarted,
             uiState = WooShippingLabelCreationViewModel.UIControlsState(
                 markOrderComplete = false,
                 isShipmentDetailsExpanded = false,
