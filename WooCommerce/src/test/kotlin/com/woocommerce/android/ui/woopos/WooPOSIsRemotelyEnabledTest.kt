@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos
 
+import com.google.gson.Gson
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WCSSRModelCachingFetcher
 import kotlinx.coroutines.test.runTest
@@ -25,7 +26,7 @@ class WooPOSIsRemotelyEnabledTest {
     @Before
     fun setup() {
         whenever(selectedSite.get()).thenReturn(siteModel)
-        sut = WooPOSIsRemotelyEnabled(selectedSite, fetcher)
+        sut = WooPOSIsRemotelyEnabled(selectedSite, fetcher, Gson())
     }
 
     @Test
