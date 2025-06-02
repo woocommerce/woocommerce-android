@@ -47,7 +47,7 @@ import com.woocommerce.android.ui.orders.details.ShippingLabelOnboardingReposito
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ConfigDTO
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.Item
-import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ShippingLabelDTO
+import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ShippingLabelDataDTO
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingLabelRepository
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
@@ -645,7 +645,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
             doReturn(true).whenever(orderDetailRepository).isOrderEligibleForSLCreation(order.id)
-            doReturn(flowOf(ConfigDTO(emptyMap(), ShippingLabelDTO()))).whenever(configDataStore)
+            doReturn(flowOf(ConfigDTO(emptyMap(), ShippingLabelDataDTO(emptyList())))).whenever(configDataStore)
                 .observeConfig(order.id)
 
             var isCreateShippingLabelButtonVisible: Boolean? = null
@@ -686,7 +686,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                             "3" to emptyList<Item>(),
                             "4" to emptyList<Item>()
                         ),
-                        ShippingLabelDTO()
+                        ShippingLabelDataDTO(emptyList())
                     )
                 )
             ).whenever(configDataStore).observeConfig(order.id)

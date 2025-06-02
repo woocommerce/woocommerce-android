@@ -17,6 +17,7 @@ data class ShippingLabelModel(
     val isLetter: Boolean,
     val productNames: List<String>,
     val productIds: List<Long>,
+    val shipmentId: Long,
     val receiptItemId: Long,
     val createdDate: Date?,
     val mainReceiptId: Long,

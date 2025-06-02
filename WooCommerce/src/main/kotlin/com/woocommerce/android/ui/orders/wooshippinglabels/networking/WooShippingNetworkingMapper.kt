@@ -50,6 +50,7 @@ class WooShippingNetworkingMapper @Inject constructor(
             isLetter = shippingLabelDTO.isLetter ?: false,
             productNames = shippingLabelDTO.productNames.orEmpty(),
             productIds = shippingLabelDTO.productIds.orEmpty(),
+            shipmentId = shippingLabelDTO.shipmentId ?: 0,
             receiptItemId = shippingLabelDTO.receiptItemId ?: 0,
             createdDate = shippingLabelDTO.createdDate?.let { Date(it) },
             mainReceiptId = shippingLabelDTO.mainReceiptId ?: 0,
