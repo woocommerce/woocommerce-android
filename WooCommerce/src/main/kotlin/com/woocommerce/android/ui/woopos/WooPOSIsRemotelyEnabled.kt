@@ -2,18 +2,17 @@ package com.woocommerce.android.ui.woopos
 
 import com.google.common.reflect.TypeToken
 import com.google.gson.Gson
-import com.woocommerce.android.cache.SSRCache
 import com.woocommerce.android.tools.SelectedSite
-import org.wordpress.android.fluxc.store.WooCommerceStore
+import com.woocommerce.android.util.WCSSRModelCachingFetcher
 import javax.inject.Inject
 
 class WooPOSIsRemotelyEnabled @Inject constructor(
     private val selectedSite: SelectedSite,
-    private val wooCommerceStore: WooCommerceStore
+    private val ssrFetcher: WCSSRModelCachingFetcher
 ) {
 
     suspend operator fun invoke(): Boolean {
-        val result = SSRCache.load(selectedSite.get(), wooCommerceStore)
+        val result = ssrFetcher.load(selectedSite.get())
 
         if (!result.isError) {
             result.model?.let { ssr ->

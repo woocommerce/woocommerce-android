@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.woopos
 
-import com.woocommerce.android.cache.SSRCache
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.WCSSRModelCachingFetcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
@@ -10,15 +10,14 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCSSRModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
-import org.wordpress.android.fluxc.store.WooCommerceStore
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class WooPOSIsRemotelyEnabledTest {
     private val selectedSite: SelectedSite = mock()
-    private val wooCommerceStore: WooCommerceStore = mock()
     private val siteModel: SiteModel = mock()
     private val ssrModel: WCSSRModel = mock()
+    private val fetcher: WCSSRModelCachingFetcher = mock()
     private val cacheResult: WooResult<WCSSRModel> = mock()
 
     private lateinit var sut: WooPOSIsRemotelyEnabled
@@ -26,8 +25,7 @@ class WooPOSIsRemotelyEnabledTest {
     @Before
     fun setup() {
         whenever(selectedSite.get()).thenReturn(siteModel)
-        sut = WooPOSIsRemotelyEnabled(selectedSite, wooCommerceStore)
-        SSRCache.clear()
+        sut = WooPOSIsRemotelyEnabled(selectedSite, fetcher)
     }
 
     @Test
@@ -37,7 +35,7 @@ class WooPOSIsRemotelyEnabledTest {
         whenever(ssrModel.settings).thenReturn(jsonSettings)
         whenever(cacheResult.isError).thenReturn(false)
         whenever(cacheResult.model).thenReturn(ssrModel)
-        whenever(wooCommerceStore.fetchSSR(siteModel)).thenReturn(cacheResult)
+        whenever(fetcher.load(siteModel)).thenReturn(cacheResult)
 
         // WHEN
         val result = sut.invoke()
@@ -52,7 +50,7 @@ class WooPOSIsRemotelyEnabledTest {
         whenever(ssrModel.settings).thenReturn(jsonSettings)
         whenever(cacheResult.isError).thenReturn(false)
         whenever(cacheResult.model).thenReturn(ssrModel)
-        whenever(wooCommerceStore.fetchSSR(siteModel)).thenReturn(cacheResult)
+        whenever(fetcher.load(siteModel)).thenReturn(cacheResult)
 
         val result = sut.invoke()
 
@@ -65,7 +63,7 @@ class WooPOSIsRemotelyEnabledTest {
         whenever(ssrModel.settings).thenReturn(jsonSettings)
         whenever(cacheResult.isError).thenReturn(false)
         whenever(cacheResult.model).thenReturn(ssrModel)
-        whenever(wooCommerceStore.fetchSSR(siteModel)).thenReturn(cacheResult)
+        whenever(fetcher.load(siteModel)).thenReturn(cacheResult)
 
         val result = sut.invoke()
 
@@ -76,7 +74,7 @@ class WooPOSIsRemotelyEnabledTest {
     fun `given null result when invoked then returns false`() = runTest {
         whenever(cacheResult.isError).thenReturn(false)
         whenever(cacheResult.model).thenReturn(null)
-        whenever(wooCommerceStore.fetchSSR(siteModel)).thenReturn(cacheResult)
+        whenever(fetcher.load(siteModel)).thenReturn(cacheResult)
 
         val result = sut.invoke()
 
@@ -86,7 +84,7 @@ class WooPOSIsRemotelyEnabledTest {
     @Test
     fun `given error result when invoked then returns false`() = runTest {
         whenever(cacheResult.isError).thenReturn(true)
-        whenever(wooCommerceStore.fetchSSR(siteModel)).thenReturn(cacheResult)
+        whenever(fetcher.load(siteModel)).thenReturn(cacheResult)
 
         val result = sut.invoke()
 
