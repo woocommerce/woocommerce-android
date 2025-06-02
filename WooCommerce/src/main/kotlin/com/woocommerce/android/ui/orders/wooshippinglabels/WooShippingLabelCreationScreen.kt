@@ -381,7 +381,7 @@ private fun LabelCreationScreenWithBottomSheet(
         sheetPeekHeight = bottomSheetPeekHeight,
         scaffoldState = scaffoldState,
         topBar = {
-            TopBar(onNavigateBack)
+            TopBar(onNavigateBack, shipmentUIList[uiState.selectedIndex].purchased)
         },
     ) { innerPadding ->
         Surface(
@@ -549,8 +549,18 @@ private fun CreateShippingCards(
 }
 
 @Composable
-private fun TopBar(onNavigateBack: () -> Unit) = TopAppBar(
-    title = { Text(stringResource(id = R.string.shipping_label_create_title)) },
+private fun TopBar(onNavigateBack: () -> Unit, purchased: Boolean = false) = TopAppBar(
+    title = {
+        Text(
+            stringResource(
+                id = if (purchased) {
+                    R.string.shipping_label_print_screen_title
+                } else {
+                    R.string.shipping_label_create_title
+                }
+            )
+        )
+    },
     navigationIcon = {
         IconButton(onNavigateBack) {
             Icon(
