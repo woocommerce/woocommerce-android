@@ -1225,7 +1225,7 @@ class OrderCreateEditFormFragment :
             val orderUpdateFailureSnackBar = orderUpdateFailureSnackBar ?: uiMessageResolver.getIndefiniteActionSnack(
                 message = getString(R.string.order_sync_failed),
                 actionText = getString(R.string.retry),
-                actionListener = { viewModel.onRetryPaymentsClicked() }
+                actionListener = { viewModel.onRetryClicked() }
             ).also {
                 orderUpdateFailureSnackBar = it
             }
