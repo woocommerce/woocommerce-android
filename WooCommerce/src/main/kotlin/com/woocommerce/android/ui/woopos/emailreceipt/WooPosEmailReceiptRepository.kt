@@ -7,7 +7,6 @@ import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditRepository
 import com.woocommerce.android.ui.orders.creation.OrderCreationSource
-import com.woocommerce.android.ui.woopos.featureflags.WooPosIsPOSReceiptsEnabled
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -20,7 +19,6 @@ class WooPosEmailReceiptRepository @Inject constructor(
     private val orderCreateEditRepository: OrderCreateEditRepository,
     private val orderMapper: OrderMapper,
     private val provideEmailPattern: WooPosProvideEmailPattern,
-    private val isPOSReceiptsEnabledLocally: WooPosIsPOSReceiptsEnabled,
     private val getWooCoreVersion: GetWooCorePluginCachedVersion
 ) {
     suspend fun sendReceiptByEmail(orderId: Long, email: String): Result<Unit> = withContext(Dispatchers.IO) {
@@ -38,7 +36,7 @@ class WooPosEmailReceiptRepository @Inject constructor(
 
     fun isEmailValid(email: String): Boolean = provideEmailPattern().matcher(email).matches()
 
-    fun posReceiptsAreEnabled(): Boolean = isPOSReceiptsEnabledLocally() && isWooCoreSupportsPOSReceipts()
+    fun posReceiptsAreEnabled(): Boolean = isWooCoreSupportsPOSReceipts()
 
     private suspend fun triggerOrderReceiptSending(orderId: Long): Result<Unit> {
         val sendOrderResult = if (posReceiptsAreEnabled()) {
