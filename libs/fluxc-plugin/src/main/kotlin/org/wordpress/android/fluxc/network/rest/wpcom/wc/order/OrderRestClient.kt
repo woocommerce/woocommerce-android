@@ -1169,6 +1169,7 @@ class OrderRestClient @Inject constructor(
                 ?.takeIf { it.isNotEmpty() }
                 ?.let { mapOf("code" to it) }
                 ?.let { put("gift_cards", listOf(it)) }
+            decimalPlaces?.let { put("dp", it) }
         }
     }
 
