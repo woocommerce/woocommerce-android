@@ -1205,7 +1205,7 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onRetryClicked() {
-            retryOrderDraftUpdateTrigger.tryEmit(Unit)
+        retryOrderDraftUpdateTrigger.tryEmit(Unit)
     }
 
     fun onFeeButtonClicked() {
