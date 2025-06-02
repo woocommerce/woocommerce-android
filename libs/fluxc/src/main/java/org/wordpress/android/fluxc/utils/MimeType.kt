@@ -1,5 +1,6 @@
 package org.wordpress.android.fluxc.utils
 
+// WARN: This class is used within WordPress-MediaPicker-Android, do not remove!
 data class MimeType(val type: Type, val subtypes: List<Subtype>, val extensions: List<String> = listOf()) {
     constructor(type: Type, subtype: Subtype, extensions: List<String>) : this(
             type,

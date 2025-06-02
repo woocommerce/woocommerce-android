@@ -1,9 +1,8 @@
-import com.woocommerce.android.cache.SSRCache
+package com.woocommerce.android.util
+
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNotNull
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.times
@@ -17,29 +16,21 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
-class SSRCacheTest {
+class WCSSRModelCachingFetcherTest {
     private val wooCommerceStore: WooCommerceStore = mock()
     private val siteModel: SiteModel = mock()
     private val ssrModel: WCSSRModel = mock()
 
-    @Before
-    fun setUp() {
-        SSRCache.clear()
-    }
-
-    @After
-    fun tearDown() {
-        SSRCache.clear()
-    }
+    private val sut: WCSSRModelCachingFetcher = WCSSRModelCachingFetcher(wooCommerceStore)
 
     @Test
     fun `given cached value when load called again then store is not called`() = runTest {
         // GIVEN
         whenever(wooCommerceStore.fetchSSR(siteModel)).thenReturn(WooResult(ssrModel))
-        SSRCache.load(siteModel, wooCommerceStore) // Populate cache
+        sut.load(siteModel) // Populate cache
 
         // WHEN
-        val result = SSRCache.load(siteModel, wooCommerceStore)
+        val result = sut.load(siteModel)
 
         // THEN
         assertEquals(ssrModel, result.model)
@@ -52,7 +43,7 @@ class SSRCacheTest {
         whenever(wooCommerceStore.fetchSSR(siteModel)).thenReturn(WooResult(ssrModel))
 
         // WHEN
-        val result = SSRCache.load(siteModel, wooCommerceStore)
+        val result = sut.load(siteModel)
 
         // THEN
         assertEquals(ssrModel, result.model)
@@ -67,7 +58,7 @@ class SSRCacheTest {
         whenever(wooCommerceStore.fetchSSR(siteModel)).thenReturn(WooResult(error))
 
         // WHEN
-        val result = SSRCache.load(siteModel, wooCommerceStore)
+        val result = sut.load(siteModel)
 
         // THEN
         assertNotNull(result.error)

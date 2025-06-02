@@ -1,6 +1,5 @@
 package com.woocommerce.android.support
 
-import com.woocommerce.android.cache.SSRCache
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.zendesk.TicketCustomField
 import com.woocommerce.android.support.zendesk.TicketType
@@ -11,6 +10,7 @@ import com.woocommerce.android.support.zendesk.ZendeskException.RequestCreationT
 import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.support.zendesk.ZendeskTags
 import com.woocommerce.android.support.zendesk.ZendeskTicketRepository
+import com.woocommerce.android.util.WCSSRModelCachingFetcher
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.zendesk.service.ErrorResponse
 import com.zendesk.service.ZendeskCallback
@@ -35,7 +35,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.SiteStore
-import org.wordpress.android.fluxc.store.WooCommerceStore
 import zendesk.support.CreateRequest
 import zendesk.support.Request
 import zendesk.support.RequestProvider
@@ -47,7 +46,7 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
     private lateinit var requestProvider: RequestProvider
     private lateinit var envDataSource: ZendeskEnvironmentDataSource
     private lateinit var siteStore: SiteStore
-    private val wooStore: WooCommerceStore = mock()
+    private val ssrFetcher: WCSSRModelCachingFetcher = mock()
 
     @Before
     fun setup() {
@@ -60,7 +59,6 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
             on { sites } doReturn emptyList()
         }
         envDataSource = mockEnvDataSource()
-        SSRCache.clear()
         createSUT()
     }
 
@@ -404,8 +402,9 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
             }
             val expectedTags = arrayOf("application_password_authenticated")
             val captor = argumentCaptor<CreateRequest>()
-            wooStore.stub {
-                onBlocking { fetchSSR(selectedSite) } doReturn WooResult(model = WCSSRModel(123))
+
+            ssrFetcher.stub {
+                onBlocking { load(selectedSite) } doReturn WooResult(model = WCSSRModel(123))
             }
 
             // When
@@ -568,9 +567,10 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
     fun `when createRequest is called, then the request is created with the site address`() =
         testBlocking {
             // given
-            wooStore.stub {
-                onBlocking { fetchSSR(any()) } doReturn WooResult(model = WCSSRModel(123))
+            ssrFetcher.stub {
+                onBlocking { load(any()) } doReturn WooResult(model = WCSSRModel(123))
             }
+
             val siteAddress = "www.test.com"
             val captor = argumentCaptor<CreateRequest>()
             createSUT()
@@ -601,8 +601,8 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
     fun `given the ssr report is returned and site is selected, when creating the request, attach ssr`() =
         testBlocking {
             // given
-            wooStore.stub {
-                onBlocking { fetchSSR(any()) } doReturn WooResult(model = WCSSRModel(123))
+            ssrFetcher.stub {
+                onBlocking { load(any()) } doReturn WooResult(model = WCSSRModel(123))
             }
             val captor = argumentCaptor<CreateRequest>()
             createSUT()
@@ -660,14 +660,15 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
     fun `given the site is selected but app fails on fetching ssr, when creating the request, attach empty ssr`() =
         testBlocking {
             // given
-            wooStore.stub {
-                onBlocking { fetchSSR(any()) } doReturn WooResult(
+            ssrFetcher.stub {
+                onBlocking { load(any()) } doReturn WooResult(
                     WooError(
                         WooErrorType.GENERIC_ERROR,
                         BaseRequest.GenericErrorType.NETWORK_ERROR
                     )
                 )
             }
+
             val captor = argumentCaptor<CreateRequest>()
             createSUT()
 
@@ -699,7 +700,7 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
             siteStore = siteStore,
             dispatchers = coroutinesTestRule.testDispatchers,
             mock(),
-            wooStore,
+            ssrFetcher
         )
     }
 

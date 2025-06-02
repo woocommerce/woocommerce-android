@@ -7,11 +7,11 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
-import com.woocommerce.android.cache.SSRCache
 import com.woocommerce.android.extensions.formatResult
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.WCSSRModelCachingFetcher
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -22,15 +22,14 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 @HiltViewModel
 class SSRActivityViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val dispatchers: CoroutineDispatchers,
-    private val wooCommerceStore: WooCommerceStore,
     private val selectedSite: SelectedSite,
+    private val ssrFetcher: WCSSRModelCachingFetcher,
     networkStatus: NetworkStatus
 ) : ScopedViewModel(savedState) {
     companion object {
@@ -48,7 +47,7 @@ class SSRActivityViewModel @Inject constructor(
         if (networkStatus.isConnected()) {
             viewStateFlow.update { it.copy(isLoading = true) }
             launch(dispatchers.io) {
-                val result = SSRCache.load(selectedSite.get(), wooCommerceStore)
+                val result = ssrFetcher.load(selectedSite.get())
 
                 if (result.isError) {
                     withContext(dispatchers.main) {

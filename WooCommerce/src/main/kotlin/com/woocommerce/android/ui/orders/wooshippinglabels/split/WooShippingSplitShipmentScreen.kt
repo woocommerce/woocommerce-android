@@ -75,6 +75,7 @@ fun WooShippingSplitShipmentScreen(
         WooShippingSplitShipmentScreen(
             viewState = it,
             onBack = viewModel::onNavigateBack,
+            onDone = viewModel::onDoneTapped,
             onDismissInstructions = viewModel::onDismissInstructions,
             onUpdateSelection = viewModel::onUpdateSelection,
             onUpdateShipment = viewModel::onUpdateShipment,
@@ -91,6 +92,7 @@ fun WooShippingSplitShipmentScreen(
 fun WooShippingSplitShipmentScreen(
     viewState: SplitShipmentViewState,
     onBack: () -> Unit,
+    onDone: () -> Unit,
     onDismissInstructions: () -> Unit,
     onUpdateSelection: (index: Int, selectedIndexes: Set<Int>?) -> Unit,
     onUpdateShipment: (splitMovement: SplitMovement) -> Unit,
@@ -117,7 +119,7 @@ fun WooShippingSplitShipmentScreen(
                 backgroundColor = colorResource(id = R.color.color_toolbar),
                 actions = {
                     WCTextButton(
-                        onClick = onBack,
+                        onClick = onDone,
                         text = stringResource(id = R.string.done)
                     )
                 }
@@ -554,6 +556,7 @@ private fun WooShippingSplitShipmentScreenPreview() = WooThemeWithBackground {
             )
         ),
         onBack = {},
+        onDone = {},
         onDismissInstructions = {},
         onUpdateSelection = { _, _ -> },
         onUpdateShipment = {},

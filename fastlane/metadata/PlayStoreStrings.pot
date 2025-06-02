@@ -16,6 +16,12 @@ msgid "This update brings product search and coupon support to Woo POS, making i
 msgstr ""
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_225"
+msgid ""
+"22.5:\n"
+"We've enhanced your WooCommerce experience with this update! Enjoy smoother order creation with our improved custom amount editing form, better tablet navigation with the added toolbar for Variation Attributes, faster product searches with our enhanced POS algorithms, and a new Coupons search feature to help you find discounts quickly. Happy selling!\n"
+msgstr ""
+
 msgctxt "release_note_224"
 msgid ""
 "22.4:\n"
@@ -24,12 +30,6 @@ msgid ""
 "- [*] Minor design adjustments of the coupon creation flow.\n"
 "- [***] We added products search into Woo POS [https://github.com/woocommerce/woocommerce-android/pull/14029]\n"
 "- [***] We added support for coupons into Woo POS [https://github.com/woocommerce/woocommerce-android/pull/14074]\n"
-msgstr ""
-
-msgctxt "release_note_223"
-msgid ""
-"22.3:\n"
-"We've streamlined the WooCommerce mobile app! Product types are now seamlessly integrated into the POS menu. This updated design makes managing product information during checkout simple and intuitive.\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!
