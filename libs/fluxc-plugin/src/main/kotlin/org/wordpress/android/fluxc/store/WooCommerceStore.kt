@@ -31,10 +31,10 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WCApiVersionResp
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WCSystemPluginResponse.SystemPluginModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WooSystemRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.toDomainModel
-import org.wordpress.android.fluxc.persistence.PluginSqlUtils
+import org.wordpress.android.fluxc.persistence.PluginSqlUtilsWrapper
 import org.wordpress.android.fluxc.persistence.SiteSqlUtils
-import org.wordpress.android.fluxc.persistence.WCProductSettingsSqlUtils
 import org.wordpress.android.fluxc.persistence.WCSettingsSqlUtils
+import org.wordpress.android.fluxc.persistence.dao.ProductSettingsDao
 import org.wordpress.android.fluxc.persistence.dao.TaxBasedOnDao
 import org.wordpress.android.fluxc.store.SiteStore.FetchSitesPayload
 import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
@@ -60,6 +60,8 @@ open class WooCommerceStore @Inject constructor(
     private val siteSqlUtils: SiteSqlUtils,
     private val accountStore: AccountStore,
     private val taxBasedOnDao: TaxBasedOnDao,
+    private val pluginSqlUtils: PluginSqlUtilsWrapper,
+    private val productSettingsDao: ProductSettingsDao
 ) : Store(dispatcher) {
     enum class WooPlugin(val pluginName: String) {
         WOO_CORE("woocommerce/woocommerce"),
@@ -212,8 +214,8 @@ open class WooCommerceStore @Inject constructor(
     /**
      * Given a [SiteModel], returns its WooCommerce product settings, or null if no settings are stored for this site.
      */
-    open fun getProductSettings(site: SiteModel): WCProductSettingsModel? =
-        WCProductSettingsSqlUtils.getProductSettingsForSite(site)
+    suspend fun getProductSettings(site: SiteModel): WCProductSettingsModel? =
+        productSettingsDao.getProductSettings(site.localId())
 
     suspend fun getTaxBasedOnSettings(site: SiteModel): TaxBasedOnSettingEntity? =
         taxBasedOnDao.getTaxBasedOnSetting(site.localId())
@@ -228,19 +230,19 @@ open class WooCommerceStore @Inject constructor(
     }
 
     fun getSitePlugin(site: SiteModel, plugin: WooPlugin): SitePluginModel? {
-        return PluginSqlUtils.getSitePluginByName(site, plugin.pluginName)
+        return pluginSqlUtils.getSitePluginByName(site, plugin.pluginName)
     }
 
     suspend fun getSitePlugins(site: SiteModel, plugins: List<WooPlugin>): List<SitePluginModel> {
         return coroutineEngine.withDefaultContext(T.DB, this, "getSitePlugins") {
             val pluginNames = plugins.map { it.pluginName }
-            PluginSqlUtils.getSitePluginByNames(site, pluginNames)
+            pluginSqlUtils.getSitePluginByNames(site, pluginNames)
         }
     }
 
     suspend fun getSitePlugins(site: SiteModel): List<SitePluginModel> {
         return coroutineEngine.withDefaultContext(T.DB, this, "getSitePlugins") {
-            PluginSqlUtils.getSitePlugins(site)
+            pluginSqlUtils.getSitePlugins(site)
         }
     }
 
@@ -254,7 +256,7 @@ open class WooCommerceStore @Inject constructor(
 
                 response.result?.plugins != null -> {
                     val plugins = response.result.plugins.map { it.toDomainModel(site.id) }
-                    PluginSqlUtils.insertOrReplaceSitePlugins(site, plugins)
+                    pluginSqlUtils.insertOrReplaceSitePlugins(site, plugins)
                     WooResult(plugins)
                 }
 
@@ -486,7 +488,7 @@ open class WooCommerceStore @Inject constructor(
 
                 response.result != null -> {
                     val settings = settingsMapper.mapProductSettings(response.result, site)
-                    WCProductSettingsSqlUtils.insertOrUpdateProductSettings(settings)
+                    productSettingsDao.upsertProductSettings(settings)
 
                     WooResult(settings)
                 }

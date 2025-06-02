@@ -4,8 +4,8 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.packages.datasource.C
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.datasource.CarrierType.USPS
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.networking.CarrierPackageGroupDTO
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.networking.CarrierPredefinedPackagesDTO
-import com.woocommerce.android.ui.orders.wooshippinglabels.packages.networking.CustomPackageCreationResponse
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.networking.CustomPackageDTO
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.networking.PackageCreationResponse
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.networking.PackageResponse
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.networking.PackageStoreOptionsDTO
 import javax.inject.Inject
@@ -18,12 +18,16 @@ class WooShippingLabelPackageMapper @Inject constructor() {
         return StorePackagesDAO(
             storeOptions = mapStoreOptions(storeOptionsResponse),
             savedPackages = mapSavedPackages(savedPackagesResponse, response.storeOptions),
-            carrierPackages = mapCarrierPackages(response.packages?.predefined, response.storeOptions)
+            carrierPackages = mapCarrierPackages(
+                response.storeOptions,
+                response.packages?.predefined,
+                response.packages?.saved?.predefined
+            )
         )
     }
 
     operator fun invoke(
-        response: CustomPackageCreationResponse
+        response: PackageCreationResponse
     ): List<PackageDAO> {
         return response.custom?.map {
             PackageDAO(
@@ -33,7 +37,8 @@ class WooShippingLabelPackageMapper @Inject constructor() {
                 weight = it.boxWeight?.toString().orEmpty(),
                 isLetter = it.isLetter ?: false,
                 dimensionUnit = "",
-                weightUnit = ""
+                weightUnit = "",
+                saved = true
             )
         } ?: emptyList()
     }
@@ -50,27 +55,31 @@ class WooShippingLabelPackageMapper @Inject constructor() {
                 weight = it.boxWeight?.toString().orEmpty(),
                 isLetter = it.isLetter ?: false,
                 dimensionUnit = storeOptions?.dimensionUnit.orEmpty(),
-                weightUnit = storeOptions?.weightUnit.orEmpty()
+                weightUnit = storeOptions?.weightUnit.orEmpty(),
+                saved = true
             )
         }
     }
 
     private fun mapCarrierPackages(
+        storeOptions: PackageStoreOptionsDTO?,
         carrierPackagesResponse: CarrierPredefinedPackagesDTO?,
-        storeOptions: PackageStoreOptionsDTO?
+        savedCarrierPackageIds: Map<String, List<String>>?,
     ): Map<CarrierType, CarrierDAO> {
         val uspsPackages = mutableListOf<CarrierPackageGroupDAO>().apply {
             carrierPackagesResponse?.usps?.let { usps ->
-                usps.flatBoxes?.toCarrierGroup(storeOptions)?.let { add(it) }
-                usps.boxes?.toCarrierGroup(storeOptions)?.let { add(it) }
-                usps.expressBoxes?.toCarrierGroup(storeOptions)?.let { add(it) }
-                usps.envelopes?.toCarrierGroup(storeOptions)?.let { add(it) }
+                usps.flatBoxes?.toCarrierGroup(storeOptions, savedCarrierPackageIds?.get(USPS.id))?.let { add(it) }
+                usps.boxes?.toCarrierGroup(storeOptions, savedCarrierPackageIds?.get(USPS.id))?.let { add(it) }
+                usps.expressBoxes?.toCarrierGroup(storeOptions, savedCarrierPackageIds?.get(USPS.id))?.let { add(it) }
+                usps.envelopes?.toCarrierGroup(storeOptions, savedCarrierPackageIds?.get(USPS.id))?.let { add(it) }
             }
         }.let { CarrierDAO(it) }
 
         val dhlPackages = mutableListOf<CarrierPackageGroupDAO>().apply {
             carrierPackagesResponse?.dhlExpress?.let { dhl ->
-                dhl.domesticAndInternationalPackages?.toCarrierGroup(storeOptions)?.let { add(it) }
+                dhl.domesticAndInternationalPackages
+                    ?.toCarrierGroup(storeOptions, savedCarrierPackageIds?.get(DHL.id))
+                    ?.let { add(it) }
             }
         }.let { CarrierDAO(it) }
 
@@ -85,7 +94,8 @@ class WooShippingLabelPackageMapper @Inject constructor() {
     }
 
     private fun CarrierPackageGroupDTO.toCarrierGroup(
-        storeOptions: PackageStoreOptionsDTO?
+        storeOptions: PackageStoreOptionsDTO?,
+        savedCarrierPackages: List<String>?
     ) = CarrierPackageGroupDAO(
         description = title.orEmpty(),
         packages = definitions?.map {
@@ -97,7 +107,8 @@ class WooShippingLabelPackageMapper @Inject constructor() {
                 isLetter = it.isLetter ?: false,
                 dimensionUnit = storeOptions?.dimensionUnit.orEmpty(),
                 weightUnit = storeOptions?.weightUnit.orEmpty(),
-                groupName = title
+                groupName = title,
+                saved = savedCarrierPackages?.contains(it.id.orEmpty()) ?: false
             )
         } ?: emptyList()
     )

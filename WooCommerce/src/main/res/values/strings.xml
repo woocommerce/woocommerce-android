@@ -677,6 +677,7 @@
     <string name="custom_amounts_percentage_hint">0</string>
     <string name="custom_amounts_percentage_symbol">%</string>
     <string name="custom_amounts_percentage_invalid_value">Invalid value</string>
+    <string name="custom_amounts_save_changes">Save Changes</string>
 
     <!--
          Taxes
@@ -3597,8 +3598,6 @@
     <string name="store_onboarding_task_add_product_description">Start selling by adding products or services to your store.</string>
     <string name="store_onboarding_task_launch_store_title">Launch your store</string>
     <string name="store_onboarding_task_launch_store_description">Publish your site to the world anytime you want!</string>
-    <string name="store_onboarding_task_change_domain_title">Customize your domain</string>
-    <string name="store_onboarding_task_change_domain_description">Have a custom URL to host your store.</string>
     <string name="store_onboarding_task_payments_setup_title">Get paid</string>
     <string name="store_onboarding_task_payments_setup_description">Give your customers an easy and convenient way to pay!</string>
     <string name="store_onboarding_task_woopayments_setup_description">Manage payments seamlessly with WooPayments, free from setup or monthly fees.</string>
@@ -3963,6 +3962,7 @@
     <string name="blaze_campaign_preview_edit_ad">Edit ad</string>
     <string name="blaze_campaign_preview_details_section_title">Details</string>
     <string name="blaze_campaign_preview_audience_section_title">Audience</string>
+    <string name="blaze_campaign_preview_product_image_content_description">Product image used for the ad</string>
     <string name="blaze_campaign_preview_details_budget">Budget</string>
     <string name="blaze_campaign_preview_details_objective">Campaign objective</string>
     <string name="blaze_campaign_preview_details_choose_objective">Choose campaign objective</string>
@@ -4414,12 +4414,16 @@
     <string name="woopos_search_back_content_description">Back</string>
     <string name="woopos_search_clear_content_description">Clear</string>
     <string name="woopos_search_products">Search products</string>
+    <string name="woopos_search_coupons">Search coupons</string>
     <string name="woopos_search_popular_items_title">Popular products</string>
     <string name="woopos_search_recent_searches_title">Recent searches</string>
     <string name="woopos_search_items_empty_title">No products found</string>
+    <string name="woopos_search_coupons_empty_title">No coupons found</string>
     <string name="woopos_search_empty_description">We couldn\'t find any matching products – try adjusting your search term.</string>
+    <string name="woopos_search_empty_coupons_description">We couldn\'t find any matching coupons – try adjusting your search term.</string>
     <string name="woopos_search_empty_image_content_description">No items found</string>
     <string name="woopos_search_items_error_title">Unable to load products</string>
+    <string name="woopos_search_coupons_error_title">Unable to load coupons</string>
     <string name="woopos_search_items_error_description">Please try again.</string>
 
     <string name="customers_details_customer_section">Customer</string>
@@ -4630,4 +4634,8 @@
     <string name="woo_shipping_split_shipment_merge_unfulfilled_desc">This will remove all unfulfilled split shipments and move all items into one shipment.</string>
     <string name="woo_shipping_split_shipment_merge_unfulfilled_button">Merge all shipments</string>
     <string name="purchased_shipment_content_description">Purchased</string>
+
+    <string name="media_library_title">WordPress Media Library</string>
+    <string name="media_loading_failed">Media loading failed</string>
+    <string name="no_network_message">There is no network available</string>
 </resources>

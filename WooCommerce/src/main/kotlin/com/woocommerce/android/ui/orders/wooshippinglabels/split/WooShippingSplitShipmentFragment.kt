@@ -9,6 +9,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -42,7 +43,12 @@ class WooShippingSplitShipmentFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is MultiLiveEvent.Event.Exit -> findNavController().navigateUp()
+                is MultiLiveEvent.Event.ExitWithResult<*> -> navigateBackWithResult(SPLIT_SHIPMENT_RESULT, event.data)
             }
         }
+    }
+
+    companion object {
+        const val SPLIT_SHIPMENT_RESULT = "split_shipment_result"
     }
 }

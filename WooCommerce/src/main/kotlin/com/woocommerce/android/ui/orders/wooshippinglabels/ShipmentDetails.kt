@@ -64,7 +64,8 @@ import kotlinx.parcelize.Parcelize
 fun ShipmentDetails(
     scaffoldState: BottomSheetScaffoldState,
     shipFromSelectionBottomSheetState: ModalBottomSheetState,
-    shippableItems: ShippableItemsUI,
+    totalItems: Int,
+    totalItemsCost: String,
     shippingLines: List<ShippingLineSummaryUI>,
     shippingAddresses: WooShippingAddresses,
     shippingRateSummary: ShippingRateSummaryUI?,
@@ -125,7 +126,8 @@ fun ShipmentDetails(
         }
         if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             ShipmentDetailsLandscape(
-                shippableItems = shippableItems,
+                totalItems = totalItems,
+                totalItemsCost = totalItemsCost,
                 shippingLines = shippingLines,
                 shippingAddresses = shippingAddresses,
                 shippingRateSummary = shippingRateSummary,
@@ -137,7 +139,8 @@ fun ShipmentDetails(
             )
         } else {
             ShipmentDetailsPortrait(
-                shippableItems = shippableItems,
+                totalItems = totalItems,
+                totalItemsCost = totalItemsCost,
                 shippingLines = shippingLines,
                 markOrderComplete = markOrderComplete,
                 onMarkOrderCompleteChange = onMarkOrderCompleteChange,
@@ -155,7 +158,8 @@ fun ShipmentDetails(
 
 @Composable
 private fun ShipmentDetailsPortrait(
-    shippableItems: ShippableItemsUI,
+    totalItems: Int,
+    totalItemsCost: String,
     shippingLines: List<ShippingLineSummaryUI>,
     shippingAddresses: WooShippingAddresses,
     markOrderComplete: Boolean,
@@ -177,8 +181,8 @@ private fun ShipmentDetailsPortrait(
         ) {
             OrderDetailsSection(
                 shippingAddresses = shippingAddresses,
-                totalItems = shippableItems.shippableItems.size,
-                totalItemsCost = shippableItems.formattedTotalPrice,
+                totalItems = totalItems,
+                totalItemsCost = totalItemsCost,
                 shippingLines = shippingLines,
                 isReadOnly = isReadOnly,
                 shipFromSelectionBottomSheetState = shipFromSelectionBottomSheetState,
@@ -203,7 +207,8 @@ private fun ShipmentDetailsPortrait(
 
 @Composable
 private fun ShipmentDetailsLandscape(
-    shippableItems: ShippableItemsUI,
+    totalItems: Int,
+    totalItemsCost: String,
     shippingLines: List<ShippingLineSummaryUI>,
     shippingAddresses: WooShippingAddresses,
     shippingRateSummary: ShippingRateSummaryUI?,
@@ -235,8 +240,8 @@ private fun ShipmentDetailsLandscape(
                     .fillMaxWidth()
             ) {
                 OrderDetailsSectionLandscape(
-                    totalItems = shippableItems.shippableItems.size,
-                    totalItemsCost = shippableItems.formattedTotalPrice,
+                    totalItems = totalItems,
+                    totalItemsCost = totalItemsCost,
                     shippingLines = shippingLines,
                     modifier = Modifier.weight(1f)
                 )
@@ -338,11 +343,8 @@ fun ShipmentDetailsLandscapePreview() {
     WooThemeWithBackground {
         Surface {
             ShipmentDetailsLandscape(
-                shippableItems = ShippableItemsUI(
-                    shippableItems = generateItems(6),
-                    formattedTotalWeight = "8.5kg",
-                    formattedTotalPrice = "$92.78"
-                ),
+                totalItems = 6,
+                totalItemsCost = "$92.78",
                 shippingLines = getShippingLines(),
                 shippingAddresses = WooShippingAddresses(
                     shipFrom = getShipFrom(),

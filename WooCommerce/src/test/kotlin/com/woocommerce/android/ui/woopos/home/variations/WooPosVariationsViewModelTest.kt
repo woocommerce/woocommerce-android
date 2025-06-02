@@ -327,7 +327,7 @@ class WooPosVariationsViewModelTest {
             // THEN
             val item = WooPosItemsViewModel.ItemClickedData.Product.Variation(123L, 1L)
             verify(fromChildToParentEventSender).sendToParent(
-                ChildToParentEvent.ItemClickedInProductSelector(
+                ChildToParentEvent.ItemClickedInItemsList(
                     itemData = item,
                     eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
                         item = item,
@@ -353,7 +353,7 @@ class WooPosVariationsViewModelTest {
             // THEN
             val item = WooPosItemsViewModel.ItemClickedData.Product.Variation(123L, 1L)
             verify(fromChildToParentEventSender).sendToParent(
-                ChildToParentEvent.ItemClickedInProductSelector(
+                ChildToParentEvent.ItemClickedInItemsList(
                     itemData = item,
                     eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
                         item = item,

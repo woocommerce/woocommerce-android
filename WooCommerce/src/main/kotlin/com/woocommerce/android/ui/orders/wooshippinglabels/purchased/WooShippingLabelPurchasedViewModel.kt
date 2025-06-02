@@ -32,6 +32,8 @@ class WooShippingLabelPurchasedViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     private val navArgs by savedState.navArgs<WooShippingLabelPurchasedFragmentArgs>()
     private val purchaseData = navArgs.purchaseData
+    private val totalItems = navArgs.totalItems
+    private val totalItemsCost = navArgs.totalItemsCost
 
     private val trackingLink: String?
         get() = ShipmentTrackingUrls.fromCarrier(
@@ -44,6 +46,8 @@ class WooShippingLabelPurchasedViewModel @Inject constructor(
         initialValue = ViewState(
             paperSizeOption = LABEL,
             shippingLabelData = purchaseData,
+            totalItems = totalItems,
+            totalItemsCost = totalItemsCost
         )
     )
     val viewState = _viewState.asLiveData()
@@ -85,9 +89,13 @@ class WooShippingLabelPurchasedViewModel @Inject constructor(
         } ?: triggerEvent(ShowError(R.string.shipping_label_purchased_pickup_error))
     }
 
-    fun onRefundClicked() { triggerEvent(StartRefundRequest) }
+    fun onRefundClicked() {
+        triggerEvent(StartRefundRequest)
+    }
 
-    fun onLearnMoreClicked() { triggerEvent(OpenLearnMoreScreen) }
+    fun onLearnMoreClicked() {
+        triggerEvent(OpenLearnMoreScreen)
+    }
 
     private fun observeShippingLabelPurchaseStatus() {
         launch {
@@ -99,9 +107,11 @@ class WooShippingLabelPurchasedViewModel @Inject constructor(
                     PurchaseInProgress -> {
                         _viewState.update { it.copy(isPurchaseFinished = false) }
                     }
+
                     Purchased -> {
                         _viewState.update { it.copy(isPurchaseFinished = true) }
                     }
+
                     else -> {
                         _viewState.update { it.copy(isPurchaseFinished = null) }
                     }
@@ -114,6 +124,8 @@ class WooShippingLabelPurchasedViewModel @Inject constructor(
     data class ViewState(
         val paperSizeOption: WooShippingLabelPaperSize,
         val shippingLabelData: PurchasedShippingLabelData? = null,
+        val totalItems: Int,
+        val totalItemsCost: String,
         val isLoadingData: Boolean = false,
         val isPurchaseFinished: Boolean? = false
     ) : Parcelable

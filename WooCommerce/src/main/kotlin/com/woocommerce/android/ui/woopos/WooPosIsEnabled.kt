@@ -17,6 +17,7 @@ class WooPosIsEnabled @Inject constructor(
     private val getWooCoreVersion: GetWooCorePluginCachedVersion,
     private val wooCommerceStore: WooCommerceStore,
     private val isRemoteFeatureFlagEnabled: IsRemoteFeatureFlagEnabled,
+    private val isRemotelyEnabled: WooPOSIsRemotelyEnabled
 ) {
     @Suppress("ReturnCount")
     suspend operator fun invoke(): Boolean = coroutineScope {
@@ -25,6 +26,7 @@ class WooPosIsEnabled @Inject constructor(
         if (!isRemoteFeatureFlagEnabled(WOO_POS)) return@coroutineScope false
         if (!isScreenSizeAllowed()) return@coroutineScope false
         if (!isWooCoreSupportsOrderAutoDraftsAndExtraPaymentsProps()) return@coroutineScope false
+        if (isFeatureSwitchSupported() && isRemotelyEnabled() != true) return@coroutineScope false
 
         val siteSettings = wooCommerceStore.getSiteSettings(selectedSite) ?: return@coroutineScope false
 
@@ -42,8 +44,14 @@ class WooPosIsEnabled @Inject constructor(
         return wooCoreVersion.semverCompareTo(WC_VERSION_SUPPORTS_POS_PRODUCT_FILTERING) >= 0
     }
 
+    private fun isFeatureSwitchSupported(): Boolean {
+        val wooCoreVersion = getWooCoreVersion() ?: return false
+        return wooCoreVersion.semverCompareTo(WC_VERSION_SUPPORTS_POS_FEATURE_SWITCH) >= 0
+    }
+
     private companion object {
         const val WC_VERSION_SUPPORTS_POS_PRODUCT_FILTERING = "9.6.0"
+        const val WC_VERSION_SUPPORTS_POS_FEATURE_SWITCH = "10.0.0"
 
         val SUPPORTED_COUNTRY_CURRENCY_PAIRS = listOf("us" to "usd", "gb" to "gbp")
     }

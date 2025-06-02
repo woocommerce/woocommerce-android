@@ -3,8 +3,10 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.split
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
+import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.extensions.sumByFloat
 import com.woocommerce.android.ui.orders.wooshippinglabels.ShippableItemUI
+import com.woocommerce.android.ui.orders.wooshippinglabels.SplitShipment
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShippingLabelsSnackbarData
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
@@ -14,6 +16,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -27,7 +30,9 @@ import javax.inject.Inject
 class WooShippingSplitShipmentViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val currencyFormatter: CurrencyFormatter,
-    private val getSplitMovements: GetSplitMovements
+    private val getSplitMovements: GetSplitMovements,
+    private val splitShipment: SplitShipment,
+    @AppCoroutineScope private val appCoroutineScope: CoroutineScope
 ) : ScopedViewModel(savedState) {
     private val navArgs: WooShippingSplitShipmentFragmentArgs by savedState.navArgs()
     private val storeOptions = navArgs.shipmentArgs.storeOptions
@@ -103,6 +108,20 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
     fun onNavigateBack() {
         triggerEvent(MultiLiveEvent.Event.Exit)
     }
+
+    fun onDoneTapped() {
+        if (hasShipmentChange()) {
+            val currentShipmentList = currentShipments.value.values.toList()
+            // Launch splitShipment in the application-level scope
+            appCoroutineScope.launch { splitShipment(navArgs.shipmentArgs.orderId, currentShipmentList) }
+            // Trigger event immediately after starting the task
+            triggerEvent(MultiLiveEvent.Event.ExitWithResult(currentShipmentList))
+        } else {
+            triggerEvent(MultiLiveEvent.Event.Exit)
+        }
+    }
+
+    private fun hasShipmentChange() = currentShipments.value.values.toList() != navArgs.shipmentArgs.shipments
 
     fun onDismissInstructions() {
         splitMessage.value = null

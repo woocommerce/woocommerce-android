@@ -85,15 +85,6 @@ class PluginJetpackTunnelRestClient @Inject constructor(
         )
     }
 
-    fun installJetpackOnIndividualPluginSite(site: SiteModel) {
-        runInstallPlugin(
-            site,
-            "jetpack",
-            mapOf("slug" to "jetpack", "status" to "active"),
-            true
-        )
-    }
-
     private fun runInstallPlugin(
         site: SiteModel,
         pluginSlug: String,

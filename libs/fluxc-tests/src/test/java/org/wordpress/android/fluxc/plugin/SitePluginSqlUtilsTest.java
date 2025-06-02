@@ -130,39 +130,6 @@ public class SitePluginSqlUtilsTest {
     }
 
     @Test
-    public void testDeleteSitePlugin() {
-        // Create site and plugin
-        SiteModel site = getTestSite();
-        String slug = randomString("slug");
-        SitePluginModel plugin = getTestPluginBySlug(slug);
-
-        // Insert the plugin and verify that site plugin size is 1
-        Assert.assertEquals(1, PluginSqlUtils.insertOrUpdateSitePlugin(site, plugin));
-        Assert.assertEquals(1, PluginSqlUtils.getSitePlugins(site).size());
-
-        // Delete the plugin and verify that site plugin list is empty
-        Assert.assertEquals(1, PluginSqlUtils.deleteSitePlugin(site, slug));
-        Assert.assertTrue(PluginSqlUtils.getSitePlugins(site).isEmpty());
-    }
-
-    @Test
-    public void testDeleteSitePlugins() {
-        // Create site and plugin
-        SiteModel site = getTestSite();
-        SitePluginModel plugin1 = getTestPluginBySlug(randomString("slug"));
-        SitePluginModel plugin2 = getTestPluginBySlug(randomString("slug"));
-
-        // Insert the plugins and verify that site plugin size is 2
-        Assert.assertEquals(1, PluginSqlUtils.insertOrUpdateSitePlugin(site, plugin1));
-        Assert.assertEquals(1, PluginSqlUtils.insertOrUpdateSitePlugin(site, plugin2));
-        Assert.assertEquals(2, PluginSqlUtils.getSitePlugins(site).size());
-
-        // Delete the plugins and verify that site plugin list is empty
-        Assert.assertEquals(2, PluginSqlUtils.deleteSitePlugins(site));
-        Assert.assertTrue(PluginSqlUtils.getSitePlugins(site).isEmpty());
-    }
-
-    @Test
     public void testGetSitePluginBySlug() {
         // Create site and 2 plugins
         SiteModel site = getTestSite();

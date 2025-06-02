@@ -126,7 +126,8 @@ class LoginSiteCredentialsViewModel @Inject constructor(
 
     fun onContinueClick() = launch {
         loginAnalyticsListener.trackSubmitClicked()
-        if (fetchedSiteId.value != -1) {
+        val site = fetchedSiteId.value.takeIf { it != -1 }?.let { wpApiSiteRepository.getSiteByLocalId(it) }
+        if (site?.username != null) {
             // The login already succeeded, proceed to fetching user info
             fetchUserInfo()
         } else {

@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.split
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -25,9 +23,7 @@ import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ScrollableTabRow
 import androidx.compose.material.Surface
-import androidx.compose.material.Tab
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
@@ -48,7 +44,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -65,6 +60,8 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.ExpandableSelectableShippingProduct
 import com.woocommerce.android.ui.orders.wooshippinglabels.ProductsSummary
 import com.woocommerce.android.ui.orders.wooshippinglabels.SelectableShippingProduct
+import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShipmentTabData
+import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShipmentsTabRow
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.SuccessSnackbarHost
 import com.woocommerce.android.ui.orders.wooshippinglabels.split.WooShippingSplitShipmentViewModel.SplitShipmentViewState
 import kotlinx.coroutines.launch
@@ -78,6 +75,7 @@ fun WooShippingSplitShipmentScreen(
         WooShippingSplitShipmentScreen(
             viewState = it,
             onBack = viewModel::onNavigateBack,
+            onDone = viewModel::onDoneTapped,
             onDismissInstructions = viewModel::onDismissInstructions,
             onUpdateSelection = viewModel::onUpdateSelection,
             onUpdateShipment = viewModel::onUpdateShipment,
@@ -94,6 +92,7 @@ fun WooShippingSplitShipmentScreen(
 fun WooShippingSplitShipmentScreen(
     viewState: SplitShipmentViewState,
     onBack: () -> Unit,
+    onDone: () -> Unit,
     onDismissInstructions: () -> Unit,
     onUpdateSelection: (index: Int, selectedIndexes: Set<Int>?) -> Unit,
     onUpdateShipment: (splitMovement: SplitMovement) -> Unit,
@@ -120,7 +119,7 @@ fun WooShippingSplitShipmentScreen(
                 backgroundColor = colorResource(id = R.color.color_toolbar),
                 actions = {
                     WCTextButton(
-                        onClick = onBack,
+                        onClick = onDone,
                         text = stringResource(id = R.string.done)
                     )
                 }
@@ -244,61 +243,23 @@ private fun MultipleShipments(
 
         LaunchedEffect(viewState.shipmentSelected) {
             val viewStateCurrentPage = shipments.indexOf(viewState.shipmentSelected)
-            if (pagerState.currentPage != viewStateCurrentPage) {
+            if (pagerState.currentPage != viewStateCurrentPage && viewStateCurrentPage != -1) {
                 pagerState.animateScrollToPage(viewStateCurrentPage)
             }
         }
 
-        Row(modifier = modifier.fillMaxWidth()) {
-            ScrollableTabRow(
-                selectedTabIndex = if (pagerState.currentPage < pagerState.pageCount) pagerState.currentPage else 0,
-                backgroundColor = MaterialTheme.colors.surface,
-                contentColor = MaterialTheme.colors.primary,
-                divider = {},
-                edgePadding = 0.dp,
-                modifier = modifier
-                    .weight(1f)
-                    .padding(top = 8.dp)
-            ) {
-                shipments.forEachIndexed { index, _ ->
-                    val textColor = if (index == pagerState.currentPage) {
-                        MaterialTheme.colors.primary
-                    } else {
-                        colorResource(id = R.color.color_on_surface_medium)
-                    }
-                    Tab(
-                        text = {
-                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                Text(
-                                    text = stringResource(
-                                        R.string.woo_shipping_split_shipment_shipment_name,
-                                        index + 1 // Use 1-based indexing for the shipments
-                                    ),
-                                    color = textColor,
-                                    style = MaterialTheme.typography.subtitle1,
-                                    fontWeight = FontWeight.SemiBold
-                                )
-                                if (viewState.selectableItems[index]?.purchased == true) {
-                                    Icon(
-                                        modifier = Modifier.size(16.dp),
-                                        painter = painterResource(R.drawable.ic_progress_circle_complete),
-                                        contentDescription = stringResource(
-                                            R.string.purchased_shipment_content_description
-                                        ),
-                                        tint = colorResource(id = R.color.woo_shipping_label_purchased_color)
-                                    )
-                                }
-                            }
-                        },
-                        selected = pagerState.currentPage == index,
-                        onClick = {
-                            scope.launch {
-                                pagerState.animateScrollToPage(index)
-                            }
-                        }
+        Row(modifier = Modifier.fillMaxWidth()) {
+            ShipmentsTabRow(
+                shipmentTabs = shipments.mapIndexed { index, shipmentKey ->
+                    ShipmentTabData(
+                        shipmentIndex = index + 1,
+                        isPurchased = viewState.selectableItems[index]?.purchased == true
                     )
-                }
-            }
+                },
+                selectedTabIndex = if (pagerState.currentPage < pagerState.pageCount) pagerState.currentPage else 0,
+                onTabSelected = { index -> scope.launch { pagerState.animateScrollToPage(index) } },
+                modifier = Modifier.weight(1f)
+            )
             if (viewState.overflowMenuItems.isNotEmpty()) {
                 WCOverflowMenu(
                     items = viewState.overflowMenuItems,
@@ -595,6 +556,7 @@ private fun WooShippingSplitShipmentScreenPreview() = WooThemeWithBackground {
             )
         ),
         onBack = {},
+        onDone = {},
         onDismissInstructions = {},
         onUpdateSelection = { _, _ -> },
         onUpdateShipment = {},
