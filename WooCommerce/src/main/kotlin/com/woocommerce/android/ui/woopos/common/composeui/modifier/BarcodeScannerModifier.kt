@@ -16,7 +16,7 @@ import androidx.compose.ui.input.key.utf16CodePoint
 private const val ALLOWED_BARCODE_CHARS =
     "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-._~:/?#[]@!$&'()*+,;="
 
-fun Modifier.barcodeScanner(
+fun Modifier.listenForBarcodes(
     onBarcodeScanned: (String) -> Unit,
     enabled: Boolean = true
 ): Modifier = composed {
