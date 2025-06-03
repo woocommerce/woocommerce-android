@@ -13,6 +13,7 @@ import com.woocommerce.android.extensions.sumByFloat
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
+import com.woocommerce.android.ui.orders.shippinglabels.ShipmentTrackingUrls
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.CustomsState
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.CustomsState.ItnMissing
@@ -34,6 +35,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.address.origin.Observ
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeBannerUiState
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeType
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShippingLabelsSnackbarData
+import com.woocommerce.android.ui.orders.wooshippinglabels.components.WooShippingLabelPaperSize
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ShouldRequireCustomsForm
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ShouldRequireITN
@@ -79,6 +81,7 @@ import kotlinx.parcelize.Parcelize
 import java.io.File
 import java.math.BigDecimal
 import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 
 @SuppressWarnings("LargeClass")
@@ -128,7 +131,8 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             markOrderComplete = false,
             selectedIndex = 0,
             isShipmentDetailsExpanded = false,
-            isAddressSelectionExpanded = false
+            isAddressSelectionExpanded = false,
+            paperSizeOption = WooShippingLabelPaperSize.LEGAL
         )
     )
 
@@ -676,7 +680,8 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             ?.firstOrNull()
             ?.let { purchasedLabel ->
                 updateShipment(
-                    shipmentId, shipments.value[shipmentId].copy(
+                    shipmentId,
+                    shipments.value[shipmentId].copy(
                         purchased = true,
                         labelId = purchasedLabel.labelId,
                         carrierId = purchasedLabel.carrierId,
@@ -795,6 +800,52 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         ) {
             hazmatStatesFlow.value = previousStates
         }
+    }
+
+    fun onLabelPaperSizeOptionSelected(paperSize: WooShippingLabelPaperSize) {
+        uiState.update { it.copy(paperSizeOption = paperSize) }
+    }
+
+    fun onPrintShippingLabelClicked() {
+        val fallbackViewState = viewState.value
+        viewState.value = WooShippingViewState.Loading
+        launch {
+            val labelId = shipments.value[selectedShipmentIndexFlow.value].labelId ?: return@launch
+            val paperSize = uiState.value.paperSizeOption
+            val labelFile = fetchShippingLabelFile(
+                labelIds = listOf(labelId),
+                paperSize = paperSize.name.lowercase(Locale.US)
+            )
+
+            labelFile?.let {
+                triggerEvent(OpenShippingLabelFile(it))
+            } ?: triggerEvent(ShowError(R.string.shipping_label_purchased_print_error))
+
+            viewState.value = fallbackViewState
+        }
+    }
+
+    fun onTrackShipmentClicked() {
+        val carrierId = shipments.value[selectedShipmentIndexFlow.value].carrierId ?: return
+        val trackingNumber = shipments.value[selectedShipmentIndexFlow.value].trackingNumber ?: return
+        ShipmentTrackingUrls.fromCarrier(carrierId, trackingNumber)
+            ?.let { triggerEvent(OpenUrl(it)) }
+            ?: triggerEvent(ShowError(R.string.shipping_label_purchased_tracking_error))
+    }
+
+    fun onSchedulePickUpClicked() {
+        val carrierId = shipments.value[selectedShipmentIndexFlow.value].carrierId ?: return
+        Carrier.fromCarrierId(carrierId)?.let {
+            triggerEvent(OpenUrl(it.pickupUrl))
+        } ?: triggerEvent(ShowError(R.string.shipping_label_purchased_pickup_error))
+    }
+
+    fun onRefundClicked() {
+        triggerEvent(StartRefundRequest)
+    }
+
+    fun onLearnMoreClicked() {
+        triggerEvent(OpenLearnMoreScreen)
     }
 
     fun allowBackNavigation(): Boolean {
@@ -935,7 +986,8 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         val selectedIndex: Int = 0,
         val isShipmentDetailsExpanded: Boolean,
         val isAddressSelectionExpanded: Boolean,
-        val noticeBannerUiState: NoticeBannerUiState? = null
+        val noticeBannerUiState: NoticeBannerUiState? = null,
+        val paperSizeOption: WooShippingLabelPaperSize,
     )
 
     data class ShippingRatesInfo(

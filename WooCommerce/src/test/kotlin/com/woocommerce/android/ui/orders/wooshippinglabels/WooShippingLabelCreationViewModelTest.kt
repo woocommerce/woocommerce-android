@@ -222,11 +222,13 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
             purchaseShippingLabel = purchaseShippingLabel,
             observeStoreOptions = observeStoreOptions,
             fetchAccountSettings = mock(),
-            shouldRequireCustoms = shouldRequireCustomsForm,
             addressValidationHelper = addressValidationHelper,
             verifyDestinationAddress = verifyDestinationAddress,
             observeShippingLabelNotice = observeShippingLabelNotice,
+            shouldRequireCustoms = shouldRequireCustomsForm,
             shouldRequireITN = shouldRequireITN,
+            fetchShippingLabelFile = mock(),
+            observeShippingLabelStatus = mock(),
             savedState = savedState
         )
     }
