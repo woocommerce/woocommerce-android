@@ -12,9 +12,7 @@ import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.CustomsState
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.HazmatState
-import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.LabelPurchased
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.PackageSelectionState.DataAvailable
-import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.PurchaseState
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.StartHazmatFormEdit
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.WooShippingViewState
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.WooShippingViewState.DataState
@@ -27,15 +25,11 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeType
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ShouldRequireCustomsForm
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ShouldRequireITN
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
-import com.woocommerce.android.ui.orders.wooshippinglabels.models.PurchasedLabelData
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
-import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
-import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.StoreOptionsModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingCarrier
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
-import com.woocommerce.android.ui.orders.wooshippinglabels.purchased.PurchasedShippingLabelData
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel.Option
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.domain.GetShippingRates
@@ -62,7 +56,6 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
-import java.util.Date
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
@@ -113,30 +106,6 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
             isVerified = true
         )
     )
-
-    private val defaultShippingLabel = ShippingLabelModel(
-        labelId = 12L,
-        carrierId = WooShippingCarrier.UPS.name,
-        tracking = "1234567890",
-        refundableAmount = BigDecimal.ZERO,
-        commercialInvoiceUrl = "",
-        created = Date(),
-        createdDate = Date(),
-        currency = "USD",
-        expiryDate = 9999999999L,
-        isCommercialInvoiceSubmittedElectronically = false,
-        isLetter = false,
-        mainReceiptId = 1434234,
-        packageName = "ups_express",
-        productIds = listOf(123L, 456L),
-        productNames = listOf("Product 1", "Product 2"),
-        rate = BigDecimal.TEN,
-        receiptItemId = 23324L,
-        serviceName = "UPS Express",
-        status = ShippingLabelStatus.PurchaseInProgress
-    )
-
-    private val defaultPackageName = "customPackage"
 
     private val defaultShipToAddress = Address.EMPTY.copy(
         firstName = "first name",
@@ -209,13 +178,6 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
                 selectedOption = defaultShippableItemUI
             )
         }
-    )
-
-    private val defaultPurchasedLabelData = PurchasedLabelData(
-        labels = listOf(defaultShippingLabel),
-        origin = mapOf(defaultPackageName to defaultOriginAddresses.first()),
-        destination = mapOf(defaultPackageName to Address.EMPTY),
-        rates = mapOf(defaultPackageName to defaultShippingRate)
     )
 
     private val orderDetailRepository: OrderDetailRepository = mock()
@@ -763,60 +725,6 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
             assertThat(dataState.shipmentUIList[0].customsState).isEqualTo(CustomsState.ItnMissing)
         }
-
-    @Test
-    fun `when onPurchaseShippingLabel succeed then return the label data`() = testBlocking {
-        val order = OrderTestUtils.generateTestOrder(orderId = orderId).copy(
-            shippingLines = defaultShippingLines
-        )
-        whenever(orderDetailRepository.getOrderById(any())) doReturn order
-        whenever(getShipments(any())) doReturn defaultShipments
-        whenever(observeOriginAddresses()) doReturn flowOf(defaultOriginAddresses)
-        whenever(observeStoreOptions()) doReturn flowOf(defaultStoreOptions)
-        whenever(
-            purchaseShippingLabel(any(), any(), any(), any(), any(), any(), any(), any(), isNull(), isNull())
-        ) doReturn Result.success(defaultPurchasedLabelData)
-
-        val label = defaultPurchasedLabelData.labels.first()
-
-        val expectedLabelData = PurchasedShippingLabelData(
-            labelId = label.labelId,
-            orderId = 1L,
-            carrierId = label.carrierId,
-            trackingNumber = label.tracking,
-            items = mock(),
-            rateSummary = mock(),
-            shippingLines = mock(),
-            addresses = mock(),
-            hazmatSelection = ShippingLabelHazmatCategory.CLASS_1
-        )
-
-        createViewModel()
-
-        val selectedRate = defaultShippingRates.values.first().first()
-
-        sut.onPackageSelected(defaultPackageData)
-        sut.onSelectedSippingRateChanged(selectedRate)
-
-        advanceUntilIdle()
-
-        var event: MultiLiveEvent.Event? = null
-        sut.event.observeForever { latestEvent -> event = latestEvent }
-
-        sut.onPurchaseShippingLabel()
-
-        val currentViewState = sut.viewState.value
-        assertThat(currentViewState).isInstanceOf(DataState::class.java)
-        val dataState = currentViewState as DataState
-        assertThat(dataState.purchaseState).isEqualTo(PurchaseState.Success)
-
-        assertThat(event).isInstanceOf(LabelPurchased::class.java)
-        val data = (event as LabelPurchased).purchaseData
-        assertThat(data.labelId).isEqualTo(expectedLabelData.labelId)
-        assertThat(data.trackingNumber).isEqualTo(expectedLabelData.trackingNumber)
-        assertThat(data.carrierId).isEqualTo(expectedLabelData.carrierId)
-        assertThat(data.orderId).isEqualTo(expectedLabelData.orderId)
-    }
 
     @Test
     fun `when onPurchaseShippingLabel fails then show a snackbar`() = testBlocking {
