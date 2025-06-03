@@ -729,22 +729,6 @@
 
     </fragment>
     <fragment
-        android:id="@+id/wooShippingLabelPurchasedFragment"
-        android:name="com.woocommerce.android.ui.orders.wooshippinglabels.purchased.WooShippingLabelPurchasedFragment"
-        android:label="WooShippingLabelPurchasedFragment">
-        <argument
-            android:name="purchaseData"
-            app:argType="com.woocommerce.android.ui.orders.wooshippinglabels.purchased.PurchasedShippingLabelData" />
-
-        <argument
-            android:name="totalItems"
-            app:argType="integer" />
-
-        <argument
-            android:name="totalItemsCost"
-            app:argType="string" />
-    </fragment>
-    <fragment
         android:id="@+id/wooShippingEditOriginAddressFragment"
         android:name="com.woocommerce.android.ui.orders.wooshippinglabels.address.WooShippingEditAddressFragment"
         android:label="WooShippingEditOriginAddressFragment">
