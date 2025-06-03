@@ -132,7 +132,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             selectedIndex = 0,
             isShipmentDetailsExpanded = false,
             isAddressSelectionExpanded = false,
-            paperSizeOption = WooShippingLabelPaperSize.LEGAL
+            paperSizeOption = WooShippingLabelPaperSize.LABEL
         )
     )
 
