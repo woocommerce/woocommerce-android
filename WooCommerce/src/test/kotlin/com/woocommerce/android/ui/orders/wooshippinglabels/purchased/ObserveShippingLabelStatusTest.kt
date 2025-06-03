@@ -1,7 +1,7 @@
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus.PurchaseInProgress
-import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus.Purchased
-import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus.Unknown
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus.PURCHASED
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus.PURCHASE_IN_PROGRESS
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus.UNKNOWN
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingLabelRepository
 import com.woocommerce.android.ui.orders.wooshippinglabels.purchased.ObserveShippingLabelStatus
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -41,13 +41,13 @@ class ObserveShippingLabelStatusTest : BaseUnitTest() {
     @Test
     fun `When status response is unknown, then observation stops`() = testBlocking {
         whenever(labelRepository.fetchShippingLabelStatus(mockSite, mockOrderId, mockLabelId))
-            .thenReturn(WooResult(Unknown))
+            .thenReturn(WooResult(UNKNOWN))
 
         val result = observeShippingLabelStatus(mockOrderId, mockLabelId).toList()
         advanceUntilIdle()
 
         verify(labelRepository).fetchShippingLabelStatus(mockSite, mockOrderId, mockLabelId)
-        assertEquals(listOf(PurchaseInProgress, Unknown), result)
+        assertEquals(listOf(PURCHASE_IN_PROGRESS, UNKNOWN), result)
     }
 
     @Test
@@ -56,9 +56,9 @@ class ObserveShippingLabelStatusTest : BaseUnitTest() {
         whenever(labelRepository.fetchShippingLabelStatus(mockSite, mockOrderId, mockLabelId))
             .then {
                 if (statusCallCount++ == 0) {
-                    WooResult(PurchaseInProgress)
+                    WooResult(PURCHASE_IN_PROGRESS)
                 } else {
-                    WooResult(Purchased)
+                    WooResult(PURCHASED)
                 }
             }
 
@@ -66,7 +66,7 @@ class ObserveShippingLabelStatusTest : BaseUnitTest() {
         advanceUntilIdle()
 
         verify(labelRepository, times(2)).fetchShippingLabelStatus(mockSite, mockOrderId, mockLabelId)
-        assertEquals(listOf(PurchaseInProgress, PurchaseInProgress, Purchased), result)
+        assertEquals(listOf(PURCHASE_IN_PROGRESS, PURCHASE_IN_PROGRESS, PURCHASED), result)
     }
 
     @Test
@@ -79,6 +79,6 @@ class ObserveShippingLabelStatusTest : BaseUnitTest() {
         advanceUntilIdle()
 
         verify(labelRepository, times(1)).fetchShippingLabelStatus(mockSite, mockOrderId, mockLabelId)
-        assertEquals(listOf(PurchaseInProgress, Unknown), result)
+        assertEquals(listOf(PURCHASE_IN_PROGRESS, UNKNOWN), result)
     }
 }

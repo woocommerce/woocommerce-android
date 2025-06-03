@@ -6,8 +6,8 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.orders.shippinglabels.ShipmentTrackingUrls
-import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus.PurchaseInProgress
-import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus.Purchased
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus.PURCHASED
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus.PURCHASE_IN_PROGRESS
 import com.woocommerce.android.ui.orders.wooshippinglabels.purchased.WooShippingLabelPaperSize.LABEL
 import com.woocommerce.android.ui.orders.wooshippinglabels.purchased.printing.FetchShippingLabelFile
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -104,11 +104,11 @@ class WooShippingLabelPurchasedViewModel @Inject constructor(
                 labelId = purchaseData.labelId
             ).onEach { status ->
                 when (status) {
-                    PurchaseInProgress -> {
+                    PURCHASE_IN_PROGRESS -> {
                         _viewState.update { it.copy(isPurchaseFinished = false) }
                     }
 
-                    Purchased -> {
+                    PURCHASED -> {
                         _viewState.update { it.copy(isPurchaseFinished = true) }
                     }
 

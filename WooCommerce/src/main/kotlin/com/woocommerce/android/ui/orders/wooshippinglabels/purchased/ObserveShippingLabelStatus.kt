@@ -2,8 +2,8 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.purchased
 
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus
-import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus.PurchaseInProgress
-import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus.Unknown
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus.PURCHASE_IN_PROGRESS
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus.UNKNOWN
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingLabelRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -16,7 +16,7 @@ class ObserveShippingLabelStatus @Inject constructor(
 ) {
     operator fun invoke(orderId: Long, labelId: Long): Flow<ShippingLabelStatus> {
         return flow {
-            var latestStatus = PurchaseInProgress
+            var latestStatus = PURCHASE_IN_PROGRESS
             emit(latestStatus)
 
             do {
@@ -24,10 +24,10 @@ class ObserveShippingLabelStatus @Inject constructor(
                     site = selectedSite.get(),
                     orderId = orderId,
                     labelId = labelId
-                ).takeIf { it.isError.not() }?.model ?: Unknown
+                ).takeIf { it.isError.not() }?.model ?: UNKNOWN
                 emit(latestStatus)
                 delay(DELAY_BETWEEN_STATUS_CHECKS)
-            } while (latestStatus == PurchaseInProgress)
+            } while (latestStatus == PURCHASE_IN_PROGRESS)
         }
     }
 

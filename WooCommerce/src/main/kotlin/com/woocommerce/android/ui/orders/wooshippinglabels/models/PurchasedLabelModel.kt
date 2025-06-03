@@ -20,5 +20,9 @@ data class PurchasedLabelModel(
 )
 
 enum class ShippingLabelStatus {
-    Unknown, PurchaseInProgress, Purchased, PurchaseError, Anonymized
+    UNKNOWN,
+    PURCHASE_IN_PROGRESS,
+    PURCHASED,
+    PURCHASE_ERROR,
+    ANONYMIZED
 }

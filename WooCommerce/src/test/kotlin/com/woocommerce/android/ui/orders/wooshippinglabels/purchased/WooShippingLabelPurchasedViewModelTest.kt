@@ -1,9 +1,9 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.purchased
 
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
-import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus.PurchaseInProgress
-import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus.Purchased
-import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus.Unknown
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus.PURCHASED
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus.PURCHASE_IN_PROGRESS
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus.UNKNOWN
 import com.woocommerce.android.ui.orders.wooshippinglabels.purchased.WooShippingLabelPaperSize.LABEL
 import com.woocommerce.android.ui.orders.wooshippinglabels.purchased.WooShippingLabelPaperSize.LETTER
 import com.woocommerce.android.ui.orders.wooshippinglabels.purchased.WooShippingLabelPurchasedViewModel.OpenLearnMoreScreen
@@ -146,7 +146,7 @@ class WooShippingLabelPurchasedViewModelTest : BaseUnitTest() {
     @Test
     fun `on Shipping Label Status is Unknown, ViewState isLoadingData is true`() = testBlocking {
         var latestState: ViewState? = null
-        whenever(observeShippingLabelStatus(labelId = 4158L, orderId = 1234L)).thenReturn(flowOf(Unknown))
+        whenever(observeShippingLabelStatus(labelId = 4158L, orderId = 1234L)).thenReturn(flowOf(UNKNOWN))
 
         createSut()
         viewModel.viewState.observeForever { latestState = it }
@@ -159,7 +159,7 @@ class WooShippingLabelPurchasedViewModelTest : BaseUnitTest() {
         var latestState: ViewState? = null
         whenever(
             observeShippingLabelStatus.invoke(labelId = 4158L, orderId = 1234L)
-        ).thenReturn(flowOf(PurchaseInProgress))
+        ).thenReturn(flowOf(PURCHASE_IN_PROGRESS))
 
         createSut()
         viewModel.viewState.observeForever { latestState = it }
@@ -170,7 +170,7 @@ class WooShippingLabelPurchasedViewModelTest : BaseUnitTest() {
     @Test
     fun `on Shipping Label Status is Purchased, ViewState isLoadingData is false`() = testBlocking {
         var latestState: ViewState? = null
-        whenever(observeShippingLabelStatus(labelId = 4158L, orderId = 1234L)).thenReturn(flowOf(Unknown, Purchased))
+        whenever(observeShippingLabelStatus(labelId = 4158L, orderId = 1234L)).thenReturn(flowOf(UNKNOWN, PURCHASED))
 
         createSut()
         viewModel.viewState.observeForever { latestState = it }

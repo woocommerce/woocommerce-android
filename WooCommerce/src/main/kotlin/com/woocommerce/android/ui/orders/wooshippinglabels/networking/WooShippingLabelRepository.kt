@@ -78,7 +78,7 @@ class WooShippingLabelRepository @Inject constructor(
     ).asWooResult { response ->
         response.shippingLabel?.let {
             mapper(it).status
-        } ?: ShippingLabelStatus.Unknown
+        } ?: ShippingLabelStatus.UNKNOWN
     }
 
     @Suppress("LongParameterList")
