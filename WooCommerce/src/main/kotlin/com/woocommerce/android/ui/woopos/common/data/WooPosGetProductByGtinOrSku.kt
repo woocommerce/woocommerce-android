@@ -16,4 +16,3 @@ class WooPosGetProductByGtinOrSku @Inject constructor(
         throw NotImplementedError("Fetching product by GTIN is not implemented yet.")
     }
 }
-
