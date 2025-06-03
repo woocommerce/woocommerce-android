@@ -755,14 +755,14 @@ fun WooPosCartScreenProductsPreview(modifier: Modifier = Modifier) {
                             validationState = CouponValidationState.Valid("-$10")
                         ),
                         WooPosCartItemViewState.Coupon(
-                            itemNumber = 1,
+                            itemNumber = 2,
                             name = "Test Coupon",
                             summary = "10$ off * All Products",
                             id = 1L,
                             validationState = CouponValidationState.Invalid
                         ),
                         WooPosCartItemViewState.Product.Simple(
-                            itemNumber = 2,
+                            itemNumber = 3,
                             id = 1L,
                             imageUrl = "",
                             name = "VW California, VW California VW California, VW California VW California, " +
@@ -771,7 +771,7 @@ fun WooPosCartScreenProductsPreview(modifier: Modifier = Modifier) {
                             price = "€50,000",
                         ),
                         WooPosCartItemViewState.Product.Simple(
-                            itemNumber = 3,
+                            itemNumber = 4,
                             id = 2L,
                             imageUrl = "",
                             name = "VW California",
@@ -781,7 +781,7 @@ fun WooPosCartScreenProductsPreview(modifier: Modifier = Modifier) {
                             productDoesNotExist = true,
                         ),
                         WooPosCartItemViewState.Product.Simple(
-                            itemNumber = 4,
+                            itemNumber = 5,
                             id = 3L,
                             imageUrl = "",
                             name = "VW California",
@@ -822,14 +822,14 @@ fun WooPosCartScreenCheckoutPreview(modifier: Modifier = Modifier) {
                             validationState = CouponValidationState.Valid("-$10")
                         ),
                         WooPosCartItemViewState.Coupon(
-                            itemNumber = 1,
+                            itemNumber = 2,
                             name = "Test Coupon",
                             summary = "10$ off * All Products",
                             id = 1L,
                             validationState = CouponValidationState.Invalid
                         ),
                         WooPosCartItemViewState.Product.Simple(
-                            itemNumber = 2,
+                            itemNumber = 3,
                             id = 1L,
                             imageUrl = "",
                             name = "VW California",
@@ -837,7 +837,7 @@ fun WooPosCartScreenCheckoutPreview(modifier: Modifier = Modifier) {
                             price = "€50,000",
                         ),
                         WooPosCartItemViewState.Product.Simple(
-                            itemNumber = 3,
+                            itemNumber = 4,
                             id = 2L,
                             imageUrl = "",
                             name = "VW California",
@@ -845,7 +845,7 @@ fun WooPosCartScreenCheckoutPreview(modifier: Modifier = Modifier) {
                             price = "$150,000",
                         ),
                         WooPosCartItemViewState.Product.Simple(
-                            itemNumber = 4,
+                            itemNumber = 5,
                             id = 3L,
                             imageUrl = "",
                             name = "VW California",
