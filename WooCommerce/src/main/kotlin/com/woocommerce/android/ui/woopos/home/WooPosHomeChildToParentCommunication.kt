@@ -48,6 +48,8 @@ sealed class ChildToParentEvent {
     data class ToastMessageDisplayed(val message: String) : ChildToParentEvent()
     data object RefreshProductList : ChildToParentEvent()
 
+    data class BarcodeScanned(val barcode: String) : ChildToParentEvent()
+
     sealed class NavigationEvent : ChildToParentEvent() {
         data class ToCashPayment(val orderId: Long) : NavigationEvent()
         data class ToEmailReceipt(val orderId: Long) : NavigationEvent()
