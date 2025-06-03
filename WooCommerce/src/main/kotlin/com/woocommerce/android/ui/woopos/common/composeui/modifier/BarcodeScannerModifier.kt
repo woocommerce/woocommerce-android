@@ -43,12 +43,12 @@ fun Modifier.barcodeScanner(
                         onBarcodeScanned(scannedBarcode)
                         barcodeBuffer.clear()
                     }
+                    return@onKeyEvent true
                 } else if (pressedKey in ALLOWED_BARCODE_CHARS) {
                     barcodeBuffer.append(pressedKey)
+                    return@onKeyEvent true
                 }
-                true
-            } else {
-                false
             }
+            return@onKeyEvent false
         }
 }
