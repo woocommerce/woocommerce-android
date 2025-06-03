@@ -1,0 +1,10 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/buildkite/pipeline-schema/main/schema.json
+---
+
+agents:
+  queue: "android"
+
+steps:
+  - label: "🧱 Report outdated dependencies"
+    command: .buildkite/commands/report_dependency_updates.sh
+    plugins: [$CI_TOOLKIT]
