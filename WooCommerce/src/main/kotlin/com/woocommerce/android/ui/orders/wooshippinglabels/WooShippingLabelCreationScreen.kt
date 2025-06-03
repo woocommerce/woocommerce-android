@@ -444,13 +444,15 @@ private fun LabelCreationScreenWithBottomSheet(
                             style = MaterialTheme.typography.h6,
                             modifier = Modifier.weight(1f)
                         )
-                        Text(
-                            text = stringResource(R.string.woo_shipping_split_shipment),
-                            color = MaterialTheme.colors.primary,
-                            modifier = Modifier
-                                .clickable { onSplitShipment() }
-                                .padding(dimensionResource(R.dimen.minor_100))
-                        )
+                        if (shipmentUIList.first().totalItemQuantity > 1) {
+                            Text(
+                                text = stringResource(R.string.woo_shipping_split_shipment),
+                                color = MaterialTheme.colors.primary,
+                                modifier = Modifier
+                                    .clickable { onSplitShipment() }
+                                    .padding(dimensionResource(R.dimen.minor_100))
+                            )
+                        }
                     }
                 } else if (shipmentUIList.size > 1) {
                     Row(modifier = Modifier.fillMaxWidth()) {
