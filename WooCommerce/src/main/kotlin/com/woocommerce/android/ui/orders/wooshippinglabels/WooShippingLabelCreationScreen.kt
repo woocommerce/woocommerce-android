@@ -110,6 +110,7 @@ fun WooShippingLabelCreationScreen(viewModel: WooShippingLabelCreationViewModel)
                 onSelectPackageClick = viewModel::onSelectPackageClicked,
                 onPurchaseShippingLabel = viewModel::onPurchaseShippingLabel,
                 shipmentUIList = viewState.shipmentUIList,
+                allShipmentsFulfilled = viewState.allShipmentsFulfilled,
                 totalItems = viewState.totalItems,
                 totalItemsCost = viewState.totalItemsCost,
                 shippingLines = viewState.shippingLines,
@@ -156,6 +157,7 @@ fun WooShippingLabelCreationScreen(viewModel: WooShippingLabelCreationViewModel)
 @Composable
 fun WooShippingLabelCreationScreen(
     shipmentUIList: List<ShipmentUI>,
+    allShipmentsFulfilled: Boolean,
     totalItems: Int,
     totalItemsCost: String,
     shippingLines: List<ShippingLineSummaryUI>,
@@ -227,6 +229,7 @@ fun WooShippingLabelCreationScreen(
     Box(modifier = Modifier.fillMaxSize()) {
         LabelCreationScreenWithBottomSheet(
             shipmentUIList = shipmentUIList,
+            allShipmentsFulfilled = allShipmentsFulfilled,
             totalItems = totalItems,
             totalItemsCost = totalItemsCost,
             modifier = modifier,
@@ -268,8 +271,9 @@ fun WooShippingLabelCreationScreen(
             isDarkTheme && !isCollapsed -> 16.dp
             else -> 8.dp
         }
-        val selectedShippingRatesState = shipmentUIList[uiState.selectedIndex].shippingRatesState
-        if (selectedShippingRatesState is ShippingRatesState.DataState) {
+        val selectedShipment = shipmentUIList[uiState.selectedIndex]
+        val selectedShippingRatesState = selectedShipment.shippingRatesState
+        if (selectedShippingRatesState is ShippingRatesState.DataState && !selectedShipment.purchased) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -315,6 +319,7 @@ fun WooShippingLabelCreationScreen(
 @Composable
 private fun LabelCreationScreenWithBottomSheet(
     shipmentUIList: List<ShipmentUI>,
+    allShipmentsFulfilled: Boolean,
     totalItems: Int,
     totalItemsCost: String,
     shippingLines: List<ShippingLineSummaryUI>,
@@ -350,8 +355,9 @@ private fun LabelCreationScreenWithBottomSheet(
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
-    val shippingRatesState = shipmentUIList[uiState.selectedIndex].shippingRatesState
-    val isPurchaseButtonDisplayed = shippingRatesState is ShippingRatesState.DataState
+    val selectedShipment = shipmentUIList[uiState.selectedIndex]
+    val shippingRatesState = selectedShipment.shippingRatesState
+    val isPurchaseButtonDisplayed = shippingRatesState is ShippingRatesState.DataState && !selectedShipment.purchased
     val requiresLargePeekHeight = isPurchaseButtonDisplayed || uiState.noticeBannerUiState != null
 
     val bottomSheetPeekHeight = when {
@@ -428,7 +434,7 @@ private fun LabelCreationScreenWithBottomSheet(
                     onSelectedShipmentChanged(pagerState.targetPage)
                 }
 
-                if (shipmentUIList.size == 1) {
+                if (shipmentUIList.size == 1 && !allShipmentsFulfilled) {
                     Row(
                         modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp),
                         verticalAlignment = Alignment.CenterVertically
@@ -446,7 +452,7 @@ private fun LabelCreationScreenWithBottomSheet(
                                 .padding(dimensionResource(R.dimen.minor_100))
                         )
                     }
-                } else {
+                } else if (shipmentUIList.size > 1) {
                     Row(modifier = Modifier.fillMaxWidth()) {
                         ShipmentsTabRow(
                             shipmentTabs = shipmentUIList.mapIndexed { index, shipment ->
@@ -942,6 +948,7 @@ private fun WooShippingLabelCreationScreenPreview() {
                     shippingRatesState = ShippingRatesState.NoAvailable,
                 )
             ),
+            allShipmentsFulfilled = false,
             totalItems = 6,
             totalItemsCost = "$92.78",
             shippingLines = getShippingLines(),
