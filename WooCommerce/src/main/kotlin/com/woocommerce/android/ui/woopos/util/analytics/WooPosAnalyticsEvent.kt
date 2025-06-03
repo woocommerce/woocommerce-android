@@ -76,11 +76,28 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
         data object EmailReceiptSendTapped : Event() {
             override val name: String = "receipt_email_send_tapped"
         }
-        data object EmailReceiptSendFailed : Event() {
+
+        data class EmailReceiptSendFailed(val eligibleForPOSReceipts: Boolean) : Event() {
             override val name: String = "receipt_email_failed"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "eligible_for_pos_receipt" to eligibleForPOSReceipts.toString()
+                    )
+                )
+            }
         }
-        data object EmailReceiptSendSuccess : Event() {
+        data class EmailReceiptSendSuccess(val eligibleForPOSReceipts: Boolean) : Event() {
             override val name: String = "receipt_email_success"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "eligible_for_pos_receipt" to eligibleForPOSReceipts.toString()
+                    )
+                )
+            }
         }
         data object ExitTapped : Event() {
             override val name: String = "exit_menu_item_tapped"

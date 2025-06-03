@@ -395,10 +395,6 @@ dependencies {
         exclude group: "org.wordpress", module: "utils"
     }
     implementation("${gradle.ext.mediaPickerSourceCameraBinaryPath}:${libs.versions.wordpress.mediapicker.get()}")
-    implementation("${gradle.ext.mediaPickerSourceWordPressBinaryPath}:${libs.versions.wordpress.mediapicker.get()}") {
-        exclude group: "org.wordpress", module: "utils"
-        exclude group: "org.wordpress", module: "fluxc"
-    }
 
     // Jetpack Compose
     implementation(platform(libs.androidx.compose.bom))

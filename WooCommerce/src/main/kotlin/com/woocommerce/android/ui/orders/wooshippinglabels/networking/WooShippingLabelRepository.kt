@@ -238,4 +238,10 @@ class WooShippingLabelRepository @Inject constructor(
             )
         }
     }
+
+    suspend fun updateShipments(
+        site: SiteModel,
+        orderId: Long,
+        shipments: ShipmentMap
+    ) = restClient.updateShipments(site = site, orderId = orderId, shipments = shipments).asWooResult()
 }

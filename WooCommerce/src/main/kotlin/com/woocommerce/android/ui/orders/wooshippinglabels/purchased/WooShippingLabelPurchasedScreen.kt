@@ -57,6 +57,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.ShipmentUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.ShippingProductsCard
 import com.woocommerce.android.ui.orders.wooshippinglabels.ShippingRateSummaryUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingAddresses
+import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.AddressStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.generateItems
 import com.woocommerce.android.ui.orders.wooshippinglabels.hazmat.HazmatCard
@@ -403,7 +404,8 @@ internal fun WooShippingLabelPurchasedScreenPreview() {
                         shippableItems = generateItems(6),
                         formattedTotalWeight = "8.5kg",
                         formattedTotalPrice = "$92.78",
-                        purchased = false
+                        purchased = false,
+                        hazmatState = WooShippingLabelCreationViewModel.HazmatState.NoSelection
                     ),
                     addresses = WooShippingAddresses.EMPTY,
                     rateSummary = ShippingRateSummaryUI(serviceName = "", total = ""),

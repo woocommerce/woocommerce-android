@@ -31,36 +31,6 @@ class PluginWPAPIRestClient @Inject constructor(
         }
     }
 
-    suspend fun fetchPlugins(
-        site: SiteModel,
-        enableCaching: Boolean = false
-    ): WPApiPluginsPayload<List<SitePluginModel>> {
-        val response = getNetwork(site).executeGetGsonRequest(
-            site = site,
-            path = WPAPI.plugins.urlV2,
-            clazz = Array<PluginResponseModel>::class.java,
-            params = emptyMap(),
-            enableCaching = enableCaching,
-            cacheTimeToLive = 0,
-            forced = false,
-            requestTimeout = 0,
-            retries = 0
-        )
-
-        return when (response) {
-            is Success -> {
-                val plugins = response.data?.map {
-                    it.toDomainModel(site.id)
-                }
-                WPApiPluginsPayload(site, plugins)
-            }
-
-            is Error -> {
-                WPApiPluginsPayload(response.error)
-            }
-        }
-    }
-
     suspend fun fetchPlugin(
         site: SiteModel,
         pluginName: String
@@ -96,18 +66,6 @@ class PluginWPAPIRestClient @Inject constructor(
             path = WPAPI.plugins.name(updatedPlugin).urlV2,
             clazz = PluginResponseModel::class.java,
             body = mapOf("status" to if (active) "active" else "inactive")
-        )
-        return handleResponse(response, site)
-    }
-
-    suspend fun deletePlugin(
-        site: SiteModel,
-        deletedPlugin: String
-    ): WPApiPluginsPayload<SitePluginModel> {
-        val response = getNetwork(site).executeDeleteGsonRequest(
-            site = site,
-            path = WPAPI.plugins.name(deletedPlugin).urlV2,
-            clazz = PluginResponseModel::class.java
         )
         return handleResponse(response, site)
     }

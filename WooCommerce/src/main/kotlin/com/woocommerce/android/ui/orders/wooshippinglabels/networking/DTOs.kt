@@ -28,6 +28,13 @@ data class ConfigResponse(
     @SerializedName("config") val config: ConfigDTO
 )
 
+data class UpdateShipmentsResponse(
+    @SerializedName("success") val success: Boolean? = null,
+    @SerializedName("data")
+    @JsonAdapter(ShipmentMapDeserializer::class)
+    val data: ShipmentMap
+)
+
 /**
  * Alias for a mapping of shipment id (as String) to the list of items contained in each shipment.
  */
