@@ -57,7 +57,7 @@ class GetShipments @Inject constructor(
                 }
                 ShipmentUIModel(id = shipmentId, remoteId = shipmentId, items = items)
             }
-        }
+        }.sortedBy { it.id.toLong() }
 
         // If there are purchased labels, merge their data into the result list
         return config?.shippingLabelData?.currentOrderLabels?.let { data ->
