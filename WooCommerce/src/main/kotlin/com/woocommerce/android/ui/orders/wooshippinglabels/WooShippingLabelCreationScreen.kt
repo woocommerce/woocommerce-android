@@ -418,7 +418,8 @@ private fun LabelCreationScreenWithBottomSheet(
             Column(
                 modifier
                     .verticalScroll(rememberScrollState())
-                    .padding(bottom = 16.dp)
+                    .padding(bottom = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 val scope = rememberCoroutineScope()
                 val pagerState = rememberPagerState { shipmentUIList.size }
@@ -429,7 +430,7 @@ private fun LabelCreationScreenWithBottomSheet(
 
                 if (shipmentUIList.size == 1) {
                     Row(
-                        modifier = Modifier.padding(16.dp),
+                        modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
@@ -446,11 +447,7 @@ private fun LabelCreationScreenWithBottomSheet(
                         )
                     }
                 } else {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 16.dp)
-                    ) {
+                    Row(modifier = Modifier.fillMaxWidth()) {
                         ShipmentsTabRow(
                             shipmentTabs = shipmentUIList.mapIndexed { index, shipment ->
                                 ShipmentTabData(shipmentIndex = index + 1, isPurchased = shipment.purchased)
@@ -478,7 +475,7 @@ private fun LabelCreationScreenWithBottomSheet(
 
                 HorizontalPager(
                     state = pagerState,
-                    modifier = modifier.fillMaxSize(),
+                    modifier = Modifier.fillMaxSize(),
                     verticalAlignment = Alignment.Top,
                 ) { page ->
                     CreateShippingCards(
@@ -554,6 +551,7 @@ private fun CreateShippingCards(
                 onSchedulePickUpClicked = onSchedulePickUpClicked,
                 onRefundClicked = onRefundClicked,
                 onLearnMoreClicked = onLearnMoreClicked,
+                modifier = Modifier.padding(horizontal = 16.dp)
             )
         }
         ShippingProductsCard(

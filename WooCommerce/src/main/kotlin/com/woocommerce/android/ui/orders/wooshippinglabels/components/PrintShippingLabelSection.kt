@@ -60,7 +60,7 @@ fun PrintShippingLabelSection(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier.padding(16.dp)
+        modifier = modifier.padding(top = 8.dp)
     ) {
         val (titleResId, messageResId) = when (status) {
             PURCHASED -> Pair(
@@ -82,8 +82,7 @@ fun PrintShippingLabelSection(
         Text(
             text = stringResource(id = titleResId),
             style = MaterialTheme.typography.subtitle1,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(top = 16.dp)
+            fontWeight = FontWeight.Bold
         )
         Text(
             text = stringResource(id = messageResId),
