@@ -81,10 +81,12 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.address.AddressSelect
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.AddressStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.getShipFrom
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.getShipTo
+import com.woocommerce.android.ui.orders.wooshippinglabels.components.PrintShippingLabelSection
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShipmentTabData
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShipmentsTabRow
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShippingLabelsSnackbarData
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.SuccessSnackbarHost
+import com.woocommerce.android.ui.orders.wooshippinglabels.components.WooShippingLabelPaperSize
 import com.woocommerce.android.ui.orders.wooshippinglabels.hazmat.HazmatCard
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
@@ -131,6 +133,12 @@ fun WooShippingLabelCreationScreen(viewModel: WooShippingLabelCreationViewModel)
                 snackbarData = viewModel.snackbarData,
                 onSplitShipment = viewModel::onSplitShipmentButtonTapped,
                 onHazmatNoticeClick = viewModel::onHazmatNoticeClick,
+                onLabelPaperSizeOptionSelected = viewModel::onLabelPaperSizeOptionSelected,
+                onPrintShippingLabelClicked = viewModel::onPrintShippingLabelClicked,
+                onTrackShipmentClicked = viewModel::onTrackShipmentClicked,
+                onSchedulePickUpClicked = viewModel::onSchedulePickUpClicked,
+                onRefundClicked = viewModel::onRefundClicked,
+                onLearnMoreClicked = viewModel::onLearnMoreClicked
             )
         }
 
@@ -174,6 +182,12 @@ fun WooShippingLabelCreationScreen(
     snackbarData: ShippingLabelsSnackbarData? = null,
     onSplitShipment: () -> Unit = {},
     onHazmatNoticeClick: () -> Unit = {},
+    onLabelPaperSizeOptionSelected: (WooShippingLabelPaperSize) -> Unit,
+    onPrintShippingLabelClicked: () -> Unit,
+    onTrackShipmentClicked: () -> Unit,
+    onSchedulePickUpClicked: () -> Unit,
+    onRefundClicked: () -> Unit,
+    onLearnMoreClicked: () -> Unit,
 ) {
     val shipmentDetailsValue = if (uiState.isShipmentDetailsExpanded) {
         BottomSheetValue.Expanded
@@ -238,7 +252,13 @@ fun WooShippingLabelCreationScreen(
             destinationStatus = destinationStatus,
             snackbarData = snackbarData,
             onSplitShipment = onSplitShipment,
-            onHazmatNoticeClick = onHazmatNoticeClick
+            onHazmatNoticeClick = onHazmatNoticeClick,
+            onLabelPaperSizeOptionSelected = onLabelPaperSizeOptionSelected,
+            onPrintShippingLabelClicked = onPrintShippingLabelClicked,
+            onTrackShipmentClicked = onTrackShipmentClicked,
+            onSchedulePickUpClicked = onSchedulePickUpClicked,
+            onRefundClicked = onRefundClicked,
+            onLearnMoreClicked = onLearnMoreClicked,
         )
         val isDarkTheme = isSystemInDarkTheme()
         val isCollapsed = scaffoldState.bottomSheetState.isCollapsed
@@ -320,7 +340,13 @@ private fun LabelCreationScreenWithBottomSheet(
     modifier: Modifier = Modifier,
     snackbarData: ShippingLabelsSnackbarData? = null,
     onSplitShipment: () -> Unit = {},
-    onHazmatNoticeClick: () -> Unit = {}
+    onHazmatNoticeClick: () -> Unit = {},
+    onLabelPaperSizeOptionSelected: (WooShippingLabelPaperSize) -> Unit,
+    onPrintShippingLabelClicked: () -> Unit,
+    onTrackShipmentClicked: () -> Unit,
+    onSchedulePickUpClicked: () -> Unit,
+    onRefundClicked: () -> Unit,
+    onLearnMoreClicked: () -> Unit,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -461,10 +487,17 @@ private fun LabelCreationScreenWithBottomSheet(
                         onEditCustomsClick = onEditCustomsClick,
                         onSelectPackageClick = onSelectPackageClick,
                         customWeight = customWeightList[uiState.selectedIndex],
+                        uiState = uiState,
                         onCustomWeightChange = onCustomWeightChange,
                         onSelectedRateSortOrderChanged = onSelectedRateSortOrderChanged,
                         onRefreshShippingRates = onRefreshShippingRates,
                         onSelectedShippingRateChanged = onSelectedShippingRateChanged,
+                        onLabelPaperSizeOptionSelected = onLabelPaperSizeOptionSelected,
+                        onPrintShippingLabelClicked = onPrintShippingLabelClicked,
+                        onTrackShipmentClicked = onTrackShipmentClicked,
+                        onSchedulePickUpClicked = onSchedulePickUpClicked,
+                        onRefundClicked = onRefundClicked,
+                        onLearnMoreClicked = onLearnMoreClicked,
                     )
                 }
             }
@@ -496,14 +529,33 @@ private fun CreateShippingCards(
     onEditCustomsClick: () -> Unit,
     onSelectPackageClick: () -> Unit,
     customWeight: String,
+    uiState: WooShippingLabelCreationViewModel.UIControlsState,
     onCustomWeightChange: (String) -> Unit,
     onSelectedRateSortOrderChanged: (ShippingSortOption) -> Unit,
     onRefreshShippingRates: () -> Unit,
     onSelectedShippingRateChanged: (rate: ShippingRateUI) -> Unit,
+    onLabelPaperSizeOptionSelected: (WooShippingLabelPaperSize) -> Unit,
+    onPrintShippingLabelClicked: () -> Unit,
+    onTrackShipmentClicked: () -> Unit,
+    onSchedulePickUpClicked: () -> Unit,
+    onRefundClicked: () -> Unit,
+    onLearnMoreClicked: () -> Unit,
 ) {
     Column {
         val isExpanded = remember { mutableStateOf(false) }
 
+        if (shipmentUI.purchased) {
+            PrintShippingLabelSection(
+                status = shipmentUI.status,
+                selectedLabelPaperSizeOption = uiState.paperSizeOption,
+                onLabelPaperSizeOptionSelected = onLabelPaperSizeOptionSelected,
+                onPrintShippingLabelClicked = onPrintShippingLabelClicked,
+                onTrackShipmentClicked = onTrackShipmentClicked,
+                onSchedulePickUpClicked = onSchedulePickUpClicked,
+                onRefundClicked = onRefundClicked,
+                onLearnMoreClicked = onLearnMoreClicked,
+            )
+        }
         ShippingProductsCard(
             shippableItems = shipmentUI,
             modifier = Modifier
@@ -916,13 +968,20 @@ private fun WooShippingLabelCreationScreenPreview() {
             uiState = WooShippingLabelCreationViewModel.UIControlsState(
                 markOrderComplete = false,
                 isShipmentDetailsExpanded = false,
-                isAddressSelectionExpanded = false
+                isAddressSelectionExpanded = false,
+                paperSizeOption = WooShippingLabelPaperSize.LABEL
             ),
             onShipmentDetailsExpandedChange = { true },
             onSelectAddressExpandedChange = { true },
             onEditCustomsClick = {},
             onEditDestinationAddress = {},
-            destinationStatus = AddressStatus.VERIFIED
+            destinationStatus = AddressStatus.VERIFIED,
+            onLabelPaperSizeOptionSelected = {},
+            onPrintShippingLabelClicked = {},
+            onTrackShipmentClicked = {},
+            onSchedulePickUpClicked = {},
+            onRefundClicked = {},
+            onLearnMoreClicked = {},
         )
     }
 }
