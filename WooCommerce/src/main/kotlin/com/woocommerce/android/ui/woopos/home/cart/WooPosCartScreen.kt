@@ -645,7 +645,7 @@ private fun LoadingItem(
     item: WooPosCartItemViewState.Loading,
     modifier: Modifier = Modifier
 ) {
-    var itemContentDescription = stringResource(
+    val itemContentDescription = stringResource(
         id = R.string.woopos_cart_item_loading_content_description,
         item.name
     )
@@ -684,7 +684,7 @@ private fun LoadingItem(
                     style = WooPosTypography.BodySmall,
                     fontWeight = FontWeight.Bold,
                     overflow = TextOverflow.Ellipsis,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    color = WooPosTheme.colors.onSurfaceVariantLowest,
                     modifier = Modifier.clearAndSetSemantics { }
                 )
 
@@ -693,7 +693,7 @@ private fun LoadingItem(
                 WooPosShimmerBox(
                     modifier = Modifier
                         .height(14.dp)
-                        .fillMaxWidth(0.9f)
+                        .fillMaxWidth(0.6f)
                 )
 
                 Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value.toAdaptivePadding()))
@@ -701,7 +701,7 @@ private fun LoadingItem(
                 WooPosShimmerBox(
                     modifier = Modifier
                         .height(14.dp)
-                        .fillMaxWidth(0.4f)
+                        .fillMaxWidth(0.3f)
                 )
             }
 
@@ -785,7 +785,7 @@ fun WooPosCartScreenProductsPreview(modifier: Modifier = Modifier) {
                             id = 3L,
                             imageUrl = "",
                             name = "VW California",
-                            description = "",
+                            description = "description bla",
                             price = "€250,000",
                         )
                     )
