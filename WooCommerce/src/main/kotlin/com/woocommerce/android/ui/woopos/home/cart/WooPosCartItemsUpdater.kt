@@ -29,36 +29,9 @@ class WooPosCartItemsUpdater @Inject constructor(
         itemsInCart.forEachIndexed { index, item ->
             when (item) {
                 is WooPosCartItemViewState.Product -> {
-                    val productKey = getProductKey(item)
-                    val availableQuantity = availableProductsMap[productKey] ?: 0
-
-                    if (availableQuantity > 0) {
-                        availableProductsMap[productKey] = availableQuantity - 1
-                        val updatedProduct = findMatchingProduct(item, updatedProducts)
-
-                        updatedProduct?.let {
-                            val updatedItem = updateProductWithNewInfo(item, it)
-                            val itemChanged = updatedItem.name != item.name || updatedItem.price != item.price
-
-                            if (itemChanged) {
-                                updateProductInCache(updatedItem, updatedProduct)
-                            }
-
-                            mutableCurrentBodyList[index] = updatedItem
-                            productsChanged = productsChanged || itemChanged
-                        }
-                    } else {
-                        val updatedItem = markProductAsNotExisting(item)
-                        mutableCurrentBodyList[index] = updatedItem
-                        val itemChanged = updatedItem.name != item.name ||
-                            updatedItem.price != item.price ||
-                            updatedItem.productDoesNotExist != item.productDoesNotExist
-
-                        if (itemChanged) {
-                            deleteProductFromCache(updatedItem.id)
-                        }
-                        productsChanged = productsChanged || itemChanged
-                    }
+                    val result = processProduct(item, availableProductsMap, updatedProducts)
+                    mutableCurrentBodyList[index] = result.updatedItem
+                    productsChanged = productsChanged || result.changed
                 }
 
                 is WooPosCartItemViewState.Coupon -> {
@@ -76,6 +49,49 @@ class WooPosCartItemsUpdater @Inject constructor(
             productsChanged = productsChanged,
             couponsChanged = couponsChanged,
         )
+    }
+
+    private suspend fun processProduct(
+        item: WooPosCartItemViewState.Product,
+        availableProductsMap: MutableMap<String, Int>,
+        updatedProducts: List<ParentToChildrenEvent.OrderCreated.ProductInfo>
+    ): ProductProcessResult {
+        val productKey = getProductKey(item)
+        val availableQuantity = availableProductsMap[productKey] ?: 0
+        var changed = false
+
+        val updatedItem = if (availableQuantity > 0) {
+            availableProductsMap[productKey] = availableQuantity - 1
+            val updatedProduct = findMatchingProduct(item, updatedProducts)
+
+            if (updatedProduct != null) {
+                val newItem = updateProductWithNewInfo(item, updatedProduct)
+                val itemChanged = newItem.name != item.name || newItem.price != item.price
+
+                if (itemChanged) {
+                    updateProductInCache(newItem, updatedProduct)
+                }
+
+                changed = itemChanged
+                newItem
+            } else {
+                item
+            }
+        } else {
+            val newItem = markProductAsNotExisting(item)
+            val itemChanged = newItem.name != item.name ||
+                newItem.price != item.price ||
+                newItem.productDoesNotExist != item.productDoesNotExist
+
+            if (itemChanged) {
+                deleteProductFromCache(newItem.id)
+            }
+
+            changed = itemChanged
+            newItem
+        }
+
+        return ProductProcessResult(updatedItem, changed)
     }
 
     private suspend fun updateCouponsWithFormattedDiscount(
@@ -196,5 +212,10 @@ class WooPosCartItemsUpdater @Inject constructor(
         val updatedItems: List<WooPosCartItemViewState>,
         val productsChanged: Boolean,
         val couponsChanged: Boolean,
+    )
+
+    private data class ProductProcessResult(
+        val updatedItem: WooPosCartItemViewState.Product,
+        val changed: Boolean
     )
 }
