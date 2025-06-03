@@ -6,5 +6,5 @@ agents:
 
 steps:
   - label: "🧱 Report outdated dependencies"
-    command: .buildkite/commands/report_dependency_updates.sh
+    command: report_dependency_updates
     plugins: [$CI_TOOLKIT]
