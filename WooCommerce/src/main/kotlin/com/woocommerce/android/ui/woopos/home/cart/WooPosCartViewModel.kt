@@ -325,9 +325,16 @@ class WooPosCartViewModel @Inject constructor(
 
     private fun onBarcodeScanned(barcode: String) {
         viewModelScope.launch {
+            if (_state.value.body == WooPosCartState.Body.Empty) {
+                analyticsTracker.track(InteractionWithCustomerStarted)
+            }
+            // TBD display a loading state when searching for a product
             val product = getProductByGtinOrSku.invoke(barcode)
+            // TBD handle cases when the barcode is not found
+            // TBD handle cases when the product is a variation
             val itemNumber = getItemNumber()
-            product.toCartListItem(itemNumber)
+            val cartListItem = product.toCartListItem(itemNumber)
+            _state.value = updateStateWithNewItem(cartListItem)
         }
     }
 
