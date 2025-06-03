@@ -1109,7 +1109,8 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         assertThat(currentViewState).isInstanceOf(DataState::class.java)
         val dataState = currentViewState as DataState
 
-        assertThat(dataState.shipmentUIList[0].hazmatState).isEqualTo(HazmatState.Declared(ShippingLabelHazmatCategory.CLASS_1))
+        assertThat(dataState.shipmentUIList[0].hazmatState)
+            .isEqualTo(HazmatState.Declared(ShippingLabelHazmatCategory.CLASS_1))
     }
 
     @Test
