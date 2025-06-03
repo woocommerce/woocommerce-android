@@ -59,6 +59,26 @@ class WooPosHomeViewModelTest {
         }
 
     @Test
+    fun `when barcode scanned, then pass event to children`() =
+        runTest {
+            // GIVEN
+            whenever(childrenToParentEventReceiver.events).thenReturn(
+                flowOf(ChildToParentEvent.BarcodeScanned("123456789"))
+            )
+
+            // WHEN
+            createViewModel()
+
+            // THEN
+            verify(parentToChildrenEventSender).sendToChildren(
+                argThat {
+                    this is ParentToChildrenEvent.BarcodeScanned &&
+                        barcode == "123456789"
+                }
+            )
+        }
+
+    @Test
     fun `given state checkout, when SystemBackClicked passed, then BackFromCheckoutToCartClicked event should be sent`() =
         runTest {
             // GIVEN
