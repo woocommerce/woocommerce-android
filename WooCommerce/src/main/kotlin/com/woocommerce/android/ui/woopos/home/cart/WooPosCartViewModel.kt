@@ -186,6 +186,10 @@ class WooPosCartViewModel @Inject constructor(
                     is ParentToChildrenEvent.RemoveCouponsClicked -> {
                         removeCouponsFromCart()
                     }
+
+                    is ParentToChildrenEvent.BarcodeScanned -> {
+                        onBarcodeScanned(event.barcode)
+                    }
                 }
             }
         }
@@ -315,6 +319,14 @@ class WooPosCartViewModel @Inject constructor(
 
     private fun clearCart() {
         _state.value = WooPosCartState()
+    }
+
+    private fun onBarcodeScanned(barcode: String) {
+        viewModelScope.launch {
+            val product = getProductByGtinOrSku.invoke(barcode)
+            val itemNumber = getItemNumber()
+            product.toCartListItem(itemNumber)
+        }
     }
 
     private fun getItemNumber(): Int {
