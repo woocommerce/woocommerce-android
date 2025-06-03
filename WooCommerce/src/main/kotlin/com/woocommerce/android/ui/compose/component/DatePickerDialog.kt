@@ -252,12 +252,10 @@ private fun CalendarView(
 ) {
     AndroidView(
         modifier = modifier.wrapContentSize(),
-            factory = { context ->
-                // Apply your custom theme overlay here
-                val themedContext =
-                    ContextThemeWrapper(context, R.style.Woo_Theme_CalendarView)
-                AndroidCalendarView(themedContext) // Use the themedContext
-            },
+        factory = { context ->
+            val themedContext = ContextThemeWrapper(context, R.style.Woo_Theme_CalendarView)
+            AndroidCalendarView(themedContext)
+        },
         update = { view ->
             if (minDate != null) {
                 view.minDate = minDate.timeInMillis
