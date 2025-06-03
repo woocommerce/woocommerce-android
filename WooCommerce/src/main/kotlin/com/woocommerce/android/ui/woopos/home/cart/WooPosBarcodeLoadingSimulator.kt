@@ -15,6 +15,7 @@ class WooPosBarcodeLoadingSimulator @Inject constructor(
 ) {
     private val itemNumberCounter = AtomicInteger(1000)
 
+    @Suppress("MagicNumber", "LongMethod")
     fun maybeSimulateLoadingItem(
         state: MutableStateFlow<WooPosCartState>,
         scope: CoroutineScope
@@ -29,11 +30,14 @@ class WooPosBarcodeLoadingSimulator @Inject constructor(
                 val currentBody = currentState.body
                 val newItems = when (currentBody) {
                     is WooPosCartState.Body.Empty -> {
-                        listOf(WooPosCartItemViewState.Loading(
-                            itemNumber = itemNumber,
-                            name = loadingItemName
-                        ))
+                        listOf(
+                            WooPosCartItemViewState.Loading(
+                                itemNumber = itemNumber,
+                                name = loadingItemName
+                            )
+                        )
                     }
+
                     is WooPosCartState.Body.WithItems -> {
                         currentBody.itemsInCart + WooPosCartItemViewState.Loading(
                             itemNumber = itemNumber,
