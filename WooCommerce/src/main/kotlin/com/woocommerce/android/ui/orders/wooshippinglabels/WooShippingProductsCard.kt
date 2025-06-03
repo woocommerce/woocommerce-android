@@ -96,7 +96,8 @@ private fun ShippingProductsCardPreview(@PreviewParameter(IsExpandedProvider::cl
                     shippableItems = generateItems(6),
                     formattedTotalWeight = "8.5kg",
                     formattedTotalPrice = "$92.78",
-                    purchased = false
+                    purchased = false,
+                    hazmatState = WooShippingLabelCreationViewModel.HazmatState.NoSelection
                 ),
                 isExpanded = isExpanded
             )
@@ -167,7 +168,8 @@ private fun ShippingProductsCardHeaderPreview() {
         shippableItems = generateItems(4),
         formattedTotalWeight = "8.5kg",
         formattedTotalPrice = "$92.78",
-        purchased = false
+        purchased = false,
+        hazmatState = WooShippingLabelCreationViewModel.HazmatState.NoSelection
     )
     val isExpanded = remember { mutableStateOf(false) }
 

@@ -72,7 +72,6 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreat
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.CustomsState.ItnMissing
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.CustomsState.NotRequired
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.CustomsState.Unavailable
-import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.HazmatState
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.HazmatState.Declared
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.PackageSelectionState
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.PackageSelectionState.DataAvailable
@@ -115,7 +114,6 @@ fun WooShippingLabelCreationScreen(viewModel: WooShippingLabelCreationViewModel)
                 shippingRatesState = viewState.shippingRates,
                 packageSelectionState = viewState.packageSelection,
                 customsState = viewState.customsState,
-                hazmatState = viewState.hazmatState,
                 onShippingFromAddressChange = viewModel::onShippingFromAddressChange,
                 onEditOriginAddress = viewModel::onEditOriginAddress,
                 onSelectedRateSortOrderChanged = viewModel::onSelectedRateSortOrderChanged,
@@ -160,7 +158,6 @@ fun WooShippingLabelCreationScreen(
     shippingAddresses: WooShippingAddresses,
     onSelectedShipmentChanged: (index: Int) -> Unit,
     customsState: CustomsState,
-    hazmatState: HazmatState,
     onShippingFromAddressChange: (OriginShippingAddress) -> Unit,
     onEditOriginAddress: (OriginShippingAddress) -> Unit,
     onSelectPackageClick: () -> Unit,
@@ -231,7 +228,6 @@ fun WooShippingLabelCreationScreen(
             shippingAddresses = shippingAddresses,
             onSelectedShipmentChanged = onSelectedShipmentChanged,
             customsState = customsState,
-            hazmatState = hazmatState,
             shippingRatesState = shippingRatesState,
             packageSelectionState = packageSelectionState,
             onShippingFromAddressChange = onShippingFromAddressChange,
@@ -312,7 +308,6 @@ private fun LabelCreationScreenWithBottomSheet(
     shippingRatesState: WooShippingLabelCreationViewModel.ShippingRatesState,
     packageSelectionState: PackageSelectionState,
     customsState: CustomsState,
-    hazmatState: HazmatState,
     onSelectPackageClick: () -> Unit,
     shippingAddresses: WooShippingAddresses,
     onSelectedShipmentChanged: (index: Int) -> Unit,
@@ -473,7 +468,6 @@ private fun LabelCreationScreenWithBottomSheet(
                     CreateShippingCards(
                         shipmentUI = shipmentUIList[page],
                         onHazmatNoticeClick = onHazmatNoticeClick,
-                        hazmatState = hazmatState,
                         customsState = customsState,
                         onEditCustomsClick = onEditCustomsClick,
                         packageSelectionState = packageSelectionState,
@@ -512,7 +506,6 @@ private fun LabelCreationScreenWithBottomSheet(
 private fun CreateShippingCards(
     shipmentUI: ShipmentUI,
     onHazmatNoticeClick: () -> Unit = {},
-    hazmatState: HazmatState,
     customsState: CustomsState,
     onEditCustomsClick: () -> Unit,
     packageSelectionState: PackageSelectionState,
@@ -541,7 +534,7 @@ private fun CreateShippingCards(
         )
         HazmatCard(
             onClick = onHazmatNoticeClick,
-            selectedCategory = hazmatState.hazmatSelection,
+            selectedCategory = shipmentUI.hazmatState.hazmatSelection,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 4.dp, end = 8.dp)
@@ -896,7 +889,8 @@ private fun WooShippingLabelCreationScreenPreview() {
                     shippableItems = generateItems(6),
                     formattedTotalWeight = "8.5kg",
                     formattedTotalPrice = "$92.78",
-                    purchased = false
+                    purchased = false,
+                    hazmatState = Declared(ShippingLabelHazmatCategory.CLASS_1)
                 )
             ),
             totalItems = 6,
@@ -914,7 +908,6 @@ private fun WooShippingLabelCreationScreenPreview() {
             shippingRatesState = WooShippingLabelCreationViewModel.ShippingRatesState.NoAvailable,
             packageSelectionState = NotSelected,
             customsState = Unavailable,
-            hazmatState = Declared(ShippingLabelHazmatCategory.CLASS_1),
             onShippingFromAddressChange = {},
             onRefreshShippingRates = {},
             onSelectedRateSortOrderChanged = {},
