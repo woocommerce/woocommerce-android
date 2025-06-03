@@ -39,10 +39,12 @@ class WooPosBarcodeLoadingSimulator @Inject constructor(
                     }
 
                     is WooPosCartState.Body.WithItems -> {
-                        currentBody.itemsInCart + WooPosCartItemViewState.Loading(
-                            itemNumber = itemNumber,
-                            name = loadingItemName
-                        )
+                        listOf(
+                            WooPosCartItemViewState.Loading(
+                                itemNumber = itemNumber,
+                                name = loadingItemName
+                            )
+                        ) + currentBody.itemsInCart
                     }
                 }
                 currentState.copy(
