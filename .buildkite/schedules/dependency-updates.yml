@@ -8,3 +8,5 @@ steps:
   - label: "🧱 Report outdated dependencies"
     command: report_dependency_updates
     plugins: [$CI_TOOLKIT]
+    artifact_paths:
+      - "build/reports/dependency-updates/report.txt"
