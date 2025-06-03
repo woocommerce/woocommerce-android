@@ -935,8 +935,11 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             val shippingLines: List<ShippingLineSummaryUI>,
             val shippingAddresses: WooShippingAddresses,
             val uiState: UIControlsState,
-            val destinationStatus: AddressStatus
-        ) : WooShippingViewState()
+            val destinationStatus: AddressStatus,
+        ) : WooShippingViewState() {
+            val allShipmentsFulfilled: Boolean
+                get() = shipmentUIList.all { it.purchased }
+        }
     }
 
     @Parcelize
