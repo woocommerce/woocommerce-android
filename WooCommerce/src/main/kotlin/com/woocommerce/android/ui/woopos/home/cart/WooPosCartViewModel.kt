@@ -56,6 +56,7 @@ class WooPosCartViewModel @Inject constructor(
     private val analyticsTrackingDataKeeper: WooPosAnalyticsTrackingDataKeeper,
     private val updateCartItemsWithChanges: WooPosCartItemsUpdater,
     private val getCachedStoreCurrency: WooPosGetCachedStoreCurrency,
+    private val barcodeLoadingSimulator: WooPosBarcodeLoadingSimulator,
     savedState: SavedStateHandle,
 ) : ViewModel() {
     private val _state = savedState.getStateFlow(
@@ -284,6 +285,7 @@ class WooPosCartViewModel @Inject constructor(
 
             itemClicked.await()?.let {
                 _state.value = updateStateWithNewItem(it)
+                barcodeLoadingSimulator.maybeSimulateLoadingItem(_state, viewModelScope)
             }
             event.eventForTracking?.let {
                 analyticsTracker.track(it)
