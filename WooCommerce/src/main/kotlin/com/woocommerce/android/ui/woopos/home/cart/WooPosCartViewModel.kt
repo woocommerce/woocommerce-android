@@ -141,7 +141,7 @@ class WooPosCartViewModel @Inject constructor(
     }
 
     private fun getCartItemsDataList(): List<WooPosItemsViewModel.ItemClickedData> {
-        val itemClickedDataList = (_state.value.body as WooPosCartState.Body.WithItems).itemsInCart.map {
+        val itemClickedDataList = (_state.value.body as WooPosCartState.Body.WithItems).itemsInCart.mapNotNull {
             when (it) {
                 is WooPosCartItemViewState.Product.Simple -> WooPosItemsViewModel.ItemClickedData.Product.Simple(it.id)
                 is WooPosCartItemViewState.Product.Variation -> WooPosItemsViewModel.ItemClickedData.Product.Variation(
@@ -150,6 +150,8 @@ class WooPosCartViewModel @Inject constructor(
                 )
 
                 is WooPosCartItemViewState.Coupon -> WooPosItemsViewModel.ItemClickedData.Coupon(it.id, it.name)
+                is WooPosCartItemViewState.Loading -> null
+                is WooPosCartItemViewState.Error -> null
             }
         }
         return itemClickedDataList
@@ -434,6 +436,8 @@ class WooPosCartViewModel @Inject constructor(
             when (item) {
                 is WooPosCartItemViewState.Coupon -> item.copy(validationState = CouponValidationState.Unknown)
                 is WooPosCartItemViewState.Product -> item
+                is WooPosCartItemViewState.Error -> item
+                is WooPosCartItemViewState.Loading -> item
             }
         }
 

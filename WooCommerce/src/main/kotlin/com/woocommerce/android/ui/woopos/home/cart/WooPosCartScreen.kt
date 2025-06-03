@@ -76,6 +76,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosLazyColumn
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButtonSmall
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
@@ -258,6 +259,9 @@ private fun CartBodyWithItems(
                     canRemoveItems = areItemsRemovable,
                     onUIEvent = onUIEvent,
                 )
+
+                is WooPosCartItemViewState.Error -> TODO()
+                is WooPosCartItemViewState.Loading -> LoadingItem(item)
             }
         }
         item {
@@ -637,6 +641,76 @@ private fun CouponItem(
 }
 
 @Composable
+private fun LoadingItem(
+    item: WooPosCartItemViewState.Loading,
+    modifier: Modifier = Modifier
+) {
+    var itemContentDescription = stringResource(
+        id = R.string.woopos_cart_item_loading_content_description,
+        item.name
+    )
+    WooPosCard(
+        modifier = modifier
+            .height(96.dp)
+            .semantics { contentDescription = itemContentDescription },
+        backgroundColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+        elevation = WooPosElevation.Medium,
+        shadowType = ShadowType.Soft,
+        shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(96.dp)
+            ) {
+                WooPosShimmerBox(
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+
+            Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value.toAdaptivePadding()))
+
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = WooPosSpacing.Medium.value.toAdaptivePadding())
+            ) {
+                WooPosText(
+                    text = item.name,
+                    maxLines = 1,
+                    style = WooPosTypography.BodySmall,
+                    fontWeight = FontWeight.Bold,
+                    overflow = TextOverflow.Ellipsis,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.clearAndSetSemantics { }
+                )
+
+                Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value.toAdaptivePadding()))
+
+                WooPosShimmerBox(
+                    modifier = Modifier
+                        .height(14.dp)
+                        .fillMaxWidth(0.9f)
+                )
+
+                Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value.toAdaptivePadding()))
+
+                WooPosShimmerBox(
+                    modifier = Modifier
+                        .height(14.dp)
+                        .fillMaxWidth(0.4f)
+                )
+            }
+
+            Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value.toAdaptivePadding()))
+        }
+    }
+}
+
+@Composable
 private fun RemoveItemFromCartButton(
     item: WooPosCartItemViewState,
     onUIEvent: (WooPosCartUIEvent) -> Unit
@@ -803,6 +877,37 @@ fun WooPosCartScreenEmptyPreview(modifier: Modifier = Modifier) {
                 body = WooPosCartState.Body.Empty,
                 areItemsRemovable = false,
                 isCheckoutButtonVisible = false
+            )
+        ) {}
+    }
+}
+
+@Composable
+@WooPosPreview
+fun WooPosCartScreenLoadingPreview(modifier: Modifier = Modifier) {
+    WooPosTheme {
+        WooPosCartScreen(
+            modifier = modifier,
+            state = WooPosCartState(
+                toolbar = WooPosCartState.Toolbar(
+                    backIconVisible = false,
+                    itemsCount = "3 items",
+                    isClearAllButtonVisible = true
+                ),
+                body = WooPosCartState.Body.WithItems(
+                    itemsInCart = listOf(
+                        WooPosCartItemViewState.Loading(
+                            itemNumber = 1,
+                            name = "VW California"
+                        ),
+                        WooPosCartItemViewState.Loading(
+                            itemNumber = 2,
+                            name = "ADAXS1313XDVZX"
+                        )
+                    )
+                ),
+                areItemsRemovable = false,
+                isCheckoutButtonVisible = true
             )
         ) {}
     }
