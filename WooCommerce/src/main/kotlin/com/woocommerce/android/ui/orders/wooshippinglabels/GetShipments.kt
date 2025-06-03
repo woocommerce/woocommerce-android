@@ -78,6 +78,7 @@ class GetShipments @Inject constructor(
                 labelId = labelForShipment.labelId,
                 carrierId = labelForShipment.carrierId,
                 trackingNumber = labelForShipment.tracking,
+                status = labelForShipment.status,
             )
         }
     }

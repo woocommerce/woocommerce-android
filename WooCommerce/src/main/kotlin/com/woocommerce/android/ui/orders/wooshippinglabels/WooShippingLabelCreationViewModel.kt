@@ -43,8 +43,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.PurchaseState
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PurchasedLabelData
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
-import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus.PurchaseInProgress
-import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus.Purchased
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.StoreOptionsModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
 import com.woocommerce.android.ui.orders.wooshippinglabels.purchased.ObserveShippingLabelStatus
@@ -212,13 +211,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         launch {
             val labelId = shipments.value[shipmentId].labelId ?: return@launch
             observeShippingLabelStatus(orderId = navArgs.orderId, labelId = labelId).onEach { status ->
-                val isPurchaseFinished = when (status) {
-                    PurchaseInProgress -> false
-                    Purchased -> true
-                    else -> null
-                }
-
-                updateShipment(shipmentId, shipments.value[shipmentId].copy(isPurchaseFinished = isPurchaseFinished))
+                updateShipment(shipmentId, shipments.value[shipmentId].copy(status = status))
             }.launchIn(this)
         }
     }
@@ -496,12 +489,11 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                     currencyFormatter,
                     storeOptions.dimensionUnit,
                     storeOptions.weightUnit,
-                    shipments[index].purchased,
+                    shipments[index],
                     hazmatStatesFlow.value[index].hazmatSelection,
                     packageSelectionsFlow.value[index],
                     shippingRatesStatesFlow.value[index],
-                    customsStatesFlow.value[index],
-                    shipments[index].purchaseState
+                    customsStatesFlow.value[index]
                 )
             }
 
@@ -1042,6 +1034,7 @@ data class ShipmentUI(
     val hazmatState: HazmatState,
     val shippingRatesState: ShippingRatesState,
     val purchaseState: PurchaseState = PurchaseState.NoStarted,
+    val status: ShippingLabelStatus = ShippingLabelStatus.UNKNOWN,
 ) : Parcelable {
     val totalItemQuantity
         get() = shippableItems.sumByFloat { it.quantity }.toInt()

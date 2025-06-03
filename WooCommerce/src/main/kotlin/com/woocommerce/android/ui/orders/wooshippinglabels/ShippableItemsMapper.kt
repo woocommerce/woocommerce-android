@@ -7,7 +7,6 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHa
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.CustomsState
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.PackageSelectionState
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.ShippingRatesState
-import com.woocommerce.android.ui.orders.wooshippinglabels.models.PurchaseState
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel.Companion.SINGLE_QUANTITY
@@ -37,12 +36,11 @@ fun List<ShippableItemModel>.toUIModel(
     currencyFormatter: CurrencyFormatter,
     dimensionUnit: String,
     weightUnit: String,
-    purchased: Boolean,
+    shipmentUIModel: ShipmentUIModel,
     hazmatCategory: ShippingLabelHazmatCategory?,
     packageSelectionState: PackageSelectionState,
     shippingRates: ShippingRatesState,
     customsState: CustomsState,
-    purchaseState: PurchaseState
 ): ShipmentUI {
     val shippableItemsUI = map { item -> item.toUIModel(currencyFormatter, dimensionUnit, weightUnit) }
     val formattedTotalPrice = getFormattedTotalPrice(currencyFormatter)
@@ -52,13 +50,14 @@ fun List<ShippableItemModel>.toUIModel(
         shippableItems = shippableItemsUI,
         formattedTotalWeight = formattedTotalWeight,
         formattedTotalPrice = formattedTotalPrice,
-        purchased = purchased,
+        purchased = shipmentUIModel.purchased,
         packageSelectionState = packageSelectionState,
         customsState = customsState,
         hazmatState = hazmatCategory?.let { WooShippingLabelCreationViewModel.HazmatState.Declared(it) }
             ?: WooShippingLabelCreationViewModel.HazmatState.NoSelection,
         shippingRatesState = shippingRates,
-        purchaseState = purchaseState
+        purchaseState = shipmentUIModel.purchaseState,
+        status = shipmentUIModel.status
     )
 }
 

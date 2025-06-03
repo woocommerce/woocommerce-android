@@ -13,7 +13,7 @@ data class ShipmentUIModel(
     val carrierId: String? = null,
     val trackingNumber: String? = null,
     val purchaseState: PurchaseState = PurchaseState.NoStarted,
-    val isPurchaseFinished: Boolean? = false
+    val status: ShippingLabelStatus = ShippingLabelStatus.UNKNOWN
 ) : Parcelable
 
 @Parcelize
