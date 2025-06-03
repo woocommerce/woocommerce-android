@@ -10,6 +10,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetCouponById
+import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductByGtinOrSku
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetVariationById
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
@@ -56,6 +57,7 @@ class WooPosCartViewModel @Inject constructor(
     private val analyticsTrackingDataKeeper: WooPosAnalyticsTrackingDataKeeper,
     private val updateCartItemsWithChanges: WooPosCartItemsUpdater,
     private val getCachedStoreCurrency: WooPosGetCachedStoreCurrency,
+    private val getProductByGtinOrSku: WooPosGetProductByGtinOrSku,
     savedState: SavedStateHandle,
 ) : ViewModel() {
     private val _state = savedState.getStateFlow(
