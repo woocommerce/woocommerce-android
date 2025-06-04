@@ -234,7 +234,7 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
                     ?.combine(splitMovement.movingShipmentItems)
                     ?: splitMovement.movingShipmentItems
             ) ?: ShipmentUIModel(
-                id = splitMovement.destinationShipmentKey.toString(),
+                localId = splitMovement.destinationShipmentKey.toString(),
                 items = splitMovement.movingShipmentItems
             )
 
@@ -261,7 +261,7 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
     private fun reindexShipments(
         shipments: Map<Int, ShipmentUIModel>
     ) = shipments.values.mapIndexed { index, shipmentUIModel ->
-        index to shipmentUIModel.copy(id = index.toString())
+        index to shipmentUIModel.copy(localId = index.toString())
     }.toMap()
 
     private fun showUndoSnackbar(splitMovement: SplitMovement, undoAction: () -> Unit) {

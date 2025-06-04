@@ -86,7 +86,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
             length = it.toFloat()
         )
     }
-    private val defaultShipments = listOf(ShipmentUIModel(id = "0", items = defaultShippableItems))
+    private val defaultShipments = listOf(ShipmentUIModel(localId = "0", items = defaultShippableItems))
     private val defaultShippingLines = List(3) {
         Order.ShippingLine(
             methodTitle = "Shipping Line $it",
@@ -1093,7 +1093,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         )
         whenever(orderDetailRepository.getOrderById(any())) doReturn order
         whenever(getShipments(any())) doReturn listOf(
-            ShipmentUIModel(id = "0", items = defaultShippableItems, labelId = 123)
+            ShipmentUIModel(localId = "0", items = defaultShippableItems, labelId = 123)
         )
         whenever(fetchShippingLabelFile(eq(listOf(123)), any())).thenReturn(file)
 
@@ -1154,7 +1154,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         whenever(orderDetailRepository.getOrderById(any())) doReturn order
         whenever(getShipments(any())) doReturn listOf(
             ShipmentUIModel(
-                id = "0",
+                localId = "0",
                 items = defaultShippableItems,
                 carrierId = "usps",
                 trackingNumber = "123456"
@@ -1182,7 +1182,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         )
         whenever(orderDetailRepository.getOrderById(any())) doReturn order
         whenever(getShipments(any())) doReturn listOf(
-            ShipmentUIModel(id = "0", items = defaultShippableItems, carrierId = "usps")
+            ShipmentUIModel(localId = "0", items = defaultShippableItems, carrierId = "usps")
         )
 
         createViewModel()
