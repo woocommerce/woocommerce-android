@@ -29,8 +29,12 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
+import androidx.compose.material3.Checkbox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -114,19 +118,46 @@ private fun BlazeCampaignCreationPreviewScreen(
             )
             Spacer(modifier = Modifier.height(16.dp))
             Divider()
-            WCColoredButton(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                    .padding(bottom = 8.dp),
-                text = stringResource(id = R.string.blaze_campaign_preview_details_confirm_details_button),
-                onClick = onConfirmDetailsClicked,
-                enabled = previewState.adDetails != Loading
-            )
+            val checked = remember { mutableStateOf(false) }
+            ConfirmationFooter(onConfirmDetailsClicked, previewState, checked)
         }
     }
 
     previewState.dialogState?.Render()
+}
+
+@Composable
+private fun ConfirmationFooter(
+    onConfirmDetailsClicked: () -> Unit,
+    previewState: CampaignPreviewUiState,
+    checked: MutableState<Boolean>
+) {
+    WCColoredButton(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        text = stringResource(id = R.string.blaze_campaign_preview_details_confirm_details_button),
+        onClick = onConfirmDetailsClicked,
+        enabled = previewState.adDetails != Loading && checked.value
+    )
+
+    Row(
+        modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .padding(bottom = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Checkbox(
+            checked = checked.value,
+            onCheckedChange = { checked.value = it }
+        )
+        Text(
+            modifier = Modifier.padding(start = 8.dp),
+            text = stringResource(id = R.string.blaze_campaign_preview_tos_checkbox),
+            style = MaterialTheme.typography.body2,
+            color = colorResource(id = R.color.color_on_surface_medium),
+        )
+    }
 }
 
 @Composable
