@@ -8,6 +8,8 @@ import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.WooLog
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
@@ -36,33 +38,27 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
         identifier: String,
         codeScannerResultFormat: GoogleBarcodeFormatMapper.BarcodeFormat
     ): WooPosSearchByIdentifierResult {
-        val searchQueries = listOfNotNull(
-            identifier,
-            checkDigitRemover(identifier, codeScannerResultFormat)
-        )
+        val (gtinResult, skuResult) = searchInParallel(identifier)
 
-        val gtinResult = performSearchWithFallback(searchQueries) { query ->
-            searchProductsByGlobalUniqueId(query)
-        }
+        return if (gtinResult is WooPosSearchByIdentifierResult.Success) {
+            gtinResult
+        } else {
+            if (skuResult is WooPosSearchByIdentifierResult.Success) {
+                skuResult
+            } else {
+                val identifierWithoutCheckDigit = checkDigitRemover(identifier, codeScannerResultFormat)
+                return if (identifierWithoutCheckDigit != null) {
+                    val (gtinFallbackResult, skuFallbackResult) = searchInParallel(identifierWithoutCheckDigit)
 
-        if (gtinResult is WooPosSearchByIdentifierResult.Success) {
-            return gtinResult
-        }
+                    gtinFallbackResult as? WooPosSearchByIdentifierResult.Success
 
-        val skuResult = performSearchWithFallback(searchQueries) { query ->
-            searchProductsBySku(query)
-        }
+                    skuFallbackResult as? WooPosSearchByIdentifierResult.Success
 
-        if (skuResult is WooPosSearchByIdentifierResult.Success) {
-            return skuResult
-        }
-
-        return when {
-            gtinResult is WooPosSearchByIdentifierResult.Failure &&
-                gtinResult.error != WooPosSearchByIdentifierResult.Error.ProductNotFound -> gtinResult
-            skuResult is WooPosSearchByIdentifierResult.Failure &&
-                skuResult.error != WooPosSearchByIdentifierResult.Error.ProductNotFound -> skuResult
-            else -> WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.ProductNotFound)
+                    prioritizeError(gtinFallbackResult, skuFallbackResult, gtinResult, skuResult)
+                } else {
+                    prioritizeError(gtinResult, skuResult)
+                }
+            }
         }
     }
 
@@ -84,6 +80,7 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
         return when (result) {
             is ContinuationWrapper.ContinuationResult.Cancellation ->
                 Result.failure(SearchException(WooPosSearchByIdentifierResult.Error.RequestCancelled))
+
             is ContinuationWrapper.ContinuationResult.Success ->
                 Result.success(result.value)
         }
@@ -106,38 +103,66 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
         return when (result) {
             is ContinuationWrapper.ContinuationResult.Cancellation ->
                 Result.failure(SearchException(WooPosSearchByIdentifierResult.Error.RequestCancelled))
+
             is ContinuationWrapper.ContinuationResult.Success ->
                 Result.success(result.value)
         }
     }
 
-    private suspend fun performSearchWithFallback(
-        searchQueries: List<String>,
-        searchFunction: suspend (String) -> Result<List<Product>>
+    private suspend fun searchInParallel(identifier: String):
+        Pair<WooPosSearchByIdentifierResult, WooPosSearchByIdentifierResult> = coroutineScope {
+        val gtinSearchDeferred = async {
+            searchAndConvertResult { searchProductsByGlobalUniqueId(identifier) }
+        }
+        val skuSearchDeferred = async {
+            searchAndConvertResult { searchProductsBySku(identifier) }
+        }
+
+        Pair(gtinSearchDeferred.await(), skuSearchDeferred.await())
+    }
+
+    private suspend fun searchAndConvertResult(
+        searchFunction: suspend () -> Result<List<Product>>
     ): WooPosSearchByIdentifierResult {
-        var lastResult: Result<List<Product>>? = null
+        val result = searchFunction()
 
-        for (query in searchQueries) {
-            val result = searchFunction(query)
-            lastResult = result
-
-            if (result.isSuccess) {
+        return when {
+            result.isSuccess -> {
                 val products = result.getOrThrow()
                 val product = products.firstOrNull()
                 if (product != null) {
                     productsCache.addAll(listOf(product))
-                    return WooPosSearchByIdentifierResult.Success(product)
+                    WooPosSearchByIdentifierResult.Success(product)
+                } else {
+                    WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.ProductNotFound)
                 }
-            } else {
-                return handleError(result)
+            }
+
+            else -> handleError(result)
+        }
+    }
+
+    @Suppress("ReturnCount")
+    private fun prioritizeError(
+        vararg results: WooPosSearchByIdentifierResult
+    ): WooPosSearchByIdentifierResult {
+        results.forEach { result ->
+            if (result is WooPosSearchByIdentifierResult.Failure &&
+                result.error == WooPosSearchByIdentifierResult.Error.RequestCancelled
+            ) {
+                return result
             }
         }
 
-        return if (lastResult?.isFailure == true) {
-            handleError(lastResult)
-        } else {
-            WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.ProductNotFound)
+        results.forEach { result ->
+            if (result is WooPosSearchByIdentifierResult.Failure &&
+                result.error == WooPosSearchByIdentifierResult.Error.NetworkError
+            ) {
+                return result
+            }
         }
+
+        return WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.ProductNotFound)
     }
 
     private fun handleError(result: Result<List<Product>>): WooPosSearchByIdentifierResult {
