@@ -296,7 +296,7 @@ fun WooShippingLabelCreationScreen(
                 }
             }
         }
-        val selectedPurchaseState = shipmentUIList[uiState.selectedIndex].purchaseState
+        val selectedPurchaseState = selectedShipment.purchaseState
         if (selectedPurchaseState is PurchaseState.InProgress) {
             Box(
                 modifier = Modifier
@@ -406,14 +406,15 @@ private fun LabelCreationScreenWithBottomSheet(
                     onShipmentDetailsExpandedChange = onShipmentDetailsExpandedChange,
                     onEditDestinationAddress = onEditDestinationAddress,
                     destinationStatus = destinationStatus,
-                    noticeBannerUiState = uiState.noticeBannerUiState
+                    noticeBannerUiState = uiState.noticeBannerUiState,
+                    isReadOnly = selectedShipment.purchased
                 )
             }
         },
         sheetPeekHeight = bottomSheetPeekHeight,
         scaffoldState = scaffoldState,
         topBar = {
-            TopBar(onNavigateBack, shipmentUIList[uiState.selectedIndex].purchased)
+            TopBar(onNavigateBack, selectedShipment.purchased)
         },
     ) { innerPadding ->
         Surface(
