@@ -1,21 +1,36 @@
 package com.woocommerce.android.ui.woopos.common.data.searchbyidentifier
 
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
 import javax.inject.Inject
 
 class WooPosSearchByIdentifierLocal @Inject constructor(
-    private val productsCache: WooPosProductsCache
+    private val productsCache: WooPosProductsCache,
+    private val lastDigitRemover: WooPosSearchByIdentifierLastDigitRemover
 ) {
-    suspend fun searchProductsBySku(sku: String): List<Product> {
-        return productsCache.getAll().filter { product ->
-            product.sku.equals(sku, ignoreCase = true)
-        }
-    }
+    @Suppress("ReturnCount")
+    suspend fun searchProduct(
+        identifier: String,
+        codeScannerResultFormat: GoogleBarcodeFormatMapper.BarcodeFormat
+    ): Product? {
+        val searchQueries = listOfNotNull(
+            identifier,
+            lastDigitRemover(identifier, codeScannerResultFormat)
+        )
 
-    suspend fun searchProductsByGlobalUniqueId(globalUniqueId: String): List<Product> {
-        return productsCache.getAll().filter { product ->
-            product.globalUniqueId.equals(globalUniqueId, ignoreCase = true)
+        val allProducts = productsCache.getAll()
+
+        for (query in searchQueries) {
+            allProducts.firstOrNull { product ->
+                product.globalUniqueId.equals(query, ignoreCase = true)
+            }?.let { return it }
+
+            allProducts.firstOrNull { product ->
+                product.sku.equals(query, ignoreCase = true)
+            }?.let { return it }
         }
+
+        return null
     }
 }
