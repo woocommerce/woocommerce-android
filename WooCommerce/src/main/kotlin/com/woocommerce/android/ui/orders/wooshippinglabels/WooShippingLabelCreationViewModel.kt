@@ -460,6 +460,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
     @Suppress("ComplexCondition")
     private suspend fun observeShippingLabelInformation() {
+
         combine(
             storeOptions.drop(1),
             order.drop(1),
@@ -521,38 +522,28 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     }
 
     private fun initFlows(shipmentSize: Int) {
-        if (selectedPackagesFlow.value.size != shipmentSize) {
-            selectedPackagesFlow.value = List(shipmentSize) { null }
+        fun <T> MutableStateFlow<List<T>>.updateSize(defaultValue: T) = this.update { currentList ->
+            if (currentList.size < shipmentSize) {
+                currentList + List(shipmentSize - currentList.size) { defaultValue }
+            } else {
+                currentList.take(shipmentSize)
+            }
         }
-        if (customsFormDataFlow.value.size != shipmentSize) {
-            customsFormDataFlow.value = List(shipmentSize) { null }
-        }
-        if (packageWeightsFlow.value.size != shipmentSize) {
-            packageWeightsFlow.value = List(shipmentSize) { null }
-        }
-        if (packageSelectionsFlow.value.size != shipmentSize) {
-            packageSelectionsFlow.value = List(shipmentSize) { NotSelected }
-        }
-        if (customsStatesFlow.value.size != shipmentSize) {
-            customsStatesFlow.value = List(shipmentSize) { NotRequired }
-        }
-        if (hazmatStatesFlow.value.size != shipmentSize) {
-            hazmatStatesFlow.value = List(shipmentSize) { NoSelection }
-        }
-        if (selectedRatesSortOrdersFlow.value.size != shipmentSize) {
-            selectedRatesSortOrdersFlow.value = List(shipmentSize) { ShippingSortOption.FASTEST }
-        }
-        if (selectedRatesFlow.value.size != shipmentSize) {
-            selectedRatesFlow.value = List(shipmentSize) { null }
-        }
-        if (shippingRatesListFlow.value.size != shipmentSize) {
-            shippingRatesListFlow.value = List(shipmentSize) { emptyMap() }
-        }
-        if (shippingRatesStatesFlow.value.size != shipmentSize) {
-            shippingRatesStatesFlow.value = List(shipmentSize) { ShippingRatesState.NoAvailable }
-        }
-        if (customWeight.size != shipmentSize) {
-            customWeight = List(shipmentSize) { "" }
+        selectedPackagesFlow.updateSize(null)
+        customsFormDataFlow.updateSize(null)
+        packageWeightsFlow.updateSize(null)
+        packageSelectionsFlow.updateSize(NotSelected)
+        customsStatesFlow.updateSize(NotRequired)
+        hazmatStatesFlow.updateSize(NoSelection)
+        selectedRatesSortOrdersFlow.updateSize(ShippingSortOption.FASTEST)
+        selectedRatesFlow.updateSize(null)
+        shippingRatesListFlow.updateSize(emptyMap())
+        shippingRatesStatesFlow.updateSize(ShippingRatesState.NoAvailable)
+
+        customWeight = if (customWeight.size < shipmentSize) {
+            customWeight + List(shipmentSize - customWeight.size) { "" }
+        } else {
+            customWeight.take(shipmentSize)
         }
     }
 
