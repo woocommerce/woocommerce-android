@@ -10,7 +10,7 @@ class WooPosSearchByIdentifierLocal @Inject constructor(
     private val lastDigitRemover: WooPosSearchByIdentifierLastDigitRemover
 ) {
     @Suppress("ReturnCount")
-    suspend fun searchProduct(
+    suspend operator fun invoke(
         identifier: String,
         codeScannerResultFormat: GoogleBarcodeFormatMapper.BarcodeFormat
     ): Product? {

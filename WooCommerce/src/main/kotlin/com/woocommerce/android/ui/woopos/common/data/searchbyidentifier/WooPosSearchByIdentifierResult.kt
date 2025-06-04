@@ -18,9 +18,4 @@ sealed class WooPosSearchByIdentifierResult {
 
     val isFailure: Boolean
         get() = this is Failure
-
-    fun getErrorOrNull(): Error? = when (this) {
-        is Success -> null
-        is Failure -> error
-    }
 }

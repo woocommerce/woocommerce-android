@@ -34,16 +34,14 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
         dispatcher.unregister(this)
     }
 
-    suspend fun searchProduct(
+    suspend operator fun invoke(
         identifier: String,
         codeScannerResultFormat: GoogleBarcodeFormatMapper.BarcodeFormat
     ): WooPosSearchByIdentifierResult {
         val (gtinResult, skuResult) = searchInParallel(identifier)
 
-        return if (gtinResult is WooPosSearchByIdentifierResult.Success) {
-            gtinResult
-        } else {
-            if (skuResult is WooPosSearchByIdentifierResult.Success) {
+        return gtinResult as? WooPosSearchByIdentifierResult.Success
+            ?: if (skuResult is WooPosSearchByIdentifierResult.Success) {
                 skuResult
             } else {
                 val identifierWithoutCheckDigit = checkDigitRemover(identifier, codeScannerResultFormat)
@@ -59,7 +57,6 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
                     prioritizeError(gtinResult, skuResult)
                 }
             }
-        }
     }
 
     private suspend fun searchProductsBySku(sku: String): Result<List<Product>> {

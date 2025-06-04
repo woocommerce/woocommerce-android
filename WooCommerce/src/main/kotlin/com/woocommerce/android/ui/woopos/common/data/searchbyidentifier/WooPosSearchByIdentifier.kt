@@ -15,11 +15,11 @@ class WooPosSearchByIdentifier @Inject constructor(
         codeScannerResultCode: String,
         codeScannerResultFormat: GoogleBarcodeFormatMapper.BarcodeFormat
     ): WooPosSearchByIdentifierResult {
-        val localProduct = localSearcher.searchProduct(codeScannerResultCode, codeScannerResultFormat)
+        val localProduct = localSearcher(codeScannerResultCode, codeScannerResultFormat)
         if (localProduct != null) {
             return WooPosSearchByIdentifierResult.Success(localProduct)
         }
 
-        return remoteSearcher.searchProduct(codeScannerResultCode, codeScannerResultFormat)
+        return remoteSearcher(codeScannerResultCode, codeScannerResultFormat)
     }
 }
