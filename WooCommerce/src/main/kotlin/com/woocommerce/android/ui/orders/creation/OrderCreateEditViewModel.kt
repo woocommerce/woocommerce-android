@@ -2003,19 +2003,32 @@ class OrderCreateEditViewModel @Inject constructor(
     fun onCustomAmountTapped(customAmountUIModel: CustomAmountUIModel = CustomAmountUIModel.EMPTY) {
         val orderTotal = _orderDraft.value.total.toString()
         val currencyCode = _orderDraft.value.currency.let { CurrencyCode(it) }
+        val isEditingExistingCustomAmount = customAmountUIModel != CustomAmountUIModel.EMPTY
 
-        if (orderContainsProductsOrCustomAmounts()) {
-            triggerEvent(ShowCustomAmountBottomSheet)
-        } else {
-            triggerEvent(
-                ShowCustomAmountDialog(
-                    customAmountUIModel.copy(
-                        type = CustomAmountType.FIXED_CUSTOM_AMOUNT,
-                        currencyCode = currencyCode
-                    ),
-                    orderTotal = orderTotal
+        when {
+            isEditingExistingCustomAmount -> {
+                triggerEvent(
+                    ShowCustomAmountDialog(
+                        customAmountUIModel.copy(
+                            type = CustomAmountType.FIXED_CUSTOM_AMOUNT,
+                            currencyCode = currencyCode
+                        ),
+                        orderTotal = orderTotal
+                    )
                 )
-            )
+            }
+            orderContainsProductsOrCustomAmounts() -> triggerEvent(ShowCustomAmountBottomSheet)
+            else -> {
+                triggerEvent(
+                    ShowCustomAmountDialog(
+                        customAmountUIModel.copy(
+                            type = CustomAmountType.FIXED_CUSTOM_AMOUNT,
+                            currencyCode = currencyCode
+                        ),
+                        orderTotal = orderTotal
+                    )
+                )
+            }
         }
     }
 
