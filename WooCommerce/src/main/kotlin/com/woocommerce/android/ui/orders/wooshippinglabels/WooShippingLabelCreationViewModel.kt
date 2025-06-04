@@ -937,8 +937,11 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             val uiState: UIControlsState,
             val destinationStatus: AddressStatus,
         ) : WooShippingViewState() {
-            val allShipmentsFulfilled: Boolean
-                get() = shipmentUIList.all { it.purchased }
+            val shouldShowSplitShipmentButton: Boolean
+                get() {
+                    val unpurchasedShipments = shipmentUIList.filterNot { it.purchased }
+                    return unpurchasedShipments.size > 1 || unpurchasedShipments.first().totalItemQuantity > 1
+                }
         }
     }
 

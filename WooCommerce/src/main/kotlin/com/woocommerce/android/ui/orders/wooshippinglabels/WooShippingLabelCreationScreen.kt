@@ -110,7 +110,7 @@ fun WooShippingLabelCreationScreen(viewModel: WooShippingLabelCreationViewModel)
                 onSelectPackageClick = viewModel::onSelectPackageClicked,
                 onPurchaseShippingLabel = viewModel::onPurchaseShippingLabel,
                 shipmentUIList = viewState.shipmentUIList,
-                allShipmentsFulfilled = viewState.allShipmentsFulfilled,
+                shouldShowSplitShipmentButton = viewState.shouldShowSplitShipmentButton,
                 totalItems = viewState.totalItems,
                 totalItemsCost = viewState.totalItemsCost,
                 shippingLines = viewState.shippingLines,
@@ -157,7 +157,7 @@ fun WooShippingLabelCreationScreen(viewModel: WooShippingLabelCreationViewModel)
 @Composable
 fun WooShippingLabelCreationScreen(
     shipmentUIList: List<ShipmentUI>,
-    allShipmentsFulfilled: Boolean,
+    shouldShowSplitShipmentButton: Boolean,
     totalItems: Int,
     totalItemsCost: String,
     shippingLines: List<ShippingLineSummaryUI>,
@@ -229,7 +229,7 @@ fun WooShippingLabelCreationScreen(
     Box(modifier = Modifier.fillMaxSize()) {
         LabelCreationScreenWithBottomSheet(
             shipmentUIList = shipmentUIList,
-            allShipmentsFulfilled = allShipmentsFulfilled,
+            shouldShowSplitShipmentButton = shouldShowSplitShipmentButton,
             totalItems = totalItems,
             totalItemsCost = totalItemsCost,
             modifier = modifier,
@@ -319,7 +319,7 @@ fun WooShippingLabelCreationScreen(
 @Composable
 private fun LabelCreationScreenWithBottomSheet(
     shipmentUIList: List<ShipmentUI>,
-    allShipmentsFulfilled: Boolean,
+    shouldShowSplitShipmentButton: Boolean,
     totalItems: Int,
     totalItemsCost: String,
     shippingLines: List<ShippingLineSummaryUI>,
@@ -434,7 +434,7 @@ private fun LabelCreationScreenWithBottomSheet(
                     onSelectedShipmentChanged(pagerState.targetPage)
                 }
 
-                if (shipmentUIList.size == 1 && !allShipmentsFulfilled) {
+                if (shipmentUIList.size == 1 && shouldShowSplitShipmentButton) {
                     Row(
                         modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp),
                         verticalAlignment = Alignment.CenterVertically
@@ -468,15 +468,17 @@ private fun LabelCreationScreenWithBottomSheet(
                             onTabSelected = { index -> scope.launch { pagerState.animateScrollToPage(index) } },
                             modifier = modifier.weight(1f)
                         )
-                        IconButton(
-                            onClick = onSplitShipment,
-                            modifier = Modifier.align(Alignment.CenterVertically)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.Edit,
-                                tint = colorResource(id = R.color.color_icon_menu),
-                                contentDescription = stringResource(id = R.string.woo_shipping_split_shipment)
-                            )
+                        if (shouldShowSplitShipmentButton) {
+                            IconButton(
+                                onClick = onSplitShipment,
+                                modifier = Modifier.align(Alignment.CenterVertically)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.Edit,
+                                    tint = colorResource(id = R.color.color_icon_menu),
+                                    contentDescription = stringResource(id = R.string.woo_shipping_split_shipment)
+                                )
+                            }
                         }
                     }
                 }
@@ -950,7 +952,7 @@ private fun WooShippingLabelCreationScreenPreview() {
                     shippingRatesState = ShippingRatesState.NoAvailable,
                 )
             ),
-            allShipmentsFulfilled = false,
+            shouldShowSplitShipmentButton = true,
             totalItems = 6,
             totalItemsCost = "$92.78",
             shippingLines = getShippingLines(),
