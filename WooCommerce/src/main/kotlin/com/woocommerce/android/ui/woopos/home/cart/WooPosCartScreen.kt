@@ -47,6 +47,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -263,10 +264,14 @@ private fun CartBodyWithItems(
                 is WooPosCartItemViewState.Error -> ErrorItem(
                     modifier = Modifier.animateItem(),
                     item = item,
+                    canRemoveItems = areItemsRemovable,
+                    onUIEvent = onUIEvent,
                 )
                 is WooPosCartItemViewState.Loading -> LoadingItem(
                     modifier = Modifier.animateItem(),
                     item = item,
+                    canRemoveItems = areItemsRemovable,
+                    onUIEvent = onUIEvent,
                 )
             }
         }
@@ -650,6 +655,8 @@ private fun CouponItem(
 private fun LoadingItem(
     modifier: Modifier = Modifier,
     item: WooPosCartItemViewState.Loading,
+    canRemoveItems: Boolean,
+    onUIEvent: (WooPosCartUIEvent) -> Unit,
 ) {
     val itemContentDescription = stringResource(
         id = R.string.woopos_cart_item_loading_content_description,
@@ -684,34 +691,27 @@ private fun LoadingItem(
                     .weight(1f)
                     .padding(end = WooPosSpacing.Medium.value.toAdaptivePadding())
             ) {
-                WooPosText(
-                    text = item.name,
-                    maxLines = 1,
-                    style = WooPosTypography.BodySmall,
-                    fontWeight = FontWeight.Bold,
-                    overflow = TextOverflow.Ellipsis,
-                    color = WooPosTheme.colors.onSurfaceVariantLowest,
-                    modifier = Modifier.clearAndSetSemantics { }
+                WooPosShimmerBox(
+                    modifier = Modifier
+                        .height(22.dp)
+                        .fillMaxWidth(0.95f)
+                        .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
                 )
 
                 Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value.toAdaptivePadding()))
 
                 WooPosShimmerBox(
                     modifier = Modifier
-                        .height(14.dp)
-                        .fillMaxWidth(0.6f)
-                )
-
-                Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value.toAdaptivePadding()))
-
-                WooPosShimmerBox(
-                    modifier = Modifier
-                        .height(14.dp)
-                        .fillMaxWidth(0.3f)
+                        .height(22.dp)
+                        .fillMaxWidth(0.25f)
+                        .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
                 )
             }
 
-            Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value.toAdaptivePadding()))
+            if (canRemoveItems) {
+                RemoveItemFromCartButton(item, onUIEvent)
+            }
+            Spacer(modifier = Modifier.width(WooPosSpacing.Small.value.toAdaptivePadding()))
         }
     }
 }
@@ -720,6 +720,8 @@ private fun LoadingItem(
 private fun ErrorItem(
     modifier: Modifier = Modifier,
     item: WooPosCartItemViewState.Error,
+    canRemoveItems: Boolean,
+    onUIEvent: (WooPosCartUIEvent) -> Unit,
 ) {
     val itemContentDescription = stringResource(
         id = R.string.woopos_cart_item_error_content_description,
@@ -779,7 +781,6 @@ private fun ErrorItem(
                 WooPosText(
                     text = item.message,
                     style = WooPosTypography.BodySmall,
-                    fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.error,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
@@ -787,6 +788,9 @@ private fun ErrorItem(
                 )
             }
 
+            if (canRemoveItems) {
+                RemoveItemFromCartButton(item, onUIEvent)
+            }
             Spacer(modifier = Modifier.width(WooPosSpacing.Small.value.toAdaptivePadding()))
         }
     }
@@ -993,7 +997,7 @@ fun WooPosCartScreenErrorLoadingPreview(modifier: Modifier = Modifier) {
                         ),
                     )
                 ),
-                areItemsRemovable = false,
+                areItemsRemovable = true,
                 isCheckoutButtonVisible = true
             )
         ) {}
