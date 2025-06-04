@@ -460,7 +460,6 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
     @Suppress("ComplexCondition")
     private suspend fun observeShippingLabelInformation() {
-
         combine(
             storeOptions.drop(1),
             order.drop(1),
@@ -529,6 +528,9 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                 currentList.take(shipmentSize)
             }
         }
+
+        selectedShipmentIndexFlow.update { it.coerceAtMost(shipmentSize - 1) }
+
         selectedPackagesFlow.updateSize(null)
         customsFormDataFlow.updateSize(null)
         packageWeightsFlow.updateSize(null)
