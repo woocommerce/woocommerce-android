@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.split
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.sumByFloat
@@ -46,7 +48,8 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
     private val removeShipmentSheet: MutableStateFlow<RemoveShipmentSheet?> = MutableStateFlow(null)
     private val splitMessage: MutableStateFlow<SplitShipmentMessage?> = MutableStateFlow(null)
 
-    val viewState: MutableStateFlow<SplitShipmentViewState> = MutableStateFlow(SplitShipmentViewState.Loading)
+    private val _viewState = MutableLiveData<SplitShipmentViewState>(SplitShipmentViewState.Loading)
+    val viewState: LiveData<SplitShipmentViewState> = _viewState
 
     init {
         launch {
@@ -96,7 +99,7 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
                 removeShipmentSheet = sheet,
                 splitMessage = message
             )
-        }.collectLatest { viewState.value = it }
+        }.collectLatest { _viewState.value = it }
     }
 
     private fun getOverflowMenuItems(shipmentKeys: List<Int>) = buildList {
@@ -118,15 +121,15 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
 
     fun onDoneTapped() {
         if (hasShipmentChange()) {
-            val fallbackViewState = viewState.value
-            viewState.value = SplitShipmentViewState.Loading
+            val fallbackViewState = _viewState.value
+            _viewState.value = SplitShipmentViewState.Loading
             launch {
                 val currentShipmentList = currentShipments.value.values.toList()
                 val result = splitShipment(navArgs.shipmentArgs.orderId, currentShipmentList)
                 if (result.isSuccess) {
                     triggerEvent(MultiLiveEvent.Event.ExitWithResult(result.getOrThrow()))
                 } else {
-                    viewState.value = fallbackViewState
+                    fallbackViewState?.let { _viewState.value = it }
                     snackbarData = ShippingLabelsSnackbarData(
                         message = R.string.woo_shipping_split_shipment_error,
                         actionLabel = R.string.retry,

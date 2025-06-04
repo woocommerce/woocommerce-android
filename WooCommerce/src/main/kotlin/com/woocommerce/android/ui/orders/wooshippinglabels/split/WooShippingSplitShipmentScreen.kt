@@ -35,8 +35,8 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -73,22 +73,24 @@ fun WooShippingSplitShipmentScreen(
     viewModel: WooShippingSplitShipmentViewModel,
     modifier: Modifier = Modifier
 ) {
-    when (val viewState = viewModel.viewState.collectAsState().value) {
-        is SplitShipmentViewState.Loading -> LoadingScreen()
-        is SplitShipmentViewState.DataState -> WooShippingSplitShipmentScreen(
-            viewState = viewState,
-            onBack = viewModel::onNavigateBack,
-            onDone = viewModel::onDoneTapped,
-            onDismissInstructions = viewModel::onDismissInstructions,
-            onUpdateSelection = viewModel::onUpdateSelection,
-            onUpdateShipment = viewModel::onUpdateShipment,
-            onRemoveShipments = viewModel::onRemoveShipments,
-            onUpdateSelectedShipment = viewModel::onUpdateSelectedShipment,
-            onRemoveShipmentMenuTapped = viewModel::onRemoveShipmentMenuTapped,
-            onDismissRemoveSheet = viewModel::onDismissRemoveSheet,
-            snackbarData = viewModel.snackbarData,
-            modifier = modifier
-        )
+    viewModel.viewState.observeAsState().value?.let {
+        when (it) {
+            is SplitShipmentViewState.Loading -> LoadingScreen()
+            is SplitShipmentViewState.DataState -> WooShippingSplitShipmentScreen(
+                viewState = it,
+                onBack = viewModel::onNavigateBack,
+                onDone = viewModel::onDoneTapped,
+                onDismissInstructions = viewModel::onDismissInstructions,
+                onUpdateSelection = viewModel::onUpdateSelection,
+                onUpdateShipment = viewModel::onUpdateShipment,
+                onRemoveShipments = viewModel::onRemoveShipments,
+                onUpdateSelectedShipment = viewModel::onUpdateSelectedShipment,
+                onRemoveShipmentMenuTapped = viewModel::onRemoveShipmentMenuTapped,
+                onDismissRemoveSheet = viewModel::onDismissRemoveSheet,
+                snackbarData = viewModel.snackbarData,
+                modifier = modifier
+            )
+        }
     }
 }
 
