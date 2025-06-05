@@ -4,13 +4,14 @@ import com.google.gson.annotations.SerializedName
 import org.wordpress.android.fluxc.generated.endpoint.WOOCOMMERCE
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.order.LineItem
-import org.wordpress.android.fluxc.model.refunds.WCRefundModel
+import org.wordpress.android.fluxc.model.refunds.RefundRequestItem
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel.WCRefundFeeLine
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel.WCRefundShippingLine
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooNetwork
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
-import org.wordpress.android.fluxc.utils.sumBy
+import org.wordpress.android.fluxc.utils.extensions.filterNotNull
 import org.wordpress.android.fluxc.utils.toWooPayload
+import java.math.BigDecimal
 import javax.inject.Inject
 
 class RefundRestClient @Inject constructor(private val wooNetwork: WooNetwork) {
@@ -33,18 +34,20 @@ class RefundRestClient @Inject constructor(private val wooNetwork: WooNetwork) {
     suspend fun createRefundByItems(
         site: SiteModel,
         orderId: Long,
+        amount: BigDecimal?,
         reason: String,
         automaticRefund: Boolean,
-        items: List<WCRefundModel.WCRefundItem>,
+        items: List<RefundRequestItem>,
         restockItems: Boolean
     ): WooPayload<RefundResponse> {
         val body = mapOf(
                 "reason" to reason,
-                "amount" to items.sumBy { it.subtotal + it.totalTax }.toString(),
+                "amount" to amount?.toString(),
                 "api_refund" to automaticRefund.toString(),
-                "line_items" to items.associateBy { it.itemId },
+                "line_items" to items,
                 "restock_items" to restockItems
-        )
+        ).filterNotNull()
+
         return createRefund(site, orderId, body)
     }
 

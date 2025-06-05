@@ -20,6 +20,15 @@ object WCRefundSqlUtils {
     fun insertOrUpdate(site: SiteModel, orderId: Long, data: RefundResponse) =
             insertOrUpdate(site, orderId, listOf(data))
 
+    fun deleteRefunds(site: SiteModel, orderId: Long) {
+        WellSql.delete(RefundBuilder::class.java)
+            .where()
+            .equals(WCRefundsTable.LOCAL_SITE_ID, site.id)
+            .equals(WCRefundsTable.ORDER_ID, orderId)
+            .endWhere()
+            .execute()
+    }
+
     fun insertOrUpdate(site: SiteModel, orderId: Long, data: List<RefundResponse>) {
         data.forEach { item ->
             val json = gson.toJson(item)

@@ -18,9 +18,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent.REFUND_CREATE_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.adminUrlOrDefault
-import com.woocommerce.android.extensions.calculateTotalSubtotal
-import com.woocommerce.android.extensions.calculateTotalTaxes
-import com.woocommerce.android.extensions.calculateTotals
 import com.woocommerce.android.extensions.isCashPayment
 import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.extensions.joinToString
@@ -38,9 +35,6 @@ import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRef
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.ShowNumberPicker
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundConfirmation
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundSummary
-import com.woocommerce.android.ui.payments.refunds.RefundFeeListAdapter.FeeRefundListItem
-import com.woocommerce.android.ui.payments.refunds.RefundProductListAdapter.ProductRefundListItem
-import com.woocommerce.android.ui.payments.refunds.RefundShippingListAdapter.ShippingRefundListItem
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.max
 import com.woocommerce.android.util.min
@@ -56,8 +50,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.model.refunds.RefundRequestItem
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel
-import org.wordpress.android.fluxc.model.refunds.WCRefundModel.WCRefundItem
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCGatewayStore
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -210,8 +204,6 @@ class IssueRefundViewModel @Inject constructor(
         if (refundByItemsStateLiveData.hasInitialValue) {
             refundByItemsState = refundByItemsState.copy(
                 currency = order.currency,
-                subtotal = formatCurrency(BigDecimal.ZERO),
-                taxes = formatCurrency(BigDecimal.ZERO),
                 shippingSubtotal = formatCurrency(order.shippingTotal),
                 shippingTaxes = formatCurrency(order.shippingLines.sumByBigDecimal { it.totalTax }),
                 feesSubtotal = formatCurrency(order.feesTotal),
@@ -236,8 +228,8 @@ class IssueRefundViewModel @Inject constructor(
                 orderItem = it,
                 maxQuantity = maxQuantity,
                 quantity = selectedQuantity,
-                subtotal = formatCurrency(BigDecimal.ZERO),
-                taxes = formatCurrency(BigDecimal.ZERO)
+                subtotal = BigDecimal.ZERO,
+                taxes = emptyList()
             )
         }
         updateRefundItems(items)
@@ -311,7 +303,8 @@ class IssueRefundViewModel @Inject constructor(
         refundSummaryState = refundSummaryState.copy(
             isFormEnabled = true,
             previouslyRefunded = formatCurrency(order.refundTotal),
-            refundAmount = formatCurrency(commonState.refundTotal)
+            refundAmount = commonState.refundTotal,
+            refundAmountFormatted = formatCurrency(commonState.refundTotal)
         )
 
         triggerEvent(ShowRefundSummary)
@@ -387,7 +380,7 @@ class IssueRefundViewModel @Inject constructor(
     }
 
     private suspend fun initiateRefund(): WooResult<WCRefundModel> {
-        val allItems = mutableListOf<WCRefundItem>()
+        val allItems = mutableListOf<RefundRequestItem>()
         refundItems.value?.let {
             it.forEach { item -> allItems.add(item.toDataModel()) }
         }
@@ -407,11 +400,12 @@ class IssueRefundViewModel @Inject constructor(
         selectedFees?.forEach { allItems.add(it.toDataModel()) }
 
         return refundStore.createItemsRefund(
-            selectedSite.get(),
-            order.id,
-            refundSummaryState.refundReason ?: "",
-            true,
-            gateway.supportsRefunds,
+            site = selectedSite.get(),
+            orderId = order.id,
+            amount = refundSummaryState.refundAmount,
+            reason = refundSummaryState.refundReason ?: "",
+            restockItems = true,
+            autoRefund = gateway.supportsRefunds,
             items = allItems
         )
     }
@@ -516,13 +510,6 @@ class IssueRefundViewModel @Inject constructor(
         refundSummaryState = refundSummaryState.copy(isSummaryTextTooLong = currLength > maxLength)
     }
 
-    fun onProductsRefundAmountChanged(newAmount: BigDecimal) {
-        refundByItemsState = refundByItemsState.copy(
-            productsRefund = newAmount,
-            formattedProductsRefund = formatCurrency(newAmount)
-        )
-    }
-
     fun onRefundQuantityChanged(uniqueId: Long, newQuantity: Int) {
         val newItems = getUpdatedItemList(uniqueId, newQuantity)
         updateRefundItems(newItems)
@@ -541,8 +528,6 @@ class IssueRefundViewModel @Inject constructor(
         refundByItemsState = refundByItemsState.copy(
             productsRefund = productsRefund,
             formattedProductsRefund = formatCurrency(productsRefund),
-            taxes = formatCurrency(taxes),
-            subtotal = formatCurrency(subtotal),
             selectButtonTitle = selectButtonTitle
         )
     }
@@ -555,8 +540,8 @@ class IssueRefundViewModel @Inject constructor(
                 var newItem = it.copy(quantity = newQuantity, maxQuantity = maxQuantities[uniqueId] ?: 0f)
 
                 // Update the subtotal and taxes based on the new quantity
-                val subtotal = formatCurrency(newItem.calculateTotalSubtotal())
-                val taxes = formatCurrency(newItem.calculateTotalTaxes())
+                val subtotal = newItem.calculateTotalSubtotal()
+                val taxes = newItem.calculateTaxesList()
                 newItem = newItem.copy(subtotal = subtotal, taxes = taxes)
 
                 newItems.add(newItem)
@@ -792,8 +777,6 @@ class IssueRefundViewModel @Inject constructor(
         val currency: String? = null,
         val productsRefund: BigDecimal = BigDecimal.ZERO,
         val formattedProductsRefund: String? = null,
-        val subtotal: String? = null,
-        val taxes: String? = null,
         val feesSubtotal: String? = null,
         val feesTaxes: String? = null,
         val feesRefund: BigDecimal = BigDecimal.ZERO,
@@ -827,7 +810,8 @@ class IssueRefundViewModel @Inject constructor(
     data class RefundSummaryViewState(
         val isFormEnabled: Boolean? = null,
         val previouslyRefunded: String? = null,
-        val refundAmount: String? = null,
+        val refundAmount: BigDecimal? = null,
+        val refundAmountFormatted: String? = null,
         val refundMethod: String? = null,
         val refundReason: String? = null,
         val isMethodDescriptionVisible: Boolean? = null,

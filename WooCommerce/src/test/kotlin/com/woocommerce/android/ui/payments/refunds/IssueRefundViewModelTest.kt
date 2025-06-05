@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.RefundByItemsViewState
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -22,6 +23,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -383,6 +385,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
                 refundStore.createItemsRefund(
                     site = any(),
                     orderId = any(),
+                    amount = anyOrNull(),
                     reason = any(),
                     restockItems = any(),
                     autoRefund = any(),
@@ -434,6 +437,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
                 refundStore.createItemsRefund(
                     site = any(),
                     orderId = any(),
+                    amount = anyOrNull(),
                     reason = any(),
                     restockItems = any(),
                     autoRefund = any(),
@@ -485,6 +489,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
                 refundStore.createItemsRefund(
                     site = any(),
                     orderId = any(),
+                    amount = anyOrNull(),
                     reason = any(),
                     restockItems = any(),
                     autoRefund = any(),
@@ -777,6 +782,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
                 refundStore.createItemsRefund(
                     site = any(),
                     orderId = any(),
+                    amount = anyOrNull(),
                     reason = any(),
                     restockItems = any(),
                     autoRefund = any(),
@@ -832,6 +838,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
                 refundStore.createItemsRefund(
                     site = any(),
                     orderId = any(),
+                    amount = anyOrNull(),
                     reason = any(),
                     restockItems = any(),
                     autoRefund = any(),
@@ -1206,4 +1213,67 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             assertThat(viewModel.refundItems.value!![1].maxQuantity).isEqualTo(2.0F)
             assertThat(viewModel.refundItems.value!![2].maxQuantity).isEqualTo(2.0F)
         }
+
+    @Test
+    fun `when preparing refund for products, then pass correct tax rates`() {
+        testBlocking {
+            val order = OrderTestUtils.generateOrderWithOneShipping()
+            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(order)
+
+            initViewModel()
+            viewModel.onSelectButtonTapped()
+
+            val items = viewModel.refundItems.getOrAwaitValue()
+            items.map { it.toDataModel() }.forEach { refundItem ->
+                val item = order.getLineItemList().first { it.id == refundItem.itemId }
+                assertThat(refundItem.refundTax).allMatch { refundTaxItem ->
+                    val tax = item.taxes!!.first { it.rateId == refundTaxItem.taxRateId }
+                    tax.rateId == refundTaxItem.taxRateId &&
+                        tax.total.isEqualTo(refundTaxItem.refundTotal)
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `when preparing refund for shipping, then pass correct tax rates`() {
+        testBlocking {
+            val order = OrderTestUtils.generateOrderWithOneShipping()
+            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(order)
+
+            initViewModel()
+            viewModel.onSelectButtonTapped()
+
+            val shippingLines = viewModel.refundShippingLines.getOrAwaitValue()
+            shippingLines.map { it.toDataModel() }.forEach { refundItem ->
+                val shippingLine = order.getShippingLineList().first { it.id == refundItem.itemId }
+                assertThat(refundItem.refundTax).allMatch { refundTaxItem ->
+                    val tax = shippingLine.taxes!!.first { it.rateId == refundTaxItem.taxRateId }
+                    tax.rateId == refundTaxItem.taxRateId &&
+                        tax.total.isEqualTo(refundTaxItem.refundTotal)
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `when preparing refund for fees, then pass correct tax rates`() {
+        testBlocking {
+            val order = OrderTestUtils.generateOrderWithOneShipping()
+            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(order)
+
+            initViewModel()
+            viewModel.onSelectButtonTapped()
+
+            val feeLines = viewModel.refundFeeLines.getOrAwaitValue()
+            feeLines.map { it.toDataModel() }.forEach { refundItem ->
+                val feeLine = order.getFeeLineList().first { it.id == refundItem.itemId }
+                assertThat(refundItem.refundTax).allMatch { refundTaxItem ->
+                    val tax = feeLine.taxes!!.first { it.rateId == refundTaxItem.taxRateId }
+                    tax.rateId == refundTaxItem.taxRateId &&
+                        tax.total.isEqualTo(refundTaxItem.refundTotal)
+                }
+            }
+        }
+    }
 }
