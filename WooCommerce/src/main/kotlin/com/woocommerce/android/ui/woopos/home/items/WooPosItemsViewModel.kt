@@ -156,6 +156,8 @@ class WooPosItemsViewModel @Inject constructor(
 
         val state = _viewState.value
 
+        searchHelper.updateLoadingState(isLoading = false)
+
         _viewState.value = when (selectedTab) {
             is Tab.Products -> WooPosItemsToolbarViewState.ProductList(
                 tabs = tabsHelper.selectTab(state.tabs, selectedTab),

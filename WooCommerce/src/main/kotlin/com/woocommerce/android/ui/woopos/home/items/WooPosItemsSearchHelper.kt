@@ -156,13 +156,21 @@ class WooPosItemsSearchHelper @Inject constructor(
         val searchState = getCurrentSearchVisibleState() ?: return
         val searchStateValue = getCurrentSearchOpenState() ?: return
 
+        val shouldShowLoadingIndicatorInToolbar = isLoading && viewStateFlow.value.doesSupportLocalSearch()
+
         viewStateFlow.value = viewStateFlow.value.copy(
             search = searchState.copy(
                 state = searchStateValue.copy(
-                    isLoading = isLoading
+                    isLoading = shouldShowLoadingIndicatorInToolbar
                 )
             )
         )
+    }
+
+    private fun WooPosItemsToolbarViewState.doesSupportLocalSearch() = when (this) {
+        is WooPosItemsToolbarViewState.CouponList -> false
+        is WooPosItemsToolbarViewState.ProductList -> true
+        is WooPosItemsToolbarViewState.VariationList -> false
     }
 
     private fun getCurrentSearchVisibleState(): SearchState.Visible? {
