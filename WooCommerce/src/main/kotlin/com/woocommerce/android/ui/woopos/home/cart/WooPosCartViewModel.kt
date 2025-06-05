@@ -10,9 +10,10 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetCouponById
-import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductByGtinOrSku
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetVariationById
+import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosSearchByIdentifier
+import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosSearchByIdentifierResult
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.CouponsRemoved
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
@@ -57,7 +58,7 @@ class WooPosCartViewModel @Inject constructor(
     private val analyticsTrackingDataKeeper: WooPosAnalyticsTrackingDataKeeper,
     private val updateCartItemsWithChanges: WooPosCartItemsUpdater,
     private val getCachedStoreCurrency: WooPosGetCachedStoreCurrency,
-    private val getProductByGtinOrSku: WooPosGetProductByGtinOrSku,
+    private val searchByIdentifier: WooPosSearchByIdentifier,
     private val barcodeLoadingSimulator: WooPosBarcodeLoadingSimulator,
     savedState: SavedStateHandle,
 ) : ViewModel() {
@@ -133,6 +134,7 @@ class WooPosCartViewModel @Inject constructor(
                     is WooPosCartItemViewState.Coupon -> {
                         analyticsTracker.track(ItemRemovedFromCart(item = item, source = source))
                     }
+
                     is WooPosCartItemViewState.Loading,
                     is WooPosCartItemViewState.Error -> Unit
                 }
@@ -192,9 +194,11 @@ class WooPosCartViewModel @Inject constructor(
                     ParentToChildrenEvent.SearchEvent.Started,
                     ParentToChildrenEvent.RefreshProductList,
                     is ParentToChildrenEvent.CouponsRemoved -> Unit
+
                     is ParentToChildrenEvent.CouponsValidationFailed -> {
                         onCouponsValidationFails()
                     }
+
                     is ParentToChildrenEvent.RemoveCouponsClicked -> {
                         removeCouponsFromCart()
                     }
@@ -343,12 +347,18 @@ class WooPosCartViewModel @Inject constructor(
                 analyticsTracker.track(InteractionWithCustomerStarted)
             }
             // TBD display a loading state when searching for a product
-            val product = getProductByGtinOrSku.invoke(barcode)
-            // TBD handle cases when the barcode is not found
-            // TBD handle cases when the product is a variation
-            val itemNumber = getItemNumber()
-            val cartListItem = product.toCartListItem(itemNumber)
-            _state.value = updateStateWithNewItem(cartListItem)
+            when (val searchResult = searchByIdentifier.invoke(barcode)) {
+                is WooPosSearchByIdentifierResult.Success -> {
+                    // TBD handle cases when the product is a variation
+                    val itemNumber = getItemNumber()
+                    val cartListItem = searchResult.product.toCartListItem(itemNumber)
+                    _state.value = updateStateWithNewItem(cartListItem)
+                }
+
+                is WooPosSearchByIdentifierResult.Failure -> {
+                    // TBD handle cases when the barcode is not found
+                }
+            }
         }
     }
 
@@ -497,6 +507,7 @@ class WooPosCartViewModel @Inject constructor(
             price = formatPrice(price),
             imageUrl = image?.source,
         )
+
     private fun getInitialValueOrHighestUsedItemNumberAfterProcessDeath() =
         (_state.value.body as? WooPosCartState.Body.WithItems)?.itemsInCart?.maxOfOrNull { it.itemNumber } ?: 1
 

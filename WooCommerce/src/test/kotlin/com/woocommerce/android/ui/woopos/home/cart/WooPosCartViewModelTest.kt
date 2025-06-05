@@ -6,9 +6,9 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetCouponById
-import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductByGtinOrSku
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetVariationById
+import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosSearchByIdentifier
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
@@ -100,7 +100,7 @@ class WooPosCartViewModelTest {
     private val savedState: SavedStateHandle = SavedStateHandle()
     private val trackerData: WooPosAnalyticsTrackingDataKeeper = WooPosAnalyticsTrackingDataKeeper()
     private val cartItemsUpdater: WooPosCartItemsUpdater = mock()
-    private val getProductByGtinOrSku: WooPosGetProductByGtinOrSku = mock()
+    private val searchByIdentifier: WooPosSearchByIdentifier = mock()
     private val barcodeLoadingSimulator: WooPosBarcodeLoadingSimulator = mock()
 
     @Test
@@ -1059,7 +1059,7 @@ class WooPosCartViewModelTest {
             trackerData,
             cartItemsUpdater,
             getCachedStoreCurrency,
-            getProductByGtinOrSku,
+            searchByIdentifier,
             barcodeLoadingSimulator,
             savedState
         )
