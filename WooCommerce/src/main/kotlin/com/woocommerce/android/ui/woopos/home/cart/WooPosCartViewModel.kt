@@ -59,7 +59,6 @@ class WooPosCartViewModel @Inject constructor(
     private val updateCartItemsWithChanges: WooPosCartItemsUpdater,
     private val getCachedStoreCurrency: WooPosGetCachedStoreCurrency,
     private val searchByIdentifier: WooPosSearchByIdentifier,
-    private val barcodeLoadingSimulator: WooPosBarcodeLoadingSimulator,
     savedState: SavedStateHandle,
 ) : ViewModel() {
     private val _state = savedState.getStateFlow(
@@ -345,19 +344,14 @@ class WooPosCartViewModel @Inject constructor(
             if (_state.value.body == WooPosCartState.Body.Empty) {
                 analyticsTracker.track(InteractionWithCustomerStarted)
             }
-            val itemNumber = getItemNumber()
-            updateStateWithNewItem(WooPosCartItemViewState.Loading(itemNumber = itemNumber, name = barcode))
+            val loadingItem = WooPosCartItemViewState.Loading(itemNumber = getItemNumber(), name = barcode)
+            updateStateWithNewItem(loadingItem)
 
-            when (val searchResult = searchByIdentifier.invoke(barcode)) {
-                is WooPosSearchByIdentifierResult.Success -> {
-                    // TBD handle cases when the product is a variation
-                    updateStateByReplacingItem(searchResult.product.toCartListItem(itemNumber), itemNumber)
-                }
-
-                is WooPosSearchByIdentifierResult.Failure -> {
-                    // TBD handle cases when the barcode is not found
-                }
-            }
+            val searchResult = searchByIdentifier.invoke(barcode)
+            updateStateByReplacingItem(
+                createCartItemFromSearchResult(searchResult, loadingItem),
+                loadingItem.itemNumber
+            )
         }
     }
 
@@ -529,4 +523,37 @@ class WooPosCartViewModel @Inject constructor(
 
     private fun cartContainsPurchasableItems(body: WooPosCartState.Body.WithItems) =
         body.itemsInCart.filterIsInstance<WooPosCartItemViewState.Product>().isNotEmpty()
+
+    private suspend fun createCartItemFromSearchResult(
+        result: WooPosSearchByIdentifierResult,
+        loadingItem: WooPosCartItemViewState.Loading
+    ): WooPosCartItemViewState {
+        return when (result) {
+            is WooPosSearchByIdentifierResult.Success -> {
+                val product = result.product
+                WooPosCartItemViewState.Product.Simple(
+                    itemNumber = loadingItem.itemNumber,
+                    id = product.remoteId,
+                    name = product.name,
+                    description = null,
+                    price = formatPrice(product.price),
+                    imageUrl = product.firstImageUrl
+                )
+            }
+            is WooPosSearchByIdentifierResult.Failure -> {
+                // TBD replace with error messages defined in strings.xml
+                val errorMessage = when (result.error) {
+                    WooPosSearchByIdentifierResult.Error.ProductNotFound -> "Product not found"
+                    WooPosSearchByIdentifierResult.Error.NetworkError -> "Network error"
+                    WooPosSearchByIdentifierResult.Error.RequestCancelled -> "Request cancelled"
+                    is WooPosSearchByIdentifierResult.Error.UnknownError -> result.error.message
+                }
+                WooPosCartItemViewState.Error(
+                    itemNumber = loadingItem.itemNumber,
+                    name = loadingItem.name,
+                    message = errorMessage
+                )
+            }
+        }
+    }
 }
