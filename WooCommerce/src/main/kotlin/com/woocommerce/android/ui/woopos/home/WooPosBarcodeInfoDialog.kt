@@ -68,10 +68,12 @@ fun WooPosBarcodeInfoDialog(
                 },
             contentAlignment = Alignment.Center
         ) {
+            @Suppress("DestructuringDeclarationWithTooManyEntries")
             ConstraintLayout(
                 modifier = Modifier.fillMaxWidth()
             ) {
-                val (header, closeIcon, primaryText, secondaryText, tertiaryText, quaternaryBox, primaryButton) = createRefs()
+                val (header, closeIcon, primaryText, secondaryText, tertiaryText, quaternaryBox, primaryButton) =
+                    createRefs()
 
                 WooPosText(
                     text = stringResource(id = state.header),
