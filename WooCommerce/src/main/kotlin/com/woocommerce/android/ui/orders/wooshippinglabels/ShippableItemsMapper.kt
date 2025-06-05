@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.wooshippinglabels
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.extensions.sumByFloat
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel.Companion.SINGLE_QUANTITY
@@ -31,7 +32,8 @@ fun List<ShippableItemModel>.toUIModel(
     currencyFormatter: CurrencyFormatter,
     dimensionUnit: String,
     weightUnit: String,
-    purchased: Boolean
+    purchased: Boolean,
+    hazmatCategory: ShippingLabelHazmatCategory?
 ): ShipmentUI {
     val shippableItemsUI = map { item -> item.toUIModel(currencyFormatter, dimensionUnit, weightUnit) }
     val formattedTotalPrice = getFormattedTotalPrice(currencyFormatter)
@@ -41,7 +43,9 @@ fun List<ShippableItemModel>.toUIModel(
         shippableItems = shippableItemsUI,
         formattedTotalWeight = formattedTotalWeight,
         formattedTotalPrice = formattedTotalPrice,
-        purchased = purchased
+        purchased = purchased,
+        hazmatState = hazmatCategory?.let { WooShippingLabelCreationViewModel.HazmatState.Declared(it) }
+            ?: WooShippingLabelCreationViewModel.HazmatState.NoSelection
     )
 }
 
