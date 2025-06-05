@@ -37,6 +37,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ORDER_ID
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_START_PAYMENT_FLOW
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.databinding.FragmentOrderDetailBinding
+import com.woocommerce.android.extensions.WindowSizeClass
 import com.woocommerce.android.extensions.handleDialogNotice
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.handleNotice
@@ -48,6 +49,7 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
+import com.woocommerce.android.extensions.windowWidthSizeClass
 import com.woocommerce.android.model.GiftCardSummary
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
@@ -108,6 +110,7 @@ class OrderDetailFragment :
     companion object {
         val TAG: String = OrderDetailFragment::class.java.simpleName
         private const val MARGINS_FOR_TABLET: Float = 0.1F
+        private const val MARGINS_FOR_SMALL_TABLET: Float = 0.01F
     }
 
     private val viewModel: OrderDetailViewModel by viewModels()
@@ -258,7 +261,7 @@ class OrderDetailFragment :
         val layoutParams = binding.orderDetailContainer.layoutParams as FrameLayout.LayoutParams
         when (requireContext().isTwoPanesShouldBeUsed) {
             true -> {
-                val marginHorizontal = (windowWidth * MARGINS_FOR_TABLET).toInt()
+                val marginHorizontal = getMarginHorizontal(windowWidth)
                 layoutParams.setMargins(
                     marginHorizontal,
                     layoutParams.topMargin,
@@ -270,6 +273,12 @@ class OrderDetailFragment :
             false -> return
         }
         binding.orderDetailContainer.layoutParams = layoutParams
+    }
+
+    private fun getMarginHorizontal(windowWidth: Int): Int = when (requireContext().windowWidthSizeClass) {
+        WindowSizeClass.Medium -> (windowWidth * MARGINS_FOR_SMALL_TABLET).toInt()
+        WindowSizeClass.ExpandedAndBigger -> (windowWidth * MARGINS_FOR_TABLET).toInt()
+        WindowSizeClass.Compact -> 0
     }
 
     private fun setupToolbar() {
