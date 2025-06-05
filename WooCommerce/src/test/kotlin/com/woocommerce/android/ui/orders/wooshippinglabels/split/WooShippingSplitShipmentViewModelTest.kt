@@ -7,6 +7,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIMode
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.StoreOptionsModel
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.observeForTesting
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -40,6 +41,8 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
     fun `when split shipments is opened, then display the correct number of expandable products`() = testBlocking {
         createViewModel()
 
+        sut.viewState.observeForTesting { }
+
         val state = sut.viewState.value as WooShippingSplitShipmentViewModel.SplitShipmentViewState.DataState
 
         val selectableItems = state.selectableItems[0]!!
@@ -59,6 +62,8 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
 
             createViewModel(shipmentArgs)
 
+            sut.viewState.observeForTesting { }
+
             val state = sut.viewState.value as WooShippingSplitShipmentViewModel.SplitShipmentViewState.DataState
 
             val selectableItems = state.selectableItems[0]!!
@@ -74,6 +79,8 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
         createViewModel()
 
         sut.onUpdateSelection(shippableItemIndex, List(3) { it }.toSet())
+
+        sut.viewState.observeForTesting { }
 
         val state = sut.viewState.value as WooShippingSplitShipmentViewModel.SplitShipmentViewState.DataState
 
@@ -93,6 +100,8 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
 
         sut.onUpdateSelection(shippableItemIndex, null)
 
+        sut.viewState.observeForTesting { }
+
         val state = sut.viewState.value as WooShippingSplitShipmentViewModel.SplitShipmentViewState.DataState
 
         val selectableItems = state.selectableItems[0]!!
@@ -110,6 +119,8 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
         createViewModel()
 
         sut.onUpdateSelection(shippableItemIndex, null)
+
+        sut.viewState.observeForTesting { }
 
         val state = sut.viewState.value as WooShippingSplitShipmentViewModel.SplitShipmentViewState.DataState
 
@@ -136,6 +147,8 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
         createViewModel()
 
         sut.onUpdateShipment(movement)
+
+        sut.viewState.observeForTesting { }
 
         val state = sut.viewState.value as WooShippingSplitShipmentViewModel.SplitShipmentViewState.DataState
 
@@ -181,6 +194,8 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
 
             sut.onUpdateShipment(movement)
 
+            sut.viewState.observeForTesting { }
+
             val state = sut.viewState.value as WooShippingSplitShipmentViewModel.SplitShipmentViewState.DataState
 
             val selectableItems = state.selectableItems
@@ -208,6 +223,8 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
 
         sut.onUpdateShipment(movement)
 
+        sut.viewState.observeForTesting { }
+
         val state = sut.viewState.value as WooShippingSplitShipmentViewModel.SplitShipmentViewState.DataState
 
         val splitMessage = state.splitMessage
@@ -233,6 +250,8 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
 
         sut.onUpdateShipment(movement)
 
+        sut.viewState.observeForTesting { }
+
         val state = sut.viewState.value as WooShippingSplitShipmentViewModel.SplitShipmentViewState.DataState
 
         val splitMessage = state.splitMessage
@@ -253,6 +272,8 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
         val expectedQuantity = 6 // Total single items in the Shipment 1 from `twoShipment`
 
         createViewModel(shipmentArgs)
+
+        sut.viewState.observeForTesting { }
 
         val state = sut.viewState.value as WooShippingSplitShipmentViewModel.SplitShipmentViewState.DataState
 
@@ -275,6 +296,8 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
         createViewModel()
 
         sut.onUpdateShipment(movement)
+
+        sut.viewState.observeForTesting { }
 
         val state = sut.viewState.value as WooShippingSplitShipmentViewModel.SplitShipmentViewState.DataState
 
@@ -303,6 +326,8 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
 
         sut.onUpdateShipment(movement)
 
+        sut.viewState.observeForTesting { }
+
         val state = sut.viewState.value as WooShippingSplitShipmentViewModel.SplitShipmentViewState.DataState
 
         val modifiedShipment = state.selectableItems.values.first()
@@ -318,6 +343,8 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
         )
 
         createViewModel(shipmentArgs)
+
+        sut.viewState.observeForTesting { }
 
         val state = sut.viewState.value as WooShippingSplitShipmentViewModel.SplitShipmentViewState.DataState
 
@@ -335,6 +362,8 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
 
             createViewModel(shipmentArgs)
 
+            sut.viewState.observeForTesting { }
+
             val state = sut.viewState.value as WooShippingSplitShipmentViewModel.SplitShipmentViewState.DataState
 
             assertThat(state.overflowMenuItems.size).isEqualTo(2)
@@ -349,6 +378,8 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
         )
 
         createViewModel(shipmentArgs)
+
+        sut.viewState.observeForTesting { }
 
         val state = sut.viewState.value as WooShippingSplitShipmentViewModel.SplitShipmentViewState.DataState
         val lastMenuItem = state.overflowMenuItems.last()
@@ -377,6 +408,8 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
             destinationShipmentKey = null
         )
 
+        sut.viewState.observeForTesting { }
+
         val state = sut.viewState.value as WooShippingSplitShipmentViewModel.SplitShipmentViewState.DataState
         val currentShipments = state.selectableItems
         val expectedItemQuantity = 10 // All items from `threeShipments`
@@ -403,6 +436,8 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
                 removingShipmentKeys = (0 until shipmentArgs.shipments.size).toList(),
                 destinationShipmentKey = null
             )
+
+            sut.viewState.observeForTesting { }
 
             val state = sut.viewState.value as WooShippingSplitShipmentViewModel.SplitShipmentViewState.DataState
             val currentShipments = state.selectableItems
