@@ -32,6 +32,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.common.composeui.isPreviewMode
+import com.woocommerce.android.ui.woopos.home.WooPosHomeState.BarcodeInfoDialog
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ProductsInfoDialog
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreen
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreenProductsPreview
@@ -249,6 +250,7 @@ fun WooPosHomeCartScreenPreview() {
             state = WooPosHomeState(
                 screenPositionState = WooPosHomeState.ScreenPositionState.Cart,
                 productsInfoDialog = ProductsInfoDialog(isVisible = false),
+                barcodeInfoDialog = BarcodeInfoDialog(isVisible = false),
                 exitConfirmationDialog = WooPosHomeState.ExitConfirmationDialog(isVisible = false),
             ),
             onHomeUIEvent = { },
@@ -264,6 +266,7 @@ fun WooPosHomeCheckoutScreenPreview() {
             state = WooPosHomeState(
                 screenPositionState = WooPosHomeState.ScreenPositionState.Checkout.CartWithTotals,
                 productsInfoDialog = ProductsInfoDialog(isVisible = false),
+                barcodeInfoDialog = BarcodeInfoDialog(isVisible = false),
                 exitConfirmationDialog = WooPosHomeState.ExitConfirmationDialog(isVisible = false),
             ),
             onHomeUIEvent = { },
@@ -279,6 +282,7 @@ fun WooPosHomeCheckoutPaidScreenPreview() {
             state = WooPosHomeState(
                 screenPositionState = WooPosHomeState.ScreenPositionState.Checkout.FullScreenTotals,
                 productsInfoDialog = ProductsInfoDialog(isVisible = false),
+                barcodeInfoDialog = BarcodeInfoDialog(isVisible = false),
                 exitConfirmationDialog = WooPosHomeState.ExitConfirmationDialog(isVisible = false),
             ),
             onHomeUIEvent = { },
