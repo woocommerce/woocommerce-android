@@ -13,6 +13,8 @@ interface WooPosProductsCache {
 
     suspend fun getProductById(productId: Long): Product?
 
+    suspend fun getProductByGtin(gtin: String): Product?
+
     suspend fun updateProduct(product: Product)
 
     suspend fun deleteProduct(productId: Long)
