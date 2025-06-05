@@ -2,10 +2,8 @@ package com.woocommerce.android.ui.woopos.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -73,7 +71,7 @@ fun WooPosBarcodeInfoDialog(
             ConstraintLayout(
                 modifier = Modifier.fillMaxWidth()
             ) {
-                val (header, closeIcon, primaryText, spacer1, secondaryText, spacer2, tertiaryText, spacer3, quaternaryBox, spacer4, primaryButton) = createRefs()
+                val (header, closeIcon, primaryText, secondaryText, tertiaryText, quaternaryBox, primaryButton) = createRefs()
 
                 WooPosText(
                     text = stringResource(id = state.header),
@@ -104,14 +102,6 @@ fun WooPosBarcodeInfoDialog(
                             top.linkTo(header.bottom)
                             start.linkTo(parent.start)
                             end.linkTo(parent.end)
-                        }
-                )
-
-                Spacer(
-                    modifier = Modifier
-                        .height(WooPosSpacing.Small.value.toAdaptivePadding())
-                        .constrainAs(spacer1) {
-                            top.linkTo(primaryText.bottom)
                         }
                 )
 
@@ -148,19 +138,14 @@ fun WooPosBarcodeInfoDialog(
                     textAlign = TextAlign.Start,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = WooPosSpacing.Medium.value.toAdaptivePadding())
+                        .padding(
+                            start = WooPosSpacing.Medium.value.toAdaptivePadding(),
+                            top = WooPosSpacing.Small.value.toAdaptivePadding()
+                        )
                         .constrainAs(secondaryText) {
-                            top.linkTo(spacer1.bottom)
+                            top.linkTo(primaryText.bottom)
                             start.linkTo(parent.start)
                             end.linkTo(parent.end)
-                        }
-                )
-
-                Spacer(
-                    modifier = Modifier
-                        .height(WooPosSpacing.Small.value.toAdaptivePadding())
-                        .constrainAs(spacer2) {
-                            top.linkTo(secondaryText.bottom)
                         }
                 )
 
@@ -172,23 +157,17 @@ fun WooPosBarcodeInfoDialog(
                         .fillMaxWidth()
                         .padding(
                             start = WooPosSpacing.Medium.value.toAdaptivePadding(),
+                            top = WooPosSpacing.Small.value.toAdaptivePadding(),
                             bottom = WooPosSpacing.Medium.value.toAdaptivePadding()
                         )
                         .constrainAs(tertiaryText) {
-                            top.linkTo(spacer2.bottom)
+                            top.linkTo(secondaryText.bottom)
                             start.linkTo(parent.start)
                             end.linkTo(parent.end)
                         }
                 )
 
-                @Suppress("WooPosDesignSystemSpacingUsageRule")
-                Spacer(
-                    modifier = Modifier
-                        .height(40.dp.toAdaptivePadding())
-                        .constrainAs(spacer3) {
-                            top.linkTo(tertiaryText.bottom)
-                        }
-                )
+                val bigMargin = 40.dp.toAdaptivePadding()
 
                 Box(
                     modifier = Modifier
@@ -201,7 +180,7 @@ fun WooPosBarcodeInfoDialog(
                             horizontal = WooPosSpacing.Medium.value.toAdaptivePadding()
                         )
                         .constrainAs(quaternaryBox) {
-                            top.linkTo(spacer3.bottom)
+                            top.linkTo(tertiaryText.bottom, margin = bigMargin)
                             start.linkTo(parent.start)
                             end.linkTo(parent.end)
                         },
@@ -214,14 +193,7 @@ fun WooPosBarcodeInfoDialog(
                     )
                 }
 
-                Spacer(
-                    modifier = Modifier
-                        .height(WooPosSpacing.XLarge.value.toAdaptivePadding())
-                        .constrainAs(spacer4) {
-                            top.linkTo(quaternaryBox.bottom)
-                        }
-                )
-
+                val buttonMargin = WooPosSpacing.XLarge.value.toAdaptivePadding()
                 WooPosOutlinedButton(
                     onClick = { onDismissRequest() },
                     text = stringResource(id = state.primaryButton.label),
@@ -231,7 +203,7 @@ fun WooPosBarcodeInfoDialog(
                             contentDescription = primaryButtonContentDescription
                         }
                         .constrainAs(primaryButton) {
-                            top.linkTo(spacer4.bottom)
+                            top.linkTo(quaternaryBox.bottom, margin = buttonMargin)
                             start.linkTo(parent.start)
                             end.linkTo(parent.end)
                         }
