@@ -2,7 +2,7 @@ package com.woocommerce.android.ui.woopos.common.barcode
 
 import javax.inject.Inject
 
-class WooPosCheckBarcodeDigitRemoverFactory @Inject constructor() {
+class WooPosBarcodeCheckDigitRemoverFactory @Inject constructor() {
     fun getCheckDigitRemoverFor(barcodeFormat: WooPosBarcodeFormat): WooPosCheckDigitRemover {
         return when (barcodeFormat) {
             WooPosBarcodeFormat.FormatEAN13 -> WooPosEAN13CheckDigitRemover()

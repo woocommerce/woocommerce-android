@@ -1,11 +1,11 @@
 package com.woocommerce.android.ui.woopos.common.data.searchbyidentifier
 
 import com.woocommerce.android.ui.woopos.common.barcode.WooPosBarcodeFormat
-import com.woocommerce.android.ui.woopos.common.barcode.WooPosCheckBarcodeDigitRemoverFactory
+import com.woocommerce.android.ui.woopos.common.barcode.WooPosBarcodeCheckDigitRemoverFactory
 import javax.inject.Inject
 
 class WooPosSearchByIdentifierCheckDigitRemover @Inject constructor(
-    private val checkDigitRemoverFactory: WooPosCheckBarcodeDigitRemoverFactory
+    private val checkDigitRemoverFactory: WooPosBarcodeCheckDigitRemoverFactory
 ) {
     operator fun invoke(
         code: String,
