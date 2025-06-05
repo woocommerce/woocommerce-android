@@ -28,9 +28,18 @@ class WooPosBarcodeLoadingSimulator @Inject constructor(
 
         if (Random.nextBoolean()) {
             val itemNumber = itemNumberCounter.getAndIncrement()
-            val barcodeValue = "00${Random.nextInt(10000000, 99999999)}${Random.nextInt(10000, 99999)}"
+            val randomValue = "00${Random.nextInt(10000000, 99999999)}${Random.nextInt(10000, 99999)}"
+            val realBarcodes = listOf(
+                "00012345678905",
+                "00012345678906",
+                "heavy-duty-steel-car-62383189"
+            )
             searchAndAddProductToCartFromHIDScanner(
-                barcodeValue = barcodeValue,
+                barcodeValue = if (Random.nextBoolean()) {
+                    realBarcodes.random()
+                } else {
+                    randomValue
+                },
                 itemNumber = itemNumber,
                 state = state,
                 scope = scope
