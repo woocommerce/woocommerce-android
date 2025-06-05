@@ -301,8 +301,7 @@ class WooPosCartViewModel @Inject constructor(
             }
 
             itemClicked.await()?.let {
-                _state.value = updateStateWithNewItem(it)
-                barcodeLoadingSimulator.maybeSimulateLoadingItem(_state, viewModelScope)
+                updateStateWithNewItem(it)
             }
             event.eventForTracking?.let {
                 analyticsTracker.track(it)
@@ -346,13 +345,13 @@ class WooPosCartViewModel @Inject constructor(
             if (_state.value.body == WooPosCartState.Body.Empty) {
                 analyticsTracker.track(InteractionWithCustomerStarted)
             }
-            // TBD display a loading state when searching for a product
+            val itemNumber = getItemNumber()
+            updateStateWithNewItem(WooPosCartItemViewState.Loading(itemNumber = itemNumber, name = barcode))
+
             when (val searchResult = searchByIdentifier.invoke(barcode)) {
                 is WooPosSearchByIdentifierResult.Success -> {
                     // TBD handle cases when the product is a variation
-                    val itemNumber = getItemNumber()
-                    val cartListItem = searchResult.product.toCartListItem(itemNumber)
-                    _state.value = updateStateWithNewItem(cartListItem)
+                    updateStateByReplacingItem(searchResult.product.toCartListItem(itemNumber), itemNumber)
                 }
 
                 is WooPosSearchByIdentifierResult.Failure -> {
@@ -369,8 +368,8 @@ class WooPosCartViewModel @Inject constructor(
         }
     }
 
-    private fun updateStateWithNewItem(newItem: WooPosCartItemViewState): WooPosCartState {
-        return when (val currentState = _state.value.body) {
+    private fun updateStateWithNewItem(newItem: WooPosCartItemViewState) {
+        _state.value = when (val currentState = _state.value.body) {
             is WooPosCartState.Body.Empty -> _state.value.copy(body = WooPosCartState.Body.WithItems(listOf(newItem)))
             is WooPosCartState.Body.WithItems -> {
                 val updatedItemsList = placeItemInList(currentState, newItem)
@@ -378,6 +377,23 @@ class WooPosCartViewModel @Inject constructor(
                 _state.value.copy(body = currentState.copy(itemsInCart = updatedItemsList))
             }
         }
+    }
+
+    private fun updateStateByReplacingItem(newItem: WooPosCartItemViewState, itemNumber: Int) {
+        val currentState = _state.value
+        val body = currentState.body as? WooPosCartState.Body.WithItems
+            ?: error("Cannot replace item in an empty cart")
+
+        val itemExists = body.itemsInCart.any { it.itemNumber == itemNumber }
+        if (!itemExists) {
+            error("Item with number $itemNumber not found in cart")
+        }
+
+        val updatedItemsList = body.itemsInCart.map { item ->
+            if (item.itemNumber == itemNumber) newItem else item
+        }
+
+        _state.value = currentState.copy(body = body.copy(itemsInCart = updatedItemsList))
     }
 
     private fun placeItemInList(
