@@ -1,13 +1,13 @@
 package com.woocommerce.android.ui.woopos.common.data.searchbyidentifier
 
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.ui.woopos.common.data.WooPosBarcodeFormat
+import com.woocommerce.android.ui.woopos.common.barcode.WooPosBarcodeFormat
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
 import javax.inject.Inject
 
 class WooPosSearchByIdentifierLocal @Inject constructor(
     private val productsCache: WooPosProductsCache,
-    private val lastDigitRemover: WooPosSearchByIdentifierLastDigitRemover
+    private val lastDigitRemover: WooPosSearchByIdentifierCheckDigitRemover
 ) {
     @Suppress("ReturnCount")
     suspend operator fun invoke(

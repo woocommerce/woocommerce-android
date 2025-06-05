@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.woopos.common.data.searchbyidentifier
 
-import com.woocommerce.android.ui.woopos.common.data.WooPosBarcodeFormat
+import com.woocommerce.android.ui.woopos.common.barcode.WooPosBarcodeFormat
 import javax.inject.Inject
 
 class WooPosSearchByIdentifier @Inject constructor(

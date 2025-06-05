@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.common.data
+package com.woocommerce.android.ui.woopos.common.barcode
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
