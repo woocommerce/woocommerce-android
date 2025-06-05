@@ -210,6 +210,10 @@ class WooPosHomeViewModel @Inject constructor(
                     ChildToParentEvent.RefreshProductList -> {
                         sendEventToChildren(ParentToChildrenEvent.RefreshProductList)
                     }
+
+                    is ChildToParentEvent.BarcodeScanned -> sendEventToChildren(
+                        ParentToChildrenEvent.BarcodeScanned(event.barcode)
+                    )
                 }
             }
         }

@@ -10,6 +10,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetCouponById
+import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductByGtinOrSku
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetVariationById
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
@@ -56,6 +57,7 @@ class WooPosCartViewModel @Inject constructor(
     private val analyticsTrackingDataKeeper: WooPosAnalyticsTrackingDataKeeper,
     private val updateCartItemsWithChanges: WooPosCartItemsUpdater,
     private val getCachedStoreCurrency: WooPosGetCachedStoreCurrency,
+    private val getProductByGtinOrSku: WooPosGetProductByGtinOrSku,
     private val barcodeLoadingSimulator: WooPosBarcodeLoadingSimulator,
     savedState: SavedStateHandle,
 ) : ViewModel() {
@@ -196,6 +198,10 @@ class WooPosCartViewModel @Inject constructor(
                     is ParentToChildrenEvent.RemoveCouponsClicked -> {
                         removeCouponsFromCart()
                     }
+
+                    is ParentToChildrenEvent.BarcodeScanned -> {
+                        onBarcodeScanned(event.barcode)
+                    }
                 }
             }
         }
@@ -326,6 +332,24 @@ class WooPosCartViewModel @Inject constructor(
 
     private fun clearCart() {
         _state.value = WooPosCartState()
+    }
+
+    private fun onBarcodeScanned(barcode: String) {
+        if (_state.value.cartStatus !in listOf(EDITABLE, EMPTY)) {
+            return
+        }
+        viewModelScope.launch {
+            if (_state.value.body == WooPosCartState.Body.Empty) {
+                analyticsTracker.track(InteractionWithCustomerStarted)
+            }
+            // TBD display a loading state when searching for a product
+            val product = getProductByGtinOrSku.invoke(barcode)
+            // TBD handle cases when the barcode is not found
+            // TBD handle cases when the product is a variation
+            val itemNumber = getItemNumber()
+            val cartListItem = product.toCartListItem(itemNumber)
+            _state.value = updateStateWithNewItem(cartListItem)
+        }
     }
 
     private fun getItemNumber(): Int {

@@ -37,6 +37,8 @@ sealed class ParentToChildrenEvent {
         val itemClickedDataList: List<WooPosItemsViewModel.ItemClickedData>
     ) : ParentToChildrenEvent()
 
+    data class BarcodeScanned(val barcode: String) : ParentToChildrenEvent()
+
     data class OrderSuccessfullyPaid(val paymentMethod: PaymentMethod) : ParentToChildrenEvent() {
         enum class PaymentMethod {
             CARD,

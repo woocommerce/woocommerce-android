@@ -12,4 +12,5 @@ sealed class WooPosItemsUIEvent {
     data object CloseSearchClicked : WooPosItemsUIEvent()
     data object SearchIconClicked : WooPosItemsUIEvent()
     data object AddCouponIconClicked : WooPosItemsUIEvent()
+    data class BarcodeScanned(val barcode: String) : WooPosItemsUIEvent()
 }
