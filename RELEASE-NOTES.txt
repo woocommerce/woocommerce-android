@@ -4,6 +4,7 @@
 22.6
 -----
 - [*] Fix a rare dead-end in the order creation flow. [https://github.com/woocommerce/woocommerce-android/pull/14133]
+- [**] Fix UI glitches in Orders screen on small tablets. [https://github.com/woocommerce/woocommerce-android/pull/14152]
 
 22.6
 -----
