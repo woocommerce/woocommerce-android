@@ -124,7 +124,6 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
         }
     }
 
-
     private suspend fun searchAndConvertResult(
         searchFunction: suspend () -> Result<List<Product>>
     ): WooPosSearchByIdentifierResult {

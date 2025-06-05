@@ -131,6 +131,7 @@ class WooPosSearchByIdentifierTest {
         verify(remoteSearcher).onCleanup()
     }
 
+    @Suppress("LongMethod")
     private fun createProduct(
         remoteId: Long = 1,
         name: String = "Test Product"

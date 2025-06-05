@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.woopos.common.data.searchbyidentifier
 
-import com.woocommerce.android.ui.woopos.common.barcode.WooPosBarcodeFormat
 import com.woocommerce.android.ui.woopos.common.barcode.WooPosBarcodeCheckDigitRemoverFactory
+import com.woocommerce.android.ui.woopos.common.barcode.WooPosBarcodeFormat
 import javax.inject.Inject
 
 class WooPosSearchByIdentifierCheckDigitRemover @Inject constructor(

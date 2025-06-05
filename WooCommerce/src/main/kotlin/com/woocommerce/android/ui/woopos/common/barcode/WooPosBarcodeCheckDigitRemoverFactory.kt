@@ -9,7 +9,7 @@ class WooPosBarcodeCheckDigitRemoverFactory @Inject constructor() {
             WooPosBarcodeFormat.FormatEAN8 -> WooPosEAN8CheckDigitRemover()
             WooPosBarcodeFormat.FormatUPCA -> WooPosUPCCheckDigitRemover()
             WooPosBarcodeFormat.FormatUPCE -> WooPosUPCCheckDigitRemover()
-            else -> throw IllegalStateException(
+            else -> error(
                 "Cannot remove check digit for this barcode format: ${barcodeFormat.formatName}"
             )
         }

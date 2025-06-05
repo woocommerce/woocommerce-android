@@ -1,8 +1,6 @@
 package com.woocommerce.android.ui.woopos.common.data.searchbyidentifier
 
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.model.ProductCategory
-import com.woocommerce.android.model.ProductTag
 import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductStockStatus
@@ -118,6 +116,7 @@ class WooPosSearchByIdentifierLocalTest {
         assertEquals(product, result)
     }
 
+    @Suppress("LongMethod")
     private fun createProduct(
         remoteId: Long = 1,
         name: String = "Test Product",
