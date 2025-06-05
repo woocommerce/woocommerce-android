@@ -30,33 +30,52 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
         dispatcher.register(this)
     }
 
-    fun onCleanup() {
-        dispatcher.unregister(this)
-    }
-
     suspend operator fun invoke(
         identifier: String,
         format: WooPosBarcodeFormat
-    ): WooPosSearchByIdentifierResult {
-        val (gtinResult, identifierResult) = searchInParallel(identifier)
+    ): WooPosSearchByIdentifierResult = coroutineScope {
+        val gtinSearchDeferred = async {
+            searchAndConvertResult { searchProductsByGlobalUniqueId(identifier) }
+        }
+        val skuSearchDeferred = async {
+            searchAndConvertResult { searchProductsBySku(identifier) }
+        }
 
-        return gtinResult as? WooPosSearchByIdentifierResult.Success
-            ?: if (identifierResult is WooPosSearchByIdentifierResult.Success) {
-                identifierResult
-            } else {
-                val identifierWithoutCheckDigit = checkDigitRemover(identifier, format)
-                return if (identifierWithoutCheckDigit != null) {
-                    val (gtinFallbackResult, identifierFallbackResult) = searchInParallel(identifierWithoutCheckDigit)
+        val gtinResult = gtinSearchDeferred.await()
+        if (gtinResult is WooPosSearchByIdentifierResult.Success) {
+            skuSearchDeferred.cancel()
+            return@coroutineScope gtinResult
+        }
 
-                    gtinFallbackResult as? WooPosSearchByIdentifierResult.Success
+        val identifierResult = skuSearchDeferred.await()
+        if (identifierResult is WooPosSearchByIdentifierResult.Success) {
+            return@coroutineScope identifierResult
+        }
 
-                    identifierFallbackResult as? WooPosSearchByIdentifierResult.Success
-
-                    prioritizeError(gtinFallbackResult, identifierFallbackResult, gtinResult, identifierResult)
-                } else {
-                    prioritizeError(gtinResult, identifierResult)
-                }
+        val identifierWithoutCheckDigit = checkDigitRemover(identifier, format)
+        if (identifierWithoutCheckDigit != null) {
+            val gtinFallbackDeferred = async {
+                searchAndConvertResult { searchProductsByGlobalUniqueId(identifierWithoutCheckDigit) }
             }
+            val identifierFallbackDeferred = async {
+                searchAndConvertResult { searchProductsBySku(identifierWithoutCheckDigit) }
+            }
+
+            val gtinFallbackResult = gtinFallbackDeferred.await()
+            if (gtinFallbackResult is WooPosSearchByIdentifierResult.Success) {
+                identifierFallbackDeferred.cancel()
+                return@coroutineScope gtinFallbackResult
+            }
+
+            val identifierFallbackResult = identifierFallbackDeferred.await()
+            if (identifierFallbackResult is WooPosSearchByIdentifierResult.Success) {
+                return@coroutineScope identifierFallbackResult
+            }
+
+            prioritizeError(gtinFallbackResult, identifierFallbackResult, gtinResult, identifierResult)
+        } else {
+            prioritizeError(gtinResult, identifierResult)
+        }
     }
 
     private suspend fun searchProductsBySku(identifier: String): Result<List<Product>> {
@@ -78,8 +97,7 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
             is ContinuationWrapper.ContinuationResult.Cancellation ->
                 Result.failure(SearchException(WooPosSearchByIdentifierResult.Error.RequestCancelled))
 
-            is ContinuationWrapper.ContinuationResult.Success ->
-                Result.success(result.value)
+            is ContinuationWrapper.ContinuationResult.Success -> Result.success(result.value)
         }
     }
 
@@ -106,17 +124,6 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
         }
     }
 
-    private suspend fun searchInParallel(identifier: String):
-        Pair<WooPosSearchByIdentifierResult, WooPosSearchByIdentifierResult> = coroutineScope {
-        val gtinSearchDeferred = async {
-            searchAndConvertResult { searchProductsByGlobalUniqueId(identifier) }
-        }
-        val identifierSearchDeferred = async {
-            searchAndConvertResult { searchProductsBySku(identifier) }
-        }
-
-        Pair(gtinSearchDeferred.await(), identifierSearchDeferred.await())
-    }
 
     private suspend fun searchAndConvertResult(
         searchFunction: suspend () -> Result<List<Product>>
@@ -186,6 +193,10 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
             val products = event.searchResults.map { it.toAppModel() }
             continuation.continueWith(products)
         }
+    }
+
+    fun onCleanup() {
+        dispatcher.unregister(this)
     }
 }
 
