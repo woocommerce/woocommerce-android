@@ -414,6 +414,7 @@ class WooPosItemsViewModelTest {
 
 
 
+
         // WHEN
         viewModel.onUIEvent(WooPosItemsUIEvent.BarcodeScanned("1234567890"))
 
