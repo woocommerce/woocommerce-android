@@ -116,7 +116,8 @@ data class Order(
         val parent: Long? = null,
         val configuration: ProductConfiguration? = null,
         val configurationKey: Long? = null,
-        val containsMetadata: Boolean = false
+        val containsMetadata: Boolean = false,
+        val taxes: List<LineTaxEntry> = emptyList(),
     ) : Parcelable {
         @IgnoredOnParcel
         val uniqueId: Long = ProductHelper.productOrVariationId(productId, variationId)
@@ -205,10 +206,11 @@ data class Order(
         val methodId: String?,
         val methodTitle: String,
         val totalTax: BigDecimal,
-        val total: BigDecimal
+        val total: BigDecimal,
+        val taxes: List<LineTaxEntry>
     ) : Parcelable {
         constructor(methodId: String, methodTitle: String, total: BigDecimal) :
-            this(0L, methodId, methodTitle, BigDecimal.ZERO, total)
+            this(0L, methodId, methodTitle, BigDecimal.ZERO, total, emptyList())
     }
 
     @Parcelize
@@ -228,6 +230,7 @@ data class Order(
         val total: BigDecimal,
         val totalTax: BigDecimal,
         var taxStatus: FeeLineTaxStatus,
+        val taxes: List<LineTaxEntry>
     ) : Parcelable {
         fun getTotalValue(): BigDecimal = total + totalTax
 
@@ -238,6 +241,7 @@ data class Order(
                 total = BigDecimal.ZERO,
                 totalTax = BigDecimal.ZERO,
                 taxStatus = FeeLineTaxStatus.UNKNOWN,
+                taxes = emptyList()
             )
         }
 
@@ -274,6 +278,12 @@ data class Order(
             )
         }
     }
+
+    @Parcelize
+    data class LineTaxEntry(
+        val rateId: Long,
+        val taxAmount: BigDecimal
+    ) : Parcelable
 
     fun getBillingName(defaultValue: String): String {
         return when {

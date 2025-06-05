@@ -1,6 +1,5 @@
-package com.woocommerce.android.extensions
+package com.woocommerce.android.ui.payments.refunds
 
-import com.woocommerce.android.ui.payments.refunds.RefundProductListAdapter.ProductRefundListItem
 import java.math.BigDecimal
 import java.math.RoundingMode.HALF_UP
 
@@ -24,4 +23,14 @@ fun ProductRefundListItem.calculateTotalTaxes(): BigDecimal {
 
     val singleItemTax = orderItem.totalTax.divide(orderItem.quantity.toBigDecimal(), 2, HALF_UP)
     return quantity.times(singleItemTax)
+}
+
+fun ProductRefundListItem.calculateTaxesList(): List<TaxRefund> {
+    val quantity = quantity.toBigDecimal()
+    val taxes = orderItem.taxes
+
+    return taxes.map {
+        val tax = it.taxAmount.divide(orderItem.quantity.toBigDecimal(), 2, HALF_UP)
+        TaxRefund(it.rateId, quantity.times(tax))
+    }
 }

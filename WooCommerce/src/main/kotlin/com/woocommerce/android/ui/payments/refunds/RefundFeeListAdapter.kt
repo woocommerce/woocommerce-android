@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.payments.refunds
 
-import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,9 +8,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.hide
-import com.woocommerce.android.model.Order
-import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.model.refunds.WCRefundModel.WCRefundItem
 import java.math.BigDecimal
 
 class RefundFeeListAdapter(
@@ -70,19 +66,5 @@ class RefundFeeListAdapter(
         val name: TextView = view.findViewById(R.id.issueRefund_feesName)
         val switch: SwitchMaterial = view.findViewById(R.id.issueRefund_feeLineSwitch)
         val divider: View = view.findViewById(R.id.issueRefund_feesDivider)
-    }
-
-    @Parcelize
-    data class FeeRefundListItem(
-        val feeLine: Order.FeeLine
-    ) : Parcelable {
-        fun toDataModel(): WCRefundItem {
-            return WCRefundItem(
-                feeLine.id,
-                quantity = 1, /* Hardcoded because a fee line always has a quantity of 1 */
-                subtotal = feeLine.total,
-                totalTax = feeLine.totalTax
-            )
-        }
     }
 }

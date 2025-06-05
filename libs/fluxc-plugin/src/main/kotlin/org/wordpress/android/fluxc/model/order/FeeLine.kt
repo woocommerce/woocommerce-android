@@ -23,6 +23,9 @@ class FeeLine {
 
     @SerializedName("tax_status")
     var taxStatus: FeeLineTaxStatus? = null
+
+    @SerializedName("taxes")
+    var taxes: List<WCLineTaxEntry>? = null
 }
 
 enum class FeeLineTaxStatus(val value: String) {

@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
-import com.woocommerce.android.ui.woopos.common.composeui.component.RecentSearchesChips
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosRecentSearchesChips
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
@@ -41,7 +41,7 @@ fun WooPosCouponsEmptySearchQueryStateScreen(
             .verticalScroll(scrollState)
     ) {
         if (state.recentSearches.isNotEmpty()) {
-            RecentSearchesChips(
+            WooPosRecentSearchesChips(
                 recentSearches = state.recentSearches,
                 onRecentSearchClicked = { recentSearch ->
                     onUIEvent(WooPosCouponsSearchUiEvent.OnRecentSearchClicked(recentSearch))
@@ -82,7 +82,7 @@ fun WooPosCouponsRecentSearchesChipsPreview() {
                 .fillMaxWidth()
                 .padding(WooPosSpacing.Medium.value)
         ) {
-            RecentSearchesChips(
+            WooPosRecentSearchesChips(
                 recentSearches = listOf("SUMMER", "DISCOUNT", "SALE", "WINTER", "PROMO"),
                 onRecentSearchClicked = {}
             )

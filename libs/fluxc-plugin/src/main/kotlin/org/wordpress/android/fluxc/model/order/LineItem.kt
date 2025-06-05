@@ -30,7 +30,9 @@ data class LineItem(
     @SerializedName("bundled_by")
     val bundledBy: String? = null,
     @SerializedName("composite_parent")
-    val compositeParent: String? = null
+    val compositeParent: String? = null,
+    @SerializedName("taxes")
+    val taxes: List<WCLineTaxEntry>? = null,
 ) {
     class Attribute(val key: String?, val value: String?)
 

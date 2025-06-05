@@ -30,7 +30,8 @@ class RefundMapper @Inject constructor() {
                             total = it.total?.toBigDecimalOrNull(),
                             sku = it.sku,
                             price = it.price?.toBigDecimalOrNull(),
-                            metaData = it.metaData
+                            metaData = it.metaData,
+                            taxes = it.taxes
                     )
                 } ?: emptyList(),
                 shippingLineItems = response.shippingLineItems ?: emptyList(),
