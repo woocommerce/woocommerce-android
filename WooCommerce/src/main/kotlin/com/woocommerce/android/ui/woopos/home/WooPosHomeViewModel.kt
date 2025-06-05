@@ -97,6 +97,12 @@ class WooPosHomeViewModel @Inject constructor(
                 )
             }
 
+            WooPosHomeUIEvent.DismissBarcodeInfoDialog -> {
+                _state.value = _state.value.copy(
+                    barcodeInfoDialog = BarcodeInfoDialog(isVisible = false)
+                )
+            }
+
             WooPosHomeUIEvent.OnPaymentCompletedViaCash -> onOrderSuccessfullyPaid(
                 PaymentMethod.CASH
             )
@@ -175,6 +181,12 @@ class WooPosHomeViewModel @Inject constructor(
                     ChildToParentEvent.SimpleProductExplanationMenuItemClicked -> {
                         _state.value = _state.value.copy(
                             productsInfoDialog = ProductsInfoDialog(isVisible = true)
+                        )
+                    }
+
+                    ChildToParentEvent.BarcodeInfoMenuItemClicked -> {
+                        _state.value = _state.value.copy(
+                            barcodeInfoDialog = BarcodeInfoDialog(isVisible = true)
                         )
                     }
 
