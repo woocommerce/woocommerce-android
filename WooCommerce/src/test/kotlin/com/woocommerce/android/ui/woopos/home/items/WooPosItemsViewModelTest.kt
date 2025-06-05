@@ -412,6 +412,8 @@ class WooPosItemsViewModelTest {
         // GIVEN
         val viewModel = createViewModel()
 
+
+
         // WHEN
         viewModel.onUIEvent(WooPosItemsUIEvent.BarcodeScanned("1234567890"))
 
