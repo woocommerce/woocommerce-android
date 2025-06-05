@@ -1,25 +1,25 @@
 package com.woocommerce.android.ui.woopos.common.data.searchbyidentifier
 
-import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper
+import com.woocommerce.android.ui.woopos.common.data.WooPosBarcodeFormat
 import javax.inject.Inject
 
 class WooPosSearchByIdentifier @Inject constructor(
     private val localSearcher: WooPosSearchByIdentifierLocal,
     private val remoteSearcher: WooPosSearchByIdentifierRemote
 ) {
-    fun onCleanup() {
-        remoteSearcher.onCleanup()
-    }
-
     suspend operator fun invoke(
-        codeScannerResultCode: String,
-        codeScannerResultFormat: GoogleBarcodeFormatMapper.BarcodeFormat
+        identifier: String,
+        format: WooPosBarcodeFormat = WooPosBarcodeFormat.FormatUnknown
     ): WooPosSearchByIdentifierResult {
-        val localProduct = localSearcher(codeScannerResultCode, codeScannerResultFormat)
+        val localProduct = localSearcher(identifier, format)
         if (localProduct != null) {
             return WooPosSearchByIdentifierResult.Success(localProduct)
         }
 
-        return remoteSearcher(codeScannerResultCode, codeScannerResultFormat)
+        return remoteSearcher(identifier, format)
+    }
+
+    fun onCleanup() {
+        remoteSearcher.onCleanup()
     }
 }

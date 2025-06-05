@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.home.cart
 
-import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper
 import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosSearchByIdentifier
 import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosSearchByIdentifierResult
 import com.woocommerce.android.ui.woopos.featureflags.WooPosIsBarcodesScanningFeatureFlagEnabled
@@ -30,9 +29,8 @@ class WooPosBarcodeLoadingSimulator @Inject constructor(
         if (Random.nextBoolean()) {
             val itemNumber = itemNumberCounter.getAndIncrement()
             val barcodeValue = "00${Random.nextInt(10000000, 99999999)}${Random.nextInt(10000, 99999)}"
-            searchAndAddProductToCart(
+            searchAndAddProductToCartFromHIDScanner(
                 barcodeValue = barcodeValue,
-                barcodeFormat = GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN13,
                 itemNumber = itemNumber,
                 state = state,
                 scope = scope
@@ -40,16 +38,15 @@ class WooPosBarcodeLoadingSimulator @Inject constructor(
         }
     }
 
-    fun searchAndAddProductToCart(
+    fun searchAndAddProductToCartFromHIDScanner(
         barcodeValue: String,
-        barcodeFormat: GoogleBarcodeFormatMapper.BarcodeFormat,
         itemNumber: Int,
         state: MutableStateFlow<WooPosCartState>,
         scope: CoroutineScope
     ) {
-        addLoadingItemToCart(barcodeValue, itemNumber, state)
         scope.launch {
-            val result = searchProductByIdentifier(barcodeValue, barcodeFormat)
+            addLoadingItemToCart(barcodeValue, itemNumber, state)
+            val result = searchProductByIdentifier(barcodeValue)
             updateCartWithSearchResult(result, itemNumber, state)
         }
     }

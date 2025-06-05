@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.woopos.common.data.searchbyidentifier
 
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper
+import com.woocommerce.android.ui.woopos.common.data.WooPosBarcodeFormat
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
 import javax.inject.Inject
 
@@ -12,7 +12,7 @@ class WooPosSearchByIdentifierLocal @Inject constructor(
     @Suppress("ReturnCount")
     suspend operator fun invoke(
         identifier: String,
-        codeScannerResultFormat: GoogleBarcodeFormatMapper.BarcodeFormat
+        codeScannerResultFormat: WooPosBarcodeFormat
     ): Product? {
         val searchQueries = listOfNotNull(
             identifier,

@@ -4,7 +4,7 @@ import com.woocommerce.android.AppConstants
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper
+import com.woocommerce.android.ui.woopos.common.data.WooPosBarcodeFormat
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.WooLog
@@ -36,7 +36,7 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
 
     suspend operator fun invoke(
         identifier: String,
-        codeScannerResultFormat: GoogleBarcodeFormatMapper.BarcodeFormat
+        format: WooPosBarcodeFormat
     ): WooPosSearchByIdentifierResult {
         val (gtinResult, skuResult) = searchInParallel(identifier)
 
@@ -44,7 +44,7 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
             ?: if (skuResult is WooPosSearchByIdentifierResult.Success) {
                 skuResult
             } else {
-                val identifierWithoutCheckDigit = checkDigitRemover(identifier, codeScannerResultFormat)
+                val identifierWithoutCheckDigit = checkDigitRemover(identifier, format)
                 return if (identifierWithoutCheckDigit != null) {
                     val (gtinFallbackResult, skuFallbackResult) = searchInParallel(identifierWithoutCheckDigit)
 
