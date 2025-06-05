@@ -90,6 +90,11 @@ class WooPosToolbarViewModel @Inject constructor(
         hideMenu()
 
         when (event.menuItem.title) {
+            R.string.woopos_barcode_scanning_title -> {
+                viewModelScope.launch {
+                    childrenToParentEventSender.sendToParent(ChildToParentEvent.BarcodeInfoMenuItemClicked)
+                }
+            }
             R.string.woopos_product_limitations_title -> {
                 viewModelScope.launch {
                     childrenToParentEventSender.sendToParent(ChildToParentEvent.SimpleProductExplanationMenuItemClicked)
@@ -152,6 +157,10 @@ class WooPosToolbarViewModel @Inject constructor(
 
     private companion object {
         val toolbarMenuItems = listOf(
+            WooPosToolbarState.Menu.MenuItem(
+                title = R.string.woopos_barcode_scanning_title,
+                icon = R.drawable.ic_barcode_scanner,
+            ),
             WooPosToolbarState.Menu.MenuItem(
                 title = R.string.woopos_product_limitations_title,
                 icon = R.drawable.ic_not_found,
