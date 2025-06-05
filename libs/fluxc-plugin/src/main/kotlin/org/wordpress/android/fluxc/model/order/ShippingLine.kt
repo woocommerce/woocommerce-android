@@ -13,5 +13,7 @@ data class ShippingLine(
     @JsonAdapter(NullStringJsonAdapter::class, nullSafe = false)
     val methodId: String? = null,
     @SerializedName("method_title")
-    val methodTitle: String? = null
+    val methodTitle: String? = null,
+    @SerializedName("taxes")
+    val taxes: List<WCLineTaxEntry>? = null,
 )

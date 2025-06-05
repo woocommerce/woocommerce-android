@@ -18,9 +18,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent.REFUND_CREATE_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.adminUrlOrDefault
-import com.woocommerce.android.extensions.calculateTotalSubtotal
-import com.woocommerce.android.extensions.calculateTotalTaxes
-import com.woocommerce.android.extensions.calculateTotals
 import com.woocommerce.android.extensions.isCashPayment
 import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.extensions.joinToString
@@ -38,9 +35,6 @@ import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRef
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.ShowNumberPicker
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundConfirmation
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundSummary
-import com.woocommerce.android.ui.payments.refunds.RefundFeeListAdapter.FeeRefundListItem
-import com.woocommerce.android.ui.payments.refunds.RefundProductListAdapter.ProductRefundListItem
-import com.woocommerce.android.ui.payments.refunds.RefundShippingListAdapter.ShippingRefundListItem
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.max
 import com.woocommerce.android.util.min
@@ -56,8 +50,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.model.refunds.RefundRequestItem
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel
-import org.wordpress.android.fluxc.model.refunds.WCRefundModel.WCRefundItem
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCGatewayStore
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -387,7 +381,7 @@ class IssueRefundViewModel @Inject constructor(
     }
 
     private suspend fun initiateRefund(): WooResult<WCRefundModel> {
-        val allItems = mutableListOf<WCRefundItem>()
+        val allItems = mutableListOf<RefundRequestItem>()
         refundItems.value?.let {
             it.forEach { item -> allItems.add(item.toDataModel()) }
         }
