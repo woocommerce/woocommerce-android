@@ -46,3 +46,14 @@ sealed class WooPosBarcodeFormat(val formatName: String) : Parcelable {
     @Parcelize
     object FormatUnknown : WooPosBarcodeFormat("unknown")
 }
+
+fun WooPosBarcodeFormat.isUPC() = this == WooPosBarcodeFormat.FormatUPCA || this == WooPosBarcodeFormat.FormatUPCE
+
+fun WooPosBarcodeFormat.isEAN() = this == WooPosBarcodeFormat.FormatEAN13 || this == WooPosBarcodeFormat.FormatEAN8
+
+fun WooPosBarcodeFormat.removeCheckDigitIfPresent(code: String) =
+    if (isEAN() || isUPC()) {
+        code.dropLast(1)
+    } else {
+        code
+    }

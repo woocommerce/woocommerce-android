@@ -53,7 +53,7 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
         }
 
         val identifierWithoutCheckDigit = checkDigitRemover(identifier, format)
-        if (identifierWithoutCheckDigit != null) {
+        if (identifierWithoutCheckDigit != identifier) {
             val gtinFallbackDeferred = async {
                 searchAndConvertResult { searchProductsByGlobalUniqueId(identifierWithoutCheckDigit) }
             }

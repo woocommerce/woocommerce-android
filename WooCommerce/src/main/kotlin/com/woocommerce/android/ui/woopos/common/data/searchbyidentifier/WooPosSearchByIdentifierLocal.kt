@@ -7,17 +7,19 @@ import javax.inject.Inject
 
 class WooPosSearchByIdentifierLocal @Inject constructor(
     private val productsCache: WooPosProductsCache,
-    private val lastDigitRemover: WooPosSearchByIdentifierCheckDigitRemover
+    private val checkDigitRemover: WooPosSearchByIdentifierCheckDigitRemover
 ) {
     @Suppress("ReturnCount")
     suspend operator fun invoke(
         identifier: String,
         codeScannerResultFormat: WooPosBarcodeFormat
     ): Product? {
-        val searchQueries = listOfNotNull(
-            identifier,
-            lastDigitRemover(identifier, codeScannerResultFormat)
-        )
+        val identifierWithoutCheckDigit = checkDigitRemover(identifier, codeScannerResultFormat)
+        val searchQueries = if (identifierWithoutCheckDigit != identifier) {
+            listOf(identifier, identifierWithoutCheckDigit)
+        } else {
+            listOf(identifier)
+        }
 
         val allProducts = productsCache.getAll()
 
