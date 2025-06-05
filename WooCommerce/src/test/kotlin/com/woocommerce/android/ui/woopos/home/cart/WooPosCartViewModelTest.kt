@@ -782,7 +782,7 @@ class WooPosCartViewModelTest {
 
         // THEN
         val state = states.last()
-        assertThat(state.isCheckoutButtonVisible).isFalse()
+        assertThat(state.checkoutButtonState).isEqualTo(WooPosCartState.CheckoutButtonState.Invisible)
     }
 
     @Test
@@ -796,7 +796,7 @@ class WooPosCartViewModelTest {
 
         // THEN
         val finalState = states.last()
-        assertThat(finalState.isCheckoutButtonVisible).isFalse()
+        assertThat(finalState.checkoutButtonState).isEqualTo(WooPosCartState.CheckoutButtonState.Invisible)
     }
 
     @Test
@@ -823,7 +823,7 @@ class WooPosCartViewModelTest {
 
         // THEN
         val finalState = states.last()
-        assertThat(finalState.isCheckoutButtonVisible).isTrue()
+        assertThat(finalState.checkoutButtonState).isEqualTo(WooPosCartState.CheckoutButtonState.Enabled)
     }
 
     @Test
@@ -853,7 +853,7 @@ class WooPosCartViewModelTest {
 
         // THEN
         val finalState = states.last()
-        assertThat(finalState.isCheckoutButtonVisible).isTrue()
+        assertThat(finalState.checkoutButtonState).isEqualTo(WooPosCartState.CheckoutButtonState.Enabled)
     }
 
     @Test
@@ -885,21 +885,21 @@ class WooPosCartViewModelTest {
 
         // THEN
         val finalState = states.last()
-        assertThat(finalState.isCheckoutButtonVisible).isFalse()
+        assertThat(finalState.checkoutButtonState).isEqualTo(WooPosCartState.CheckoutButtonState.Invisible)
     }
 
     @Test
     fun `given cart with products, when navigated to checkout, then checkout button not visible`() = runTest {
         // GIVEN
         val (sut, states) = createSutWithItemsInCart()
-        assertThat(states.last().isCheckoutButtonVisible).isTrue()
+        assertThat(states.last().checkoutButtonState).isEqualTo(WooPosCartState.CheckoutButtonState.Enabled)
 
         // WHEN
         sut.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
 
         // THEN
         val finalState = states.last()
-        assertThat(finalState.isCheckoutButtonVisible).isFalse()
+        assertThat(finalState.checkoutButtonState).isEqualTo(WooPosCartState.CheckoutButtonState.Invisible)
     }
 
     @Test
@@ -907,14 +907,14 @@ class WooPosCartViewModelTest {
         // GIVEN
         val (sut, states) = createSutWithItemsInCart()
         sut.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
-        assertThat(states.last().isCheckoutButtonVisible).isFalse()
+        assertThat(states.last().checkoutButtonState).isEqualTo(WooPosCartState.CheckoutButtonState.Invisible)
 
         // WHEN
         sut.onUIEvent(WooPosCartUIEvent.BackClicked)
 
         // THEN
         val finalState = states.last()
-        assertThat(finalState.isCheckoutButtonVisible).isTrue()
+        assertThat(finalState.checkoutButtonState).isEqualTo(WooPosCartState.CheckoutButtonState.Enabled)
     }
 
     @Test

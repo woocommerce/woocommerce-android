@@ -74,6 +74,7 @@ import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosLazyColumn
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButtonSmall
@@ -158,14 +159,14 @@ private fun WooPosCartScreen(
                     },
                     items = state.body.itemsInCart,
                     areItemsRemovable = state.areItemsRemovable,
-                    isCheckoutButtonVisible = state.isCheckoutButtonVisible,
+                    checkoutButtonState = state.checkoutButtonState,
                     onUIEvent = onUIEvent
                 )
             }
         }
 
         AnimatedVisibility(
-            visible = state.isCheckoutButtonVisible,
+            visible = state.checkoutButtonState != WooPosCartState.CheckoutButtonState.Invisible,
             enter = fadeIn(animationSpec = tween(300)),
             exit = fadeOut(animationSpec = tween(300)),
             modifier = Modifier
@@ -180,7 +181,14 @@ private fun WooPosCartScreen(
         ) {
             WooPosButton(
                 text = stringResource(R.string.woopos_checkout_button),
-                onClick = { onUIEvent(WooPosCartUIEvent.CheckoutClicked) }
+                onClick = { onUIEvent(WooPosCartUIEvent.CheckoutClicked) },
+                state = when (state.checkoutButtonState) {
+                    WooPosCartState.CheckoutButtonState.Enabled -> WooPosButtonState.ENABLED
+                    WooPosCartState.CheckoutButtonState.Disabled -> WooPosButtonState.DISABLED
+
+                    // To be displayed during animation
+                    WooPosCartState.CheckoutButtonState.Invisible -> WooPosButtonState.ENABLED
+                }
             )
         }
     }
@@ -218,14 +226,14 @@ private fun CartBodyWithItems(
     modifier: Modifier = Modifier,
     items: List<WooPosCartItemViewState>,
     areItemsRemovable: Boolean,
-    isCheckoutButtonVisible: Boolean,
+    checkoutButtonState: WooPosCartState.CheckoutButtonState,
     onUIEvent: (WooPosCartUIEvent) -> Unit,
 ) {
     val listState = rememberLazyListState()
     ScrollToTopHandler(items, listState)
 
     val spacerHeight by animateDpAsState(
-        targetValue = if (!isCheckoutButtonVisible) 212.dp else 0.dp,
+        targetValue = if (checkoutButtonState == WooPosCartState.CheckoutButtonState.Invisible) 212.dp else 0.dp,
         label = "cart list height animation"
     )
 
@@ -877,7 +885,7 @@ fun WooPosCartScreenProductsPreview(modifier: Modifier = Modifier) {
                     )
                 ),
                 areItemsRemovable = true,
-                isCheckoutButtonVisible = true
+                checkoutButtonState = WooPosCartState.CheckoutButtonState.Enabled
             )
         ) {}
     }
@@ -942,7 +950,7 @@ fun WooPosCartScreenCheckoutPreview(modifier: Modifier = Modifier) {
                     )
                 ),
                 areItemsRemovable = false,
-                isCheckoutButtonVisible = true
+                checkoutButtonState = WooPosCartState.CheckoutButtonState.Enabled
             )
         ) {}
     }
@@ -962,7 +970,7 @@ fun WooPosCartScreenEmptyPreview(modifier: Modifier = Modifier) {
                 ),
                 body = WooPosCartState.Body.Empty,
                 areItemsRemovable = false,
-                isCheckoutButtonVisible = false
+                checkoutButtonState = WooPosCartState.CheckoutButtonState.Invisible
             )
         ) {}
     }
@@ -998,7 +1006,7 @@ fun WooPosCartScreenErrorLoadingPreview(modifier: Modifier = Modifier) {
                     )
                 ),
                 areItemsRemovable = true,
-                isCheckoutButtonVisible = true
+                checkoutButtonState = WooPosCartState.CheckoutButtonState.Disabled
             )
         ) {}
     }
