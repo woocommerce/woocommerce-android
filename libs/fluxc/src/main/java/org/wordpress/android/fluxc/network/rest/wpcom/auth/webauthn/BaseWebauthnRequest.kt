@@ -34,9 +34,11 @@ abstract class BaseWebauthnRequest<T>(
                 .let { JSONObject(it).getJSONObject(WEBAUTHN_DATA) }
                 .let { serializeResponse(it.toString()) }
                 .let { Response.success(it, headers) }
+        } catch (exception: UnsupportedEncodingException) {
+            Response.error(ParseError(exception))
+        } catch (exception: JSONException) {
+            Response.error(ParseError(exception))
         }
-        catch (exception: UnsupportedEncodingException) { Response.error(ParseError(exception)) }
-        catch (exception: JSONException) { Response.error(ParseError(exception)) }
     }
 
     override fun getParams() = parameters
@@ -54,7 +56,7 @@ abstract class BaseWebauthnRequest<T>(
         CREATE_2FA_COOKIES_ONLY("create_2fa_cookies_only")
     }
 
-    class WebauthnChallengeRequestException(message: String): Exception(message)
+    class WebauthnChallengeRequestException(message: String) : Exception(message)
 
     companion object {
         private const val baseWPLoginUrl = "https://wordpress.com/wp-login.php?action"

@@ -296,7 +296,6 @@ class WCCustomerStore @Inject constructor(
         }
     }
 
-
     companion object {
         private const val DEFAULT_CUSTOMER_PAGE_SIZE = 25
         private val DEFAULT_CUSTOMER_SORTING = NAME_ASC

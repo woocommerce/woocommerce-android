@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -47,6 +49,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -69,7 +72,6 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreat
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.CustomsState.ItnMissing
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.CustomsState.NotRequired
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.CustomsState.Unavailable
-import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.HazmatState
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.HazmatState.Declared
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.PackageSelectionState
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.PackageSelectionState.DataAvailable
@@ -78,6 +80,8 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.address.AddressSelect
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.AddressStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.getShipFrom
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.getShipTo
+import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShipmentTabData
+import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShipmentsTabRow
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShippingLabelsSnackbarData
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.SuccessSnackbarHost
 import com.woocommerce.android.ui.orders.wooshippinglabels.hazmat.HazmatCard
@@ -88,6 +92,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageDa
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRateUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRatesSection
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingSortOption
+import kotlinx.coroutines.launch
 
 @Composable
 fun WooShippingLabelCreationScreen(viewModel: WooShippingLabelCreationViewModel) {
@@ -100,13 +105,15 @@ fun WooShippingLabelCreationScreen(viewModel: WooShippingLabelCreationViewModel)
             WooShippingLabelCreationScreen(
                 onSelectPackageClick = viewModel::onSelectPackageClicked,
                 onPurchaseShippingLabel = viewModel::onPurchaseShippingLabel,
-                shippableItems = viewState.shippableItems,
+                shipmentUIList = viewState.shipmentUIList,
+                totalItems = viewState.totalItems,
+                totalItemsCost = viewState.totalItemsCost,
                 shippingLines = viewState.shippingLines,
                 shippingAddresses = viewState.shippingAddresses,
+                onSelectedShipmentChanged = viewModel::onSelectedShipmentChanged,
                 shippingRatesState = viewState.shippingRates,
                 packageSelectionState = viewState.packageSelection,
                 customsState = viewState.customsState,
-                hazmatState = viewState.hazmatState,
                 onShippingFromAddressChange = viewModel::onShippingFromAddressChange,
                 onEditOriginAddress = viewModel::onEditOriginAddress,
                 onSelectedRateSortOrderChanged = viewModel::onSelectedRateSortOrderChanged,
@@ -142,13 +149,15 @@ fun WooShippingLabelCreationScreen(viewModel: WooShippingLabelCreationViewModel)
 
 @Composable
 fun WooShippingLabelCreationScreen(
-    shippableItems: ShippableItemsUI,
+    shipmentUIList: List<ShipmentUI>,
+    totalItems: Int,
+    totalItemsCost: String,
     shippingLines: List<ShippingLineSummaryUI>,
     shippingRatesState: WooShippingLabelCreationViewModel.ShippingRatesState,
     packageSelectionState: PackageSelectionState,
     shippingAddresses: WooShippingAddresses,
+    onSelectedShipmentChanged: (index: Int) -> Unit,
     customsState: CustomsState,
-    hazmatState: HazmatState,
     onShippingFromAddressChange: (OriginShippingAddress) -> Unit,
     onEditOriginAddress: (OriginShippingAddress) -> Unit,
     onSelectPackageClick: () -> Unit,
@@ -209,14 +218,16 @@ fun WooShippingLabelCreationScreen(
 
     Box(modifier = Modifier.fillMaxSize()) {
         LabelCreationScreenWithBottomSheet(
-            shippableItems = shippableItems,
+            shipmentUIList = shipmentUIList,
+            totalItems = totalItems,
+            totalItemsCost = totalItemsCost,
             modifier = modifier,
             onSelectPackageClick = onSelectPackageClick,
             scaffoldState = scaffoldState,
             shippingLines = shippingLines,
             shippingAddresses = shippingAddresses,
+            onSelectedShipmentChanged = onSelectedShipmentChanged,
             customsState = customsState,
-            hazmatState = hazmatState,
             shippingRatesState = shippingRatesState,
             packageSelectionState = packageSelectionState,
             onShippingFromAddressChange = onShippingFromAddressChange,
@@ -225,7 +236,7 @@ fun WooShippingLabelCreationScreen(
             onRefreshShippingRates = onRefreshShippingRates,
             customWeight = customWeight,
             onCustomWeightChange = onCustomWeightChange,
-            onSelectedSippingRateChanged = onSelectedSippingRateChanged,
+            onSelectedShippingRateChanged = onSelectedSippingRateChanged,
             uiState = uiState,
             onNavigateBack = onNavigateBack,
             onMarkOrderCompleteChange = onMarkOrderCompleteChange,
@@ -290,21 +301,23 @@ fun WooShippingLabelCreationScreen(
 @Suppress("CyclomaticComplexMethod")
 @Composable
 private fun LabelCreationScreenWithBottomSheet(
-    shippableItems: ShippableItemsUI,
+    shipmentUIList: List<ShipmentUI>,
+    totalItems: Int,
+    totalItemsCost: String,
     shippingLines: List<ShippingLineSummaryUI>,
     shippingRatesState: WooShippingLabelCreationViewModel.ShippingRatesState,
     packageSelectionState: PackageSelectionState,
     customsState: CustomsState,
-    hazmatState: HazmatState,
     onSelectPackageClick: () -> Unit,
     shippingAddresses: WooShippingAddresses,
+    onSelectedShipmentChanged: (index: Int) -> Unit,
     onEditOriginAddress: (OriginShippingAddress) -> Unit,
     onShippingFromAddressChange: (OriginShippingAddress) -> Unit,
     onSelectedRateSortOrderChanged: (ShippingSortOption) -> Unit,
     onRefreshShippingRates: () -> Unit,
     customWeight: String,
     onCustomWeightChange: (String) -> Unit,
-    onSelectedSippingRateChanged: (rate: ShippingRateUI) -> Unit,
+    onSelectedShippingRateChanged: (rate: ShippingRateUI) -> Unit,
     uiState: WooShippingLabelCreationViewModel.UIControlsState,
     scaffoldState: BottomSheetScaffoldState,
     shipFromSelectionBottomSheetState: ModalBottomSheetState,
@@ -358,7 +371,8 @@ private fun LabelCreationScreenWithBottomSheet(
                 onEditOriginAddress = onEditOriginAddress
             ) {
                 ShipmentDetails(
-                    shippableItems = shippableItems,
+                    totalItems = totalItems,
+                    totalItemsCost = totalItemsCost,
                     shippingLines = shippingLines,
                     shipFromSelectionBottomSheetState = shipFromSelectionBottomSheetState,
                     onMarkOrderCompleteChange = onMarkOrderCompleteChange,
@@ -388,70 +402,84 @@ private fun LabelCreationScreenWithBottomSheet(
             Column(
                 modifier
                     .verticalScroll(rememberScrollState())
-                    .padding(vertical = 16.dp)
+                    .padding(bottom = 16.dp)
             ) {
-                val isExpanded = remember { mutableStateOf(false) }
-                Row(
-                    modifier = Modifier.padding(
-                        start = dimensionResource(R.dimen.major_100),
-                        end = dimensionResource(R.dimen.major_100),
-                        bottom = dimensionResource(R.dimen.minor_100)
-                    ),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = stringResource(R.string.products),
-                        style = MaterialTheme.typography.h6,
-                        modifier = Modifier.weight(1f)
-                    )
-                    Text(
-                        text = stringResource(R.string.woo_shipping_split_shipment),
-                        color = MaterialTheme.colors.primary,
-                        modifier = Modifier
-                            .clickable { onSplitShipment() }
-                            .padding(dimensionResource(R.dimen.minor_100))
-                    )
+                val scope = rememberCoroutineScope()
+                val pagerState = rememberPagerState { shipmentUIList.size }
+
+                LaunchedEffect(pagerState.targetPage) {
+                    onSelectedShipmentChanged(pagerState.targetPage)
                 }
 
-                ShippingProductsCard(
-                    shippableItems = shippableItems,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            start = dimensionResource(R.dimen.major_100),
-                            end = dimensionResource(R.dimen.major_100),
-                            bottom = dimensionResource(R.dimen.major_100)
-                        ),
-                    isExpanded = isExpanded.value,
-                    onExpand = { isExpanded.value = it }
-                )
-                HazmatCard(
-                    onClick = onHazmatNoticeClick,
-                    selectedCategory = hazmatState.hazmatSelection,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 4.dp, end = 8.dp)
-                )
-                CustomsCard(
-                    customsState = customsState,
-                    onEditCustomsClick = onEditCustomsClick,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                )
-                PackageCard(
-                    modifier = Modifier.padding(16.dp),
-                    packageSelectionState = packageSelectionState,
-                    onSelectPackageClick = onSelectPackageClick,
-                    customWeight = customWeight,
-                    onCustomWeightChange = onCustomWeightChange
-                )
-                ShippingRatesSection(
-                    shippingRatesState = shippingRatesState,
-                    onSelectedRateSortOrderChanged = onSelectedRateSortOrderChanged,
-                    onRefreshShippingRates = onRefreshShippingRates,
-                    onSelectedSippingRateChanged = onSelectedSippingRateChanged
-                )
+                if (shipmentUIList.size == 1) {
+                    Row(
+                        modifier = Modifier.padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = stringResource(R.string.products),
+                            style = MaterialTheme.typography.h6,
+                            modifier = Modifier.weight(1f)
+                        )
+                        Text(
+                            text = stringResource(R.string.woo_shipping_split_shipment),
+                            color = MaterialTheme.colors.primary,
+                            modifier = Modifier
+                                .clickable { onSplitShipment() }
+                                .padding(dimensionResource(R.dimen.minor_100))
+                        )
+                    }
+                } else {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 16.dp)
+                    ) {
+                        ShipmentsTabRow(
+                            shipmentTabs = shipmentUIList.mapIndexed { index, shipment ->
+                                ShipmentTabData(shipmentIndex = index + 1, isPurchased = shipment.purchased)
+                            },
+                            selectedTabIndex = if (pagerState.currentPage < pagerState.pageCount) {
+                                pagerState.currentPage
+                            } else {
+                                0
+                            },
+                            onTabSelected = { index -> scope.launch { pagerState.animateScrollToPage(index) } },
+                            modifier = modifier.weight(1f)
+                        )
+                        IconButton(
+                            onClick = onSplitShipment,
+                            modifier = Modifier.align(Alignment.CenterVertically)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Edit,
+                                tint = colorResource(id = R.color.color_icon_menu),
+                                contentDescription = stringResource(id = R.string.woo_shipping_split_shipment)
+                            )
+                        }
+                    }
+                }
+
+                HorizontalPager(
+                    state = pagerState,
+                    modifier = modifier.fillMaxSize(),
+                    verticalAlignment = Alignment.Top,
+                ) { page ->
+                    CreateShippingCards(
+                        shipmentUI = shipmentUIList[page],
+                        onHazmatNoticeClick = onHazmatNoticeClick,
+                        customsState = customsState,
+                        onEditCustomsClick = onEditCustomsClick,
+                        packageSelectionState = packageSelectionState,
+                        onSelectPackageClick = onSelectPackageClick,
+                        customWeight = customWeight,
+                        onCustomWeightChange = onCustomWeightChange,
+                        shippingRatesState = shippingRatesState,
+                        onSelectedRateSortOrderChanged = onSelectedRateSortOrderChanged,
+                        onRefreshShippingRates = onRefreshShippingRates,
+                        onSelectedShippingRateChanged = onSelectedShippingRateChanged,
+                    )
+                }
             }
 
             val actionSnackbarMessage = snackbarData?.let { stringResource(it.message) }
@@ -471,6 +499,66 @@ private fun LabelCreationScreenWithBottomSheet(
                 } ?: snackbarHostState.currentSnackbarData?.dismiss()
             }
         }
+    }
+}
+
+@Composable
+private fun CreateShippingCards(
+    shipmentUI: ShipmentUI,
+    onHazmatNoticeClick: () -> Unit = {},
+    customsState: CustomsState,
+    onEditCustomsClick: () -> Unit,
+    packageSelectionState: PackageSelectionState,
+    onSelectPackageClick: () -> Unit,
+    customWeight: String,
+    onCustomWeightChange: (String) -> Unit,
+    shippingRatesState: WooShippingLabelCreationViewModel.ShippingRatesState,
+    onSelectedRateSortOrderChanged: (ShippingSortOption) -> Unit,
+    onRefreshShippingRates: () -> Unit,
+    onSelectedShippingRateChanged: (rate: ShippingRateUI) -> Unit,
+) {
+    Column {
+        val isExpanded = remember { mutableStateOf(false) }
+
+        ShippingProductsCard(
+            shippableItems = shipmentUI,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = dimensionResource(R.dimen.major_100),
+                    end = dimensionResource(R.dimen.major_100),
+                    bottom = dimensionResource(R.dimen.major_100)
+                ),
+            isExpanded = isExpanded.value,
+            onExpand = { isExpanded.value = it }
+        )
+        HazmatCard(
+            onClick = onHazmatNoticeClick,
+            selectedCategory = shipmentUI.hazmatState.hazmatSelection,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 4.dp, end = 8.dp)
+        )
+        CustomsCard(
+            customsState = customsState,
+            onEditCustomsClick = onEditCustomsClick,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        )
+        PackageCard(
+            modifier = Modifier.padding(16.dp),
+            packageSelectionState = packageSelectionState,
+            onSelectPackageClick = onSelectPackageClick,
+            customWeight = customWeight,
+            onCustomWeightChange = onCustomWeightChange
+        )
+        ShippingRatesSection(
+            shippingRatesState = shippingRatesState,
+            onSelectedRateSortOrderChanged = onSelectedRateSortOrderChanged,
+            onRefreshShippingRates = onRefreshShippingRates,
+            onSelectedSippingRateChanged = onSelectedShippingRateChanged
+        )
     }
 }
 
@@ -796,11 +884,17 @@ internal fun ErrorScreen(
 private fun WooShippingLabelCreationScreenPreview() {
     WooThemeWithBackground {
         WooShippingLabelCreationScreen(
-            shippableItems = ShippableItemsUI(
-                shippableItems = generateItems(6),
-                formattedTotalWeight = "8.5kg",
-                formattedTotalPrice = "$92.78"
+            shipmentUIList = listOf(
+                ShipmentUI(
+                    shippableItems = generateItems(6),
+                    formattedTotalWeight = "8.5kg",
+                    formattedTotalPrice = "$92.78",
+                    purchased = false,
+                    hazmatState = Declared(ShippingLabelHazmatCategory.CLASS_1)
+                )
             ),
+            totalItems = 6,
+            totalItemsCost = "$92.78",
             shippingLines = getShippingLines(),
             modifier = Modifier.fillMaxSize(),
             onSelectPackageClick = {},
@@ -810,10 +904,10 @@ private fun WooShippingLabelCreationScreenPreview() {
                 shipTo = getShipTo(),
                 originAddresses = listOf(getShipFrom())
             ),
+            onSelectedShipmentChanged = {},
             shippingRatesState = WooShippingLabelCreationViewModel.ShippingRatesState.NoAvailable,
             packageSelectionState = NotSelected,
             customsState = Unavailable,
-            hazmatState = Declared(ShippingLabelHazmatCategory.CLASS_1),
             onShippingFromAddressChange = {},
             onRefreshShippingRates = {},
             onSelectedRateSortOrderChanged = {},

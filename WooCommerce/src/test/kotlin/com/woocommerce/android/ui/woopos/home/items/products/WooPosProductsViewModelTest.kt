@@ -3,17 +3,17 @@ package com.woocommerce.android.ui.woopos.home.items.products
 import app.cash.turbine.test
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
+import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
+import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.home.items.WooPosContentViewState
-import com.woocommerce.android.ui.woopos.home.items.WooPosItemNavigationData
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosProductsViewState
-import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart.WooPosItemSource
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -27,6 +27,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.times
@@ -46,9 +47,9 @@ class WooPosProductsViewModelTest {
         onBlocking { invoke(BigDecimal("20.0")) }.thenReturn("$20.0")
     }
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender = mock()
+    private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock()
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private val productsDataSource: WooPosProductsDataSource = mock()
-    private val wooPosItemsNavigator: WooPosItemsNavigator = mock()
 
     @Before
     fun setup() {
@@ -69,6 +70,7 @@ class WooPosProductsViewModelTest {
                 )
             )
         )
+        whenever(parentToChildrenEventReceiver.events).thenReturn(flowOf())
     }
 
     @Test
@@ -203,13 +205,20 @@ class WooPosProductsViewModelTest {
         viewModel.onUIEvent(WooPosProductsUIEvent.ItemClicked(product))
 
         // THEN
+        val item = WooPosItemsViewModel.ItemClickedData.Product.Simple(
+            id = product.id
+        )
         viewModel.viewState.test {
             verify(fromChildToParentEventSender).sendToParent(
-                ChildToParentEvent.ItemClickedInProductSelector(
-                    WooPosItemsViewModel.ItemClickedData.Product.Simple(
-                        id = product.id
-                    ),
-                    source = WooPosItemSource.PRODUCT_LIST
+                eq(
+                    ChildToParentEvent.ItemClickedInItemsList(
+                        itemData = item,
+                        eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
+                            item = item,
+                            source = WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT,
+                            sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST
+                        )
+                    )
                 )
             )
             cancelAndConsumeRemainingEvents()
@@ -301,52 +310,11 @@ class WooPosProductsViewModelTest {
         viewModel.onUIEvent(WooPosProductsUIEvent.PullToRefreshTriggered)
 
         // THEN
-        verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.ProductsPullToRefreshTriggered)
-    }
-
-    @Test
-    fun `given variable product, when clicked on it, then trigger proper event`() = runTest {
-        // GIVEN
-        val products = listOf(
-            ProductTestUtils.generateProduct(
-                productId = 1,
-                productName = "Product 1",
-                amount = "10.0",
-                productType = "variable",
-                isVariable = true
-            )
-        )
-        whenever(productsDataSource.loadProducts(any())).thenReturn(
-            flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
-                    Result.success(products)
-                )
-            )
-        )
-        val viewModel = createViewModel()
-
-        // WHEN
-        viewModel.onUIEvent(
-            WooPosProductsUIEvent.ItemClicked(
-                WooPosItemSelectionViewState.Product.Variable(
-                    id = 1L,
-                    name = "Product 1",
-                    numOfVariations = 10,
-                    variationIds = emptyList(),
-                    price = "$10.0",
-                    imageUrl = null
-                )
-            )
-        )
-
-        // THEN
-        verify(wooPosItemsNavigator).sendNavigationEvent(
-            WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateToVariationsScreen(
-                WooPosItemNavigationData.VariableProductData(
-                    id = 1,
-                    name = "Product 1",
-                    numOfVariations = 10,
-                    source = WooPosItemSource.PRODUCT_LIST
+        verify(analyticsTracker).track(
+            eq(
+                WooPosAnalyticsEvent.Event.PullToRefreshTriggered(
+                    source = WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT,
+                    sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST
                 )
             )
         )
@@ -396,50 +364,51 @@ class WooPosProductsViewModelTest {
 
     @Test
     @OptIn(ExperimentalCoroutinesApi::class)
-    fun `given initial load in progress, when end of list reached, then pagination state set to loading and queue load more`() = runTest {
-        // GIVEN
-        whenever(productsDataSource.hasMorePages).thenReturn(true)
-        whenever(productsDataSource.loadMore()).thenReturn(
-            Result.success(
-                listOf(
-                    ProductTestUtils.generateProduct(
-                        productId = 2,
-                        productName = "Product 2",
-                        amount = "20.0",
-                        productType = "simple"
-                    )
-                )
-            )
-        )
-
-        val productsFlow = flow {
-            emit(
-                WooPosProductsDataSource.ProductsResult.Remote(
-                    Result.success(
-                        listOf(
-                            ProductTestUtils.generateProduct(
-                                productId = 1,
-                                productName = "Product 1",
-                                amount = "10.0",
-                                productType = "simple"
-                            )
+    fun `given initial load in progress, when end of list reached, then pagination state set to loading and queue load more`() =
+        runTest {
+            // GIVEN
+            whenever(productsDataSource.hasMorePages).thenReturn(true)
+            whenever(productsDataSource.loadMore()).thenReturn(
+                Result.success(
+                    listOf(
+                        ProductTestUtils.generateProduct(
+                            productId = 2,
+                            productName = "Product 2",
+                            amount = "20.0",
+                            productType = "simple"
                         )
                     )
                 )
             )
+
+            val productsFlow = flow {
+                emit(
+                    WooPosProductsDataSource.ProductsResult.Remote(
+                        Result.success(
+                            listOf(
+                                ProductTestUtils.generateProduct(
+                                    productId = 1,
+                                    productName = "Product 1",
+                                    amount = "10.0",
+                                    productType = "simple"
+                                )
+                            )
+                        )
+                    )
+                )
+            }
+
+            whenever(productsDataSource.loadProducts(any())).thenReturn(productsFlow)
+
+            val viewModel = createViewModel()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosProductsUIEvent.EndOfItemsListReached)
+            advanceUntilIdle()
+
+            // THEN
+            verify(productsDataSource, times(1)).loadMore()
         }
-
-        whenever(productsDataSource.loadProducts(any())).thenReturn(productsFlow)
-
-        val viewModel = createViewModel()
-
-        // WHEN
-        viewModel.onUIEvent(WooPosProductsUIEvent.EndOfItemsListReached)
-        advanceUntilIdle()
-
-        // THEN
-        verify(productsDataSource, times(1)).loadMore()
-    }
 
     @Test
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -468,30 +437,89 @@ class WooPosProductsViewModelTest {
     }
 
     @Test
-    fun `when variable product is clicked from product list, then navigation event uses product list source`() = runTest {
+    fun `when variable product clicked, then send event to parent without tracking event`() = runTest {
         // GIVEN
-        val viewModel = createViewModel()
-        val item = WooPosItemSelectionViewState.Product.Variable(
-            id = 1,
-            name = "Product",
-            price = "$10",
+        val variableProduct = WooPosItemSelectionViewState.Product.Variable(
+            id = 123L,
+            name = "Variable Product",
+            price = "$20.0",
             imageUrl = null,
-            numOfVariations = 2,
-            variationIds = emptyList()
+            numOfVariations = 5,
+            variationIds = listOf(1, 2, 3)
+        )
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosProductsUIEvent.ItemClicked(variableProduct))
+
+        // THEN
+        verify(fromChildToParentEventSender).sendToParent(
+            eq(
+                ChildToParentEvent.ItemClickedInItemsList(
+                    itemData = WooPosItemsViewModel.ItemClickedData.VariableProduct(
+                        id = 123L,
+                        name = "Variable Product",
+                        numOfVariations = 5,
+                        sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST,
+                    ),
+                    eventForTracking = null,
+                )
+            )
+        )
+    }
+
+    @Test
+    fun `when RefreshProductList event received, then products are reloaded with force refresh`() = runTest {
+        // GIVEN
+        whenever(parentToChildrenEventReceiver.events).thenReturn(
+            flowOf(ParentToChildrenEvent.RefreshProductList)
         )
 
         // WHEN
-        viewModel.onUIEvent(WooPosProductsUIEvent.ItemClicked(item))
+        createViewModel()
 
         // THEN
-        verify(wooPosItemsNavigator).sendNavigationEvent(
-            WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateToVariationsScreen(
-                WooPosItemNavigationData.VariableProductData(
-                    id = 1L,
-                    name = "Product",
-                    numOfVariations = 2,
-                    source = WooPosItemSource.PRODUCT_LIST
+        verify(productsDataSource).loadProducts(forceRefreshProducts = true)
+    }
+
+    @Test
+    fun `when ProductsLoadingErrorRetryButtonClicked, then products are reloaded without force refresh`() = runTest {
+        // GIVEN
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosProductsUIEvent.ProductsLoadingErrorRetryButtonClicked)
+
+        // THEN
+        verify(productsDataSource, times(2)).loadProducts(forceRefreshProducts = false)
+    }
+
+    @Test
+    fun `when successful load more, then analytics event is tracked`() = runTest {
+        // GIVEN
+        whenever(productsDataSource.hasMorePages).thenReturn(true)
+        whenever(productsDataSource.loadMore()).thenReturn(
+            Result.success(
+                listOf(
+                    ProductTestUtils.generateProduct(
+                        productId = 2,
+                        productName = "Product 2",
+                        amount = "20.0",
+                        productType = "simple"
+                    )
                 )
+            )
+        )
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosProductsUIEvent.EndOfItemsListReached)
+
+        // THEN
+        verify(analyticsTracker).track(
+            WooPosAnalyticsEvent.Event.ItemsNextPageLoaded(
+                source = WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT,
+                sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST
             )
         )
     }
@@ -502,7 +530,7 @@ class WooPosProductsViewModelTest {
             priceFormat = priceFormat,
             analyticsTracker = analyticsTracker,
             fromChildToParentEventSender = fromChildToParentEventSender,
-            navigator = wooPosItemsNavigator,
+            parentToChildrenEventReceiver = parentToChildrenEventReceiver,
         )
     }
 }

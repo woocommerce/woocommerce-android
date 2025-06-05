@@ -2089,7 +2089,7 @@ class ProductDetailViewModel @Inject constructor(
     /**
      * Fetch the shipping class name of a product based on the remote shipping class id
      */
-    fun getShippingClassByRemoteShippingClassId(remoteShippingClassId: Long) =
+    suspend fun getShippingClassByRemoteShippingClassId(remoteShippingClassId: Long) =
         productRepository.getProductShippingClassByRemoteId(remoteShippingClassId)?.name
             ?: viewState.productDraft?.shippingClass ?: ""
 
@@ -2404,13 +2404,15 @@ class ProductDetailViewModel @Inject constructor(
     fun onProductTagAdded(tagName: String) {
         // verify if the entered tagName exists for the site
         // It so, the tag should be added to the product directly
-        productTagsRepository.getProductTagByName(tagName)?.let {
-            onProductTagSelected(it)
-        } ?: run {
-            // Since the tag does not exist for the site, add the tag to
-            // a list of newly added tags
-            _addedProductTags.addNewItem(ProductTag(name = tagName))
-            loadProductTags()
+        viewModelScope.launch {
+            productTagsRepository.getProductTagByName(tagName)?.let {
+                onProductTagSelected(it)
+            } ?: run {
+                // Since the tag does not exist for the site, add the tag to
+                // a list of newly added tags
+                _addedProductTags.addNewItem(ProductTag(name = tagName))
+                loadProductTags()
+            }
         }
     }
 
@@ -2464,12 +2466,13 @@ class ProductDetailViewModel @Inject constructor(
      */
     fun setProductTagsFilter(filter: String) {
         productTagsViewState = productTagsViewState.copy(currentFilter = filter)
-        val productTags = productTagsRepository.getProductTags()
-        filterProductTagList(productTags)
 
-        // fetch from the backend when a filter exists in case not all tags have been fetched yet
-        if (filter.isNotEmpty()) {
-            launch {
+        launch {
+            val productTags = productTagsRepository.getProductTags()
+            filterProductTagList(productTags)
+
+            // fetch from the backend when a filter exists in case not all tags have been fetched yet
+            if (filter.isNotEmpty()) {
                 fetchProductTags(searchQuery = filter)
             }
         }

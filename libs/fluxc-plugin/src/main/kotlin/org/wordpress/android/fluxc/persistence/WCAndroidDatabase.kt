@@ -7,9 +7,13 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.withTransaction
+import org.wordpress.android.fluxc.model.WCProductCategoryModel
 import org.wordpress.android.fluxc.model.WCProductModel
+import org.wordpress.android.fluxc.model.WCProductReviewModel
+import org.wordpress.android.fluxc.model.WCProductSettingsModel
+import org.wordpress.android.fluxc.model.WCProductShippingClassModel
+import org.wordpress.android.fluxc.model.WCProductTagModel
 import org.wordpress.android.fluxc.model.WCProductVariationModel
-import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.fluxc.model.taxes.TaxBasedOnSettingEntity
 import org.wordpress.android.fluxc.model.taxes.TaxRateEntity
 import org.wordpress.android.fluxc.persistence.converters.BigDecimalConverter
@@ -24,6 +28,11 @@ import org.wordpress.android.fluxc.persistence.dao.InboxNotesDao
 import org.wordpress.android.fluxc.persistence.dao.MetaDataDao
 import org.wordpress.android.fluxc.persistence.dao.OrderNotesDao
 import org.wordpress.android.fluxc.persistence.dao.OrdersDao
+import org.wordpress.android.fluxc.persistence.dao.ProductCategoriesDao
+import org.wordpress.android.fluxc.persistence.dao.ProductReviewsDao
+import org.wordpress.android.fluxc.persistence.dao.ProductSettingsDao
+import org.wordpress.android.fluxc.persistence.dao.ProductShippingClassesDao
+import org.wordpress.android.fluxc.persistence.dao.ProductTagsDao
 import org.wordpress.android.fluxc.persistence.dao.ProductVariationsDao
 import org.wordpress.android.fluxc.persistence.dao.ProductsDao
 import org.wordpress.android.fluxc.persistence.dao.ShippingMethodDao
@@ -41,6 +50,7 @@ import org.wordpress.android.fluxc.persistence.entity.GlobalAddonGroupEntity
 import org.wordpress.android.fluxc.persistence.entity.InboxNoteActionEntity
 import org.wordpress.android.fluxc.persistence.entity.InboxNoteEntity
 import org.wordpress.android.fluxc.persistence.entity.MetaDataEntity
+import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.fluxc.persistence.entity.OrderNoteEntity
 import org.wordpress.android.fluxc.persistence.entity.ShippingMethodEntity
 import org.wordpress.android.fluxc.persistence.entity.TopPerformerProductEntity
@@ -76,7 +86,7 @@ import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_7_8
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_8_9
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_9_10
 
-const val WC_DATABASE_VERSION = 40
+const val WC_DATABASE_VERSION = 45
 
 @Database(
     version = WC_DATABASE_VERSION,
@@ -102,7 +112,12 @@ const val WC_DATABASE_VERSION = 40
         ShippingMethodEntity::class,
         CustomerFromAnalyticsEntity::class,
         WCProductModel::class,
-        WCProductVariationModel::class
+        WCProductCategoryModel::class,
+        WCProductVariationModel::class,
+        WCProductTagModel::class,
+        WCProductShippingClassModel::class,
+        WCProductReviewModel::class,
+        WCProductSettingsModel::class,
     ],
     autoMigrations = [
         AutoMigration(from = 12, to = 13),
@@ -125,7 +140,12 @@ const val WC_DATABASE_VERSION = 40
         AutoMigration(from = 36, to = 37),
         AutoMigration(from = 37, to = 38, spec = AutoMigration37to38::class),
         AutoMigration(from = 38, to = 39),
-        AutoMigration(from = 39, to = 40)
+        AutoMigration(from = 39, to = 40),
+        AutoMigration(from = 40, to = 41),
+        AutoMigration(from = 41, to = 42),
+        AutoMigration(from = 42, to = 43),
+        AutoMigration(from = 43, to = 44),
+        AutoMigration(from = 44, to = 45),
     ]
 )
 @TypeConverters(
@@ -153,6 +173,11 @@ abstract class WCAndroidDatabase : RoomDatabase(), TransactionExecutor {
     abstract val customerFromAnalyticsDao: CustomerFromAnalyticsDao
     internal abstract val productsDao: ProductsDao
     internal abstract val productVariationsDao: ProductVariationsDao
+    internal abstract val productCategoriesDao: ProductCategoriesDao
+    internal abstract val productTagsDao: ProductTagsDao
+    internal abstract val productShippingClassesDao: ProductShippingClassesDao
+    internal abstract val productReviewsDao: ProductReviewsDao
+    internal abstract val productSettingsDao: ProductSettingsDao
 
     companion object {
         fun buildDb(applicationContext: Context) = Room.databaseBuilder(

@@ -91,7 +91,7 @@ class WCTaxStoreTest {
     }
 
     @Test
-    fun`when fetch tax rate fails, then error is returned` () {
+    fun`when fetch tax rate fails, then error is returned`() {
         runBlocking {
             val error = WooError(INVALID_RESPONSE, NETWORK_ERROR, "Invalid site ID")
             whenever(restClient.fetchTaxRateList(site, 1, 100)).thenReturn(WooPayload(error))
@@ -101,7 +101,7 @@ class WCTaxStoreTest {
     }
 
     @Test
-    fun `when fetch tax rate succeeds, then success returns` () {
+    fun `when fetch tax rate succeeds, then success returns`() {
         runBlocking {
             val taxRateApiResponse = TaxTestUtils.generateSampleTaxRateApiResponse()
             whenever(restClient.fetchTaxRateList(site, 1, 100)).thenReturn(WooPayload(taxRateApiResponse))

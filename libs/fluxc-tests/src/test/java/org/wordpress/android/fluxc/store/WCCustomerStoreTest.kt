@@ -38,7 +38,7 @@ class WCCustomerStoreTest {
 
     private val restClient: CustomerRestClient = mock()
     private val mapper: WCCustomerMapper = mock()
-    private val analyticsMapper: WCCustomerFromAnalyticsMapper= mock()
+    private val analyticsMapper: WCCustomerFromAnalyticsMapper = mock()
     private val customerFromAnalyticsDao: CustomerFromAnalyticsDao = mock()
 
     private lateinit var store: WCCustomerStore

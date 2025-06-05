@@ -13,7 +13,6 @@ import com.yarolegovich.wellsql.WellSql
 import com.yarolegovich.wellsql.WellTableManager
 import org.wordpress.android.fluxc.BuildConfig
 import org.wordpress.android.fluxc.model.plugin.SitePluginModel
-import org.wordpress.android.fluxc.model.plugin.WPOrgPluginModel
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.AppLog.T
 import kotlin.annotation.AnnotationRetention.SOURCE
@@ -41,7 +40,7 @@ open class WellSqlConfig : DefaultWellConfig {
     annotation class AddOn
 
     override fun getDbVersion(): Int {
-        return 209
+        return 216
     }
 
     override fun getDbName(): String {
@@ -2129,6 +2128,67 @@ open class WellSqlConfig : DefaultWellConfig {
 
                 208 -> migrateAddOn(ADDON_WOOCOMMERCE, version) {
                     db.execSQL("DROP TABLE IF EXISTS WCProductVariationModel")
+                }
+
+                209 -> migrateAddOn(ADDON_WOOCOMMERCE, version) {
+                    db.execSQL("DROP TABLE IF EXISTS WCProductCategoryModel")
+                }
+
+                210 -> migrateAddOn(ADDON_WOOCOMMERCE, version) {
+                    db.execSQL("DROP TABLE IF EXISTS WCProductTagModel")
+                }
+
+                211 -> migrate(version) {
+                    db.execSQL("DROP TABLE IF EXISTS ActivityLog")
+                    db.execSQL("DROP TABLE IF EXISTS BackupDownloadStatus")
+                    db.execSQL("DROP TABLE IF EXISTS CommentModel")
+                    db.execSQL("DROP TABLE IF EXISTS EditorTheme")
+                    db.execSQL("DROP TABLE IF EXISTS EditorThemeElement")
+                    db.execSQL("DROP TABLE IF EXISTS GutenbergLayoutCategoriesModel")
+                    db.execSQL("DROP TABLE IF EXISTS GutenbergLayoutCategoryModel")
+                    db.execSQL("DROP TABLE IF EXISTS GutenbergLayoutModel")
+                    db.execSQL("DROP TABLE IF EXISTS InsightTypes")
+                    db.execSQL("DROP TABLE IF EXISTS LikeModel")
+                    db.execSQL("DROP TABLE IF EXISTS LocalDiffModel")
+                    db.execSQL("DROP TABLE IF EXISTS LocalRevisionModel")
+                    db.execSQL("DROP TABLE IF EXISTS PostFormatModel")
+                    db.execSQL("DROP TABLE IF EXISTS PostModel")
+                    db.execSQL("DROP TABLE IF EXISTS PostUploadModel")
+                    db.execSQL("DROP TABLE IF EXISTS PostSchedulingReminder")
+                    db.execSQL("DROP TABLE IF EXISTS QuickStartStatusModel")
+                    db.execSQL("DROP TABLE IF EXISTS QuickStartTaskModel")
+                    db.execSQL("DROP TABLE IF EXISTS RewindStatus")
+                    db.execSQL("DROP TABLE IF EXISTS RewindStatusCredentials")
+                    db.execSQL("DROP TABLE IF EXISTS RoleModel")
+                    db.execSQL("DROP TABLE IF EXISTS ScanState")
+                    db.execSQL("DROP TABLE IF EXISTS ThreatModel")
+                    db.execSQL("DROP TABLE IF EXISTS StatsBlock")
+                    db.execSQL("DROP TABLE IF EXISTS StatsRequest")
+                    db.execSQL("DROP TABLE IF EXISTS StockMedia")
+                    db.execSQL("DROP TABLE IF EXISTS StockMediaPage")
+                    db.execSQL("DROP TABLE IF EXISTS SubscriptionModel")
+                    db.execSQL("DROP TABLE IF EXISTS TaxonomyModel")
+                    db.execSQL("DROP TABLE IF EXISTS TermModel")
+                    db.execSQL("DROP TABLE IF EXISTS XPostSites")
+                    db.execSQL("DROP TABLE IF EXISTS XPosts")
+                }
+
+                212 -> migrateAddOn(ADDON_WOOCOMMERCE, version) {
+                    db.execSQL("DROP TABLE IF EXISTS WCProductShippingClassModel")
+                }
+
+                213 -> migrateAddOn(ADDON_WOOCOMMERCE, version) {
+                    db.execSQL("DROP TABLE IF EXISTS WCProductReviewModel")
+                }
+
+                214 -> migrate(version) {
+                    db.execSQL("DROP TABLE IF EXISTS WCTopPerformerProductModel")
+                    db.execSQL("DROP TABLE IF EXISTS PluginDirectoryModel")
+                    db.execSQL("DROP TABLE IF EXISTS WPOrgPluginModel")
+                }
+
+                215 -> migrateAddOn(ADDON_WOOCOMMERCE, version) {
+                    db.execSQL("DROP TABLE IF EXISTS WCProductSettingsModel")
                 }
             }
         }

@@ -36,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -213,6 +214,7 @@ fun WooPosProductCard(
 ) {
     WooPosCard(
         modifier = modifier
+            .wrapContentHeight()
             .semantics { contentDescription = itemContentDescription },
         shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
         backgroundColor = MaterialTheme.colorScheme.surfaceContainerLowest,
@@ -222,7 +224,8 @@ fun WooPosProductCard(
         Row(
             modifier = Modifier
                 .clickable { onItemClicked(item) }
-                .height(112.dp)
+                .height(IntrinsicSize.Min)
+                .heightIn(min = 112.dp)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -278,7 +281,9 @@ private fun ProductInfo(modifier: Modifier, item: Product) {
 private fun ProductImage(item: Product) {
     Box(
         modifier = Modifier
-            .size(112.dp)
+            .width(112.dp)
+            .fillMaxHeight()
+            .heightIn(min = 112.dp)
             .background(MaterialTheme.colorScheme.surfaceDim),
         contentAlignment = Alignment.Center
     ) {
@@ -343,7 +348,7 @@ private fun CouponInfo(name: String, summary: String, expiredState: Coupon.Expir
             .padding(
                 end = WooPosSpacing.Medium.value,
             )
-            .padding(vertical = WooPosSpacing.Small.value.toAdaptivePadding()),
+            .padding(vertical = WooPosSpacing.Medium.value.toAdaptivePadding()),
         verticalArrangement = Arrangement.Center
     ) {
         WooPosText(
@@ -512,12 +517,14 @@ fun WooPosItemsEmptyList(
     title: String,
     message: String,
     contentDescription: String,
+    icon: Painter = painterResource(R.drawable.ic_woo_pos_not_found),
 ) {
     WooPosItemsEmptyListInternal(
         modifier = modifier,
         title = title,
         message = message,
         contentDescription = contentDescription,
+        icon = icon,
         actionLabel = null,
         onActionClicked = null
     )
@@ -529,6 +536,7 @@ fun WooPosItemsEmptyList(
     title: String,
     message: String,
     contentDescription: String,
+    icon: Painter = painterResource(R.drawable.ic_woo_pos_not_found),
     actionLabel: String,
     onActionClicked: (() -> Unit),
 ) {
@@ -537,6 +545,7 @@ fun WooPosItemsEmptyList(
         title = title,
         message = message,
         contentDescription = contentDescription,
+        icon = icon,
         actionLabel = actionLabel,
         onActionClicked = onActionClicked
     )
@@ -548,6 +557,7 @@ private fun WooPosItemsEmptyListInternal(
     title: String,
     message: String,
     contentDescription: String,
+    icon: Painter = painterResource(R.drawable.ic_woo_pos_not_found),
     actionLabel: String?,
     onActionClicked: (() -> Unit)? = null,
 ) {
@@ -561,7 +571,7 @@ private fun WooPosItemsEmptyListInternal(
         ) {
             Image(
                 modifier = Modifier.size(104.dp),
-                imageVector = ImageVector.vectorResource(id = R.drawable.ic_not_found),
+                painter = icon,
                 contentDescription = contentDescription,
             )
 

@@ -2,8 +2,8 @@ package com.woocommerce.android.model
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.model.AvatarSize.SMALL
 import org.wordpress.android.fluxc.model.WCProductReviewModel
-import org.wordpress.android.fluxc.model.WCProductReviewModel.AvatarSize.SMALL
 import org.wordpress.android.util.DateTimeUtils
 import java.util.Date
 
@@ -23,13 +23,13 @@ data class ProductReview(
 
 fun WCProductReviewModel.toAppModel(): ProductReview {
     return ProductReview(
-        remoteId = this.remoteProductReviewId,
+        remoteId = this.remoteProductReviewId.value,
         dateCreated = DateTimeUtils.dateUTCFromIso8601(this.dateCreated),
         review = this.review,
         rating = this.rating,
         reviewerName = this.reviewerName,
         reviewerAvatarUrl = this.reviewerAvatarUrlBySize[SMALL],
-        remoteProductId = this.remoteProductId,
+        remoteProductId = this.remoteProductId.value,
         status = this.status
     )
 }

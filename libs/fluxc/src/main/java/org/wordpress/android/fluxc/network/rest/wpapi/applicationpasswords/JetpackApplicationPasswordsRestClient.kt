@@ -63,7 +63,7 @@ internal class JetpackApplicationPasswordsRestClient @Inject constructor(
     suspend fun fetchApplicationPasswordUUID(
         site: SiteModel,
         applicationName: String
-    ) : ApplicationPasswordUUIDFetchPayload {
+    ): ApplicationPasswordUUIDFetchPayload {
         AppLog.d(T.MAIN, "Fetch application password UUID using Jetpack Tunnel")
         val url = WPAPI.users.me.application_passwords.urlV2
         val response = jetpackTunnelGsonRequestBuilder.syncGetRequest(
@@ -76,8 +76,8 @@ internal class JetpackApplicationPasswordsRestClient @Inject constructor(
 
         return when (response) {
             is JetpackSuccess -> {
-                response.data?.firstOrNull { it.name == applicationName }?.let {
-                    ApplicationPasswordUUIDFetchPayload(it.uuid)
+                response.data?.firstOrNull { it.name == applicationName }?.uuid?.let {
+                    ApplicationPasswordUUIDFetchPayload(it)
                 } ?: ApplicationPasswordUUIDFetchPayload(
                     BaseNetworkError(
                         GenericErrorType.UNKNOWN,

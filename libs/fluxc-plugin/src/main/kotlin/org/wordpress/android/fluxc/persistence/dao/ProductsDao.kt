@@ -197,5 +197,4 @@ internal abstract class ProductsDao {
         localSiteId: Int,
         sku: String?
     ): List<WCProductModel>
-
 }

@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.coupons
 
 import com.woocommerce.android.WooException
-import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Coupon
@@ -9,6 +8,8 @@ import com.woocommerce.android.model.CouponPerformanceReport
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
+import com.woocommerce.android.ui.coupons.tracking.StoreManagementCouponCreationFlowTrackerEventProvider
+import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationFlowTrackerEventProvider
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.flow.Flow
@@ -22,12 +23,15 @@ class CouponRepository @Inject constructor(
     private val store: CouponStore,
     private val selectedSite: SelectedSite,
     private val dateUtils: DateUtils,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val posTrackingEventProvider: WooPosCouponCreationFlowTrackerEventProvider,
+    private val storeManagementTrackingEventProvider: StoreManagementCouponCreationFlowTrackerEventProvider,
 ) {
     suspend fun fetchCoupons(
         page: Int,
         pageSize: Int,
-        couponIds: List<Long> = emptyList()
+        couponIds: List<Long> = emptyList(),
+        isPosMode: Boolean = false
     ): Result<Boolean> {
         return store.fetchCoupons(
             site = selectedSite.get(),
@@ -39,7 +43,11 @@ class CouponRepository @Inject constructor(
             .let { result ->
                 if (result.isError) {
                     analyticsTrackerWrapper.track(
-                        AnalyticsEvent.COUPONS_LOAD_FAILED,
+                        if (isPosMode) {
+                            posTrackingEventProvider.COUPONS_LOAD_FAILED
+                        } else {
+                            storeManagementTrackingEventProvider.COUPONS_LOAD_FAILED
+                        },
                         mapOf(
                             AnalyticsTracker.KEY_ERROR_CONTEXT to result.error::class.java.simpleName,
                             AnalyticsTracker.KEY_ERROR_TYPE to result.error.type.name,
@@ -53,13 +61,19 @@ class CouponRepository @Inject constructor(
                     )
                     Result.failure(WooException(result.error))
                 } else {
-                    analyticsTrackerWrapper.track(
-                        AnalyticsEvent.COUPONS_LOADED,
-                        mapOf(Pair(AnalyticsTracker.KEY_IS_LOADING_MORE, page > 1))
-                    )
+                    trackCouponsLoaded(isPosMode, page)
                     Result.success(result.model!!)
                 }
             }
+    }
+
+    private fun trackCouponsLoaded(isPosMode: Boolean, page: Int) {
+        if (!isPosMode) {
+            analyticsTrackerWrapper.track(
+                storeManagementTrackingEventProvider.COUPONS_LOADED,
+                mapOf(Pair(AnalyticsTracker.KEY_IS_LOADING_MORE, page > 1))
+            )
+        }
     }
 
     suspend fun searchCoupons(

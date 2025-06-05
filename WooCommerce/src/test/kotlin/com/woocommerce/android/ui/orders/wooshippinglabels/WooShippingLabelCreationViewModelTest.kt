@@ -85,7 +85,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
             length = it.toFloat()
         )
     }
-    private val defaultShipments = listOf(ShipmentUIModel(id = "0", items = defaultShippableItems, purchased = false))
+    private val defaultShipments = listOf(ShipmentUIModel(id = "0", items = defaultShippableItems))
     private val defaultShippingLines = List(3) {
         Order.ShippingLine(
             methodTitle = "Shipping Line $it",
@@ -497,10 +497,12 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         )
         whenever(shouldRequireCustomsForm.invoke(any())) doReturn false
         whenever(orderDetailRepository.getOrderById(any())) doReturn order
+        whenever(getShipments(any())) doReturn defaultShipments
         whenever(observeOriginAddresses()) doReturn flowOf(defaultOriginAddresses)
         whenever(
             getShippingRates(any(), any(), any(), any(), any(), any(), isNull(), isNull())
         ) doReturn Result.success(defaultShippingRates)
+        whenever(observeStoreOptions()) doReturn flowOf(defaultStoreOptions)
 
         createViewModel()
 
@@ -512,8 +514,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
         advanceUntilIdle()
 
-        verify(getShippingRates, times(2))
-            .invoke(any(), any(), any(), any(), any(), any(), isNull(), isNull())
+        verify(getShippingRates, times(2)).invoke(any(), any(), any(), any(), any(), any(), isNull(), isNull())
     }
 
     @Test
@@ -527,10 +528,12 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         )
         whenever(shouldRequireCustomsForm.invoke(any())) doReturn false
         whenever(orderDetailRepository.getOrderById(any())) doReturn order
+        whenever(getShipments(any())) doReturn defaultShipments
         whenever(observeOriginAddresses()) doReturn flowOf(defaultOriginAddresses)
         whenever(
             getShippingRates(any(), any(), any(), any(), any(), any(), isNull(), isNull())
         ) doReturn Result.success(defaultShippingRates)
+        whenever(observeStoreOptions()) doReturn flowOf(defaultStoreOptions)
 
         createViewModel()
 
@@ -557,10 +560,12 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         )
         whenever(shouldRequireCustomsForm.invoke(any())) doReturn false
         whenever(orderDetailRepository.getOrderById(any())) doReturn order
+        whenever(getShipments(any())) doReturn defaultShipments
         whenever(observeOriginAddresses()) doReturn flowOf(defaultOriginAddresses)
         whenever(
             getShippingRates(any(), any(), any(), any(), any(), any(), isNull(), isNull())
         ) doReturn Result.success(defaultShippingRates)
+        whenever(observeStoreOptions()) doReturn flowOf(defaultStoreOptions)
 
         createViewModel()
 
@@ -1079,7 +1084,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         assertThat(currentViewState).isInstanceOf(DataState::class.java)
         val dataState = currentViewState as DataState
 
-        assertThat(dataState.hazmatState).isEqualTo(HazmatState.NoSelection)
+        assertThat(dataState.shipmentUIList[0].hazmatState).isEqualTo(HazmatState.NoSelection)
     }
 
     @Test
@@ -1104,14 +1109,17 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         assertThat(currentViewState).isInstanceOf(DataState::class.java)
         val dataState = currentViewState as DataState
 
-        assertThat(dataState.hazmatState).isEqualTo(HazmatState.Declared(ShippingLabelHazmatCategory.CLASS_1))
+        assertThat(dataState.shipmentUIList[0].hazmatState)
+            .isEqualTo(HazmatState.Declared(ShippingLabelHazmatCategory.CLASS_1))
     }
 
     @Test
     fun `when StartHazmatFormEdit is triggered with a selected category, the event contains the expected category value`() =
         testBlocking {
             var event: MultiLiveEvent.Event? = null
-            whenever(orderDetailRepository.getOrderById(any())) doReturn null
+            val order = OrderTestUtils.generateTestOrder(orderId = orderId)
+            whenever(orderDetailRepository.getOrderById(any())) doReturn order
+            whenever(getShipments(any())) doReturn defaultShipments
             whenever(observeOriginAddresses()) doReturn flowOf(defaultOriginAddresses)
             whenever(observeStoreOptions()) doReturn flowOf(defaultStoreOptions)
 
@@ -1143,6 +1151,6 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         val currentViewState = sut.viewState.value
         assert(currentViewState is DataState)
         val dataState = currentViewState as DataState
-        assertThat(dataState.shippableItems.totalItemQuantity).isEqualTo(expectedItemQuantity)
+        assertThat(dataState.totalItems).isEqualTo(expectedItemQuantity)
     }
 }

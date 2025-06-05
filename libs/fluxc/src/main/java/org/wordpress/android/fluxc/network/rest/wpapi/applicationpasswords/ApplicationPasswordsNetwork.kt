@@ -62,8 +62,10 @@ class ApplicationPasswordsNetwork @Inject constructor(
                 params,
                 body,
                 clazz,
-                /* listener = */ { continuation.resume(WPAPIResponse.Success(it)) },
-                /* errorListener = */ { continuation.resume(WPAPIResponse.Error(it)) }
+                /* listener = */
+                { continuation.resume(WPAPIResponse.Success(it)) },
+                /* errorListener = */
+                { continuation.resume(WPAPIResponse.Error(it)) }
             )
 
             request.addHeader(AUTHORIZATION_HEADER, authorizationHeader)
@@ -135,7 +137,7 @@ class ApplicationPasswordsNetwork @Inject constructor(
                 "Authentication failure using application password, maybe revoked?" +
                     " Delete the saved one then retry"
             )
-            mApplicationPasswordsManager.deleteLocalApplicationPassword(site)
+            mApplicationPasswordsManager.deleteLocalApplicationPassword(site, credentials)
             executeGsonRequest(site, method, path, clazz, params, body, isRegeneratingApplicationPassword = true)
         } else {
             response

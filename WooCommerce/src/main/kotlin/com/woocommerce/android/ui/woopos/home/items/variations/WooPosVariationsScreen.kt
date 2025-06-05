@@ -1,14 +1,9 @@
 package com.woocommerce.android.ui.woopos.home.items.variations
 
-import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -29,32 +24,28 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.Button
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreen
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosPaginationErrorIndicator
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolbar
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemList
-import com.woocommerce.android.ui.woopos.home.items.WooPosItemNavigationData.VariableProductData
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsEmptyList
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsLoadingIndicator
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.home.items.WooPosVariationsViewState
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart.WooPosItemSource
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 fun WooPosVariationsScreen(
     modifier: Modifier,
-    variableProductData: VariableProductData,
+    variableProductData: WooPosVariationsNavigationData,
     onBackClicked: () -> Unit
 ) {
     val viewModel: WooPosVariationsViewModel = hiltViewModel(
         key = variableProductData.id.toString()
     )
     LaunchedEffect(variableProductData.id) {
-        viewModel.init(variableProductData.id, variableProductData.source)
+        viewModel.init(variableProductData.id, variableProductData.sourceType)
     }
     val state = viewModel.viewState
     WooPosVariationsScreens(
@@ -79,13 +70,11 @@ fun WooPosVariationsScreen(
                 WooPosVariationsUIEvents.VariationsLoadingErrorRetryButtonClicked(variableProductData.id)
             )
         },
-        variableProductData,
         state,
     )
 }
 
 @OptIn(ExperimentalMaterialApi::class)
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 private fun WooPosVariationsScreens(
     modifier: Modifier,
@@ -94,7 +83,6 @@ private fun WooPosVariationsScreens(
     onEndOfItemListReached: () -> Unit,
     onPullToRefresh: () -> Unit,
     onRetryClicked: () -> Unit,
-    variableProductData: VariableProductData,
     state: StateFlow<WooPosVariationsViewState>,
 ) {
     val itemState = state.collectAsState()
@@ -103,6 +91,7 @@ private fun WooPosVariationsScreens(
         onRefresh = onPullToRefresh
     )
     val listState = rememberLazyListState()
+    BackHandler(onBack = onBackClicked)
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -111,62 +100,53 @@ private fun WooPosVariationsScreens(
                 enabled = itemState.value.pullToRefreshState == WooPosPullToRefreshState.Enabled
             )
     ) {
-        BackHandler(onBack = onBackClicked)
-        Column(
-            modifier = modifier.fillMaxHeight()
-        ) {
-            WooPosToolbar(
-                titleText = variableProductData.name,
-                onBackClicked = onBackClicked
-            )
-
-            Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
-
-            Box(
-                modifier = Modifier
-                    .padding(horizontal = WooPosSpacing.Medium.value.toAdaptivePadding())
-            ) {
-                when (val itemsState = itemState.value) {
-                    is WooPosVariationsViewState.Content -> {
-                        WooPosItemList(
-                            state = itemsState,
-                            listState = listState,
-                            onItemClicked = {
-                                onItemClicked(
-                                    (it as WooPosItemSelectionViewState.Product.Variation).productId,
-                                    it.id
-                                )
-                            },
-                            onEndOfProductsListReached = onEndOfItemListReached,
-                            onErrorWhilePaginating = {
-                                VariationsPaginationError {
-                                    onEndOfItemListReached()
-                                }
-                            }
+        when (val itemsState = itemState.value) {
+            is WooPosVariationsViewState.Content -> {
+                WooPosItemList(
+                    modifier = Modifier.padding(top = WooPosSpacing.Large.value),
+                    state = itemsState,
+                    listState = listState,
+                    onItemClicked = {
+                        onItemClicked(
+                            (it as WooPosItemSelectionViewState.Product.Variation).productId,
+                            it.id
                         )
-                    }
-
-                    is WooPosVariationsViewState.Loading -> {
-                        WooPosItemsLoadingIndicator()
-                    }
-
-                    is WooPosVariationsViewState.Error -> {
-                        VariationsError(modifier = Modifier.width(640.dp)) {
-                            onRetryClicked()
+                    },
+                    onEndOfProductsListReached = onEndOfItemListReached,
+                    onErrorWhilePaginating = {
+                        VariationsPaginationError {
+                            onEndOfItemListReached()
                         }
                     }
+                )
+            }
 
-                    is WooPosVariationsViewState.Empty -> {
-                        WooPosItemsEmptyList(
-                            modifier = Modifier.fillMaxSize(),
-                            title = stringResource(id = R.string.woopos_variations_empty_list_title),
-                            message = stringResource(id = R.string.woopos_variations_empty_list_message),
-                            contentDescription = stringResource(
-                                id = R.string.woopos_variations_empty_list_image_description
-                            )
-                        )
-                    }
+            is WooPosVariationsViewState.Loading -> {
+                WooPosItemsLoadingIndicator(
+                    modifier = Modifier.padding(top = WooPosSpacing.Large.value),
+                )
+            }
+
+            is WooPosVariationsViewState.Error -> {
+                VariationsError(
+                    modifier = Modifier
+                        .width(640.dp)
+                        .padding(top = WooPosSpacing.Large.value)
+                ) {
+                    onRetryClicked()
                 }
+            }
+
+            is WooPosVariationsViewState.Empty -> {
+                WooPosItemsEmptyList(
+                    modifier = Modifier.fillMaxSize()
+                        .padding(top = WooPosSpacing.Large.value),
+                    title = stringResource(id = R.string.woopos_variations_empty_list_title),
+                    message = stringResource(id = R.string.woopos_variations_empty_list_message),
+                    contentDescription = stringResource(
+                        id = R.string.woopos_variations_empty_list_image_description
+                    )
+                )
             }
         }
 
@@ -179,7 +159,7 @@ private fun WooPosVariationsScreens(
 }
 
 @Composable
-fun VariationsError(modifier: Modifier, onRetryClicked: () -> Unit) {
+private fun VariationsError(modifier: Modifier, onRetryClicked: () -> Unit) {
     Box(
         modifier = Modifier.fillMaxWidth(),
         contentAlignment = Alignment.Center,
@@ -187,7 +167,7 @@ fun VariationsError(modifier: Modifier, onRetryClicked: () -> Unit) {
         WooPosErrorScreen(
             modifier = modifier,
             message = stringResource(id = R.string.woopos_variations_loading_error_title),
-            reason = stringResource(id = R.string.woopos_products_loading_error_message),
+            reason = stringResource(id = R.string.woopos_variations_loading_error_message),
             primaryButton = Button(
                 text = stringResource(id = R.string.woopos_products_loading_error_retry_button),
                 click = onRetryClicked
@@ -197,7 +177,7 @@ fun VariationsError(modifier: Modifier, onRetryClicked: () -> Unit) {
 }
 
 @Composable
-fun VariationsPaginationError(onRetryClicked: () -> Unit) {
+private fun VariationsPaginationError(onRetryClicked: () -> Unit) {
     WooPosPaginationErrorIndicator(
         message = stringResource(id = R.string.woopos_items_pagination_error_title),
         description = stringResource(id = R.string.woopos_items_pagination_error_description),
@@ -249,12 +229,6 @@ fun WooPosVariationsScreenPreview() {
             onEndOfItemListReached = {},
             onPullToRefresh = {},
             onRetryClicked = {},
-            variableProductData = VariableProductData(
-                id = 0,
-                name = "Variable Product",
-                numOfVariations = 20,
-                source = WooPosItemSource.PRODUCT_LIST,
-            ),
             state = productState,
         )
     }

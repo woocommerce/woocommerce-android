@@ -9,6 +9,9 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.WooPosGetCachedStoreCurrency
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosCouponsFormatter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -20,10 +23,13 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doSuspendableAnswer
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.mockito.kotlin.wheneverBlocking
 import java.util.Date
@@ -44,6 +50,7 @@ class WooPosCouponsListViewStateManagerTest {
     private val couponFormatter: WooPosCouponsFormatter = mock()
     private val getCachedStoreCurrency: WooPosGetCachedStoreCurrency = mock()
     private val couponsDataFlow = MutableStateFlow<List<CouponDBModel>>(emptyList())
+    private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private val cachedCouponEnabledChecker: CachedCouponEnabledChecker = mock {
         onBlocking { isEnabled() } doReturn true
     }
@@ -56,7 +63,8 @@ class WooPosCouponsListViewStateManagerTest {
         couponsDataSource,
         couponFormatter,
         getCachedStoreCurrency,
-        cachedCouponEnabledChecker
+        cachedCouponEnabledChecker,
+        analyticsTracker,
     )
 
     @Before
@@ -377,6 +385,35 @@ class WooPosCouponsListViewStateManagerTest {
     }
 
     @Test
+    fun `when end of list reached and load more fails, then PTR enabled`() = runTest {
+        // GIVEN
+        whenever(couponsDataSource.clearCacheAndFetchFirstPage()).doSuspendableAnswer {
+            couponsDataFlow.emit(listOf(CouponTestUtils.generateTestCoupon(0L))) // cache
+            delay(1) // workaround for bug in mockito
+            Result.success(MORE_PAGES_AVAILABLE)
+        }
+        sat.fetchCoupons(testViewModelScope, WooPosCouponsListViewStateManager.WooPosCouponsListRefreshType.INITIAL)
+        advanceUntilIdle()
+        whenever(couponsDataSource.loadMore()).doSuspendableAnswer {
+            delay(1) // workaround for bug in mockito
+            Result.failure(IllegalArgumentException("Test exception"))
+        }
+
+        sat.viewState.test {
+            // WHEN
+            sat.endOfListReached(testViewModelScope)
+
+            advanceUntilIdle()
+
+            // THEN
+            val state = expectMostRecentItem() as Content
+            assertThat(state.pullToRefreshState).isInstanceOf(WooPosPullToRefreshState.Enabled::class.java)
+
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
     fun `given pagination state error, when end of list reached, then nothing happens`() = runTest {
         // GIVEN
         whenever(couponsDataSource.clearCacheAndFetchFirstPage()).doSuspendableAnswer {
@@ -659,4 +696,75 @@ class WooPosCouponsListViewStateManagerTest {
                 cancelAndIgnoreRemainingEvents()
             }
         }
+
+    @Test
+    fun `when next page loads without search query, then tracks event with LIST source type`() = runTest {
+        // GIVEN
+        whenever(couponsDataSource.clearCacheAndFetchFirstPage()).doSuspendableAnswer {
+            couponsDataFlow.emit(listOf(CouponTestUtils.generateTestCoupon(0L))) // cache
+            delay(1) // workaround for bug in mockito
+            Result.success(MORE_PAGES_AVAILABLE)
+        }
+        sat.fetchCoupons(testViewModelScope, WooPosCouponsListViewStateManager.WooPosCouponsListRefreshType.INITIAL)
+        advanceUntilIdle()
+        whenever(couponsDataSource.loadMore()).doSuspendableAnswer {
+            delay(1) // workaround for bug in mockito
+            Result.success(MORE_PAGES_AVAILABLE)
+        }
+
+        sat.viewState.test {
+            // WHEN
+            sat.endOfListReached(testViewModelScope)
+
+            advanceUntilIdle()
+
+            // THEN
+            verify(analyticsTracker).track(
+                eq(
+                    WooPosAnalyticsEvent.Event.ItemsNextPageLoaded(
+                        source = WooPosAnalyticsEventConstant.ItemsListSource.COUPON,
+                        sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST
+                    )
+                )
+            )
+
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `when next page loads with search query, then tracks event with SEARCH_RESULT source type`() = runTest {
+        // GIVEN
+        whenever(couponsDataSource.clearCacheAndFetchFirstPage(any())).doSuspendableAnswer {
+            couponsDataFlow.emit(listOf(CouponTestUtils.generateTestCoupon(0L))) // cache
+            delay(1) // workaround for bug in mockito
+            Result.success(MORE_PAGES_AVAILABLE)
+        }
+        whenever(couponsDataSource.loadMore()).doSuspendableAnswer {
+            delay(1) // workaround for bug in mockito
+            Result.success(MORE_PAGES_AVAILABLE)
+        }
+
+        sat.setSearchQuery("test", testViewModelScope)
+        advanceUntilIdle()
+
+        sat.viewState.test {
+            // WHEN
+            sat.endOfListReached(testViewModelScope)
+
+            advanceUntilIdle()
+
+            // THEN
+            verify(analyticsTracker).track(
+                eq(
+                    WooPosAnalyticsEvent.Event.ItemsNextPageLoaded(
+                        source = WooPosAnalyticsEventConstant.ItemsListSource.COUPON,
+                        sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.SEARCH_RESULT
+                    )
+                )
+            )
+
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
 }

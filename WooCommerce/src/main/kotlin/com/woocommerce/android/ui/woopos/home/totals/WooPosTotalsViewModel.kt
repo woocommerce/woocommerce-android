@@ -15,7 +15,6 @@ import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardRea
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState.CardReaderPaymentState
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
-import com.woocommerce.android.ui.woopos.featureflags.WooPosIsCouponsFeatureFlagEnabled
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToCashPayment
@@ -40,6 +39,7 @@ import com.woocommerce.android.util.WooLogWrapper
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -61,7 +61,6 @@ class WooPosTotalsViewModel @Inject constructor(
     private val networkStatus: WooPosNetworkStatus,
     private val cardReaderPaymentControllerFactory: WooPosCardReaderPaymentControllerFactory,
     private val uiStringParser: UiStringParser,
-    private val isCouponsFFEnabled: WooPosIsCouponsFeatureFlagEnabled,
     private val totalsAnalyticsTracker: WooPosTotalsAnalyticsTracker,
     private val wooLogWrapper: WooLogWrapper,
     savedState: SavedStateHandle,
@@ -81,6 +80,8 @@ class WooPosTotalsViewModel @Inject constructor(
         )
 
     val state: StateFlow<WooPosTotalsViewState> = uiState
+
+    private var createDraftOrderJob: Job? = null
 
     private val dataState: MutableStateFlow<TotalsDataState> = savedState.getStateFlow(
         scope = viewModelScope,
@@ -139,6 +140,10 @@ class WooPosTotalsViewModel @Inject constructor(
     private fun cancelPaymentAction() {
         cardReaderPaymentController?.onBackPressed()
         cardReaderPaymentController?.stop()
+    }
+
+    private fun cancelCreateOrderDraftAction() {
+        createDraftOrderJob?.cancel()
     }
 
     fun onUIEvent(event: WooPosTotalsUIEvent) {
@@ -226,7 +231,10 @@ class WooPosTotalsViewModel @Inject constructor(
                     retryPaymentCollectionFromScratch()
                 }
 
-                else -> childrenToParentEventSender.sendToParent(ChildToParentEvent.BackFromCheckoutToCartClicked)
+                else -> {
+                    cancelCreateOrderDraftAction()
+                    childrenToParentEventSender.sendToParent(ChildToParentEvent.BackFromCheckoutToCartClicked)
+                }
             }
         }
     }
@@ -288,6 +296,7 @@ class WooPosTotalsViewModel @Inject constructor(
 
                     is ParentToChildrenEvent.BackFromCheckoutToCartClicked -> {
                         cancelPaymentAction()
+                        cancelCreateOrderDraftAction()
                         uiState.value = InitialState
                     }
 
@@ -304,12 +313,13 @@ class WooPosTotalsViewModel @Inject constructor(
                     }
 
                     is ParentToChildrenEvent.SearchEvent.RecentSearchSelected,
-                    is ParentToChildrenEvent.ItemClickedInProductSelector,
+                    is ParentToChildrenEvent.ItemClickedInItemsList,
                     is ParentToChildrenEvent.SearchEvent.ChangedQuery,
                     ParentToChildrenEvent.SearchEvent.Finished,
                     is ParentToChildrenEvent.OrderCreated,
                     ParentToChildrenEvent.SearchEvent.Started,
                     ParentToChildrenEvent.RemoveCouponsClicked,
+                    ParentToChildrenEvent.RefreshProductList,
                     ParentToChildrenEvent.CouponsValidationFailed -> Unit
                 }
             }
@@ -442,7 +452,8 @@ class WooPosTotalsViewModel @Inject constructor(
     }
 
     private fun createOrderDraft(itemClickedDataList: List<WooPosItemsViewModel.ItemClickedData>) {
-        viewModelScope.launch {
+        createDraftOrderJob?.cancel()
+        createDraftOrderJob = viewModelScope.launch {
             uiState.value = WooPosTotalsViewState.Loading
 
             totalsRepository.createOrderFromCartItems(itemClickedDataList = itemClickedDataList)
@@ -452,6 +463,7 @@ class WooPosTotalsViewModel @Inject constructor(
                         onCreateOrderDraftFails(error)
                     }
                 )
+            createDraftOrderJob = null
         }
     }
 
@@ -579,7 +591,7 @@ class WooPosTotalsViewModel @Inject constructor(
         }
         return WooPosTotalsViewState.Checkout(
             totals = Totals.Visible(
-                orderDiscountText = if (isCouponsFFEnabled() && discountAmount > BigDecimal.ZERO) {
+                orderDiscountText = if (discountAmount > BigDecimal.ZERO) {
                     "-${priceFormat(discountAmount)}"
                 } else {
                     null

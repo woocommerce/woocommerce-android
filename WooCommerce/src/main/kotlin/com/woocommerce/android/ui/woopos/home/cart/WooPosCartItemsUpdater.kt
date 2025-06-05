@@ -1,21 +1,15 @@
 package com.woocommerce.android.ui.woopos.home.cart
 
 import com.automattic.android.tracks.crashlogging.CrashLogging
-import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
-import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
-import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState.Coupon.CouponValidationState
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.util.WooLogWrapper
-import com.woocommerce.android.viewmodel.ResourceProvider
 import javax.inject.Inject
 
 class WooPosCartItemsUpdater @Inject constructor(
-    private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
-    private val resourceProvider: ResourceProvider,
     private val formatPrice: WooPosFormatPrice,
     private val productsCache: WooPosProductsCache,
     private val wooLogWrapper: WooLogWrapper,
@@ -25,58 +19,79 @@ class WooPosCartItemsUpdater @Inject constructor(
         itemsInCart: List<WooPosCartItemViewState>,
         updatedProducts: List<ParentToChildrenEvent.OrderCreated.ProductInfo>,
         updatedCoupons: List<ParentToChildrenEvent.OrderCreated.CouponInfo>,
-    ): List<WooPosCartItemViewState> {
+    ): CartItemsUpdaterResult {
         val mutableCurrentBodyList = itemsInCart.toMutableList()
         var productsChanged = false
+        var couponsChanged = false
 
         val availableProductsMap = createAvailableProductsMap(updatedProducts)
 
         itemsInCart.forEachIndexed { index, item ->
             when (item) {
                 is WooPosCartItemViewState.Product -> {
-                    val productKey = getProductKey(item)
-                    val availableQuantity = availableProductsMap[productKey] ?: 0
-
-                    if (availableQuantity > 0) {
-                        availableProductsMap[productKey] = availableQuantity - 1
-                        val updatedProduct = findMatchingProduct(item, updatedProducts)
-
-                        updatedProduct?.let {
-                            val updatedItem = updateProductWithNewInfo(item, it)
-                            val itemChanged = updatedItem.name != item.name || updatedItem.price != item.price
-
-                            if (itemChanged) {
-                                updateProductInCache(updatedItem, updatedProduct)
-                            }
-
-                            mutableCurrentBodyList[index] = updatedItem
-                            productsChanged = productsChanged || itemChanged
-                        }
-                    } else {
-                        val updatedItem = markProductAsNotExisting(item)
-                        mutableCurrentBodyList[index] = updatedItem
-                        val itemChanged = updatedItem.name != item.name ||
-                            updatedItem.price != item.price ||
-                            updatedItem.productDoesNotExist != item.productDoesNotExist
-
-                        if (itemChanged) {
-                            deleteProductFromCache(updatedItem.id)
-                        }
-                        productsChanged = productsChanged || itemChanged
-                    }
+                    val result = processProduct(item, availableProductsMap, updatedProducts)
+                    mutableCurrentBodyList[index] = result.updatedItem
+                    productsChanged = productsChanged || result.changed
                 }
 
                 is WooPosCartItemViewState.Coupon -> {
+                    couponsChanged = true
                     mutableCurrentBodyList[index] = updateCouponsWithFormattedDiscount(updatedCoupons, item)
                 }
+
+                is WooPosCartItemViewState.Error -> error("unsupported item $item")
+                is WooPosCartItemViewState.Loading -> error("unsupported item $item")
             }
         }
 
-        if (productsChanged) {
-            notifyParentAboutChanges()
+        return CartItemsUpdaterResult(
+            updatedItems = mutableCurrentBodyList,
+            productsChanged = productsChanged,
+            couponsChanged = couponsChanged,
+        )
+    }
+
+    private suspend fun processProduct(
+        item: WooPosCartItemViewState.Product,
+        availableProductsMap: MutableMap<String, Int>,
+        updatedProducts: List<ParentToChildrenEvent.OrderCreated.ProductInfo>
+    ): ProductProcessResult {
+        val productKey = getProductKey(item)
+        val availableQuantity = availableProductsMap[productKey] ?: 0
+        var changed = false
+
+        val updatedItem = if (availableQuantity > 0) {
+            availableProductsMap[productKey] = availableQuantity - 1
+            val updatedProduct = findMatchingProduct(item, updatedProducts)
+
+            if (updatedProduct != null) {
+                val newItem = updateProductWithNewInfo(item, updatedProduct)
+                val itemChanged = newItem.name != item.name || newItem.price != item.price
+
+                if (itemChanged) {
+                    updateProductInCache(newItem, updatedProduct)
+                }
+
+                changed = itemChanged
+                newItem
+            } else {
+                item
+            }
+        } else {
+            val newItem = markProductAsNotExisting(item)
+            val itemChanged = newItem.name != item.name ||
+                newItem.price != item.price ||
+                newItem.productDoesNotExist != item.productDoesNotExist
+
+            if (itemChanged) {
+                deleteProductFromCache(newItem.id)
+            }
+
+            changed = itemChanged
+            newItem
         }
 
-        return mutableCurrentBodyList
+        return ProductProcessResult(updatedItem, changed)
     }
 
     private suspend fun updateCouponsWithFormattedDiscount(
@@ -88,14 +103,6 @@ class WooPosCartItemsUpdater @Inject constructor(
         val message = "Coupon not found in the cart"
         wooLogWrapper.e(T.POS, message)
         crashLogger.sendReport(IllegalStateException(message))
-    }
-
-    private suspend fun notifyParentAboutChanges() {
-        childrenToParentEventSender.sendToParent(
-            ChildToParentEvent.ToastMessageDisplayed(
-                message = resourceProvider.getString(R.string.woopos_cart_changes_in_the_cart)
-            )
-        )
     }
 
     private suspend fun updateProductInCache(
@@ -200,4 +207,15 @@ class WooPosCartItemsUpdater @Inject constructor(
 
     private fun ParentToChildrenEvent.OrderCreated.ProductInfo.subtotalPricePerItem() =
         basePrice.div(quantity.toBigDecimal())
+
+    data class CartItemsUpdaterResult(
+        val updatedItems: List<WooPosCartItemViewState>,
+        val productsChanged: Boolean,
+        val couponsChanged: Boolean,
+    )
+
+    private data class ProductProcessResult(
+        val updatedItem: WooPosCartItemViewState.Product,
+        val changed: Boolean
+    )
 }

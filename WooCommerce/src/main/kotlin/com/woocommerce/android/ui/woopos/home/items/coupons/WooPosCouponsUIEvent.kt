@@ -5,7 +5,6 @@ sealed class WooPosCouponsUIEvent {
     data object PullToRefreshTriggered : WooPosCouponsUIEvent()
     data object RetryLoadMoreTriggered : WooPosCouponsUIEvent()
     data object RetryTriggered : WooPosCouponsUIEvent()
-    data class CouponClicked(val couponId: Long) : WooPosCouponsUIEvent()
+    data class CouponClicked(val couponId: Long, val couponCode: String) : WooPosCouponsUIEvent()
     data object CreateCouponClicked : WooPosCouponsUIEvent()
-    data object BackButtonClicked : WooPosCouponsUIEvent()
 }

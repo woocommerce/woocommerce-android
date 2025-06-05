@@ -80,13 +80,13 @@ object ProductTestUtils {
         description: String = "",
         siteId: Int = 6
     ): WCProductShippingClassModel {
-        return WCProductShippingClassModel().apply {
-            remoteShippingClassId = remoteId
-            localSiteId = siteId
-            this.name = name
-            this.slug = slug
-            this.description = description
-        }
+        return WCProductShippingClassModel(
+            remoteShippingClassId = RemoteId(remoteId),
+            localSiteId = LocalId(siteId),
+            name = name,
+            slug = slug,
+            description = description,
+        )
     }
 
     fun generateSampleProductReview(
@@ -94,11 +94,11 @@ object ProductTestUtils {
         remoteProductReviewId: Long = 2L,
         siteId: Int = 6
     ): WCProductReviewModel {
-        return WCProductReviewModel(1).apply {
-            this.remoteProductId = remoteProductId
-            this.remoteProductReviewId = remoteProductReviewId
-            this.localSiteId = siteId
-        }
+        return WCProductReviewModel(
+            remoteProductId = RemoteId(remoteProductId),
+            remoteProductReviewId = RemoteId(remoteProductReviewId),
+            localSiteId = LocalId(siteId),
+        )
     }
 
     fun generateProductShippingClassList(siteId: Int = 6) = List(5) {
@@ -113,40 +113,19 @@ object ProductTestUtils {
         val responseType = object : TypeToken<List<ProductReviewApiResponse>>() {}.type
         val converted = Gson().fromJson(json, responseType) as? List<ProductReviewApiResponse> ?: emptyList()
         return converted.map {
-            WCProductReviewModel().apply {
-                localSiteId = siteId
-                remoteProductReviewId = it.id
-                remoteProductId = it.product_id
-                dateCreated = it.date_created_gmt?.let { "${it}Z" } ?: ""
-                status = it.status ?: ""
-                reviewerName = it.reviewer ?: ""
-                reviewerEmail = it.reviewer_email ?: ""
-                review = it.review ?: ""
-                rating = it.rating
-                verified = it.verified
-                reviewerAvatarsJson = it.reviewer_avatar_urls.toString()
-            }
-        }
-    }
-
-    fun generateCategory(siteId: Int, remoteId: Long) =
-        WCProductCategoryModel().apply {
-            localSiteId = siteId
-            remoteCategoryId = remoteId
-            name = "Category $remoteId"
-            slug = "category$remoteId"
-            parent = 0L
-        }
-
-    fun generateCategoryList(siteId: Int): List<WCProductCategoryModel> {
-        return List(5) {
-            WCProductCategoryModel().apply {
-                localSiteId = siteId
-                remoteCategoryId = it.toLong()
-                name = "Category $it"
-                slug = "category$it"
-                parent = 0L
-            }
+            WCProductReviewModel(
+                localSiteId = LocalId(siteId),
+                remoteProductReviewId = RemoteId(it.id),
+                remoteProductId = RemoteId(it.product_id),
+                dateCreated = it.date_created_gmt?.let { "${it}Z" } ?: "",
+                status = it.status ?: "",
+                reviewerName = it.reviewer ?: "",
+                reviewerEmail = it.reviewer_email ?: "",
+                review = it.review ?: "",
+                rating = it.rating,
+                verified = it.verified,
+                reviewerAvatarsJson = it.reviewer_avatar_urls.toString(),
+ )
         }
     }
 
@@ -156,17 +135,17 @@ object ProductTestUtils {
         val responseType = object : TypeToken<List<ProductCategoryApiResponse>>() {}.type
         val converted = Gson().fromJson(categoryJson, responseType) as? List<ProductCategoryApiResponse> ?: emptyList()
         return converted.map {
-            WCProductCategoryModel().apply {
-                localSiteId = siteId
-                remoteCategoryId = it.id
-                name = it.name ?: ""
-                slug = it.slug ?: ""
-                parent = it.parent ?: 0L
-            }
+            WCProductCategoryModel(
+                localSiteId = LocalId(siteId),
+                remoteCategoryId = RemoteId(it.id),
+                name = it.name ?: "",
+                slug = it.slug ?: "",
+                parent = it.parent ?: 0L,
+            )
         }
     }
 
-    fun generateSampleProductTag(
+    private fun generateSampleProductTag(
         remoteId: Long = 1L,
         name: String = "",
         slug: String = "",
@@ -174,14 +153,14 @@ object ProductTestUtils {
         count: Int = 3,
         siteId: Int = 6
     ): WCProductTagModel {
-        return WCProductTagModel().apply {
-            remoteTagId = remoteId
-            localSiteId = siteId
-            this.name = name
-            this.slug = slug
-            this.description = description
-            this.count = count
-        }
+        return WCProductTagModel(
+            remoteTagId = RemoteId(remoteId),
+            localSiteId = LocalId(siteId),
+            name = name,
+            slug = slug,
+            description = description,
+            count = count,
+        )
     }
 
     fun generateProductTags(siteId: Int = 6): List<WCProductTagModel> {
@@ -194,7 +173,7 @@ object ProductTestUtils {
                     name = "$i",
                     slug = "$i",
                     description = "$i"
-            )
+                )
             )
         }
         return tagList

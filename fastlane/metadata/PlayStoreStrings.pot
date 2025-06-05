@@ -12,20 +12,24 @@ msgstr ""
 
 #. translators: Release notes for the latest Wear App version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
 msgctxt "wear_release_note"
-msgid "We've improved WooCommerce app! This time we've fixed several bugs and focused on improving user interface. Keep your feedback falling in; it helps us figure how to improve Woo for you. Happy selling!"
+msgid "This update brings product search and coupon support to Woo POS, making in-person selling smoother than ever. We've also polished the coupon creation flow and improved the "Custom amount" UI. Plus, a pesky crash caused by malformed tax data is now fixed for a more stable experience."
 msgstr ""
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
-msgctxt "release_note_223"
+msgctxt "release_note_225"
 msgid ""
-"22.3:\n"
-"We've streamlined the WooCommerce mobile app! Product types are now seamlessly integrated into the POS menu. This updated design makes managing product information during checkout simple and intuitive.\n"
+"22.5:\n"
+"We've enhanced your WooCommerce experience with this update! Enjoy smoother order creation with our improved custom amount editing form, better tablet navigation with the added toolbar for Variation Attributes, faster product searches with our enhanced POS algorithms, and a new Coupons search feature to help you find discounts quickly. Happy selling!\n"
 msgstr ""
 
-msgctxt "release_note_222"
+msgctxt "release_note_224"
 msgid ""
-"22.2:\n"
-"We've made important improvements in this update! Crashes related to currency formatting, the "Add custom amount" screen, and the Jetpack Installation screen have all been resolved for a smoother and more reliable experience. Enjoy the enhanced stability in your WooCommerce mobile app!\n"
+"22.4:\n"
+"- [*] UI improvements for the "Custom amount" section on the order details screen [https://github.com/woocommerce/woocommerce-android/pull/13999]\n"
+"- [*] Fixes for the crash when tax lines JSON is malformed [https://github.com/woocommerce/woocommerce-android/pull/14049]\n"
+"- [*] Minor design adjustments of the coupon creation flow.\n"
+"- [***] We added products search into Woo POS [https://github.com/woocommerce/woocommerce-android/pull/14029]\n"
+"- [***] We added support for coupons into Woo POS [https://github.com/woocommerce/woocommerce-android/pull/14074]\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!

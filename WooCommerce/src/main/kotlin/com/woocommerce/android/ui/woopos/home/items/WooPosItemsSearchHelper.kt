@@ -6,7 +6,7 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
-import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState.SearchState
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.SearchState
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.scopes.ActivityRetainedScoped
 import kotlinx.coroutines.CoroutineScope
@@ -21,17 +21,20 @@ class WooPosItemsSearchHelper @Inject constructor(
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
 ) {
     private lateinit var coroutineScope: CoroutineScope
-    private lateinit var viewStateFlow: MutableStateFlow<WooPosItemsViewState>
+    private lateinit var viewStateFlow: MutableStateFlow<WooPosItemsToolbarViewState>
+
+    private var wasLastStateClosed = true
 
     fun initialize(
         coroutineScope: CoroutineScope,
-        viewStateFlow: MutableStateFlow<WooPosItemsViewState>
+        viewStateFlow: MutableStateFlow<WooPosItemsToolbarViewState>
     ) {
         this.coroutineScope = coroutineScope
         this.viewStateFlow = viewStateFlow
         listenEventsFromParent()
     }
 
+    @Suppress("CyclomaticComplexMethod")
     private fun listenEventsFromParent() {
         coroutineScope.launch {
             parentToChildrenEventReceiver.events.collect { event ->
@@ -51,9 +54,14 @@ class WooPosItemsSearchHelper @Inject constructor(
                     is ParentToChildrenEvent.SearchEvent.RecentSearchSelected -> {
                         onSearchChanged(event.query, event.query.length)
                     }
+                    is ParentToChildrenEvent.RefreshProductList -> {
+                        if (isSearchOpen()) {
+                            onSearchChanged("", 0)
+                        }
+                    }
 
                     is ParentToChildrenEvent.BackFromCheckoutToCartClicked -> Unit
-                    is ParentToChildrenEvent.ItemClickedInProductSelector -> Unit
+                    is ParentToChildrenEvent.ItemClickedInItemsList -> Unit
                     is ParentToChildrenEvent.CheckoutClicked -> Unit
                     is ParentToChildrenEvent.SearchEvent.ChangedQuery -> Unit
                     is ParentToChildrenEvent.OrderCreated -> Unit
@@ -72,27 +80,16 @@ class WooPosItemsSearchHelper @Inject constructor(
             )
         }
 
-        val currentState = getCurrentContentState()
-
         if (newQuery.isEmpty()) {
             updateToInitialOpenState()
         } else {
-            val currentOpenState = getCurrentSearchOpenState() ?: return
-            viewStateFlow.value = currentState.copy(
-                search = SearchState.Visible(
-                    state = WooPosSearchInputState.Open(
-                        input = WooPosSearchInputState.Open.Input.Query(newQuery, cursorPosition),
-                        isLoading = false,
-                        hasAnimationPlayed = currentOpenState.hasAnimationPlayed
-                    )
-                )
-            )
+            updateToOpenStateWithQuery(newQuery, cursorPosition)
         }
     }
 
     fun onCloseSearchClicked() {
-        val currentState = getCurrentContentState()
-        viewStateFlow.value = currentState.copy(
+        wasLastStateClosed = true
+        viewStateFlow.value = viewStateFlow.value.copy(
             search = SearchState.Visible(
                 state = WooPosSearchInputState.Closed
             )
@@ -108,36 +105,42 @@ class WooPosItemsSearchHelper @Inject constructor(
         updateToInitialOpenState()
     }
 
-    @Suppress("ReturnCount")
-    fun onAnimationComplete() {
-        val currentState = getCurrentContentState()
-        val searchState = getCurrentSearchVisibleState() ?: return
-        val openState = getCurrentSearchOpenState() ?: return
-
-        viewStateFlow.value = currentState.copy(
-            search = searchState.copy(
-                state = openState.copy(
-                    hasAnimationPlayed = true
-                )
-            )
-        )
-    }
-
     fun isSearchOpen(): Boolean {
         val searchState = getCurrentSearchVisibleState() ?: return false
         return searchState.state is WooPosSearchInputState.Open
     }
 
     private fun updateToInitialOpenState() {
-        val currentState = getCurrentContentState()
-        viewStateFlow.value = currentState.copy(
+        val shouldRequestFocus = wasLastStateClosed
+        wasLastStateClosed = false
+
+        val searchHintStringRes = when (viewStateFlow.value) {
+            is WooPosItemsToolbarViewState.ProductList -> R.string.woopos_search_products
+            is WooPosItemsToolbarViewState.CouponList -> R.string.woopos_search_coupons
+            is WooPosItemsToolbarViewState.VariationList -> error("Search is not applicable for variations list")
+        }
+
+        viewStateFlow.value = viewStateFlow.value.copy(
             search = SearchState.Visible(
                 state = WooPosSearchInputState.Open(
-                    input = WooPosSearchInputState.Open.Input.Hint(
-                        resourceProvider.getString(R.string.woopos_search_products)
-                    ),
+                    input = WooPosSearchInputState.Open.Input.Hint(resourceProvider.getString(searchHintStringRes)),
                     isLoading = false,
-                    hasAnimationPlayed = false
+                    requestFocus = shouldRequestFocus,
+                )
+            )
+        )
+    }
+
+    private fun updateToOpenStateWithQuery(query: String, cursorPosition: Int) {
+        val shouldRequestFocus = wasLastStateClosed
+        wasLastStateClosed = false
+
+        viewStateFlow.value = viewStateFlow.value.copy(
+            search = SearchState.Visible(
+                state = WooPosSearchInputState.Open(
+                    input = WooPosSearchInputState.Open.Input.Query(query, cursorPosition),
+                    isLoading = false,
+                    requestFocus = shouldRequestFocus,
                 )
             )
         )
@@ -145,30 +148,32 @@ class WooPosItemsSearchHelper @Inject constructor(
 
     fun getInitialSearchState(): SearchState =
         SearchState.Visible(
-            state = WooPosSearchInputState.Closed
+            state = WooPosSearchInputState.Closed,
         )
 
-    @Suppress("ReturnCount")
-    private fun updateLoadingState(isLoading: Boolean) {
-        val currentState = getCurrentContentState()
+    fun updateLoadingState(isLoading: Boolean) {
         val searchState = getCurrentSearchVisibleState() ?: return
         val searchStateValue = getCurrentSearchOpenState() ?: return
 
-        viewStateFlow.value = currentState.copy(
+        val shouldShowLoadingIndicatorInToolbar = isLoading && viewStateFlow.value.doesSupportLocalSearch()
+
+        viewStateFlow.value = viewStateFlow.value.copy(
             search = searchState.copy(
                 state = searchStateValue.copy(
-                    isLoading = isLoading
+                    isLoading = shouldShowLoadingIndicatorInToolbar
                 )
             )
         )
     }
 
-    private fun getCurrentContentState(): WooPosItemsViewState {
-        return viewStateFlow.value
+    private fun WooPosItemsToolbarViewState.doesSupportLocalSearch() = when (this) {
+        is WooPosItemsToolbarViewState.CouponList -> false
+        is WooPosItemsToolbarViewState.ProductList -> true
+        is WooPosItemsToolbarViewState.VariationList -> false
     }
 
     private fun getCurrentSearchVisibleState(): SearchState.Visible? {
-        val currentState = getCurrentContentState()
+        val currentState = viewStateFlow.value
         return currentState.search as? SearchState.Visible
     }
 
@@ -177,10 +182,11 @@ class WooPosItemsSearchHelper @Inject constructor(
         return searchState.state as? WooPosSearchInputState.Open
     }
 
-    private fun WooPosItemsViewState.copy(search: SearchState.Visible): WooPosItemsViewState {
+    private fun WooPosItemsToolbarViewState.copy(search: SearchState.Visible): WooPosItemsToolbarViewState {
         return when (this) {
-            is WooPosItemsViewState.ProductList -> this.copy(search = search)
-            is WooPosItemsViewState.CouponList -> this
+            is WooPosItemsToolbarViewState.ProductList -> this.copy(search = search)
+            is WooPosItemsToolbarViewState.CouponList -> this.copy(search = search)
+            is WooPosItemsToolbarViewState.VariationList -> this
         }
     }
 }

@@ -329,5 +329,138 @@ class CustomAmountsFragmentViewModelTest : BaseUnitTest() {
 
         assertThat(viewModel.viewState.currencySymbol?.value).isEqualTo("₹")
     }
+
+    @Test
+    fun `given edit mode with percentage type, when getting current percentage, then uses adjusted base`() {
+        // GIVEN
+        viewModel = CustomAmountsViewModel(
+            CustomAmountsFragmentArgs(
+                customAmountUIModel = CustomAmountUIModel(
+                    id = 1L,
+                    amount = BigDecimal("50"),
+                    name = "Test",
+                    type = PERCENTAGE_CUSTOM_AMOUNT
+                ),
+                orderTotal = "200"
+            ).toSavedStateHandle(),
+            tracker,
+            currencySymbolFinder,
+            store,
+            selectedSite
+        )
+
+        // WHEN
+        viewModel.currentPrice = BigDecimal("30")
+
+        // THEN: Percentage should be calculated based on adjusted base (200 - 50 = 150)
+        // 30 / 150 * 100 = 20%
+        assertThat(viewModel.currentPercentage).isEqualTo(BigDecimal("20.00"))
+    }
+
+    @Test
+    fun `given edit mode with percentage type, when setting percentage, then uses adjusted base`() {
+        // GIVEN
+        viewModel = CustomAmountsViewModel(
+            CustomAmountsFragmentArgs(
+                customAmountUIModel = CustomAmountUIModel(
+                    id = 1L, // Non-zero ID indicates edit mode
+                    amount = BigDecimal("50"),
+                    name = "Test",
+                    type = PERCENTAGE_CUSTOM_AMOUNT
+                ),
+                orderTotal = "200"
+            ).toSavedStateHandle(),
+            tracker,
+            currencySymbolFinder,
+            store,
+            selectedSite
+        )
+
+        // WHEN
+        viewModel.currentPercentage = BigDecimal("20")
+
+        // THEN: Current price should be calculated based on adjusted base (200 - 50 = 150)
+        // 150 * 20% = 30
+        assertThat(viewModel.viewState.customAmountUIModel.currentPrice).isEqualTo(BigDecimal("30.00"))
+    }
+
+    @Test
+    fun `given create mode with percentage type, when getting current percentage, then uses full order total`() {
+        // GIVEN
+        viewModel = CustomAmountsViewModel(
+            CustomAmountsFragmentArgs(
+                customAmountUIModel = CustomAmountUIModel(
+                    id = 0L,
+                    amount = BigDecimal.ZERO,
+                    name = "",
+                    type = PERCENTAGE_CUSTOM_AMOUNT
+                ),
+                orderTotal = "200"
+            ).toSavedStateHandle(),
+            tracker,
+            currencySymbolFinder,
+            store,
+            selectedSite
+        )
+
+        // WHEN
+        viewModel.currentPrice = BigDecimal("40")
+
+        // THEN
+        assertThat(viewModel.currentPercentage).isEqualTo(BigDecimal("20.00"))
+    }
+
+    @Test
+    fun `given edit mode with fixed amount type, when getting current percentage, then uses full order total`() {
+        // GIVEN
+        viewModel = CustomAmountsViewModel(
+            CustomAmountsFragmentArgs(
+                customAmountUIModel = CustomAmountUIModel(
+                    id = 1L,
+                    amount = BigDecimal("50"),
+                    name = "Test",
+                    type = FIXED_CUSTOM_AMOUNT
+                ),
+                orderTotal = "200"
+            ).toSavedStateHandle(),
+            tracker,
+            currencySymbolFinder,
+            store,
+            selectedSite
+        )
+
+        // WHEN
+        viewModel.currentPrice = BigDecimal("40")
+
+        // THEN: Percentage should be calculated based on full order total
+        // 40 / 200 * 100 = 20%
+        assertThat(viewModel.currentPercentage).isEqualTo(BigDecimal("20.00"))
+    }
+
+    @Test
+    fun `given edit mode with percentage type, when adjusted base is zero or negative, then percentage is zero`() {
+        // GIVEN
+        viewModel = CustomAmountsViewModel(
+            CustomAmountsFragmentArgs(
+                customAmountUIModel = CustomAmountUIModel(
+                    id = 1L,
+                    amount = BigDecimal("200"), // Same as order total
+                    name = "Test",
+                    type = PERCENTAGE_CUSTOM_AMOUNT
+                ),
+                orderTotal = "200"
+            ).toSavedStateHandle(),
+            tracker,
+            currencySymbolFinder,
+            store,
+            selectedSite
+        )
+
+        // WHEN
+        viewModel.currentPrice = BigDecimal("50")
+
+        // THEN: Percentage should be zero because adjusted base is zero
+        assertThat(viewModel.currentPercentage).isEqualTo(BigDecimal.ZERO)
+    }
     //endregion
 }

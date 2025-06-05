@@ -1,5 +1,10 @@
 #!/bin/bash -eu
 
+# Check if we can skip this job based on PR changes
+if .buildkite/commands/should-skip-job.sh --job-type build; then
+  exit 0
+fi
+
 "$(dirname "${BASH_SOURCE[0]}")/restore-cache.sh"
 
 APP_TO_BUILD="${1?You need to specify the app to build, WooCommerce or WooCommerce-Wear}"

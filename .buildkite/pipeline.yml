@@ -35,7 +35,11 @@ steps:
           queue: "linter"
 
       - label: "detekt"
-        command: ./gradlew detektAll
+        command: |
+          if .buildkite/commands/should-skip-job.sh --job-type validation; then
+            exit 0
+          fi
+          ./gradlew detektAll
         plugins: [$CI_TOOLKIT]
         artifact_paths:
           - "**/build/reports/detekt/detekt.html"
@@ -100,5 +104,5 @@ steps:
 
 
   - label: "🐘 Populate Gradle build cache"
-    command: ".buildkite/commands/gradle-cache-build.sh"
+    command: .buildkite/commands/gradle-cache-build.sh
     plugins: [$CI_TOOLKIT]

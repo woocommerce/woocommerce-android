@@ -237,8 +237,9 @@ private fun ShipmentCardPreview() = ShipmentCard(
     shipment = mapOf(
         3 to SelectableShippableItemsUI(
             shippableItems = emptyList(),
-            "550g",
-            "$50.00"
+            formattedTotalWeight = "550g",
+            formattedTotalPrice = "$50.00",
+            purchased = false
         )
     ).entries.first()
 )
@@ -250,8 +251,9 @@ private fun ShipmentCardSelectedPreview() = ShipmentCard(
     shipment = mapOf(
         2 to SelectableShippableItemsUI(
             shippableItems = emptyList(),
-            "825g",
-            "$75.00"
+            formattedTotalWeight = "825g",
+            formattedTotalPrice = "$75.00",
+            purchased = false
         )
     ).entries.first(),
     isSelected = true

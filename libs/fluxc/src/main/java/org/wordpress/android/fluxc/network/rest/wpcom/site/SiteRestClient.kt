@@ -16,7 +16,6 @@ import org.wordpress.android.fluxc.generated.SiteActionBuilder
 import org.wordpress.android.fluxc.generated.endpoint.WPCOMREST
 import org.wordpress.android.fluxc.generated.endpoint.WPCOMV2
 import org.wordpress.android.fluxc.model.JetpackCapability
-import org.wordpress.android.fluxc.model.RoleModel
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.SitesModel
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
@@ -30,14 +29,12 @@ import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder.Re
 import org.wordpress.android.fluxc.network.rest.wpcom.auth.AccessToken
 import org.wordpress.android.fluxc.network.rest.wpcom.auth.AppSecrets
 import org.wordpress.android.fluxc.network.rest.wpcom.site.SiteWPComRestResponse.SitesResponse
-import org.wordpress.android.fluxc.network.rest.wpcom.site.UserRoleWPComRestResponse.UserRolesResponse
 import org.wordpress.android.fluxc.store.SiteStore.AccessCookieErrorType
 import org.wordpress.android.fluxc.store.SiteStore.AutomatedTransferEligibilityResponsePayload
 import org.wordpress.android.fluxc.store.SiteStore.AutomatedTransferError
 import org.wordpress.android.fluxc.store.SiteStore.AutomatedTransferStatusResponsePayload
 import org.wordpress.android.fluxc.store.SiteStore.ConnectSiteInfoPayload
 import org.wordpress.android.fluxc.store.SiteStore.DeleteSiteError
-import org.wordpress.android.fluxc.store.SiteStore.DesignateMobileEditorForAllSitesResponsePayload
 import org.wordpress.android.fluxc.store.SiteStore.DesignatePrimaryDomainError
 import org.wordpress.android.fluxc.store.SiteStore.DesignatePrimaryDomainErrorType
 import org.wordpress.android.fluxc.store.SiteStore.DesignatedPrimaryDomainPayload
@@ -52,27 +49,19 @@ import org.wordpress.android.fluxc.store.SiteStore.DomainSupportedCountriesRespo
 import org.wordpress.android.fluxc.store.SiteStore.DomainSupportedStatesError
 import org.wordpress.android.fluxc.store.SiteStore.DomainSupportedStatesErrorType
 import org.wordpress.android.fluxc.store.SiteStore.DomainSupportedStatesResponsePayload
-import org.wordpress.android.fluxc.store.SiteStore.FetchedBlockLayoutsResponsePayload
-import org.wordpress.android.fluxc.store.SiteStore.FetchedEditorsPayload
 import org.wordpress.android.fluxc.store.SiteStore.FetchedJetpackCapabilitiesPayload
 import org.wordpress.android.fluxc.store.SiteStore.FetchedPlansPayload
-import org.wordpress.android.fluxc.store.SiteStore.FetchedPostFormatsPayload
 import org.wordpress.android.fluxc.store.SiteStore.FetchedPrivateAtomicCookiePayload
-import org.wordpress.android.fluxc.store.SiteStore.FetchedUserRolesPayload
 import org.wordpress.android.fluxc.store.SiteStore.InitiateAutomatedTransferResponsePayload
 import org.wordpress.android.fluxc.store.SiteStore.JetpackCapabilitiesError
 import org.wordpress.android.fluxc.store.SiteStore.JetpackCapabilitiesErrorType
 import org.wordpress.android.fluxc.store.SiteStore.NewSiteError
 import org.wordpress.android.fluxc.store.SiteStore.NewSiteErrorType
 import org.wordpress.android.fluxc.store.SiteStore.PlansError
-import org.wordpress.android.fluxc.store.SiteStore.PostFormatsError
-import org.wordpress.android.fluxc.store.SiteStore.PostFormatsErrorType
 import org.wordpress.android.fluxc.store.SiteStore.PrivateAtomicCookieError
 import org.wordpress.android.fluxc.store.SiteStore.QuickStartCompletedResponsePayload
 import org.wordpress.android.fluxc.store.SiteStore.QuickStartError
 import org.wordpress.android.fluxc.store.SiteStore.QuickStartErrorType
-import org.wordpress.android.fluxc.store.SiteStore.SiteEditorsError
-import org.wordpress.android.fluxc.store.SiteStore.SiteEditorsErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.store.SiteStore.SiteError
 import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType
 import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType.INVALID_SITE
@@ -87,10 +76,7 @@ import org.wordpress.android.fluxc.store.SiteStore.SiteVisibility.PUBLIC
 import org.wordpress.android.fluxc.store.SiteStore.SuggestDomainError
 import org.wordpress.android.fluxc.store.SiteStore.SuggestDomainErrorType.EMPTY_RESULTS
 import org.wordpress.android.fluxc.store.SiteStore.SuggestDomainsResponsePayload
-import org.wordpress.android.fluxc.store.SiteStore.UserRolesError
-import org.wordpress.android.fluxc.store.SiteStore.UserRolesErrorType
 import org.wordpress.android.fluxc.tools.CoroutineEngine
-import org.wordpress.android.fluxc.utils.SiteUtils
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.AppLog.T.API
 import org.wordpress.android.util.StringUtils
@@ -98,7 +84,6 @@ import org.wordpress.android.util.UrlUtils
 import java.io.UnsupportedEncodingException
 import java.net.URI
 import java.net.URLEncoder
-import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
@@ -354,7 +339,7 @@ class SiteRestClient @Inject constructor(
         }
     }
 
-    suspend fun launchSite(site: SiteModel) : Response<Unit>{
+    suspend fun launchSite(site: SiteModel): Response<Unit> {
         val url = WPCOMV2.sites.site(site.siteId).launch.url
         return wpComGsonRequestBuilder.syncPostRequest(
             restClient = this,
@@ -363,135 +348,6 @@ class SiteRestClient @Inject constructor(
             body = mapOf("site" to site.siteId),
             Unit::class.java
         )
-    }
-
-    fun fetchSiteEditors(site: SiteModel) {
-        val params = mutableMapOf<String, String>()
-        val url = WPCOMV2.sites.site(site.siteId).gutenberg.url
-        val request = WPComGsonRequest.buildGetRequest(url, params,
-                SiteEditorsResponse::class.java,
-                { response ->
-                    if (response != null) {
-                        val payload = FetchedEditorsPayload(site, response.editor_web, response.editor_mobile)
-                        mDispatcher.dispatch(SiteActionBuilder.newFetchedSiteEditorsAction(payload))
-                    } else {
-                        AppLog.e(API, "Received empty response to /sites/\$site/gutenberg for " + site.url)
-                        val payload = FetchedEditorsPayload(site, "", "")
-                        payload.error = SiteEditorsError(GENERIC_ERROR)
-                        mDispatcher.dispatch(SiteActionBuilder.newFetchedSiteEditorsAction(payload))
-                    }
-                }
-        ) {
-            val payload = FetchedEditorsPayload(site, "", "")
-            payload.error = SiteEditorsError(GENERIC_ERROR)
-            mDispatcher.dispatch(SiteActionBuilder.newFetchedSiteEditorsAction(payload))
-        }
-        add(request)
-    }
-
-    fun designateMobileEditor(site: SiteModel, mobileEditorName: String) {
-        val params = mutableMapOf<String, Any>()
-        val url = WPCOMV2.sites.site(site.siteId).gutenberg.url
-        params["editor"] = mobileEditorName
-        params["platform"] = "mobile"
-        val request = WPComGsonRequest
-                .buildPostRequest(url, params, SiteEditorsResponse::class.java,
-                        { response ->
-                            val payload = FetchedEditorsPayload(site, response.editor_web, response.editor_mobile)
-                            mDispatcher.dispatch(SiteActionBuilder.newFetchedSiteEditorsAction(payload))
-                        }
-                ) {
-                    val payload = FetchedEditorsPayload(site, "", "")
-                    payload.error = SiteEditorsError(GENERIC_ERROR)
-                    mDispatcher.dispatch(SiteActionBuilder.newFetchedSiteEditorsAction(payload))
-                }
-        add(request)
-    }
-
-    fun designateMobileEditorForAllSites(mobileEditorName: String, setOnlyIfEmpty: Boolean) {
-        val params = mutableMapOf<String, Any>()
-        val url = WPCOMV2.me.gutenberg.url
-        params["editor"] = mobileEditorName
-        params["platform"] = "mobile"
-        if (setOnlyIfEmpty) {
-            params["set_only_if_empty"] = "true"
-        }
-        // Else, omit the "set_only_if_empty" parameters.
-        // There is an issue in the API implementation. It only checks
-        // for "set_only_if_empty" presence but don't check for its value.
-        add(
-                WPComGsonRequest
-                        .buildPostRequest<Map<String, String>>(url, params, MutableMap::class.java,
-                                { response ->
-                                    val payload = DesignateMobileEditorForAllSitesResponsePayload(response)
-                                    mDispatcher.dispatch(
-                                            SiteActionBuilder.newDesignatedMobileEditorForAllSitesAction(payload)
-                                    )
-                                },
-                                {
-                                    val payload = DesignateMobileEditorForAllSitesResponsePayload(null)
-                                    payload.error = SiteEditorsError(GENERIC_ERROR)
-                                    mDispatcher.dispatch(
-                                            SiteActionBuilder.newDesignatedMobileEditorForAllSitesAction(payload)
-                                    )
-                                })
-        )
-    }
-
-    suspend fun fetchPostFormats(site: SiteModel): FetchedPostFormatsPayload {
-        val url = WPCOMREST.sites.site(site.siteId).post_formats.urlV1_1
-        val response = wpComGsonRequestBuilder.syncGetRequest(this, url, mapOf(), PostFormatsResponse::class.java)
-        return when (response) {
-            is Success -> {
-                val postFormats = SiteUtils.getValidPostFormatsOrNull(response.data.formats)
-                if (postFormats != null) {
-                    FetchedPostFormatsPayload(
-                            site,
-                            postFormats
-                    )
-                } else {
-                    val payload = FetchedPostFormatsPayload(site, emptyList())
-                    payload.error = PostFormatsError(PostFormatsErrorType.INVALID_RESPONSE)
-                    payload
-                }
-            }
-            is Error -> {
-                val payload = FetchedPostFormatsPayload(site, emptyList())
-                payload.error = PostFormatsError(PostFormatsErrorType.GENERIC_ERROR)
-                payload
-            }
-        }
-    }
-
-    @Suppress("ForbiddenComment")
-    fun fetchUserRoles(site: SiteModel) {
-        val url = WPCOMREST.sites.site(site.siteId).roles.urlV1_1
-        val request = WPComGsonRequest.buildGetRequest(url, null,
-                UserRolesResponse::class.java,
-                { response ->
-                    val roleArray = mutableListOf<RoleModel>()
-                    for (roleResponse in response.roles) {
-                        val roleModel = RoleModel()
-                        roleModel.name = roleResponse.name
-                        roleModel.displayName = StringEscapeUtils.unescapeHtml4(roleResponse.display_name)
-                        roleArray.add(roleModel)
-                    }
-                    mDispatcher.dispatch(
-                            SiteActionBuilder.newFetchedUserRolesAction(
-                                    FetchedUserRolesPayload(
-                                            site,
-                                            roleArray
-                                    )
-                            )
-                    )
-                }
-        ) {
-            val payload = FetchedUserRolesPayload(site, emptyList())
-            // TODO: what other kind of error could we get here?
-            payload.error = UserRolesError(UserRolesErrorType.GENERIC_ERROR)
-            mDispatcher.dispatch(SiteActionBuilder.newFetchedUserRolesAction(payload))
-        }
-        add(request)
     }
 
     fun fetchPlans(site: SiteModel) {
@@ -597,81 +453,6 @@ class SiteRestClient @Inject constructor(
                     }
                 }
         )
-        add(request)
-    }
-
-    @Suppress("LongParameterList")
-    fun fetchWpComBlockLayouts(
-        site: SiteModel,
-        supportedBlocks: List<String?>?,
-        previewWidth: Float?,
-        previewHeight: Float?,
-        scale: Float?,
-        isBeta: Boolean?
-    ) {
-        val url = WPCOMV2.sites.site(site.siteId).block_layouts.url
-        fetchBlockLayouts(site, url, supportedBlocks, previewWidth, previewHeight, scale, isBeta)
-    }
-
-    @Suppress("LongParameterList")
-    fun fetchSelfHostedBlockLayouts(
-        site: SiteModel,
-        supportedBlocks: List<String?>?,
-        previewWidth: Float?,
-        previewHeight: Float?,
-        scale: Float?,
-        isBeta: Boolean?
-    ) {
-        val url = WPCOMV2.common_block_layouts.url
-        fetchBlockLayouts(site, url, supportedBlocks, previewWidth, previewHeight, scale, isBeta)
-    }
-
-    @Suppress("LongParameterList")
-    private fun fetchBlockLayouts(
-        site: SiteModel,
-        url: String,
-        supportedBlocks: List<String?>?,
-        previewWidth: Float?,
-        previewHeight: Float?,
-        scale: Float?,
-        isBeta: Boolean?
-    ) {
-        val params = mutableMapOf<String, String>()
-        if (supportedBlocks != null && supportedBlocks.isNotEmpty()) {
-            params["supported_blocks"] = TextUtils.join(",", supportedBlocks)
-        }
-        if (previewWidth != null) {
-            params["preview_width"] = String.format(Locale.US, "%.1f", previewWidth)
-        }
-        if (previewHeight != null) {
-            params["preview_height"] = String.format(Locale.US, "%.1f", previewHeight)
-        }
-        if (scale != null) {
-            params["scale"] = String.format(Locale.US, "%.1f", scale)
-        }
-        params["type"] = "mobile"
-        if (isBeta != null) {
-            params["is_beta"] = isBeta.toString()
-        }
-        val request = WPComGsonRequest.buildGetRequest(url, params,
-                BlockLayoutsResponse::class.java,
-                { (layouts, categories) ->
-                    val payload = FetchedBlockLayoutsResponsePayload(
-                            site, layouts,
-                            categories
-                    )
-                    mDispatcher.dispatch(SiteActionBuilder.newFetchedBlockLayoutsAction(payload))
-                }
-        ) { error ->
-            val siteErrorType = when (error.apiError) {
-                "unauthorized" -> UNAUTHORIZED
-                "unknown_blog" -> UNKNOWN_SITE
-                else -> SiteErrorType.GENERIC_ERROR
-            }
-            val siteError = SiteError(siteErrorType, error.message)
-            val payload = FetchedBlockLayoutsResponsePayload(site, siteError)
-            mDispatcher.dispatch(SiteActionBuilder.newFetchedBlockLayoutsAction(payload))
-        }
         add(request)
     }
 
@@ -1081,16 +862,6 @@ class SiteRestClient @Inject constructor(
             mDispatcher.dispatch(SiteActionBuilder.newFetchedJetpackCapabilitiesAction(payload))
         }
         add(request)
-    }
-
-    suspend fun fetchJetpackSocial(remoteSiteId: Long): Response<JetpackSocialResponse> {
-        val url = WPCOMV2.sites.site(remoteSiteId).jetpack_social.url
-        return wpComGsonRequestBuilder.syncGetRequest(
-            restClient = this,
-            url = url,
-            params = mapOf(),
-            clazz = JetpackSocialResponse::class.java
-        )
     }
 
     @Suppress("LongMethod", "ComplexMethod")

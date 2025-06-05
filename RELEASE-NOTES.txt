@@ -1,12 +1,26 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
+
+22.6
+-----
+- [*] POS: for WooCommerce version 10.0.0 and higher (betas available in June), a new check for POS feature switch value (in wp-admin WooCommerce Settings > Advanced > Features) was added for the POS entry point. [https://github.com/woocommerce/woocommerce-android/pull/14113]
+- [*] POS: for WooCommerce version 10.0.0 and higher (betas available in June) and stores eligible for POS, sending email from the payment success screen sends out POS specific email receipts with product unit price, additional cash/card payment details, and customizable store details from POS settings in wp-admin WooCommerce Settings > Point of Sale. [https://github.com/woocommerce/woocommerce-android/pull/14116]
+
+22.5
+-----
+- [**] Fix bugs in Order Creation – Custom Amount editing form [https://github.com/woocommerce/woocommerce-android/pull/14016]
+- [*] Added missing toolbar in tablet layout to Variation Attributes screen [https://github.com/woocommerce/woocommerce-android/pull/14097]
+- [**] Improved local search algorithms in POS [https://github.com/woocommerce/woocommerce-android/pull/14068]
+- [**] Added Coupons search feature [https://github.com/woocommerce/woocommerce-android/pull/14101]
+
 22.4
 -----
 - [*] UI improvements for the "Custom amount" section on the order details screen [https://github.com/woocommerce/woocommerce-android/pull/13999]
 - [*] Fixes for the crash when tax lines JSON is malformed [https://github.com/woocommerce/woocommerce-android/pull/14049]
 - [*] Minor design adjustments of the coupon creation flow.
 - [***] We added products search into Woo POS [https://github.com/woocommerce/woocommerce-android/pull/14029]
+- [***] We added support for coupons into Woo POS [https://github.com/woocommerce/woocommerce-android/pull/14074]
 
 22.3
 -----

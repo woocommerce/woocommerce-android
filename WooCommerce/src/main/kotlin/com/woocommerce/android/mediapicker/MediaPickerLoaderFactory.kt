@@ -1,9 +1,9 @@
 package com.woocommerce.android.mediapicker
 
+import com.woocommerce.android.mediapicker.medialibrary.MediaLibrarySource
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
 import org.wordpress.android.mediapicker.loader.MediaLoader
 import org.wordpress.android.mediapicker.loader.MediaLoaderFactory
-import org.wordpress.android.mediapicker.source.wordpress.MediaLibrarySource
 import javax.inject.Inject
 
 // A factory class responsible for building an image-loader class, which is specific to a source.

@@ -88,7 +88,7 @@ class MainSettingsPresenter @Inject constructor(
     }
 
     override val isDomainOptionVisible: Boolean
-        get() = selectedSite.get().isWPComAtomic
+        get() = false // Domain option disabled for accessibility reasons more on Linear WOOMOB-504
 
     override val isCloseAccountOptionVisible: Boolean
         get() = selectedSite.connectionType != SiteConnectionType.ApplicationPasswords &&

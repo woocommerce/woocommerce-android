@@ -54,6 +54,7 @@ class FetchPredefinedPackagesFromStoreTest : BaseUnitTest() {
                 isSelected = false,
                 isLetter = false,
                 isPredefined = true,
+                isStarred = true,
             )
         )
         assertThat(result.carrierPackages[Carrier.USPS]).containsExactly(
@@ -110,7 +111,8 @@ class FetchPredefinedPackagesFromStoreTest : BaseUnitTest() {
                 weight = "weight",
                 isLetter = false,
                 dimensionUnit = "cm",
-                weightUnit = "kg"
+                weightUnit = "kg",
+                saved = false
             ),
             PackageDAO(
                 id = "2",
@@ -119,7 +121,8 @@ class FetchPredefinedPackagesFromStoreTest : BaseUnitTest() {
                 weight = "weight",
                 isLetter = false,
                 dimensionUnit = "cm",
-                weightUnit = "kg"
+                weightUnit = "kg",
+                saved = true
             )
         ),
         carrierPackages = mapOf(
@@ -135,7 +138,8 @@ class FetchPredefinedPackagesFromStoreTest : BaseUnitTest() {
                                 weight = "weight",
                                 isLetter = false,
                                 dimensionUnit = "cm",
-                                weightUnit = "kg"
+                                weightUnit = "kg",
+                                saved = false
                             )
                         )
                     )

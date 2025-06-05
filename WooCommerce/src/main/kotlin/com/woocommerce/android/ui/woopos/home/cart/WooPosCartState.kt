@@ -97,4 +97,17 @@ sealed class WooPosCartItemViewState(open val itemNumber: Int, open val name: St
             data object Unknown : CouponValidationState()
         }
     }
+
+    @Parcelize
+    data class Loading(
+        override val itemNumber: Int,
+        override val name: String,
+    ) : WooPosCartItemViewState(itemNumber, name)
+
+    @Parcelize
+    data class Error(
+        override val itemNumber: Int,
+        override val name: String,
+        val message: String,
+    ) : WooPosCartItemViewState(itemNumber, name)
 }

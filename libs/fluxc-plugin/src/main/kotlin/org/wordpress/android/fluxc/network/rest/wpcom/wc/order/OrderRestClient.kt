@@ -631,21 +631,34 @@ class OrderRestClient @Inject constructor(
         }
     }
 
-    suspend fun updateOrderStatusAndPaymentMethod(
+    suspend fun updateOrderStatusAndPaymentDetails(
         orderToUpdate: OrderEntity,
         site: SiteModel,
         status: String,
-        paymentMethodId: String? = null,
-        paymentMethodTitle: String? = null,
+        paymentDetails: OrderUpdatePaymentDetails? = null
     ): RemoteOrderPayload.Updating {
         val updatePayload = mutableMapOf<String, Any>()
         updatePayload["status"] = status
-        paymentMethodId?.let {
-            updatePayload["payment_method"] = paymentMethodId
+        paymentDetails?.paymentMethodId?.let {
+            updatePayload["payment_method"] = it
         }
-        paymentMethodTitle?.let {
-            updatePayload["payment_method_title"] = paymentMethodTitle
+        paymentDetails?.paymentMethodTitle?.let {
+            updatePayload["payment_method_title"] = it
         }
+
+        paymentDetails?.cashPaymentChangeDueAmount?.let {
+            val metaData = mapOf(
+                "meta_data" to listOfNotNull(
+                        mapOf(
+                            "key" to "_cash_change_amount",
+                            "value" to it
+                        )
+                )
+            )
+
+            updatePayload += metaData
+        }
+
         return updateOrder(orderToUpdate, site, updatePayload)
     }
 
@@ -1046,6 +1059,22 @@ class OrderRestClient @Inject constructor(
         return response.toWooPayload { it }
     }
 
+    suspend fun sendOrderPOSSpecificReceipt(
+        site: SiteModel,
+        orderId: Long,
+    ): WooPayload<Unit> {
+        val response = wooNetwork.executePostGsonRequest(
+            site = site,
+            path = WOOCOMMERCE.orders.id(orderId).actions.send_email.pathV3,
+            clazz = Unit::class.java,
+            body = mapOf(
+                "template_id" to "customer_pos_completed_order"
+            )
+        )
+
+        return response.toWooPayload { it }
+    }
+
     private suspend fun doFetchOrderCount(site: SiteModel, filterByStatus: String?): FetchOrdersCountResponsePayload {
         val url = WOOCOMMERCE.reports.orders.totals.pathV3
 
@@ -1151,6 +1180,7 @@ class OrderRestClient @Inject constructor(
             shippingLines?.let { put("shipping_lines", it) }
             customerNote?.let { put("customer_note", it) }
             couponLines?.let { put("coupon_lines", it) }
+            createdVia?.let { put("created_via", it) }
             giftCard
                 ?.takeIf { it.isNotEmpty() }
                 ?.let { mapOf("code" to it) }
@@ -1275,7 +1305,7 @@ class OrderRestClient @Inject constructor(
 
     enum class SortOrder(val value: String) {
         ASCENDING("asc"),
-        DESCENDING("desc");
+        DESCENDING("desc")
     }
 
     enum class OrderBy(val value: String) {
@@ -1283,6 +1313,12 @@ class OrderRestClient @Inject constructor(
         ID("id"),
         INCLUDE("include"),
         TITLE("title"),
-        SLUG("slug");
+        SLUG("slug")
     }
+
+    data class OrderUpdatePaymentDetails(
+        val paymentMethodId: String? = null,
+        val paymentMethodTitle: String? = null,
+        val cashPaymentChangeDueAmount: String? = null
+    )
 }

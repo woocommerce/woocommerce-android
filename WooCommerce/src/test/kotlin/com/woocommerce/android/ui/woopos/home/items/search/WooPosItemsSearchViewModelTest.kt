@@ -6,14 +6,12 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
-import com.woocommerce.android.ui.woopos.home.items.WooPosItemNavigationData.VariableProductData
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState.Product
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
-import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
-import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateToVariationsScreen
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemAddedToCart.WooPosItemSource
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -29,6 +27,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -48,7 +47,6 @@ class WooPosItemsSearchViewModelTest {
     private val mockDataSource: WooPosSearchProductsDataSource = mock()
     private val mockChildToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val mockParentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock()
-    private val mockNavigator: WooPosItemsNavigator = mock()
     private val mockSearchHelper: com.woocommerce.android.ui.woopos.home.items.WooPosItemsSearchHelper = mock()
     private val mockAnalyticsTracker: WooPosItemsSearchAnalyticsTracker = mock()
 
@@ -304,10 +302,10 @@ class WooPosItemsSearchViewModelTest {
                 val value = awaitItem() as WooPosItemsSearchViewState.Content
                 assertThat(value.items[0]).isInstanceOf(Product.Variable::class.java)
 
-                val variableProduct = value.items[0] as Product.Variable
-                assertThat(variableProduct.name).isEqualTo("Variable Product")
-                assertThat(variableProduct.numOfVariations).isEqualTo(3)
-                assertThat(variableProduct.variationIds).containsExactly(101L, 102L, 103L)
+                val variableProductResult = value.items[0] as Product.Variable
+                assertThat(variableProductResult.name).isEqualTo("Variable Product")
+                assertThat(variableProductResult.numOfVariations).isEqualTo(3)
+                assertThat(variableProductResult.variationIds).containsExactly(101L, 102L, 103L)
             }
         }
 
@@ -611,39 +609,16 @@ class WooPosItemsSearchViewModelTest {
         viewModel.onUIEvent(WooPosItemsSearchUiEvent.OnItemClicked(simpleProduct))
 
         // THEN
+        val item = ItemClickedData.Product.Simple(id = 1)
         verify(mockChildToParentEventSender).sendToParent(
-            ChildToParentEvent.ItemClickedInProductSelector(
-                itemData = ItemClickedData.Product.Simple(id = 1),
-                source = WooPosItemSource.SEARCH_RESULT
-            )
-        )
-    }
-
-    @Test
-    fun `given variable product, when item clicked, then navigate to variations screen`() = runTest {
-        // GIVEN
-        val variableProduct = Product.Variable(
-            id = 1,
-            name = "Variable Product",
-            price = "$10.0",
-            imageUrl = null,
-            numOfVariations = 3,
-            variationIds = listOf(101L, 102L, 103L)
-        )
-
-        // WHEN
-        val viewModel = createViewModel()
-        viewModel.onUIEvent(WooPosItemsSearchUiEvent.OnItemClicked(variableProduct))
-        advanceUntilIdle()
-
-        // THEN
-        verify(mockNavigator).sendNavigationEvent(
-            NavigateToVariationsScreen(
-                VariableProductData(
-                    id = 1,
-                    name = "Variable Product",
-                    numOfVariations = 3,
-                    source = WooPosItemSource.SEARCH_RESULT,
+            eq(
+                ChildToParentEvent.ItemClickedInItemsList(
+                    itemData = item,
+                    eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
+                        item = item,
+                        source = WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT,
+                        sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.SEARCH_RESULT,
+                    )
                 )
             )
         )
@@ -748,41 +723,16 @@ class WooPosItemsSearchViewModelTest {
             // THEN
             verify(mockEmptyStateProvider).addPopularItemsToCache()
             verify(mockChildToParentEventSender).sendToParent(
-                ChildToParentEvent.ItemClickedInProductSelector(
+                ChildToParentEvent.ItemClickedInItemsList(
                     ItemClickedData.Product.Simple(id = simpleProduct.id),
-                    source = WooPosItemSource.POPULAR_PRODUCTS
+                    eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
+                        item = ItemClickedData.Product.Simple(id = simpleProduct.id),
+                        source = WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT,
+                        sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.POPULAR_PRODUCTS,
+                    )
                 )
             )
         }
-
-    @Test
-    fun `when variable product is clicked from search, then navigation event uses search source`() = runTest {
-        // GIVEN
-        val viewModel = createViewModel()
-        val item = Product.Variable(
-            id = 1,
-            name = "Product",
-            price = "$10",
-            imageUrl = null,
-            numOfVariations = 2,
-            variationIds = emptyList()
-        )
-
-        // WHEN
-        viewModel.onUIEvent(WooPosItemsSearchUiEvent.OnItemClicked(item))
-
-        // THEN
-        verify(mockNavigator).sendNavigationEvent(
-            NavigateToVariationsScreen(
-                VariableProductData(
-                    id = 1L,
-                    name = "Product",
-                    numOfVariations = 2,
-                    source = WooPosItemSource.SEARCH_RESULT
-                )
-            )
-        )
-    }
 
     @Test
     fun `given product is in local search result, when item clicked, then send product click event to parent with local source`() =
@@ -796,10 +746,15 @@ class WooPosItemsSearchViewModelTest {
             viewModel.onUIEvent(WooPosItemsSearchUiEvent.OnItemClicked(simpleProduct))
 
             // THEN
+            val item = ItemClickedData.Product.Simple(id = 1)
             verify(mockChildToParentEventSender).sendToParent(
-                ChildToParentEvent.ItemClickedInProductSelector(
-                    itemData = ItemClickedData.Product.Simple(id = 1),
-                    source = WooPosItemSource.SEARCH_RESULT_LOCAL
+                ChildToParentEvent.ItemClickedInItemsList(
+                    itemData = item,
+                    eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
+                        item = item,
+                        source = WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT,
+                        sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.SEARCH_RESULT_LOCAL,
+                    ),
                 )
             )
         }
@@ -816,10 +771,15 @@ class WooPosItemsSearchViewModelTest {
             viewModel.onUIEvent(WooPosItemsSearchUiEvent.OnItemClicked(simpleProduct))
 
             // THEN
+            val item = ItemClickedData.Product.Simple(id = 1)
             verify(mockChildToParentEventSender).sendToParent(
-                ChildToParentEvent.ItemClickedInProductSelector(
-                    itemData = ItemClickedData.Product.Simple(id = 1),
-                    source = WooPosItemSource.SEARCH_RESULT
+                ChildToParentEvent.ItemClickedInItemsList(
+                    itemData = item,
+                    eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
+                        item = item,
+                        source = WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT,
+                        sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.SEARCH_RESULT,
+                    ),
                 )
             )
         }
@@ -876,7 +836,6 @@ class WooPosItemsSearchViewModelTest {
         dataSource = mockDataSource,
         childToParentEventSender = mockChildToParentEventSender,
         parentToChildrenEventReceiver = mockParentToChildrenEventReceiver,
-        navigator = mockNavigator,
         searchHelper = mockSearchHelper,
         analyticsTracker = mockAnalyticsTracker,
     )

@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.split
 
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.orders.wooshippinglabels.SplitShipment
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.SplitShipmentArgs
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
@@ -9,6 +10,7 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.observeForTesting
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestScope
 import org.assertj.core.api.Assertions.assertThat
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doAnswer
@@ -22,6 +24,7 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
         on { formatCurrency(amount = any(), any(), any()) }.doAnswer { it.getArgument<BigDecimal>(0).toString() }
     }
     private val getSplitMovements: GetSplitMovements = mock()
+    private val splitShipment: SplitShipment = mock()
     lateinit var sut: WooShippingSplitShipmentViewModel
 
     private fun createViewModel(
@@ -35,7 +38,9 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
         sut = WooShippingSplitShipmentViewModel(
             savedState,
             currencyFormatter,
-            getSplitMovements
+            getSplitMovements,
+            splitShipment,
+            TestScope(coroutinesTestRule.testDispatcher)
         )
     }
 
@@ -354,6 +359,24 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when there are 2 shipments and 1 purchased shipment, then do not display the Merge all unfulfilled option`() =
+        testBlocking {
+            val shipmentArgs = SplitShipmentArgs(
+                orderId = 1L,
+                storeOptions = StoreOptionsModel.EMPTY,
+                shipments = twoShipments + purchasedShipmentUIModel
+            )
+
+            createViewModel(shipmentArgs)
+
+            sut.viewState.observeForTesting { }
+
+            val state = sut.viewState.value!!
+
+            assertThat(state.overflowMenuItems.size).isEqualTo(2)
+        }
+
+    @Test
     fun `when there are 3 shipments, then display the Merge all unfulfilled option`() = testBlocking {
         val shipmentArgs = SplitShipmentArgs(
             orderId = 1L,
@@ -404,6 +427,35 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
         assertThat(currentShipments.values.first().totalItemQuantity).isEqualTo(expectedItemQuantity)
     }
 
+    @Test
+    fun `when merging unfulfilled shipments, do not merge purchased shipments`() =
+        testBlocking {
+            val shipmentArgs = SplitShipmentArgs(
+                orderId = 1L,
+                storeOptions = StoreOptionsModel.EMPTY,
+                shipments = listOf(purchasedShipmentUIModel) + threeShipments
+            )
+
+            createViewModel(shipmentArgs)
+
+            // Trigger merging all shipments
+            sut.onRemoveShipments(
+                removingShipmentKeys = (0 until shipmentArgs.shipments.size).toList(),
+                destinationShipmentKey = null
+            )
+
+            sut.viewState.observeForTesting { }
+
+            val state = sut.viewState.value!!
+            val currentShipments = state.selectableItems
+            val expectedItemQuantity = 10 // All items from `threeShipments`
+
+            // Verify there are two shipments
+            assertThat(currentShipments.size).isEqualTo(2)
+
+            assertThat(currentShipments.values.toList()[1].totalItemQuantity).isEqualTo(expectedItemQuantity)
+        }
+
     private val defaultShipments = listOf(
         ShipmentUIModel(
             id = "0",
@@ -447,8 +499,7 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
                     height = 3f,
                     weight = 8f
                 )
-            ),
-            purchased = false
+            )
         )
     )
 
@@ -482,8 +533,7 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
                     height = 3f,
                     weight = 8f
                 )
-            ),
-            purchased = false
+            )
         ),
         ShipmentUIModel(
             id = "1",
@@ -501,8 +551,7 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
                     height = 3f,
                     weight = 8f
                 )
-            ),
-            purchased = false
+            )
         )
     )
 
@@ -536,8 +585,7 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
                     height = 3f,
                     weight = 8f
                 )
-            ),
-            purchased = false
+            )
         ),
         ShipmentUIModel(
             id = "1",
@@ -555,8 +603,7 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
                     height = 3f,
                     weight = 8f
                 )
-            ),
-            purchased = false
+            )
         ),
         ShipmentUIModel(
             id = "2",
@@ -574,8 +621,27 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
                     height = 3f,
                     weight = 8f
                 )
-            ),
-            purchased = false
+            )
         )
+    )
+
+    val purchasedShipmentUIModel = ShipmentUIModel(
+        id = "10",
+        items = listOf(
+            ShippableItemModel(
+                itemId = 1L,
+                productId = 1L,
+                title = "A product with quantity 1",
+                price = BigDecimal(30),
+                quantity = 1f,
+                imageUrl = null,
+                currency = "USD",
+                length = 3f,
+                width = 3f,
+                height = 3f,
+                weight = 8f
+            )
+        ),
+        purchased = true
     )
 }

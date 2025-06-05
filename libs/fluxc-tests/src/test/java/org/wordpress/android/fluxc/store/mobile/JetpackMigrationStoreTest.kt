@@ -10,8 +10,8 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.SERVER_ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.mobile.JetpackMigrationRestClient
-import org.wordpress.android.fluxc.store.mobile.MigrationCompleteFetchedPayload.Success
 import org.wordpress.android.fluxc.store.mobile.MigrationCompleteFetchedPayload.Error
+import org.wordpress.android.fluxc.store.mobile.MigrationCompleteFetchedPayload.Success
 import org.wordpress.android.fluxc.test
 import org.wordpress.android.fluxc.tools.initCoroutineEngine
 import kotlin.test.assertEquals

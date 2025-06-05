@@ -28,10 +28,10 @@ class ObserveStoreOptionsTest : BaseUnitTest() {
         dimensionUnit = "cm",
         originCountry = "US"
     )
-    private val defaultProductSettings = WCProductSettingsModel().apply {
-        weightUnit = defaultStoreOptions.weightUnit
+    private val defaultProductSettings = WCProductSettingsModel(
+        weightUnit = defaultStoreOptions.weightUnit,
         dimensionUnit = defaultStoreOptions.dimensionUnit
-    }
+    )
     private val selectedSite: SelectedSite = mock {
         on(it.get()).thenReturn(SiteModel())
     }

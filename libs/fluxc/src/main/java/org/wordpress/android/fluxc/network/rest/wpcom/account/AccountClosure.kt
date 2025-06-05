@@ -3,10 +3,10 @@ package org.wordpress.android.fluxc.network.rest.wpcom.account
 import org.wordpress.android.fluxc.generated.endpoint.WPCOMREST
 import org.wordpress.android.fluxc.network.Response
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest
-import org.wordpress.android.fluxc.network.rest.wpcom.account.CloseAccountResult.Success
-import org.wordpress.android.fluxc.network.rest.wpcom.account.CloseAccountResult.Failure
 import org.wordpress.android.fluxc.network.rest.wpcom.account.CloseAccountResult.Error
 import org.wordpress.android.fluxc.network.rest.wpcom.account.CloseAccountResult.ErrorType
+import org.wordpress.android.fluxc.network.rest.wpcom.account.CloseAccountResult.Failure
+import org.wordpress.android.fluxc.network.rest.wpcom.account.CloseAccountResult.Success
 
 /**
  * Performs an HTTP POST call to v1.1 /me/account/close endpoint to close the user account.
@@ -25,11 +25,11 @@ fun AccountRestClient.closeAccount(onResult: (CloseAccountResult) -> Unit) {
     ))
 }
 
-class CloseAccountResponse: Response
+class CloseAccountResponse : Response
 
 sealed class CloseAccountResult {
-    object Success: CloseAccountResult()
-    data class Failure(val error: Error): CloseAccountResult()
+    object Success : CloseAccountResult()
+    data class Failure(val error: Error) : CloseAccountResult()
     data class Error(val errorType: ErrorType, val message: String)
     enum class ErrorType(val token: String? = null) {
         UNAUTHORIZED("unauthorized"),

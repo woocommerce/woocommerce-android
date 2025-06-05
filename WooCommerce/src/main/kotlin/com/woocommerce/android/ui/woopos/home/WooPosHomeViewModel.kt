@@ -6,7 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ui.woopos.common.util.WooPosSoundHelper
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.CheckoutClicked
-import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.ItemClickedInProductSelector
+import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.CouponsRemoved
+import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.ItemClickedInItemsList
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderCreated
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccessfullyPaid.PaymentMethod
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.SearchEvent.ChangedQuery
@@ -14,7 +15,6 @@ import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.SearchEvent.
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ExitConfirmationDialog
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ProductsInfoDialog
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ScreenPositionState
-import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCartTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
@@ -30,7 +30,6 @@ import javax.inject.Inject
 class WooPosHomeViewModel @Inject constructor(
     private val childrenToParentEventReceiver: WooPosChildrenToParentEventReceiver,
     private val parentToChildrenEventSender: WooPosParentToChildrenEventSender,
-    private val wooPosItemsNavigator: WooPosItemsNavigator,
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val soundHelper: WooPosSoundHelper,
     savedStateHandle: SavedStateHandle,
@@ -127,9 +126,12 @@ class WooPosHomeViewModel @Inject constructor(
                         sendEventToChildren(ParentToChildrenEvent.BackFromCheckoutToCartClicked)
                     }
 
-                    is ChildToParentEvent.ItemClickedInProductSelector -> {
+                    is ChildToParentEvent.ItemClickedInItemsList -> {
                         sendEventToChildren(
-                            ItemClickedInProductSelector(itemData = event.itemData, source = event.source)
+                            ItemClickedInItemsList(
+                                itemData = event.itemData,
+                                eventForTracking = event.eventForTracking
+                            )
                         )
                     }
 
@@ -202,7 +204,11 @@ class WooPosHomeViewModel @Inject constructor(
                         sendEventToChildren(ParentToChildrenEvent.RemoveCouponsClicked)
                     }
                     is ChildToParentEvent.CouponsRemoved -> {
-                        sendEventToChildren(ParentToChildrenEvent.CouponsRemoved(event.cartDataList))
+                        sendEventToChildren(CouponsRemoved(event.cartDataList))
+                    }
+
+                    ChildToParentEvent.RefreshProductList -> {
+                        sendEventToChildren(ParentToChildrenEvent.RefreshProductList)
                     }
                 }
             }
@@ -256,10 +262,6 @@ class WooPosHomeViewModel @Inject constructor(
     private fun onOrderSuccessfullyPaid(paymentMethod: PaymentMethod) {
         viewModelScope.launch {
             soundHelper.playChaChing()
-
-            wooPosItemsNavigator.sendNavigationEvent(
-                WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateBackToItemListScreen
-            )
         }
         _state.value = _state.value.copy(
             screenPositionState = ScreenPositionState.Checkout.FullScreenTotals

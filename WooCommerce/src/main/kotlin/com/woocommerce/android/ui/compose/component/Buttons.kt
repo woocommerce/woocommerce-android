@@ -59,7 +59,8 @@ fun WCColoredButton(
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     colors: ButtonColors = ButtonDefaults.buttonColors(
-        contentColor = colorResource(id = R.color.woo_white)
+        contentColor = colorResource(id = R.color.woo_white),
+        backgroundColor = colorResource(id = R.color.primary_colored_button_background)
     ),
     rippleColor: Color = MaterialTheme.colors.primaryVariant,
     elevation: ButtonElevation? = null,
@@ -99,8 +100,9 @@ fun WCColoredButton(
     enabled: Boolean = true,
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     colors: ButtonColors = ButtonDefaults.buttonColors(
-        contentColor = colorResource(id = R.color.woo_white)
-    )
+        contentColor = colorResource(id = R.color.woo_white),
+        backgroundColor = colorResource(id = R.color.primary_colored_button_background)
+    ),
 ) {
     WCColoredButton(
         onClick = onClick,
@@ -228,7 +230,7 @@ fun WCSelectableChip(
     enabled: Boolean = true,
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     selectedButtonColors: ButtonColors = ButtonDefaults.outlinedButtonColors(
-        backgroundColor = colorResource(id = R.color.color_primary),
+        backgroundColor = colorResource(id = R.color.primary_colored_button_background),
         contentColor = colorResource(id = R.color.woo_white)
     ),
     defaultButtonColors: ButtonColors = ButtonDefaults.outlinedButtonColors(
@@ -288,7 +290,9 @@ fun WCTextButton(
     allCaps: Boolean = true,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     contentPadding: PaddingValues = ButtonDefaults.TextButtonContentPadding,
-    colors: ButtonColors = ButtonDefaults.textButtonColors(),
+    colors: ButtonColors = ButtonDefaults.textButtonColors(
+        disabledContentColor = colorResource(id = R.color.color_on_surface_medium),
+    ),
 ) {
     TextButton(
         onClick = onClick,

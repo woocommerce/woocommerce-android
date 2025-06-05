@@ -51,9 +51,9 @@ class WCShippingMethodsStore @Inject constructor(
         }
     }
 
-    suspend fun updateShippingMethods(site: SiteModel, shippingMethods:List<WCShippingMethod>){
+    suspend fun updateShippingMethods(site: SiteModel, shippingMethods: List<WCShippingMethod>) {
         val shippingMethodsEntity = shippingMethods
-            .filter { it.id.isNotEmpty()}
+            .filter { it.id.isNotEmpty() }
             .map { it.toEntity(site.localId()) }
         shippingMethodDao.updateShippingMethods(shippingMethodsEntity)
     }
@@ -62,12 +62,12 @@ class WCShippingMethodsStore @Inject constructor(
         return shippingMethodDao.getShippingMethodById(site.localId(), id)?.toAppModel()
     }
 
-    suspend fun updateShippingMethod(site: SiteModel, shippingMethod: WCShippingMethod){
-        if(shippingMethod.id.isEmpty()) return
+    suspend fun updateShippingMethod(site: SiteModel, shippingMethod: WCShippingMethod) {
+        if (shippingMethod.id.isEmpty()) return
         shippingMethodDao.insertShippingMethods(listOf(shippingMethod.toEntity(site.localId())))
     }
 
-    suspend fun fetchShippingMethod(site: SiteModel, id: String): WooResult<WCShippingMethod>{
+    suspend fun fetchShippingMethod(site: SiteModel, id: String): WooResult<WCShippingMethod> {
         return coroutineEngine.withDefaultContext(
             AppLog.T.API,
             this, "fetchShippingMethods"

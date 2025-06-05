@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
@@ -36,9 +37,9 @@ import kotlinx.coroutines.flow.StateFlow
 @Composable
 fun WooPosCouponsScreen(
     modifier: Modifier = Modifier,
+    listState: LazyListState,
 ) {
     val vm: WooPosCouponsViewModel = hiltViewModel()
-    val listState = rememberLazyListState()
     WooPosCouponsScreen(
         modifier = modifier,
         listState = listState,
@@ -76,7 +77,7 @@ private fun WooPosCouponsScreen(
                     modifier = Modifier.padding(top = WooPosSpacing.Large.value),
                     state = itemsState,
                     listState = listState,
-                    onItemClicked = { item -> onUIEvent(WooPosCouponsUIEvent.CouponClicked(item.id)) },
+                    onItemClicked = { item -> onUIEvent(WooPosCouponsUIEvent.CouponClicked(item.id, item.name)) },
                     onEndOfProductsListReached = { onUIEvent(WooPosCouponsUIEvent.EndOfListReached) },
                 ) {
                     CouponsPaginationError(
@@ -93,6 +94,7 @@ private fun WooPosCouponsScreen(
 
             is WooPosCouponsViewState.Empty -> WooPosItemsEmptyList(
                 modifier = Modifier.fillMaxSize(),
+                icon = painterResource(id = R.drawable.img_empty_coupon_list),
                 title = stringResource(id = R.string.woopos_coupons_empty_list_title),
                 message = stringResource(id = R.string.woopos_coupons_empty_list_message),
                 contentDescription = stringResource(id = R.string.woopos_coupons_empty_list_image_description),
@@ -152,6 +154,7 @@ fun CouponsDisabledError() {
         WooPosErrorScreen(
             message = stringResource(id = R.string.woopos_coupons_loading_error_coupons_disabled_title),
             reason = stringResource(id = R.string.woopos_coupons_loading_error_coupons_disabled_message),
+            icon = painterResource(id = R.drawable.img_empty_coupon_list),
         )
     }
 }

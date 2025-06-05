@@ -26,6 +26,7 @@ import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Objects;
 
+// WARN: This class is used within WordPress-MediaPicker-Android, do not remove!
 @Table
 @RawConstraints({"UNIQUE (SITE_ID, URL)"})
 public class SiteModel extends Payload<BaseNetworkError> implements Identifiable, Serializable {

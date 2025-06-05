@@ -55,7 +55,7 @@ import com.woocommerce.android.util.StringUtils
 
 @Composable
 fun ShippingProductsCard(
-    shippableItems: ShippableItemsUI,
+    shippableItems: ShipmentUI,
     modifier: Modifier = Modifier,
     iconColor: Color = MaterialTheme.colors.primary,
     isExpanded: Boolean = false,
@@ -92,10 +92,12 @@ private fun ShippingProductsCardPreview(@PreviewParameter(IsExpandedProvider::cl
     WooThemeWithBackground {
         Box(modifier = Modifier.padding(dimensionResource(R.dimen.major_100))) {
             ShippingProductsCard(
-                shippableItems = ShippableItemsUI(
+                shippableItems = ShipmentUI(
                     shippableItems = generateItems(6),
                     formattedTotalWeight = "8.5kg",
-                    formattedTotalPrice = "$92.78"
+                    formattedTotalPrice = "$92.78",
+                    purchased = false,
+                    hazmatState = WooShippingLabelCreationViewModel.HazmatState.NoSelection
                 ),
                 isExpanded = isExpanded
             )
@@ -105,7 +107,7 @@ private fun ShippingProductsCardPreview(@PreviewParameter(IsExpandedProvider::cl
 
 @Composable
 private fun ShippingProductsCardHeader(
-    shippableItems: ShippableItemsUI,
+    shippableItems: ShipmentUI,
     iconColor: Color,
     modifier: Modifier = Modifier,
     isExpanded: Boolean = false
@@ -148,8 +150,9 @@ private fun ShippingProductsCardHeader(
             Icon(
                 painter = painterResource(R.drawable.ic_arrow_down),
                 tint = iconColor,
-                contentDescription =
-                stringResource(id = R.string.shipping_label_package_details_items_expand_content_description),
+                contentDescription = stringResource(
+                    id = R.string.shipping_label_package_details_items_expand_content_description
+                ),
                 modifier = Modifier
                     .size(dimensionResource(R.dimen.image_minor_100))
                     .rotate(rotationAnimation.value)
@@ -161,10 +164,12 @@ private fun ShippingProductsCardHeader(
 @Preview
 @Composable
 private fun ShippingProductsCardHeaderPreview() {
-    val shippableItems = ShippableItemsUI(
+    val shippableItems = ShipmentUI(
         shippableItems = generateItems(4),
         formattedTotalWeight = "8.5kg",
-        formattedTotalPrice = "$92.78"
+        formattedTotalPrice = "$92.78",
+        purchased = false,
+        hazmatState = WooShippingLabelCreationViewModel.HazmatState.NoSelection
     )
     val isExpanded = remember { mutableStateOf(false) }
 
@@ -461,14 +466,14 @@ fun SelectableShippingProduct(
     price: String,
     quantity: Float,
     isSelected: Boolean,
-    onSelectionChange: (Boolean) -> Unit,
+    onSelectionChange: ((Boolean) -> Unit)?,
     modifier: Modifier = Modifier,
     imageUrl: String? = null,
 ) {
     RoundedCornerBoxWithBorder(
         modifier = modifier,
         innerModifier = Modifier
-            .clickable { onSelectionChange(!isSelected) }
+            .clickable(enabled = onSelectionChange != null, onClick = { onSelectionChange?.invoke(!isSelected) })
             .padding(
                 top = 16.dp,
                 start = 8.dp,
@@ -497,8 +502,8 @@ fun ExpandableSelectableShippingProduct(
     price: String,
     quantity: Float,
     isSelected: Boolean,
-    onSelectionChange: (Boolean) -> Unit,
-    onInnerSelectionChange: (Boolean, Int) -> Unit,
+    onSelectionChange: ((Boolean) -> Unit)?,
+    onInnerSelectionChange: ((Boolean, Int) -> Unit)?,
     selectedIndexes: Set<Int>,
     isExpanded: Boolean,
     onExpand: (Boolean) -> Unit,
@@ -510,7 +515,10 @@ fun ExpandableSelectableShippingProduct(
     val rotationAnimation = animateFloatAsState(targetValue = if (isExpanded) 180f else 0f, label = "rotationAnimation")
     RoundedCornerBoxWithBorder(
         modifier = modifier,
-        innerModifier = Modifier.clickable { onSelectionChange(!isSelected) }
+        innerModifier = Modifier.clickable(
+            enabled = onSelectionChange != null,
+            onClick = { onSelectionChange?.invoke(!isSelected) }
+        )
     ) {
         Column(modifier = Modifier.animateContentSize()) {
             Row(
@@ -577,11 +585,14 @@ fun ExpandableSelectableShippingProduct(
                         quantity = quantity,
                         isSelected = isInnerItemSelected,
                         onSelectionChange = {
-                            onInnerSelectionChange(isInnerItemSelected, index)
+                            onInnerSelectionChange?.invoke(isInnerItemSelected, index)
                         },
                         imageUrl = imageUrl,
                         modifier = Modifier
-                            .clickable { onInnerSelectionChange(isInnerItemSelected, index) }
+                            .clickable(
+                                enabled = onInnerSelectionChange != null,
+                                onClick = { onInnerSelectionChange?.invoke(isInnerItemSelected, index) }
+                            )
                             .padding(start = 24.dp, top = 16.dp, end = 16.dp, bottom = 16.dp),
                         imageSize = dimensionResource(R.dimen.image_minor_100),
                         displayQuantity = false
@@ -600,7 +611,7 @@ fun SelectableShippingProductDetails(
     price: String,
     quantity: Float,
     isSelected: Boolean,
-    onSelectionChange: (Boolean) -> Unit,
+    onSelectionChange: ((Boolean) -> Unit)?,
     modifier: Modifier = Modifier,
     imageUrl: String? = null,
     imageSize: Dp = dimensionResource(R.dimen.image_major_50),
