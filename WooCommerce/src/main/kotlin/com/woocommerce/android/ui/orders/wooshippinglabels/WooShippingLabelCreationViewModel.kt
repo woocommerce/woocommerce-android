@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels
 
 import android.os.Parcelable
+import androidx.annotation.StringRes
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -153,7 +154,9 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     private val shippingRatesListFlow = MutableStateFlow<List<Map<CarrierUI, List<ShippingRateUI>>>>(emptyList())
     private val shippingRatesStatesFlow = MutableStateFlow<List<ShippingRatesState>>(emptyList())
 
-    val viewState: MutableStateFlow<WooShippingViewState> = MutableStateFlow(WooShippingViewState.Loading)
+    val viewState: MutableStateFlow<WooShippingViewState> = MutableStateFlow(
+        WooShippingViewState.Loading(R.string.shipping_label_create_title)
+    )
 
     init {
         launch { observeShippingLabelInformation() }
@@ -808,7 +811,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
     fun onPrintShippingLabelClicked() {
         val fallbackViewState = viewState.value
-        viewState.value = WooShippingViewState.Loading
+        viewState.value = WooShippingViewState.Loading(R.string.shipping_label_print_screen_title)
         launch {
             val labelId = shipments.value[selectedShipmentIndexFlow.value].labelId ?: return@launch
             val paperSize = uiState.value.paperSizeOption
@@ -870,7 +873,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     }
 
     fun onRetry() {
-        viewState.value = WooShippingViewState.Loading
+        viewState.value = WooShippingViewState.Loading(R.string.shipping_label_create_title)
 
         // Retry loading data that may have previously resulted in errors.
         launch {
@@ -927,7 +930,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
     sealed class WooShippingViewState {
         data object Error : WooShippingViewState()
-        data object Loading : WooShippingViewState()
+        data class Loading(@StringRes val screenTitle: Int) : WooShippingViewState()
         data class DataState(
             val shipmentUIList: List<ShipmentUI>,
             val totalItems: Int,
