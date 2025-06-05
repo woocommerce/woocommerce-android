@@ -193,11 +193,15 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                 itemType = when (item) {
                     is WooPosCartItemViewState.Product -> ItemsListItemType.PRODUCT
                     is WooPosCartItemViewState.Coupon -> ItemsListItemType.COUPON
+                    is WooPosCartItemViewState.Error -> error("Error item is not a valid item type")
+                    is WooPosCartItemViewState.Loading -> error("Loading item is not a valid item type")
                 },
                 productType = when (item) {
                     is WooPosCartItemViewState.Product.Simple -> ItemsListProductType.SIMPLE
                     is WooPosCartItemViewState.Product.Variation -> ItemsListProductType.VARIATION
                     is WooPosCartItemViewState.Coupon -> null
+                    is WooPosCartItemViewState.Error -> error("Error item is not a valid item type")
+                    is WooPosCartItemViewState.Loading -> error("Loading item is not a valid item type")
                 }
             )
 

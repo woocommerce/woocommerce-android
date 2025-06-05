@@ -99,6 +99,7 @@ class WooPosCartViewModelTest {
     private val savedState: SavedStateHandle = SavedStateHandle()
     private val trackerData: WooPosAnalyticsTrackingDataKeeper = WooPosAnalyticsTrackingDataKeeper()
     private val cartItemsUpdater: WooPosCartItemsUpdater = mock()
+    private val barcodeLoadingSimulator: WooPosBarcodeLoadingSimulator = mock()
 
     @Test
     fun `given empty cart, when product clicked in product selector, then should add product to cart`() = runTest {
@@ -1056,6 +1057,7 @@ class WooPosCartViewModelTest {
             trackerData,
             cartItemsUpdater,
             getCachedStoreCurrency,
+            barcodeLoadingSimulator,
             savedState
         )
     }
