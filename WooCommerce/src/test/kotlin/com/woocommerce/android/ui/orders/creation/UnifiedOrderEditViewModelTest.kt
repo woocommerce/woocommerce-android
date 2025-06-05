@@ -484,7 +484,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 methodId = "other",
                 total = BigDecimal(10),
                 totalTax = BigDecimal.ZERO,
-                methodTitle = "name"
+                methodTitle = "name",
+                taxes = emptyList()
             )
         )
         val order = defaultOrderValue.copy(shippingLines = shippingLines)
@@ -1968,7 +1969,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 methodId = shippingMethodId,
                 total = BigDecimal.TEN,
                 methodTitle = "Random name",
-                totalTax = BigDecimal.ZERO
+                totalTax = BigDecimal.ZERO,
+                taxes = emptyList()
             )
         )
         val getShippingMethodsResult = flowOf(
@@ -2027,7 +2029,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                     methodId = shippingMethodId,
                     total = BigDecimal.TEN,
                     methodTitle = "Random name",
-                    totalTax = BigDecimal.ZERO
+                    totalTax = BigDecimal.ZERO,
+                    taxes = emptyList()
                 )
             )
             val getShippingMethodsResult = flowOf(
@@ -2087,7 +2090,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                     methodId = shippingMethodId,
                     total = BigDecimal.TEN,
                     methodTitle = "Random name",
-                    totalTax = BigDecimal.ZERO
+                    totalTax = BigDecimal.ZERO,
+                    taxes = emptyList()
                 )
             )
             val getShippingMethodsResult = flowOf(

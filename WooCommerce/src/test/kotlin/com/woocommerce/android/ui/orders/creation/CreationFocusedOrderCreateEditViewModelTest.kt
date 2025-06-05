@@ -914,7 +914,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                 Succeeded(
                     Order.getEmptyOrder(Date(), Date()).copy(
                         shippingLines = listOf(
-                            Order.ShippingLine(itemId, "first", "first", BigDecimal(1), BigDecimal.ZERO),
+                            Order.ShippingLine(itemId, "first", "first", BigDecimal(1), BigDecimal.ZERO, emptyList()),
                             Order.ShippingLine("second", "second", BigDecimal(2)),
                             Order.ShippingLine("third", "third", BigDecimal(3)),
                         )
@@ -954,7 +954,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                 Succeeded(
                     Order.getEmptyOrder(Date(), Date()).copy(
                         shippingLines = listOf(
-                            Order.ShippingLine(itemId, "first", "first", BigDecimal(1), BigDecimal.ZERO),
+                            Order.ShippingLine(itemId, "first", "first", BigDecimal(1), BigDecimal.ZERO, emptyList()),
                             Order.ShippingLine("second", "second", BigDecimal(2)),
                             Order.ShippingLine("third", "third", BigDecimal(3)),
                         )
@@ -1016,9 +1016,9 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                 Succeeded(
                     Order.getEmptyOrder(Date(), Date()).copy(
                         shippingLines = listOf(
-                            Order.ShippingLine(itemId, "first", "first", BigDecimal(1), BigDecimal.ZERO),
-                            Order.ShippingLine(2L, "second", "second", BigDecimal(2), BigDecimal.ZERO),
-                            Order.ShippingLine(3L, "third", "third", BigDecimal(3), BigDecimal.ZERO),
+                            Order.ShippingLine(itemId, "first", "first", BigDecimal(1), BigDecimal.ZERO, emptyList()),
+                            Order.ShippingLine(2L, "second", "second", BigDecimal(2), BigDecimal.ZERO, emptyList()),
+                            Order.ShippingLine(3L, "third", "third", BigDecimal(3), BigDecimal.ZERO, emptyList()),
                         )
                     )
                 )
