@@ -405,7 +405,6 @@ class WooPosItemsViewModelTest {
         }
     }
 
-
     @Test
     fun `when barcode scanned, then event passed to parent`() = runTest {
         // GIVEN
