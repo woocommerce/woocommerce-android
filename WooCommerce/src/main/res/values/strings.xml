@@ -4295,7 +4295,8 @@
 
     <string name="woopos_dialog_barcode_info_heading">Barcode scanning</string>
     <string name="woopos_dialog_barcode_info_primary_message">• You can scan barcodes using an external scanner to quickly build a cart.</string>
-    <string name="woopos_dialog_barcode_info_secondary_message">• Set up barcodes in the "GTIN, UPC, EAN, ISBN" field in Products/Details/Inventory. More details.</string>
+    <string name="woopos_dialog_barcode_info_secondary_message">• Set up barcodes in the "GTIN, UPC, EAN, ISBN" field in Products/Details/Inventory. </string>
+    <string name="woopos_dialog_barcode_info_more_details_link">More details</string>
     <string name="woopos_dialog_barcode_info_tertiary_message">• Refer to your bluetooth barcode scanner in System Bluetooth settings.</string>
     <string name="woopos_dialog_barcode_info_quaternary_message">The scanner emulates a keyboard, so sometimes it will prevent the software keyboard from showing, e.g. in search. Double-press the scan button to bring the software keyboard back.</string>
     <string name="woopos_dialog_barcode_info_button_label">OK</string>
