@@ -75,7 +75,8 @@ class WooPosSearchByIdentifierRemoteTest {
             dispatcher,
             selectedSite,
             productsCache,
-            checkDigitRemover
+            checkDigitRemover,
+            coroutinesTestRule.testDispatcher
         )
 
         // Test that object creation succeeds without exceptions
