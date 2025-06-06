@@ -22,7 +22,6 @@ import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.store.WCProductStore
-import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 
 class WooPosSearchByIdentifierRemote @Inject constructor(
@@ -33,9 +32,9 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
     @LimitedConcurrencyDispatcher private val searchDispatcher: CoroutineDispatcher,
 ) {
     private val searchByIdentifierContinuations =
-        ConcurrentHashMap<String, MutableList<ContinuationWrapper<List<Product>>>>()
+        mutableMapOf<String, MutableList<ContinuationWrapper<List<Product>>>>()
     private val searchByGlobalUniqueIdContinuations =
-        ConcurrentHashMap<String, MutableList<ContinuationWrapper<List<Product>>>>()
+        mutableMapOf<String, MutableList<ContinuationWrapper<List<Product>>>>()
 
     private val coroutineScope = CoroutineScope(SupervisorJob() + searchDispatcher)
 
@@ -136,7 +135,7 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
 
     private suspend fun <T> performSearch(
         identifier: String,
-        continuations: ConcurrentHashMap<String, MutableList<ContinuationWrapper<List<Product>>>>,
+        continuations: MutableMap<String, MutableList<ContinuationWrapper<List<Product>>>>,
         createPayload: () -> T,
         dispatchAction: (T) -> Unit
     ): Result<List<Product>> {
