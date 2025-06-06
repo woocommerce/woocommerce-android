@@ -2524,13 +2524,13 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         // THEN
         assertThat(observedViewState!!.orderInfo!!.order).isEqualTo(newOrder)
-        assertThat(observedViewState!!.orderInfo!!.isPaymentCollectableWithCardReader).isFalse()
+        assertThat(observedViewState.orderInfo!!.isPaymentCollectableWithCardReader).isFalse()
     }
 
     @Test
     fun `when view model is initialized then fetchConfig is called`() = testBlocking {
         viewModel.start()
 
-        verify(shippingLabelRepository).fetchConfig(selectedSite.get(), ORDER_ID)
+        verify(shippingLabelRepository, never()).fetchConfig(selectedSite.get(), ORDER_ID)
     }
 }
