@@ -8,23 +8,38 @@ import com.woocommerce.android.ui.woopos.common.barcode.WooPosBarcodeFormat
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.WooLog
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.store.WCProductStore
+import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class WooPosSearchByIdentifierRemote @Inject constructor(
     private val dispatcher: Dispatcher,
     private val selectedSite: SelectedSite,
     private val productsCache: WooPosProductsCache,
-    private val checkDigitRemover: WooPosSearchByIdentifierCheckDigitRemover
+    private val checkDigitRemover: WooPosSearchByIdentifierCheckDigitRemover,
+    private val searchDispatcher: CoroutineDispatcher = Dispatchers.Default.limitedParallelism(1)
 ) {
-    private var searchByIdentifierContinuation = ContinuationWrapper<List<Product>>(WooLog.T.PRODUCTS)
-    private var searchByGlobalUniqueIdContinuation = ContinuationWrapper<List<Product>>(WooLog.T.PRODUCTS)
+    private val searchByIdentifierContinuations =
+        ConcurrentHashMap<String, MutableList<ContinuationWrapper<List<Product>>>>()
+    private val searchByGlobalUniqueIdContinuations =
+        ConcurrentHashMap<String, MutableList<ContinuationWrapper<List<Product>>>>()
+
+    private val coroutineScope = CoroutineScope(SupervisorJob() + searchDispatcher)
 
     init {
         dispatcher.register(this)
@@ -79,48 +94,76 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
     }
 
     private suspend fun searchProductsBySku(identifier: String): Result<List<Product>> {
-        val result = searchByIdentifierContinuation.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
-            val payload = WCProductStore.SearchProductsPayload(
-                site = selectedSite.get(),
-                searchQuery = identifier,
-                skuSearchOptions = WCProductStore.SkuSearchOptions.ExactSearch,
-                pageSize = WCProductStore.DEFAULT_PRODUCT_PAGE_SIZE,
-                offset = 0,
-                sorting = WCProductStore.ProductSorting.TITLE_ASC,
-                excludedProductIds = null,
-                filterOptions = emptyMap()
-            )
-            dispatcher.dispatch(WCProductActionBuilder.newSearchProductsAction(payload))
-        }
-
-        return when (result) {
-            is ContinuationWrapper.ContinuationResult.Cancellation ->
-                Result.failure(SearchException(WooPosSearchByIdentifierResult.Error.RequestCancelled))
-
-            is ContinuationWrapper.ContinuationResult.Success -> Result.success(result.value)
-        }
+        return performSearch(
+            identifier = identifier,
+            continuations = searchByIdentifierContinuations,
+            createPayload = { query ->
+                WCProductStore.SearchProductsPayload(
+                    site = selectedSite.get(),
+                    searchQuery = query,
+                    skuSearchOptions = WCProductStore.SkuSearchOptions.ExactSearch,
+                    pageSize = WCProductStore.DEFAULT_PRODUCT_PAGE_SIZE,
+                    offset = 0,
+                    sorting = WCProductStore.ProductSorting.TITLE_ASC,
+                    excludedProductIds = null,
+                    filterOptions = emptyMap()
+                )
+            },
+            dispatchAction = { payload ->
+                dispatcher.dispatch(WCProductActionBuilder.newSearchProductsAction(payload))
+            }
+        )
     }
 
     private suspend fun searchProductsByGlobalUniqueId(globalUniqueId: String): Result<List<Product>> {
-        val result = searchByGlobalUniqueIdContinuation.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
-            val payload = WCProductStore.SearchProductsByGlobalUniqueIdPayload(
-                site = selectedSite.get(),
-                globalUniqueId = globalUniqueId,
-                pageSize = WCProductStore.DEFAULT_PRODUCT_PAGE_SIZE,
-                offset = 0,
-                sorting = WCProductStore.ProductSorting.TITLE_ASC,
-                excludedProductIds = null,
-                filterOptions = emptyMap()
-            )
-            dispatcher.dispatch(WCProductActionBuilder.newSearchProductsByGlobalUniqueIdAction(payload))
-        }
+        return performSearch(
+            identifier = globalUniqueId,
+            continuations = searchByGlobalUniqueIdContinuations,
+            createPayload = { query ->
+                WCProductStore.SearchProductsByGlobalUniqueIdPayload(
+                    site = selectedSite.get(),
+                    globalUniqueId = query,
+                    pageSize = WCProductStore.DEFAULT_PRODUCT_PAGE_SIZE,
+                    offset = 0,
+                    sorting = WCProductStore.ProductSorting.TITLE_ASC,
+                    excludedProductIds = null,
+                    filterOptions = emptyMap()
+                )
+            },
+            dispatchAction = { payload ->
+                dispatcher.dispatch(WCProductActionBuilder.newSearchProductsByGlobalUniqueIdAction(payload))
+            }
+        )
+    }
 
-        return when (result) {
-            is ContinuationWrapper.ContinuationResult.Cancellation ->
-                Result.failure(SearchException(WooPosSearchByIdentifierResult.Error.RequestCancelled))
+    private suspend fun <T> performSearch(
+        identifier: String,
+        continuations: ConcurrentHashMap<String, MutableList<ContinuationWrapper<List<Product>>>>,
+        createPayload: (String) -> T,
+        dispatchAction: (T) -> Unit
+    ): Result<List<Product>> {
+        val continuation = ContinuationWrapper<List<Product>>(WooLog.T.PRODUCTS)
 
-            is ContinuationWrapper.ContinuationResult.Success ->
-                Result.success(result.value)
+        return withContext(searchDispatcher) {
+            val requestWithIdInProgress = continuations.containsKey(identifier)
+
+            val continuationsList = continuations.getOrPut(identifier) { mutableListOf() }
+            continuationsList.add(continuation)
+
+            if (!requestWithIdInProgress) {
+                val payload = createPayload(identifier)
+                dispatchAction(payload)
+            }
+
+            val result = continuation.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {}
+
+            when (result) {
+                is ContinuationWrapper.ContinuationResult.Cancellation ->
+                    Result.failure(SearchException(WooPosSearchByIdentifierResult.Error.RequestCancelled))
+
+                is ContinuationWrapper.ContinuationResult.Success ->
+                    Result.success(result.value)
+            }
         }
     }
 
@@ -177,25 +220,46 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
         return WooPosSearchByIdentifierResult.Failure(searchError)
     }
 
-    @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onProductsSearched(event: WCProductStore.OnProductsSearched) {
-        val continuation = if (event.globalUniqueIdSearchQuery != null) {
-            searchByGlobalUniqueIdContinuation
-        } else {
-            searchByIdentifierContinuation
-        }
+        coroutineScope.launch {
+            val query = event.globalUniqueIdSearchQuery ?: event.searchQuery ?: return@launch
+            val continuations = when {
+                event.globalUniqueIdSearchQuery != null -> searchByGlobalUniqueIdContinuations
+                else -> searchByIdentifierContinuations
+            }
 
-        if (event.isError) {
-            continuation.continueWith(emptyList())
-        } else {
-            val products = event.searchResults.map { it.toAppModel() }
-            continuation.continueWith(products)
+            val continuationsList = continuations[query]
+
+            val products = if (event.isError) {
+                emptyList()
+            } else {
+                val productsList = event.searchResults.map { it.toAppModel() }
+                productsList
+            }
+
+            continuationsList?.forEach { continuation ->
+                continuation.continueWith(products)
+            }
+
+            continuations.remove(query)
         }
     }
 
     fun onCleanup() {
         dispatcher.unregister(this)
+
+        // Cancel any pending continuations
+        searchByIdentifierContinuations.forEach { (_, continuationsList) ->
+            continuationsList.forEach { it.cancel() }
+        }
+        searchByGlobalUniqueIdContinuations.forEach { (_, continuationsList) ->
+            continuationsList.forEach { it.cancel() }
+        }
+
+        searchByIdentifierContinuations.clear()
+        searchByGlobalUniqueIdContinuations.clear()
+        coroutineScope.cancel()
     }
 }
 
