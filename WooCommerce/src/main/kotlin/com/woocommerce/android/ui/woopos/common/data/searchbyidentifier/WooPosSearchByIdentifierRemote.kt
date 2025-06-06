@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.common.data.searchbyidentifier
 
 import com.woocommerce.android.AppConstants
+import com.woocommerce.android.di.LimitedConcurrencyDispatcher
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
@@ -10,8 +11,6 @@ import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
@@ -26,13 +25,12 @@ import org.wordpress.android.fluxc.store.WCProductStore
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class WooPosSearchByIdentifierRemote @Inject constructor(
     private val dispatcher: Dispatcher,
     private val selectedSite: SelectedSite,
     private val productsCache: WooPosProductsCache,
     private val checkDigitRemover: WooPosSearchByIdentifierCheckDigitRemover,
-    private val searchDispatcher: CoroutineDispatcher = Dispatchers.Default.limitedParallelism(1)
+    @LimitedConcurrencyDispatcher private val searchDispatcher: CoroutineDispatcher,
 ) {
     private val searchByIdentifierContinuations =
         ConcurrentHashMap<String, MutableList<ContinuationWrapper<List<Product>>>>()
