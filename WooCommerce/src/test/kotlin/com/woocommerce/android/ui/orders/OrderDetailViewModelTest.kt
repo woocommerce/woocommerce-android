@@ -2518,7 +2518,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         // THEN
         assertThat(observedViewState!!.orderInfo!!.order).isEqualTo(newOrder)
-        assertThat(observedViewState!!.orderInfo!!.isPaymentCollectableWithCardReader).isFalse()
+        assertThat(observedViewState.orderInfo!!.isPaymentCollectableWithCardReader).isFalse()
     }
 
     @Test
