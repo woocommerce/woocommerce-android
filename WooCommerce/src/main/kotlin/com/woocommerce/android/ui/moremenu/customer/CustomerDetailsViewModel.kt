@@ -29,7 +29,7 @@ class CustomerDetailsViewModel @Inject constructor(
 
     private val _viewState = savedState.getStateFlow(
         scope = viewModelScope,
-        initialValue = CustomerViewState(navArgs.customer, true, false)
+        initialValue = CustomerViewState(navArgs.customer, getCustomerName(navArgs.customer), true, false)
     )
     val viewState: LiveData<CustomerViewState> = _viewState.asLiveData()
 
@@ -47,8 +47,7 @@ class CustomerDetailsViewModel @Inject constructor(
                         customerWithAnalytics = refreshedCustomer,
                         isLoadingAnalytics = false,
                         isRefreshingData = false,
-                        customerName = refreshedCustomer.getFullName().takeIf { it.isNotBlank() }
-                            ?: resourceProvider.getString(R.string.customer_detail_guest_customer)
+                        customerName = getCustomerName(refreshedCustomer)
                     )
                 },
                 onFailure = { }
@@ -67,6 +66,11 @@ class CustomerDetailsViewModel @Inject constructor(
 
     fun onEmailTapped() {
         triggerEvent(SendEmailEvent(viewState.value?.customerWithAnalytics?.email ?: ""))
+    }
+
+    private fun getCustomerName(customer: CustomerWithAnalytics): String {
+        return customer.getFullName().takeIf { it.isNotBlank() }
+            ?: resourceProvider.getString(R.string.customer_detail_guest_customer)
     }
 }
 
