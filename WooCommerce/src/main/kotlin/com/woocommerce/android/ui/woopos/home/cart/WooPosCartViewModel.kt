@@ -344,13 +344,14 @@ class WooPosCartViewModel @Inject constructor(
             if (_state.value.body == WooPosCartState.Body.Empty) {
                 analyticsTracker.track(InteractionWithCustomerStarted)
             }
-            val loadingItem = WooPosCartItemViewState.Loading(itemNumber = getItemNumber(), name = barcode)
-            updateStateWithNewItem(loadingItem)
+            val itemNumber = getItemNumber()
+
+            updateStateWithNewItem(WooPosCartItemViewState.Loading(itemNumber = itemNumber, name = barcode))
 
             val searchResult = searchByIdentifier.invoke(barcode)
             updateStateByReplacingItem(
-                createCartItemFromSearchResult(searchResult, loadingItem),
-                loadingItem.itemNumber
+                searchResult.mapToCartItem(identifier = barcode, itemNumber = itemNumber),
+                itemNumber
             )
         }
     }
@@ -376,12 +377,7 @@ class WooPosCartViewModel @Inject constructor(
     private fun updateStateByReplacingItem(newItem: WooPosCartItemViewState, itemNumber: Int) {
         val currentState = _state.value
         val body = currentState.body as? WooPosCartState.Body.WithItems
-            ?: error("Cannot replace item in an empty cart")
-
-        val itemExists = body.itemsInCart.any { it.itemNumber == itemNumber }
-        if (!itemExists) {
-            error("Item with number $itemNumber not found in cart")
-        }
+            ?: return
 
         val updatedItemsList = body.itemsInCart.map { item ->
             if (item.itemNumber == itemNumber) newItem else item
@@ -532,15 +528,15 @@ class WooPosCartViewModel @Inject constructor(
     private fun cartContainsLoadingOrErrorItems(body: WooPosCartState.Body.WithItems) =
         body.itemsInCart.any { it is WooPosCartItemViewState.Loading || it is WooPosCartItemViewState.Error }
 
-    private suspend fun createCartItemFromSearchResult(
-        result: WooPosSearchByIdentifierResult,
-        loadingItem: WooPosCartItemViewState.Loading
+    private suspend fun WooPosSearchByIdentifierResult.mapToCartItem(
+        identifier: String,
+        itemNumber: Int,
     ): WooPosCartItemViewState {
-        return when (result) {
+        return when (this) {
             is WooPosSearchByIdentifierResult.Success -> {
-                val product = result.product
+                val product = this.product
                 WooPosCartItemViewState.Product.Simple(
-                    itemNumber = loadingItem.itemNumber,
+                    itemNumber = itemNumber,
                     id = product.remoteId,
                     name = product.name,
                     description = null,
@@ -548,17 +544,23 @@ class WooPosCartViewModel @Inject constructor(
                     imageUrl = product.firstImageUrl
                 )
             }
+
             is WooPosSearchByIdentifierResult.Failure -> {
-                // TBD replace with error messages defined in strings.xml
-                val errorMessage = when (result.error) {
-                    WooPosSearchByIdentifierResult.Error.ProductNotFound -> "Product not found"
-                    WooPosSearchByIdentifierResult.Error.NetworkError -> "Network error"
-                    WooPosSearchByIdentifierResult.Error.RequestCancelled -> "Request cancelled"
-                    is WooPosSearchByIdentifierResult.Error.UnknownError -> result.error.message
+                val errorMessage = when (this.error) {
+                    WooPosSearchByIdentifierResult.Error.ProductNotFound -> {
+                        resourceProvider.getString(R.string.woopos_cart_barcode_scan_result_product_not_found)
+                    }
+                    WooPosSearchByIdentifierResult.Error.NetworkError -> {
+                        resourceProvider.getString(R.string.woopos_cart_barcode_scan_result_network_error)
+                    }
+                    WooPosSearchByIdentifierResult.Error.RequestCancelled -> {
+                        resourceProvider.getString(R.string.woopos_cart_barcode_scan_result_request_cancelled)
+                    }
+                    is WooPosSearchByIdentifierResult.Error.UnknownError -> this.error.message
                 }
                 WooPosCartItemViewState.Error(
-                    itemNumber = loadingItem.itemNumber,
-                    name = loadingItem.name,
+                    itemNumber = itemNumber,
+                    name = identifier,
                     message = errorMessage
                 )
             }
