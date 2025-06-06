@@ -79,6 +79,11 @@ class WooPosCartViewModel @Inject constructor(
         listenEventsFromParent()
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        searchByIdentifier.onCleanup()
+    }
+
     @Suppress("ReturnCount")
     fun onUIEvent(event: WooPosCartUIEvent) {
         when (event) {
