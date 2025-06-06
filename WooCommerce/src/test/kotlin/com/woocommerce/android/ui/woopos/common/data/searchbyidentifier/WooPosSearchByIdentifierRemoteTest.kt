@@ -181,25 +181,29 @@ class WooPosSearchByIdentifierRemoteTest {
 
             assertTrue(
                 payloads.any { payload ->
-                    payload is WCProductStore.SearchProductsByGlobalUniqueIdPayload && payload.globalUniqueId == identifier1
+                    payload is WCProductStore.SearchProductsByGlobalUniqueIdPayload &&
+                        payload.globalUniqueId == identifier1
                 }
             )
 
             assertTrue(
                 payloads.any { payload ->
-                    payload is WCProductStore.SearchProductsByGlobalUniqueIdPayload && payload.globalUniqueId == identifier2
+                    payload is WCProductStore.SearchProductsByGlobalUniqueIdPayload &&
+                        payload.globalUniqueId == identifier2
                 }
             )
 
             assertTrue(
                 payloads.any { payload ->
-                    payload is WCProductStore.SearchProductsPayload && payload.searchQuery == identifier1
+                    payload is WCProductStore.SearchProductsPayload &&
+                        payload.searchQuery == identifier1
                 }
             )
 
             assertTrue(
                 payloads.any { payload ->
-                    payload is WCProductStore.SearchProductsPayload && payload.searchQuery == identifier2
+                    payload is WCProductStore.SearchProductsPayload &&
+                        payload.searchQuery == identifier2
                 }
             )
 
