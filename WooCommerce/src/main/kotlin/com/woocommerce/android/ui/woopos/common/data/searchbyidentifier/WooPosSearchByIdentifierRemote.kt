@@ -97,10 +97,10 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
         return performSearch(
             identifier = identifier,
             continuations = searchByIdentifierContinuations,
-            createPayload = { query ->
+            createPayload = {
                 WCProductStore.SearchProductsPayload(
                     site = selectedSite.get(),
-                    searchQuery = query,
+                    searchQuery = identifier,
                     skuSearchOptions = WCProductStore.SkuSearchOptions.ExactSearch,
                     pageSize = WCProductStore.DEFAULT_PRODUCT_PAGE_SIZE,
                     offset = 0,
@@ -119,10 +119,10 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
         return performSearch(
             identifier = globalUniqueId,
             continuations = searchByGlobalUniqueIdContinuations,
-            createPayload = { query ->
+            createPayload = {
                 WCProductStore.SearchProductsByGlobalUniqueIdPayload(
                     site = selectedSite.get(),
-                    globalUniqueId = query,
+                    globalUniqueId = globalUniqueId,
                     pageSize = WCProductStore.DEFAULT_PRODUCT_PAGE_SIZE,
                     offset = 0,
                     sorting = WCProductStore.ProductSorting.TITLE_ASC,
@@ -139,7 +139,7 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
     private suspend fun <T> performSearch(
         identifier: String,
         continuations: ConcurrentHashMap<String, MutableList<ContinuationWrapper<List<Product>>>>,
-        createPayload: (String) -> T,
+        createPayload: () -> T,
         dispatchAction: (T) -> Unit
     ): Result<List<Product>> {
         val continuation = ContinuationWrapper<List<Product>>(WooLog.T.PRODUCTS)
@@ -151,7 +151,7 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
             continuationsList.add(continuation)
 
             if (!requestWithIdInProgress) {
-                val payload = createPayload(identifier)
+                val payload = createPayload()
                 dispatchAction(payload)
             }
 
