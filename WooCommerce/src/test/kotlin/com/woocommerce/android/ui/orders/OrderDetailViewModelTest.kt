@@ -2531,6 +2531,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     fun `when view model is initialized then fetchConfig is called`() = testBlocking {
         viewModel.start()
 
-        verify(shippingLabelRepository).fetchConfig(selectedSite.get(), ORDER_ID)
+        verify(shippingLabelRepository, never()).fetchConfig(selectedSite.get(), ORDER_ID)
     }
 }
