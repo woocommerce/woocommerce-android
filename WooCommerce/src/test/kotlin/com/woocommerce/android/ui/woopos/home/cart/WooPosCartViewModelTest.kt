@@ -31,6 +31,7 @@ import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -38,6 +39,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.mockito.kotlin.any
 import org.mockito.kotlin.clearInvocations
+import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
@@ -999,7 +1001,16 @@ class WooPosCartViewModelTest {
     @Test
     fun `given empty cart, when barcode scanned, then loading item is added to cart`() = runTest {
         // GIVEN
-        whenever(searchByIdentifier(any(), any())).thenReturn(WooPosSearchByIdentifierResult.Success(mock()))
+        whenever(
+            searchByIdentifier(any(), any())
+        ).doSuspendableAnswer {
+            delay(1)
+            WooPosSearchByIdentifierResult.Success(
+                ProductTestUtils.generateProduct(
+                    amount = "10.0"
+                )
+            )
+        }
         val sut = createSut()
         val states = sut.state.captureValues()
 
@@ -1090,7 +1101,7 @@ class WooPosCartViewModelTest {
             val scannedProduct = ProductTestUtils.generateProduct(
                 productId = 42L,
                 productName = "Scanned Product",
-                amount = "15.0"
+                amount = "10.0"
             ).copy(firstImageUrl = "url2")
 
             whenever(getProductById(eq(existingProduct.remoteId))).thenReturn(existingProduct)
@@ -1117,8 +1128,6 @@ class WooPosCartViewModelTest {
             // THEN
             val finalItemsInCart = (states.last().body as WooPosCartState.Body.WithItems).itemsInCart
             assertThat(finalItemsInCart).hasSize(2)
-            assertThat(finalItemsInCart[0]).isInstanceOf(WooPosCartItemViewState.Product.Simple::class.java)
-            assertThat(finalItemsInCart[1]).isInstanceOf(WooPosCartItemViewState.Product.Simple::class.java)
 
             val scannedItem = finalItemsInCart[0] as WooPosCartItemViewState.Product.Simple
             assertThat(scannedItem.id).isEqualTo(scannedProduct.remoteId)
