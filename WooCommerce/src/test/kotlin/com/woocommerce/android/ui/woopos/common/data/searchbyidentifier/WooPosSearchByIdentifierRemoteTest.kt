@@ -179,21 +179,29 @@ class WooPosSearchByIdentifierRemoteTest {
 
             val payloads = actionCaptor.allValues.map { it.payload }
 
-            assertTrue(payloads.any { payload ->
-                payload is WCProductStore.SearchProductsByGlobalUniqueIdPayload && payload.globalUniqueId == identifier1
-            })
+            assertTrue(
+                payloads.any { payload ->
+                    payload is WCProductStore.SearchProductsByGlobalUniqueIdPayload && payload.globalUniqueId == identifier1
+                }
+            )
 
-            assertTrue(payloads.any { payload ->
-                payload is WCProductStore.SearchProductsByGlobalUniqueIdPayload && payload.globalUniqueId == identifier2
-            })
+            assertTrue(
+                payloads.any { payload ->
+                    payload is WCProductStore.SearchProductsByGlobalUniqueIdPayload && payload.globalUniqueId == identifier2
+                }
+            )
 
-            assertTrue(payloads.any { payload ->
-                payload is WCProductStore.SearchProductsPayload && payload.searchQuery == identifier1
-            })
+            assertTrue(
+                payloads.any { payload ->
+                    payload is WCProductStore.SearchProductsPayload && payload.searchQuery == identifier1
+                }
+            )
 
-            assertTrue(payloads.any { payload ->
-                payload is WCProductStore.SearchProductsPayload && payload.searchQuery == identifier2
-            })
+            assertTrue(
+                payloads.any { payload ->
+                    payload is WCProductStore.SearchProductsPayload && payload.searchQuery == identifier2
+                }
+            )
 
             job1.cancel()
             job2.cancel()
