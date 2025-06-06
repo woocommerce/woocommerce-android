@@ -3,6 +3,8 @@ package org.wordpress.android.fluxc.store
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.customer.WCCustomerFromAnalytics
 import org.wordpress.android.fluxc.model.customer.WCCustomerFromAnalyticsMapper
@@ -15,7 +17,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.customer.CustomerRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.customer.CustomerSorting
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.customer.CustomerSorting.NAME_ASC
-import org.wordpress.android.fluxc.persistence.CustomerSqlUtils
+import org.wordpress.android.fluxc.persistence.dao.CustomerDao
 import org.wordpress.android.fluxc.persistence.dao.CustomerFromAnalyticsDao
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.util.AppLog
@@ -23,36 +25,31 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class WCCustomerStore @Inject constructor(
+class WCCustomerStore @Inject internal constructor(
     private val restClient: CustomerRestClient,
     private val coroutineEngine: CoroutineEngine,
     private val mapper: WCCustomerMapper,
+    private val customerDao: CustomerDao,
     private val customerFromAnalyticsDao: CustomerFromAnalyticsDao,
     private val customerFromAnalyticsMapper: WCCustomerFromAnalyticsMapper
 ) {
     /**
      * returns cached customers for the given site
      */
-    fun getCustomersForSite(site: SiteModel) = CustomerSqlUtils.getCustomersForSite(site)
+    suspend fun getCustomersForSite(site: SiteModel) = customerDao.getCustomersForSite(LocalId(site.id))
 
     /**
      * returns a cached customer with provided remote id or null if not in cache
      */
-    fun getCustomerByRemoteId(site: SiteModel, remoteCustomerId: Long) =
-        CustomerSqlUtils.getCustomerByRemoteId(site, remoteCustomerId)
+    suspend fun getCustomerByRemoteId(site: SiteModel, remoteCustomerId: Long) =
+        customerDao.getCustomerByRemoteId(LocalId(site.id), RemoteId(remoteCustomerId))
 
-    /**
-     * returns a cached customers with provided remote ids or empty list if not in cache
-     */
-    fun getCustomerByRemoteIds(site: SiteModel, remoteCustomerId: List<Long>) =
-        CustomerSqlUtils.getCustomerByRemoteIds(site, remoteCustomerId)
-
-    fun saveCustomers(customers: List<WCCustomerModel>) {
-        CustomerSqlUtils.insertCustomers(customers)
+    suspend fun saveCustomers(customers: List<WCCustomerModel>) {
+        customerDao.upsertCustomers(customers)
     }
 
-    fun deleteCustomersForSite(site: SiteModel) {
-        CustomerSqlUtils.deleteCustomersForSite(site)
+    suspend fun deleteCustomersForSite(site: SiteModel) {
+        customerDao.deleteCustomersForSite(LocalId(site.id))
     }
 
     /**
@@ -68,7 +65,7 @@ class WCCustomerStore @Inject constructor(
                 response.isError -> WooResult(response.error)
                 response.result != null -> {
                     val customer = mapper.mapToModel(site, response.result)
-                    CustomerSqlUtils.insertOrUpdateCustomer(customer)
+                    customerDao.upsertCustomer(customer)
                     WooResult(customer)
                 }
 
@@ -111,8 +108,8 @@ class WCCustomerStore @Inject constructor(
                     val customers = response.result.map { mapper.mapToModel(site, it) }
 
                     // clear cache if it's the first page for the site
-                    if (offset == 0L) CustomerSqlUtils.deleteCustomersForSite(site)
-                    CustomerSqlUtils.insertOrUpdateCustomers(customers)
+                    if (offset == 0L) customerDao.deleteCustomersForSite(LocalId(site.id))
+                    customerDao.upsertCustomers(customers)
 
                     WooResult(customers)
                 }
@@ -144,7 +141,7 @@ class WCCustomerStore @Inject constructor(
                 response.isError -> WooResult(response.error)
                 response.result != null -> {
                     val customers = response.result.map { mapper.mapToModel(site, it) }
-                    CustomerSqlUtils.insertOrUpdateCustomers(customers)
+                    customerDao.upsertCustomers(customers)
                     WooResult(Unit)
                 }
 

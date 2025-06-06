@@ -1,98 +1,50 @@
 package org.wordpress.android.fluxc.model.customer
 
-import com.yarolegovich.wellsql.core.Identifiable
-import com.yarolegovich.wellsql.core.annotation.Column
-import com.yarolegovich.wellsql.core.annotation.PrimaryKey
-import com.yarolegovich.wellsql.core.annotation.Table
-import org.wordpress.android.fluxc.persistence.WellSqlConfig
+import androidx.room.Entity
+import androidx.room.Ignore
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 
 /**
  * Single Woo customer - see https://woocommerce.github.io/woocommerce-rest-api-docs/#customer-properties
  */
-@Table(addOn = WellSqlConfig.ADDON_WOOCOMMERCE)
-data class WCCustomerModel(@PrimaryKey @Column private var id: Int = 0) : Identifiable {
-    @Column var avatarUrl: String = ""
-    @Column var dateCreated: String = ""
-    @Column var dateCreatedGmt: String = ""
-    @Column var dateModified: String = ""
-    @Column var dateModifiedGmt: String = ""
-    @Column var email: String = ""
-    @Column var firstName: String = ""
-    @Column var remoteCustomerId: Long = 0L
-    @Column var isPayingCustomer: Boolean = false
-        @JvmName("setIsPayingCustomer")
-        set
-    @Column var lastName: String = ""
-    @Column var role: String = ""
-    @Column var username: String = ""
-
-    @Column var localSiteId = 0
-
-    @Column var billingAddress1: String = ""
-    @Column var billingAddress2: String = ""
-    @Column var billingCity: String = ""
-    @Column var billingCompany: String = ""
-    @Column var billingCountry: String = ""
-    @Column var billingEmail: String = ""
-    @Column var billingFirstName: String = ""
-    @Column var billingLastName: String = ""
-    @Column var billingPhone: String = ""
-    @Column var billingPostcode: String = ""
-    @Column var billingState: String = ""
-
-    @Column var shippingAddress1: String = ""
-    @Column var shippingAddress2: String = ""
-    @Column var shippingCity: String = ""
-    @Column var shippingCompany: String = ""
-    @Column var shippingCountry: String = ""
-    @Column var shippingFirstName: String = ""
-    @Column var shippingLastName: String = ""
-    @Column var shippingPostcode: String = ""
-    @Column var shippingState: String = ""
-    var analyticsCustomerId: Long? = null
-
-    override fun getId() = id
-
-    override fun setId(id: Int) {
-        this.id = id
-    }
-
-    override fun toString(): String {
-        return "WCCustomerModel(" +
-                "id=$id, " +
-                "avatarUrl='$avatarUrl', " +
-                "dateCreated='$dateCreated', " +
-                "dateCreatedGmt='$dateCreatedGmt', " +
-                "dateModified='$dateModified', " +
-                "dateModifiedGmt='$dateModifiedGmt', " +
-                "email='$email', " +
-                "firstName='$firstName', " +
-                "remoteCustomerId=$remoteCustomerId, " +
-                "isPayingCustomer=$isPayingCustomer, " +
-                "lastName='$lastName', " +
-                "role='$role', " +
-                "username='$username', " +
-                "localSiteId=$localSiteId, " +
-                "billingAddress1='$billingAddress1', " +
-                "billingAddress2='$billingAddress2', " +
-                "billingCity='$billingCity', " +
-                "billingCompany='$billingCompany', " +
-                "billingCountry='$billingCountry', " +
-                "billingEmail='$billingEmail', " +
-                "billingFirstName='$billingFirstName', " +
-                "billingLastName='$billingLastName', " +
-                "billingPhone='$billingPhone', " +
-                "billingPostcode='$billingPostcode', " +
-                "billingState='$billingState', " +
-                "shippingAddress1='$shippingAddress1', " +
-                "shippingAddress2='$shippingAddress2', " +
-                "shippingCity='$shippingCity', " +
-                "shippingCompany='$shippingCompany', " +
-                "shippingCountry='$shippingCountry', " +
-                "shippingFirstName='$shippingFirstName', " +
-                "shippingLastName='$shippingLastName', " +
-                "shippingPostcode='$shippingPostcode', " +
-                "shippingState='$shippingState'" +
-                ")"
-    }
-}
+@Entity(
+    tableName = "CustomerEntity",
+    primaryKeys = ["localSiteId", "remoteCustomerId"]
+)
+data class WCCustomerModel(
+    val localSiteId: LocalId = LocalId(0),
+    val remoteCustomerId: RemoteId = RemoteId(0),
+    val avatarUrl: String = "",
+    val dateCreated: String = "",
+    val dateCreatedGmt: String = "",
+    val dateModified: String = "",
+    val dateModifiedGmt: String = "",
+    val email: String = "",
+    val firstName: String = "",
+    val isPayingCustomer: Boolean = false,
+    val lastName: String = "",
+    val role: String = "",
+    val username: String = "",
+    val billingAddress1: String = "",
+    val billingAddress2: String = "",
+    val billingCity: String = "",
+    val billingCompany: String = "",
+    val billingCountry: String = "",
+    val billingEmail: String = "",
+    val billingFirstName: String = "",
+    val billingLastName: String = "",
+    val billingPhone: String = "",
+    val billingPostcode: String = "",
+    val billingState: String = "",
+    val shippingAddress1: String = "",
+    val shippingAddress2: String = "",
+    val shippingCity: String = "",
+    val shippingCompany: String = "",
+    val shippingCountry: String = "",
+    val shippingFirstName: String = "",
+    val shippingLastName: String = "",
+    val shippingPostcode: String = "",
+    val shippingState: String = "",
+    val analyticsCustomerId: Long? = 0
+)
