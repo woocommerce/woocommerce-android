@@ -5,8 +5,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.R
 import com.woocommerce.android.model.CustomerWithAnalytics
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
@@ -20,6 +22,7 @@ class CustomerDetailsViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val refreshCustomerData: RefreshCustomerData,
     private val getCustomerWithStats: GetCustomerWithStats,
+    private val resourceProvider: ResourceProvider,
 ) : ScopedViewModel(savedState) {
 
     private val navArgs: CustomerDetailsFragmentArgs by savedState.navArgs()
@@ -43,7 +46,9 @@ class CustomerDetailsViewModel @Inject constructor(
                     _viewState.value = CustomerViewState(
                         customerWithAnalytics = refreshedCustomer,
                         isLoadingAnalytics = false,
-                        isRefreshingData = false
+                        isRefreshingData = false,
+                        customerName = refreshedCustomer.getFullName().takeIf { it.isNotBlank() }
+                            ?: resourceProvider.getString(R.string.customer_detail_guest_customer)
                     )
                 },
                 onFailure = { }
@@ -68,6 +73,7 @@ class CustomerDetailsViewModel @Inject constructor(
 @Parcelize
 data class CustomerViewState(
     val customerWithAnalytics: CustomerWithAnalytics,
+    val customerName: String,
     val isLoadingAnalytics: Boolean,
     val isRefreshingData: Boolean
 ) : Parcelable
