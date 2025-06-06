@@ -13,5 +13,6 @@ data class UpdateOrderRequest(
     val shippingLines: List<ShippingLine>? = null,
     val customerNote: String? = null,
     val giftCard: String? = null,
-    val createdVia: String? = null
+    val createdVia: String? = null,
+    val decimalPlaces: Int? = 8,
 )

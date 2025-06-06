@@ -97,7 +97,10 @@ private fun ShippingProductsCardPreview(@PreviewParameter(IsExpandedProvider::cl
                     formattedTotalWeight = "8.5kg",
                     formattedTotalPrice = "$92.78",
                     purchased = false,
-                    hazmatState = WooShippingLabelCreationViewModel.HazmatState.NoSelection
+                    packageSelectionState = WooShippingLabelCreationViewModel.PackageSelectionState.NotSelected,
+                    customsState = WooShippingLabelCreationViewModel.CustomsState.NotRequired,
+                    hazmatState = WooShippingLabelCreationViewModel.HazmatState.NoSelection,
+                    shippingRatesState = WooShippingLabelCreationViewModel.ShippingRatesState.NoAvailable,
                 ),
                 isExpanded = isExpanded
             )
@@ -169,7 +172,10 @@ private fun ShippingProductsCardHeaderPreview() {
         formattedTotalWeight = "8.5kg",
         formattedTotalPrice = "$92.78",
         purchased = false,
-        hazmatState = WooShippingLabelCreationViewModel.HazmatState.NoSelection
+        packageSelectionState = WooShippingLabelCreationViewModel.PackageSelectionState.NotSelected,
+        customsState = WooShippingLabelCreationViewModel.CustomsState.NotRequired,
+        hazmatState = WooShippingLabelCreationViewModel.HazmatState.NoSelection,
+        shippingRatesState = WooShippingLabelCreationViewModel.ShippingRatesState.NoAvailable
     )
     val isExpanded = remember { mutableStateOf(false) }
 

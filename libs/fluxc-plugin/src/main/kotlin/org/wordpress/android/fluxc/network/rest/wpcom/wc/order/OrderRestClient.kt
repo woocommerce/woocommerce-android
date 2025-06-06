@@ -1169,6 +1169,7 @@ class OrderRestClient @Inject constructor(
         }
     }
 
+    @Suppress("CyclomaticComplexMethod")
     private fun UpdateOrderRequest.toNetworkRequest(): Map<String, Any> {
         return mutableMapOf<String, Any>().apply {
             customerId?.let { put("customer_id", it) }
@@ -1185,6 +1186,7 @@ class OrderRestClient @Inject constructor(
                 ?.takeIf { it.isNotEmpty() }
                 ?.let { mapOf("code" to it) }
                 ?.let { put("gift_cards", listOf(it)) }
+            decimalPlaces?.let { put("dp", it) }
         }
     }
 
