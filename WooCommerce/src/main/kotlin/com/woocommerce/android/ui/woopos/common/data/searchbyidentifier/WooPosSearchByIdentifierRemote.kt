@@ -246,7 +246,6 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
     fun onCleanup() {
         dispatcher.unregister(this)
 
-        // Cancel any pending continuations
         searchByIdentifierContinuations.forEach { (_, continuationsList) ->
             continuationsList.forEach { it.cancel() }
         }

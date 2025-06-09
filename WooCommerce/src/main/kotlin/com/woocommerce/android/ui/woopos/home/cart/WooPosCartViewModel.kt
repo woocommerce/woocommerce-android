@@ -305,7 +305,7 @@ class WooPosCartViewModel @Inject constructor(
             }
 
             itemClicked.await()?.let {
-                updateStateWithNewItem(it)
+                updateCartItem(it)
             }
             event.eventForTracking?.let {
                 analyticsTracker.track(it)
@@ -351,11 +351,11 @@ class WooPosCartViewModel @Inject constructor(
             }
             val itemNumber = getItemNumber()
 
-            updateStateWithNewItem(WooPosCartItemViewState.Loading(itemNumber = itemNumber, name = barcode))
+            updateCartItem(WooPosCartItemViewState.Loading(itemNumber = itemNumber, name = barcode))
 
-            val searchResult = searchByIdentifier.invoke(barcode)
+            val searchResult = searchByIdentifier(barcode)
             val cartItem = searchResult.mapToCartItem(identifier = barcode, itemNumber = itemNumber)
-            updateStateByReplacingItem(cartItem, itemNumber)
+            updateCartItem(cartItem)
         }
     }
 
@@ -366,27 +366,27 @@ class WooPosCartViewModel @Inject constructor(
         }
     }
 
-    private fun updateStateWithNewItem(newItem: WooPosCartItemViewState) {
-        _state.value = when (val currentState = _state.value.body) {
-            is WooPosCartState.Body.Empty -> _state.value.copy(body = WooPosCartState.Body.WithItems(listOf(newItem)))
-            is WooPosCartState.Body.WithItems -> {
-                val updatedItemsList = placeItemInList(currentState, newItem)
+    private fun updateCartItem(newItem: WooPosCartItemViewState) {
+        val currentState = _state.value
 
-                _state.value.copy(body = currentState.copy(itemsInCart = updatedItemsList))
+        _state.value = when (val body = currentState.body) {
+            is WooPosCartState.Body.Empty -> {
+                currentState.copy(body = WooPosCartState.Body.WithItems(listOf(newItem)))
+            }
+            is WooPosCartState.Body.WithItems -> {
+                val existingItemIndex = body.itemsInCart.indexOfFirst { it.itemNumber == newItem.itemNumber }
+
+                val updatedItemsList = if (existingItemIndex != -1) {
+                    body.itemsInCart.mapIndexed { index, item ->
+                        if (index == existingItemIndex) newItem else item
+                    }
+                } else {
+                    placeItemInList(body, newItem)
+                }
+
+                currentState.copy(body = body.copy(itemsInCart = updatedItemsList))
             }
         }
-    }
-
-    private fun updateStateByReplacingItem(newItem: WooPosCartItemViewState, itemNumber: Int) {
-        val currentState = _state.value
-        val body = currentState.body as? WooPosCartState.Body.WithItems
-            ?: return
-
-        val updatedItemsList = body.itemsInCart.map { item ->
-            if (item.itemNumber == itemNumber) newItem else item
-        }
-
-        _state.value = currentState.copy(body = body.copy(itemsInCart = updatedItemsList))
     }
 
     private fun placeItemInList(
