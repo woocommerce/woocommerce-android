@@ -553,13 +553,19 @@ class WooPosCartViewModel @Inject constructor(
                     WooPosSearchByIdentifierResult.Error.ProductNotFound -> {
                         resourceProvider.getString(R.string.woopos_cart_barcode_scan_result_product_not_found)
                     }
+
                     WooPosSearchByIdentifierResult.Error.NetworkError -> {
                         resourceProvider.getString(R.string.woopos_cart_barcode_scan_result_network_error)
                     }
+
                     WooPosSearchByIdentifierResult.Error.RequestCancelled -> {
                         resourceProvider.getString(R.string.woopos_cart_barcode_scan_result_request_cancelled)
                     }
+
                     is WooPosSearchByIdentifierResult.Error.UnknownError -> this.error.message
+                    WooPosSearchByIdentifierResult.Error.UnsupportedProduct -> {
+                        resourceProvider.getString(R.string.woopos_cart_barcode_scan_result_unsupported_product)
+                    }
                 }
                 WooPosCartItemViewState.Error(
                     itemNumber = itemNumber,
