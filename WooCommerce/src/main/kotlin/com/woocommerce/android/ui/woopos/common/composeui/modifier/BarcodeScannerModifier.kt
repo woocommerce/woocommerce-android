@@ -75,6 +75,7 @@ class BarcodeInputDetector(
     private var lastCharTime: Long? = null
     private var timeoutJob: Job? = null
 
+    @Suppress("ReturnCount")
     fun handleKeyInput(char: Char): Boolean {
         val currentTime = currentTimeProvider.currentDate().time
 
@@ -166,5 +167,3 @@ class BarcodeInputDetector(
         timeoutJob = null
     }
 }
-
-
