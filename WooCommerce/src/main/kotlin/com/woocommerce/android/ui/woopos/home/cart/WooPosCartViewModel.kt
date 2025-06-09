@@ -353,7 +353,7 @@ class WooPosCartViewModel @Inject constructor(
 
             updateStateWithNewItem(WooPosCartItemViewState.Loading(itemNumber = itemNumber, name = barcode))
 
-            val searchResult = searchByIdentifier.invoke(barcode)
+            val searchResult = searchByIdentifier(barcode)
             val cartItem = searchResult.mapToCartItem(identifier = barcode, itemNumber = itemNumber)
             updateStateByReplacingItem(cartItem, itemNumber)
         }
