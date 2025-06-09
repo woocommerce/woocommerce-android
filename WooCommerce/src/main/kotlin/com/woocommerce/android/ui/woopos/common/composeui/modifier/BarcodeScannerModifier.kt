@@ -113,11 +113,6 @@ class BarcodeInputDetector(
         scanStartTime = currentTime
         lastCharTime = currentTime
         barcodeBuffer.append(char)
-
-        timeoutJob = coroutineScope.launch {
-            delay(MAX_SCANNER_TOTAL_SCAN_TIMEOUT_MS)
-            processBarcodeBuffer()
-        }
     }
 
     private fun handleContinuedScan(char: Char, currentTime: Long) {
