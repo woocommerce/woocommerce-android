@@ -158,7 +158,6 @@ class CustomAmountsViewModel @Inject constructor(
         val currencySymbol: CurrencySymbol? = null,
         val isDoneButtonEnabled: Boolean = false,
         val isProgressShowing: Boolean = false,
-        val createdOrder: Order? = null,
     ) : Parcelable
 
     @Parcelize
