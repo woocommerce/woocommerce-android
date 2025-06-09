@@ -430,17 +430,22 @@ class WooPosCartViewModel @Inject constructor(
     private fun updateStateDependingOnCartStatus(newState: WooPosCartState) =
         when (newState.cartStatus) {
             EDITABLE -> {
+                val checkoutButtonState = when {
+                    newState.body !is WooPosCartState.Body.WithItems -> WooPosCartState.CheckoutButtonState.Invisible
+                    cartContainsLoadingOrErrorItems(newState.body) -> WooPosCartState.CheckoutButtonState.Disabled
+                    cartContainsPurchasableItems(newState.body) -> WooPosCartState.CheckoutButtonState.Enabled
+                    else -> WooPosCartState.CheckoutButtonState.Invisible
+                }
                 newState.copy(
                     areItemsRemovable = true,
-                    isCheckoutButtonVisible = newState.body is WooPosCartState.Body.WithItems &&
-                        cartContainsPurchasableItems(newState.body),
+                    checkoutButtonState = checkoutButtonState,
                 )
             }
 
             CHECKOUT, EMPTY -> {
                 newState.copy(
                     areItemsRemovable = false,
-                    isCheckoutButtonVisible = false,
+                    checkoutButtonState = WooPosCartState.CheckoutButtonState.Invisible,
                 )
             }
         }
@@ -502,4 +507,7 @@ class WooPosCartViewModel @Inject constructor(
 
     private fun cartContainsPurchasableItems(body: WooPosCartState.Body.WithItems) =
         body.itemsInCart.filterIsInstance<WooPosCartItemViewState.Product>().isNotEmpty()
+
+    private fun cartContainsLoadingOrErrorItems(body: WooPosCartState.Body.WithItems) =
+        body.itemsInCart.any { it is WooPosCartItemViewState.Loading || it is WooPosCartItemViewState.Error }
 }

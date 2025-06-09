@@ -211,6 +211,10 @@ class OrderDetailViewModel @Inject constructor(
 
     private var pluginsInformation: Map<String, WooPlugin> = HashMap()
 
+    private val isRevampWooShippingEnabled: Boolean
+        get() = FeatureFlag.REVAMP_WOO_SHIPPING.isEnabled() &&
+            shippingLabelOnboardingRepository.shippingPluginSupport.isWooShippingSupported()
+
     init {
         productImageMap.subscribeToOnProductFetchedEvents(this)
         launch {
@@ -680,10 +684,7 @@ class OrderDetailViewModel @Inject constructor(
     fun onCreateShippingLabelButtonTapped() {
         tracker.trackShippinhLabelTapped()
         launch {
-            if (
-                FeatureFlag.REVAMP_WOO_SHIPPING.isEnabled() &&
-                shippingLabelOnboardingRepository.shippingPluginSupport.isWooShippingSupported()
-            ) {
+            if (isRevampWooShippingEnabled) {
                 triggerEvent(StartWooShippingLabelCreationFlow(awaitOrder().id))
             } else {
                 triggerEvent(StartShippingLabelCreationFlow(awaitOrder().id))
@@ -837,7 +838,7 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     private fun fetchShipmentsAsync() = async {
-        if (shippingLabelOnboardingRepository.shippingPluginSupport.isSupported()) {
+        if (isRevampWooShippingEnabled) {
             shippingLabelRepository.fetchConfig(selectedSite.get(), navArgs.orderId)
         }
         orderDetailsTransactionLauncher.onShipmentsFetchingCompleted()

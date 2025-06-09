@@ -1,9 +1,12 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource
 
+import android.os.Parcelable
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingCarrier
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel.Option
+import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
 
+@Parcelize
 data class WooShippingRateModel(
     val packageId: String,
     val shipmentId: String,
@@ -24,7 +27,7 @@ data class WooShippingRateModel(
     val retailRate: BigDecimal,
     val option: Option,
     val carrier: WooShippingCarrier
-) {
+) : Parcelable {
     enum class Option {
         DEFAULT,
         SIGNATURE,

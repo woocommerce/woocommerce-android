@@ -27,14 +27,16 @@ class ObserveShippingLabelNotice @Inject constructor(private val addressValidati
 
     operator fun invoke(
         shippingAddresses: Flow<WooShippingAddresses?>,
-        customsState: Flow<CustomsState>,
+        customsState: Flow<List<CustomsState>>,
+        selectedIndexFlow: Flow<Int>,
         coroutineScope: CoroutineScope,
     ) = combine(
         shippingAddresses.filterNotNull(),
         customsState,
+        selectedIndexFlow,
         isDismissedFlow
-    ) { addresses, customs, isDismissed ->
-        val noticeType = getNoticeType(addresses, customs, isDismissed) ?: return@combine null
+    ) { addresses, customs, selectedIndex, isDismissed ->
+        val noticeType = getNoticeType(addresses, customs[selectedIndex], isDismissed) ?: return@combine null
         getNoticeBannerUiState(noticeType).also { state ->
             previousNotice = state.type
             if (state.autoDismiss) {
