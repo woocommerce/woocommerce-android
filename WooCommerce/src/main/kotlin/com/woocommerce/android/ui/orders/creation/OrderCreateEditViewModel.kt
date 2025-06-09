@@ -2010,18 +2010,9 @@ class OrderCreateEditViewModel @Inject constructor(
         val isEditingExistingCustomAmount = customAmountUIModel != CustomAmountUIModel.EMPTY
 
         when {
-            isEditingExistingCustomAmount -> {
-                triggerEvent(
-                    ShowCustomAmountDialog(
-                        customAmountUIModel.copy(
-                            type = CustomAmountType.FIXED_CUSTOM_AMOUNT,
-                            currencyCode = currencyCode
-                        ),
-                        orderTotal = orderTotal
-                    )
-                )
+            !isEditingExistingCustomAmount && orderContainsProductsOrCustomAmounts() -> {
+                triggerEvent(ShowCustomAmountBottomSheet)
             }
-            orderContainsProductsOrCustomAmounts() -> triggerEvent(ShowCustomAmountBottomSheet)
             else -> {
                 triggerEvent(
                     ShowCustomAmountDialog(
