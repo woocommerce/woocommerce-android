@@ -117,7 +117,6 @@ class CustomerDetailsViewModelTest : BaseUnitTest() {
         // GIVEN
         val customerWithName = defaultCustomer.copy(firstName = "John", lastName = "Doe")
         whenever(getCustomerWithStats.invoke(any(), any())).doReturn(Result.success(customerWithName))
-        whenever(resourceProvider.getString(R.string.customer_detail_guest_customer)).doReturn("Guest")
 
         // WHEN
         createViewModel()
