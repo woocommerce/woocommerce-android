@@ -39,6 +39,7 @@ class WooPosSearchByIdentifierRemoteTest {
     private val dispatcher: Dispatcher = mock()
     private val selectedSite: SelectedSite = mock()
     private val productsCache: WooPosProductsCache = mock()
+    private val productStore: WCProductStore = mock()
     private val checkDigitRemover: WooPosSearchByIdentifierCheckDigitRemover =
         WooPosSearchByIdentifierCheckDigitRemover()
 
@@ -51,6 +52,7 @@ class WooPosSearchByIdentifierRemoteTest {
             dispatcher,
             selectedSite,
             productsCache,
+            productStore,
             checkDigitRemover,
             coroutinesTestRule.testDispatcher
         )
@@ -75,6 +77,7 @@ class WooPosSearchByIdentifierRemoteTest {
             dispatcher,
             selectedSite,
             productsCache,
+            productStore,
             checkDigitRemover,
             coroutinesTestRule.testDispatcher
         )

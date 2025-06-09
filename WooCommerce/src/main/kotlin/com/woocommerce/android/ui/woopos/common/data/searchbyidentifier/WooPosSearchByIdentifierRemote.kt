@@ -28,6 +28,7 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
     private val dispatcher: Dispatcher,
     private val selectedSite: SelectedSite,
     private val productsCache: WooPosProductsCache,
+    private val productStore: WCProductStore,
     private val checkDigitRemover: WooPosSearchByIdentifierCheckDigitRemover,
     @LimitedConcurrencyDispatcher private val searchDispatcher: CoroutineDispatcher,
 ) {
@@ -173,15 +174,57 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
             result.isSuccess -> {
                 val products = result.getOrThrow()
                 val product = products.firstOrNull()
-                if (product != null) {
+                    ?: return WooPosSearchByIdentifierResult.Failure(
+                        WooPosSearchByIdentifierResult.Error.ProductNotFound
+                    )
+
+                if (product.type.equals("variation", ignoreCase = true)) {
+                    handleVariationResult(product)
+                } else {
                     productsCache.addAll(listOf(product))
                     WooPosSearchByIdentifierResult.Success(product)
-                } else {
-                    WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.ProductNotFound)
                 }
             }
 
             else -> handleError(result)
+        }
+    }
+
+    @Suppress("ReturnCount")
+    private suspend fun handleVariationResult(product: Product): WooPosSearchByIdentifierResult {
+        val parentId = product.parentId
+        val variationId = product.remoteId
+
+        if (parentId <= 0) {
+            return WooPosSearchByIdentifierResult.Failure(
+                WooPosSearchByIdentifierResult.Error.ProductNotFound
+            )
+        }
+
+        val variationResult = productStore.fetchSingleVariation(
+            selectedSite.get(),
+            parentId,
+            variationId
+        )
+
+        if (variationResult.isError) {
+            return WooPosSearchByIdentifierResult.Failure(
+                WooPosSearchByIdentifierResult.Error.ProductNotFound
+            )
+        }
+
+        val variation = productStore.getVariationByRemoteId(
+            selectedSite.get(),
+            parentId,
+            variationId
+        )?.toAppModel()
+
+        return if (variation != null) {
+            WooPosSearchByIdentifierResult.VariationSuccess(variation, parentId)
+        } else {
+            WooPosSearchByIdentifierResult.Failure(
+                WooPosSearchByIdentifierResult.Error.ProductNotFound
+            )
         }
     }
 
