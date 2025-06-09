@@ -33,7 +33,7 @@ class WooPosSearchByIdentifier @Inject constructor(
         return if (meetsFilterRequirements(result.product)) {
             result
         } else {
-            WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.ProductNotFound)
+            WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.UnsupportedProduct)
         }
     }
 

@@ -152,7 +152,7 @@ class WooPosSearchByIdentifierTest {
     }
 
     @Test
-    fun `given product has invalid status, when search called, then return product not found`() = runTest {
+    fun `given product has invalid status, when search called, then return product not supported`() = runTest {
         // GIVEN
         val identifier = "123456"
         val product = createProduct(status = ProductStatus.DRAFT)
@@ -165,13 +165,13 @@ class WooPosSearchByIdentifierTest {
         // THEN
         assertTrue(result is WooPosSearchByIdentifierResult.Failure)
         assertEquals(
-            WooPosSearchByIdentifierResult.Error.ProductNotFound,
+            WooPosSearchByIdentifierResult.Error.UnsupportedProduct,
             (result as WooPosSearchByIdentifierResult.Failure).error
         )
     }
 
     @Test
-    fun `given product is downloadable, when search called, then return product not found`() = runTest {
+    fun `given product is downloadable, when search called, then return product not supported`() = runTest {
         // GIVEN
         val identifier = "123456"
         val product = createProduct(isDownloadable = true)
@@ -184,13 +184,13 @@ class WooPosSearchByIdentifierTest {
         // THEN
         assertTrue(result is WooPosSearchByIdentifierResult.Failure)
         assertEquals(
-            WooPosSearchByIdentifierResult.Error.ProductNotFound,
+            WooPosSearchByIdentifierResult.Error.UnsupportedProduct,
             (result as WooPosSearchByIdentifierResult.Failure).error
         )
     }
 
     @Test
-    fun `given unsupported product type, when search called, then return product not found`() = runTest {
+    fun `given unsupported product type, when search called, then return product not supported`() = runTest {
         // GIVEN
         val identifier = "123456"
         val product = createProduct(type = ProductType.GROUPED.value)
@@ -203,7 +203,7 @@ class WooPosSearchByIdentifierTest {
         // THEN
         assertTrue(result is WooPosSearchByIdentifierResult.Failure)
         assertEquals(
-            WooPosSearchByIdentifierResult.Error.ProductNotFound,
+            WooPosSearchByIdentifierResult.Error.UnsupportedProduct,
             (result as WooPosSearchByIdentifierResult.Failure).error
         )
     }
