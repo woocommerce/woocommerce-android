@@ -71,8 +71,8 @@ class BarcodeInputDetector(
     }
 
     private val barcodeBuffer = StringBuilder()
-    private var scanStartTime: Long? = null
-    private var lastCharTime: Long? = null
+    private var scanStartTime: Long = -1L
+    private var lastCharTime: Long = -1L
     private var timeoutJob: Job? = null
 
     @Suppress("ReturnCount")
@@ -82,10 +82,8 @@ class BarcodeInputDetector(
         when (char) {
             '\n', '\r' -> {
                 cancelTimeout()
-                val isLikelyScanner = scanStartTime != null &&
-                    (currentTime - scanStartTime!! <= MAX_SCANNER_TOTAL_SCAN_TIMEOUT_MS) &&
-                    lastCharTime != null &&
-                    (currentTime - lastCharTime!! <= MAX_SCANNER_INTER_CHAR_DELAY_MS)
+                val isLikelyScanner = (currentTime - scanStartTime <= MAX_SCANNER_TOTAL_SCAN_TIMEOUT_MS) &&
+                    (currentTime - lastCharTime <= MAX_SCANNER_INTER_CHAR_DELAY_MS)
                 if (isLikelyScanner) processBarcodeBuffer()
                 clear()
                 return true
@@ -94,7 +92,7 @@ class BarcodeInputDetector(
             in ALLOWED_BARCODE_CHARS -> {
                 cancelTimeout()
 
-                if (scanStartTime == null) {
+                if (scanStartTime == -1L) {
                     startNewScan(char, currentTime)
                 } else {
                     handleContinuedScan(char, currentTime)
@@ -116,8 +114,8 @@ class BarcodeInputDetector(
     }
 
     private fun handleContinuedScan(char: Char, currentTime: Long) {
-        val totalElapsedTime = currentTime - scanStartTime!!
-        val timeSinceLastChar = currentTime - lastCharTime!!
+        val totalElapsedTime = currentTime - scanStartTime
+        val timeSinceLastChar = currentTime - lastCharTime
         val humanInputDetected = totalElapsedTime > MAX_SCANNER_TOTAL_SCAN_TIMEOUT_MS ||
             timeSinceLastChar > MAX_SCANNER_INTER_CHAR_DELAY_MS
 
@@ -153,8 +151,8 @@ class BarcodeInputDetector(
     fun clear() {
         cancelTimeout()
         barcodeBuffer.clear()
-        scanStartTime = null
-        lastCharTime = null
+        scanStartTime = -1
+        lastCharTime = -1
     }
 
     private fun cancelTimeout() {
