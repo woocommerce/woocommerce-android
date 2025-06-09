@@ -8,6 +8,7 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.ContextWrapper
+import android.content.res.Configuration
 import android.graphics.Point
 import android.os.Parcelable
 import android.view.WindowManager
@@ -33,14 +34,19 @@ val Context.windowWidthSizeClass: WindowSizeClass
 private const val MIN_SCREEN_SHORT_SIZE_DP = 674
 private const val MIN_SCREEN_LONG_SIZE_DP = 800
 
-private fun determineIfTwoPanesShouldBeUsed(widthDp: Int, heightDp: Int): Boolean {
+private fun Context.determineIfTwoPanesShouldBeUsed(widthDp: Int, heightDp: Int): Boolean {
     val minScreenShortSizeDP = MIN_SCREEN_SHORT_SIZE_DP
     val minScreenLongSizeDP = MIN_SCREEN_LONG_SIZE_DP
 
     val shortSize = min(widthDp, heightDp)
     val longSize = max(widthDp, heightDp)
 
-    return shortSize >= minScreenShortSizeDP && longSize >= minScreenLongSizeDP
+    val orientation = resources.configuration.orientation
+    return when (orientation) {
+        Configuration.ORIENTATION_PORTRAIT -> shortSize >= minScreenShortSizeDP
+        Configuration.ORIENTATION_LANDSCAPE -> longSize >= minScreenLongSizeDP
+        else -> false
+    }
 }
 
 private fun determineWindowHeightSizeClassByGivenSize(sizeDp: Int): WindowSizeClass {
