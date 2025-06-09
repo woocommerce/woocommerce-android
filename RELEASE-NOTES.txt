@@ -10,6 +10,7 @@
 - [*] POS: for WooCommerce version 10.0.0 and higher (betas available in June), a new check for POS feature switch value (in wp-admin WooCommerce Settings > Advanced > Features) was added for the POS entry point. [https://github.com/woocommerce/woocommerce-android/pull/14113]
 - [*] POS: for WooCommerce version 10.0.0 and higher (betas available in June) and stores eligible for POS, sending email from the payment success screen sends out POS specific email receipts with product unit price, additional cash/card payment details, and customizable store details from POS settings in wp-admin WooCommerce Settings > Point of Sale. [https://github.com/woocommerce/woocommerce-android/pull/14116]
 - [*] Fixed an issue with taxes not being correctly included during refunds [https://github.com/woocommerce/woocommerce-android/pull/14064]
+- [*] Fixed start padding for the back navigation icon in the toolbars [https://github.com/woocommerce/woocommerce-android/pull/14151]
 - [*] Improved payments UI in accessibility screen mode (increased screen size) [https://github.com/woocommerce/woocommerce-android/pull/14148]
 
 22.5
