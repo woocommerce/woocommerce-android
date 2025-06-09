@@ -38,19 +38,16 @@ class WooPosSearchByIdentifier @Inject constructor(
     }
 
     private fun meetsFilterRequirements(product: Product): Boolean {
-        if (product.status?.value != filterConfig.filters[ProductFilterOption.STATUS]) {
-            return false
-        }
+        val hasValidStatus = product.status?.value == filterConfig.filters[ProductFilterOption.STATUS]
 
-        if (product.isDownloadable
-            && filterConfig.filters[ProductFilterOption.DOWNLOADABLE] == DownloadableOptions.FALSE.toString()
-        ) {
-            return false
-        }
+        val meetsDownloadableRequirement = !(product.isDownloadable &&
+            filterConfig.filters[ProductFilterOption.DOWNLOADABLE] == DownloadableOptions.FALSE.toString())
 
-        return filterConfig.includeTypes.any {
+        val hasValidType = filterConfig.includeTypes.any {
             it.toString().equals(product.type, ignoreCase = true)
         }
+
+        return hasValidStatus && meetsDownloadableRequirement && hasValidType
     }
 
     fun onCleanup() {
