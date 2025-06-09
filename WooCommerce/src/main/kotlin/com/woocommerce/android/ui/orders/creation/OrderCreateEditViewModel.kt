@@ -1956,7 +1956,7 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    fun orderContainsProductsOrCustomAmounts() =
+    private fun orderContainsProductsOrCustomAmounts() =
         orderDraft.value?.hasProducts() == true || orderDraft.value?.hasCustomAmounts() == true
 
     fun getCurrencySymbol() = currencySymbolFinder.findCurrencySymbol(currentDraft.currency)
