@@ -65,7 +65,7 @@ class BarcodeInputDetectorTest {
             detector.handleKeyInput(char)
             advanceTestTimeBy(10)
         }
-        advanceTimeBy(BarcodeInputDetector.MAX_SCANNER_TOTAL_SCAN_TIMEOUT_MS)
+        advanceTestTimeBy(BarcodeInputDetector.MAX_SCANNER_TOTAL_SCAN_TIMEOUT_MS)
 
         // THEN
         verify(onBarcodeScanned).invoke(barcode)
