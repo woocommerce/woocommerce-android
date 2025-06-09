@@ -40,8 +40,10 @@ class WooPosSearchByIdentifier @Inject constructor(
     private fun meetsFilterRequirements(product: Product): Boolean {
         val hasValidStatus = product.status?.value == filterConfig.filters[ProductFilterOption.STATUS]
 
-        val meetsDownloadableRequirement = !(product.isDownloadable &&
-            filterConfig.filters[ProductFilterOption.DOWNLOADABLE] == DownloadableOptions.FALSE.toString())
+        val meetsDownloadableRequirement = !(
+            product.isDownloadable &&
+                filterConfig.filters[ProductFilterOption.DOWNLOADABLE] == DownloadableOptions.FALSE.toString()
+            )
 
         val hasValidType = filterConfig.includeTypes.any {
             it.toString().equals(product.type, ignoreCase = true)
