@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.ClickableSpan
+import android.util.DisplayMetrics
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -107,10 +108,16 @@ object UiHelpers {
     }
 
     @Suppress("MagicNumber")
-    fun getIllustrationVisibilityForFontScale(fontScale: Float): Int = if (fontScale > 1.5f) {
-        View.GONE
-    } else {
-        View.VISIBLE
+    private fun isFontScaleIncreased(fontScale: Float): Boolean = fontScale > 1.5f
+
+    private fun Context.isDisplaySizeScaleIncreased(): Boolean =
+        resources.displayMetrics.densityDpi > DisplayMetrics.DENSITY_DEVICE_STABLE
+
+    /**
+     * Returns View.GONE if either the font scale is large or the accessibility display size is changed, otherwise View.VISIBLE.
+     */
+    fun Context.getIllustrationVisibilityForAccessibility(fontScale: Float): Int {
+        return if (isFontScaleIncreased(fontScale) || isDisplaySizeScaleIncreased()) View.GONE else View.VISIBLE
     }
 }
 
