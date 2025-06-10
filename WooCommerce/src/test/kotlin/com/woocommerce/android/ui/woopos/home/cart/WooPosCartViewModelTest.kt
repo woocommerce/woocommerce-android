@@ -1177,12 +1177,20 @@ class WooPosCartViewModelTest {
             on { price }.thenReturn(BigDecimal("45.0"))
             on { stockStatus }.thenReturn(ProductStockStatus.InStock)
             on { image }.thenReturn(null)
+            on { attributes }.thenReturn(emptyArray())
         }
+
+        val product = ProductTestUtils.generateProduct(
+            productId = productId,
+            productName = "Red Hoodie",
+            amount = "45.0"
+        )
 
         whenever(searchByIdentifier(eq("VAR123456"), any())).thenReturn(
             WooPosSearchByIdentifierResult.VariationSuccess(variation)
         )
         whenever(formatPrice(eq(BigDecimal("45.0")))).thenReturn("45.0$")
+        whenever(getProductById(eq(productId))).thenReturn(product)
 
         val sut = createSut()
         val states = sut.state.captureValues()
@@ -1199,7 +1207,7 @@ class WooPosCartViewModelTest {
         assertThat(itemsInCart.first()).isInstanceOf(WooPosCartItemViewState.Product.Variation::class.java)
         val variationItem = itemsInCart.first() as WooPosCartItemViewState.Product.Variation
         assertThat(variationItem.variationId).isEqualTo(variationId)
-        assertThat(variationItem.name).isEqualTo("Red Hoodie - Size L")
+        assertThat(variationItem.name).isEqualTo("Red Hoodie")
     }
 
     private suspend fun createSutWithItemsInCart(): Pair<WooPosCartViewModel, List<WooPosCartState>> {
