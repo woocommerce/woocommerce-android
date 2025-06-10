@@ -16,4 +16,12 @@ class WooPosSoundHelper @Inject constructor(
         mp.setOnCompletionListener { it.release() }
         mp.start()
     }
+
+    suspend fun playBarcodeScanFailure() = withContext(Dispatchers.IO) {
+        val mp = MediaPlayer.create(context, R.raw.pos_scan_failure)
+        mp.setOnCompletionListener {
+            it.release()
+        }
+        mp.start()
+    }
 }
