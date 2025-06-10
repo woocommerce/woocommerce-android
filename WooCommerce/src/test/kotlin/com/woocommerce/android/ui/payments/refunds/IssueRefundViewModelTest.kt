@@ -1223,9 +1223,9 @@ class IssueRefundViewModelTest : BaseUnitTest() {
 
             val items = viewModel.refundByItemsStateLiveData.getOrAwaitValue().productsSection.refundItems
             items.map { it.toDataModel() }.forEach { refundItem ->
-                val item = order.getLineItemList().first { it.id == refundItem.itemId }
+                val lineItem = order.getLineItemList().first { it.id == refundItem.itemId }
                 assertThat(refundItem.refundTax).allMatch { refundTaxItem ->
-                    val tax = item.taxes!!.first { it.rateId == refundTaxItem.taxRateId }
+                    val tax = lineItem.taxes!!.first { it.rateId == refundTaxItem.taxRateId }
                     tax.rateId == refundTaxItem.taxRateId &&
                         tax.total.isEqualTo(refundTaxItem.refundTotal)
                 }
