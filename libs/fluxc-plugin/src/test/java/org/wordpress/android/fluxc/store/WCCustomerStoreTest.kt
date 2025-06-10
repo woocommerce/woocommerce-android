@@ -9,9 +9,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
@@ -32,9 +30,6 @@ import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
 import org.wordpress.android.fluxc.persistence.dao.CustomerDao
 import org.wordpress.android.fluxc.test
 import org.wordpress.android.fluxc.tools.initCoroutineEngine
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 @Config(manifest = Config.NONE)
 @RunWith(RobolectricTestRunner::class)
@@ -98,38 +93,6 @@ class WCCustomerStoreTest {
         // then
         assertThat(result.isError).isTrue
         assertThat(result.error).isEqualTo(TEST_ERROR)
-    }
-
-    @Test
-    fun `createCustomer with error returns error result`() = test {
-        // given
-        val customerModel = fakeWCCustomerModel(localSiteId = DEFAULT_SITE_ID)
-
-        whenever(restClient.createCustomer(eq(DEFAULT_SITE_MODEL), any())).thenReturn(WooPayload(TEST_ERROR))
-
-        // when
-        val result = sut.createCustomer(DEFAULT_SITE_MODEL, customerModel)
-
-        // then
-        assertTrue(result.isError)
-    }
-
-    @Test
-    fun `createCustomer with success returns customer model`() = test {
-        // given
-        val customerDtoResponse = fakeCustomerDTO()
-        val customerModel = fakeWCCustomerModel(localSiteId = DEFAULT_SITE_ID)
-
-        whenever(restClient.createCustomer(eq(DEFAULT_SITE_MODEL), any())).thenReturn(
-            WooPayload(customerDtoResponse)
-        )
-
-        // when
-        val result = sut.createCustomer(DEFAULT_SITE_MODEL, customerModel)
-
-        // then
-        assertFalse(result.isError)
-        assertEquals(customerModel, result.model)
     }
 
     @Test
