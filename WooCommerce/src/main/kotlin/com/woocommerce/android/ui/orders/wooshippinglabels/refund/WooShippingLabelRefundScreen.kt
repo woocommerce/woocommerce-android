@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.refund
 
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,6 +23,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.annotatedStringResLegacy
@@ -129,5 +131,18 @@ private fun LoadingScreen() {
                 CircularProgressIndicator()
             }
         }
+    }
+}
+
+@Preview
+@Preview("Dark Theme", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun WooShippingLabelRefundScreenPreview() {
+    WooThemeWithBackground {
+        WooShippingLabelRefundScreen(
+            purchaseDate = "Feb 19, 2025",
+            refundableAmount = "$11.33",
+            onRefundLabelClick = {},
+        )
     }
 }
