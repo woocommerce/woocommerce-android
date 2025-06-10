@@ -124,6 +124,102 @@ class WooPosSearchByIdentifierLocalTest {
         assertEquals(WooPosSearchByIdentifierResult.Success(product), result)
     }
 
+    @Test
+    fun `given variation with matching global unique id, when search called, then return variation`() = runTest {
+        // GIVEN
+        val identifier = "VAR123456"
+        val productId = 1L
+        val variationId = 10L
+        val product = createProduct(remoteId = productId).copy(type = ProductType.VARIABLE.value)
+        val variation: ProductVariation = mock {
+            on { remoteVariationId }.thenReturn(variationId)
+            on { remoteProductId }.thenReturn(productId)
+            on { globalUniqueId }.thenReturn(identifier)
+            on { sku }.thenReturn("")
+        }
+        whenever(productsCache.getAll()).thenReturn(listOf(product))
+        whenever(variationsCache.get(productId)).thenReturn(listOf(variation))
+
+        // WHEN
+        val result = sut(identifier, WooPosBarcodeFormat.FormatUnknown)
+
+        // THEN
+        assertEquals(WooPosSearchByIdentifierResult.VariationSuccess(variation), result)
+    }
+
+    @Test
+    fun `given variation with matching sku, when search called, then return variation`() = runTest {
+        // GIVEN
+        val identifier = "VAR-SKU-123"
+        val productId = 1L
+        val variationId = 10L
+        val product = createProduct(remoteId = productId).copy(type = ProductType.VARIABLE.value)
+        val variation: ProductVariation = mock {
+            on { remoteVariationId }.thenReturn(variationId)
+            on { remoteProductId }.thenReturn(productId)
+            on { sku }.thenReturn(identifier)
+            on { globalUniqueId }.thenReturn("")
+        }
+        whenever(productsCache.getAll()).thenReturn(listOf(product))
+        whenever(variationsCache.get(productId)).thenReturn(listOf(variation))
+
+        // WHEN
+        val result = sut(identifier, WooPosBarcodeFormat.FormatUnknown)
+
+        // THEN
+        assertEquals(WooPosSearchByIdentifierResult.VariationSuccess(variation), result)
+    }
+
+    @Test
+    fun `given multiple variations with one matching, when search called, then return correct variation`() = runTest {
+        // GIVEN
+        val identifier = "MATCH-VAR"
+        val productId = 1L
+        val product = createProduct(remoteId = productId).copy(type = ProductType.VARIABLE.value)
+        val variation1: ProductVariation = mock {
+            on { remoteVariationId }.thenReturn(10L)
+            on { remoteProductId }.thenReturn(productId)
+            on { globalUniqueId }.thenReturn("OTHER-VAR")
+            on { sku }.thenReturn("OTHER-SKU")
+        }
+        val variation2: ProductVariation = mock {
+            on { remoteVariationId }.thenReturn(20L)
+            on { remoteProductId }.thenReturn(productId)
+            on { globalUniqueId }.thenReturn(identifier)
+            on { sku }.thenReturn("")
+        }
+        whenever(productsCache.getAll()).thenReturn(listOf(product))
+        whenever(variationsCache.get(productId)).thenReturn(listOf(variation1, variation2))
+
+        // WHEN
+        val result = sut(identifier, WooPosBarcodeFormat.FormatUnknown)
+
+        // THEN
+        assertEquals(WooPosSearchByIdentifierResult.VariationSuccess(variation2), result)
+    }
+
+    @Test
+    fun `given variation with case insensitive match, when search called, then return variation`() = runTest {
+        // GIVEN
+        val identifier = "VAR-UPPER"
+        val productId = 1L
+        val product = createProduct(remoteId = productId).copy(type = ProductType.VARIABLE.value)
+        val variation: ProductVariation = mock {
+            on { remoteVariationId }.thenReturn(10L)
+            on { remoteProductId }.thenReturn(productId)
+            on { globalUniqueId }.thenReturn("var-upper")
+            on { sku }.thenReturn("")
+        }
+        whenever(productsCache.getAll()).thenReturn(listOf(product))
+        whenever(variationsCache.get(productId)).thenReturn(listOf(variation))
+
+        // WHEN
+        val result = sut(identifier, WooPosBarcodeFormat.FormatUnknown)
+
+        // THEN
+        assertEquals(WooPosSearchByIdentifierResult.VariationSuccess(variation), result)
+    }
+
     @Suppress("LongMethod")
     private fun createProduct(
         remoteId: Long = 1,

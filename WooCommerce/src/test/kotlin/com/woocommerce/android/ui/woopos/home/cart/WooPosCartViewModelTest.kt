@@ -4,6 +4,8 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Coupon
+import com.woocommerce.android.model.ProductVariation
+import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetCouponById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
@@ -1161,6 +1163,43 @@ class WooPosCartViewModelTest {
         assertThat(finalItemsInCart).hasSize(1)
         val errorItem = finalItemsInCart.first() as WooPosCartItemViewState.Error
         assertThat(errorItem.message).isEqualTo(errorMessage)
+    }
+
+    @Test
+    fun `given barcode scanned, when variation found, then variation added to cart`() = runTest {
+        // GIVEN
+        val productId = 100L
+        val variationId = 200L
+        val variation: ProductVariation = mock {
+            on { remoteVariationId }.thenReturn(variationId)
+            on { remoteProductId }.thenReturn(productId)
+            on { getName() }.thenReturn("Red Hoodie - Size L")
+            on { price }.thenReturn(BigDecimal("45.0"))
+            on { stockStatus }.thenReturn(ProductStockStatus.InStock)
+            on { image }.thenReturn(null)
+        }
+
+        whenever(searchByIdentifier(eq("VAR123456"), any())).thenReturn(
+            WooPosSearchByIdentifierResult.VariationSuccess(variation)
+        )
+        whenever(formatPrice(eq(BigDecimal("45.0")))).thenReturn("45.0$")
+
+        val sut = createSut()
+        val states = sut.state.captureValues()
+
+        // WHEN
+        parentToChildrenMutableSharedFlow.emit(
+            ParentToChildrenEvent.BarcodeScanned("VAR123456")
+        )
+        advanceUntilIdle()
+
+        // THEN
+        val itemsInCart = (states.last().body as WooPosCartState.Body.WithItems).itemsInCart
+        assertThat(itemsInCart).hasSize(1)
+        assertThat(itemsInCart.first()).isInstanceOf(WooPosCartItemViewState.Product.Variation::class.java)
+        val variationItem = itemsInCart.first() as WooPosCartItemViewState.Product.Variation
+        assertThat(variationItem.variationId).isEqualTo(variationId)
+        assertThat(variationItem.name).isEqualTo("Red Hoodie - Size L")
     }
 
     private suspend fun createSutWithItemsInCart(): Pair<WooPosCartViewModel, List<WooPosCartState>> {

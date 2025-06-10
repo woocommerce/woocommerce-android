@@ -20,7 +20,7 @@ class WooPosVariationsDataSource @Inject constructor(
     private val variationCache: WooPosVariationsLRUCache,
     private val variationFilterConfig: WooPosVariationsTypesFilterConfig
 ) {
-    suspend fun getCachedVariations(productId: Long): List<ProductVariation> {
+    private suspend fun getCachedVariations(productId: Long): List<ProductVariation> {
         return variationCache.get(productId) ?: emptyList()
     }
 
