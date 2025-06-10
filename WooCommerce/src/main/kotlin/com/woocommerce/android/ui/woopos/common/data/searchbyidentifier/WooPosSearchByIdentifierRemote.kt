@@ -55,13 +55,13 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
         }
 
         val gtinResult = gtinSearchDeferred.await()
-        if (gtinResult is WooPosSearchByIdentifierResult.Success) {
+        if (gtinResult.isSuccess) {
             skuSearchDeferred.cancel()
             return@coroutineScope gtinResult
         }
 
         val identifierResult = skuSearchDeferred.await()
-        if (identifierResult is WooPosSearchByIdentifierResult.Success) {
+        if (identifierResult.isSuccess) {
             return@coroutineScope identifierResult
         }
 
@@ -75,13 +75,13 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
             }
 
             val gtinFallbackResult = gtinFallbackDeferred.await()
-            if (gtinFallbackResult is WooPosSearchByIdentifierResult.Success) {
+            if (gtinFallbackResult.isSuccess) {
                 identifierFallbackDeferred.cancel()
                 return@coroutineScope gtinFallbackResult
             }
 
             val identifierFallbackResult = identifierFallbackDeferred.await()
-            if (identifierFallbackResult is WooPosSearchByIdentifierResult.Success) {
+            if (identifierFallbackResult.isSuccess) {
                 return@coroutineScope identifierFallbackResult
             }
 
