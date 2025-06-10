@@ -18,6 +18,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
@@ -62,6 +63,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.ProductsSummary
 import com.woocommerce.android.ui.orders.wooshippinglabels.SelectableShippingProduct
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShipmentTabData
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShipmentsTabRow
+import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShippingLabelsSnackbarData
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.SuccessSnackbarHost
 import com.woocommerce.android.ui.orders.wooshippinglabels.split.WooShippingSplitShipmentViewModel.SplitShipmentViewState
 import kotlinx.coroutines.launch
@@ -72,25 +74,30 @@ fun WooShippingSplitShipmentScreen(
     modifier: Modifier = Modifier
 ) {
     viewModel.viewState.observeAsState().value?.let {
-        WooShippingSplitShipmentScreen(
-            viewState = it,
-            onBack = viewModel::onNavigateBack,
-            onDone = viewModel::onDoneTapped,
-            onDismissInstructions = viewModel::onDismissInstructions,
-            onUpdateSelection = viewModel::onUpdateSelection,
-            onUpdateShipment = viewModel::onUpdateShipment,
-            onRemoveShipments = viewModel::onRemoveShipments,
-            onUpdateSelectedShipment = viewModel::onUpdateSelectedShipment,
-            onRemoveShipmentMenuTapped = viewModel::onRemoveShipmentMenuTapped,
-            onDismissRemoveSheet = viewModel::onDismissRemoveSheet,
-            modifier = modifier
-        )
+        when (it) {
+            is SplitShipmentViewState.Loading -> LoadingScreen()
+            is SplitShipmentViewState.DataState -> WooShippingSplitShipmentScreen(
+                viewState = it,
+                onBack = viewModel::onNavigateBack,
+                onDone = viewModel::onDoneTapped,
+                onDismissInstructions = viewModel::onDismissInstructions,
+                onUpdateSelection = viewModel::onUpdateSelection,
+                onUpdateShipment = viewModel::onUpdateShipment,
+                onRemoveShipments = viewModel::onRemoveShipments,
+                onUpdateSelectedShipment = viewModel::onUpdateSelectedShipment,
+                onRemoveShipmentMenuTapped = viewModel::onRemoveShipmentMenuTapped,
+                onDismissRemoveSheet = viewModel::onDismissRemoveSheet,
+                snackbarData = viewModel.snackbarData,
+                modifier = modifier
+            )
+        }
     }
 }
 
+@Suppress("CyclomaticComplexMethod")
 @Composable
 fun WooShippingSplitShipmentScreen(
-    viewState: SplitShipmentViewState,
+    viewState: SplitShipmentViewState.DataState,
     onBack: () -> Unit,
     onDone: () -> Unit,
     onDismissInstructions: () -> Unit,
@@ -100,31 +107,13 @@ fun WooShippingSplitShipmentScreen(
     onUpdateSelectedShipment: (shipmentKey: Int) -> Unit,
     onRemoveShipmentMenuTapped: (shipmentKeys: List<Int>) -> Unit,
     onDismissRemoveSheet: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    snackbarData: ShippingLabelsSnackbarData? = null,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.woo_shipping_split_shipment)) },
-                navigationIcon = {
-                    IconButton(onBack) {
-                        Icon(
-                            imageVector = Icons.Filled.Close,
-                            contentDescription = stringResource(id = R.string.close)
-                        )
-                    }
-                },
-                backgroundColor = colorResource(id = R.color.color_toolbar),
-                actions = {
-                    WCTextButton(
-                        onClick = onDone,
-                        text = stringResource(id = R.string.done)
-                    )
-                }
-            )
-        },
+        topBar = { TopBar(onBack, onDone) },
         snackbarHost = { SuccessSnackbarHost(snackbarHostState) }
     ) { padding ->
         Surface(
@@ -201,6 +190,22 @@ fun WooShippingSplitShipmentScreen(
         }
     }
 
+    val actionSnackbarMessage = snackbarData?.let { stringResource(it.message) }
+    val actionSnackbarActionLabel = snackbarData?.let { stringResource(it.actionLabel) }
+    LaunchedEffect(snackbarData) {
+        snackbarData?.let {
+            val result = snackbarHostState.showSnackbar(
+                message = actionSnackbarMessage ?: "",
+                actionLabel = actionSnackbarActionLabel,
+                duration = snackbarData.duration,
+            )
+            when (result) {
+                SnackbarResult.ActionPerformed -> snackbarData.action()
+                SnackbarResult.Dismissed -> snackbarData.dismissAction()
+            }
+        } ?: snackbarHostState.currentSnackbarData?.dismiss()
+    }
+
     val context = LocalContext.current
     LaunchedEffect(viewState.splitMessage) {
         if (viewState.splitMessage is SplitShipmentMessage.Success) {
@@ -224,8 +229,31 @@ fun WooShippingSplitShipmentScreen(
 }
 
 @Composable
+private fun TopBar(onBack: (() -> Unit)? = null, onDone: (() -> Unit)? = null) {
+    TopAppBar(
+        title = { Text(stringResource(R.string.woo_shipping_split_shipment)) },
+        navigationIcon = {
+            IconButton(onBack ?: {}) {
+                Icon(
+                    imageVector = Icons.Filled.Close,
+                    contentDescription = stringResource(id = R.string.close)
+                )
+            }
+        },
+        backgroundColor = colorResource(id = R.color.color_toolbar),
+        actions = {
+            WCTextButton(
+                enabled = onDone != null,
+                onClick = onDone ?: {},
+                text = stringResource(id = R.string.done)
+            )
+        }
+    )
+}
+
+@Composable
 private fun MultipleShipments(
-    viewState: SplitShipmentViewState,
+    viewState: SplitShipmentViewState.DataState,
     shipments: List<Int>,
     productsExtraPadding: Dp,
     onUpdateSelectedShipment: (shipmentKey: Int) -> Unit,
@@ -534,11 +562,25 @@ fun SelectableProductsSection(
     }
 }
 
+@Composable
+private fun LoadingScreen() {
+    Scaffold(topBar = { TopBar() }) { padding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
+        }
+    }
+}
+
 @Preview
 @Composable
 private fun WooShippingSplitShipmentScreenPreview() = WooThemeWithBackground {
     WooShippingSplitShipmentScreen(
-        viewState = SplitShipmentViewState(
+        viewState = SplitShipmentViewState.DataState(
             shipmentSelected = 0,
             selectableItems = mapOf(
                 0 to SelectableShippableItemsUI(

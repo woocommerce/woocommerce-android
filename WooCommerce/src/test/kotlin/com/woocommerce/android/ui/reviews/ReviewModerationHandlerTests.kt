@@ -1,4 +1,4 @@
-@file:Suppress("DEPRECATION", "ForbiddenComment")
+@file:Suppress("DEPRECATION_ERROR", "ForbiddenComment")
 // TODO: @malinajirka Issue: https://github.com/woocommerce/woocommerce-android/issues/6899
 
 package com.woocommerce.android.ui.reviews

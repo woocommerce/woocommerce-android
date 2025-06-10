@@ -1,7 +1,7 @@
 package org.wordpress.android.fluxc.store
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -41,7 +41,7 @@ class WCShippingMethodsStoreTest {
 
     @Test
     fun `when shipping method id is not empty, then the shipping method can be updated`() =
-        runBlockingTest {
+        runTest {
             val shippingMethod = WCShippingMethod(id = "methodId", title = "methodTitle")
 
             sut.updateShippingMethod(defaultSiteModel, shippingMethod)
@@ -51,7 +51,7 @@ class WCShippingMethodsStoreTest {
 
     @Test
     fun `when shipping method id is empty, then the shipping method CAN'T be updated`() =
-        runBlockingTest {
+        runTest {
             val shippingMethod = WCShippingMethod(id = "", title = "methodTitle")
 
             sut.updateShippingMethod(defaultSiteModel, shippingMethod)
@@ -60,7 +60,7 @@ class WCShippingMethodsStoreTest {
         }
 
     @Test
-    fun `when fetch shipping method success, then response is expected`() = runBlockingTest {
+    fun `when fetch shipping method success, then response is expected`() = runTest {
         val methodId = "methodId"
         val methodTitle = "Random Title"
         val expected = WCShippingMethod(methodId, methodTitle)
@@ -77,7 +77,7 @@ class WCShippingMethodsStoreTest {
     }
 
     @Test
-    fun `when fetch shipping method is null, then response is error`() = runBlockingTest {
+    fun `when fetch shipping method is null, then response is error`() = runTest {
         val methodId = "methodId"
         whenever(shippingMethodsRestClient.fetchShippingMethodsById(defaultSiteModel, methodId))
             .doReturn(WooPayload(null))
@@ -89,7 +89,7 @@ class WCShippingMethodsStoreTest {
     }
 
     @Test
-    fun `when fetch shipping method fails, then response is error`() = runBlockingTest {
+    fun `when fetch shipping method fails, then response is error`() = runTest {
         val methodId = "methodId"
         val error = WooError(EMPTY_RESPONSE, NOT_FOUND)
         whenever(shippingMethodsRestClient.fetchShippingMethodsById(defaultSiteModel, methodId))
@@ -102,7 +102,7 @@ class WCShippingMethodsStoreTest {
     }
 
     @Test
-    fun `when fetch shipping methods success, then response is expected`() = runBlockingTest {
+    fun `when fetch shipping methods success, then response is expected`() = runTest {
         val methodId = "methodId"
         val methodTitle = "Random Title"
         val expected = listOf(WCShippingMethod(methodId, methodTitle))
@@ -119,7 +119,7 @@ class WCShippingMethodsStoreTest {
     }
 
     @Test
-    fun `when fetch shipping methods is null, then response is error`() = runBlockingTest {
+    fun `when fetch shipping methods is null, then response is error`() = runTest {
         whenever(shippingMethodsRestClient.fetchShippingMethods(defaultSiteModel))
             .doReturn(WooPayload(null))
 
@@ -130,7 +130,7 @@ class WCShippingMethodsStoreTest {
     }
 
     @Test
-    fun `when fetch shipping methods fails, then response is error`() = runBlockingTest {
+    fun `when fetch shipping methods fails, then response is error`() = runTest {
         val error = WooError(EMPTY_RESPONSE, NOT_FOUND)
         whenever(shippingMethodsRestClient.fetchShippingMethods(defaultSiteModel))
             .doReturn(WooPayload(error))

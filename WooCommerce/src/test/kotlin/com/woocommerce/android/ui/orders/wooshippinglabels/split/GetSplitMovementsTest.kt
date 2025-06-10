@@ -196,7 +196,9 @@ class GetSplitMovementsTest : BaseUnitTest() {
         )
     }
 
-    private val defaultShipments = mapOf(0 to ShipmentUIModel(id = null, items = defaultShippableItems))
+    private val defaultShipments = mapOf(
+        0 to ShipmentUIModel(localId = "0", remoteId = null, items = defaultShippableItems)
+    )
     val defaultSelection = defaultShipments.mapValues {
         it.value.toSelectableUIModel(
             currencyFormatter = currencyFormatter,
@@ -207,8 +209,8 @@ class GetSplitMovementsTest : BaseUnitTest() {
     }
 
     private val twoShipments = mapOf(
-        0 to ShipmentUIModel(id = null, items = defaultShippableItems),
-        1 to ShipmentUIModel(id = null, items = defaultShippableItems)
+        0 to ShipmentUIModel(localId = "0", remoteId = null, items = defaultShippableItems),
+        1 to ShipmentUIModel(localId = "0", remoteId = null, items = defaultShippableItems)
     )
     val twoShipmentsSelection = twoShipments.mapValues {
         it.value.toSelectableUIModel(
@@ -220,6 +222,6 @@ class GetSplitMovementsTest : BaseUnitTest() {
     }
 
     private val purchasedShipment = mapOf(
-        10 to ShipmentUIModel(id = null, items = defaultShippableItems, purchased = true)
+        10 to ShipmentUIModel(localId = "0", remoteId = null, items = defaultShippableItems, purchased = true)
     )
 }

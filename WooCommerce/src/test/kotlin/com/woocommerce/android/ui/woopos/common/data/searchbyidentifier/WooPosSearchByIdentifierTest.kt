@@ -8,6 +8,7 @@ import com.woocommerce.android.ui.products.ProductTaxStatus
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import com.woocommerce.android.ui.woopos.common.barcode.WooPosBarcodeFormat
+import com.woocommerce.android.ui.woopos.common.data.WooPosProductsTypesFilterConfig
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -25,28 +26,30 @@ class WooPosSearchByIdentifierTest {
     private lateinit var sut: WooPosSearchByIdentifier
     private val localSearcher: WooPosSearchByIdentifierLocal = mock()
     private val remoteSearcher: WooPosSearchByIdentifierRemote = mock()
+    private val filterConfig: WooPosProductsTypesFilterConfig = WooPosProductsTypesFilterConfig()
 
     @Before
     fun setup() {
-        sut = WooPosSearchByIdentifier(localSearcher, remoteSearcher)
+        sut = WooPosSearchByIdentifier(localSearcher, remoteSearcher, filterConfig)
     }
 
     @Test
-    fun `given product exists locally, when search called, then return local product without remote search`() = runTest {
-        // GIVEN
-        val identifier = "123456"
-        val format = WooPosBarcodeFormat.FormatEAN13
-        val localProduct = createProduct()
-        whenever(localSearcher(identifier, format)).thenReturn(localProduct)
+    fun `given product exists locally, when search called, then return local product without remote search`() =
+        runTest {
+            // GIVEN
+            val identifier = "123456"
+            val format = WooPosBarcodeFormat.FormatEAN13
+            val localProduct = createProduct()
+            whenever(localSearcher(identifier, format)).thenReturn(localProduct)
 
-        // WHEN
-        val result = sut(identifier, format)
+            // WHEN
+            val result = sut(identifier, format)
 
-        // THEN
-        assertTrue(result is WooPosSearchByIdentifierResult.Success)
-        assertEquals(localProduct, (result as WooPosSearchByIdentifierResult.Success).product)
-        verify(remoteSearcher, never()).invoke(identifier, format)
-    }
+            // THEN
+            assertTrue(result is WooPosSearchByIdentifierResult.Success)
+            assertEquals(localProduct, (result as WooPosSearchByIdentifierResult.Success).product)
+            verify(remoteSearcher, never()).invoke(identifier, format)
+        }
 
     @Test
     fun `given product not found locally, when search called, then search remotely`() = runTest {
@@ -131,10 +134,87 @@ class WooPosSearchByIdentifierTest {
         verify(remoteSearcher).onCleanup()
     }
 
+    @Test
+    fun `given product meets filter criteria, when search called, then return product`() = runTest {
+        // GIVEN
+        val identifier = "123456"
+        val format = WooPosBarcodeFormat.FormatEAN13
+        val product = createProduct(type = ProductType.SIMPLE.value, status = ProductStatus.PUBLISH)
+
+        whenever(localSearcher(identifier, format)).thenReturn(product)
+
+        // WHEN
+        val result = sut(identifier, format)
+
+        // THEN
+        assertTrue(result is WooPosSearchByIdentifierResult.Success)
+        assertEquals(product, (result as WooPosSearchByIdentifierResult.Success).product)
+    }
+
+    @Test
+    fun `given product has invalid status, when search called, then return product not supported`() = runTest {
+        // GIVEN
+        val identifier = "123456"
+        val product = createProduct(status = ProductStatus.DRAFT)
+
+        whenever(localSearcher(identifier, WooPosBarcodeFormat.FormatUnknown)).thenReturn(product)
+
+        // WHEN
+        val result = sut(identifier)
+
+        // THEN
+        assertTrue(result is WooPosSearchByIdentifierResult.Failure)
+        assertEquals(
+            WooPosSearchByIdentifierResult.Error.UnsupportedProduct,
+            (result as WooPosSearchByIdentifierResult.Failure).error
+        )
+    }
+
+    @Test
+    fun `given product is downloadable, when search called, then return product not supported`() = runTest {
+        // GIVEN
+        val identifier = "123456"
+        val product = createProduct(isDownloadable = true)
+
+        whenever(localSearcher(identifier, WooPosBarcodeFormat.FormatUnknown)).thenReturn(product)
+
+        // WHEN
+        val result = sut(identifier)
+
+        // THEN
+        assertTrue(result is WooPosSearchByIdentifierResult.Failure)
+        assertEquals(
+            WooPosSearchByIdentifierResult.Error.UnsupportedProduct,
+            (result as WooPosSearchByIdentifierResult.Failure).error
+        )
+    }
+
+    @Test
+    fun `given unsupported product type, when search called, then return product not supported`() = runTest {
+        // GIVEN
+        val identifier = "123456"
+        val product = createProduct(type = ProductType.GROUPED.value)
+
+        whenever(localSearcher(identifier, WooPosBarcodeFormat.FormatUnknown)).thenReturn(product)
+
+        // WHEN
+        val result = sut(identifier)
+
+        // THEN
+        assertTrue(result is WooPosSearchByIdentifierResult.Failure)
+        assertEquals(
+            WooPosSearchByIdentifierResult.Error.UnsupportedProduct,
+            (result as WooPosSearchByIdentifierResult.Failure).error
+        )
+    }
+
     @Suppress("LongMethod")
     private fun createProduct(
         remoteId: Long = 1,
-        name: String = "Test Product"
+        name: String = "Test Product",
+        type: String = ProductType.SIMPLE.value,
+        status: ProductStatus = ProductStatus.PUBLISH,
+        isDownloadable: Boolean = false
     ) = Product(
         remoteId = remoteId,
         parentId = 0,
@@ -142,8 +222,8 @@ class WooPosSearchByIdentifierTest {
         description = "",
         shortDescription = "",
         slug = "",
-        type = ProductType.SIMPLE.value,
-        status = ProductStatus.PUBLISH,
+        type = type,
+        status = status,
         catalogVisibility = ProductCatalogVisibility.VISIBLE,
         isFeatured = false,
         stockStatus = ProductStockStatus.InStock,
@@ -168,7 +248,7 @@ class WooPosSearchByIdentifierTest {
         globalUniqueId = "",
         shippingClass = "",
         shippingClassId = 0,
-        isDownloadable = false,
+        isDownloadable = isDownloadable,
         downloads = emptyList(),
         downloadLimit = 0,
         downloadExpiry = 0,

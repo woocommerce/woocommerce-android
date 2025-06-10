@@ -10,8 +10,8 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.AddressNormalizationModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PurchasedLabelData
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.PurchasedLabelModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
-import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.StoreOptionsModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel
@@ -39,17 +39,18 @@ class WooShippingNetworkingMapper @Inject constructor(
             labelId = shippingLabelDTO.labelId ?: 0,
             tracking = shippingLabelDTO.tracking.orEmpty(),
             refundableAmount = shippingLabelDTO.refundableAmount ?: BigDecimal.ZERO,
-            status = mapShippingLabelStatus(shippingLabelDTO.status),
+            status = shippingLabelDTO.status,
             created = shippingLabelDTO.created?.let { Date(it) },
             carrierId = shippingLabelDTO.carrierId.orEmpty(),
             serviceName = shippingLabelDTO.serviceName.orEmpty(),
             commercialInvoiceUrl = shippingLabelDTO.commercialInvoiceUrl.orEmpty(),
-            isCommercialInvoiceSubmittedElectronically =
-            shippingLabelDTO.isCommercialInvoiceSubmittedElectronically ?: false,
+            isCommercialInvoiceSubmittedElectronically = shippingLabelDTO
+                .isCommercialInvoiceSubmittedElectronically == true,
             packageName = shippingLabelDTO.packageName.orEmpty(),
-            isLetter = shippingLabelDTO.isLetter ?: false,
+            isLetter = shippingLabelDTO.isLetter == true,
             productNames = shippingLabelDTO.productNames.orEmpty(),
             productIds = shippingLabelDTO.productIds.orEmpty(),
+            shipmentId = shippingLabelDTO.shipmentId ?: 0,
             receiptItemId = shippingLabelDTO.receiptItemId ?: 0,
             createdDate = shippingLabelDTO.createdDate?.let { Date(it) },
             mainReceiptId = shippingLabelDTO.mainReceiptId ?: 0,
@@ -58,6 +59,23 @@ class WooShippingNetworkingMapper @Inject constructor(
             expiryDate = shippingLabelDTO.expiryDate ?: 0
         )
     }
+
+    operator fun invoke(purchasedLabelDTO: PurchasedLabelDTO) = PurchasedLabelModel(
+        labelId = purchasedLabelDTO.labelId ?: 0,
+        tracking = purchasedLabelDTO.tracking.orEmpty(),
+        refundableAmount = purchasedLabelDTO.refundableAmount ?: BigDecimal.ZERO,
+        status = purchasedLabelDTO.status,
+        created = purchasedLabelDTO.created?.let { Date(it) },
+        carrierId = purchasedLabelDTO.carrierId.orEmpty(),
+        serviceName = purchasedLabelDTO.serviceName.orEmpty(),
+        commercialInvoiceUrl = purchasedLabelDTO.commercialInvoiceUrl.orEmpty(),
+        isCommercialInvoiceSubmittedElectronically = purchasedLabelDTO
+            .isCommercialInvoiceSubmittedElectronically == true,
+        packageName = purchasedLabelDTO.packageName.orEmpty(),
+        isLetter = purchasedLabelDTO.isLetter == true,
+        productNames = purchasedLabelDTO.productNames.orEmpty(),
+        productIds = purchasedLabelDTO.productIds.orEmpty()
+    )
 
     operator fun invoke(destinationAddressDTO: DestinationAddressDTO): Address {
         val name = destinationAddressDTO.name?.split(" ") ?: listOf("", "")
@@ -99,14 +117,12 @@ class WooShippingNetworkingMapper @Inject constructor(
         )
     }
 
-    operator fun invoke(purchasedShippingLabelResponseDTO: PurchasedShippingLabelResponseDTO): PurchasedLabelData {
-        return PurchasedLabelData(
-            labels = purchasedShippingLabelResponseDTO.labels.map { invoke(it) },
-            destination = purchasedShippingLabelResponseDTO.selectedDestination.mapValues { invoke(it.value) },
-            origin = purchasedShippingLabelResponseDTO.selectedOrigin.mapValues { invoke(it.value) },
-            rates = purchasedShippingLabelResponseDTO.selectedRates.mapValues { ratesMapper(it.key, it.value) }
-        )
-    }
+    operator fun invoke(purchasedShippingLabelResponseDTO: PurchasedShippingLabelResponseDTO) = PurchasedLabelData(
+        labels = purchasedShippingLabelResponseDTO.labels.map { invoke(it) },
+        destination = purchasedShippingLabelResponseDTO.selectedDestination.mapValues { invoke(it.value) },
+        origin = purchasedShippingLabelResponseDTO.selectedOrigin.mapValues { invoke(it.value) },
+        rates = purchasedShippingLabelResponseDTO.selectedRates.mapValues { ratesMapper(it.key, it.value) }
+    )
 
     operator fun invoke(addressListDTO: Array<AddressDTO>): List<OriginShippingAddress> {
         return addressListDTO.map {
@@ -241,16 +257,6 @@ class WooShippingNetworkingMapper @Inject constructor(
         )
     }
 
-    private fun mapShippingLabelStatus(status: String?): ShippingLabelStatus {
-        return when (status) {
-            PURCHASE_IN_PROGRESS_KEY -> ShippingLabelStatus.PurchaseInProgress
-            PURCHASED_KEY -> ShippingLabelStatus.Purchased
-            PURCHASE_ERROR_KEY -> ShippingLabelStatus.PurchaseError
-            ANONYMIZED_KEY -> ShippingLabelStatus.Anonymized
-            else -> ShippingLabelStatus.Unknown
-        }
-    }
-
     fun toAddressDTO(address: Address, id: String? = null): AddressDTO {
         return AddressDTO(
             id = id,
@@ -305,10 +311,6 @@ class WooShippingNetworkingMapper @Inject constructor(
         } ?: HazmatDTO()
 
     companion object {
-        private const val PURCHASE_IN_PROGRESS_KEY = "PURCHASE_IN_PROGRESS"
-        private const val PURCHASED_KEY = "PURCHASED"
-        private const val PURCHASE_ERROR_KEY = "PURCHASE_ERROR"
-        private const val ANONYMIZED_KEY = "ANONYMIZED"
         private const val CUSTOMS_PACKAGE_PREFIX = "shipment_"
     }
 }
