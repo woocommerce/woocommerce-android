@@ -42,6 +42,7 @@ import java.util.Locale;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+// WARN: This class is used within WordPress-MediaPicker-Android, do not remove!
 @Singleton
 public class MediaStore extends Store {
     public static final int DEFAULT_NUM_MEDIA_PER_FETCH = 50;
@@ -318,6 +319,7 @@ public class MediaStore extends Store {
         }
     }
 
+    // WARN: This class is used within WordPress-MediaPicker-Android, do not remove!
     public static class OnMediaListFetched extends OnChanged<MediaError> {
         @NonNull public SiteModel site;
         public boolean canLoadMore;

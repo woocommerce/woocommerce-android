@@ -28,14 +28,16 @@ sealed class ParentToChildrenEvent {
     data class CouponsRemoved(
         val cartDataList: List<WooPosItemsViewModel.ItemClickedData>
     ) : ParentToChildrenEvent()
-    data class ItemClickedInProductSelector(
+    data class ItemClickedInItemsList(
         val itemData: WooPosItemsViewModel.ItemClickedData,
-        val eventForTracking: WooPosAnalyticsEvent.Event.ItemAddedToCart
+        val eventForTracking: WooPosAnalyticsEvent.Event.ItemAddedToCart?
     ) : ParentToChildrenEvent()
 
     data class CheckoutClicked(
         val itemClickedDataList: List<WooPosItemsViewModel.ItemClickedData>
     ) : ParentToChildrenEvent()
+
+    data class BarcodeScanned(val barcode: String) : ParentToChildrenEvent()
 
     data class OrderSuccessfullyPaid(val paymentMethod: PaymentMethod) : ParentToChildrenEvent() {
         enum class PaymentMethod {

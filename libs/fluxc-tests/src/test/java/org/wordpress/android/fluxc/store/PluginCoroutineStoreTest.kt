@@ -17,21 +17,15 @@ import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.plugin.PluginDirectoryType.SITE
 import org.wordpress.android.fluxc.model.plugin.SitePluginModel
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
-import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.HTTP_AUTH_ERROR
 import org.wordpress.android.fluxc.network.rest.wpapi.plugin.PluginWPAPIRestClient
 import org.wordpress.android.fluxc.persistence.PluginSqlUtilsWrapper
 import org.wordpress.android.fluxc.store.PluginCoroutineStore.WPApiPluginsPayload
 import org.wordpress.android.fluxc.store.PluginStore.ConfigureSitePluginErrorType
-import org.wordpress.android.fluxc.store.PluginStore.DeleteSitePluginErrorType
 import org.wordpress.android.fluxc.store.PluginStore.InstallSitePluginErrorType
-import org.wordpress.android.fluxc.store.PluginStore.OnPluginDirectoryFetched
 import org.wordpress.android.fluxc.store.PluginStore.OnSitePluginConfigured
-import org.wordpress.android.fluxc.store.PluginStore.OnSitePluginDeleted
-import org.wordpress.android.fluxc.store.PluginStore.PluginDirectoryErrorType.UNAUTHORIZED
 import org.wordpress.android.fluxc.test
 import org.wordpress.android.fluxc.tools.initCoroutineEngine
 
@@ -45,8 +39,6 @@ class PluginCoroutineStoreTest {
         url = "site.com"
         username = "username"
     }
-    private lateinit var onFetchedEventCaptor: KArgumentCaptor<OnPluginDirectoryFetched>
-    private lateinit var onDeletedEventCaptor: KArgumentCaptor<OnSitePluginDeleted>
     private lateinit var onConfiguredEventCaptor: KArgumentCaptor<OnSitePluginConfigured>
 
     @Before
@@ -57,146 +49,7 @@ class PluginCoroutineStoreTest {
             pluginWPAPIRestClient,
             pluginSqlUtils
         )
-        onFetchedEventCaptor = argumentCaptor()
-        onDeletedEventCaptor = argumentCaptor()
         onConfiguredEventCaptor = argumentCaptor()
-    }
-
-    @Test
-    fun `fetches WP Api plugins with success`() = test {
-        val fetchedPlugins = listOf(
-            SitePluginModel()
-        )
-        whenever(pluginWPAPIRestClient.fetchPlugins(site)).thenReturn(
-            WPApiPluginsPayload(
-                site,
-                fetchedPlugins
-            )
-        )
-
-        val result = store.syncFetchWPApiPlugins(site)
-
-        assertThat(result.isError).isFalse
-        assertThat(result.type).isEqualTo(SITE)
-        verify(pluginSqlUtils).insertOrReplaceSitePlugins(site, fetchedPlugins)
-    }
-
-    @Test
-    fun `fetches WP Api plugins with error `() = test {
-        whenever(pluginWPAPIRestClient.fetchPlugins(site)).thenReturn(
-            WPApiPluginsPayload(
-                BaseNetworkError(
-                    GenericErrorType.AUTHORIZATION_REQUIRED
-                )
-            )
-        )
-
-        val result = store.syncFetchWPApiPlugins(site)
-
-        assertThat(result.isError).isTrue
-        assertThat(result.error.type).isEqualTo(UNAUTHORIZED)
-        verifyNoInteractions(pluginSqlUtils)
-    }
-
-    @Test
-    fun `fetches WP Api plugins and emits event`() = test {
-        val fetchedPlugins = listOf(
-            SitePluginModel()
-        )
-        whenever(pluginWPAPIRestClient.fetchPlugins(site)).thenReturn(
-            WPApiPluginsPayload(
-                site,
-                fetchedPlugins
-            )
-        )
-
-        store.fetchWPApiPlugins(site)
-
-        verify(dispatcher).emitChange(onFetchedEventCaptor.capture())
-        assertThat(onFetchedEventCaptor.lastValue.isError).isFalse
-        assertThat(onFetchedEventCaptor.lastValue.type).isEqualTo(SITE)
-        verify(pluginSqlUtils).insertOrReplaceSitePlugins(site, fetchedPlugins)
-    }
-
-    @Test
-    fun `deletes a plugin with success`() = test {
-        val pluginName = "plugin_name"
-        val slug = "plugin_slug"
-        val sitePluginModel = SitePluginModel()
-        whenever(pluginSqlUtils.getSitePluginBySlug(site, slug)).thenReturn(sitePluginModel)
-        whenever(pluginWPAPIRestClient.deletePlugin(site, pluginName)).thenReturn(
-            WPApiPluginsPayload(
-                site,
-                sitePluginModel
-            )
-        )
-
-        val result = store.syncDeleteSitePlugin(site, pluginName, slug)
-
-        assertThat(result.isError).isFalse
-        assertThat(result.pluginName).isEqualTo(pluginName)
-        assertThat(result.slug).isEqualTo(slug)
-        verify(pluginSqlUtils).deleteSitePlugin(site, slug)
-    }
-
-    @Test
-    fun `deletes a plugin and emits an event`() = test {
-        val pluginName = "plugin_name"
-        val slug = "plugin_slug"
-        val sitePluginModel = SitePluginModel()
-        sitePluginModel.name = pluginName
-        whenever(pluginSqlUtils.getSitePluginBySlug(site, slug)).thenReturn(sitePluginModel)
-        whenever(pluginWPAPIRestClient.deletePlugin(site, pluginName)).thenReturn(
-            WPApiPluginsPayload(
-                site,
-                sitePluginModel
-            )
-        )
-
-        store.deleteSitePlugin(site, pluginName, slug)
-
-        verify(dispatcher).emitChange(onDeletedEventCaptor.capture())
-        assertThat(onDeletedEventCaptor.lastValue.isError).isFalse
-        assertThat(onDeletedEventCaptor.lastValue.pluginName).isEqualTo(pluginName)
-        assertThat(onDeletedEventCaptor.lastValue.slug).isEqualTo(slug)
-        verify(pluginSqlUtils).deleteSitePlugin(site, slug)
-    }
-
-    @Test
-    fun `does not delete a plugin with a failure`() = test {
-        val pluginName = "plugin_name"
-        val slug = "plugin_slug"
-        val sitePluginModel = SitePluginModel()
-        whenever(pluginSqlUtils.getSitePluginBySlug(site, slug)).thenReturn(sitePluginModel)
-        whenever(pluginWPAPIRestClient.deletePlugin(site, pluginName)).thenReturn(
-            WPApiPluginsPayload(
-                BaseNetworkError(HTTP_AUTH_ERROR)
-            )
-        )
-
-        val result = store.syncDeleteSitePlugin(site, pluginName, slug)
-
-        assertThat(result.isError).isTrue
-        assertThat(result.error.type).isEqualTo(DeleteSitePluginErrorType.UNAUTHORIZED)
-        verify(pluginSqlUtils, never()).deleteSitePlugin(eq(site), any())
-    }
-
-    @Test
-    fun `deletes a plugin with a UNKNOWN_PLUGIN failure`() = test {
-        val pluginName = "plugin_name"
-        val slug = "plugin_slug"
-        val sitePluginModel = SitePluginModel()
-        whenever(pluginSqlUtils.getSitePluginBySlug(site, slug)).thenReturn(sitePluginModel)
-        whenever(pluginWPAPIRestClient.deletePlugin(site, pluginName)).thenReturn(
-            WPApiPluginsPayload(
-                BaseNetworkError(GenericErrorType.NOT_FOUND)
-            )
-        )
-
-        val result = store.syncDeleteSitePlugin(site, pluginName, slug)
-
-        assertThat(result.isError).isFalse
-        verify(pluginSqlUtils).deleteSitePlugin(site, slug)
     }
 
     @Test

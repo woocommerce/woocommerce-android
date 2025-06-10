@@ -68,7 +68,6 @@ data class PurchasedLabelDTO(
     @SerializedName("label_id") val labelId: Long? = null,
     @SerializedName("tracking") val tracking: String? = null,
     @SerializedName("refundable_amount") val refundableAmount: BigDecimal? = null,
-    @JsonAdapter(ShippingLabelStatusDeserializer::class)
     @SerializedName("status") val status: ShippingLabelStatus = ShippingLabelStatus.UNKNOWN,
     @SerializedName("created") val created: Long? = null,
     @SerializedName("carrier_id") val carrierId: String? = null,
@@ -86,7 +85,6 @@ data class ShippingLabelDTO(
     @SerializedName("label_id") val labelId: Long? = null,
     @SerializedName("tracking") val tracking: String? = null,
     @SerializedName("refundable_amount") val refundableAmount: BigDecimal? = null,
-    @JsonAdapter(ShippingLabelStatusDeserializer::class)
     @SerializedName("status") val status: ShippingLabelStatus = ShippingLabelStatus.UNKNOWN,
     @SerializedName("created") val created: Long? = null,
     @SerializedName("carrier_id") val carrierId: String? = null,
@@ -204,19 +202,5 @@ private class ShipmentMapDeserializer : JsonDeserializer<ShipmentMap> {
 
         val mapType = object : TypeToken<ShipmentMap>() {}.type
         return Gson().fromJson(jsonObject, mapType)
-    }
-}
-
-private class ShippingLabelStatusDeserializer : JsonDeserializer<ShippingLabelStatus> {
-    override fun deserialize(
-        json: JsonElement,
-        typeOfT: Type,
-        context: JsonDeserializationContext
-    ) = when (json.asString.uppercase()) {
-        "PURCHASE_IN_PROGRESS" -> ShippingLabelStatus.PURCHASE_IN_PROGRESS
-        "PURCHASED" -> ShippingLabelStatus.PURCHASED
-        "PURCHASE_ERROR" -> ShippingLabelStatus.PURCHASE_ERROR
-        "ANONYMIZED" -> ShippingLabelStatus.ANONYMIZED
-        else -> ShippingLabelStatus.UNKNOWN
     }
 }

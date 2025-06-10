@@ -163,13 +163,15 @@ class WooPosEmailReceiptViewModelTest {
         viewModel.onUIEvent(WooPosEmailReceiptUIEvent.EmailChanged("valid@example.com"))
         whenever(repository.sendReceiptByEmail(orderId = 123L, "valid@example.com"))
             .thenReturn(Result.failure(RuntimeException("Failed")))
+        val posReceiptsAreEnabled = false
+        whenever(repository.posReceiptsAreEnabled()).thenReturn(posReceiptsAreEnabled)
 
         // WHEN
         viewModel.onUIEvent(WooPosEmailReceiptUIEvent.SendEmailClicked)
         advanceUntilIdle()
 
         // THEN
-        verify(tracker).track(EmailReceiptSendFailed)
+        verify(tracker).track(EmailReceiptSendFailed(posReceiptsAreEnabled))
     }
 
     @Test
@@ -179,12 +181,14 @@ class WooPosEmailReceiptViewModelTest {
         viewModel.onUIEvent(WooPosEmailReceiptUIEvent.EmailChanged("valid@example.com"))
         whenever(repository.sendReceiptByEmail(orderId = 123L, "valid@example.com"))
             .thenReturn(Result.success(Unit))
+        val posReceiptsAreEnabled = true
+        whenever(repository.posReceiptsAreEnabled()).thenReturn(posReceiptsAreEnabled)
 
         // WHEN
         viewModel.onUIEvent(WooPosEmailReceiptUIEvent.SendEmailClicked)
         advanceUntilIdle()
 
         // THEN
-        verify(tracker).track(EmailReceiptSendSuccess)
+        verify(tracker).track(EmailReceiptSendSuccess(posReceiptsAreEnabled))
     }
 }

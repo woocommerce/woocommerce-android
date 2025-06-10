@@ -9,13 +9,10 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.SearchEvent.Rec
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
-import com.woocommerce.android.ui.woopos.home.items.WooPosItemNavigationData.VariableProductData
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsSearchHelper
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
-import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
-import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateToVariationsScreen
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
@@ -39,7 +36,6 @@ class WooPosItemsSearchViewModel @Inject constructor(
     private val dataSource: WooPosSearchProductsDataSource,
     private val childToParentEventSender: WooPosChildrenToParentEventSender,
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
-    private val navigator: WooPosItemsNavigator,
     private val searchHelper: WooPosItemsSearchHelper,
     private val analyticsTracker: WooPosItemsSearchAnalyticsTracker,
 ) : ViewModel() {
@@ -197,7 +193,8 @@ class WooPosItemsSearchViewModel @Inject constructor(
                     is ParentToChildrenEvent.CouponsRemoved -> Unit
                     is ParentToChildrenEvent.RefreshProductList -> Unit
                     is ParentToChildrenEvent.CouponsValidationFailed -> Unit
-                    is ParentToChildrenEvent.ItemClickedInProductSelector -> {
+                    is ParentToChildrenEvent.BarcodeScanned -> Unit
+                    is ParentToChildrenEvent.ItemClickedInItemsList -> {
                         if (event.itemData is ItemClickedData.Product.Variation && searchHelper.isSearchOpen()) {
                             storeRecentSearch()
                         }
@@ -242,7 +239,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
                 viewModelScope.launch {
                     val itemData = ItemClickedData.Product.Simple(id = item.id)
                     childToParentEventSender.sendToParent(
-                        ChildToParentEvent.ItemClickedInProductSelector(
+                        ChildToParentEvent.ItemClickedInItemsList(
                             itemData = itemData,
                             eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
                                 item = itemData,
@@ -258,14 +255,15 @@ class WooPosItemsSearchViewModel @Inject constructor(
 
             is WooPosItemSelectionViewState.Product.Variable -> {
                 viewModelScope.launch {
-                    navigator.sendNavigationEvent(
-                        NavigateToVariationsScreen(
-                            VariableProductData(
+                    childToParentEventSender.sendToParent(
+                        ChildToParentEvent.ItemClickedInItemsList(
+                            itemData = ItemClickedData.VariableProduct(
                                 id = item.id,
                                 name = item.name,
                                 numOfVariations = item.numOfVariations,
                                 sourceType = sourceType,
-                            )
+                            ),
+                            eventForTracking = null,
                         )
                     )
                 }

@@ -18,6 +18,8 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="navigationIcon">@drawable/ic_back_24dp</item>
         <item name="android:theme">@style/Widget.Woo.Toolbar.Surface</item>
         <item name="android:background">@color/color_toolbar</item>
+        <item name="android:paddingStart">0dp</item>
+        <item name="android:paddingLeft">0dp</item>
     </style>
     <style name="Widget.Woo.Toolbar.Surface" parent="ThemeOverlay.MaterialComponents.Toolbar.Surface">
         <item name="actionMenuTextColor">@color/color_primary_selector</item>
@@ -31,7 +33,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:textColor">@color/color_on_surface</item>
         <item name="android:layout_height">@dimen/toolbar_height</item>
     </style>
-    <style name="Woo.CollapsedToolbarLayout" parent="Widget.MaterialComponents.Toolbar.Surface">
+    <style name="Woo.CollapsedToolbarLayout" parent="@style/Widget.Design.CollapsingToolbar">
         <item name="layout_scrollFlags">scroll|exitUntilCollapsed</item>
         <item name="android:background">@color/color_toolbar</item>
         <item name="statusBarScrim">@android:color/transparent</item>
@@ -474,6 +476,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:paddingStart">@dimen/major_100</item>
         <item name="android:paddingEnd">@dimen/major_100</item>
         <item name="rippleColor">?colorPrimaryVariant</item>
+        <item name="backgroundTint">@color/primary_colored_button_background</item>
     </style>
 
     <!--  Circular button filled with color  -->

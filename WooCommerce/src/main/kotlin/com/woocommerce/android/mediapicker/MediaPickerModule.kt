@@ -1,5 +1,7 @@
 package com.woocommerce.android.mediapicker
 
+import com.woocommerce.android.mediapicker.medialibrary.MediaLibrarySource
+import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import dagger.Binds
 import dagger.Module
@@ -16,8 +18,6 @@ import org.wordpress.android.mediapicker.api.MediaPickerSetup
 import org.wordpress.android.mediapicker.api.MimeTypeProvider
 import org.wordpress.android.mediapicker.api.Tracker
 import org.wordpress.android.mediapicker.loader.MediaLoaderFactory
-import org.wordpress.android.mediapicker.source.wordpress.MediaLibrarySource
-import org.wordpress.android.mediapicker.source.wordpress.util.NetworkUtilsWrapper
 
 @InstallIn(SingletonComponent::class)
 @Module(
@@ -33,14 +33,14 @@ abstract class MediaPickerModule {
             mediaStore: MediaStore,
             dispatcher: Dispatcher,
             bgDispatcher: CoroutineDispatcher,
-            networkUtilsWrapper: NetworkUtilsWrapper,
+            networkStatus: NetworkStatus,
             site: SelectedSite
         ): MediaLibrarySource.Factory {
             return MediaLibrarySource.Factory(
                 mediaStore,
                 dispatcher,
                 bgDispatcher,
-                networkUtilsWrapper,
+                networkStatus,
                 site.get()
             )
         }

@@ -2,6 +2,7 @@ package org.wordpress.android.fluxc.model.refunds
 
 import com.google.gson.annotations.SerializedName
 import org.wordpress.android.fluxc.model.metadata.WCMetaData
+import org.wordpress.android.fluxc.model.order.WCLineTaxEntry
 import java.math.BigDecimal
 import java.util.Date
 
@@ -26,11 +27,8 @@ data class WCRefundModel(
 ) {
     data class WCRefundItem(
         val itemId: Long,
-        @SerializedName("qty")
         val quantity: Int,
-        @SerializedName("refund_total")
         val subtotal: BigDecimal,
-        @SerializedName("refund_tax")
         val totalTax: BigDecimal,
         val name: String? = null,
         val productId: Long? = null,
@@ -38,8 +36,8 @@ data class WCRefundModel(
         val total: BigDecimal? = null,
         val sku: String? = null,
         val price: BigDecimal? = null,
-        @SerializedName("meta_data")
-        val metaData: List<WCMetaData>? = null
+        val metaData: List<WCMetaData>? = null,
+        val taxes: List<WCLineTaxEntry>? = null
     )
 
     data class WCRefundShippingLine(

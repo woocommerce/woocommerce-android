@@ -104,6 +104,7 @@ class CustomAmountsFragment : BaseFragment(R.layout.dialog_custom_amounts) {
             binding.buttonDelete.hide()
         } else {
             binding.buttonDelete.show()
+            binding.buttonDone.text = getString(R.string.custom_amounts_save_changes)
         }
     }
 
@@ -154,7 +155,7 @@ class CustomAmountsFragment : BaseFragment(R.layout.dialog_custom_amounts) {
             when (event) {
                 is PopulatePercentage -> {
                     binding.editPercentage.setText(
-                        viewModel.currentPercentage.setScale(2, RoundingMode.HALF_UP).toString()
+                        viewModel.currentPercentage.setScale(2, RoundingMode.HALF_UP).toPlainString()
                     )
                 }
             }
@@ -216,7 +217,15 @@ class CustomAmountsFragment : BaseFragment(R.layout.dialog_custom_amounts) {
 
             new.isProgressShowing.takeIfNotEqualTo(old?.isProgressShowing) { show ->
                 binding.progressBar.isVisible = show
-                binding.buttonDone.text = if (show) "" else getString(R.string.custom_amounts_add_custom_amount)
+                binding.buttonDone.text = if (show) {
+                    ""
+                } else {
+                    if (viewModel.isInCreateMode()) {
+                        getString(R.string.custom_amounts_add_custom_amount)
+                    } else {
+                        getString(R.string.custom_amounts_save_changes)
+                    }
+                }
             }
             new.customAmountUIModel.takeIfNotEqualTo(old?.customAmountUIModel) {
                 if (binding.customAmountNameText.text.toString() != it.name) {

@@ -32,10 +32,12 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.common.composeui.isPreviewMode
+import com.woocommerce.android.ui.woopos.home.WooPosHomeState.BarcodeInfoDialog
+import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ExitConfirmationDialog
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ProductsInfoDialog
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreen
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreenProductsPreview
-import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsScreens
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsScreen
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosItemsScreenPreview
 import com.woocommerce.android.ui.woopos.home.toolbar.PreviewWooPosFloatingToolbarStatusConnectedWithMenu
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosFloatingToolbar
@@ -168,6 +170,7 @@ private fun WooPosHomeScreen(
         )
 
         HandleProductsInfoDialog(state.productsInfoDialog, onHomeUIEvent)
+        HandleBarcodeInfoDialog(state.barcodeInfoDialog, onHomeUIEvent)
     }
 }
 
@@ -185,11 +188,24 @@ private fun HandleProductsInfoDialog(
 }
 
 @Composable
+private fun HandleBarcodeInfoDialog(
+    state: BarcodeInfoDialog,
+    onHomeUIEvent: (WooPosHomeUIEvent) -> Unit
+) {
+    WooPosBarcodeInfoDialog(
+        state = state,
+        onDismissRequest = {
+            onHomeUIEvent(WooPosHomeUIEvent.DismissBarcodeInfoDialog)
+        }
+    )
+}
+
+@Composable
 private fun WooPosHomeScreenProducts(modifier: Modifier) {
     if (isPreviewMode()) {
         WooPosItemsScreenPreview(modifier)
     } else {
-        WooPosItemsScreens(modifier = modifier)
+        WooPosItemsScreen(modifier = modifier)
     }
 }
 
@@ -249,7 +265,8 @@ fun WooPosHomeCartScreenPreview() {
             state = WooPosHomeState(
                 screenPositionState = WooPosHomeState.ScreenPositionState.Cart,
                 productsInfoDialog = ProductsInfoDialog(isVisible = false),
-                exitConfirmationDialog = WooPosHomeState.ExitConfirmationDialog(isVisible = false),
+                barcodeInfoDialog = BarcodeInfoDialog(isVisible = false),
+                exitConfirmationDialog = ExitConfirmationDialog(isVisible = false),
             ),
             onHomeUIEvent = { },
         )
@@ -264,7 +281,8 @@ fun WooPosHomeCheckoutScreenPreview() {
             state = WooPosHomeState(
                 screenPositionState = WooPosHomeState.ScreenPositionState.Checkout.CartWithTotals,
                 productsInfoDialog = ProductsInfoDialog(isVisible = false),
-                exitConfirmationDialog = WooPosHomeState.ExitConfirmationDialog(isVisible = false),
+                barcodeInfoDialog = BarcodeInfoDialog(isVisible = false),
+                exitConfirmationDialog = ExitConfirmationDialog(isVisible = false),
             ),
             onHomeUIEvent = { },
         )
@@ -279,7 +297,8 @@ fun WooPosHomeCheckoutPaidScreenPreview() {
             state = WooPosHomeState(
                 screenPositionState = WooPosHomeState.ScreenPositionState.Checkout.FullScreenTotals,
                 productsInfoDialog = ProductsInfoDialog(isVisible = false),
-                exitConfirmationDialog = WooPosHomeState.ExitConfirmationDialog(isVisible = false),
+                barcodeInfoDialog = BarcodeInfoDialog(isVisible = false),
+                exitConfirmationDialog = ExitConfirmationDialog(isVisible = false),
             ),
             onHomeUIEvent = { },
         )

@@ -213,7 +213,7 @@ object OrderTestUtils {
             "    \"subtotal_tax\":\"0.00\",\n" +
             "    \"total\":\"10.00\",\n" +
             "    \"total_tax\":\"0.00\",\n" +
-            "    \"taxes\":[],\n" +
+            "    \"taxes\":[{\"id\":1, \"total\":2}, {\"id\":2, \"total\":5}],\n" +
             "    \"meta_data\":[],\n" +
             "    \"sku\":null,\n" +
             "    \"price\":10\n" +
@@ -241,7 +241,7 @@ object OrderTestUtils {
                 "   \"instance_id\":\"0\",\n" +
                 "   \"total\":\"30.00\",\n" +
                 "   \"total_tax\":\"0.00\",\n" +
-                "   \"taxes\":[],\n" +
+                "   \"taxes\":[{\"id\":1, \"total\":2}, {\"id\":2, \"total\":5}],\n" +
                 "   \"meta_data\":[]}]",
         )
     }
@@ -258,7 +258,7 @@ object OrderTestUtils {
                 "    \"subtotal_tax\":\"0.00\",\n" +
                 "    \"total\":\"10.00\",\n" +
                 "    \"total_tax\":\"0.00\",\n" +
-                "    \"taxes\":[],\n" +
+                "    \"taxes\":[{\"id\":1, \"total\":2}, {\"id\":2, \"total\":5}],\n" +
                 "    \"meta_data\":[],\n" +
                 "    \"sku\":null,\n" +
                 "    \"price\":10\n" +
@@ -305,7 +305,7 @@ object OrderTestUtils {
                 "    \"subtotal_tax\":\"0.00\",\n" +
                 "    \"total\":\"10.00\",\n" +
                 "    \"total_tax\":\"0.00\",\n" +
-                "    \"taxes\":[],\n" +
+                "    \"taxes\":[{\"id\":1, \"total\":2}, {\"id\":2, \"total\":5}],\n" +
                 "    \"meta_data\":[],\n" +
                 "    \"sku\":null,\n" +
                 "    \"price\":10\n" +
@@ -319,7 +319,7 @@ object OrderTestUtils {
                 "   \"instance_id\":\"0\",\n" +
                 "   \"total\":\"30.00\",\n" +
                 "   \"total_tax\":\"0.00\",\n" +
-                "   \"taxes\":[],\n" +
+                "   \"taxes\":[{\"id\":1, \"total\":2}, {\"id\":2, \"total\":5}],\n" +
                 "   \"meta_data\":[]},\n" +
                 "{  " +
                 "\"id\":120,\n" +
@@ -328,7 +328,7 @@ object OrderTestUtils {
                 "   \"instance_id\":\"0\",\n" +
                 "   \"total\":\"20.00\",\n" +
                 "   \"total_tax\":\"0.00\",\n" +
-                "   \"taxes\":[],\n" +
+                "   \"taxes\":[{\"id\":1, \"total\":3}, {\"id\":2, \"total\":4}],\n" +
                 "   \"meta_data\":[]\n" +
                 "}]",
         )
@@ -377,7 +377,8 @@ object OrderTestUtils {
     fun generateTestOrderItems(
         count: Int = 1,
         productId: Long = -1,
-        quantity: Float = 1F
+        quantity: Float = 1F,
+        taxes: (Int) -> List<Order.LineTaxEntry> = { emptyList() }
     ): List<Item> {
         val list = mutableListOf<Item>()
         for (i in 1..count) {
@@ -394,7 +395,8 @@ object OrderTestUtils {
                     totalTax = BigDecimal.ZERO,
                     total = BigDecimal("10"),
                     variationId = 0,
-                    attributesList = emptyList()
+                    attributesList = emptyList(),
+                    taxes = taxes(i),
                 )
             )
         }

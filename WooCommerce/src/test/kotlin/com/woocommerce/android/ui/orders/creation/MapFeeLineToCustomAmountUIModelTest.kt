@@ -20,7 +20,8 @@ class MapFeeLineToCustomAmountUIModelTest : BaseUnitTest() {
             name = "Test Amount",
             total = BigDecimal.TEN,
             totalTax = BigDecimal.ZERO,
-            taxStatus = Order.FeeLine.FeeLineTaxStatus.UNKNOWN
+            taxStatus = Order.FeeLine.FeeLineTaxStatus.UNKNOWN,
+            taxes = emptyList()
         )
         val expectedResult = CustomAmountUIModel(
             id = 1,
@@ -43,7 +44,8 @@ class MapFeeLineToCustomAmountUIModelTest : BaseUnitTest() {
             name = "Test Amount",
             total = BigDecimal.TEN,
             totalTax = BigDecimal.ZERO,
-            taxStatus = Order.FeeLine.FeeLineTaxStatus.NONE
+            taxStatus = Order.FeeLine.FeeLineTaxStatus.NONE,
+            taxes = emptyList()
         )
         val expectedResult = CustomAmountUIModel(
             id = 1,
@@ -66,7 +68,8 @@ class MapFeeLineToCustomAmountUIModelTest : BaseUnitTest() {
             name = "Test Amount",
             total = BigDecimal.TEN,
             totalTax = BigDecimal.ZERO,
-            taxStatus = Order.FeeLine.FeeLineTaxStatus.TAXABLE
+            taxStatus = Order.FeeLine.FeeLineTaxStatus.TAXABLE,
+            taxes = emptyList()
         )
         val expectedResult = CustomAmountUIModel(
             id = 1,

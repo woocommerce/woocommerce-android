@@ -49,11 +49,11 @@ class WCSettingsMapper
         val weightUnit = getValueForSettingsField(response, "woocommerce_weight_unit")
         val dimensionUnit = getValueForSettingsField(response, "woocommerce_dimension_unit")
 
-        return WCProductSettingsModel().apply {
-            localSiteId = site.id
-            this.dimensionUnit = dimensionUnit ?: ""
-            this.weightUnit = weightUnit ?: ""
-        }
+        return WCProductSettingsModel(
+            localSiteId = site.localId(),
+            dimensionUnit = dimensionUnit ?: "",
+            weightUnit = weightUnit ?: "",
+        )
     }
 
     fun mapTaxBasedOnSettings(

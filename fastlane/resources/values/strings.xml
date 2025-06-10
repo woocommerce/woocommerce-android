@@ -677,6 +677,7 @@
     <string name="custom_amounts_percentage_hint">0</string>
     <string name="custom_amounts_percentage_symbol">%</string>
     <string name="custom_amounts_percentage_invalid_value">Invalid value</string>
+    <string name="custom_amounts_save_changes">Save Changes</string>
 
     <!--
          Taxes
@@ -3597,8 +3598,6 @@
     <string name="store_onboarding_task_add_product_description">Start selling by adding products or services to your store.</string>
     <string name="store_onboarding_task_launch_store_title">Launch your store</string>
     <string name="store_onboarding_task_launch_store_description">Publish your site to the world anytime you want!</string>
-    <string name="store_onboarding_task_change_domain_title">Customize your domain</string>
-    <string name="store_onboarding_task_change_domain_description">Have a custom URL to host your store.</string>
     <string name="store_onboarding_task_payments_setup_title">Get paid</string>
     <string name="store_onboarding_task_payments_setup_description">Give your customers an easy and convenient way to pay!</string>
     <string name="store_onboarding_task_woopayments_setup_description">Manage payments seamlessly with WooPayments, free from setup or monthly fees.</string>
@@ -3963,6 +3962,7 @@
     <string name="blaze_campaign_preview_edit_ad">Edit ad</string>
     <string name="blaze_campaign_preview_details_section_title">Details</string>
     <string name="blaze_campaign_preview_audience_section_title">Audience</string>
+    <string name="blaze_campaign_preview_product_image_content_description">Product image used for the ad</string>
     <string name="blaze_campaign_preview_details_budget">Budget</string>
     <string name="blaze_campaign_preview_details_objective">Campaign objective</string>
     <string name="blaze_campaign_preview_details_choose_objective">Choose campaign objective</string>
@@ -4331,24 +4331,24 @@
     <string name="woopos_products_empty_list_title">No supported products found</string>
     <string name="woopos_products_empty_list_message">POS currently only supports simple, variable, and virtual products – \ncreate one to get started.</string>
     <string name="woopos_products_empty_list_message_two">POS currently only supports simple products</string>
-    <string name="woopos_products_loading_error_title">Error loading products</string>
-    <string name="woopos_products_loading_error_message">Give it another go?</string>
+    <string name="woopos_products_loading_error_title">Unable to load products</string>
+    <string name="woopos_products_loading_error_message">Please try again.</string>
 
     <string name="woopos_coupons_empty_list_image_description">No coupons</string>
     <string name="woopos_coupons_empty_list_title">No coupons found</string>
-    <string name="woopos_coupons_loading_error_coupons_disabled_title">No coupons found</string>
-    <string name="woopos_coupons_loading_error_coupons_disabled_message">Please enable coupons in WooCommerce Settings.</string>
-    <string name="woopos_coupons_empty_list_message">Boost your business by sending customers special offers and discounts.</string>
+    <string name="woopos_coupons_loading_error_coupons_disabled_title">Start accepting coupons</string>
+    <string name="woopos_coupons_loading_error_coupons_disabled_message">Enable coupon codes in WooCommerce settings to start creating them for your customers.</string>
+    <string name="woopos_coupons_empty_list_message">Coupons can be effective way to drive business. Would you like to create one?</string>
     <string name="woopos_coupons_empty_list_create_coupon_label">Create coupon</string>
-    <string name="woopos_coupons_loading_error_title">Error loading coupons</string>
-    <string name="woopos_coupons_loading_error_message">Give it another go?</string>
+    <string name="woopos_coupons_loading_error_title">Unable to load coupons</string>
+    <string name="woopos_coupons_loading_error_message">Please check your internet connection and try again.</string>
     <string name="woopos_coupons_loading_error_retry_button">Retry</string>
 
     <string name="woopos_error_icon_content_description">Error indication icon</string>
     <string name="woopos_reader_not_connected_description">Please make sure a card reader is connected.</string>
     <string name="woopos_products_loading_error_retry_button">Retry</string>
     <string name="woopos_totals_order_creation_error">Couldn\'t create order</string>
-    <string name="woopos_totals_invalid_coupon_error">Couldn\'t apply coupons</string>
+    <string name="woopos_totals_invalid_coupon_error">Unable to apply coupons</string>
     <string name="woopos_totals_success_payment_cash">A cash payment of %1$s was successfully made.</string>
     <string name="woopos_totals_success_payment_card">A card payment of %1$s was successfully made.</string>
 
@@ -4385,17 +4385,18 @@
     <string name="woopos_no_internet_message">It looks like you\'re not connected to the internet. Ensure your Wi-Fi is turned on. If you\'re using mobile data, make sure it\'s enabled in your device settings.</string>
 
     <string name="woopos_variations_back_content_description">Back</string>
-    <string name="woopos_items_pagination_try_again_label">Try again</string>
-    <string name="woopos_items_pagination_error_title">"Failed to load more items"</string>
-    <string name="woopos_items_pagination_error_description">"An error occurred while loading products."</string>
+    <string name="woopos_items_pagination_try_again_label">Retry</string>
+    <string name="woopos_items_pagination_error_title">Unable to load more products</string>
+    <string name="woopos_items_pagination_error_description">Please check your internet connection and try again.</string>
     <string name="woopos_items_pagination_error_content_description">"Failed to load more items. Double tap to try again."</string>
-    <string name="woopos_variations_loading_error_title">Error loading variations</string>
+    <string name="woopos_variations_loading_error_title">Unable to load variations</string>
+    <string name="woopos_variations_loading_error_message">Please check your internet connection and try again.</string>
     <string name="woopos_variations_options_available_text">Options available</string>
 
-    <string name="woopos_coupons_pagination_try_again_label">Try again</string>
-    <string name="woopos_coupons_pagination_error_title">Failed to load more items"</string>
-    <string name="woopos_coupons_pagination_error_description">"An error occurred while loading coupons."</string>
-    <string name="woopos_coupons_pagination_error_content_description">"Failed to load more coupons. Double tap to try again."</string>
+    <string name="woopos_coupons_pagination_try_again_label">Retry</string>
+    <string name="woopos_coupons_pagination_error_title">Unable to load more coupons</string>
+    <string name="woopos_coupons_pagination_error_description">Please check your internet connection and try again.</string>
+    <string name="woopos_coupons_pagination_error_content_description">Unable to load more coupons. Double tap to try again.</string>
 
     <string name="woopos_cash_payment_title">Cash payment</string>
     <string name="woopos_complete_cash_order_button">Mark payment as complete</string>
@@ -4413,13 +4414,17 @@
     <string name="woopos_search_back_content_description">Back</string>
     <string name="woopos_search_clear_content_description">Clear</string>
     <string name="woopos_search_products">Search products</string>
+    <string name="woopos_search_coupons">Search coupons</string>
     <string name="woopos_search_popular_items_title">Popular products</string>
     <string name="woopos_search_recent_searches_title">Recent searches</string>
-    <string name="woopos_search_items_empty_title">Nothing found</string>
-    <string name="woopos_search_empty_description">We couldn\'t find anything matching your search.</string>
+    <string name="woopos_search_items_empty_title">No products found</string>
+    <string name="woopos_search_coupons_empty_title">No coupons found</string>
+    <string name="woopos_search_empty_description">We couldn\'t find any matching products – try adjusting your search term.</string>
+    <string name="woopos_search_empty_coupons_description">We couldn\'t find any matching coupons – try adjusting your search term.</string>
     <string name="woopos_search_empty_image_content_description">No items found</string>
-    <string name="woopos_search_items_error_title">We couldn\'t load your items</string>
-    <string name="woopos_search_items_error_description">Give it another go?</string>
+    <string name="woopos_search_items_error_title">Unable to load products</string>
+    <string name="woopos_search_coupons_error_title">Unable to load coupons</string>
+    <string name="woopos_search_items_error_description">Please try again.</string>
 
     <string name="customers_details_customer_section">Customer</string>
     <string name="customers_details_orders_section">Orders</string>

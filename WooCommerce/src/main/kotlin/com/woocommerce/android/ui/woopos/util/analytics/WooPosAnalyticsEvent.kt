@@ -76,11 +76,28 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
         data object EmailReceiptSendTapped : Event() {
             override val name: String = "receipt_email_send_tapped"
         }
-        data object EmailReceiptSendFailed : Event() {
+
+        data class EmailReceiptSendFailed(val eligibleForPOSReceipts: Boolean) : Event() {
             override val name: String = "receipt_email_failed"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "eligible_for_pos_receipt" to eligibleForPOSReceipts.toString()
+                    )
+                )
+            }
         }
-        data object EmailReceiptSendSuccess : Event() {
+        data class EmailReceiptSendSuccess(val eligibleForPOSReceipts: Boolean) : Event() {
             override val name: String = "receipt_email_success"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "eligible_for_pos_receipt" to eligibleForPOSReceipts.toString()
+                    )
+                )
+            }
         }
         data object ExitTapped : Event() {
             override val name: String = "exit_menu_item_tapped"
@@ -115,10 +132,6 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "coupons_load_failed"
         }
 
-        data object CouponsLoaded : PaymentFlowTrackerEvent() {
-            override val name: String = "coupons_loaded"
-        }
-
         @ExposedCopyVisibility
         data class ItemAddedToCart private constructor(
             val source: ItemsListSource,
@@ -138,11 +151,17 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                 itemType = when (item) {
                     is WooPosItemsViewModel.ItemClickedData.Product -> ItemsListItemType.PRODUCT
                     is WooPosItemsViewModel.ItemClickedData.Coupon -> ItemsListItemType.COUPON
+                    is WooPosItemsViewModel.ItemClickedData.VariableProduct -> {
+                        error("VariableProduct is not a valid item type")
+                    }
                 },
                 productType = when (item) {
                     is WooPosItemsViewModel.ItemClickedData.Product.Simple -> ItemsListProductType.SIMPLE
                     is WooPosItemsViewModel.ItemClickedData.Product.Variation -> ItemsListProductType.VARIATION
                     is WooPosItemsViewModel.ItemClickedData.Coupon -> null
+                    is WooPosItemsViewModel.ItemClickedData.VariableProduct -> {
+                        error("VariableProduct is not a valid item type")
+                    }
                 }
             )
 
@@ -174,11 +193,15 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                 itemType = when (item) {
                     is WooPosCartItemViewState.Product -> ItemsListItemType.PRODUCT
                     is WooPosCartItemViewState.Coupon -> ItemsListItemType.COUPON
+                    is WooPosCartItemViewState.Error -> error("Error item is not a valid item type")
+                    is WooPosCartItemViewState.Loading -> error("Loading item is not a valid item type")
                 },
                 productType = when (item) {
                     is WooPosCartItemViewState.Product.Simple -> ItemsListProductType.SIMPLE
                     is WooPosCartItemViewState.Product.Variation -> ItemsListProductType.VARIATION
                     is WooPosCartItemViewState.Coupon -> null
+                    is WooPosCartItemViewState.Error -> error("Error item is not a valid item type")
+                    is WooPosCartItemViewState.Loading -> error("Loading item is not a valid item type")
                 }
             )
 

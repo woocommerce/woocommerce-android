@@ -14,7 +14,8 @@ data class PackageDAO(
     val isLetter: Boolean,
     val dimensionUnit: String,
     val weightUnit: String,
-    val groupName: String? = null
+    val groupName: String? = null,
+    val saved: Boolean,
 )
 
 data class CarrierDAO(
@@ -33,7 +34,7 @@ data class StoreOptionsDAO(
     val originCountry: String
 )
 
-enum class CarrierType {
-    USPS,
-    DHL
+enum class CarrierType(val id: String) {
+    USPS(id = "usps"),
+    DHL(id = "dhlexpress")
 }

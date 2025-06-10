@@ -100,7 +100,7 @@ class RefundSummaryFragment : BaseFragment(R.layout.fragment_refund_summary), Ba
             new.isSubmitButtonEnabled.takeIfNotEqualTo(old?.isSubmitButtonEnabled) {
                 binding.refundSummaryBtnRefund.isEnabled = new.isSubmitButtonEnabled
             }
-            new.refundAmount?.takeIfNotEqualTo(old?.refundAmount) {
+            new.refundAmountFormatted?.takeIfNotEqualTo(old?.refundAmountFormatted) {
                 binding.refundSummaryRefundAmount.text = it
                 binding.toolbar.title = resources.getString(
                     R.string.order_refunds_title_with_amount, it

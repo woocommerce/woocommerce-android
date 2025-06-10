@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.models
 
+import com.google.gson.annotations.SerializedName
 import java.math.BigDecimal
 import java.util.Date
 
@@ -20,9 +21,18 @@ data class PurchasedLabelModel(
 )
 
 enum class ShippingLabelStatus {
+    @SerializedName("UNKNOWN")
     UNKNOWN,
+
+    @SerializedName("PURCHASE_IN_PROGRESS")
     PURCHASE_IN_PROGRESS,
+
+    @SerializedName("PURCHASED")
     PURCHASED,
+
+    @SerializedName("PURCHASE_ERROR")
     PURCHASE_ERROR,
+
+    @SerializedName("ANONYMIZED")
     ANONYMIZED
 }
