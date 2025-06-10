@@ -1,7 +1,7 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.wc.product
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -43,7 +43,7 @@ class ProductRestClientTest {
     }
 
     @Test
-    fun `send only updated parameters with id if products differ`() = runBlockingTest {
+    fun `send only updated parameters with id if products differ`() = runTest {
         // given
         val product = WCProductModel().copy(
             remoteId = RemoteId(productId),
@@ -79,7 +79,7 @@ class ProductRestClientTest {
     }
 
     @Test
-    fun `do not send any properties if entities do not differ`() = runBlockingTest {
+    fun `do not send any properties if entities do not differ`() = runTest {
         // given
         val productA = WCProductModel().copy(
             remoteId = RemoteId(2),
@@ -111,7 +111,7 @@ class ProductRestClientTest {
 
     @Test
     fun `when fetch products called with exact sku search, then correct params is used for network call`() {
-        runBlockingTest {
+        runTest {
             whenever(wooNetwork.executeGetGsonRequest(any(), any(), eq(Array<ProductApiResponse>::class.java), any(), any(), any(), any(), any(), any())).thenReturn(WPAPIResponse.Success(null))
             sut.fetchProducts(
                 site = site,
@@ -140,7 +140,7 @@ class ProductRestClientTest {
 
     @Test
     fun `when fetch products called with partial sku search, then correct params is used for network call`() {
-        runBlockingTest {
+        runTest {
             whenever(wooNetwork.executeGetGsonRequest(any(), any(), eq(Array<ProductApiResponse>::class.java), any(), any(), any(), any(), any(), any())).thenReturn(WPAPIResponse.Success(null))
             sut.fetchProducts(
                 site = site,
@@ -168,7 +168,7 @@ class ProductRestClientTest {
 
     @Test
     fun `when fetch products called with the global unique id, then correct params is used for network call`() {
-        runBlockingTest {
+        runTest {
             whenever(wooNetwork.executeGetGsonRequest(any(), any(), eq(Array<ProductApiResponse>::class.java), any(), any(), any(), any(), any(), any())).thenReturn(WPAPIResponse.Success(null))
             val globalUniqueIdSearchQuery = "test global unique id"
             sut.fetchProducts(
