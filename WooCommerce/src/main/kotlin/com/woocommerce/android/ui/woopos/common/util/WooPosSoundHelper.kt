@@ -28,7 +28,7 @@ class WooPosSoundHelper @Inject constructor(
     }
 
     suspend fun playChaChing() = withContext(Dispatchers.IO) {
-        soundPool?.play(chaChingSoundId, 1.0f, 1.0f, 5, 0, 1.0f)
+        soundPool?.play(chaChingSoundId, 1.0f, 1.0f, 1, 0, 1.0f)
     }
 
     suspend fun preloadBarcodeScanFailure() = withContext(Dispatchers.IO) {
@@ -41,7 +41,7 @@ class WooPosSoundHelper @Inject constructor(
     }
 
     fun playBarcodeScanFailure() {
-        soundPool?.play(failureSoundId, 1.0f, 1.0f, 5, 0, 1.0f)
+        soundPool?.play(failureSoundId, 1.0f, 1.0f, 1, 0, 1.0f)
     }
 
     private suspend fun init() = withContext(Dispatchers.IO) {
