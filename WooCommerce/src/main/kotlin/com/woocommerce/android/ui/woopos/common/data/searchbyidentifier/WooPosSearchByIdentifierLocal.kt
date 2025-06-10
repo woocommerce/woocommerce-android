@@ -35,13 +35,13 @@ class WooPosSearchByIdentifierLocal @Inject constructor(
             }?.let { return WooPosSearchByIdentifierResult.Success(it) }
         }
 
-        val allVariations = variationsCache.getAll()
+        val allVariations = variationsCache.getAll().values.flatten()
         for (query in searchQueries) {
-            allVariations.values.flatten().firstOrNull { variation ->
+            allVariations.firstOrNull { variation ->
                 variation.globalUniqueId.equals(query, ignoreCase = true)
             }?.let { return WooPosSearchByIdentifierResult.VariationSuccess(it) }
 
-            allVariations.values.flatten().firstOrNull { variation ->
+            allVariations.firstOrNull { variation ->
                 variation.sku.equals(query, ignoreCase = true)
             }?.let { return WooPosSearchByIdentifierResult.VariationSuccess(it) }
         }
