@@ -89,22 +89,6 @@ class BarcodeInputDetectorTest {
     }
 
     @Test
-    fun `given valid input with invalid character, when enter pressed, then barcode scan is not triggered`() = runTest {
-        // GIVEN
-        val detector = setupDetector(this)
-        detector.handleKeyInput('1')
-        detector.handleKeyInput('2')
-
-        // WHEN
-        val result = detector.handleKeyInput('€')
-        detector.handleKeyInput('\n')
-
-        // THEN
-        assert(!result)
-        verify(onBarcodeScanned, never()).invoke(any())
-    }
-
-    @Test
     fun `given input shorter than minimum length, when enter pressed, then barcode scan is not triggered`() = runTest {
         // GIVEN
         val detector = setupDetector(this)

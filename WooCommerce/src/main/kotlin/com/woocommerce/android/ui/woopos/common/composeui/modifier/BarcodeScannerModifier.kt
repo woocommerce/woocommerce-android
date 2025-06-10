@@ -62,9 +62,6 @@ class BarcodeInputDetector(
     private val currentTimeProvider: CurrentTimeProvider,
 ) {
     companion object {
-        @Suppress("SpellCheckingInspection")
-        const val ALLOWED_BARCODE_CHARS =
-            "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-._~:/?#[]@!$&'()*+,;="
         const val MAX_SCANNER_TOTAL_SCAN_TIMEOUT_MS = 1500L
         const val MAX_SCANNER_INTER_CHAR_DELAY_MS = 100L
         const val MIN_BARCODE_LENGTH = 4
@@ -75,7 +72,6 @@ class BarcodeInputDetector(
     private var lastCharTime: Long = -1L
     private var timeoutJob: Job? = null
 
-    @Suppress("ReturnCount")
     fun handleKeyInput(char: Char): Boolean {
         val currentTime = currentTimeProvider.currentDate().time
 
@@ -86,10 +82,9 @@ class BarcodeInputDetector(
                     (currentTime - lastCharTime <= MAX_SCANNER_INTER_CHAR_DELAY_MS)
                 if (isLikelyScanner) processBarcodeBuffer()
                 clear()
-                return true
             }
 
-            in ALLOWED_BARCODE_CHARS -> {
+            else -> {
                 cancelTimeout()
 
                 if (scanStartTime == -1L) {
@@ -97,14 +92,9 @@ class BarcodeInputDetector(
                 } else {
                     handleContinuedScan(char, currentTime)
                 }
-                return true
-            }
-
-            else -> {
-                clear()
-                return false
             }
         }
+        return true
     }
 
     private fun startNewScan(char: Char, currentTime: Long) {
