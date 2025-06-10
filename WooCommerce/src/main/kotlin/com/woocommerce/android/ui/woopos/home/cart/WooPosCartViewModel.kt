@@ -79,11 +79,15 @@ class WooPosCartViewModel @Inject constructor(
 
     init {
         listenEventsFromParent()
+        viewModelScope.launch {
+            soundHelper.preloadBarcodeScanFailure()
+        }
     }
 
     override fun onCleared() {
         super.onCleared()
         searchByIdentifier.onCleanup()
+        soundHelper.onCleanup()
     }
 
     @Suppress("ReturnCount")
@@ -378,6 +382,7 @@ class WooPosCartViewModel @Inject constructor(
             is WooPosCartState.Body.Empty -> {
                 currentState.copy(body = WooPosCartState.Body.WithItems(listOf(newItem)))
             }
+
             is WooPosCartState.Body.WithItems -> {
                 val existingItemIndex = body.itemsInCart.indexOfFirst { it.itemNumber == newItem.itemNumber }
 
@@ -558,12 +563,15 @@ class WooPosCartViewModel @Inject constructor(
                     WooPosSearchByIdentifierResult.Error.ProductNotFound -> {
                         resourceProvider.getString(R.string.woopos_cart_barcode_scan_result_product_not_found)
                     }
+
                     WooPosSearchByIdentifierResult.Error.NetworkError -> {
                         resourceProvider.getString(R.string.woopos_cart_barcode_scan_result_network_error)
                     }
+
                     WooPosSearchByIdentifierResult.Error.RequestCancelled -> {
                         resourceProvider.getString(R.string.woopos_cart_barcode_scan_result_request_cancelled)
                     }
+
                     is WooPosSearchByIdentifierResult.Error.UnknownError -> this.error.message
                 }
                 WooPosCartItemViewState.Error(
