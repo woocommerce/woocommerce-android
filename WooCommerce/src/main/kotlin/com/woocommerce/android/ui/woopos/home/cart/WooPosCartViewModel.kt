@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetVariationById
 import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosSearchByIdentifier
 import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosSearchByIdentifierResult
+import com.woocommerce.android.ui.woopos.common.util.WooPosSoundHelper
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.CouponsRemoved
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
@@ -59,6 +60,7 @@ class WooPosCartViewModel @Inject constructor(
     private val updateCartItemsWithChanges: WooPosCartItemsUpdater,
     private val getCachedStoreCurrency: WooPosGetCachedStoreCurrency,
     private val searchByIdentifier: WooPosSearchByIdentifier,
+    private val soundHelper: WooPosSoundHelper,
     savedState: SavedStateHandle,
 ) : ViewModel() {
     private val _state = savedState.getStateFlow(
@@ -77,11 +79,15 @@ class WooPosCartViewModel @Inject constructor(
 
     init {
         listenEventsFromParent()
+        viewModelScope.launch {
+            soundHelper.preloadBarcodeScanFailure()
+        }
     }
 
     override fun onCleared() {
         super.onCleared()
         searchByIdentifier.onCleanup()
+        soundHelper.onCleanup()
     }
 
     @Suppress("ReturnCount")
@@ -355,6 +361,9 @@ class WooPosCartViewModel @Inject constructor(
 
             val searchResult = searchByIdentifier(barcode)
             val cartItem = searchResult.mapToCartItem(identifier = barcode, itemNumber = itemNumber)
+            if (cartItem is WooPosCartItemViewState.Error) {
+                soundHelper.playBarcodeScanFailure()
+            }
             updateCartItem(cartItem)
         }
     }
@@ -373,6 +382,7 @@ class WooPosCartViewModel @Inject constructor(
             is WooPosCartState.Body.Empty -> {
                 currentState.copy(body = WooPosCartState.Body.WithItems(listOf(newItem)))
             }
+
             is WooPosCartState.Body.WithItems -> {
                 val existingItemIndex = body.itemsInCart.indexOfFirst { it.itemNumber == newItem.itemNumber }
 
