@@ -20,7 +20,6 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.adminUrlOrDefault
 import com.woocommerce.android.extensions.isCashPayment
 import com.woocommerce.android.extensions.isEqualTo
-import com.woocommerce.android.extensions.joinToString
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.model.OrderNote
@@ -343,17 +342,11 @@ class IssueRefundViewModel @Inject constructor(
     }
 
     private fun prepareRefundNotice(order: Order): String? {
-        val refundOptions = mutableListOf<String>()
-        // Inform user that multiple shipping lines can only be refunded in wp-admin.
-        if (order.refundableShippingLineIds.size > 1) {
-            val shipping = resourceProvider.getString(R.string.multiple_shipping).lowercase(Locale.getDefault())
-            refundOptions.add(shipping)
-        }
-
-        return if (refundOptions.isNotEmpty()) {
-            val and = resourceProvider.getString(R.string.and).lowercase(Locale.getDefault())
-            val options = refundOptions.joinToString(lastSeparator = " $and ")
-            resourceProvider.getString(R.string.order_refunds_shipping_refund_variable_notice, options)
+        return if (order.refundableShippingLineIds.size > 1) {
+            resourceProvider.getString(
+                R.string.order_refunds_shipping_refund_variable_notice,
+                resourceProvider.getString(R.string.multiple_shipping).lowercase(Locale.getDefault())
+            )
         } else {
             null
         }

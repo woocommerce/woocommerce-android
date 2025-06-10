@@ -65,7 +65,6 @@ class IssueRefundViewModelTest : BaseUnitTest() {
     private val resourceProvider: ResourceProvider = mock {
         on { getString(any()) } doAnswer { it.arguments[0].toString() }
         on { getString(R.string.multiple_shipping) } doAnswer { "Multiple shipping lines" }
-        on { getString(R.string.and) } doAnswer { "and" }
         on { getString(any(), any()) } doAnswer { i ->
             "You can refund " + i.arguments[1].toString()
         }
