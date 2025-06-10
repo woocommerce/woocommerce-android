@@ -220,7 +220,7 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
         )?.toAppModel()
 
         return if (variation != null) {
-            WooPosSearchByIdentifierResult.VariationSuccess(variation, parentId)
+            WooPosSearchByIdentifierResult.VariationSuccess(variation)
         } else {
             WooPosSearchByIdentifierResult.Failure(
                 WooPosSearchByIdentifierResult.Error.ProductNotFound

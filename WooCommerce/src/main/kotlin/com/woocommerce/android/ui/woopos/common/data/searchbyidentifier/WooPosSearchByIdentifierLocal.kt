@@ -42,13 +42,13 @@ class WooPosSearchByIdentifierLocal @Inject constructor(
                 cachedVariations.firstOrNull { variation ->
                     variation.globalUniqueId.equals(query, ignoreCase = true)
                 }?.let { variation ->
-                    return WooPosSearchByIdentifierResult.VariationSuccess(variation, product.remoteId)
+                    return WooPosSearchByIdentifierResult.VariationSuccess(variation)
                 }
 
                 cachedVariations.firstOrNull { variation ->
                     variation.sku.equals(query, ignoreCase = true)
                 }?.let { variation ->
-                    return WooPosSearchByIdentifierResult.VariationSuccess(variation, product.remoteId)
+                    return WooPosSearchByIdentifierResult.VariationSuccess(variation)
                 }
             }
         }
