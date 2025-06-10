@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.test.runTest
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -15,9 +16,6 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
-import kotlin.test.assertEquals
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
 
 @Config(manifest = Config.NONE)
 @RunWith(RobolectricTestRunner::class)
@@ -39,18 +37,14 @@ class CustomerDaoTest {
         sut = database.customerDao
     }
 
-    @After
-    fun closeDb() {
-        database.close()
-    }
-
     @Test
     fun `get customer by remote id returns null when there is no customer stored`() = runTest {
         // given
         val remoteCustomerId = 1L
 
         // when & then
-        assertNull(sut.getCustomerByRemoteId(LocalId(site.id), RemoteId(remoteCustomerId)))
+        val storedCustomer = sut.getCustomerByRemoteId(LocalId(site.id), RemoteId(remoteCustomerId))
+        assertThat(storedCustomer).isNull()
     }
 
     @Test
@@ -58,20 +52,18 @@ class CustomerDaoTest {
         // given
         val remoteCustomerId = 1L
         val username = "userName"
-        val customer = WCCustomerModel(
+        val expectedCustomer = WCCustomerModel(
             remoteCustomerId = RemoteId(remoteCustomerId),
             localSiteId = LocalId(site.id),
             username = username
         )
 
         // when
-        sut.upsertCustomer(customer)
+        sut.upsertCustomer(expectedCustomer)
 
         // then
         val storedCustomer = sut.getCustomerByRemoteId(LocalId(site.id), RemoteId(remoteCustomerId))
-        assertEquals(storedCustomer!!.remoteCustomerId.value, remoteCustomerId)
-        assertEquals(storedCustomer.localSiteId.value, site.id)
-        assertEquals(storedCustomer.username, username)
+        assertThat(storedCustomer).isEqualTo(expectedCustomer)
     }
 
     @Test
@@ -90,13 +82,13 @@ class CustomerDaoTest {
 
         // then
         val storedCustomer = sut.getCustomerByRemoteId(LocalId(site.id), RemoteId(remoteCustomerId))
-        assertNull(storedCustomer)
+        assertThat(storedCustomer).isNull()
     }
 
     @Test
     fun `get customers by site returns null when no customers stored`() = runTest {
         // when & then
-        assertTrue(sut.getCustomersForSite(LocalId(site.id)).isEmpty())
+        assertThat(sut.getCustomersForSite(LocalId(site.id)).isEmpty())
     }
 
     @Test
@@ -121,10 +113,7 @@ class CustomerDaoTest {
 
         // then
         val storedCustomers = sut.getCustomersForSite(LocalId(site.id))
-        assertEquals(1, storedCustomers.size)
-        assertEquals(usernameTwo, storedCustomers[0].username)
-        assertEquals(24, storedCustomers[0].localSiteId.value)
-        assertEquals(2L, storedCustomers[0].remoteCustomerId.value)
+        assertThat(storedCustomers).containsExactly(customerTwo)
     }
 
     @Test
@@ -150,9 +139,11 @@ class CustomerDaoTest {
 
         // then
         val storedCustomers = sut.getCustomersForSite(LocalId(customerOne.localSiteId.value))
-        assertEquals(1, storedCustomers.size)
-        assertEquals(usernameOne, storedCustomers[0].username)
-        assertEquals(3, storedCustomers[0].localSiteId.value)
-        assertEquals(1L, storedCustomers[0].remoteCustomerId.value)
+        assertThat(storedCustomers).containsExactly(customerOne)
+    }
+
+    @After
+    fun closeDb() {
+        database.close()
     }
 }
