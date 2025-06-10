@@ -17,6 +17,7 @@ data class ShippingLabelModel(
     val isLetter: Boolean,
     val productNames: List<String>,
     val productIds: List<Long>,
+    val shipmentId: Long,
     val receiptItemId: Long,
     val createdDate: Date?,
     val mainReceiptId: Long,
@@ -24,7 +25,3 @@ data class ShippingLabelModel(
     val currency: String,
     val expiryDate: Long,
 )
-
-enum class ShippingLabelStatus {
-    Unknown, PurchaseInProgress, Purchased, PurchaseError, Anonymized
-}

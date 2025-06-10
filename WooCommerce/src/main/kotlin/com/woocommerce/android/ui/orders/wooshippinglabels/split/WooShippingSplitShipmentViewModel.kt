@@ -1,9 +1,11 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.split
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
-import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.extensions.sumByFloat
 import com.woocommerce.android.ui.orders.wooshippinglabels.ShippableItemUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.SplitShipment
@@ -16,7 +18,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -32,9 +33,9 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
     private val currencyFormatter: CurrencyFormatter,
     private val getSplitMovements: GetSplitMovements,
     private val splitShipment: SplitShipment,
-    @AppCoroutineScope private val appCoroutineScope: CoroutineScope
 ) : ScopedViewModel(savedState) {
     private val navArgs: WooShippingSplitShipmentFragmentArgs by savedState.navArgs()
+    var snackbarData by mutableStateOf<ShippingLabelsSnackbarData?>(null)
     private val storeOptions = navArgs.shipmentArgs.storeOptions
 
     private val currentShipments = MutableStateFlow(
@@ -45,6 +46,7 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
     private val shipmentSelected = MutableStateFlow(0)
     private val removeShipmentSheet: MutableStateFlow<RemoveShipmentSheet?> = MutableStateFlow(null)
     private val splitMessage: MutableStateFlow<SplitShipmentMessage?> = MutableStateFlow(null)
+    private val isLoading: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
     init {
         launch {
@@ -75,21 +77,26 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
         shipmentSelected,
         shipmentsUIMap.filterNotNull(),
         removeShipmentSheet,
-        splitMessage
-    ) { shipmentSelected, selectableItems, sheet, message ->
-        val unfulfilledShipmentKeys = selectableItems.keys.filterNot { selectableItems.getValue(it).purchased }
-        SplitShipmentViewState(
-            shipmentSelected = shipmentSelected,
-            selectableItems = selectableItems,
-            overflowMenuItems = getOverflowMenuItems(unfulfilledShipmentKeys),
-            splitMovements = getSplitMovements(
-                sourceShipmentKey = shipmentSelected,
-                shipments = currentShipments.value,
-                selection = selectableItems
-            ),
-            removeShipmentSheet = sheet,
-            splitMessage = message
-        )
+        splitMessage,
+        isLoading
+    ) { shipmentSelected, selectableItems, sheet, message, loading ->
+        if (loading) {
+            SplitShipmentViewState.Loading
+        } else {
+            val unfulfilledShipmentKeys = selectableItems.keys.filterNot { selectableItems.getValue(it).purchased }
+            SplitShipmentViewState.DataState(
+                shipmentSelected = shipmentSelected,
+                selectableItems = selectableItems,
+                overflowMenuItems = getOverflowMenuItems(unfulfilledShipmentKeys),
+                splitMovements = getSplitMovements(
+                    sourceShipmentKey = shipmentSelected,
+                    shipments = currentShipments.value,
+                    selection = selectableItems
+                ),
+                removeShipmentSheet = sheet,
+                splitMessage = message
+            )
+        }
     }.asLiveData()
 
     private fun getOverflowMenuItems(shipmentKeys: List<Int>) = buildList {
@@ -111,11 +118,20 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
 
     fun onDoneTapped() {
         if (hasShipmentChange()) {
-            val currentShipmentList = currentShipments.value.values.toList()
-            // Launch splitShipment in the application-level scope
-            appCoroutineScope.launch { splitShipment(navArgs.shipmentArgs.orderId, currentShipmentList) }
-            // Trigger event immediately after starting the task
-            triggerEvent(MultiLiveEvent.Event.ExitWithResult(currentShipmentList))
+            isLoading.value = true
+            launch {
+                val currentShipmentList = currentShipments.value.values.toList()
+                val result = splitShipment(navArgs.shipmentArgs.orderId, currentShipmentList)
+                if (result.isSuccess) {
+                    triggerEvent(MultiLiveEvent.Event.ExitWithResult(result.getOrThrow()))
+                } else {
+                    isLoading.value = false
+                    snackbarData = ShippingLabelsSnackbarData(
+                        message = R.string.woo_shipping_split_shipment_error,
+                        actionLabel = R.string.retry,
+                    ) { onDoneTapped() }
+                }
+            }
         } else {
             triggerEvent(MultiLiveEvent.Event.Exit)
         }
@@ -217,7 +233,7 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
                     ?.combine(splitMovement.movingShipmentItems)
                     ?: splitMovement.movingShipmentItems
             ) ?: ShipmentUIModel(
-                id = splitMovement.destinationShipmentKey.toString(),
+                localId = splitMovement.destinationShipmentKey.toString(),
                 items = splitMovement.movingShipmentItems
             )
 
@@ -243,7 +259,9 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
      */
     private fun reindexShipments(
         shipments: Map<Int, ShipmentUIModel>
-    ) = shipments.values.mapIndexed { index, items -> index to items }.toMap()
+    ) = shipments.values.mapIndexed { index, shipmentUIModel ->
+        index to shipmentUIModel.copy(localId = index.toString())
+    }.toMap()
 
     private fun showUndoSnackbar(splitMovement: SplitMovement, undoAction: () -> Unit) {
         val snackbarMessage = if (splitMovement.totalItemsToMove > 1) {
@@ -266,14 +284,17 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
         )
     }
 
-    data class SplitShipmentViewState(
-        val shipmentSelected: Int,
-        val selectableItems: Map<Int, SelectableShippableItemsUI>,
-        val overflowMenuItems: List<List<Int>> = emptyList(), // Each item represents shipments to be removed.
-        val splitMovements: List<SplitMovement> = emptyList(),
-        val removeShipmentSheet: RemoveShipmentSheet? = null,
-        val splitMessage: SplitShipmentMessage? = null
-    )
+    sealed class SplitShipmentViewState {
+        data object Loading : SplitShipmentViewState()
+        data class DataState(
+            val shipmentSelected: Int,
+            val selectableItems: Map<Int, SelectableShippableItemsUI>,
+            val overflowMenuItems: List<List<Int>> = emptyList(), // Each item represents shipments to be removed.
+            val splitMovements: List<SplitMovement> = emptyList(),
+            val removeShipmentSheet: RemoveShipmentSheet? = null,
+            val splitMessage: SplitShipmentMessage? = null
+        ) : SplitShipmentViewState()
+    }
 
     companion object {
         private const val TOOLTIP_DELAY = 800L

@@ -2,11 +2,13 @@ package com.woocommerce.android.ui.woopos.home.items
 
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsNavigationData
+import com.woocommerce.android.util.FeatureFlag
 
 sealed class WooPosItemsToolbarViewState(
     open val tabs: List<Tab>,
     open val search: SearchState,
     open val backNavigation: Boolean = false,
+    open val barcodeScanningEnabled: Boolean = FeatureFlag.WOO_POS_BARCODES_SCANNING.isEnabled(),
 ) {
     data class ProductList(
         override val tabs: List<Tab>,

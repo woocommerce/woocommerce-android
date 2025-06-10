@@ -405,13 +405,60 @@ class WooPosItemsViewModelTest {
         }
     }
 
-    private fun createViewModel() =
-        WooPosItemsViewModel(
-            searchHelper,
-            tabsHelper,
-            couponCreationFacade,
-            fromChildToParentEventSender,
-            parentToChildrenEventReceiver,
-            analyticsTracker,
+    @Test
+    fun `when barcode scanned, then event passed to parent`() = runTest {
+        // GIVEN
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosItemsUIEvent.BarcodeScanned("1234567890"))
+
+        // THEN
+        verify(fromChildToParentEventSender).sendToParent(
+            eq(
+                ChildToParentEvent.BarcodeScanned("1234567890")
+            )
         )
+    }
+
+    @Test
+    fun `when switching tabs, then search loading state is reset`() = runTest {
+        // GIVEN
+        val couponsTab = WooPosItemsToolbarViewState.Tab.Coupons(
+            "Coupons",
+            WooPosItemsToolbarViewState.Tab.HighlightLevel.Normal
+        )
+
+        whenever(tabsHelper.selectTab(any(), eq(couponsTab))).thenReturn(
+            listOf(
+                WooPosItemsToolbarViewState.Tab.Products(
+                    "Products",
+                    WooPosItemsToolbarViewState.Tab.HighlightLevel.Normal
+                ),
+                WooPosItemsToolbarViewState.Tab.Coupons(
+                    "Coupons",
+                    WooPosItemsToolbarViewState.Tab.HighlightLevel.Full
+                )
+            )
+        )
+
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosItemsUIEvent.OnTabClicked(couponsTab))
+
+        // THEN
+        verify(searchHelper).updateLoadingState(isLoading = false)
+    }
+
+    private fun createViewModel(): WooPosItemsViewModel {
+        return WooPosItemsViewModel(
+            searchHelper = searchHelper,
+            tabsHelper = tabsHelper,
+            couponCreationFacade = couponCreationFacade,
+            fromChildToParentEventSender = fromChildToParentEventSender,
+            parentToChildrenEventReceiver = parentToChildrenEventReceiver,
+            analyticsTracker = analyticsTracker,
+        )
+    }
 }

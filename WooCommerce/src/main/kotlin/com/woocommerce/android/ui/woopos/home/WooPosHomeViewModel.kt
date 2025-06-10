@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderCreated
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccessfullyPaid.PaymentMethod
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.SearchEvent.ChangedQuery
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.SearchEvent.RecentSearchSelected
+import com.woocommerce.android.ui.woopos.home.WooPosHomeState.BarcodeInfoDialog
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ExitConfirmationDialog
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ProductsInfoDialog
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ScreenPositionState
@@ -40,6 +41,7 @@ class WooPosHomeViewModel @Inject constructor(
         initialValue = WooPosHomeState(
             screenPositionState = ScreenPositionState.Cart,
             productsInfoDialog = ProductsInfoDialog(isVisible = false),
+            barcodeInfoDialog = BarcodeInfoDialog(isVisible = false),
             exitConfirmationDialog = ExitConfirmationDialog(isVisible = false),
         )
     )
@@ -53,6 +55,14 @@ class WooPosHomeViewModel @Inject constructor(
 
     init {
         listenBottomEvents()
+        viewModelScope.launch {
+            soundHelper.preloadChaChing()
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        soundHelper.onCleanup()
     }
 
     fun onUIEvent(event: WooPosHomeUIEvent) {
@@ -95,9 +105,16 @@ class WooPosHomeViewModel @Inject constructor(
                 )
             }
 
+            WooPosHomeUIEvent.DismissBarcodeInfoDialog -> {
+                _state.value = _state.value.copy(
+                    barcodeInfoDialog = BarcodeInfoDialog(isVisible = false)
+                )
+            }
+
             WooPosHomeUIEvent.OnPaymentCompletedViaCash -> onOrderSuccessfullyPaid(
                 PaymentMethod.CASH
             )
+
             WooPosHomeUIEvent.ExitPosClicked -> {
                 viewModelScope.launch {
                     _navigationEvent.emit(NavigationEvent.ExitPos)
@@ -150,6 +167,7 @@ class WooPosHomeViewModel @Inject constructor(
                             screenPositionState = ScreenPositionState.Checkout.CartWithTotals
                         )
                     }
+
                     is ChildToParentEvent.PaymentInProgress,
                     is ChildToParentEvent.PaymentFailed -> {
                         _state.value = _state.value.copy(
@@ -176,6 +194,12 @@ class WooPosHomeViewModel @Inject constructor(
                         )
                     }
 
+                    ChildToParentEvent.BarcodeInfoMenuItemClicked -> {
+                        _state.value = _state.value.copy(
+                            barcodeInfoDialog = BarcodeInfoDialog(isVisible = true)
+                        )
+                    }
+
                     is ChildToParentEvent.ToastMessageDisplayed -> {
                         viewModelScope.launch {
                             _toastEvent.emit(event.message)
@@ -186,12 +210,15 @@ class WooPosHomeViewModel @Inject constructor(
                     is ChildToParentEvent.SearchEvent.QueryChanged -> {
                         sendEventToChildren(ChangedQuery(event.query))
                     }
+
                     ChildToParentEvent.SearchEvent.Finished -> {
                         sendEventToChildren(ParentToChildrenEvent.SearchEvent.Finished)
                     }
+
                     ChildToParentEvent.SearchEvent.Started -> {
                         sendEventToChildren(ParentToChildrenEvent.SearchEvent.Started)
                     }
+
                     is ChildToParentEvent.SearchEvent.RecentSearchSelected -> {
                         sendEventToChildren(RecentSearchSelected(event.query))
                     }
@@ -200,15 +227,25 @@ class WooPosHomeViewModel @Inject constructor(
                     is ChildToParentEvent.CouponsValidationFailed -> {
                         sendEventToChildren(ParentToChildrenEvent.CouponsValidationFailed)
                     }
+
                     is ChildToParentEvent.RemoveCouponsClicked -> {
                         sendEventToChildren(ParentToChildrenEvent.RemoveCouponsClicked)
                     }
+
                     is ChildToParentEvent.CouponsRemoved -> {
                         sendEventToChildren(CouponsRemoved(event.cartDataList))
                     }
 
                     ChildToParentEvent.RefreshProductList -> {
                         sendEventToChildren(ParentToChildrenEvent.RefreshProductList)
+                    }
+
+                    is ChildToParentEvent.BarcodeScanned -> {
+                        if (state.value.screenPositionState is ScreenPositionState.Cart) {
+                            sendEventToChildren(
+                                ParentToChildrenEvent.BarcodeScanned(event.barcode)
+                            )
+                        }
                     }
                 }
             }

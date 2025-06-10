@@ -40,6 +40,10 @@ class WooPosProductsInMemoryCache @Inject constructor() : WooPosProductsCache {
         return productsCache[productId]
     }
 
+    override suspend fun getProductByGtin(gtin: String): Product? {
+        return productsCache.values.find { it.globalUniqueId == gtin }
+    }
+
     override suspend fun clear() = mutex.withLock {
         productsCache.clear()
     }

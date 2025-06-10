@@ -23,7 +23,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 
 @Composable
-fun RecentSearchesChips(
+fun WooPosRecentSearchesChips(
     recentSearches: List<String>,
     onRecentSearchClicked: (String) -> Unit,
 ) {

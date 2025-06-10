@@ -730,6 +730,7 @@
     <string name="order_creation_remove_coupon">Remove coupon from order</string>
     <string name="order_creation_remove_this_coupon">Remove coupon</string>
     <string name="order_creation_customer_details">Customer details</string>
+    <string name="customer_detail_guest_customer">Guest</string>
     <string name="order_creation_product_stock_quantity">%s in stock</string>
     <string name="order_creation_product_instock">In stock</string>
     <string name="order_creation_new_customer_add_different_shipping_address">Add a different shipping address</string>
@@ -4273,11 +4274,17 @@
     <string name="woopos_variable_product_item_content_description">Variable Product %s, Price %s</string>
     <string name="woopos_variation_item_content_description">Variation %s, Price %s</string>
     <string name="woopos_cart_item_product_content_description">Product in cart %s, Price %s</string>
+    <string name="woopos_cart_item_loading_content_description">Loading item %s</string>
+    <string name="woopos_cart_item_error_content_description">Error loading item %s</string>
     <string name="woopos_coupon_item_content_description">Coupon %s</string>
     <string name="woopos_coupon_item_expired_label">Expired on %s</string>
     <string name="woopos_cart_item_coupon_content_description">Coupon in cart %s</string>
     <string name="woopos_cart_title">Cart</string>
     <string name="woopos_cart_changes_in_the_cart">There are changes in the cart</string>
+    <string name="woopos_cart_barcode_scan_result_product_not_found">Unknown scanned item</string>
+    <string name="woopos_cart_barcode_scan_result_unsupported_product">Unsupported item type</string>
+    <string name="woopos_cart_barcode_scan_result_network_error">No internet connection</string>
+    <string name="woopos_cart_barcode_scan_result_request_cancelled">Request cancelled</string>
     <string name="woopos_clear_cart_button">Clear</string>
 
     <string name="woopos_banner_simple_products_dialog_content_description">Simple, variable and virtual products only dialog</string>
@@ -4291,8 +4298,19 @@
     <string name="woopos_dialog_products_info_button_label">OK</string>
     <string name="woopos_dialog_products_info_background_content_description">Dimmed background. Tap to dismiss the dialog.</string>
 
+    <string name="woopos_dialog_barcode_info_heading">Barcode scanning</string>
+    <string name="woopos_dialog_barcode_info_primary_message">• You can scan barcodes using an external scanner to quickly build a cart.</string>
+    <string name="woopos_dialog_barcode_info_secondary_message">• Set up barcodes in the "GTIN, UPC, EAN, ISBN" field in Products/Details/Inventory. </string>
+    <string name="woopos_dialog_barcode_info_more_details_link">More details</string>
+    <string name="woopos_dialog_barcode_info_tertiary_message">• Refer to your bluetooth barcode scanner in System Bluetooth settings.</string>
+    <string name="woopos_dialog_barcode_info_quaternary_message">The scanner emulates a keyboard, so sometimes it will prevent the software keyboard from showing, e.g. in search. Double-press the scan button to bring the software keyboard back.</string>
+    <string name="woopos_dialog_barcode_info_button_label">OK</string>
+    <string name="woopos_dialog_barcode_info_content_description">Barcode scanning information dialog</string>
+    <string name="woopos_dialog_barcode_info_background_content_description">Dimmed background. Tap to dismiss the dialog.</string>
+
     <string name="woopos_exit_confirmation_title">Exit POS</string>
     <string name="woopos_get_support_title">Get Support</string>
+    <string name="woopos_barcode_scanning_title">Barcode scanning</string>
     <string name="woopos_product_limitations_title">Where are my products?</string>
     <string name="woopos_documentation_title">Documentation</string>
     <string name="woopos_exit_dialog_confirmation_close_content_description">Close</string>
@@ -4593,6 +4611,7 @@
     <string name="woo_shipping_address_missing_info_hint">Add missing information</string>
     <string name="woo_shipping_labels_loading_order_error">Unable to load the order</string>
     <string name="woo_shipping_labels_purchase_error">We are unable to purchase the shipping label. Please try again.</string>
+    <string name="woo_shipping_split_shipment_error">We were unable to split the shipments. Please try again.</string>
     <string name="woo_shipping_labels_loading_error">Unable to load data</string>
     <string name="woo_shipping_address_save_changes">Save changes</string>
 

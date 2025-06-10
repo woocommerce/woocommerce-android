@@ -20,6 +20,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import kotlin.test.Test
@@ -54,6 +55,69 @@ class WooPosHomeViewModelTest {
             verify(parentToChildrenEventSender).sendToChildren(
                 argThat {
                     this is ParentToChildrenEvent.OrderCreated
+                }
+            )
+        }
+
+    @Test
+    fun `given screen state Cart, when barcode scanned, then pass event to children`() = runTest {
+        // GIVEN
+        val events = MutableSharedFlow<ChildToParentEvent>()
+        whenever(childrenToParentEventReceiver.events).thenReturn(events)
+        createViewModel()
+
+        // WHEN
+        events.emit(ChildToParentEvent.BarcodeScanned("123456789"))
+
+        // THEN
+        verify(parentToChildrenEventSender).sendToChildren(
+            argThat {
+                this is ParentToChildrenEvent.BarcodeScanned &&
+                    barcode == "123456789"
+            }
+        )
+    }
+
+    @Test
+    fun `given checkout state, when barcode scanned, then don't pass event to children`() = runTest {
+        // GIVEN
+        val events = MutableSharedFlow<ChildToParentEvent>()
+        whenever(childrenToParentEventReceiver.events).thenReturn(events)
+
+        val viewModel = createViewModel()
+        events.emit(ChildToParentEvent.CheckoutClicked(listOf(ItemClickedData.Product.Simple(1))))
+
+        assertThat(viewModel.state.value.screenPositionState)
+            .isEqualTo(WooPosHomeState.ScreenPositionState.Checkout.CartWithTotals)
+
+        // WHEN
+        events.emit(ChildToParentEvent.BarcodeScanned("123456789"))
+
+        // THEN
+        verify(parentToChildrenEventSender, never()).sendToChildren(
+            argThat {
+                this is ParentToChildrenEvent.BarcodeScanned &&
+                    barcode == "123456789"
+            }
+        )
+    }
+
+    @Test
+    fun `given payment completed state, when barcode scanned, then don't pass event to children`() =
+        runTest {
+            // GIVEN
+            val events = MutableSharedFlow<ChildToParentEvent>()
+            whenever(childrenToParentEventReceiver.events).thenReturn(events)
+            createViewModel().onUIEvent(WooPosHomeUIEvent.OnPaymentCompletedViaCash)
+
+            // WHEN
+            events.emit(ChildToParentEvent.BarcodeScanned("123456789"))
+
+            // THEN
+            verify(parentToChildrenEventSender, never()).sendToChildren(
+                argThat {
+                    this is ParentToChildrenEvent.BarcodeScanned &&
+                        barcode == "123456789"
                 }
             )
         }

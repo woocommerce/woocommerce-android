@@ -39,6 +39,7 @@ sealed class ChildToParentEvent {
     data object OrderSuccessfullyPaidByCard : ChildToParentEvent()
     data object ExitPosClicked : ChildToParentEvent()
     data object SimpleProductExplanationMenuItemClicked : ChildToParentEvent()
+    data object BarcodeInfoMenuItemClicked : ChildToParentEvent()
     data object CouponsValidationFailed : ChildToParentEvent()
     data object RemoveCouponsClicked : ChildToParentEvent()
     data class CouponsRemoved(
@@ -47,6 +48,8 @@ sealed class ChildToParentEvent {
 
     data class ToastMessageDisplayed(val message: String) : ChildToParentEvent()
     data object RefreshProductList : ChildToParentEvent()
+
+    data class BarcodeScanned(val barcode: String) : ChildToParentEvent()
 
     sealed class NavigationEvent : ChildToParentEvent() {
         data class ToCashPayment(val orderId: Long) : NavigationEvent()

@@ -180,6 +180,79 @@ class WooPosItemsSearchHelperTest {
         assertThat(openState.isLoading).isFalse
     }
 
+    @Test
+    fun `given search with loading state true, when tab switched and search opened, then loading state is reset`() = runTest {
+        // GIVEN
+        searchHelper.initialize(CoroutineScope(coroutinesTestRule.testDispatcher), viewStateFlow)
+
+        whenever(mockParentToChildrenEventReceiver.events).thenReturn(
+            flowOf(ParentToChildrenEvent.SearchEvent.Started)
+        )
+        advanceUntilIdle()
+
+        viewStateFlow.value = WooPosItemsToolbarViewState.CouponList(
+            search = WooPosItemsToolbarViewState.SearchState.Visible(
+                state = WooPosSearchInputState.Closed
+            ),
+            tabs = listOf(
+                WooPosItemsToolbarViewState.Tab.Products(
+                    "Products",
+                    highlightLevel = WooPosItemsToolbarViewState.Tab.HighlightLevel.Normal
+                ),
+                WooPosItemsToolbarViewState.Tab.Coupons(
+                    "Coupons",
+                    highlightLevel = WooPosItemsToolbarViewState.Tab.HighlightLevel.Full
+                )
+            )
+        )
+
+        // WHEN
+        searchHelper.onSearchChanged("", 0)
+
+        // THEN
+        val currentState = viewStateFlow.value as WooPosItemsToolbarViewState.CouponList
+        val searchState = currentState.search as WooPosItemsToolbarViewState.SearchState.Visible
+        val openState = searchState.state as WooPosSearchInputState.Open
+        assertThat(openState.isLoading).isFalse
+    }
+
+    @Test
+    fun `given coupons screen, when search event started received, then loading state remains false`() = runTest {
+        // GIVEN
+        viewStateFlow.value = WooPosItemsToolbarViewState.CouponList(
+            search = WooPosItemsToolbarViewState.SearchState.Visible(
+                state = WooPosSearchInputState.Open(
+                    input = WooPosSearchInputState.Open.Input.Hint("Search coupons"),
+                    isLoading = false
+                )
+            ),
+            tabs = listOf(
+                WooPosItemsToolbarViewState.Tab.Products(
+                    "Products",
+                    highlightLevel = WooPosItemsToolbarViewState.Tab.HighlightLevel.Normal
+                ),
+                WooPosItemsToolbarViewState.Tab.Coupons(
+                    "Coupons",
+                    highlightLevel = WooPosItemsToolbarViewState.Tab.HighlightLevel.Full
+                )
+            )
+        )
+
+        whenever(mockParentToChildrenEventReceiver.events).thenReturn(
+            flowOf(ParentToChildrenEvent.SearchEvent.Started)
+        )
+
+        // WHEN
+        searchHelper.initialize(CoroutineScope(coroutinesTestRule.testDispatcher), viewStateFlow)
+        advanceUntilIdle()
+
+        // THEN
+        val currentState = viewStateFlow.value as WooPosItemsToolbarViewState.CouponList
+        val searchState = currentState.search as WooPosItemsToolbarViewState.SearchState.Visible
+        val openState = searchState.state as WooPosSearchInputState.Open
+        assertThat(openState.isLoading).isFalse
+    }
+
     private fun createContentState(): WooPosItemsToolbarViewState.ProductList {
         return WooPosItemsToolbarViewState.ProductList(
             search = WooPosItemsToolbarViewState.SearchState.Visible(

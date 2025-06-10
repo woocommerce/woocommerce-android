@@ -3,8 +3,8 @@ package com.woocommerce.android.ui.woopos.featureflags
 import com.woocommerce.android.util.FeatureFlag
 import javax.inject.Inject
 
-class WooPosIsPOSReceiptsEnabled @Inject constructor() {
+class WooPosIsBarcodesScanningFeatureFlagEnabled @Inject constructor() {
     operator fun invoke(): Boolean {
-        return FeatureFlag.POS_RECEIPTS.isEnabled()
+        return FeatureFlag.WOO_POS_BARCODES_SCANNING.isEnabled()
     }
 }
