@@ -55,6 +55,14 @@ class WooPosHomeViewModel @Inject constructor(
 
     init {
         listenBottomEvents()
+        viewModelScope.launch {
+            soundHelper.preloadPlayChaChing()
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        soundHelper.onCleanup()
     }
 
     fun onUIEvent(event: WooPosHomeUIEvent) {

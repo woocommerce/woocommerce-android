@@ -16,11 +16,32 @@ class WooPosSoundHelper @Inject constructor(
     private var mp: MediaPlayer? = null
     private var soundPool: SoundPool? = null
     private var failureSoundId: Int = 0
+    private var chaChingSoundId: Int = 0
+
+    suspend fun preloadPlayChaChing() = withContext(Dispatchers.IO) {
+        if (soundPool == null) {
+            init()
+        }
+        soundPool?.load(context, R.raw.cha_ching, 1)?.let { soundId ->
+            chaChingSoundId = soundId
+        }
+    }
 
     suspend fun playChaChing() = withContext(Dispatchers.IO) {
-        val mp = MediaPlayer.create(context, R.raw.cha_ching)
-        mp.setOnCompletionListener { it.release() }
-        mp.start()
+        soundPool?.play(chaChingSoundId, 1.0f, 1.0f, 5, 0, 1.0f)
+    }
+
+    suspend fun preloadBarcodeScanFailure() = withContext(Dispatchers.IO) {
+        if (soundPool == null) {
+            init()
+        }
+        soundPool?.load(context, R.raw.pos_scan_failure, 1)?.let { soundId ->
+            failureSoundId = soundId
+        }
+    }
+
+    fun playBarcodeScanFailure() {
+        soundPool?.play(failureSoundId, 1.0f, 1.0f, 5, 0, 1.0f)
     }
 
     private suspend fun init() = withContext(Dispatchers.IO) {
@@ -33,17 +54,6 @@ class WooPosSoundHelper @Inject constructor(
             .setMaxStreams(1)
             .setAudioAttributes(attributes)
             .build()
-    }
-
-    suspend fun preloadBarcodeScanFailure() = withContext(Dispatchers.IO) {
-        if (soundPool == null) {
-            init()
-        }
-        soundPool?.load(context, R.raw.pos_scan_failure, 1)
-    }
-
-    fun playBarcodeScanFailure() {
-        soundPool?.play(failureSoundId, 1.0f, 1.0f, 5, 0, 1.0f)
     }
 
     fun onCleanup() {
