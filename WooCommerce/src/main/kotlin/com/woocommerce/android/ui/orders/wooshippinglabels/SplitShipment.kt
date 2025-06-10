@@ -32,7 +32,7 @@ class SplitShipment @Inject constructor(
             } else {
                 updateCachedShipments(orderId, result.data)
                 // Update remote ids
-                val newShipments = shipments.map { it.copy(remoteId = it.id) }
+                val newShipments = shipments.map { it.copy(remoteId = it.localId) }
                 Result.success(newShipments)
             }
         } ?: Result.failure(Exception("No site selected"))
@@ -48,11 +48,11 @@ class SplitShipment @Inject constructor(
      * This mapping helps the backend update the correct shipment mapping during a split operation.
      */
     private fun getShipmentsToUpdate(shipments: List<ShipmentUIModel>): Map<String, Int> = shipments.filter {
-        it.remoteId != null && it.id != it.remoteId
-    }.associate { it.remoteId!! to it.id.toInt() }
+        it.remoteId != null && it.localId != it.remoteId
+    }.associate { it.remoteId!! to it.localId.toInt() }
 
     private fun List<ShipmentUIModel>.toShipmentMap() = associate {
-        it.id to it.items.map { item -> Item(id = item.itemId, subItems = item.subItems()) }
+        it.localId to it.items.map { item -> Item(id = item.itemId, subItems = item.subItems()) }
     }
 
     /**

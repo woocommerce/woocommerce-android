@@ -1,9 +1,10 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.models
 
+import com.google.gson.annotations.SerializedName
 import java.math.BigDecimal
 import java.util.Date
 
-data class ShippingLabelModel(
+data class PurchasedLabelModel(
     val labelId: Long,
     val tracking: String,
     val refundableAmount: BigDecimal,
@@ -17,11 +18,21 @@ data class ShippingLabelModel(
     val isLetter: Boolean,
     val productNames: List<String>,
     val productIds: List<Long>,
-    val shipmentId: Long,
-    val receiptItemId: Long,
-    val createdDate: Date?,
-    val mainReceiptId: Long,
-    val rate: BigDecimal,
-    val currency: String,
-    val expiryDate: Long,
 )
+
+enum class ShippingLabelStatus {
+    @SerializedName("UNKNOWN")
+    UNKNOWN,
+
+    @SerializedName("PURCHASE_IN_PROGRESS")
+    PURCHASE_IN_PROGRESS,
+
+    @SerializedName("PURCHASED")
+    PURCHASED,
+
+    @SerializedName("PURCHASE_ERROR")
+    PURCHASE_ERROR,
+
+    @SerializedName("ANONYMIZED")
+    ANONYMIZED
+}

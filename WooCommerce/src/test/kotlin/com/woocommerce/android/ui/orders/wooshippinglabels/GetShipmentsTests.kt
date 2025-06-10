@@ -6,7 +6,7 @@ import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ConfigDTO
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.Item
-import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ShippingLabelDTO
+import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ShippingLabelDataDTO
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -171,7 +171,7 @@ class GetShipmentsTests : BaseUnitTest() {
             )
         )
         whenever(configDataStore.observeConfig(eq(order.id))) doReturn flowOf(
-            ConfigDTO(shipments = shipments, shippingLabelData = ShippingLabelDTO())
+            ConfigDTO(shipments = shipments, shippingLabelData = ShippingLabelDataDTO(emptyList()))
         )
 
         val result = sut.invoke(order)
