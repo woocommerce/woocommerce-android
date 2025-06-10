@@ -488,7 +488,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             }
 
             shipmentItems.value = shipments.map { it.items }
-            initFlows(shipments.size)
+            adjustFlowSizesToShipmentCount(shipments.size)
 
             val shippingLineSummary = order.getShippingLinesSummary(currencyFormatter)
             val shipmentUIList = shipmentItems.value.mapIndexed { index, shippableItemModels ->
@@ -520,7 +520,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         }
     }
 
-    private fun initFlows(shipmentSize: Int) {
+    private fun adjustFlowSizesToShipmentCount(shipmentSize: Int) {
         fun <T> MutableStateFlow<List<T>>.updateSize(defaultValue: T) = this.update { currentList ->
             if (currentList.size <= shipmentSize) {
                 currentList + List(shipmentSize - currentList.size) { defaultValue }
