@@ -110,6 +110,7 @@ fun WooShippingLabelCreationScreen(viewModel: WooShippingLabelCreationViewModel)
                 onSelectPackageClick = viewModel::onSelectPackageClicked,
                 onPurchaseShippingLabel = viewModel::onPurchaseShippingLabel,
                 shipmentUIList = viewState.shipmentUIList,
+                shouldShowSplitShipmentButton = viewState.shouldShowSplitShipmentButton,
                 totalItems = viewState.totalItems,
                 totalItemsCost = viewState.totalItemsCost,
                 shippingLines = viewState.shippingLines,
@@ -156,6 +157,7 @@ fun WooShippingLabelCreationScreen(viewModel: WooShippingLabelCreationViewModel)
 @Composable
 fun WooShippingLabelCreationScreen(
     shipmentUIList: List<ShipmentUI>,
+    shouldShowSplitShipmentButton: Boolean,
     totalItems: Int,
     totalItemsCost: String,
     shippingLines: List<ShippingLineSummaryUI>,
@@ -227,6 +229,7 @@ fun WooShippingLabelCreationScreen(
     Box(modifier = Modifier.fillMaxSize()) {
         LabelCreationScreenWithBottomSheet(
             shipmentUIList = shipmentUIList,
+            shouldShowSplitShipmentButton = shouldShowSplitShipmentButton,
             totalItems = totalItems,
             totalItemsCost = totalItemsCost,
             modifier = modifier,
@@ -268,8 +271,9 @@ fun WooShippingLabelCreationScreen(
             isDarkTheme && !isCollapsed -> 16.dp
             else -> 8.dp
         }
-        val selectedShippingRatesState = shipmentUIList[uiState.selectedIndex].shippingRatesState
-        if (selectedShippingRatesState is ShippingRatesState.DataState) {
+        val selectedShipment = shipmentUIList[uiState.selectedIndex]
+        val selectedShippingRatesState = selectedShipment.shippingRatesState
+        if (selectedShippingRatesState is ShippingRatesState.DataState && !selectedShipment.purchased) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -292,7 +296,7 @@ fun WooShippingLabelCreationScreen(
                 }
             }
         }
-        val selectedPurchaseState = shipmentUIList[uiState.selectedIndex].purchaseState
+        val selectedPurchaseState = selectedShipment.purchaseState
         if (selectedPurchaseState is PurchaseState.InProgress) {
             Box(
                 modifier = Modifier
@@ -315,6 +319,7 @@ fun WooShippingLabelCreationScreen(
 @Composable
 private fun LabelCreationScreenWithBottomSheet(
     shipmentUIList: List<ShipmentUI>,
+    shouldShowSplitShipmentButton: Boolean,
     totalItems: Int,
     totalItemsCost: String,
     shippingLines: List<ShippingLineSummaryUI>,
@@ -350,8 +355,9 @@ private fun LabelCreationScreenWithBottomSheet(
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
-    val shippingRatesState = shipmentUIList[uiState.selectedIndex].shippingRatesState
-    val isPurchaseButtonDisplayed = shippingRatesState is ShippingRatesState.DataState
+    val selectedShipment = shipmentUIList[uiState.selectedIndex]
+    val shippingRatesState = selectedShipment.shippingRatesState
+    val isPurchaseButtonDisplayed = shippingRatesState is ShippingRatesState.DataState && !selectedShipment.purchased
     val requiresLargePeekHeight = isPurchaseButtonDisplayed || uiState.noticeBannerUiState != null
 
     val bottomSheetPeekHeight = when {
@@ -406,7 +412,8 @@ private fun LabelCreationScreenWithBottomSheet(
                     onShipmentDetailsExpandedChange = onShipmentDetailsExpandedChange,
                     onEditDestinationAddress = onEditDestinationAddress,
                     destinationStatus = destinationStatus,
-                    noticeBannerUiState = uiState.noticeBannerUiState
+                    noticeBannerUiState = uiState.noticeBannerUiState,
+                    isReadOnly = selectedShipment.purchased
                 )
             }
         },
@@ -432,7 +439,7 @@ private fun LabelCreationScreenWithBottomSheet(
                     onSelectedShipmentChanged(pagerState.targetPage)
                 }
 
-                if (shipmentUIList.size == 1) {
+                if (shipmentUIList.size == 1 && shouldShowSplitShipmentButton) {
                     Row(
                         modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp),
                         verticalAlignment = Alignment.CenterVertically
@@ -442,15 +449,17 @@ private fun LabelCreationScreenWithBottomSheet(
                             style = MaterialTheme.typography.h6,
                             modifier = Modifier.weight(1f)
                         )
-                        Text(
-                            text = stringResource(R.string.woo_shipping_split_shipment),
-                            color = MaterialTheme.colors.primary,
-                            modifier = Modifier
-                                .clickable { onSplitShipment() }
-                                .padding(dimensionResource(R.dimen.minor_100))
-                        )
+                        if (shipmentUIList.first().totalItemQuantity > 1) {
+                            Text(
+                                text = stringResource(R.string.woo_shipping_split_shipment),
+                                color = MaterialTheme.colors.primary,
+                                modifier = Modifier
+                                    .clickable { onSplitShipment() }
+                                    .padding(dimensionResource(R.dimen.minor_100))
+                            )
+                        }
                     }
-                } else {
+                } else if (shipmentUIList.size > 1) {
                     Row(modifier = Modifier.fillMaxWidth()) {
                         ShipmentsTabRow(
                             shipmentTabs = shipmentUIList.mapIndexed { index, shipment ->
@@ -464,15 +473,17 @@ private fun LabelCreationScreenWithBottomSheet(
                             onTabSelected = { index -> scope.launch { pagerState.animateScrollToPage(index) } },
                             modifier = modifier.weight(1f)
                         )
-                        IconButton(
-                            onClick = onSplitShipment,
-                            modifier = Modifier.align(Alignment.CenterVertically)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.Edit,
-                                tint = colorResource(id = R.color.color_icon_menu),
-                                contentDescription = stringResource(id = R.string.woo_shipping_split_shipment)
-                            )
+                        if (shouldShowSplitShipmentButton) {
+                            IconButton(
+                                onClick = onSplitShipment,
+                                modifier = Modifier.align(Alignment.CenterVertically)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.Edit,
+                                    tint = colorResource(id = R.color.color_icon_menu),
+                                    contentDescription = stringResource(id = R.string.woo_shipping_split_shipment)
+                                )
+                            }
                         }
                     }
                 }
@@ -933,6 +944,7 @@ private fun WooShippingLabelCreationScreenPreview() {
                     shippingRatesState = ShippingRatesState.NoAvailable,
                 )
             ),
+            shouldShowSplitShipmentButton = true,
             totalItems = 6,
             totalItemsCost = "$92.78",
             shippingLines = getShippingLines(),
