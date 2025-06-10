@@ -217,8 +217,14 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     private fun observeShippingLabelPurchaseStatus(shipmentId: Int) {
         launch {
             val labelId = shipments.value[shipmentId].labelId ?: return@launch
-            observeShippingLabelStatus(orderId = navArgs.orderId, labelId = labelId).onEach { status ->
-                updateShipment(shipmentId, shipments.value[shipmentId].copy(status = status))
+            observeShippingLabelStatus(orderId = navArgs.orderId, labelId = labelId).onEach { result ->
+                updateShipment(
+                    shipmentId,
+                    shipments.value[shipmentId].copy(
+                        status = result.status,
+                        refundableAmount = result.refundableAmount ?: BigDecimal.ZERO
+                    )
+                )
             }.launchIn(this)
         }
     }
@@ -688,7 +694,9 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                         purchased = true,
                         labelId = purchasedLabel.labelId,
                         carrierId = purchasedLabel.carrierId,
-                        trackingNumber = purchasedLabel.tracking
+                        trackingNumber = purchasedLabel.tracking,
+                        refundableAmount = purchasedLabel.refundableAmount,
+                        purchaseDate = purchasedLabel.created
                     )
                 )
                 observeShippingLabelPurchaseStatus(shipmentId)
