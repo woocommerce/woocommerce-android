@@ -400,7 +400,9 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         val currentViewState = sut.viewState.value
         assert(currentViewState is DataState)
         val dataState = currentViewState as DataState
-        assertIs<WooShippingLabelCreationViewModel.ShippingRatesState.DataState>(dataState.shippingRates)
+        assertIs<WooShippingLabelCreationViewModel.ShippingRatesState.DataState>(
+            dataState.shipmentUIList[0].shippingRatesState
+        )
     }
 
     @Test
@@ -427,7 +429,9 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         val currentViewState = sut.viewState.value
         assert(currentViewState is DataState)
         val dataState = currentViewState as DataState
-        assertIs<WooShippingLabelCreationViewModel.ShippingRatesState.MissingInfo>(dataState.shippingRates)
+        assertIs<WooShippingLabelCreationViewModel.ShippingRatesState.MissingInfo>(
+            dataState.shipmentUIList[0].shippingRatesState
+        )
     }
 
     @Test
@@ -455,7 +459,9 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         val currentViewState = sut.viewState.value
         assert(currentViewState is DataState)
         val dataState = currentViewState as DataState
-        assertIs<WooShippingLabelCreationViewModel.ShippingRatesState.MissingInfo>(dataState.shippingRates)
+        assertIs<WooShippingLabelCreationViewModel.ShippingRatesState.MissingInfo>(
+            dataState.shipmentUIList[0].shippingRatesState
+        )
     }
 
     @Test
@@ -484,7 +490,9 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         val currentViewState = sut.viewState.value
         assert(currentViewState is DataState)
         val dataState = currentViewState as DataState
-        assertIs<WooShippingLabelCreationViewModel.ShippingRatesState.Error>(dataState.shippingRates)
+        assertIs<WooShippingLabelCreationViewModel.ShippingRatesState.Error>(
+            dataState.shipmentUIList[0].shippingRatesState
+        )
     }
 
     @Test
@@ -617,8 +625,8 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         assertThat(currentViewState).isInstanceOf(DataState::class.java)
         val dataState = currentViewState as DataState
 
-        assertThat(dataState.packageSelection).isInstanceOf(DataAvailable::class.java)
-        val dataAvailable = dataState.packageSelection as DataAvailable
+        assertThat(dataState.shipmentUIList[0].packageSelectionState).isInstanceOf(DataAvailable::class.java)
+        val dataAvailable = dataState.shipmentUIList[0].packageSelectionState as DataAvailable
         assertThat(dataAvailable.selectedPackage).isEqualTo(initialPackageData)
     }
 
@@ -670,8 +678,8 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         assertThat(currentViewState).isInstanceOf(DataState::class.java)
         val dataState = currentViewState as DataState
 
-        assertThat(dataState.packageSelection).isInstanceOf(DataAvailable::class.java)
-        val dataAvailable = dataState.packageSelection as DataAvailable
+        assertThat(dataState.shipmentUIList[0].packageSelectionState).isInstanceOf(DataAvailable::class.java)
+        val dataAvailable = dataState.shipmentUIList[0].packageSelectionState as DataAvailable
         assertThat(dataAvailable.selectedPackage).isEqualTo(newPackageData)
     }
 
@@ -698,7 +706,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         assertThat(currentViewState).isInstanceOf(DataState::class.java)
         val dataState = currentViewState as DataState
 
-        assertThat(dataState.customsState).isEqualTo(CustomsState.NotRequired)
+        assertThat(dataState.shipmentUIList[0].customsState).isEqualTo(CustomsState.NotRequired)
     }
 
     @Test
@@ -724,7 +732,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         assertThat(currentViewState).isInstanceOf(DataState::class.java)
         val dataState = currentViewState as DataState
 
-        assertThat(dataState.customsState).isEqualTo(CustomsState.NotRequired)
+        assertThat(dataState.shipmentUIList[0].customsState).isEqualTo(CustomsState.NotRequired)
     }
 
     @Test
@@ -754,7 +762,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
             assertThat(currentViewState).isInstanceOf(DataState::class.java)
             val dataState = currentViewState as DataState
 
-            assertThat(dataState.customsState).isEqualTo(CustomsState.ItnMissing)
+            assertThat(dataState.shipmentUIList[0].customsState).isEqualTo(CustomsState.ItnMissing)
         }
 
     @Test
@@ -999,7 +1007,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         whenever(getShipments(any())) doReturn defaultShipments
         whenever(observeOriginAddresses()) doReturn flowOf(defaultOriginAddresses)
         whenever(observeStoreOptions()) doReturn flowOf(defaultStoreOptions)
-        whenever(observeShippingLabelNotice(any(), any(), any())) doReturn flowOf(notice)
+        whenever(observeShippingLabelNotice(any(), any(), any(), any())) doReturn flowOf(notice)
 
         createViewModel()
 
@@ -1018,7 +1026,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         whenever(getShipments(any())) doReturn defaultShipments
         whenever(observeOriginAddresses()) doReturn flowOf(defaultOriginAddresses)
         whenever(observeStoreOptions()) doReturn flowOf(defaultStoreOptions)
-        whenever(observeShippingLabelNotice(any(), any(), any())) doReturn flowOf(notice)
+        whenever(observeShippingLabelNotice(any(), any(), any(), any())) doReturn flowOf(notice)
 
         createViewModel()
 

@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui
 
 import android.content.Context
 import android.content.res.Configuration
+import android.os.Parcelable
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.animation.animateColorAsState
@@ -68,6 +69,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingCar
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel.Option
 import kotlinx.coroutines.launch
+import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
 import kotlin.random.Random
 
@@ -538,28 +540,33 @@ enum class ShippingSortOption(@StringRes val stringResource: Int) {
     FASTEST(R.string.shipping_label_shipping_rates_sort_option_fastest)
 }
 
+@Parcelize
 data class CarrierUI(
     val carrier: WooShippingCarrier,
     val name: String,
     val logoRes: Int? = null,
-)
+) : Parcelable
 
+@Parcelize
 data class ShippingRateUI(
     val options: Map<Option, ShippingRateOptionUI>,
     val selectedOption: ShippingRateOptionUI
-) {
-    val id = defaultRate.rate.rateId
+) : Parcelable {
+    val id: String
+        get() = defaultRate.rate.rateId
     val defaultRate: ShippingRateOptionUI
         get() = options[Option.DEFAULT] ?: options.values.first()
 
-    val summary = ShippingRateSummaryUI(
-        serviceName = selectedOption.title,
-        total = selectedOption.formatedPrice,
-        optionName = selectedOption.formattedOptionName,
-        optionFee = selectedOption.formattedFee
-    )
+    val summary: ShippingRateSummaryUI
+        get() = ShippingRateSummaryUI(
+            serviceName = selectedOption.title,
+            total = selectedOption.formatedPrice,
+            optionName = selectedOption.formattedOptionName,
+            optionFee = selectedOption.formattedFee
+        )
 }
 
+@Parcelize
 data class ShippingRateOptionUI(
     val title: String,
     val formatedPrice: String,
@@ -570,7 +577,7 @@ data class ShippingRateOptionUI(
     val option: Option,
     val shippingRateOptions: List<String>,
     val rate: WooShippingRateModel
-)
+) : Parcelable
 
 fun generateShippingRates(): Map<CarrierUI, List<ShippingRateUI>> {
     val carriers = listOf(

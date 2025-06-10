@@ -9,7 +9,7 @@ data class WooPosCartState(
     val toolbar: Toolbar = Toolbar(),
     val body: Body = Body.Empty,
     val areItemsRemovable: Boolean = true,
-    val isCheckoutButtonVisible: Boolean = true,
+    val checkoutButtonState: CheckoutButtonState = CheckoutButtonState.Enabled,
 ) : Parcelable {
     @Parcelize
     sealed class Body : Parcelable {
@@ -34,6 +34,12 @@ data class WooPosCartState(
         val itemsCount: String? = null,
         val isClearAllButtonVisible: Boolean = false,
     ) : Parcelable
+
+    enum class CheckoutButtonState {
+        Enabled,
+        Disabled,
+        Invisible
+    }
 }
 
 enum class WooPosCartStatus {

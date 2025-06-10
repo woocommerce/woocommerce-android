@@ -49,18 +49,24 @@ class ObserveShippingLabelNoticeTests : BaseUnitTest() {
         originAddresses = emptyList()
     )
     private val defaultAddressesFlow = flowOf(defaultAddresses)
-    private val customsFlow = flowOf(CustomsState.NotRequired)
+    private val customsFlow = flowOf(listOf(CustomsState.NotRequired))
+    private val selectedIndexFlow = flowOf(0)
 
     @Test
     fun `when no issues, then don't display any notification`() = runTest {
-        val result = sut.invoke(defaultAddressesFlow, customsFlow, coroutineScope).first()
+        val result = sut.invoke(defaultAddressesFlow, customsFlow, selectedIndexFlow, coroutineScope).first()
         assertThat(result).isNull()
     }
 
     @Test
     fun `when missing origin address was displayed but it is now verified, then display verified notice`() = runTest {
         val missingOriginAddress = defaultAddresses.copy(shipFrom = OriginShippingAddress.EMPTY)
-        val result = sut.invoke(flowOf(missingOriginAddress, defaultAddresses), customsFlow, coroutineScope)
+        val result = sut.invoke(
+            flowOf(missingOriginAddress, defaultAddresses),
+            customsFlow,
+            selectedIndexFlow,
+            coroutineScope
+        )
             .take(2)
             .last()
         assertThat(result?.type).isEqualTo(NoticeType.VERIFIED_ORIGIN_ADDRESS)
@@ -70,7 +76,12 @@ class ObserveShippingLabelNoticeTests : BaseUnitTest() {
     fun `when missing destination address was displayed but it is now verified, then display verified notice`() =
         runTest {
             val missingDestinationAddress = defaultAddresses.copy(shipTo = DestinationShippingAddress.EMPTY)
-            val result = sut.invoke(flowOf(missingDestinationAddress, defaultAddresses), customsFlow, coroutineScope)
+            val result = sut.invoke(
+                flowOf(missingDestinationAddress, defaultAddresses),
+                customsFlow,
+                selectedIndexFlow,
+                coroutineScope
+            )
                 .take(2)
                 .last()
             assertThat(result?.type).isEqualTo(NoticeType.VERIFIED_DESTINATION_ADDRESS)
@@ -80,7 +91,7 @@ class ObserveShippingLabelNoticeTests : BaseUnitTest() {
     fun `when shipFrom is not verified, then display origin not verified`() = runTest {
         val addresses = defaultAddresses.copy(shipFrom = defaultAddresses.shipFrom.copy(isVerified = false))
 
-        val result = sut.invoke(flowOf(addresses), customsFlow, coroutineScope).first()
+        val result = sut.invoke(flowOf(addresses), customsFlow, selectedIndexFlow, coroutineScope).first()
 
         assertThat(result?.type).isEqualTo(NoticeType.UNVERIFIED_ORIGIN_ADDRESS)
     }
@@ -89,7 +100,7 @@ class ObserveShippingLabelNoticeTests : BaseUnitTest() {
     fun `when shipTo is not verified, then display destination not verified`() = runTest {
         val addresses = defaultAddresses.copy(shipTo = defaultAddresses.shipTo.copy(isVerified = false))
 
-        val result = sut.invoke(flowOf(addresses), customsFlow, coroutineScope).first()
+        val result = sut.invoke(flowOf(addresses), customsFlow, selectedIndexFlow, coroutineScope).first()
 
         assertThat(result?.type).isEqualTo(NoticeType.UNVERIFIED_DESTINATION_ADDRESS)
     }
@@ -102,7 +113,8 @@ class ObserveShippingLabelNoticeTests : BaseUnitTest() {
             addressValidationHelper.isMissingDestinationAddress(missingDestinationAddress.shipTo.address)
         ) doReturn true
 
-        val result = sut.invoke(flowOf(missingDestinationAddress), customsFlow, coroutineScope).first()
+        val result =
+            sut.invoke(flowOf(missingDestinationAddress), customsFlow, selectedIndexFlow, coroutineScope).first()
 
         assertThat(result?.type).isEqualTo(NoticeType.MISSING_DESTINATION_ADDRESS)
     }
@@ -114,10 +126,10 @@ class ObserveShippingLabelNoticeTests : BaseUnitTest() {
             shipFrom = defaultAddresses.shipFrom.copy(isVerified = false)
         )
         val addressesFlow = MutableStateFlow(addresses)
-        val missingCustoms = MutableStateFlow<CustomsState>(CustomsState.ItnMissing)
+        val missingCustoms = MutableStateFlow<List<CustomsState>>(listOf(CustomsState.ItnMissing))
 
         // When address have issues, then display origin warnings first
-        var result = sut.invoke(addressesFlow, missingCustoms, coroutineScope)
+        var result = sut.invoke(addressesFlow, missingCustoms, selectedIndexFlow, coroutineScope)
 
         assertThat(result.first()?.type).isEqualTo(NoticeType.UNVERIFIED_ORIGIN_ADDRESS)
 
@@ -139,24 +151,24 @@ class ObserveShippingLabelNoticeTests : BaseUnitTest() {
         assertThat(result.first()?.type).isEqualTo(NoticeType.MISSING_ITN)
 
         // Fix ITN issue
-        missingCustoms.value = CustomsState.NotRequired
+        missingCustoms.value = listOf(CustomsState.NotRequired)
 
         assertThat(result.first()?.type).isNull()
     }
 
     @Test
     fun `when missing itn, then display itn notice`() = runTest {
-        val missingCustoms = flowOf(CustomsState.ItnMissing)
+        val missingCustoms = flowOf(listOf(CustomsState.ItnMissing))
 
-        val result = sut.invoke(defaultAddressesFlow, missingCustoms, coroutineScope).first()
+        val result = sut.invoke(defaultAddressesFlow, missingCustoms, selectedIndexFlow, coroutineScope).first()
         assertThat(result?.type).isEqualTo(NoticeType.MISSING_ITN)
     }
 
     @Test
     fun `when notice dismissed, then display no notice`() = runTest {
-        val missingCustoms = flowOf(CustomsState.ItnMissing)
+        val missingCustoms = flowOf(listOf(CustomsState.ItnMissing))
 
-        val result = sut.invoke(defaultAddressesFlow, missingCustoms, coroutineScope)
+        val result = sut.invoke(defaultAddressesFlow, missingCustoms, selectedIndexFlow, coroutineScope)
 
         result.first()?.onDismissed?.invoke()
 

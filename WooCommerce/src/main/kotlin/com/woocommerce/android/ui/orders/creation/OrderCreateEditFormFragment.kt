@@ -31,6 +31,7 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
@@ -1225,8 +1226,12 @@ class OrderCreateEditFormFragment :
             val orderUpdateFailureSnackBar = orderUpdateFailureSnackBar ?: uiMessageResolver.getIndefiniteActionSnack(
                 message = getString(R.string.order_sync_failed),
                 actionText = getString(R.string.retry),
-                actionListener = { viewModel.onRetryPaymentsClicked() }
-            ).also {
+                actionListener = { viewModel.onRetryClicked() }
+            ).apply {
+                behavior = object : BaseTransientBottomBar.Behavior() {
+                    override fun canSwipeDismissView(child: View): Boolean = false
+                }
+            }.also {
                 orderUpdateFailureSnackBar = it
             }
 
