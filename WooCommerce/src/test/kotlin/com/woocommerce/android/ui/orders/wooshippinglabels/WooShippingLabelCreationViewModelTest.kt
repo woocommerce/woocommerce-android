@@ -15,7 +15,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreat
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.OpenLearnMoreScreen
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.OpenShippingLabelFile
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.OpenUrl
-import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.PackageSelectionState.DataAvailable
+import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.PackageSelectionState
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.StartHazmatFormEdit
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.StartRefundRequest
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.WooShippingViewState
@@ -599,8 +599,8 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         assertThat(currentViewState).isInstanceOf(DataState::class.java)
         val dataState = currentViewState as DataState
 
-        assertThat(dataState.shipmentUIList[0].packageSelectionState).isInstanceOf(DataAvailable::class.java)
-        val dataAvailable = dataState.shipmentUIList[0].packageSelectionState as DataAvailable
+        assertThat(dataState.shipmentUIList[0].packageSelectionState).isInstanceOf(PackageSelectionState.DataAvailable::class.java)
+        val dataAvailable = dataState.shipmentUIList[0].packageSelectionState as PackageSelectionState.DataAvailable
         assertThat(dataAvailable.selectedPackage).isEqualTo(initialPackageData)
     }
 
@@ -652,8 +652,8 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         assertThat(currentViewState).isInstanceOf(DataState::class.java)
         val dataState = currentViewState as DataState
 
-        assertThat(dataState.shipmentUIList[0].packageSelectionState).isInstanceOf(DataAvailable::class.java)
-        val dataAvailable = dataState.shipmentUIList[0].packageSelectionState as DataAvailable
+        assertThat(dataState.shipmentUIList[0].packageSelectionState).isInstanceOf(PackageSelectionState.DataAvailable::class.java)
+        val dataAvailable = dataState.shipmentUIList[0].packageSelectionState as PackageSelectionState.DataAvailable
         assertThat(dataAvailable.selectedPackage).isEqualTo(newPackageData)
     }
 
@@ -1238,5 +1238,57 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         sut.onLearnMoreClicked()
 
         assertThat(event).isEqualTo(OpenLearnMoreScreen)
+    }
+
+    @Test
+    fun `after splitting a shipment, then retain the state of previous shipments`() = testBlocking {
+        val order = OrderTestUtils.generateTestOrder(orderId = orderId).copy(
+            shippingLines = defaultShippingLines
+        )
+        whenever(orderDetailRepository.getOrderById(any())) doReturn order
+        whenever(getShipments(any())) doReturn defaultShipments
+        whenever(observeOriginAddresses()) doReturn flowOf(defaultOriginAddresses)
+        whenever(observeStoreOptions()) doReturn flowOf(defaultStoreOptions)
+
+        createViewModel()
+        advanceUntilIdle()
+
+        sut.onPackageSelected(defaultPackageData)
+        sut.onShipmentSplit(
+            listOf(
+                ShipmentUIModel("0", items = defaultShippableItems.take(2)),
+                ShipmentUIModel("1", items = defaultShippableItems.takeLast(1)),
+            )
+        )
+
+        val afterSplitState = sut.viewState.value as DataState
+        assertThat(afterSplitState.shipmentUIList.first().packageSelectionState)
+            .matches { it is PackageSelectionState.DataAvailable && it.selectedPackage == defaultPackageData }
+        assertThat(afterSplitState.shipmentUIList.last().packageSelectionState)
+            .isEqualTo(PackageSelectionState.NotSelected)
+    }
+
+    @Test
+    fun `after merging shipments, then reset state to default values`() = testBlocking {
+        val order = OrderTestUtils.generateTestOrder(orderId = orderId).copy(
+            shippingLines = defaultShippingLines
+        )
+        whenever(orderDetailRepository.getOrderById(any())) doReturn order
+        whenever(getShipments(any())) doReturn listOf(
+            ShipmentUIModel("0", items = defaultShippableItems.take(2)),
+            ShipmentUIModel("1", items = defaultShippableItems.takeLast(1)),
+        )
+        whenever(observeOriginAddresses()) doReturn flowOf(defaultOriginAddresses)
+        whenever(observeStoreOptions()) doReturn flowOf(defaultStoreOptions)
+
+        createViewModel()
+        advanceUntilIdle()
+
+        sut.onPackageSelected(defaultPackageData)
+        sut.onShipmentSplit(defaultShipments)
+
+        val afterSplitState = sut.viewState.value as DataState
+        assertThat(afterSplitState.shipmentUIList.first().packageSelectionState)
+            .isEqualTo(PackageSelectionState.NotSelected)
     }
 }
