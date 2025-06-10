@@ -844,7 +844,8 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     }
 
     fun onRefundClicked() {
-        triggerEvent(StartRefundRequest)
+        val selectedShipment = shipments.value[selectedShipmentIndexFlow.value]
+        triggerEvent(StartRefundRequest(navArgs.orderId, selectedShipment))
     }
 
     fun onLearnMoreClicked() {
@@ -1031,7 +1032,8 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     data class OpenShippingLabelFile(val file: File) : Event()
     data class OpenUrl(val url: String) : Event()
     data class ShowError(val errorResId: Int) : Event()
-    object StartRefundRequest : Event()
+    data class StartRefundRequest(val orderId: Long, val shipment: ShipmentUIModel) : Event()
+
     object OpenLearnMoreScreen : Event()
 
     enum class Carrier(val pickupUrl: String) {
