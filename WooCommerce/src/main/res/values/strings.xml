@@ -67,6 +67,7 @@
     <string name="this_year">This Year</string>
     <string name="discard">Discard</string>
     <string name="products">Products</string>
+    <string name="point_of_sale">Point of Sale</string>
     <string name="custom_amounts">Custom Amounts</string>
     <string name="refunds">Refunds</string>
     <string name="domain">Domain</string>

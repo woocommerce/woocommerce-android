@@ -16,6 +16,7 @@ interface MainContract {
         fun updateStatsWidgets()
         fun onPlanUpgraded()
         fun onPlanUpgradeDismissed()
+        suspend fun shouldShowPOSFeature(): Boolean
     }
 
     interface View : BaseView<Presenter> {
