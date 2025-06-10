@@ -9,11 +9,13 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.R
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
@@ -30,8 +32,11 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIMode
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationFragment.Companion.PACKAGE_SELECTION_RESULT
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
 import com.woocommerce.android.ui.orders.wooshippinglabels.split.WooShippingSplitShipmentFragment
+import com.woocommerce.android.util.ActivityUtils
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
+import java.io.File
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -70,15 +75,6 @@ class WooShippingLabelCreationFragment : BaseFragment(), BackPressListener {
                     WooShippingLabelCreationFragmentDirections
                         .actionWooShippingLabelCreationFragmentToWooShippingLabelPackageCreationFragment()
                         .let { findNavController().navigateSafely(it) }
-
-                is WooShippingLabelCreationViewModel.LabelPurchased -> {
-                    WooShippingLabelCreationFragmentDirections
-                        .actionWooShippingLabelCreationFragmentToWooShippingLabelPurchasedFragment(
-                            purchaseData = event.purchaseData,
-                            totalItems = event.totalItems,
-                            totalItemsCost = event.totalItemsCost
-                        ).let { findNavController().navigateSafely(it) }
-                }
 
                 is WooShippingLabelCreationViewModel.StartOriginAddressEdit ->
                     WooShippingLabelCreationFragmentDirections
@@ -127,6 +123,11 @@ class WooShippingLabelCreationFragment : BaseFragment(), BackPressListener {
                             event.selectedCategory?.name
                         ).let { findNavController().navigateSafely(it) }
                 }
+
+                is WooShippingLabelCreationViewModel.OpenShippingLabelFile -> openShippingLabelPreview(event.file)
+                is WooShippingLabelCreationViewModel.OpenLearnMoreScreen -> openLearnMoreView()
+                is WooShippingLabelCreationViewModel.OpenUrl -> openUrl(event.url)
+                is WooShippingLabelCreationViewModel.ShowError -> showErrorDialog(event.errorResId)
             }
         }
     }
@@ -153,4 +154,28 @@ class WooShippingLabelCreationFragment : BaseFragment(), BackPressListener {
     }
 
     override fun onRequestAllowBackPress(): Boolean = viewModel.allowBackNavigation()
+
+    private fun openShippingLabelPreview(file: File) {
+        ActivityUtils.previewPDFFile(requireActivity(), file)
+    }
+
+    private fun openLearnMoreView() {
+        findNavController().navigate(
+            WooShippingLabelCreationFragmentDirections
+                .actionWooShippingLabelCreationFragmentToPrintShippingLabelInfoFragment()
+        )
+    }
+
+    private fun openUrl(url: String) {
+        ChromeCustomTabUtils.launchUrl(requireContext(), url)
+    }
+
+    private fun showErrorDialog(messageResId: Int) {
+        WooDialog.showDialog(
+            activity = requireActivity(),
+            titleId = R.string.error_generic,
+            messageId = messageResId,
+            positiveButtonId = R.string.dialog_ok
+        )
+    }
 }
