@@ -1,7 +1,7 @@
 package org.wordpress.android.fluxc.store
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
@@ -47,7 +47,7 @@ class WCGoogleStoreTest {
     }
 
     @Test
-    fun `when programs response is a single page, then return the data directly`() = runBlockingTest {
+    fun `when programs response is a single page, then return the data directly`() = runTest {
         // Given
         val mockPrograms = createProgramsPage()
         val expectedModel = WCGoogleAdsProgramsMapper().mapToModel(mockPrograms)
@@ -76,7 +76,7 @@ class WCGoogleStoreTest {
     }
 
     @Test
-    fun `when programs response is paginated, requested everything and return the sum`() = runBlockingTest {
+    fun `when programs response is paginated, requested everything and return the sum`() = runTest {
         // Given
         val mapper = WCGoogleAdsProgramsMapper()
         val firstPage = createProgramsPage(pageNumber = 1, hasNextPage = true)
