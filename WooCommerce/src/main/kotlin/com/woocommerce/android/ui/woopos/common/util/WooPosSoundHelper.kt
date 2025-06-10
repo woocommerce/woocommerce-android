@@ -18,7 +18,7 @@ class WooPosSoundHelper @Inject constructor(
     private var failureSoundId: Int = 0
     private var chaChingSoundId: Int = 0
 
-    suspend fun preloadPlayChaChing() = withContext(Dispatchers.IO) {
+    suspend fun preloadChaChing() = withContext(Dispatchers.IO) {
         if (soundPool == null) {
             init()
         }

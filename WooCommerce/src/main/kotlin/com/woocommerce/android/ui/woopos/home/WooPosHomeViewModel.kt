@@ -56,7 +56,7 @@ class WooPosHomeViewModel @Inject constructor(
     init {
         listenBottomEvents()
         viewModelScope.launch {
-            soundHelper.preloadPlayChaChing()
+            soundHelper.preloadChaChing()
         }
     }
 
