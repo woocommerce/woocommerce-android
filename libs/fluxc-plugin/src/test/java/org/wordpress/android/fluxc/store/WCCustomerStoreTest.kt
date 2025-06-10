@@ -4,28 +4,32 @@ import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.test.runTest
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.customer.WCCustomerFromAnalyticsMapper
 import org.wordpress.android.fluxc.model.customer.WCCustomerMapper
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
-import org.wordpress.android.fluxc.network.BaseRequest
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.NETWORK_ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.INVALID_RESPONSE
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.customer.CustomerRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.customer.dto.CustomerDTO
 import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
 import org.wordpress.android.fluxc.persistence.dao.CustomerDao
-import org.wordpress.android.fluxc.persistence.dao.CustomerFromAnalyticsDao
 import org.wordpress.android.fluxc.test
 import org.wordpress.android.fluxc.tools.initCoroutineEngine
 import kotlin.test.assertEquals
@@ -35,21 +39,12 @@ import kotlin.test.assertTrue
 @Config(manifest = Config.NONE)
 @RunWith(RobolectricTestRunner::class)
 class WCCustomerStoreTest {
-    val error = WooError(
-        WooErrorType.INVALID_RESPONSE,
-        BaseRequest.GenericErrorType.NETWORK_ERROR,
-        "Invalid site ID"
-    )
 
     private val restClient: CustomerRestClient = mock()
-    private val mapper: WCCustomerMapper = mock()
-    private val analyticsMapper: WCCustomerFromAnalyticsMapper = mock()
-    private val customerFromAnalyticsDao: CustomerFromAnalyticsDao = mock()
 
     private lateinit var roomDb: WCAndroidDatabase
     private lateinit var customerDao: CustomerDao
-
-    private lateinit var store: WCCustomerStore
+    private lateinit var sut: WCCustomerStore
 
     @Before
     fun setUp() {
@@ -59,95 +54,78 @@ class WCCustomerStoreTest {
             .build()
         customerDao = roomDb.customerDao
 
-        store = WCCustomerStore(
+        sut = WCCustomerStore(
             restClient,
             initCoroutineEngine(),
-            mapper,
+            WCCustomerMapper(),
             customerDao,
-            customerFromAnalyticsDao,
-            analyticsMapper
+            roomDb.customerFromAnalyticsDao,
+            WCCustomerFromAnalyticsMapper()
         )
     }
 
     @Test
-    fun `fetch single customer with success returns success`() = test {
+    fun `fetchSingleCustomer with success returns customer model`() = runTest {
         // given
-        val siteModelId = 1
-        val remoteCustomerId = 2L
-        val siteModel = SiteModel().apply { id = siteModelId }
-
-        val response: CustomerDTO = mock()
-        whenever(restClient.fetchSingleCustomer(siteModel, remoteCustomerId))
-            .thenReturn(WooPayload(response))
-        val model: WCCustomerModel = WCCustomerModel()
-        whenever(mapper.mapToModel(siteModel, response)).thenReturn(model)
-
-        // when
-        val result = store.fetchSingleCustomer(siteModel, remoteCustomerId)
-
-        // then
-        assertFalse(result.isError)
-        assertEquals(model, result.model)
-    }
-
-    @Test
-    fun `fetch single customer with error returns error`() = test {
-        // given
-        val siteModelId = 1
-        val remoteCustomerId = 2L
-        val siteModel = SiteModel().apply { id = siteModelId }
-
-        whenever(restClient.fetchSingleCustomer(siteModel, remoteCustomerId)).thenReturn(
-            WooPayload(
-                error
-            )
+        val customerDto = fakeCustomerDTO(id = DEFAULT_REMOTE_CUSTOMER_ID)
+        val expectedCustomer = fakeWCCustomerModel(
+            remoteCustomerId = DEFAULT_REMOTE_CUSTOMER_ID,
+            localSiteId = DEFAULT_SITE_ID
         )
 
+        doReturn(WooPayload(customerDto))
+            .whenever(restClient)
+            .fetchSingleCustomer(DEFAULT_SITE_MODEL, DEFAULT_REMOTE_CUSTOMER_ID)
+
         // when
-        val result = store.fetchSingleCustomer(siteModel, remoteCustomerId)
+        val result = sut.fetchSingleCustomer(DEFAULT_SITE_MODEL, DEFAULT_REMOTE_CUSTOMER_ID)
 
         // then
-        assertTrue(result.isError)
-        assertEquals(error, result.error)
+        assertThat(result.isError).isFalse
+        assertThat(result.model).isEqualTo(expectedCustomer)
     }
 
     @Test
-    fun `create customer with error returns error`() = test {
+    fun `fetchSingleCustomer with error returns error result`() = runTest {
         // given
-        val siteModelId = 1
-        val siteModel = SiteModel().apply { id = siteModelId }
-        val customerDto: CustomerDTO = mock()
-        val customerModel: WCCustomerModel = mock()
-
-        whenever(mapper.mapToDTO(customerModel)).thenReturn(customerDto)
-        whenever(restClient.createCustomer(siteModel, customerDto)).thenReturn(WooPayload(error))
+        doReturn(WooPayload<WCCustomerModel>(TEST_ERROR))
+            .whenever(restClient)
+            .fetchSingleCustomer(DEFAULT_SITE_MODEL, DEFAULT_REMOTE_CUSTOMER_ID)
 
         // when
-        val result = store.createCustomer(siteModel, customerModel)
+        val result = sut.fetchSingleCustomer(DEFAULT_SITE_MODEL, DEFAULT_REMOTE_CUSTOMER_ID)
+
+        // then
+        assertThat(result.isError).isTrue
+        assertThat(result.error).isEqualTo(TEST_ERROR)
+    }
+
+    @Test
+    fun `createCustomer with error returns error result`() = test {
+        // given
+        val customerModel = fakeWCCustomerModel(localSiteId = DEFAULT_SITE_ID)
+
+        whenever(restClient.createCustomer(eq(DEFAULT_SITE_MODEL), any())).thenReturn(WooPayload(TEST_ERROR))
+
+        // when
+        val result = sut.createCustomer(DEFAULT_SITE_MODEL, customerModel)
 
         // then
         assertTrue(result.isError)
     }
 
     @Test
-    fun `create customer with success returns dto`() = test {
+    fun `createCustomer with success returns customer model`() = test {
         // given
-        val siteModelId = 1
-        val siteModel = SiteModel().apply { id = siteModelId }
-        val customerDto: CustomerDTO = mock()
-        val customerDtoResponse: CustomerDTO = mock()
-        val customerModel: WCCustomerModel = mock()
+        val customerDtoResponse = fakeCustomerDTO()
+        val customerModel = fakeWCCustomerModel(localSiteId = DEFAULT_SITE_ID)
 
-        whenever(mapper.mapToDTO(customerModel)).thenReturn(customerDto)
-        whenever(mapper.mapToModel(siteModel, customerDtoResponse)).thenReturn(customerModel)
-        whenever(restClient.createCustomer(siteModel, customerDto)).thenReturn(
-            WooPayload(
-                customerDtoResponse
-            )
+        whenever(restClient.createCustomer(eq(DEFAULT_SITE_MODEL), any())).thenReturn(
+            WooPayload(customerDtoResponse)
         )
 
         // when
-        val result = store.createCustomer(siteModel, customerModel)
+        val result = sut.createCustomer(DEFAULT_SITE_MODEL, customerModel)
 
         // then
         assertFalse(result.isError)
@@ -155,24 +133,143 @@ class WCCustomerStoreTest {
     }
 
     @Test
-    fun `given error, when fetchCustomersFromAnalytics, then nothing is stored and error`() =
-        runTest {
-            // given
-            val siteModelId = 1
-            val siteModel = SiteModel().apply { id = siteModelId }
-            whenever(
-                restClient.fetchCustomersFromAnalytics(
-                    siteModel,
-                    page = 1,
-                    pageSize = 25
+    fun `fetchCustomersFromAnalytics with error returns error and does not cache`() = test {
+        // given
+        whenever(
+            restClient.fetchCustomersFromAnalytics(
+                DEFAULT_SITE_MODEL,
+                page = 1,
+                pageSize = DEFAULT_PAGE_SIZE
+            )
+        ).thenReturn(WooPayload(TEST_ERROR))
+
+        // when
+        val result = sut.fetchCustomersFromAnalytics(DEFAULT_SITE_MODEL, 1)
+
+        // then
+        assertThat(result.isError).isTrue
+        assertThat(customerDao.getCustomersForSite(DEFAULT_SITE_MODEL.localId())).isEmpty()
+    }
+
+    @After
+    fun closeDb() {
+        roomDb.close()
+    }
+
+    private companion object {
+        const val DEFAULT_SITE_ID = 1
+        const val DEFAULT_REMOTE_CUSTOMER_ID = 2L
+        const val DEFAULT_PAGE_SIZE = 25
+
+        val DEFAULT_SITE_MODEL = SiteModel().apply { id = DEFAULT_SITE_ID }
+        val TEST_ERROR = WooError(INVALID_RESPONSE, NETWORK_ERROR, "Invalid site ID")
+
+        fun fakeCustomerDTO(
+            id: Long = 1L,
+            email: String = "customer@example.com",
+            firstName: String = "John",
+            lastName: String = "Doe",
+            username: String = "johndoe",
+            avatarUrl: String = "https://example.com/avatar.jpg",
+            dateCreated: String = "2023-01-01T00:00:00",
+            dateCreatedGmt: String = "2023-01-01T00:00:00",
+            dateModified: String = "2023-01-01T00:00:00",
+            dateModifiedGmt: String = "2023-01-01T00:00:00",
+            isPayingCustomer: Boolean = false,
+            role: String = "customer",
+            billing: CustomerDTO.Billing? = null,
+            shipping: CustomerDTO.Shipping? = null
+        ): CustomerDTO {
+            return CustomerDTO(
+                id = id,
+                email = email,
+                firstName = firstName,
+                lastName = lastName,
+                username = username,
+                avatarUrl = avatarUrl,
+                dateCreated = dateCreated,
+                dateCreatedGmt = dateCreatedGmt,
+                dateModified = dateModified,
+                dateModifiedGmt = dateModifiedGmt,
+                isPayingCustomer = isPayingCustomer,
+                role = role,
+                billing = billing ?: CustomerDTO.Billing(
+                    address1 = "123 Main St",
+                    address2 = "Apt 4B",
+                    city = "Anytown",
+                    company = "ACME Inc",
+                    country = "US",
+                    email = email,
+                    firstName = firstName,
+                    lastName = lastName,
+                    phone = "555-1234",
+                    postcode = "12345",
+                    state = "CA"
+                ),
+                shipping = shipping ?: CustomerDTO.Shipping(
+                    address1 = "123 Main St",
+                    address2 = "Apt 4B",
+                    city = "Anytown",
+                    company = "ACME Inc",
+                    country = "US",
+                    firstName = firstName,
+                    lastName = lastName,
+                    postcode = "12345",
+                    state = "CA"
                 )
-            ).thenReturn(WooPayload(error))
-
-            // when
-            val result = store.fetchCustomersFromAnalytics(siteModel, 1)
-
-            // then
-            Assertions.assertThat(result.isError).isTrue
-            assertThat(customerDao.getCustomersForSite(siteModel.localId())).isEmpty()
+            )
         }
+
+        fun fakeWCCustomerModel(
+            remoteCustomerId: Long = 1L,
+            localSiteId: Int = DEFAULT_SITE_ID,
+            email: String = "customer@example.com",
+            firstName: String = "John",
+            lastName: String = "Doe",
+            username: String = "johndoe",
+            avatarUrl: String = "https://example.com/avatar.jpg",
+            dateCreated: String = "2023-01-01T00:00:00",
+            dateCreatedGmt: String = "2023-01-01T00:00:00",
+            dateModified: String = "2023-01-01T00:00:00",
+            dateModifiedGmt: String = "2023-01-01T00:00:00",
+            isPayingCustomer: Boolean = false,
+            role: String = "customer"
+        ): WCCustomerModel {
+            return WCCustomerModel(
+                remoteCustomerId = RemoteId(remoteCustomerId),
+                localSiteId = LocalId(localSiteId),
+                email = email,
+                firstName = firstName,
+                lastName = lastName,
+                username = username,
+                avatarUrl = avatarUrl,
+                dateCreated = dateCreated,
+                dateCreatedGmt = dateCreatedGmt,
+                dateModified = dateModified,
+                dateModifiedGmt = dateModifiedGmt,
+                isPayingCustomer = isPayingCustomer,
+                role = role,
+                billingAddress1 = "123 Main St",
+                billingAddress2 = "Apt 4B",
+                billingCity = "Anytown",
+                billingCompany = "ACME Inc",
+                billingCountry = "US",
+                billingEmail = email,
+                billingFirstName = firstName,
+                billingLastName = lastName,
+                billingPhone = "555-1234",
+                billingPostcode = "12345",
+                billingState = "CA",
+                shippingAddress1 = "123 Main St",
+                shippingAddress2 = "Apt 4B",
+                shippingCity = "Anytown",
+                shippingCompany = "ACME Inc",
+                shippingCountry = "US",
+                shippingFirstName = firstName,
+                shippingLastName = lastName,
+                shippingPostcode = "12345",
+                shippingState = "CA",
+            )
+        }
+    }
 }
