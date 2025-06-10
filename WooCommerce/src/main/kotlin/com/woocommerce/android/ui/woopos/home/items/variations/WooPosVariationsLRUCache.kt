@@ -25,4 +25,10 @@ class WooPosVariationsLRUCache<K, V> @Inject constructor() {
             cache.put(key, value)
         }
     }
+
+    suspend fun getAll(): Map<K, V> {
+        return mutex.withLock {
+            cache.snapshot()
+        }
+    }
 }

@@ -35,22 +35,15 @@ class WooPosSearchByIdentifierLocal @Inject constructor(
             }?.let { return WooPosSearchByIdentifierResult.Success(it) }
         }
 
-        for (product in allProducts) {
-            val cachedVariations = variationsCache.get(product.remoteId) ?: emptyList()
+        val allVariations = variationsCache.getAll()
+        for (query in searchQueries) {
+            allVariations.values.flatten().firstOrNull { variation ->
+                variation.globalUniqueId.equals(query, ignoreCase = true)
+            }?.let { return WooPosSearchByIdentifierResult.VariationSuccess(it) }
 
-            for (query in searchQueries) {
-                cachedVariations.firstOrNull { variation ->
-                    variation.globalUniqueId.equals(query, ignoreCase = true)
-                }?.let { variation ->
-                    return WooPosSearchByIdentifierResult.VariationSuccess(variation)
-                }
-
-                cachedVariations.firstOrNull { variation ->
-                    variation.sku.equals(query, ignoreCase = true)
-                }?.let { variation ->
-                    return WooPosSearchByIdentifierResult.VariationSuccess(variation)
-                }
-            }
+            allVariations.values.flatten().firstOrNull { variation ->
+                variation.sku.equals(query, ignoreCase = true)
+            }?.let { return WooPosSearchByIdentifierResult.VariationSuccess(it) }
         }
 
         return null
