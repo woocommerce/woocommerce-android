@@ -146,13 +146,15 @@ class IssueRefundViewModel @Inject constructor(
     private val Order.allFeeLineIds: List<Long>
         get() = feesLines.map { it.id }
     private val Order.refundableFeeLineIds: List<Long>
-        get() = allFeeLineIds.filterNot { feeId -> refunds.any { it.id == feeId } }
+        get() = allFeeLineIds.filterNot { feeId ->
+            refunds.any { refund -> refund.feeLines.any { it.id == feeId } }
+        }
 
     private val Order.allShippingLineIds: List<Long>
         get() = shippingLines.map { it.itemId }
     private val Order.refundableShippingLineIds: List<Long>
         get() = allShippingLineIds.filterNot { shippingId ->
-            refunds.any { it.id == shippingId }
+            refunds.any { refund -> refund.shippingLines.any { it.itemId == shippingId } }
         }
 
     private val Order.containsOnlyCustomAmounts: Boolean
