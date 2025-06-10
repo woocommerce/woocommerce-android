@@ -4574,7 +4574,6 @@
     <string name="woo_shipping_labels_hazmat_selection_set">Hazardous materials category set</string>
     <string name="woo_shipping_labels_hazmat_selection_removed">Removed hazardous materials category</string>
 
-
     <string name="email_not_registered_wpcom">Hmm, we can\'t find a WordPress.com account connected to this email address.</string>
 
     <string name="woo_shipping_edit_origin_address_title">Edit Origin</string>
@@ -4606,7 +4605,6 @@
     <string name="woo_shipping_address_notification_destination_verified">Verified destination address</string>
     <string name="woo_shipping_address_notification_origin_verified">Verified origin address</string>
 
-
     <string name="woo_shipping_address_validate_and_save">Validate &amp; Save</string>
     <string name="woo_shipping_address_missing_info_hint">Add missing information</string>
     <string name="woo_shipping_labels_loading_order_error">Unable to load the order</string>
@@ -4628,7 +4626,6 @@
 
     <string name="woo_shipping_confirm_submit_address_suggested">Confirm Suggested Address</string>
     <string name="woo_shipping_confirm_submit_address_entered">Confirm Entered Address</string>
-
 
     <string name="error_user_username_instead_of_email">Please log in using your WordPress.com username instead of your email address.</string>
     <string name="about_automattic_x_item_title">X</string>
@@ -4653,6 +4650,12 @@
     <string name="woo_shipping_split_shipment_merge_unfulfilled_desc">This will remove all unfulfilled split shipments and move all items into one shipment.</string>
     <string name="woo_shipping_split_shipment_merge_unfulfilled_button">Merge all shipments</string>
     <string name="purchased_shipment_content_description">Purchased</string>
+
+    <string name="woo_shipping_refund_title">Request a shipping label refund</string>
+    <string name="woo_shipping_refund_description">Request a refund for your unused shipping label. The refund process for the shipping label will begin immediately and is typically completed within 14 business days.</string>
+    <string name="woo_shipping_refund_purchase_date"><![CDATA[<b>Purchase date:</b> %s]]></string>
+    <string name="woo_shipping_refund_amount_eligible_for_refund"><![CDATA[<b>Amount eligible for refund:</b> %s]]></string>
+    <string name="woo_shipping_refund_note">Please note that this refund request applies only to the unused shipping label and will not affect the order itself.</string>
 
     <string name="media_library_title">WordPress Media Library</string>
     <string name="media_loading_failed">Media loading failed</string>
