@@ -39,7 +39,7 @@ class WooPosSearchByIdentifierLocalTest {
         val identifier = "1234567890123"
         val product = createProduct(globalUniqueId = identifier)
         whenever(productsCache.getAll()).thenReturn(listOf(product))
-        whenever(variationsCache.get(product.remoteId)).thenReturn(emptyList<ProductVariation>())
+        whenever(variationsCache.getAll()).thenReturn(emptyList<ProductVariation>())
 
         // WHEN
         val result = sut(identifier, WooPosBarcodeFormat.FormatEAN13)
@@ -54,7 +54,7 @@ class WooPosSearchByIdentifierLocalTest {
         val identifier = "SKU123"
         val product = createProduct(sku = identifier)
         whenever(productsCache.getAll()).thenReturn(listOf(product))
-        whenever(variationsCache.get(product.remoteId)).thenReturn(emptyList<ProductVariation>())
+        whenever(variationsCache.getAll()).thenReturn(emptyList<ProductVariation>())
 
         // WHEN
         val result = sut(identifier, WooPosBarcodeFormat.FormatUnknown)
@@ -70,7 +70,7 @@ class WooPosSearchByIdentifierLocalTest {
         val identifierWithoutCheckDigit = "123456789012"
         val product = createProduct(globalUniqueId = identifierWithoutCheckDigit)
         whenever(productsCache.getAll()).thenReturn(listOf(product))
-        whenever(variationsCache.get(product.remoteId)).thenReturn(emptyList<ProductVariation>())
+        whenever(variationsCache.getAll()).thenReturn(emptyList<ProductVariation>())
         whenever(checkDigitRemover(identifier, WooPosBarcodeFormat.FormatEAN13))
             .thenReturn(identifierWithoutCheckDigit)
 
@@ -86,6 +86,7 @@ class WooPosSearchByIdentifierLocalTest {
         // GIVEN
         val identifier = "NOTFOUND"
         whenever(productsCache.getAll()).thenReturn(emptyList())
+        whenever(variationsCache.getAll()).thenReturn(emptyList<ProductVariation>())
 
         // WHEN
         val result = sut(identifier, WooPosBarcodeFormat.FormatUnknown)
@@ -100,7 +101,7 @@ class WooPosSearchByIdentifierLocalTest {
         val identifier = "ABC123"
         val product = createProduct(globalUniqueId = "abc123")
         whenever(productsCache.getAll()).thenReturn(listOf(product))
-        whenever(variationsCache.get(product.remoteId)).thenReturn(emptyList<ProductVariation>())
+        whenever(variationsCache.getAll()).thenReturn(emptyList<ProductVariation>())
 
         // WHEN
         val result = sut(identifier, WooPosBarcodeFormat.FormatUnknown)
@@ -115,7 +116,7 @@ class WooPosSearchByIdentifierLocalTest {
         val identifier = "SKU123"
         val product = createProduct(sku = "sku123")
         whenever(productsCache.getAll()).thenReturn(listOf(product))
-        whenever(variationsCache.get(product.remoteId)).thenReturn(emptyList<ProductVariation>())
+        whenever(variationsCache.getAll()).thenReturn(emptyList<ProductVariation>())
 
         // WHEN
         val result = sut(identifier, WooPosBarcodeFormat.FormatUnknown)
@@ -138,7 +139,7 @@ class WooPosSearchByIdentifierLocalTest {
             on { sku }.thenReturn("")
         }
         whenever(productsCache.getAll()).thenReturn(listOf(product))
-        whenever(variationsCache.get(productId)).thenReturn(listOf(variation))
+        whenever(variationsCache.getAll()).thenReturn(listOf(variation))
 
         // WHEN
         val result = sut(identifier, WooPosBarcodeFormat.FormatUnknown)
@@ -161,7 +162,7 @@ class WooPosSearchByIdentifierLocalTest {
             on { globalUniqueId }.thenReturn("")
         }
         whenever(productsCache.getAll()).thenReturn(listOf(product))
-        whenever(variationsCache.get(productId)).thenReturn(listOf(variation))
+        whenever(variationsCache.getAll()).thenReturn(listOf(variation))
 
         // WHEN
         val result = sut(identifier, WooPosBarcodeFormat.FormatUnknown)
@@ -189,7 +190,7 @@ class WooPosSearchByIdentifierLocalTest {
             on { sku }.thenReturn("")
         }
         whenever(productsCache.getAll()).thenReturn(listOf(product))
-        whenever(variationsCache.get(productId)).thenReturn(listOf(variation1, variation2))
+        whenever(variationsCache.getAll()).thenReturn(listOf(variation1, variation2))
 
         // WHEN
         val result = sut(identifier, WooPosBarcodeFormat.FormatUnknown)
@@ -211,7 +212,7 @@ class WooPosSearchByIdentifierLocalTest {
             on { sku }.thenReturn("")
         }
         whenever(productsCache.getAll()).thenReturn(listOf(product))
-        whenever(variationsCache.get(productId)).thenReturn(listOf(variation))
+        whenever(variationsCache.getAll()).thenReturn(listOf(variation))
 
         // WHEN
         val result = sut(identifier, WooPosBarcodeFormat.FormatUnknown)
