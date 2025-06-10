@@ -70,7 +70,7 @@ import org.wordpress.android.fluxc.store.WCGatewayStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCRefundStore
 import java.math.BigDecimal
-import java.util.Locale
+import java.util.*
 import javax.inject.Inject
 import org.wordpress.android.fluxc.utils.sumBy as sumByBigDecimal
 
@@ -110,7 +110,7 @@ class IssueRefundViewModel @Inject constructor(
     )
     private val productsRefundSection = combine(
         refundItems.filterNotNull(),
-        orderFlow
+        orderFlow // Ensure the order is loaded before preparing this section as the order is needed for formatting
     ) { items, _ ->
         prepareProductsRefundSection(items)
     }.shareIn(viewModelScope, started = SharingStarted.Lazily, replay = 1)
