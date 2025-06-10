@@ -126,6 +126,11 @@ class WooShippingLabelCreationFragment : BaseFragment(), BackPressListener {
 
                 is WooShippingLabelCreationViewModel.OpenShippingLabelFile -> openShippingLabelPreview(event.file)
                 is WooShippingLabelCreationViewModel.OpenLearnMoreScreen -> openLearnMoreView()
+                is WooShippingLabelCreationViewModel.StartRefundRequest -> startRefundRequest(
+                    event.orderId,
+                    event.shipment
+                )
+
                 is WooShippingLabelCreationViewModel.OpenUrl -> openUrl(event.url)
                 is WooShippingLabelCreationViewModel.ShowError -> showErrorDialog(event.errorResId)
             }
@@ -163,6 +168,13 @@ class WooShippingLabelCreationFragment : BaseFragment(), BackPressListener {
         findNavController().navigate(
             WooShippingLabelCreationFragmentDirections
                 .actionWooShippingLabelCreationFragmentToPrintShippingLabelInfoFragment()
+        )
+    }
+
+    private fun startRefundRequest(orderId: Long, shipment: ShipmentUIModel) {
+        findNavController().navigate(
+            WooShippingLabelCreationFragmentDirections
+                .actionWooShippingLabelCreationFragmentToWooShippingLabelRefundRequestFragment(orderId, shipment)
         )
     }
 
