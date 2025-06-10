@@ -342,9 +342,6 @@ class WooPosCartViewModel @Inject constructor(
     }
 
     private fun onBarcodeScanned(barcode: String) {
-        if (_state.value.cartStatus !in listOf(EDITABLE, EMPTY)) {
-            return
-        }
         viewModelScope.launch {
             if (_state.value.body == WooPosCartState.Body.Empty) {
                 analyticsTracker.track(InteractionWithCustomerStarted)
