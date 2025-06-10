@@ -219,7 +219,7 @@ class WCCustomerMapperTest {
         assertThat(result.lastName).isEqualTo("lastname")
         assertThat(result.email).isEqualTo("email")
         assertThat(result.isPayingCustomer).isEqualTo(true)
-        assertThat(result.remoteCustomerId).isEqualTo(1L)
+        assertThat(result.remoteCustomerId.value).isEqualTo(1L)
         assertThat(result.dateCreated).isEqualTo("dateRegistered")
         assertThat(result.dateModified).isEqualTo("dateLastActive")
 
