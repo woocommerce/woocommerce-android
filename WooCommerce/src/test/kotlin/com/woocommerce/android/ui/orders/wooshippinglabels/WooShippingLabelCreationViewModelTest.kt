@@ -1215,7 +1215,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
         sut.onRefundClicked()
 
-        assertThat(event).isEqualTo(StartRefundRequest)
+        assertThat(event).isEqualTo(StartRefundRequest(orderId, defaultShipments.first()))
     }
 
     @Test
