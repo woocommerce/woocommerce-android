@@ -20,7 +20,7 @@ import javax.inject.Singleton
 class ExperimentationModule {
     @Provides
     @Singleton
-    fun provideExperimentationRepository(
+    fun provideVariationsRepository(
         @ApplicationContext appContext: Context,
         appLogWrapper: AppLogWrapper,
         @AppCoroutineScope appCoroutineScope: CoroutineScope,
