@@ -944,7 +944,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                 get() {
                     val unpurchasedShipments = shipmentUIList.filterNot { it.purchased }
                     return unpurchasedShipments.size > 1 ||
-                    (unpurchasedShipments.firstOrNull()?.totalItemQuantity ?: 0) > 1
+                        (unpurchasedShipments.firstOrNull()?.totalItemQuantity ?: 0) > 1
                 }
         }
     }
