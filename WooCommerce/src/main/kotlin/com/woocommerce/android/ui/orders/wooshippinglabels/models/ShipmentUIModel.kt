@@ -5,8 +5,8 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class ShipmentUIModel(
-    // If id is null, it indicates that no shipment has been fetched from the backend.
-    val id: String?,
+    val id: String, // Local id
+    val remoteId: String? = null,
     val items: List<ShippableItemModel>,
     val purchased: Boolean = false
 ) : Parcelable
