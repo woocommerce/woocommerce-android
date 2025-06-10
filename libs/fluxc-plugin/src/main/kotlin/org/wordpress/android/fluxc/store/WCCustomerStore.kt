@@ -69,23 +69,6 @@ class WCCustomerStore @Inject constructor(
     }
 
     /**
-     * creates a customer on the backend
-     */
-    suspend fun createCustomer(
-        site: SiteModel,
-        customer: WCCustomerModel
-    ): WooResult<WCCustomerModel> {
-        return coroutineEngine.withDefaultContext(AppLog.T.API, this, "createCustomer") {
-            val response = restClient.createCustomer(site, mapper.mapToDTO(customer))
-            when {
-                response.isError -> WooResult(response.error)
-                response.result != null -> WooResult(mapper.mapToModel(site, response.result))
-                else -> WooResult(WooError(GENERIC_ERROR, UNKNOWN))
-            }
-        }
-    }
-
-    /**
      * returns customers from analytics
      */
     suspend fun fetchCustomersFromAnalytics(

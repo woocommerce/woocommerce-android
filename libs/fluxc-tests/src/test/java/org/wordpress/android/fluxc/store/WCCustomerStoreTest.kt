@@ -106,49 +106,6 @@ class WCCustomerStoreTest {
     }
 
     @Test
-    fun `create customer with error returns error`() = test {
-        // given
-        val siteModelId = 1
-        val siteModel = SiteModel().apply { id = siteModelId }
-        val customerDto: CustomerDTO = mock()
-        val customerModel: WCCustomerModel = mock()
-
-        whenever(mapper.mapToDTO(customerModel)).thenReturn(customerDto)
-        whenever(restClient.createCustomer(siteModel, customerDto)).thenReturn(WooPayload(error))
-
-        // when
-        val result = store.createCustomer(siteModel, customerModel)
-
-        // then
-        assertTrue(result.isError)
-    }
-
-    @Test
-    fun `create customer with success returns dto`() = test {
-        // given
-        val siteModelId = 1
-        val siteModel = SiteModel().apply { id = siteModelId }
-        val customerDto: CustomerDTO = mock()
-        val customerDtoResponse: CustomerDTO = mock()
-        val customerModel: WCCustomerModel = mock()
-
-        whenever(mapper.mapToDTO(customerModel)).thenReturn(customerDto)
-        whenever(mapper.mapToModel(siteModel, customerDtoResponse)).thenReturn(customerModel)
-        whenever(restClient.createCustomer(siteModel, customerDto)).thenReturn(
-            WooPayload(
-                customerDtoResponse
-            )
-        )
-
-        // when
-        val result = store.createCustomer(siteModel, customerModel)
-
-        // then
-        assertFalse(result.isError)
-        assertEquals(customerModel, result.model)
-    }
-
-    @Test
     fun `given error, when fetchCustomersFromAnalytics, then nothing is stored and error`() =
         test {
             // given
