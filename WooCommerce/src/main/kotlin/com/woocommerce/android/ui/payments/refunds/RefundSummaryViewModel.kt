@@ -161,7 +161,7 @@ class RefundSummaryViewModel @Inject constructor(
         refundSummaryState = refundSummaryState.copy(isSummaryTextTooLong = currLength > maxLength)
     }
 
-    private suspend fun initRefundSummaryState() {
+    private fun initRefundSummaryState() {
         if (refundSummaryStateLiveData.hasInitialValue) {
             val refundAmount = navArgs.refundAmount.toBigDecimal()
             refundSummaryState = refundSummaryState.copy(
