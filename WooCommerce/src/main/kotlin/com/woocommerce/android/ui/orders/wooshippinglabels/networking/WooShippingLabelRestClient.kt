@@ -209,13 +209,14 @@ class WooShippingLabelRestClient @Inject constructor(
         site: SiteModel,
         orderId: Long,
         shipments: ShipmentMap,
+        shipmentIdsToUpdate: Map<String, Int>
     ): WooPayload<UpdateShipmentsResponse> {
         val url = "/wcshipping/v1/shipments/$orderId"
 
         val result = wooNetwork.executePostGsonRequest(
             site = site,
             path = url,
-            body = mapOf("shipments" to shipments, "shipmentIdsToUpdate" to emptyMap()),
+            body = mapOf("shipments" to shipments, "shipmentIdsToUpdate" to shipmentIdsToUpdate),
             clazz = UpdateShipmentsResponse::class.java,
         )
 
