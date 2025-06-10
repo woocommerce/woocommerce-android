@@ -1,8 +1,10 @@
 package org.wordpress.android.fluxc.store
 
 import android.content.Context
+import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import com.yarolegovich.wellsql.WellSql
+import kotlinx.coroutines.test.runTest
+import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -11,19 +13,18 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import org.wordpress.android.fluxc.SingleStoreWellSqlConfigForTests
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.customer.WCCustomerFromAnalyticsMapper
 import org.wordpress.android.fluxc.model.customer.WCCustomerMapper
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
-import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.NETWORK_ERROR
+import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.INVALID_RESPONSE
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.customer.CustomerRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.customer.dto.CustomerDTO
-import org.wordpress.android.fluxc.persistence.CustomerSqlUtils
-import org.wordpress.android.fluxc.persistence.WellSqlConfig
+import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
+import org.wordpress.android.fluxc.persistence.dao.CustomerDao
 import org.wordpress.android.fluxc.persistence.dao.CustomerFromAnalyticsDao
 import org.wordpress.android.fluxc.test
 import org.wordpress.android.fluxc.tools.initCoroutineEngine
@@ -34,30 +35,35 @@ import kotlin.test.assertTrue
 @Config(manifest = Config.NONE)
 @RunWith(RobolectricTestRunner::class)
 class WCCustomerStoreTest {
-    val error = WooError(INVALID_RESPONSE, NETWORK_ERROR, "Invalid site ID")
+    val error = WooError(
+        WooErrorType.INVALID_RESPONSE,
+        BaseRequest.GenericErrorType.NETWORK_ERROR,
+        "Invalid site ID"
+    )
 
     private val restClient: CustomerRestClient = mock()
     private val mapper: WCCustomerMapper = mock()
     private val analyticsMapper: WCCustomerFromAnalyticsMapper = mock()
     private val customerFromAnalyticsDao: CustomerFromAnalyticsDao = mock()
 
+    private lateinit var roomDb: WCAndroidDatabase
+    private lateinit var customerDao: CustomerDao
+
     private lateinit var store: WCCustomerStore
 
     @Before
     fun setUp() {
         val appContext = ApplicationProvider.getApplicationContext<Context>()
-        val config = SingleStoreWellSqlConfigForTests(
-            appContext,
-            listOf(WCCustomerModel::class.java),
-            WellSqlConfig.ADDON_WOOCOMMERCE
-        )
-        WellSql.init(config)
-        config.reset()
+        roomDb = Room.inMemoryDatabaseBuilder(appContext, WCAndroidDatabase::class.java)
+            .allowMainThreadQueries()
+            .build()
+        customerDao = roomDb.customerDao
 
         store = WCCustomerStore(
             restClient,
             initCoroutineEngine(),
             mapper,
+            customerDao,
             customerFromAnalyticsDao,
             analyticsMapper
         )
@@ -73,7 +79,7 @@ class WCCustomerStoreTest {
         val response: CustomerDTO = mock()
         whenever(restClient.fetchSingleCustomer(siteModel, remoteCustomerId))
             .thenReturn(WooPayload(response))
-        val model: WCCustomerModel = mock()
+        val model: WCCustomerModel = WCCustomerModel()
         whenever(mapper.mapToModel(siteModel, response)).thenReturn(model)
 
         // when
@@ -150,7 +156,7 @@ class WCCustomerStoreTest {
 
     @Test
     fun `given error, when fetchCustomersFromAnalytics, then nothing is stored and error`() =
-        test {
+        runTest {
             // given
             val siteModelId = 1
             val siteModel = SiteModel().apply { id = siteModelId }
@@ -166,7 +172,7 @@ class WCCustomerStoreTest {
             val result = store.fetchCustomersFromAnalytics(siteModel, 1)
 
             // then
-            assertThat(result.isError).isTrue
-            assertThat(CustomerSqlUtils.getCustomersForSite(siteModel)).isEmpty()
+            Assertions.assertThat(result.isError).isTrue
+            assertThat(customerDao.getCustomersForSite(siteModel.localId())).isEmpty()
         }
 }

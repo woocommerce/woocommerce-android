@@ -1,7 +1,6 @@
 package org.wordpress.android.fluxc.model.customer
 
 import androidx.room.Entity
-import androidx.room.Ignore
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 
