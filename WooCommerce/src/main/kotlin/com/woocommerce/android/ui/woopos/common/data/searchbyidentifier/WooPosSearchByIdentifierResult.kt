@@ -7,9 +7,10 @@ sealed class WooPosSearchByIdentifierResult {
     data class Failure(val error: Error) : WooPosSearchByIdentifierResult()
 
     sealed class Error {
-        object ProductNotFound : Error()
-        object NetworkError : Error()
-        object RequestCancelled : Error()
+        data object ProductNotFound : Error()
+        data object UnsupportedProduct : Error()
+        data object NetworkError : Error()
+        data object RequestCancelled : Error()
         data class UnknownError(val message: String) : Error()
     }
 
