@@ -36,7 +36,8 @@ class ObserveShippingLabelNotice @Inject constructor(private val addressValidati
         selectedIndexFlow,
         isDismissedFlow
     ) { addresses, customs, selectedIndex, isDismissed ->
-        val noticeType = getNoticeType(addresses, customs[selectedIndex], isDismissed) ?: return@combine null
+        val custom = customs.getOrNull(selectedIndex) ?: return@combine null
+        val noticeType = getNoticeType(addresses, custom, isDismissed) ?: return@combine null
         getNoticeBannerUiState(noticeType).also { state ->
             previousNotice = state.type
             if (state.autoDismiss) {

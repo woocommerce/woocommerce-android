@@ -22,14 +22,14 @@ class WooPosSearchByIdentifier @Inject constructor(
     ): WooPosSearchByIdentifierResult {
         val localResult = localSearcher(identifier, format)
         if (localResult != null) {
-            return filterOutUnsupportedProducts(localResult)
+            return filterUnsupportedProductResult(localResult)
         }
 
         val remoteResult = remoteSearcher(identifier, format)
-        return filterOutUnsupportedProducts(remoteResult)
+        return filterUnsupportedProductResult(remoteResult)
     }
 
-    private fun filterOutUnsupportedProducts(result: WooPosSearchByIdentifierResult): WooPosSearchByIdentifierResult {
+    private fun filterUnsupportedProductResult(result: WooPosSearchByIdentifierResult): WooPosSearchByIdentifierResult {
         return when (result) {
             is WooPosSearchByIdentifierResult.Success -> {
                 if (meetsFilterRequirements(result.product)) {
@@ -52,10 +52,8 @@ class WooPosSearchByIdentifier @Inject constructor(
     private fun meetsFilterRequirements(product: Product): Boolean {
         val hasValidStatus = product.status?.value == filterConfig.filters[ProductFilterOption.STATUS]
 
-        val meetsDownloadableRequirement = !(
-            product.isDownloadable &&
-                filterConfig.filters[ProductFilterOption.DOWNLOADABLE] == DownloadableOptions.FALSE.toString()
-            )
+        val meetsDownloadableRequirement = !product.isDownloadable ||
+            filterConfig.filters[ProductFilterOption.DOWNLOADABLE] != DownloadableOptions.FALSE.toString()
 
         val hasValidType = filterConfig.includeTypes.any {
             it.toString().equals(product.type, ignoreCase = true)
