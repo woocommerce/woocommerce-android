@@ -26,9 +26,9 @@ sealed class ChildToParentEvent {
     ) : ChildToParentEvent()
 
     data object BackFromCheckoutToCartClicked : ChildToParentEvent()
-    data class ItemClickedInProductSelector(
+    data class ItemClickedInItemsList(
         val itemData: WooPosItemsViewModel.ItemClickedData,
-        val eventForTracking: WooPosAnalyticsEvent.Event.ItemAddedToCart
+        val eventForTracking: WooPosAnalyticsEvent.Event.ItemAddedToCart?
     ) : ChildToParentEvent()
     data object NewTransactionClicked : ChildToParentEvent()
     data object PaymentCollecting : ChildToParentEvent()
@@ -39,6 +39,7 @@ sealed class ChildToParentEvent {
     data object OrderSuccessfullyPaidByCard : ChildToParentEvent()
     data object ExitPosClicked : ChildToParentEvent()
     data object SimpleProductExplanationMenuItemClicked : ChildToParentEvent()
+    data object BarcodeInfoMenuItemClicked : ChildToParentEvent()
     data object CouponsValidationFailed : ChildToParentEvent()
     data object RemoveCouponsClicked : ChildToParentEvent()
     data class CouponsRemoved(
@@ -47,6 +48,8 @@ sealed class ChildToParentEvent {
 
     data class ToastMessageDisplayed(val message: String) : ChildToParentEvent()
     data object RefreshProductList : ChildToParentEvent()
+
+    data class BarcodeScanned(val barcode: String) : ChildToParentEvent()
 
     sealed class NavigationEvent : ChildToParentEvent() {
         data class ToCashPayment(val orderId: Long) : NavigationEvent()

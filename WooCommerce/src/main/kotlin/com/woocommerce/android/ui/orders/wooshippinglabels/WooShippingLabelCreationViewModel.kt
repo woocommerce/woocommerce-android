@@ -120,7 +120,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     private val shipments = MutableStateFlow<List<ShipmentUIModel>>(emptyList())
     private val shipmentItems = MutableStateFlow<List<List<ShippableItemModel>>>(emptyList())
 
-    private val packagesSelectedFlow = MutableStateFlow<List<PackageData?>>(emptyList())
+    private val selectedPackagesFlow = MutableStateFlow<List<PackageData?>>(emptyList())
     private val customsFormDataFlow = MutableStateFlow<List<CustomsData?>>(emptyList())
     private val packageWeightsFlow = MutableStateFlow<List<PackageWeight?>>(emptyList())
     private val packageSelectionsFlow = MutableStateFlow<List<PackageSelectionState>>(emptyList())
@@ -255,7 +255,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     @OptIn(FlowPreview::class)
     private suspend fun observeShippingRates() {
         combine(
-            packagesSelectedFlow.filter { it.isNotEmpty() },
+            selectedPackagesFlow.filter { it.isNotEmpty() },
             shippingAddresses,
             packageWeightsFlow.filter { it.isNotEmpty() },
             customsStatesFlow.filter { it.isNotEmpty() },
@@ -309,7 +309,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     private suspend fun observePackageWeight() {
         combine(
             shipmentItems.filter { it.isNotEmpty() && it.size > selectedShipmentIndexFlow.value },
-            packagesSelectedFlow.filter { it.isNotEmpty() && it.size == shipments.value.size },
+            selectedPackagesFlow.filter { it.isNotEmpty() && it.size == shipments.value.size },
             snapshotFlow { customWeight }
                 .filter { it.isNotEmpty() && it.size == shipments.value.size }
                 .debounce(TYPING_DELAY)
@@ -333,7 +333,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
     private suspend fun observePackageChanges() {
         combine(
-            packagesSelectedFlow.filter { it.isNotEmpty() },
+            selectedPackagesFlow.filter { it.isNotEmpty() },
             packageWeightsFlow.filter { it.isNotEmpty() },
             storeOptions,
             packageSelectionsFlow.filter { it.isNotEmpty() }
@@ -521,8 +521,8 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     }
 
     private fun initFlows(shipmentSize: Int) {
-        if (packagesSelectedFlow.value.size != shipmentSize) {
-            packagesSelectedFlow.value = List(shipmentSize) { null }
+        if (selectedPackagesFlow.value.size != shipmentSize) {
+            selectedPackagesFlow.value = List(shipmentSize) { null }
         }
         if (customsFormDataFlow.value.size != shipmentSize) {
             customsFormDataFlow.value = List(shipmentSize) { null }
@@ -627,7 +627,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     @Suppress("ComplexCondition")
     fun onPurchaseShippingLabel() {
         val selectedShipmentIndex = selectedShipmentIndexFlow.value
-        val selectedPackage = packagesSelectedFlow.value[selectedShipmentIndex]
+        val selectedPackage = selectedPackagesFlow.value[selectedShipmentIndex]
         val addresses = shippingAddresses.value
         val shippingRate = selectedRatesFlow.value[selectedShipmentIndex]?.selectedOption?.rate
         val weight = packageWeightsFlow.value[selectedShipmentIndex]?.totalWeight
@@ -740,7 +740,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     }
 
     fun onPackageSelected(packageData: PackageData) {
-        packagesSelectedFlow.value = packagesSelectedFlow.value.toMutableList().apply {
+        selectedPackagesFlow.value = selectedPackagesFlow.value.toMutableList().apply {
             set(selectedShipmentIndexFlow.value, packageData)
         }
     }

@@ -224,12 +224,12 @@ class ProductListViewModel @Inject constructor(
     }
 
     fun onSearchOpened() {
-        _productList.value = emptyList()
         viewState = viewState.copy(
             isSearchActive = true,
             displaySortAndFilterCard = false,
             isAddProductButtonVisible = false
         )
+        _productList.value = emptyList()
     }
 
     fun onSearchClosed() {
@@ -452,7 +452,10 @@ class ProductListViewModel @Inject constructor(
                     onOpenProduct(selectedProductIdOnBigScreen!!, null)
                 }
             } else {
-                triggerEvent(ProductListEvent.OpenEmptyProduct)
+                // Opening an empty product causes the search input to lose focus
+                if (!isSearching()) {
+                    triggerEvent(ProductListEvent.OpenEmptyProduct)
+                }
             }
         }
     }

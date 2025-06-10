@@ -8,7 +8,6 @@ import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccess
 import com.woocommerce.android.ui.woopos.home.WooPosHomeUIEvent.ExitPosClicked
 import com.woocommerce.android.ui.woopos.home.WooPosHomeUIEvent.SystemBackClicked
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
-import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCartTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ExitConfirmed
@@ -37,7 +36,6 @@ class WooPosHomeViewModelTest {
 
     private val childrenToParentEventReceiver: WooPosChildrenToParentEventReceiver = mock()
     private val parentToChildrenEventSender: WooPosParentToChildrenEventSender = mock()
-    private val wooPosItemsNavigator: WooPosItemsNavigator = mock()
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private val soundHelper: WooPosSoundHelper = mock()
 
@@ -56,6 +54,26 @@ class WooPosHomeViewModelTest {
             verify(parentToChildrenEventSender).sendToChildren(
                 argThat {
                     this is ParentToChildrenEvent.OrderCreated
+                }
+            )
+        }
+
+    @Test
+    fun `when barcode scanned, then pass event to children`() =
+        runTest {
+            // GIVEN
+            whenever(childrenToParentEventReceiver.events).thenReturn(
+                flowOf(ChildToParentEvent.BarcodeScanned("123456789"))
+            )
+
+            // WHEN
+            createViewModel()
+
+            // THEN
+            verify(parentToChildrenEventSender).sendToChildren(
+                argThat {
+                    this is ParentToChildrenEvent.BarcodeScanned &&
+                        barcode == "123456789"
                 }
             )
         }
@@ -395,24 +413,7 @@ class WooPosHomeViewModelTest {
     }
 
     @Test
-    fun `given OrderSuccessfullyPaid by card, then redirect back to items screen`() =
-        runTest {
-            // GIVEN
-            whenever(childrenToParentEventReceiver.events).thenReturn(
-                flowOf(ChildToParentEvent.OrderSuccessfullyPaidByCard)
-            )
-
-            // WHEN
-            createViewModel()
-
-            // THEN
-            verify(wooPosItemsNavigator).sendNavigationEvent(
-                WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateBackToItemListScreen
-            )
-        }
-
-    @Test
-    fun `given OrderSuccessfullyPaid by cash, then redirect back to items screen`() =
+    fun `given OrderSuccessfullyPaid by cash, then play sound`() =
         runTest {
             // GIVEN
             val events = MutableSharedFlow<ChildToParentEvent>()
@@ -423,9 +424,6 @@ class WooPosHomeViewModelTest {
             viewModel.onUIEvent(WooPosHomeUIEvent.OnPaymentCompletedViaCash)
 
             // THEN
-            verify(wooPosItemsNavigator).sendNavigationEvent(
-                WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateBackToItemListScreen
-            )
             verify(soundHelper).playChaChing()
         }
 
@@ -451,7 +449,6 @@ class WooPosHomeViewModelTest {
     private fun createViewModel() = WooPosHomeViewModel(
         childrenToParentEventReceiver,
         parentToChildrenEventSender,
-        wooPosItemsNavigator,
         analyticsTracker,
         soundHelper,
         SavedStateHandle()

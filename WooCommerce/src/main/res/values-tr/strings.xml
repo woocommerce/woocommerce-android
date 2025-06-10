@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-05-06 11:54:04+0000
+Translation-Revision-Date: 2025-05-20 14:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="purchased_shipment_content_description">Satın Alındı</string>
+    <string name="woopos_totals_invalid_coupon_error">Kuponlar uygulanamadı</string>
+    <string name="woopos_coupons_empty_list_create_coupon_label">Kupon oluştur</string>
+    <string name="woopos_coupons_loading_error_coupons_disabled_message">Lütfen WooCommerce Ayarlarında kuponları etkinleştirin.</string>
+    <string name="woopos_coupons_loading_error_coupons_disabled_title">Kupon bulunamadı</string>
+    <string name="woopos_totals_coupons_validation_failed_remove_coupons">Kuponları kaldır</string>
+    <string name="woopos_totals_coupons_validation_failed_edit_order">Siparişi düzenle</string>
+    <string name="woopos_cart_coupon_invalid_subtitle">Kupon uygulanmadı</string>
+    <string name="woopos_coupon_item_expired_label">%s tarihinde sona erdi</string>
     <string name="woo_shipping_split_shipment_merge_unfulfilled_button">Tüm gönderimleri birleştir</string>
     <string name="woo_shipping_split_shipment_merge_unfulfilled_desc">Bu, tamamlanmamış tüm bölünmüş gönderimleri kaldırır ve tüm öğeleri tek bir gönderime taşır.</string>
     <string name="woo_shipping_split_shipment_merge_unfulfilled_title">Tamamlanmamış tüm gönderimleri birleştir</string>

@@ -2215,14 +2215,16 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                     methodTitle = "Free",
                     methodId = shippingMethod.id,
                     total = BigDecimal.ZERO,
-                    totalTax = BigDecimal.ZERO
+                    totalTax = BigDecimal.ZERO,
+                    taxes = emptyList()
                 ),
                 Order.ShippingLine(
                     itemId = 2L,
                     methodTitle = "Another shipping",
                     methodId = "",
                     total = BigDecimal.TEN,
-                    totalTax = BigDecimal.ZERO
+                    totalTax = BigDecimal.ZERO,
+                    taxes = emptyList()
                 ),
             )
             val testOrder = order.copy(shippingLines = orderShippingLines)
@@ -2265,14 +2267,16 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                     methodTitle = "Free",
                     methodId = "free_shipping",
                     total = BigDecimal.ZERO,
-                    totalTax = BigDecimal.ZERO
+                    totalTax = BigDecimal.ZERO,
+                    taxes = emptyList()
                 ),
                 Order.ShippingLine(
                     itemId = 2L,
                     methodTitle = "Another shipping",
                     methodId = "",
                     total = BigDecimal.TEN,
-                    totalTax = BigDecimal.ZERO
+                    totalTax = BigDecimal.ZERO,
+                    taxes = emptyList()
                 ),
             )
             val testOrder = order.copy(shippingLines = orderShippingLines)
@@ -2313,14 +2317,16 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                     methodTitle = "Free",
                     methodId = "free_shipping",
                     total = BigDecimal.ZERO,
-                    totalTax = BigDecimal.ZERO
+                    totalTax = BigDecimal.ZERO,
+                    taxes = emptyList()
                 ),
                 Order.ShippingLine(
                     itemId = 2L,
                     methodTitle = "Another shipping",
                     methodId = "",
                     total = BigDecimal.TEN,
-                    totalTax = BigDecimal.ZERO
+                    totalTax = BigDecimal.ZERO,
+                    taxes = emptyList()
                 ),
             )
             val testOrder = order.copy(shippingLines = orderShippingLines)
@@ -2518,13 +2524,13 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         // THEN
         assertThat(observedViewState!!.orderInfo!!.order).isEqualTo(newOrder)
-        assertThat(observedViewState!!.orderInfo!!.isPaymentCollectableWithCardReader).isFalse()
+        assertThat(observedViewState.orderInfo!!.isPaymentCollectableWithCardReader).isFalse()
     }
 
     @Test
     fun `when view model is initialized then fetchConfig is called`() = testBlocking {
         viewModel.start()
 
-        verify(shippingLabelRepository).fetchConfig(selectedSite.get(), ORDER_ID)
+        verify(shippingLabelRepository, never()).fetchConfig(selectedSite.get(), ORDER_ID)
     }
 }

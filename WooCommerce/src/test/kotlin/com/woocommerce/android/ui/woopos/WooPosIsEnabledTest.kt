@@ -26,6 +26,7 @@ class WooPosIsEnabledTest : BaseUnitTest() {
     private val getWooCoreVersion: GetWooCorePluginCachedVersion = mock {
         on { invoke() }.thenReturn("9.6.0")
     }
+    private val isRemotelyEnabled: WooPOSIsRemotelyEnabled = mock()
 
     private lateinit var sut: WooPosIsEnabled
 
@@ -44,6 +45,7 @@ class WooPosIsEnabledTest : BaseUnitTest() {
             isScreenSizeAllowed = isScreenSizeAllowed,
             isRemoteFeatureFlagEnabled = isRemoteFeatureFlagEnabled,
             getWooCoreVersion = getWooCoreVersion,
+            isRemotelyEnabled = isRemotelyEnabled
         )
     }
 
@@ -117,8 +119,74 @@ class WooPosIsEnabledTest : BaseUnitTest() {
 
     @Test
     fun `given woo version 10_0_1, when invoked, then return true`() = testBlocking {
+        // GIVEN
+        setupPassingConditionsForHigherVersionsCheck()
+        setupPassingConditionsForFeatureSwitchCheck()
+
         whenever(getWooCoreVersion.invoke()).thenReturn("10.0.1")
+
+        // WHEN THEN
         assertTrue(sut())
+    }
+
+    @Test
+    fun `given woo version 10_0_0 and pos switch disabled, when invoked, then return false`() = testBlocking {
+        // GIVEN
+        whenever(getWooCoreVersion.invoke()).thenReturn("10.0.0")
+
+        whenever(
+            isRemotelyEnabled.invoke()
+        ).thenReturn(false)
+
+        setupPassingConditionsForFeatureSwitchCheck()
+
+        // WHEN THEN
+        assertFalse(sut())
+    }
+
+    @Test
+    fun `given woo version 10_0_0 and pos switch enabled, when invoked, then continue to next check`() = testBlocking {
+        // GIVEN
+        whenever(getWooCoreVersion.invoke()).thenReturn("10.0.0")
+
+        whenever(
+            isRemotelyEnabled.invoke()
+        ).thenReturn(true)
+
+        setupPassingConditionsForFeatureSwitchCheck()
+
+        // WHEN THEN
+        assertTrue(sut())
+    }
+
+    @Test
+    fun `given woo version 9_9_0, when invoked, then skip feature switch check`() = testBlocking {
+        // GIVEN
+        whenever(getWooCoreVersion.invoke()).thenReturn("9.9.0")
+        setupPassingConditionsForFeatureSwitchCheck()
+
+        // WHEN THEN
+        assertTrue(sut())
+    }
+
+    private suspend fun setupPassingConditionsForHigherVersionsCheck() {
+        whenever(
+            isRemotelyEnabled.invoke()
+        ).thenReturn(true)
+    }
+
+    private suspend fun setupPassingConditionsForFeatureSwitchCheck() {
+        val mockSite = mock<SiteModel>()
+        whenever(selectedSite.getOrNull()).thenReturn(mockSite)
+
+        whenever(isRemoteFeatureFlagEnabled.invoke(WOO_POS)).thenReturn(true)
+
+        whenever(isScreenSizeAllowed()).thenReturn(true)
+
+        val mockSiteSettings = mock<WCSettingsModel>()
+        whenever(mockSiteSettings.countryCode).thenReturn("US")
+        whenever(mockSiteSettings.currencyCode).thenReturn("USD")
+        whenever(wooCommerceStore.getSiteSettings(any())).thenReturn(mockSiteSettings)
     }
 
     private fun buildSiteSettings(

@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.home.items
 
-import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
@@ -33,7 +32,7 @@ class WooPosItemsSearchHelperTest {
     private val mockChildToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val mockParentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock()
 
-    private lateinit var viewStateFlow: MutableStateFlow<WooPosItemsViewState>
+    private lateinit var viewStateFlow: MutableStateFlow<WooPosItemsToolbarViewState>
     private lateinit var searchHelper: WooPosItemsSearchHelper
 
     @Before
@@ -55,8 +54,8 @@ class WooPosItemsSearchHelperTest {
         val result = searchHelper.getInitialSearchState()
 
         // THEN
-        assertThat(result).isInstanceOf(WooPosItemsViewState.SearchState.Visible::class.java)
-        val visibleState = result as WooPosItemsViewState.SearchState.Visible
+        assertThat(result).isInstanceOf(WooPosItemsToolbarViewState.SearchState.Visible::class.java)
+        val visibleState = result as WooPosItemsToolbarViewState.SearchState.Visible
         assertThat(visibleState.state).isInstanceOf(WooPosSearchInputState.Closed::class.java)
     }
 
@@ -88,8 +87,8 @@ class WooPosItemsSearchHelperTest {
         searchHelper.onSearchChanged(searchQuery, cursorPosition)
 
         // THEN
-        val currentState = viewStateFlow.value as WooPosItemsViewState.ProductList
-        val searchState = currentState.search as WooPosItemsViewState.SearchState.Visible
+        val currentState = viewStateFlow.value as WooPosItemsToolbarViewState.ProductList
+        val searchState = currentState.search as WooPosItemsToolbarViewState.SearchState.Visible
         val openState = searchState.state as WooPosSearchInputState.Open
         assertThat(openState.input).isInstanceOf(WooPosSearchInputState.Open.Input.Query::class.java)
         val queryInput = openState.input as WooPosSearchInputState.Open.Input.Query
@@ -108,8 +107,8 @@ class WooPosItemsSearchHelperTest {
         searchHelper.onSearchChanged(emptyQuery, cursorPosition)
 
         // THEN
-        val currentState = viewStateFlow.value as WooPosItemsViewState.ProductList
-        val searchState = currentState.search as WooPosItemsViewState.SearchState.Visible
+        val currentState = viewStateFlow.value as WooPosItemsToolbarViewState.ProductList
+        val searchState = currentState.search as WooPosItemsToolbarViewState.SearchState.Visible
         val openState = searchState.state as WooPosSearchInputState.Open
         assertThat(openState.input).isInstanceOf(WooPosSearchInputState.Open.Input.Hint::class.java)
     }
@@ -124,8 +123,8 @@ class WooPosItemsSearchHelperTest {
         searchHelper.onCloseSearchClicked()
 
         // THEN
-        val currentState = viewStateFlow.value as WooPosItemsViewState.ProductList
-        val searchState = currentState.search as WooPosItemsViewState.SearchState.Visible
+        val currentState = viewStateFlow.value as WooPosItemsToolbarViewState.ProductList
+        val searchState = currentState.search as WooPosItemsToolbarViewState.SearchState.Visible
         assertThat(searchState.state).isInstanceOf(WooPosSearchInputState.Closed::class.java)
     }
 
@@ -140,8 +139,8 @@ class WooPosItemsSearchHelperTest {
             searchHelper.onClearSearchClicked()
 
             // THEN
-            val currentState = viewStateFlow.value as WooPosItemsViewState.ProductList
-            val searchState = currentState.search as WooPosItemsViewState.SearchState.Visible
+            val currentState = viewStateFlow.value as WooPosItemsToolbarViewState.ProductList
+            val searchState = currentState.search as WooPosItemsToolbarViewState.SearchState.Visible
             val openState = searchState.state as WooPosSearchInputState.Open
             assertThat(openState.input).isInstanceOf(WooPosSearchInputState.Open.Input.Hint::class.java)
         }
@@ -158,8 +157,8 @@ class WooPosItemsSearchHelperTest {
         advanceUntilIdle()
 
         // THEN
-        val currentState = viewStateFlow.value as WooPosItemsViewState.ProductList
-        val searchState = currentState.search as WooPosItemsViewState.SearchState.Visible
+        val currentState = viewStateFlow.value as WooPosItemsToolbarViewState.ProductList
+        val searchState = currentState.search as WooPosItemsToolbarViewState.SearchState.Visible
         val openState = searchState.state as WooPosSearchInputState.Open
         assertThat(openState.isLoading).isTrue
     }
@@ -175,104 +174,101 @@ class WooPosItemsSearchHelperTest {
         searchHelper.initialize(CoroutineScope(coroutinesTestRule.testDispatcher), viewStateFlow)
 
         // THEN
-        val currentState = viewStateFlow.value as WooPosItemsViewState.ProductList
-        val searchState = currentState.search as WooPosItemsViewState.SearchState.Visible
+        val currentState = viewStateFlow.value as WooPosItemsToolbarViewState.ProductList
+        val searchState = currentState.search as WooPosItemsToolbarViewState.SearchState.Visible
         val openState = searchState.state as WooPosSearchInputState.Open
         assertThat(openState.isLoading).isFalse
     }
 
     @Test
-    fun `when animation completes, then hasAnimationPlayed flag is set to true`() = runTest {
+    fun `given search with loading state true, when tab switched and search opened, then loading state is reset`() = runTest {
         // GIVEN
         searchHelper.initialize(CoroutineScope(coroutinesTestRule.testDispatcher), viewStateFlow)
 
-        // WHEN
-        searchHelper.onAnimationComplete()
-        advanceUntilIdle()
-
-        // THEN
-        val currentState = viewStateFlow.value as WooPosItemsViewState.ProductList
-        val searchState = currentState.search as WooPosItemsViewState.SearchState.Visible
-        val openState = searchState.state as WooPosSearchInputState.Open
-        assertThat(openState.hasAnimationPlayed).isTrue
-    }
-
-    @Test
-    fun `given animation completed, when search changed, then hasAnimationPlayed is preserved`() = runTest {
-        // GIVEN
-        searchHelper.initialize(CoroutineScope(coroutinesTestRule.testDispatcher), viewStateFlow)
-        searchHelper.onAnimationComplete()
-
-        // WHEN
-
-        searchHelper.onSearchChanged("test", "test".length)
-        advanceUntilIdle()
-
-        // THEN
-        val afterReopenState = viewStateFlow.value as WooPosItemsViewState.ProductList
-        val afterReopenSearchState = afterReopenState.search as WooPosItemsViewState.SearchState.Visible
-        assertThat(afterReopenSearchState.state).isInstanceOf(WooPosSearchInputState.Open::class.java)
-
-        val openState = afterReopenSearchState.state as WooPosSearchInputState.Open
-        assertThat(openState.hasAnimationPlayed).isTrue
-    }
-
-    @Test
-    fun `given animation has played, when onClearSearchClicked, then hasAnimationPlayed is false`() = runTest {
-        // GIVEN
-        searchHelper.initialize(CoroutineScope(coroutinesTestRule.testDispatcher), viewStateFlow)
-
-        searchHelper.onAnimationComplete()
-
-        // WHEN
-        searchHelper.onClearSearchClicked()
-
-        // THEN
-        val currentState = viewStateFlow.value as WooPosItemsViewState.ProductList
-        val searchState = currentState.search as WooPosItemsViewState.SearchState.Visible
-        val openState = searchState.state as WooPosSearchInputState.Open
-        assertThat(openState.hasAnimationPlayed).isFalse
-    }
-
-    @Test
-    fun `given animation complete, when order successful paid, then state is closed`() = runTest {
-        // GIVEN
-        searchHelper.initialize(CoroutineScope(coroutinesTestRule.testDispatcher), viewStateFlow)
-        searchHelper.onAnimationComplete()
-
-        // WHEN
         whenever(mockParentToChildrenEventReceiver.events).thenReturn(
-            flowOf(
-                ParentToChildrenEvent.OrderSuccessfullyPaid(
-                    ParentToChildrenEvent.OrderSuccessfullyPaid.PaymentMethod.CARD
+            flowOf(ParentToChildrenEvent.SearchEvent.Started)
+        )
+        advanceUntilIdle()
+
+        viewStateFlow.value = WooPosItemsToolbarViewState.CouponList(
+            search = WooPosItemsToolbarViewState.SearchState.Visible(
+                state = WooPosSearchInputState.Closed
+            ),
+            tabs = listOf(
+                WooPosItemsToolbarViewState.Tab.Products(
+                    "Products",
+                    highlightLevel = WooPosItemsToolbarViewState.Tab.HighlightLevel.Normal
+                ),
+                WooPosItemsToolbarViewState.Tab.Coupons(
+                    "Coupons",
+                    highlightLevel = WooPosItemsToolbarViewState.Tab.HighlightLevel.Full
                 )
             )
         )
+
+        // WHEN
+        searchHelper.onSearchChanged("", 0)
+
+        // THEN
+        val currentState = viewStateFlow.value as WooPosItemsToolbarViewState.CouponList
+        val searchState = currentState.search as WooPosItemsToolbarViewState.SearchState.Visible
+        val openState = searchState.state as WooPosSearchInputState.Open
+        assertThat(openState.isLoading).isFalse
+    }
+
+    @Test
+    fun `given coupons screen, when search event started received, then loading state remains false`() = runTest {
+        // GIVEN
+        viewStateFlow.value = WooPosItemsToolbarViewState.CouponList(
+            search = WooPosItemsToolbarViewState.SearchState.Visible(
+                state = WooPosSearchInputState.Open(
+                    input = WooPosSearchInputState.Open.Input.Hint("Search coupons"),
+                    isLoading = false
+                )
+            ),
+            tabs = listOf(
+                WooPosItemsToolbarViewState.Tab.Products(
+                    "Products",
+                    highlightLevel = WooPosItemsToolbarViewState.Tab.HighlightLevel.Normal
+                ),
+                WooPosItemsToolbarViewState.Tab.Coupons(
+                    "Coupons",
+                    highlightLevel = WooPosItemsToolbarViewState.Tab.HighlightLevel.Full
+                )
+            )
+        )
+
+        whenever(mockParentToChildrenEventReceiver.events).thenReturn(
+            flowOf(ParentToChildrenEvent.SearchEvent.Started)
+        )
+
+        // WHEN
         searchHelper.initialize(CoroutineScope(coroutinesTestRule.testDispatcher), viewStateFlow)
         advanceUntilIdle()
 
         // THEN
-        val currentState = viewStateFlow.value as WooPosItemsViewState.ProductList
-        val searchState = currentState.search as WooPosItemsViewState.SearchState.Visible
-        assertThat(searchState.state).isInstanceOf(WooPosSearchInputState.Closed::class.java)
+        val currentState = viewStateFlow.value as WooPosItemsToolbarViewState.CouponList
+        val searchState = currentState.search as WooPosItemsToolbarViewState.SearchState.Visible
+        val openState = searchState.state as WooPosSearchInputState.Open
+        assertThat(openState.isLoading).isFalse
     }
 
-    private fun createContentState(): WooPosItemsViewState.ProductList {
-        return WooPosItemsViewState.ProductList(
-            search = WooPosItemsViewState.SearchState.Visible(
+    private fun createContentState(): WooPosItemsToolbarViewState.ProductList {
+        return WooPosItemsToolbarViewState.ProductList(
+            search = WooPosItemsToolbarViewState.SearchState.Visible(
                 state = WooPosSearchInputState.Open(
                     input = WooPosSearchInputState.Open.Input.Hint("Search products"),
                     isLoading = false
                 )
             ),
             tabs = listOf(
-                WooPosItemsViewState.Tab(
-                    R.string.woopos_products_screen_title,
-                    highlightLevel = WooPosItemsViewState.Tab.HighlightLevel.Full
+                WooPosItemsToolbarViewState.Tab.Products(
+                    "Products",
+                    highlightLevel = WooPosItemsToolbarViewState.Tab.HighlightLevel.Full
                 ),
-                WooPosItemsViewState.Tab(
-                    R.string.woopos_coupons_screen_title,
-                    highlightLevel = WooPosItemsViewState.Tab.HighlightLevel.Normal
+                WooPosItemsToolbarViewState.Tab.Coupons(
+                    "Coupons",
+                    highlightLevel = WooPosItemsToolbarViewState.Tab.HighlightLevel.Normal
                 )
             )
         )

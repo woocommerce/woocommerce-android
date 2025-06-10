@@ -32,6 +32,7 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val resourceProvider: ResourceProvider,
     private val fetchPredefinedPackages: FetchPredefinedPackagesFromStore,
+    private val updateSavedCarrierPackages: UpdateSavedCarrierPackages,
     private val packageRepository: WooShippingLabelPackageRepository
 ) : ScopedViewModel(savedState) {
 
@@ -269,6 +270,13 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
             }
             viewState.copy(
                 predefinedPackagesState = predefinedPackages.copy(carrierPackages = updatedCarrierPackages)
+            )
+        }
+        launch {
+            updateSavedCarrierPackages(
+                savePackage = isStarred,
+                packageId = packageData.id,
+                carrierPackages = _viewState.value.predefinedPackagesData?.carrierPackages ?: emptyMap()
             )
         }
     }

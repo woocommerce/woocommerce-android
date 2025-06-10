@@ -7,15 +7,15 @@ import com.woocommerce.android.ui.woopos.common.util.WooPosSoundHelper
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.CheckoutClicked
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.CouponsRemoved
-import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.ItemClickedInProductSelector
+import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.ItemClickedInItemsList
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderCreated
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccessfullyPaid.PaymentMethod
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.SearchEvent.ChangedQuery
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.SearchEvent.RecentSearchSelected
+import com.woocommerce.android.ui.woopos.home.WooPosHomeState.BarcodeInfoDialog
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ExitConfirmationDialog
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ProductsInfoDialog
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ScreenPositionState
-import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCartTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
@@ -31,7 +31,6 @@ import javax.inject.Inject
 class WooPosHomeViewModel @Inject constructor(
     private val childrenToParentEventReceiver: WooPosChildrenToParentEventReceiver,
     private val parentToChildrenEventSender: WooPosParentToChildrenEventSender,
-    private val wooPosItemsNavigator: WooPosItemsNavigator,
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val soundHelper: WooPosSoundHelper,
     savedStateHandle: SavedStateHandle,
@@ -42,6 +41,7 @@ class WooPosHomeViewModel @Inject constructor(
         initialValue = WooPosHomeState(
             screenPositionState = ScreenPositionState.Cart,
             productsInfoDialog = ProductsInfoDialog(isVisible = false),
+            barcodeInfoDialog = BarcodeInfoDialog(isVisible = false),
             exitConfirmationDialog = ExitConfirmationDialog(isVisible = false),
         )
     )
@@ -97,6 +97,12 @@ class WooPosHomeViewModel @Inject constructor(
                 )
             }
 
+            WooPosHomeUIEvent.DismissBarcodeInfoDialog -> {
+                _state.value = _state.value.copy(
+                    barcodeInfoDialog = BarcodeInfoDialog(isVisible = false)
+                )
+            }
+
             WooPosHomeUIEvent.OnPaymentCompletedViaCash -> onOrderSuccessfullyPaid(
                 PaymentMethod.CASH
             )
@@ -128,9 +134,9 @@ class WooPosHomeViewModel @Inject constructor(
                         sendEventToChildren(ParentToChildrenEvent.BackFromCheckoutToCartClicked)
                     }
 
-                    is ChildToParentEvent.ItemClickedInProductSelector -> {
+                    is ChildToParentEvent.ItemClickedInItemsList -> {
                         sendEventToChildren(
-                            ItemClickedInProductSelector(
+                            ItemClickedInItemsList(
                                 itemData = event.itemData,
                                 eventForTracking = event.eventForTracking
                             )
@@ -178,6 +184,12 @@ class WooPosHomeViewModel @Inject constructor(
                         )
                     }
 
+                    ChildToParentEvent.BarcodeInfoMenuItemClicked -> {
+                        _state.value = _state.value.copy(
+                            barcodeInfoDialog = BarcodeInfoDialog(isVisible = true)
+                        )
+                    }
+
                     is ChildToParentEvent.ToastMessageDisplayed -> {
                         viewModelScope.launch {
                             _toastEvent.emit(event.message)
@@ -212,6 +224,10 @@ class WooPosHomeViewModel @Inject constructor(
                     ChildToParentEvent.RefreshProductList -> {
                         sendEventToChildren(ParentToChildrenEvent.RefreshProductList)
                     }
+
+                    is ChildToParentEvent.BarcodeScanned -> sendEventToChildren(
+                        ParentToChildrenEvent.BarcodeScanned(event.barcode)
+                    )
                 }
             }
         }
@@ -264,10 +280,6 @@ class WooPosHomeViewModel @Inject constructor(
     private fun onOrderSuccessfullyPaid(paymentMethod: PaymentMethod) {
         viewModelScope.launch {
             soundHelper.playChaChing()
-
-            wooPosItemsNavigator.sendNavigationEvent(
-                WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateBackToItemListScreen
-            )
         }
         _state.value = _state.value.copy(
             screenPositionState = ScreenPositionState.Checkout.FullScreenTotals

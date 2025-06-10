@@ -19,15 +19,44 @@ class WooShippingLabelPackageRestClient @Inject constructor(
         ).toWooPayload()
     }
 
+    /**
+     * Creates a new custom package.
+     */
     suspend fun postNewCustomPackage(
         site: SiteModel,
         requestData: List<CustomPackageCreationRequestData>
-    ): WooPayload<CustomPackageCreationResponse> {
+    ): WooPayload<PackageCreationResponse> {
         return wooNetwork.executePostGsonRequest(
             site = site,
             path = URL,
             body = mapOf("custom" to requestData),
-            clazz = CustomPackageCreationResponse::class.java,
+            clazz = PackageCreationResponse::class.java,
+        ).toWooPayload()
+    }
+
+    /**
+     * Updates the saved carrier packages.
+     */
+    suspend fun postPredefinedPackages(
+        site: SiteModel,
+        requestData: Map<String, List<String>>
+    ): WooPayload<PackageCreationResponse> {
+        return wooNetwork.executePostGsonRequest(
+            site = site,
+            path = URL,
+            body = mapOf("predefined" to requestData),
+            clazz = PackageCreationResponse::class.java,
+        ).toWooPayload()
+    }
+
+    suspend fun deleteSavedCarrierPackage(
+        site: SiteModel,
+        packageId: String
+    ): WooPayload<PackageCreationResponse> {
+        return wooNetwork.executeDeleteGsonRequest(
+            site = site,
+            path = "$URL/predefined/$packageId",
+            clazz = PackageCreationResponse::class.java,
         ).toWooPayload()
     }
 

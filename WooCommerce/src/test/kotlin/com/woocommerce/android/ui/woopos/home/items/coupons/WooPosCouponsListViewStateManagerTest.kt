@@ -23,6 +23,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doSuspendableAnswer
@@ -697,7 +698,7 @@ class WooPosCouponsListViewStateManagerTest {
         }
 
     @Test
-    fun `when next page loads, then tracks evnet`() = runTest {
+    fun `when next page loads without search query, then tracks event with LIST source type`() = runTest {
         // GIVEN
         whenever(couponsDataSource.clearCacheAndFetchFirstPage()).doSuspendableAnswer {
             couponsDataFlow.emit(listOf(CouponTestUtils.generateTestCoupon(0L))) // cache
@@ -723,6 +724,42 @@ class WooPosCouponsListViewStateManagerTest {
                     WooPosAnalyticsEvent.Event.ItemsNextPageLoaded(
                         source = WooPosAnalyticsEventConstant.ItemsListSource.COUPON,
                         sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST
+                    )
+                )
+            )
+
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `when next page loads with search query, then tracks event with SEARCH_RESULT source type`() = runTest {
+        // GIVEN
+        whenever(couponsDataSource.clearCacheAndFetchFirstPage(any())).doSuspendableAnswer {
+            couponsDataFlow.emit(listOf(CouponTestUtils.generateTestCoupon(0L))) // cache
+            delay(1) // workaround for bug in mockito
+            Result.success(MORE_PAGES_AVAILABLE)
+        }
+        whenever(couponsDataSource.loadMore()).doSuspendableAnswer {
+            delay(1) // workaround for bug in mockito
+            Result.success(MORE_PAGES_AVAILABLE)
+        }
+
+        sat.setSearchQuery("test", testViewModelScope)
+        advanceUntilIdle()
+
+        sat.viewState.test {
+            // WHEN
+            sat.endOfListReached(testViewModelScope)
+
+            advanceUntilIdle()
+
+            // THEN
+            verify(analyticsTracker).track(
+                eq(
+                    WooPosAnalyticsEvent.Event.ItemsNextPageLoaded(
+                        source = WooPosAnalyticsEventConstant.ItemsListSource.COUPON,
+                        sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.SEARCH_RESULT
                     )
                 )
             )

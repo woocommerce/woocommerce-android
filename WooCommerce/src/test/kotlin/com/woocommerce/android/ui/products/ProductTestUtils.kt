@@ -61,6 +61,42 @@ object ProductTestUtils {
         productCombinesVariationQuantities: Boolean = false,
         productAttributes: String = DEFAULT_PRODUCT_ATTRIBUTES
     ): Product {
+        return generateWCProductModel(
+            productId = productId,
+            parentID = parentID,
+            isVirtual = isVirtual,
+            isVariable = isVariable,
+            isPurchasable = isPurchasable,
+            isDownloadable = isDownloadable,
+            customStatus = customStatus,
+            variationIds = variationIds,
+            productType = productType,
+            amount = amount,
+            productName = productName,
+            imageUrl = imageUrl,
+            isStockManaged = isStockManaged,
+            productCombinesVariationQuantities = productCombinesVariationQuantities,
+            productAttributes = productAttributes
+        ).toAppModel()
+    }
+
+    fun generateWCProductModel(
+        productId: Long = 1L,
+        parentID: Long = 0L,
+        isVirtual: Boolean = false,
+        isVariable: Boolean = false,
+        isPurchasable: Boolean = true,
+        isDownloadable: Boolean = true,
+        customStatus: String? = null,
+        variationIds: String = if (isVariable) "[123]" else "[]",
+        productType: String? = null,
+        amount: String = "20.00",
+        productName: String = "product $productId",
+        imageUrl: String? = null,
+        isStockManaged: Boolean = false,
+        productCombinesVariationQuantities: Boolean = false,
+        productAttributes: String = DEFAULT_PRODUCT_ATTRIBUTES
+    ): WCProductModel {
         return WCProductModel(
             dateCreated = "2018-01-05T05:14:30Z",
             localSiteId = LocalId(2),
@@ -94,7 +130,7 @@ object ProductTestUtils {
             manageStock = isStockManaged,
             combineVariationQuantities = productCombinesVariationQuantities,
             permalink = "https://example.com/product/1",
-        ).toAppModel()
+        )
     }
 
     fun generateProductWithTagsAndCategories(productId: Long = 1L): Product {

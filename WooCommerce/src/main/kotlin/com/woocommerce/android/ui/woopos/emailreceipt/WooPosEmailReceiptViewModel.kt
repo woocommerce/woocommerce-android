@@ -61,10 +61,10 @@ class WooPosEmailReceiptViewModel @Inject constructor(
             val result = repository.sendReceiptByEmail(orderId, currentState.email)
 
             _state.value = if (result.isSuccess) {
-                analyticsTracker.track(EmailReceiptSendSuccess)
+                analyticsTracker.track(EmailReceiptSendSuccess(repository.posReceiptsAreEnabled()))
                 WooPosEmailReceiptState.Sent
             } else {
-                analyticsTracker.track(EmailReceiptSendFailed)
+                analyticsTracker.track(EmailReceiptSendFailed(repository.posReceiptsAreEnabled()))
                 val currentState = _state.value as? WooPosEmailReceiptState.Email ?: return@launch
                 currentState.copy(
                     errorMessage = resourceProvider.getString(R.string.woopos_email_receipt_send_error),

@@ -94,6 +94,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
             methodId = it.toString(),
             itemId = it.toLong(),
             totalTax = BigDecimal.ZERO,
+            taxes = emptyList()
         )
     }
     private val defaultOriginAddresses = listOf(

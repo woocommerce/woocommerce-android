@@ -183,14 +183,24 @@ class WooPosCouponsListViewStateManager @Inject constructor(
             } else {
                 canLoadMore = result.getOrNull() ?: false
                 fetchingState.emit(IDLE)
-                analyticsTracker.track(
-                    WooPosAnalyticsEvent.Event.ItemsNextPageLoaded(
-                        source = WooPosAnalyticsEventConstant.ItemsListSource.COUPON,
-                        sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST
-                    )
-                )
+                trackNextPageLoaded()
             }
         }
+    }
+
+    private suspend fun trackNextPageLoaded() {
+        val sourceType = if (currentSearchQuery.get().isNullOrBlank()) {
+            WooPosAnalyticsEventConstant.ItemsListSourceType.LIST
+        } else {
+            WooPosAnalyticsEventConstant.ItemsListSourceType.SEARCH_RESULT
+        }
+
+        analyticsTracker.track(
+            WooPosAnalyticsEvent.Event.ItemsNextPageLoaded(
+                source = WooPosAnalyticsEventConstant.ItemsListSource.COUPON,
+                sourceType = sourceType
+            )
+        )
     }
 
     // This method should eventually be moved out of this class

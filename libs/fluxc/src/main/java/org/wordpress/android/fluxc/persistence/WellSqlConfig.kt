@@ -13,7 +13,6 @@ import com.yarolegovich.wellsql.WellSql
 import com.yarolegovich.wellsql.WellTableManager
 import org.wordpress.android.fluxc.BuildConfig
 import org.wordpress.android.fluxc.model.plugin.SitePluginModel
-import org.wordpress.android.fluxc.model.plugin.WPOrgPluginModel
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.AppLog.T
 import kotlin.annotation.AnnotationRetention.SOURCE
@@ -41,7 +40,7 @@ open class WellSqlConfig : DefaultWellConfig {
     annotation class AddOn
 
     override fun getDbVersion(): Int {
-        return 214
+        return 216
     }
 
     override fun getDbName(): String {
@@ -2180,6 +2179,16 @@ open class WellSqlConfig : DefaultWellConfig {
 
                 213 -> migrateAddOn(ADDON_WOOCOMMERCE, version) {
                     db.execSQL("DROP TABLE IF EXISTS WCProductReviewModel")
+                }
+
+                214 -> migrate(version) {
+                    db.execSQL("DROP TABLE IF EXISTS WCTopPerformerProductModel")
+                    db.execSQL("DROP TABLE IF EXISTS PluginDirectoryModel")
+                    db.execSQL("DROP TABLE IF EXISTS WPOrgPluginModel")
+                }
+
+                215 -> migrateAddOn(ADDON_WOOCOMMERCE, version) {
+                    db.execSQL("DROP TABLE IF EXISTS WCProductSettingsModel")
                 }
             }
         }

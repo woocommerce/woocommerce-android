@@ -41,7 +41,7 @@ class ObserveStoreOptions @Inject constructor(
         }
     }
 
-    private fun getStoreOptionsFromSiteSettings(wooStore: WooCommerceStore, site: SelectedSite) =
+    private suspend fun getStoreOptionsFromSiteSettings(wooStore: WooCommerceStore, site: SelectedSite) =
         wooStore.getProductSettings(site.get())?.let { productSettings ->
             StoreOptionsModel.EMPTY.copy(
                 weightUnit = productSettings.weightUnit,
