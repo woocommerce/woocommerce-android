@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.common.data.searchbyidentifier
 
-import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.woopos.common.barcode.WooPosBarcodeFormat
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsLRUCache
@@ -8,7 +7,7 @@ import javax.inject.Inject
 
 class WooPosSearchByIdentifierLocal @Inject constructor(
     private val productsCache: WooPosProductsCache,
-    private val variationsCache: WooPosVariationsLRUCache<Long, List<ProductVariation>>,
+    private val variationsCache: WooPosVariationsLRUCache,
     private val checkDigitRemover: WooPosSearchByIdentifierCheckDigitRemover
 ) {
     @Suppress("ReturnCount")
@@ -35,7 +34,7 @@ class WooPosSearchByIdentifierLocal @Inject constructor(
             }?.let { return WooPosSearchByIdentifierResult.Success(it) }
         }
 
-        val allVariations = variationsCache.getAll().values.flatten()
+        val allVariations = variationsCache.getAll()
         for (query in searchQueries) {
             allVariations.firstOrNull { variation ->
                 variation.globalUniqueId.equals(query, ignoreCase = true)

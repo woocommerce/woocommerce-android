@@ -7,6 +7,7 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.barcode.WooPosBarcodeFormat
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
+import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsLRUCache
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.CoroutineDispatcher
@@ -29,6 +30,7 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
     private val selectedSite: SelectedSite,
     private val productsCache: WooPosProductsCache,
     private val productStore: WCProductStore,
+    private val variationsCache: WooPosVariationsLRUCache,
     private val checkDigitRemover: WooPosSearchByIdentifierCheckDigitRemover,
     @LimitedConcurrencyDispatcher private val searchDispatcher: CoroutineDispatcher,
 ) {
@@ -220,6 +222,7 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
         )?.toAppModel()
 
         return if (variation != null) {
+            variationsCache.add(variation.remoteProductId, variation)
             WooPosSearchByIdentifierResult.VariationSuccess(variation)
         } else {
             WooPosSearchByIdentifierResult.Failure(

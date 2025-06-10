@@ -17,7 +17,7 @@ import javax.inject.Singleton
 @Singleton
 class WooPosVariationsDataSource @Inject constructor(
     private val handler: VariationListHandler,
-    private val variationCache: WooPosVariationsLRUCache<Long, List<ProductVariation>>,
+    private val variationCache: WooPosVariationsLRUCache,
     private val variationFilterConfig: WooPosVariationsTypesFilterConfig
 ) {
     suspend fun getCachedVariations(productId: Long): List<ProductVariation> {
