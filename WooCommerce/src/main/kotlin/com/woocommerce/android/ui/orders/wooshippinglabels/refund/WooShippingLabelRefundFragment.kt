@@ -57,7 +57,11 @@ class WooShippingLabelRefundFragment : BaseFragment(), BackPressListener {
     private fun bindEventListener() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is ShowSnackbar -> uiMessageResolver.getSnack(event.message, *event.args).show()
+                is ShowSnackbar -> {
+                    @Suppress("SpreadOperator")
+                    uiMessageResolver.getSnack(event.message, *event.args).show()
+                }
+
                 is Exit -> navigateBackWithResult(KEY_REFUND_SHIPPING_LABEL_RESULT, true)
                 else -> event.isHandled = false
             }
