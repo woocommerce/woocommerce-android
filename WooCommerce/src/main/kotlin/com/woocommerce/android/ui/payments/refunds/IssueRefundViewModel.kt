@@ -263,13 +263,13 @@ class IssueRefundViewModel @Inject constructor(
 
             refundItems.value = items.filter { it.maxQuantity > 0 }
 
-            /* Grab all shipping lines listed in the Order, but remove those that are already refunded previously) */
+            /* Grab all shipping lines listed in the Order, but remove those that are already refunded previously */
             val shippingLines = order.shippingLines
                 .filter { order.refundableShippingLineIds.contains(it.itemId) }
                 .map { ShippingRefundListItem(it, isSelected = true) }
             refundShippingLines.value = shippingLines
 
-            /* Grab all fees lines listed in the Order, but remove those that are already refunded previously) */
+            /* Grab all fees lines listed in the Order, but remove those that are already refunded previously */
             val feeLines = order.feesLines
                 .filter { order.refundableFeeLineIds.contains(it.id) }
                 .map { FeeRefundListItem(it, isSelected = true) }
