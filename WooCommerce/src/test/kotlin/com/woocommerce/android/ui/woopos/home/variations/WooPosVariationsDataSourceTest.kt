@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.home.variations
 
-import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.variations.selector.VariationListHandler
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariationsTypesFilterConfig
@@ -64,7 +63,7 @@ class WooPosVariationsDataSourceTest {
     )
 
     private val handler: VariationListHandler = mock()
-    private val variationsCache: WooPosVariationsLRUCache<Long, List<ProductVariation>> = mock()
+    private val variationsCache: WooPosVariationsLRUCache = mock()
 
     @Test
     fun `given force refresh, when fetchFirstPage called, then should clear cache`() = runTest {

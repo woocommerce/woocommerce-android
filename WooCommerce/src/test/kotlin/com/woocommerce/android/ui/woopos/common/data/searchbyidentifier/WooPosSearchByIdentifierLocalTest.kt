@@ -25,7 +25,7 @@ class WooPosSearchByIdentifierLocalTest {
 
     private lateinit var sut: WooPosSearchByIdentifierLocal
     private val productsCache: WooPosProductsCache = mock()
-    private val variationsCache: WooPosVariationsLRUCache<Long, List<ProductVariation>> = mock()
+    private val variationsCache: WooPosVariationsLRUCache = mock()
     private val checkDigitRemover: WooPosSearchByIdentifierCheckDigitRemover = mock()
 
     @Before
@@ -39,7 +39,7 @@ class WooPosSearchByIdentifierLocalTest {
         val identifier = "1234567890123"
         val product = createProduct(globalUniqueId = identifier)
         whenever(productsCache.getAll()).thenReturn(listOf(product))
-        whenever(variationsCache.get(product.remoteId)).thenReturn(emptyList())
+        whenever(variationsCache.get(product.remoteId)).thenReturn(emptyList<ProductVariation>())
 
         // WHEN
         val result = sut(identifier, WooPosBarcodeFormat.FormatEAN13)
@@ -54,7 +54,7 @@ class WooPosSearchByIdentifierLocalTest {
         val identifier = "SKU123"
         val product = createProduct(sku = identifier)
         whenever(productsCache.getAll()).thenReturn(listOf(product))
-        whenever(variationsCache.get(product.remoteId)).thenReturn(emptyList())
+        whenever(variationsCache.get(product.remoteId)).thenReturn(emptyList<ProductVariation>())
 
         // WHEN
         val result = sut(identifier, WooPosBarcodeFormat.FormatUnknown)
@@ -70,7 +70,7 @@ class WooPosSearchByIdentifierLocalTest {
         val identifierWithoutCheckDigit = "123456789012"
         val product = createProduct(globalUniqueId = identifierWithoutCheckDigit)
         whenever(productsCache.getAll()).thenReturn(listOf(product))
-        whenever(variationsCache.get(product.remoteId)).thenReturn(emptyList())
+        whenever(variationsCache.get(product.remoteId)).thenReturn(emptyList<ProductVariation>())
         whenever(checkDigitRemover(identifier, WooPosBarcodeFormat.FormatEAN13))
             .thenReturn(identifierWithoutCheckDigit)
 
@@ -100,7 +100,7 @@ class WooPosSearchByIdentifierLocalTest {
         val identifier = "ABC123"
         val product = createProduct(globalUniqueId = "abc123")
         whenever(productsCache.getAll()).thenReturn(listOf(product))
-        whenever(variationsCache.get(product.remoteId)).thenReturn(emptyList())
+        whenever(variationsCache.get(product.remoteId)).thenReturn(emptyList<ProductVariation>())
 
         // WHEN
         val result = sut(identifier, WooPosBarcodeFormat.FormatUnknown)
@@ -115,7 +115,7 @@ class WooPosSearchByIdentifierLocalTest {
         val identifier = "SKU123"
         val product = createProduct(sku = "sku123")
         whenever(productsCache.getAll()).thenReturn(listOf(product))
-        whenever(variationsCache.get(product.remoteId)).thenReturn(emptyList())
+        whenever(variationsCache.get(product.remoteId)).thenReturn(emptyList<ProductVariation>())
 
         // WHEN
         val result = sut(identifier, WooPosBarcodeFormat.FormatUnknown)

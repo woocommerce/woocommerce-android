@@ -5,9 +5,10 @@ import com.woocommerce.android.model.ProductVariation
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class WooPosVariationsLRUCache @Inject constructor() {
-
     companion object {
         private const val VARIATION_CACHE_MAX_SIZE = 50
     }
@@ -31,7 +32,10 @@ class WooPosVariationsLRUCache @Inject constructor() {
         mutex.withLock {
             val list = cache.get(key)
             if (list != null) {
-                val updatedList = list.toMutableList().apply { add(value) }
+                val updatedList = list.toMutableList().apply {
+                    removeAll { it.remoteVariationId == value.remoteVariationId }
+                    add(value)
+                }
                 cache.put(key, updatedList)
             } else {
                 cache.put(key, listOf(value))

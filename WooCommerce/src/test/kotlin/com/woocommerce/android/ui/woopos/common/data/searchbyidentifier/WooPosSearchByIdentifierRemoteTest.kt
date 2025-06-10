@@ -5,6 +5,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.woopos.common.barcode.WooPosBarcodeFormat
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
+import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsLRUCache
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
@@ -40,6 +41,7 @@ class WooPosSearchByIdentifierRemoteTest {
     private val selectedSite: SelectedSite = mock()
     private val productsCache: WooPosProductsCache = mock()
     private val productStore: WCProductStore = mock()
+    private val variationsCache: WooPosVariationsLRUCache = mock()
     private val checkDigitRemover: WooPosSearchByIdentifierCheckDigitRemover =
         WooPosSearchByIdentifierCheckDigitRemover()
 
@@ -53,6 +55,7 @@ class WooPosSearchByIdentifierRemoteTest {
             selectedSite,
             productsCache,
             productStore,
+            variationsCache,
             checkDigitRemover,
             coroutinesTestRule.testDispatcher
         )
@@ -78,6 +81,7 @@ class WooPosSearchByIdentifierRemoteTest {
             selectedSite,
             productsCache,
             productStore,
+            variationsCache,
             checkDigitRemover,
             coroutinesTestRule.testDispatcher
         )
