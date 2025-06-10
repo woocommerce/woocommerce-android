@@ -522,10 +522,10 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
     private fun initFlows(shipmentSize: Int) {
         fun <T> MutableStateFlow<List<T>>.updateSize(defaultValue: T) = this.update { currentList ->
-            if (currentList.size < shipmentSize) {
+            if (currentList.size <= shipmentSize) {
                 currentList + List(shipmentSize - currentList.size) { defaultValue }
             } else {
-                currentList.take(shipmentSize)
+                List(shipmentSize) { defaultValue }
             }
         }
 
@@ -542,10 +542,10 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         shippingRatesListFlow.updateSize(emptyMap())
         shippingRatesStatesFlow.updateSize(ShippingRatesState.NoAvailable)
 
-        customWeight = if (customWeight.size < shipmentSize) {
+        customWeight = if (customWeight.size <= shipmentSize) {
             customWeight + List(shipmentSize - customWeight.size) { "" }
         } else {
-            customWeight.take(shipmentSize)
+            List(shipmentSize) { "" }
         }
     }
 
