@@ -79,7 +79,7 @@ class WooPosHomeViewModelTest {
     }
 
     @Test
-    fun `given payment completed state, when barcode scanned, then don't pass event to children`() = runTest {
+    fun `given checkout state, when barcode scanned, then don't pass event to children`() = runTest {
         // GIVEN
         val events = MutableSharedFlow<ChildToParentEvent>()
         whenever(childrenToParentEventReceiver.events).thenReturn(events)
@@ -103,7 +103,7 @@ class WooPosHomeViewModelTest {
     }
 
     @Test
-    fun `given checkout state, when barcode scanned, then don't pass event to children`() =
+    fun `given payment completed state, when barcode scanned, then don't pass event to children`() =
         runTest {
             // GIVEN
             val events = MutableSharedFlow<ChildToParentEvent>()
