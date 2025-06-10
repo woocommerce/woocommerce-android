@@ -12,7 +12,7 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
-import com.automattic.android.experimentation.ExPlat
+import com.automattic.android.experimentation.VariationsRepository
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -138,7 +138,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
     @Inject lateinit var analyticsTracker: AnalyticsTrackerWrapper
 
-    @Inject lateinit var explat: ExPlat
+    @Inject lateinit var variationsRepository: VariationsRepository
 
     // Listens for changes in device connectivity
     @Inject lateinit var connectionReceiver: ConnectionChangeReceiver

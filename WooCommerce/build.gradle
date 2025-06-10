@@ -241,9 +241,7 @@ dependencies {
         exclude group: "com.android.support"
     }
 
-    implementation(libs.automattic.tracks.experimentation) {
-        exclude group: "org.wordpress", module: "fluxc"
-    }
+    implementation(libs.automattic.tracks.experimentation)
     implementation(libs.automattic.tracks.android)
     implementation(libs.automattic.tracks.crashlogging)
 
@@ -309,12 +307,7 @@ dependencies {
     debugImplementation project(":libs:apifaker")
     debugImplementation(libs.facebook.flipper.main)
     debugImplementation(libs.facebook.soloader)
-    debugImplementation(libs.facebook.flipper.network.plugin) {
-        // Force Flipper to use the okhttp version defined in the fluxc module
-        // okhttp versions higher than 3.9.0 break handling for self-signed SSL sites
-        // See https://github.com/wordpress-mobile/WordPress-FluxC-Android/issues/919
-        exclude group: 'com.squareup.okhttp3'
-    }
+    debugImplementation(libs.facebook.flipper.network.plugin)
 
     if (isLeakCanaryEnabled()) {
         debugImplementation(libs.squareup.leakcanary.android)
