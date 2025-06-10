@@ -18,14 +18,14 @@ class WooPosSearchByIdentifier @Inject constructor(
     ): WooPosSearchByIdentifierResult {
         val localProduct = localSearcher(identifier, format)
         if (localProduct != null) {
-            return filterOutUnsupportedProducts(WooPosSearchByIdentifierResult.Success(localProduct))
+            return filterUnsupportedProductResult(WooPosSearchByIdentifierResult.Success(localProduct))
         }
 
         val remoteResult = remoteSearcher(identifier, format)
-        return filterOutUnsupportedProducts(remoteResult)
+        return filterUnsupportedProductResult(remoteResult)
     }
 
-    private fun filterOutUnsupportedProducts(result: WooPosSearchByIdentifierResult): WooPosSearchByIdentifierResult {
+    private fun filterUnsupportedProductResult(result: WooPosSearchByIdentifierResult): WooPosSearchByIdentifierResult {
         if (result !is WooPosSearchByIdentifierResult.Success) {
             return result
         }
