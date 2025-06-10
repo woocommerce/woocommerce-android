@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
+import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -31,7 +32,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material3.Checkbox
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,6 +46,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -58,6 +59,7 @@ import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPr
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignPreviewUiState
 import com.woocommerce.android.ui.compose.Render
 import com.woocommerce.android.ui.compose.animations.SkeletonView
+import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
@@ -117,9 +119,7 @@ private fun BlazeCampaignCreationPreviewScreen(
                     .padding(16.dp)
             )
             Spacer(modifier = Modifier.height(16.dp))
-            Divider()
-            val checked = remember { mutableStateOf(false) }
-            ConfirmationFooter(onConfirmDetailsClicked, previewState, checked)
+            ConfirmationFooter(onConfirmDetailsClicked, previewState)
         }
     }
 
@@ -130,32 +130,42 @@ private fun BlazeCampaignCreationPreviewScreen(
 private fun ConfirmationFooter(
     onConfirmDetailsClicked: () -> Unit,
     previewState: CampaignPreviewUiState,
-    checked: MutableState<Boolean>
 ) {
-    WCColoredButton(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        text = stringResource(id = R.string.blaze_campaign_preview_details_confirm_details_button),
-        onClick = onConfirmDetailsClicked,
-        enabled = previewState.adDetails != Loading && checked.value
-    )
-
-    Row(
-        modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .padding(bottom = 16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Checkbox(
-            checked = checked.value,
-            onCheckedChange = { checked.value = it }
-        )
-        Text(
-            modifier = Modifier.padding(start = 8.dp),
-            text = stringResource(id = R.string.blaze_campaign_preview_tos_checkbox),
-            style = MaterialTheme.typography.body2,
-            color = colorResource(id = R.color.color_on_surface_medium),
+    val checked = remember { mutableStateOf(false) }
+//    val checkboxLegalText = if(previewState.campaignDetails.budget){
+//        stringResource(id = R.string.blaze_campaign_preview_tos_checkbox_evergreen_campaigns)
+//    } else {
+//        stringResource(id = R.string.blaze_campaign_preview_tos_checkbox_evergreen_campaigns)
+//    }
+    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+        Divider()
+        Row(
+            modifier = Modifier.padding(top = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Checkbox(
+                checked = checked.value,
+                onCheckedChange = { checked.value = it }
+            )
+            Text(
+                modifier = Modifier.padding(start = 4.dp),
+                text = annotatedStringRes(
+                    stringResId = R.string.blaze_campaign_preview_tos_checkbox_evergreen_campaigns,
+                    onUrlClick = null,
+                    previewState.campaignDetails.budget.displayValue
+                ),
+                textAlign = TextAlign.Justify,
+                style = MaterialTheme.typography.caption,
+                color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium),
+            )
+        }
+        WCColoredButton(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp),
+            text = stringResource(id = R.string.blaze_campaign_preview_details_confirm_details_button),
+            onClick = onConfirmDetailsClicked,
+            enabled = previewState.adDetails != Loading && checked.value
         )
     }
 }
