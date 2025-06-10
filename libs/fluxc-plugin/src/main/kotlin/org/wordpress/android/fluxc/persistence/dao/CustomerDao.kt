@@ -3,9 +3,9 @@ package org.wordpress.android.fluxc.persistence.dao
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
-import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
+import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 
 @Dao
 internal abstract class CustomerDao {
