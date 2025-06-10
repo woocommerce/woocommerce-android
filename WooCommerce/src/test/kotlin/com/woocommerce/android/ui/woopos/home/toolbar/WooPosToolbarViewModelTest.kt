@@ -1,5 +1,11 @@
 package com.woocommerce.android.ui.woopos.home.toolbar
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.automirrored.filled.Help
+import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.DocumentScanner
+import androidx.compose.material.icons.filled.SearchOff
 import app.cash.turbine.test
 import com.woocommerce.android.AppUrls.WOO_POS_DOCUMENTATION_URL
 import com.woocommerce.android.R
@@ -89,20 +95,24 @@ class WooPosToolbarViewModelTest {
                 WooPosToolbarState.Menu.Visible(
                     listOf(
                         WooPosToolbarState.Menu.MenuItem(
+                            title = R.string.woopos_barcode_scanning_title,
+                            icon = Icons.Default.DocumentScanner,
+                        ),
+                        WooPosToolbarState.Menu.MenuItem(
                             title = R.string.woopos_product_limitations_title,
-                            icon = R.drawable.ic_not_found,
+                            icon = Icons.Default.SearchOff,
                         ),
                         WooPosToolbarState.Menu.MenuItem(
                             title = R.string.woopos_documentation_title,
-                            icon = R.drawable.woo_pos_info_ic,
+                            icon = Icons.Default.Description,
                         ),
                         WooPosToolbarState.Menu.MenuItem(
                             title = R.string.woopos_get_support_title,
-                            icon = R.drawable.woopos_ic_get_support,
+                            icon = Icons.AutoMirrored.Filled.Help,
                         ),
                         WooPosToolbarState.Menu.MenuItem(
                             title = R.string.woopos_exit_confirmation_title,
-                            icon = R.drawable.ic_woo_pos_exit,
+                            icon = Icons.AutoMirrored.Filled.ExitToApp,
                         ),
                     )
                 )
@@ -143,7 +153,7 @@ class WooPosToolbarViewModelTest {
         val viewModel = createViewModel()
         val menuItem = WooPosToolbarState.Menu.MenuItem(
             title = R.string.woopos_exit_confirmation_title,
-            icon = R.drawable.ic_woo_pos_exit
+            icon = Icons.AutoMirrored.Filled.ExitToApp
         )
 
         // WHEN
@@ -191,7 +201,7 @@ class WooPosToolbarViewModelTest {
             WooPosToolbarUIEvent.MenuItemClicked(
                 WooPosToolbarState.Menu.MenuItem(
                     title = R.string.woopos_get_support_title,
-                    icon = R.drawable.woopos_ic_get_support,
+                    icon = Icons.AutoMirrored.Filled.Help,
                 )
             )
         )
@@ -240,7 +250,7 @@ class WooPosToolbarViewModelTest {
         val viewModel = createViewModel()
         val menuItem = WooPosToolbarState.Menu.MenuItem(
             title = R.string.woopos_documentation_title,
-            icon = R.drawable.ic_help_24dp
+            icon = Icons.Default.Description
         )
 
         viewModel.openUrlEvent.test {
@@ -263,7 +273,7 @@ class WooPosToolbarViewModelTest {
             WooPosToolbarUIEvent.MenuItemClicked(
                 WooPosToolbarState.Menu.MenuItem(
                     title = R.string.woopos_product_limitations_title,
-                    icon = R.drawable.ic_not_found,
+                    icon = Icons.Default.SearchOff,
                 )
             )
         )
@@ -278,7 +288,7 @@ class WooPosToolbarViewModelTest {
         val viewModel = createViewModel()
         val menuItem = WooPosToolbarState.Menu.MenuItem(
             title = R.string.woopos_product_limitations_title,
-            icon = R.drawable.ic_not_found,
+            icon = Icons.Default.SearchOff,
         )
         viewModel.onUiEvent(WooPosToolbarUIEvent.MenuItemClicked(menuItem))
 
@@ -290,7 +300,7 @@ class WooPosToolbarViewModelTest {
         val viewModel = createViewModel()
         val menuItem = WooPosToolbarState.Menu.MenuItem(
             title = R.string.woopos_get_support_title,
-            icon = R.drawable.ic_help_24dp
+            icon = Icons.AutoMirrored.Filled.Help
         )
         viewModel.onUiEvent(WooPosToolbarUIEvent.MenuItemClicked(menuItem))
 
@@ -302,7 +312,7 @@ class WooPosToolbarViewModelTest {
         val viewModel = createViewModel()
         val menuItem = WooPosToolbarState.Menu.MenuItem(
             title = R.string.woopos_documentation_title,
-            icon = R.drawable.ic_info_outline_20dp
+            icon = Icons.Default.Description
         )
         viewModel.onUiEvent(WooPosToolbarUIEvent.MenuItemClicked(menuItem))
 
@@ -314,7 +324,7 @@ class WooPosToolbarViewModelTest {
         val viewModel = createViewModel()
         val menuItem = WooPosToolbarState.Menu.MenuItem(
             title = R.string.woopos_exit_confirmation_title,
-            icon = R.drawable.ic_woo_pos_exit
+            icon = Icons.AutoMirrored.Filled.ExitToApp
         )
         viewModel.onUiEvent(WooPosToolbarUIEvent.MenuItemClicked(menuItem))
 

@@ -49,7 +49,7 @@ import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderActivity
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.LocationUtils
 import com.woocommerce.android.util.UiHelpers
-import com.woocommerce.android.util.UiHelpers.getIllustrationVisibilityForFontScale
+import com.woocommerce.android.util.UiHelpers.getIllustrationVisibilityForAccessibility
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooPermissionUtils
@@ -169,7 +169,7 @@ class CardReaderConnectDialogFragment : PaymentsBaseDialogFragment(R.layout.card
             .also {
                 if (binding.illustration.isVisible) {
                     binding.illustration.visibility =
-                        getIllustrationVisibilityForFontScale(resources.configuration.fontScale)
+                        requireContext().getIllustrationVisibilityForAccessibility(resources.configuration.fontScale)
                 }
             }
         UiHelpers.setTextOrHide(binding.hintLabel, viewState.hintLabel)
