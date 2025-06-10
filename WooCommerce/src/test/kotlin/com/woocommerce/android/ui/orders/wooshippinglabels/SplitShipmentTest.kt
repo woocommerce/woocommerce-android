@@ -39,7 +39,7 @@ class SplitShipmentTest : BaseUnitTest() {
             WooResult(UpdateShipmentsResponse(true, emptyMap()))
         )
 
-        sut.invoke(order.id, listOf(ShipmentUIModel(id = "0", items = listOf(singleItem))))
+        sut.invoke(order.id, listOf(ShipmentUIModel(localId = "0", items = listOf(singleItem))))
 
         val expectedShipmentMap = mapOf("0" to listOf(Item(singleItem.itemId, emptyList())))
         verify(wooShippingLabelRepository).updateShipments(any(), eq(order.id), eq(expectedShipmentMap), any())
@@ -52,7 +52,7 @@ class SplitShipmentTest : BaseUnitTest() {
             WooResult(UpdateShipmentsResponse(true, emptyMap()))
         )
 
-        sut.invoke(order.id, listOf(ShipmentUIModel(id = "0", items = listOf(multipleQuantityItem))))
+        sut.invoke(order.id, listOf(ShipmentUIModel(localId = "0", items = listOf(multipleQuantityItem))))
 
         val expectedSubItems = listOf("1000-sub-0", "1000-sub-1", "1000-sub-2")
         val expectedShipmentMap = mapOf("0" to listOf(Item(multipleQuantityItem.itemId, expectedSubItems)))

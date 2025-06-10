@@ -5,7 +5,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class ShipmentUIModel(
-    val id: String, // Local id
+    val localId: String,
     val remoteId: String? = null,
     val items: List<ShippableItemModel>,
     val purchased: Boolean = false,

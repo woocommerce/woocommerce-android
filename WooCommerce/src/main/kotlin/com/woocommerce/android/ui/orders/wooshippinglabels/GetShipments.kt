@@ -46,7 +46,7 @@ class GetShipments @Inject constructor(
         val shipments = config?.shipments
 
         val shipmentUIModelList = if (shipments.isNullOrEmpty()) {
-            listOf(ShipmentUIModel(id = "0", items = orderItems))
+            listOf(ShipmentUIModel(localId = "0", items = orderItems))
         } else {
             shipments.map { (shipmentId, shipmentItems) ->
                 val items = shipmentItems.mapNotNull { (id, subItems) ->
@@ -55,9 +55,9 @@ class GetShipments @Inject constructor(
                     orderItems.firstOrNull { it.itemId == id }
                         ?.copy(quantity = if (subItems.isNullOrEmpty()) 1f else subItems.size.toFloat())
                 }
-                ShipmentUIModel(id = shipmentId, remoteId = shipmentId, items = items)
+                ShipmentUIModel(localId = shipmentId, remoteId = shipmentId, items = items)
             }
-        }.sortedBy { it.id.toLong() }
+        }.sortedBy { it.localId.toLong() }
 
         // If there are purchased labels, merge their data into the result list
         return config?.shippingLabelData?.currentOrderLabels?.let { data ->

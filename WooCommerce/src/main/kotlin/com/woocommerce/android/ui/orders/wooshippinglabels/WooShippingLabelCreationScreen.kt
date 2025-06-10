@@ -101,8 +101,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun WooShippingLabelCreationScreen(viewModel: WooShippingLabelCreationViewModel) {
     when (val viewState = viewModel.viewState.collectAsState().value) {
-        WooShippingLabelCreationViewModel.WooShippingViewState.Loading -> {
-            LoadingScreen(onNavigateBack = viewModel::onNavigateBack)
+        is WooShippingLabelCreationViewModel.WooShippingViewState.Loading -> {
+            LoadingScreen(title = viewState.screenTitle, onNavigateBack = viewModel::onNavigateBack)
         }
 
         is WooShippingLabelCreationViewModel.WooShippingViewState.DataState -> {
@@ -370,6 +370,12 @@ private fun LabelCreationScreenWithBottomSheet(
     }
     val shippingRateSummary = (shippingRatesState as? ShippingRatesState.DataState)?.selectedRate?.summary
 
+    val screenTitle = if (shipmentUIList[uiState.selectedIndex].purchased) {
+        R.string.shipping_label_print_screen_title
+    } else {
+        R.string.shipping_label_create_title
+    }
+
     BottomSheetScaffold(
         snackbarHost = {
             SuccessSnackbarHost(
@@ -406,9 +412,7 @@ private fun LabelCreationScreenWithBottomSheet(
         },
         sheetPeekHeight = bottomSheetPeekHeight,
         scaffoldState = scaffoldState,
-        topBar = {
-            TopBar(onNavigateBack, shipmentUIList[uiState.selectedIndex].purchased)
-        },
+        topBar = { TopBar(screenTitle, onNavigateBack) },
     ) { innerPadding ->
         Surface(
             modifier
@@ -599,18 +603,8 @@ private fun CreateShippingCards(
 }
 
 @Composable
-private fun TopBar(onNavigateBack: () -> Unit, purchased: Boolean = false) = TopAppBar(
-    title = {
-        Text(
-            stringResource(
-                id = if (purchased) {
-                    R.string.shipping_label_print_screen_title
-                } else {
-                    R.string.shipping_label_create_title
-                }
-            )
-        )
-    },
+private fun TopBar(title: Int = R.string.shipping_label_create_title, onNavigateBack: () -> Unit) = TopAppBar(
+    title = { Text(stringResource(title)) },
     navigationIcon = {
         IconButton(onNavigateBack) {
             Icon(
@@ -899,11 +893,8 @@ private fun PackageSelectionAvailableCard(
 }
 
 @Composable
-internal fun LoadingScreen(
-    modifier: Modifier = Modifier,
-    onNavigateBack: () -> Unit = {},
-) {
-    Scaffold(topBar = { TopBar(onNavigateBack) }) { padding ->
+internal fun LoadingScreen(title: Int, modifier: Modifier = Modifier, onNavigateBack: () -> Unit = {}) {
+    Scaffold(topBar = { TopBar(title, onNavigateBack) }) { padding ->
         Box(
             modifier = modifier
                 .fillMaxSize()
@@ -920,7 +911,7 @@ internal fun ErrorScreen(
     modifier: Modifier = Modifier,
     onNavigateBack: () -> Unit = {},
     onRetryClick: () -> Unit = {}
-) = Scaffold(topBar = { TopBar(onNavigateBack) }) { padding ->
+) = Scaffold(topBar = { TopBar(onNavigateBack = onNavigateBack) }) { padding ->
     ErrorMessageWithButton(modifier = modifier.padding(padding), onRetryClick = onRetryClick)
 }
 
