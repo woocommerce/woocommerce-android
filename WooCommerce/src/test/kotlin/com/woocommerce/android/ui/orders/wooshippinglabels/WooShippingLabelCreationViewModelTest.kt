@@ -599,7 +599,8 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         assertThat(currentViewState).isInstanceOf(DataState::class.java)
         val dataState = currentViewState as DataState
 
-        assertThat(dataState.shipmentUIList[0].packageSelectionState).isInstanceOf(PackageSelectionState.DataAvailable::class.java)
+        assertThat(dataState.shipmentUIList[0].packageSelectionState)
+            .isInstanceOf(PackageSelectionState.DataAvailable::class.java)
         val dataAvailable = dataState.shipmentUIList[0].packageSelectionState as PackageSelectionState.DataAvailable
         assertThat(dataAvailable.selectedPackage).isEqualTo(initialPackageData)
     }
@@ -652,7 +653,8 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         assertThat(currentViewState).isInstanceOf(DataState::class.java)
         val dataState = currentViewState as DataState
 
-        assertThat(dataState.shipmentUIList[0].packageSelectionState).isInstanceOf(PackageSelectionState.DataAvailable::class.java)
+        assertThat(dataState.shipmentUIList[0].packageSelectionState)
+            .isInstanceOf(PackageSelectionState.DataAvailable::class.java)
         val dataAvailable = dataState.shipmentUIList[0].packageSelectionState as PackageSelectionState.DataAvailable
         assertThat(dataAvailable.selectedPackage).isEqualTo(newPackageData)
     }
