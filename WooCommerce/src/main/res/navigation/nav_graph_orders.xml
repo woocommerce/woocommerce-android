@@ -703,10 +703,6 @@
             android:id="@+id/action_wooShippingLabelCreationFragment_to_wooShippingLabelPackageCreationFragment"
             app:destination="@id/wooShippingLabelPackageCreationFragment" />
         <action
-            android:id="@+id/action_wooShippingLabelCreationFragment_to_wooShippingLabelPurchasedFragment"
-            app:destination="@id/wooShippingLabelPurchasedFragment"
-            app:popUpTo="@id/orderDetailFragment" />
-        <action
             android:id="@+id/action_wooShippingLabelCreationFragment_to_wooShippingEditOriginAddressFragment"
             app:destination="@id/wooShippingEditOriginAddressFragment" />
         <action
@@ -718,6 +714,9 @@
         <action
             android:id="@+id/action_wooShippingLabelCreationFragment_to_wooShippingLabelHazmatFormFragment"
             app:destination="@id/wooShippingLabelHazmatFormFragment" />
+        <action
+            android:id="@+id/action_wooShippingLabelCreationFragment_to_printShippingLabelInfoFragment"
+            app:destination="@id/printShippingLabelInfoFragment" />
     </fragment>
     <fragment
         android:id="@+id/wooShippingLabelPackageCreationFragment"
@@ -728,26 +727,6 @@
             android:id="@+id/action_wooShippingLabelPackageCreationFragment_to_itemSelectorDialog"
             app:destination="@id/itemSelectorDialog" />
 
-    </fragment>
-    <fragment
-        android:id="@+id/wooShippingLabelPurchasedFragment"
-        android:name="com.woocommerce.android.ui.orders.wooshippinglabels.purchased.WooShippingLabelPurchasedFragment"
-        android:label="WooShippingLabelPurchasedFragment">
-        <argument
-            android:name="purchaseData"
-            app:argType="com.woocommerce.android.ui.orders.wooshippinglabels.purchased.PurchasedShippingLabelData" />
-
-        <argument
-            android:name="totalItems"
-            app:argType="integer" />
-
-        <argument
-            android:name="totalItemsCost"
-            app:argType="string" />
-
-        <action
-            android:id="@+id/action_wooShippingLabelPurchasedFragment_to_printShippingLabelInfoFragment"
-            app:destination="@id/printShippingLabelInfoFragment" />
     </fragment>
     <fragment
         android:id="@+id/wooShippingEditOriginAddressFragment"

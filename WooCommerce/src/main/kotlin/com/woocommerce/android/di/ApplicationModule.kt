@@ -19,6 +19,7 @@ import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
 import org.wordpress.android.login.di.LoginServiceModule
 import javax.inject.Qualifier
@@ -61,6 +62,13 @@ abstract class ApplicationModule {
             return Dispatchers.Default
         }
 
+        @OptIn(ExperimentalCoroutinesApi::class)
+        @Provides
+        @LimitedConcurrencyDispatcher
+        fun provideLimitedConcurrencyDispatcher(): CoroutineDispatcher {
+            return Dispatchers.Default.limitedParallelism(1)
+        }
+
         @Provides
         fun providesFirebaseRemoteConfig() = Firebase.remoteConfig
     }
@@ -70,3 +78,8 @@ abstract class ApplicationModule {
 @MustBeDocumented
 @Retention(RUNTIME)
 annotation class AppCoroutineScope
+
+@Qualifier
+@MustBeDocumented
+@Retention(RUNTIME)
+annotation class LimitedConcurrencyDispatcher

@@ -78,7 +78,7 @@ class WooShippingLabelRepository @Inject constructor(
     ).asWooResult { response ->
         response.shippingLabel?.let {
             mapper(it).status
-        } ?: ShippingLabelStatus.Unknown
+        } ?: ShippingLabelStatus.UNKNOWN
     }
 
     @Suppress("LongParameterList")
@@ -242,6 +242,12 @@ class WooShippingLabelRepository @Inject constructor(
     suspend fun updateShipments(
         site: SiteModel,
         orderId: Long,
-        shipments: ShipmentMap
-    ) = restClient.updateShipments(site = site, orderId = orderId, shipments = shipments).asWooResult()
+        shipments: ShipmentMap,
+        shipmentIdsToUpdate: Map<String, Int>
+    ) = restClient.updateShipments(
+        site = site,
+        orderId = orderId,
+        shipments = shipments,
+        shipmentIdsToUpdate = shipmentIdsToUpdate
+    ).asWooResult()
 }
