@@ -66,15 +66,19 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
@@ -115,7 +119,6 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     private val destinationAddress = MutableStateFlow<DestinationShippingAddress>(DestinationShippingAddress.EMPTY)
     private val shippingAddresses = MutableStateFlow<WooShippingAddresses?>(WooShippingAddresses.EMPTY)
     private val loadTrigger = MutableSharedFlow<Unit>()
-    private val storeOptions = MutableStateFlow<StoreOptionsModel?>(StoreOptionsModel.EMPTY)
 
     private val shipments = MutableStateFlow<List<ShipmentUIModel>>(emptyList())
     private val shipmentItems = MutableStateFlow<List<List<ShippableItemModel>>>(emptyList())
@@ -126,6 +129,9 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     private val packageSelectionsFlow = MutableStateFlow<List<PackageSelectionState>>(emptyList())
     private val customsStatesFlow = MutableStateFlow<List<CustomsState>>(emptyList())
     private val hazmatStatesFlow = MutableStateFlow<List<HazmatState>>(emptyList())
+
+    private val accountSettings = observeAccountSettings()
+        .shareIn(viewModelScope, started = SharingStarted.Lazily, replay = 1)
 
     private val uiState = MutableStateFlow(
         UIControlsState(
@@ -159,7 +165,6 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
     init {
         launch { observeShippingLabelInformation() }
-        launch { getStoreOptions() }
         launch { getDestinationAddress() }
         launch { getSavedShipments() }
         launch { getShippingAddresses() }
@@ -219,12 +224,6 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             observeShippingLabelStatus(orderId = navArgs.orderId, labelId = labelId).onEach { status ->
                 updateShipment(shipmentId, shipments.value[shipmentId].copy(status = status))
             }.launchIn(this)
-        }
-    }
-
-    private suspend fun getStoreOptions() {
-        observeAccountSettings().collectLatest { options ->
-            storeOptions.value = options?.storeOptions
         }
     }
 
@@ -334,7 +333,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         combine(
             selectedPackagesFlow.filter { it.isNotEmpty() },
             packageWeightsFlow.filter { it.isNotEmpty() },
-            storeOptions,
+            accountSettings.map { it?.storeOptions },
             packageSelectionsFlow.filter { it.isNotEmpty() }
         ) { packagesSelected, packageWeight, storeOptions, _ ->
             packagesSelected.mapIndexed { index, selectedPackageData ->
@@ -460,7 +459,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     @Suppress("ComplexCondition")
     private suspend fun observeShippingLabelInformation() {
         combine(
-            storeOptions.drop(1),
+            accountSettings,
             order.drop(1),
             shipments.drop(1),
             shippingAddresses.drop(1),
@@ -469,9 +468,9 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             uiState,
             customsStatesFlow,
             hazmatStatesFlow
-        ) { storeOptions, order, shipments, addresses, shippingRatesList,
+        ) { accountSettings, order, shipments, addresses, shippingRatesList,
             packageSelections, uiState, customsState, hazmatStates ->
-            if (storeOptions == null || addresses == null ||
+            if (accountSettings == null || addresses == null ||
                 shipments.any { it.purchaseState is PurchaseState.Error }
             ) {
                 return@combine WooShippingViewState.Error
@@ -493,8 +492,8 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             val shipmentUIList = shipmentItems.value.mapIndexed { index, shippableItemModels ->
                 shippableItemModels.toUIModel(
                     currencyFormatter,
-                    storeOptions.dimensionUnit,
-                    storeOptions.weightUnit,
+                    accountSettings.storeOptions.dimensionUnit,
+                    accountSettings.storeOptions.weightUnit,
                     shipments[index],
                     hazmatStatesFlow.value[index].hazmatSelection,
                     packageSelectionsFlow.value[index],
@@ -697,18 +696,20 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     }
 
     fun onSplitShipmentButtonTapped() {
-        val currentStoreOptions = storeOptions.value
-        val currentShipmentItems = shipmentItems.value
-        if (currentStoreOptions != null && currentShipmentItems.isNotEmpty()) {
-            triggerEvent(
-                StartSplitShipment(
-                    SplitShipmentArgs(
-                        orderId = navArgs.orderId,
-                        storeOptions = currentStoreOptions,
-                        shipments = shipments.value
+        viewModelScope.launch {
+            val currentStoreOptions = accountSettings.first()?.storeOptions
+            val currentShipmentItems = shipmentItems.value
+            if (currentStoreOptions != null && currentShipmentItems.isNotEmpty()) {
+                triggerEvent(
+                    StartSplitShipment(
+                        SplitShipmentArgs(
+                            orderId = navArgs.orderId,
+                            storeOptions = currentStoreOptions,
+                            shipments = shipments.value
+                        )
                     )
                 )
-            )
+            }
         }
     }
 
