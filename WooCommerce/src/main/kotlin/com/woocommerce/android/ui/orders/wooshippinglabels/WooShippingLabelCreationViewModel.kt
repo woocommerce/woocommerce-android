@@ -224,7 +224,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
     private suspend fun getStoreOptions() {
         observeAccountSettings().collectLatest { options ->
-            storeOptions.value = options
+            storeOptions.value = options?.storeOptions
         }
     }
 
