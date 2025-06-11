@@ -17,20 +17,15 @@ import androidx.core.content.ContextCompat
 import com.woocommerce.android.util.SystemVersionUtils
 import kotlinx.parcelize.Parcelize
 
+private const val MIN_WIDTH_DP_FOR_TWO_PANES = 674
 val Context.isTwoPanesShouldBeUsed: Boolean
-    get() = determineIfTwoPanesShouldBeUsed(resources.configuration.screenWidthDp)
+    get() = resources.configuration.screenWidthDp >= MIN_WIDTH_DP_FOR_TWO_PANES
 
 val Context.windowHeightSizeClass: WindowSizeClass
     get() = determineWindowHeightSizeClassByGivenSize(resources.configuration.screenHeightDp)
 
 val Context.windowWidthSizeClass: WindowSizeClass
     get() = determineWindowWidthSizeClassByGivenSize(resources.configuration.screenWidthDp)
-
-private const val MIN_WIDTH_DP_FOR_TWO_PANES = 674
-
-private fun determineIfTwoPanesShouldBeUsed(widthDp: Int): Boolean {
-    return widthDp >= MIN_WIDTH_DP_FOR_TWO_PANES
-}
 
 private fun determineWindowHeightSizeClassByGivenSize(sizeDp: Int): WindowSizeClass {
     return when {
