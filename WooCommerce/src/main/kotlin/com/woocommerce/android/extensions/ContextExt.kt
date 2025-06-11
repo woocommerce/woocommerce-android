@@ -8,7 +8,6 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.ContextWrapper
-import android.content.res.Configuration
 import android.graphics.Point
 import android.os.Parcelable
 import android.view.WindowManager
@@ -127,4 +126,3 @@ fun Context.findActivity(): Activity? {
 
     return null
 }
-
