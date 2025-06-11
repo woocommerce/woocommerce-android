@@ -69,11 +69,8 @@ class WooPosSearchByIdentifier @Inject constructor(
             else -> false
         }
 
-        val meetsDownloadableRequirement = !(
-            variation.isDownloadable &&
-                variationFilterConfig.filters[VariationFilterOption.DOWNLOADABLE] ==
-                DownloadableOptions.FALSE.toString()
-            )
+        val meetsDownloadableRequirement = !variation.isDownloadable ||
+            variationFilterConfig.filters[VariationFilterOption.DOWNLOADABLE] != DownloadableOptions.FALSE.toString()
 
         return hasValidStatus && meetsDownloadableRequirement
     }
