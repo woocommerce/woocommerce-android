@@ -134,7 +134,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
 
         @ExposedCopyVisibility
         data class ItemAddedToCart private constructor(
-            val source: ItemsListSource,
+            val source: ItemsListSource?,
             val sourceType: ItemsListSourceType,
             val itemType: ItemsListItemType,
             val productType: ItemsListProductType?
@@ -165,10 +165,32 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                 }
             )
 
+            constructor(item: WooPosCartItemViewState) : this(
+                source = null,
+                sourceType = ItemsListSourceType.BARCODE_SCANNER,
+                itemType = when (item) {
+                    is WooPosCartItemViewState.Loading -> ItemsListItemType.LOADING
+                    is WooPosCartItemViewState.Coupon -> ItemsListItemType.COUPON
+                    is WooPosCartItemViewState.Product.Simple -> ItemsListItemType.PRODUCT
+                    is WooPosCartItemViewState.Product.Variation -> ItemsListItemType.PRODUCT
+                    is WooPosCartItemViewState.Error -> ItemsListItemType.ERROR
+                },
+                productType = when (item) {
+                    is WooPosCartItemViewState.Coupon,
+                    is WooPosCartItemViewState.Error,
+                    is WooPosCartItemViewState.Loading -> null
+
+                    is WooPosCartItemViewState.Product.Simple -> ItemsListProductType.SIMPLE
+                    is WooPosCartItemViewState.Product.Variation -> ItemsListProductType.VARIATION
+                }
+            )
+
             init {
                 addProperties(
                     buildMap {
-                        put(ItemsListSource.SOURCE, source.toString())
+                        if (source != null) {
+                            put(ItemsListSource.SOURCE, source.toString())
+                        }
                         put(ItemsListSourceType.SOURCE_TYPE, sourceType.toString())
                         put(ItemsListItemType.ITEM_TYPE, itemType.toString())
                         if (productType != null) {
