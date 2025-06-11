@@ -216,6 +216,7 @@ private fun CouponItem(
     val itemContentDescription = stringResource(
         id = R.string.woopos_coupon_item_content_description,
         item.name,
+        item.summary
     )
     WooPosCouponCard(modifier, itemContentDescription, onItemClicked, item)
 }
