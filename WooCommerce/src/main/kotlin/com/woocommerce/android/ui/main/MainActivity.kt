@@ -32,11 +32,13 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentManager.FragmentLifecycleCallbacks
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.NavigationUI
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.google.android.material.appbar.AppBarLayout
 import com.woocommerce.android.AppPrefs
@@ -103,6 +105,7 @@ import com.woocommerce.android.ui.prefs.RequestedAnalyticsValue
 import com.woocommerce.android.ui.products.details.ProductDetailFragment
 import com.woocommerce.android.ui.products.list.ProductListFragmentDirections
 import com.woocommerce.android.ui.reviews.ReviewListFragmentDirections
+import com.woocommerce.android.ui.woopos.root.WooPosActivity
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
@@ -112,6 +115,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.AppRatingDialog
 import com.woocommerce.android.widgets.DisabledAppBarLayoutBehavior
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
 import org.wordpress.android.util.NetworkUtils
@@ -327,6 +331,8 @@ class MainActivity :
         navHostFragment.childFragmentManager.registerFragmentLifecycleCallbacks(fragmentLifecycleObserver, false)
         binding.bottomNav.init(navController, this)
 
+        setupPOSTabVisibility()
+
         presenter.takeView(this)
 
         // fetch the site list if the database has been downgraded - otherwise the site picker will be displayed,
@@ -356,6 +362,30 @@ class MainActivity :
             viewModel.handleIncomingAppLink(intent?.data)
             viewModel.handleShortcutAction(intent?.action?.lowercase(Locale.ROOT))
             handleIncomingImages()
+        }
+    }
+
+    private fun setupPOSTabVisibility() {
+        // Hide by default
+        binding.bottomNav.menu.findItem(R.id.point_of_sale)?.isVisible = false
+
+        // Show later if needed
+        lifecycleScope.launch {
+            val shouldShow = presenter.shouldShowPOSFeature()
+            binding.bottomNav.menu.findItem(R.id.point_of_sale)?.isVisible = shouldShow
+        }
+
+        binding.bottomNav.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.point_of_sale -> {
+                    startActivity(Intent(this, WooPosActivity::class.java))
+                    false // return false to *not* keep the tab selected
+                }
+
+                else -> {
+                    NavigationUI.onNavDestinationSelected(item, navController)
+                }
+            }
         }
     }
 
