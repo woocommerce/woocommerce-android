@@ -7,12 +7,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -22,7 +19,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.outlined.CheckCircleOutline
 import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,10 +41,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.Location
-import com.woocommerce.android.ui.compose.component.WCModalBottomSheet
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.RoundedCornerBoxWithBorder
-import com.woocommerce.android.ui.orders.wooshippinglabels.ShipmentDetailsSectionTitle
 import com.woocommerce.android.ui.orders.wooshippinglabels.VerticalDivider
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingAddresses
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShippingAddress
@@ -419,53 +413,6 @@ private fun ShipFromSelection(
                 )
             }
         }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun AddressSelectionBottomSheet(
-    shipFrom: OriginShippingAddress,
-    originAddresses: List<OriginShippingAddress>,
-    onDismiss: () -> Unit,
-    onOriginAddressSelected: (OriginShippingAddress) -> Unit,
-    onEditOriginAddress: (OriginShippingAddress) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    WCModalBottomSheet(
-        modifier = modifier,
-        sheetState = androidx.compose.material3.rememberModalBottomSheetState(
-            skipPartiallyExpanded = true
-        ),
-        onDismissRequest = onDismiss,
-    ) {
-        ShipmentDetailsSectionTitle(
-            title = stringResource(R.string.orderdetail_shipping_label_item_shipfrom),
-            modifier = Modifier.padding(
-                start = dimensionResource(id = R.dimen.major_100),
-                top = dimensionResource(id = R.dimen.major_100),
-                bottom = dimensionResource(id = R.dimen.minor_100)
-            )
-        )
-        LazyColumn {
-            items(originAddresses) { option ->
-                val isSelected = option == shipFrom
-                OriginAddressSelectionItem(
-                    address = option,
-                    isSelected = isSelected,
-                    onEdit = onEditOriginAddress,
-                    onClick = {
-                        onOriginAddressSelected(option)
-                    },
-                    modifier = Modifier.padding(
-                        top = dimensionResource(id = R.dimen.minor_100),
-                        start = dimensionResource(id = R.dimen.major_100),
-                        end = dimensionResource(id = R.dimen.major_100)
-                    )
-                )
-            }
-        }
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
     }
 }
 
