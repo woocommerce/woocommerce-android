@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.transformLatest
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
-class ObserveStoreOptions @Inject constructor(
+class ObserveAccountSettings @Inject constructor(
     private val configurationDataStore: WooShippingAccountSettingsDataStore,
     private val fetchAccountSettings: FetchAccountSettings,
     private val wooStore: WooCommerceStore,

@@ -36,7 +36,7 @@ class ObserveStoreOptionsTest : BaseUnitTest() {
         on(it.get()).thenReturn(SiteModel())
     }
 
-    val sut = ObserveStoreOptions(
+    val sut = ObserveAccountSettings(
         configurationDataStore = dataStore,
         fetchAccountSettings = fetchAccountSettings,
         wooStore = wooStore,

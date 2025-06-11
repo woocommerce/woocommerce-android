@@ -96,7 +96,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     private val fetchOriginAddresses: FetchOriginAddresses,
     private val getShippingRates: GetShippingRates,
     private val purchaseShippingLabel: PurchaseShippingLabel,
-    private val observeStoreOptions: ObserveStoreOptions,
+    private val observeAccountSettings: ObserveAccountSettings,
     private val fetchAccountSettings: FetchAccountSettings,
     private val addressValidationHelper: AddressValidationHelper,
     private val verifyDestinationAddress: VerifyDestinationAddress,
@@ -223,7 +223,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     }
 
     private suspend fun getStoreOptions() {
-        observeStoreOptions().collectLatest { options ->
+        observeAccountSettings().collectLatest { options ->
             storeOptions.value = options
         }
     }
