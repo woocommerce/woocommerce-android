@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.home.items.variations
 
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.products.variations.selector.VariationListHandler
+import com.woocommerce.android.ui.woopos.common.data.WooPosVariationsTypesFilterConfig
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -10,14 +11,14 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
-import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class WooPosVariationsDataSource @Inject constructor(
     private val handler: VariationListHandler,
-    private val variationCache: WooPosVariationsLRUCache<Long, List<ProductVariation>>
+    private val variationCache: WooPosVariationsLRUCache,
+    private val variationFilterConfig: WooPosVariationsTypesFilterConfig
 ) {
     private suspend fun getCachedVariations(productId: Long): List<ProductVariation> {
         return variationCache.get(productId) ?: emptyList()
@@ -51,10 +52,7 @@ class WooPosVariationsDataSource @Inject constructor(
         val result = handler.fetchVariations(
             productId,
             forceRefresh = true,
-            filterOptions = mapOf(
-                WCProductStore.VariationFilterOption.STATUS to VARIATION_STATUS_PUBLISH,
-                WCProductStore.VariationFilterOption.DOWNLOADABLE to VARIATION_DOWNLOADABLE_FALSE
-            )
+            filterOptions = variationFilterConfig.filters
         )
         if (result.isSuccess) {
             val remoteVariations = handler.getVariationsFlow(productId).firstOrNull()?.applyFilter() ?: emptyList()
@@ -74,10 +72,7 @@ class WooPosVariationsDataSource @Inject constructor(
     suspend fun loadMore(productId: Long): Result<List<ProductVariation>> = withContext(Dispatchers.IO) {
         val result = handler.loadMore(
             productId,
-            filterOptions = mapOf(
-                WCProductStore.VariationFilterOption.STATUS to VARIATION_STATUS_PUBLISH,
-                WCProductStore.VariationFilterOption.DOWNLOADABLE to VARIATION_DOWNLOADABLE_FALSE
-            )
+            filterOptions = variationFilterConfig.filters
         )
         if (result.isSuccess) {
             val fetchedVariations = handler.getVariationsFlow(productId).first().applyFilter()
@@ -88,11 +83,6 @@ class WooPosVariationsDataSource @Inject constructor(
                 result.exceptionOrNull() ?: Exception("Unknown error while loading more variations")
             )
         }
-    }
-
-    companion object {
-        private const val VARIATION_STATUS_PUBLISH = "publish"
-        private const val VARIATION_DOWNLOADABLE_FALSE = "false"
     }
 }
 

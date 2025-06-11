@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import com.woocommerce.android.ui.woopos.common.barcode.WooPosBarcodeFormat
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsTypesFilterConfig
+import com.woocommerce.android.ui.woopos.common.data.WooPosVariationsTypesFilterConfig
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -27,10 +28,11 @@ class WooPosSearchByIdentifierTest {
     private val localSearcher: WooPosSearchByIdentifierLocal = mock()
     private val remoteSearcher: WooPosSearchByIdentifierRemote = mock()
     private val filterConfig: WooPosProductsTypesFilterConfig = WooPosProductsTypesFilterConfig()
+    private val variationFilterConfig: WooPosVariationsTypesFilterConfig = WooPosVariationsTypesFilterConfig()
 
     @Before
     fun setup() {
-        sut = WooPosSearchByIdentifier(localSearcher, remoteSearcher, filterConfig)
+        sut = WooPosSearchByIdentifier(localSearcher, remoteSearcher, filterConfig, variationFilterConfig)
     }
 
     @Test
@@ -40,7 +42,8 @@ class WooPosSearchByIdentifierTest {
             val identifier = "123456"
             val format = WooPosBarcodeFormat.FormatEAN13
             val localProduct = createProduct()
-            whenever(localSearcher(identifier, format)).thenReturn(localProduct)
+            val localResult = WooPosSearchByIdentifierResult.Success(localProduct)
+            whenever(localSearcher(identifier, format)).thenReturn(localResult)
 
             // WHEN
             val result = sut(identifier, format)
@@ -95,7 +98,8 @@ class WooPosSearchByIdentifierTest {
         // GIVEN
         val identifier = "123456"
         val product = createProduct()
-        whenever(localSearcher(identifier, WooPosBarcodeFormat.FormatUnknown)).thenReturn(product)
+        whenever(localSearcher(identifier, WooPosBarcodeFormat.FormatUnknown))
+            .thenReturn(WooPosSearchByIdentifierResult.Success(product))
 
         // WHEN
         val result = sut(identifier) // Using default parameter
@@ -141,7 +145,8 @@ class WooPosSearchByIdentifierTest {
         val format = WooPosBarcodeFormat.FormatEAN13
         val product = createProduct(type = ProductType.SIMPLE.value, status = ProductStatus.PUBLISH)
 
-        whenever(localSearcher(identifier, format)).thenReturn(product)
+        whenever(localSearcher(identifier, format))
+            .thenReturn(WooPosSearchByIdentifierResult.Success(product))
 
         // WHEN
         val result = sut(identifier, format)
@@ -157,7 +162,8 @@ class WooPosSearchByIdentifierTest {
         val identifier = "123456"
         val product = createProduct(status = ProductStatus.DRAFT)
 
-        whenever(localSearcher(identifier, WooPosBarcodeFormat.FormatUnknown)).thenReturn(product)
+        whenever(localSearcher(identifier, WooPosBarcodeFormat.FormatUnknown))
+            .thenReturn(WooPosSearchByIdentifierResult.Success(product))
 
         // WHEN
         val result = sut(identifier)
@@ -176,7 +182,8 @@ class WooPosSearchByIdentifierTest {
         val identifier = "123456"
         val product = createProduct(isDownloadable = true)
 
-        whenever(localSearcher(identifier, WooPosBarcodeFormat.FormatUnknown)).thenReturn(product)
+        whenever(localSearcher(identifier, WooPosBarcodeFormat.FormatUnknown))
+            .thenReturn(WooPosSearchByIdentifierResult.Success(product))
 
         // WHEN
         val result = sut(identifier)
@@ -195,7 +202,8 @@ class WooPosSearchByIdentifierTest {
         val identifier = "123456"
         val product = createProduct(type = ProductType.GROUPED.value)
 
-        whenever(localSearcher(identifier, WooPosBarcodeFormat.FormatUnknown)).thenReturn(product)
+        whenever(localSearcher(identifier, WooPosBarcodeFormat.FormatUnknown))
+            .thenReturn(WooPosSearchByIdentifierResult.Success(product))
 
         // WHEN
         val result = sut(identifier)

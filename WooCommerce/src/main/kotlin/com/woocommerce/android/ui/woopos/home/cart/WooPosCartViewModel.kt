@@ -555,6 +555,19 @@ class WooPosCartViewModel @Inject constructor(
                 )
             }
 
+            is WooPosSearchByIdentifierResult.VariationSuccess -> {
+                val product = getProductById(variation.remoteProductId)!!
+                WooPosCartItemViewState.Product.Variation(
+                    itemNumber = itemNumber,
+                    id = variation.remoteProductId,
+                    variationId = variation.remoteVariationId,
+                    name = product.name,
+                    description = variation.getNameForPOS(product, resourceProvider),
+                    price = formatPrice(variation.price),
+                    imageUrl = variation.image?.source
+                )
+            }
+
             is WooPosSearchByIdentifierResult.Failure -> {
                 val errorMessage = when (this.error) {
                     WooPosSearchByIdentifierResult.Error.ProductNotFound -> {
