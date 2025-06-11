@@ -32,11 +32,16 @@ class WooPosVariationsLRUCache @Inject constructor() {
         mutex.withLock {
             val list = cache.get(key)
             if (list != null) {
-                val updatedList = list.toMutableList().apply {
-                    removeAll { it.remoteVariationId == value.remoteVariationId }
-                    add(value)
+                val mutableList = list.toMutableList()
+                val index = mutableList.indexOfFirst { it.remoteVariationId == value.remoteVariationId }
+
+                if (index != -1) {
+                    mutableList[index] = value
+                } else {
+                    mutableList.add(value)
                 }
-                cache.put(key, updatedList)
+
+                cache.put(key, mutableList)
             } else {
                 cache.put(key, listOf(value))
             }
