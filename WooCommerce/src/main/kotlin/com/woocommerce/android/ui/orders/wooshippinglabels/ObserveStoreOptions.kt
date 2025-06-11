@@ -4,6 +4,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingStoreOptionsDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.StoreOptionsModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.transformLatest
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
@@ -18,8 +19,8 @@ class ObserveStoreOptions @Inject constructor(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     // We will use data store as the source of truth and after the first emission we will refresh the values async.
-    operator fun invoke() = configurationDataStore.observeStoreOptions().transformLatest { options ->
-        val cachedStoreOptions = options ?: getStoreOptionsFromSiteSettings(wooStore, site)
+    operator fun invoke(): Flow<StoreOptionsModel?> = configurationDataStore.observeAccountSettings().transformLatest { options ->
+        val cachedStoreOptions = options?.storeOptions ?: getStoreOptionsFromSiteSettings(wooStore, site)
 
         when {
             isFirstValue && cachedStoreOptions == null -> {

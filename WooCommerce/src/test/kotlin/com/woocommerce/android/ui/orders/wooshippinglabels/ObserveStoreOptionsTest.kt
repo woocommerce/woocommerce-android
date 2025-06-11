@@ -46,7 +46,7 @@ class ObserveStoreOptionsTest : BaseUnitTest() {
     @Test
     fun `when there is NO cached data and fetch account settings fails then return cached site settings`() =
         testBlocking {
-            whenever(dataStore.observeStoreOptions()).doReturn(flowOf(null))
+            whenever(dataStore.observeAccountSettings()).doReturn(flowOf(null))
             whenever(wooStore.getProductSettings(selectedSite.get())).doReturn(defaultProductSettings)
             whenever(fetchAccountSettings.invoke()).doReturn(Result.failure(Exception("Random error")))
             val result = sut.invoke().toList()
@@ -59,7 +59,7 @@ class ObserveStoreOptionsTest : BaseUnitTest() {
     @Test
     fun `when there is cached data and fetch account settings fails then return cached data`() =
         testBlocking {
-            whenever(dataStore.observeStoreOptions()).doReturn(flowOf(defaultStoreOptions))
+            whenever(dataStore.observeAccountSettings()).doReturn(flowOf(defaultStoreOptions))
             whenever(fetchAccountSettings.invoke()).doReturn(Result.failure(Exception("Random error")))
             val result = sut.invoke().toList()
 
@@ -69,7 +69,7 @@ class ObserveStoreOptionsTest : BaseUnitTest() {
 
     @Test
     fun `refresh data only once`() = testBlocking {
-        whenever(dataStore.observeStoreOptions()).doReturn(
+        whenever(dataStore.observeAccountSettings()).doReturn(
             flowOf(defaultStoreOptions, defaultStoreOptions.copy(currencySymbol = "€"))
         )
         whenever(fetchAccountSettings.invoke()).doReturn(Result.failure(Exception("Random error")))

@@ -41,12 +41,12 @@ class WooShippingLabelRepository @Inject constructor(
         site: SiteModel,
     ) = restClient.fetchAccountSettings(
         site = site,
-    ).asWooResult { mapper(it.storeOptions) }
+    ).asWooResult { mapper(it) }
         .also { response ->
             response.model
                 ?.takeIf { response.isError.not() }
                 ?.let {
-                    configurationDataStore.saveStoreOptions(it)
+                    configurationDataStore.saveAccountSettings(it)
                 }
         }
 

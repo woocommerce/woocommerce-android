@@ -14,7 +14,8 @@ import java.lang.reflect.Type
 import java.math.BigDecimal
 
 data class AccountSettingsDTO(
-    val storeOptions: StoreOptionsDTO
+    val storeOptions: StoreOptionsDTO,
+    val formMeta: FormMetaDTO,
 )
 
 data class StoreOptionsDTO(
@@ -22,6 +23,23 @@ data class StoreOptionsDTO(
     @SerializedName("dimension_unit") val dimensionUnit: String? = null,
     @SerializedName("weight_unit") val weightUnit: String? = null,
     @SerializedName("origin_country") val originCountry: String? = null
+)
+
+data class FormMetaDTO(
+    @SerializedName("payment_methods") val paymentMethods: List<PaymentMethodDTO>
+)
+
+data class PaymentMethodDTO(
+    @SerializedName("payment_method_id")
+    val paymentMethodId: Int,
+    @SerializedName("name")
+    val name: String,
+    @SerializedName("card_type")
+    val cardType: String,
+    @SerializedName("card_digits")
+    val cardDigits: String,
+    @SerializedName("expiry")
+    val expiry: String
 )
 
 data class ConfigResponse(
