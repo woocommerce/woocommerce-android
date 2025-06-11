@@ -110,7 +110,6 @@ class OrderDetailFragment :
     companion object {
         val TAG: String = OrderDetailFragment::class.java.simpleName
         private const val MARGINS_FOR_TABLET: Float = 0.1F
-        private const val MARGINS_FOR_SMALL_TABLET: Float = 0.01F
     }
 
     private val viewModel: OrderDetailViewModel by viewModels()
@@ -276,7 +275,7 @@ class OrderDetailFragment :
     }
 
     private fun getMarginHorizontal(windowWidth: Int): Int = when (requireContext().windowWidthSizeClass) {
-        WindowSizeClass.Medium -> (windowWidth * MARGINS_FOR_SMALL_TABLET).toInt()
+        WindowSizeClass.Medium -> resources.getDimension(R.dimen.major_100).toInt()
         WindowSizeClass.ExpandedAndBigger -> (windowWidth * MARGINS_FOR_TABLET).toInt()
         WindowSizeClass.Compact -> 0
     }
