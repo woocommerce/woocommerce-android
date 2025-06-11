@@ -1031,6 +1031,36 @@ class WooPosCartViewModelTest {
     }
 
     @Test
+    fun `when barcode scanned, then item added to cart event tracked`() = runTest {
+        // GIVEN
+        whenever(
+            searchByIdentifier(any(), any())
+        ).doSuspendableAnswer {
+            delay(1)
+            WooPosSearchByIdentifierResult.Success(
+                ProductTestUtils.generateProduct(
+                    amount = "10.0"
+                )
+            )
+        }
+        createSut()
+
+        // WHEN
+        parentToChildrenMutableSharedFlow.emit(
+            ParentToChildrenEvent.BarcodeScanned("123456789")
+        )
+
+        // THEN
+        verify(analyticsTracker).track(
+            eq(
+                WooPosAnalyticsEvent.Event.ItemAddedToCart(
+                    item = WooPosCartItemViewState.Loading(1, "123456789")
+                )
+            )
+        )
+    }
+
+    @Test
     fun `given empty cart, when barcode scanned and product found, then loading item is replaced with product`() =
         runTest {
             // GIVEN
@@ -1060,6 +1090,45 @@ class WooPosCartViewModelTest {
             val productItem = finalItemsInCart.first() as WooPosCartItemViewState.Product.Simple
             assertThat(productItem.id).isEqualTo(product.remoteId)
             assertThat(productItem.name).isEqualTo(product.name)
+        }
+
+    @Test
+    fun `when barcode scanned and product found, then track item added to cart event`() =
+        runTest {
+            // GIVEN
+            val product = ProductTestUtils.generateProduct(
+                productId = 23L,
+                productName = "Scanned Product",
+                amount = "10.0"
+            ).copy(firstImageUrl = "url")
+
+            whenever(searchByIdentifier(eq("123456789"), any())).thenReturn(
+                WooPosSearchByIdentifierResult.Success(product)
+            )
+
+            createSut()
+
+            // WHEN
+            parentToChildrenMutableSharedFlow.emit(
+                ParentToChildrenEvent.BarcodeScanned("123456789")
+            )
+            advanceUntilIdle()
+
+            // THEN
+           verify(analyticsTracker).track(
+                eq(
+                    WooPosAnalyticsEvent.Event.ItemAddedToCart(
+                        item = WooPosCartItemViewState.Product.Simple(
+                            itemNumber = 1,
+                            id = product.remoteId,
+                            name = product.name,
+                            price = "$10.0",
+                            imageUrl = product.firstImageUrl,
+                            description = product.description,
+                        )
+                    )
+                )
+            )
         }
 
     @Test
@@ -1189,6 +1258,39 @@ class WooPosCartViewModelTest {
         assertThat(finalItemsInCart).hasSize(1)
         val errorItem = finalItemsInCart.first() as WooPosCartItemViewState.Error
         assertThat(errorItem.message).isEqualTo(errorMessage)
+    }
+
+    @Test
+    fun `when barcode scan fails, then item added to cart tracked`() = runTest {
+        // GIVEN
+        val errorMessage = "Network error occurred"
+        whenever(resourceProvider.getString(R.string.woopos_cart_barcode_scan_result_network_error))
+            .thenReturn(errorMessage)
+
+        whenever(searchByIdentifier(eq("123456789"), any())).thenReturn(
+            WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.NetworkError)
+        )
+
+        createSut()
+
+        // WHEN
+        parentToChildrenMutableSharedFlow.emit(
+            ParentToChildrenEvent.BarcodeScanned("123456789")
+        )
+        advanceUntilIdle()
+
+        // THEN
+        verify(analyticsTracker).track(
+            eq(
+                WooPosAnalyticsEvent.Event.ItemAddedToCart(
+                    item = WooPosCartItemViewState.Error(
+                        itemNumber = 1,
+                        name = "123456789",
+                        message = "Network error occurred",
+                    )
+                )
+            )
+        )
     }
 
     @Test
