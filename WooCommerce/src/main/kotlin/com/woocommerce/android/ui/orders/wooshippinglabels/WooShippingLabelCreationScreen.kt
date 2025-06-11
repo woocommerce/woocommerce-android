@@ -29,9 +29,6 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ModalBottomSheetDefaults
-import androidx.compose.material.ModalBottomSheetState
-import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -77,7 +74,6 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreat
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.PackageSelectionState.DataAvailable
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.PackageSelectionState.NotSelected
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.ShippingRatesState
-import com.woocommerce.android.ui.orders.wooshippinglabels.address.AddressSelection
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.AddressStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.getShipFrom
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.getShipTo
@@ -197,22 +193,6 @@ fun WooShippingLabelCreationScreen(
         BottomSheetValue.Collapsed
     }
 
-    val shipFromSelectionBottomSheetValue = if (uiState.isAddressSelectionExpanded) {
-        ModalBottomSheetValue.Expanded
-    } else {
-        ModalBottomSheetValue.Hidden
-    }
-
-    val shipFromSelectionBottomSheetState = ModalBottomSheetState(
-        density = LocalDensity.current,
-        initialValue = shipFromSelectionBottomSheetValue,
-        animationSpec = ModalBottomSheetDefaults.AnimationSpec,
-        isSkipHalfExpanded = true,
-        confirmValueChange = {
-            onSelectAddressExpandedChange(it == ModalBottomSheetValue.Expanded)
-        }
-    )
-
     val shipmentDetailsBottomSheetState = BottomSheetState(
         initialValue = shipmentDetailsValue,
         animationSpec = BottomSheetScaffoldDefaults.AnimationSpec,
@@ -248,7 +228,6 @@ fun WooShippingLabelCreationScreen(
             uiState = uiState,
             onNavigateBack = onNavigateBack,
             onMarkOrderCompleteChange = onMarkOrderCompleteChange,
-            shipFromSelectionBottomSheetState = shipFromSelectionBottomSheetState,
             onShipmentDetailsExpandedChange = onShipmentDetailsExpandedChange,
             onEditCustomsClick = onEditCustomsClick,
             onEditDestinationAddress = onEditDestinationAddress,
@@ -335,7 +314,6 @@ private fun LabelCreationScreenWithBottomSheet(
     onSelectedShippingRateChanged: (rate: ShippingRateUI) -> Unit,
     uiState: WooShippingLabelCreationViewModel.UIControlsState,
     scaffoldState: BottomSheetScaffoldState,
-    shipFromSelectionBottomSheetState: ModalBottomSheetState,
     onMarkOrderCompleteChange: (Boolean) -> Unit,
     onNavigateBack: () -> Unit,
     onShipmentDetailsExpandedChange: (Boolean) -> Boolean,
@@ -390,32 +368,24 @@ private fun LabelCreationScreenWithBottomSheet(
             )
         },
         sheetContent = {
-            AddressSelection(
-                shipFrom = shippingAddresses.shipFrom,
-                originAddresses = shippingAddresses.originAddresses,
+            ShipmentDetails(
+                totalItems = totalItems,
+                totalItemsCost = totalItemsCost,
+                shippingLines = shippingLines,
+                onMarkOrderCompleteChange = onMarkOrderCompleteChange,
+                shippingAddresses = shippingAddresses,
+                shippingRateSummary = shippingRateSummary,
+                scaffoldState = scaffoldState,
+                isShipmentDetailsExpanded = uiState.isShipmentDetailsExpanded,
+                markOrderComplete = uiState.markOrderComplete,
+                onShipmentDetailsExpandedChange = onShipmentDetailsExpandedChange,
+                onEditDestinationAddress = onEditDestinationAddress,
+                onEditOriginAddress = onEditOriginAddress,
                 onShippingFromAddressChange = onShippingFromAddressChange,
-                modalBottomSheetState = shipFromSelectionBottomSheetState,
-                modifier = Modifier.padding(bottom = paddingBottom),
-                onEditOriginAddress = onEditOriginAddress
-            ) {
-                ShipmentDetails(
-                    totalItems = totalItems,
-                    totalItemsCost = totalItemsCost,
-                    shippingLines = shippingLines,
-                    shipFromSelectionBottomSheetState = shipFromSelectionBottomSheetState,
-                    onMarkOrderCompleteChange = onMarkOrderCompleteChange,
-                    shippingAddresses = shippingAddresses,
-                    shippingRateSummary = shippingRateSummary,
-                    scaffoldState = scaffoldState,
-                    isShipmentDetailsExpanded = uiState.isShipmentDetailsExpanded,
-                    markOrderComplete = uiState.markOrderComplete,
-                    onShipmentDetailsExpandedChange = onShipmentDetailsExpandedChange,
-                    onEditDestinationAddress = onEditDestinationAddress,
-                    destinationStatus = destinationStatus,
-                    noticeBannerUiState = uiState.noticeBannerUiState,
-                    isReadOnly = selectedShipment.purchased
-                )
-            }
+                destinationStatus = destinationStatus,
+                noticeBannerUiState = uiState.noticeBannerUiState,
+                isReadOnly = selectedShipment.purchased
+            )
         },
         sheetPeekHeight = bottomSheetPeekHeight,
         scaffoldState = scaffoldState,
@@ -941,7 +911,11 @@ private fun WooShippingLabelCreationScreenPreview() {
                     packageSelectionState = NotSelected,
                     customsState = Unavailable,
                     hazmatState = Declared(ShippingLabelHazmatCategory.CLASS_1),
-                    shippingRatesState = ShippingRatesState.NoAvailable,
+                    shippingRatesState = ShippingRatesState.DataState(
+                        selectedRatesSortOrder = ShippingSortOption.CHEAPEST,
+                        shippingRates = emptyMap(),
+                        selectedRate = null
+                    ),
                 )
             ),
             shouldShowSplitShipmentButton = true,
