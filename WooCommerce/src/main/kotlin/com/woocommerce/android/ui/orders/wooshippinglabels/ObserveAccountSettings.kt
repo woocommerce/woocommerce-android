@@ -5,35 +5,30 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.AccountSetting
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.transformLatest
+import kotlinx.coroutines.flow.withIndex
 import javax.inject.Inject
 
 class ObserveAccountSettings @Inject constructor(
     private val configurationDataStore: WooShippingAccountSettingsDataStore,
     private val fetchAccountSettings: FetchAccountSettings
 ) {
-    private var isFirstValue = true
-
-    @OptIn(ExperimentalCoroutinesApi::class)
     // We will use data store as the source of truth and after the first emission we will refresh the values async.
+    @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke(): Flow<AccountSettingsModel?> = configurationDataStore.observeAccountSettings()
-        .transformLatest { cachedAccountSettings ->
-            when {
-                isFirstValue && cachedAccountSettings == null -> {
-                    isFirstValue = false
-                    if (fetchAccountSettings().isFailure) {
-                        // We will use null as not available
-                        emit(null)
-                    }
+        .withIndex()
+        .transformLatest { (index, value) ->
+            val isFirstValue = index == 0
+            if (isFirstValue && value == null) {
+                if (fetchAccountSettings().isFailure) {
+                    // We will use null as not available
+                    emit(null)
                 }
-
-                isFirstValue -> {
-                    // If there is cached data, emit cached values and refresh the store options async
-                    isFirstValue = false
-                    emit(cachedAccountSettings)
+            } else {
+                // Start by emitting cached values then refresh the store options async if needed
+                emit(value)
+                if (isFirstValue) {
                     fetchAccountSettings()
                 }
-
-                else -> emit(cachedAccountSettings)
             }
         }
 }
