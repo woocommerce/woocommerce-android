@@ -12,6 +12,6 @@ class WooPosVariationsTypesFilterConfig @Inject constructor() {
         )
 
     companion object {
-        private const val VARIATION_STATUS_PUBLISH = "publish"
+        const val VARIATION_STATUS_PUBLISH = "publish"
     }
 }

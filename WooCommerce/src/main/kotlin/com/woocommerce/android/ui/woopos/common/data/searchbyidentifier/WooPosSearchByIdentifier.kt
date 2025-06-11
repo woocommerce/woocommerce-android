@@ -65,7 +65,7 @@ class WooPosSearchByIdentifier @Inject constructor(
     private fun meetsVariationFilterRequirements(variation: ProductVariation): Boolean {
         val requiredStatus = variationFilterConfig.filters[VariationFilterOption.STATUS]
         val hasValidStatus = when (requiredStatus) {
-            "publish" -> variation.isVisible
+            WooPosVariationsTypesFilterConfig.VARIATION_STATUS_PUBLISH -> variation.isVisible
             else -> false
         }
 
