@@ -529,8 +529,6 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             }
         }
 
-        selectedShipmentIndexFlow.update { it.coerceAtMost(shipmentSize - 1) }
-
         selectedPackagesFlow.updateSize(null)
         customsFormDataFlow.updateSize(null)
         packageWeightsFlow.updateSize(null)
@@ -554,6 +552,10 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     }
 
     fun onShipmentSplit(newShipments: List<ShipmentUIModel>) {
+        if (selectedShipmentIndexFlow.value >= newShipments.size) {
+            selectedShipmentIndexFlow.update { it.coerceAtMost(newShipments.size - 1) }
+            uiState.update { it.copy(selectedIndex = selectedShipmentIndexFlow.value) }
+        }
         shipments.value = newShipments
     }
 
@@ -564,6 +566,8 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     }
 
     fun onSelectedShipmentChanged(index: Int) {
+        if (index >= shipments.value.size) return // This can happen after shipment split when the UI is not updated yet
+
         selectedShipmentIndexFlow.value = index
         uiState.value = uiState.value.copy(selectedIndex = index)
     }
