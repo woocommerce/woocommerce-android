@@ -4278,6 +4278,9 @@
     <string name="woopos_cart_item_error_content_description">Error loading item %s</string>
     <string name="woopos_coupon_item_content_description">Coupon %s</string>
     <string name="woopos_coupon_item_expired_label">Expired on %s</string>
+    <string name="woopos_add_product_to_cart_accessibility_label">Add product to cart</string>
+    <string name="woopos_add_variable_product_to_cart_accessibility_label">Open list of variations</string>
+    <string name="woopos_add_coupon_to_cart_accessibility_label">Add coupon to cart</string>
     <string name="woopos_cart_item_coupon_content_description">Coupon in cart %s</string>
     <string name="woopos_cart_title">Cart</string>
     <string name="woopos_cart_changes_in_the_cart">There are changes in the cart</string>

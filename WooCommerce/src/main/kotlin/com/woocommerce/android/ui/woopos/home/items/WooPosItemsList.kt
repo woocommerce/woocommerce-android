@@ -43,8 +43,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -161,7 +161,12 @@ private fun ProductItem(
         item.name,
         item.price
     )
-    WooPosProductCard(modifier, itemContentDescription, onItemClicked, item)
+    WooPosProductCard(
+        modifier = modifier,
+        itemContentDescription = itemContentDescription,
+        onItemClicked = onItemClicked,
+        item = item
+    )
 }
 
 @Composable
@@ -175,7 +180,13 @@ private fun VariableProductItem(
         item.name,
         item.price
     )
-    WooPosProductCard(modifier, itemContentDescription, onItemClicked, item)
+    WooPosProductCard(
+        modifier = modifier,
+        itemContentDescription = itemContentDescription,
+        clickLabelForAccessibility = stringResource(R.string.woopos_add_variable_product_to_cart_accessibility_label),
+        onItemClicked = onItemClicked,
+        item = item
+    )
 }
 
 @Composable
@@ -189,7 +200,12 @@ private fun VariationItem(
         item.name,
         item.price
     )
-    WooPosProductCard(modifier, itemContentDescription, onItemClicked, item)
+    WooPosProductCard(
+        modifier = modifier,
+        itemContentDescription = itemContentDescription,
+        onItemClicked = onItemClicked,
+        item = item
+    )
 }
 
 @Composable
@@ -209,13 +225,13 @@ private fun CouponItem(
 fun WooPosProductCard(
     modifier: Modifier,
     itemContentDescription: String,
+    clickLabelForAccessibility: String = stringResource(R.string.woopos_add_product_to_cart_accessibility_label),
     onItemClicked: (item: WooPosItemSelectionViewState) -> Unit,
     item: Product
 ) {
     WooPosCard(
         modifier = modifier
-            .wrapContentHeight()
-            .semantics { contentDescription = itemContentDescription },
+            .wrapContentHeight(),
         shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
         backgroundColor = MaterialTheme.colorScheme.surfaceContainerLowest,
         elevation = WooPosElevation.Medium,
@@ -223,9 +239,12 @@ fun WooPosProductCard(
     ) {
         Row(
             modifier = Modifier
-                .clickable { onItemClicked(item) }
+                .clickable(
+                    onClickLabel = clickLabelForAccessibility,
+                ) { onItemClicked(item) }
                 .height(IntrinsicSize.Min)
                 .heightIn(min = 112.dp)
+                .clearAndSetSemantics { contentDescription = itemContentDescription }
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -313,8 +332,7 @@ fun WooPosCouponCard(
 ) {
     WooPosCard(
         modifier = modifier
-            .wrapContentHeight()
-            .semantics { contentDescription = itemContentDescription },
+            .wrapContentHeight(),
         shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
         backgroundColor = if (item.expiredState is Coupon.ExpiredState.Expired) {
             WooPosTheme.colors.disabledContainer
@@ -326,7 +344,11 @@ fun WooPosCouponCard(
     ) {
         Row(
             modifier = Modifier
-                .clickable(enabled = item.expiredState is Coupon.ExpiredState.NotExpired) { onItemClicked(item) }
+                .clickable(
+                    enabled = item.expiredState is Coupon.ExpiredState.NotExpired,
+                    onClickLabel = stringResource(R.string.woopos_add_coupon_to_cart_accessibility_label)
+                ) { onItemClicked(item) }
+                .clearAndSetSemantics { contentDescription = itemContentDescription }
                 .height(IntrinsicSize.Min)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
