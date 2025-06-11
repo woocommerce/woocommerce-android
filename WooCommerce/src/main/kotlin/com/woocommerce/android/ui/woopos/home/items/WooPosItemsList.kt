@@ -177,8 +177,7 @@ private fun VariableProductItem(
 ) {
     val itemContentDescription = stringResource(
         id = R.string.woopos_variable_product_item_content_description,
-        item.name,
-        item.price
+        item.name
     )
     WooPosProductCard(
         modifier = modifier,
