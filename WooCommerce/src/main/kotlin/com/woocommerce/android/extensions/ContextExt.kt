@@ -16,14 +16,9 @@ import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
 import com.woocommerce.android.util.SystemVersionUtils
 import kotlinx.parcelize.Parcelize
-import kotlin.math.max
-import kotlin.math.min
 
 val Context.isTwoPanesShouldBeUsed: Boolean
-    get() = determineIfTwoPanesShouldBeUsed(
-        resources.configuration.screenWidthDp,
-        resources.configuration.screenHeightDp
-    )
+    get() = determineIfTwoPanesShouldBeUsed(resources.configuration.screenWidthDp)
 
 val Context.windowHeightSizeClass: WindowSizeClass
     get() = determineWindowHeightSizeClassByGivenSize(resources.configuration.screenHeightDp)
@@ -31,22 +26,10 @@ val Context.windowHeightSizeClass: WindowSizeClass
 val Context.windowWidthSizeClass: WindowSizeClass
     get() = determineWindowWidthSizeClassByGivenSize(resources.configuration.screenWidthDp)
 
-private const val MIN_SCREEN_SHORT_SIZE_DP = 674
-private const val MIN_SCREEN_LONG_SIZE_DP = 800
+private const val MIN_WIDTH_DP_FOR_TWO_PANES = 674
 
-private fun Context.determineIfTwoPanesShouldBeUsed(widthDp: Int, heightDp: Int): Boolean {
-    val minScreenShortSizeDP = MIN_SCREEN_SHORT_SIZE_DP
-    val minScreenLongSizeDP = MIN_SCREEN_LONG_SIZE_DP
-
-    val shortSize = min(widthDp, heightDp)
-    val longSize = max(widthDp, heightDp)
-
-    val orientation = resources.configuration.orientation
-    return when (orientation) {
-        Configuration.ORIENTATION_PORTRAIT -> shortSize >= minScreenShortSizeDP
-        Configuration.ORIENTATION_LANDSCAPE -> longSize >= minScreenLongSizeDP
-        else -> false
-    }
+private fun determineIfTwoPanesShouldBeUsed(widthDp: Int): Boolean {
+    return widthDp >= MIN_WIDTH_DP_FOR_TWO_PANES
 }
 
 private fun determineWindowHeightSizeClassByGivenSize(sizeDp: Int): WindowSizeClass {
@@ -149,3 +132,4 @@ fun Context.findActivity(): Activity? {
 
     return null
 }
+
