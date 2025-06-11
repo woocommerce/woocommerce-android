@@ -329,7 +329,6 @@ private fun AnnounceCartItemChangesForAccessibility(
 
                 is WooPosCartItemViewState.Loading ->
                     localView.context.getString(R.string.woopos_cart_searching_for_item)
-
             }
 
             localView.announceForAccessibility(message)
