@@ -123,7 +123,6 @@ fun WooShippingLabelCreationScreen(viewModel: WooShippingLabelCreationViewModel)
                 onMarkOrderCompleteChange = viewModel::onMarkOrderCompleteChange,
                 onNavigateBack = viewModel::onNavigateBack,
                 onShipmentDetailsExpandedChange = viewModel::onShipmentDetailsExpandedChange,
-                onSelectAddressExpandedChange = viewModel::onSelectAddressExpandedChange,
                 onEditCustomsClick = viewModel::onEditCustomsClick,
                 onEditDestinationAddress = viewModel::onEditDestinationAddress,
                 destinationStatus = viewState.destinationStatus,
@@ -170,8 +169,7 @@ fun WooShippingLabelCreationScreen(
     customWeightList: List<String>,
     uiState: WooShippingLabelCreationViewModel.UIControlsState,
     onMarkOrderCompleteChange: (Boolean) -> Unit,
-    onShipmentDetailsExpandedChange: (Boolean) -> Boolean,
-    onSelectAddressExpandedChange: (Boolean) -> Boolean,
+    onShipmentDetailsExpandedChange: (Boolean) -> Unit,
     onEditCustomsClick: () -> Unit,
     onNavigateBack: () -> Unit,
     onEditDestinationAddress: (DestinationShippingAddress) -> Unit,
@@ -199,6 +197,7 @@ fun WooShippingLabelCreationScreen(
         density = LocalDensity.current,
         confirmValueChange = {
             onShipmentDetailsExpandedChange(it == BottomSheetValue.Expanded)
+            true
         }
     )
 
@@ -316,7 +315,7 @@ private fun LabelCreationScreenWithBottomSheet(
     scaffoldState: BottomSheetScaffoldState,
     onMarkOrderCompleteChange: (Boolean) -> Unit,
     onNavigateBack: () -> Unit,
-    onShipmentDetailsExpandedChange: (Boolean) -> Boolean,
+    onShipmentDetailsExpandedChange: (Boolean) -> Unit,
     onEditCustomsClick: () -> Unit,
     onEditDestinationAddress: (DestinationShippingAddress) -> Unit,
     destinationStatus: AddressStatus,
@@ -943,11 +942,9 @@ private fun WooShippingLabelCreationScreenPreview() {
             uiState = WooShippingLabelCreationViewModel.UIControlsState(
                 markOrderComplete = false,
                 isShipmentDetailsExpanded = false,
-                isAddressSelectionExpanded = false,
                 paperSizeOption = WooShippingLabelPaperSize.LABEL
             ),
             onShipmentDetailsExpandedChange = { true },
-            onSelectAddressExpandedChange = { true },
             onEditCustomsClick = {},
             onEditDestinationAddress = {},
             destinationStatus = AddressStatus.VERIFIED,

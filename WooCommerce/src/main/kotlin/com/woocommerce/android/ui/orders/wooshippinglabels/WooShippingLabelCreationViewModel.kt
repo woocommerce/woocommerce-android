@@ -132,7 +132,6 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             markOrderComplete = false,
             selectedIndex = 0,
             isShipmentDetailsExpanded = false,
-            isAddressSelectionExpanded = false,
             paperSizeOption = WooShippingLabelPaperSize.LABEL
         )
     )
@@ -606,18 +605,8 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         uiState.update { it.copy(markOrderComplete = value) }
     }
 
-    fun onShipmentDetailsExpandedChange(value: Boolean): Boolean {
-        return if (uiState.value.isAddressSelectionExpanded.not()) {
-            uiState.update { it.copy(isShipmentDetailsExpanded = value) }
-            true
-        } else {
-            false
-        }
-    }
-
-    fun onSelectAddressExpandedChange(value: Boolean): Boolean {
-        uiState.update { it.copy(isAddressSelectionExpanded = value) }
-        return true
+    fun onShipmentDetailsExpandedChange(value: Boolean) {
+        uiState.update { it.copy(isShipmentDetailsExpanded = value) }
     }
 
     fun onSelectPackageClicked() {
@@ -854,11 +843,6 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     fun allowBackNavigation(): Boolean {
         val state = uiState.value
         return when {
-            state.isAddressSelectionExpanded -> {
-                uiState.update { it.copy(isAddressSelectionExpanded = false) }
-                false
-            }
-
             state.isShipmentDetailsExpanded -> {
                 uiState.update { it.copy(isShipmentDetailsExpanded = false) }
                 false
@@ -995,7 +979,6 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         val markOrderComplete: Boolean,
         val selectedIndex: Int = 0,
         val isShipmentDetailsExpanded: Boolean,
-        val isAddressSelectionExpanded: Boolean,
         val noticeBannerUiState: NoticeBannerUiState? = null,
         val paperSizeOption: WooShippingLabelPaperSize,
     )

@@ -68,7 +68,7 @@ fun ShipmentDetails(
     modifier: Modifier = Modifier,
     noticeBannerUiState: NoticeBannerUiState? = null,
     isShipmentDetailsExpanded: Boolean = false,
-    onShipmentDetailsExpandedChange: (Boolean) -> Boolean,
+    onShipmentDetailsExpandedChange: (Boolean) -> Unit,
     onEditDestinationAddress: (DestinationShippingAddress) -> Unit,
     onEditOriginAddress: (OriginShippingAddress) -> Unit,
     onOriginAddressSelected: (OriginShippingAddress) -> Unit,
