@@ -225,48 +225,6 @@ internal fun AddressSectionPortrait(
     }
 }
 
-@Preview
-@Composable
-private fun AddressSectionPortraitPreview() {
-    WooThemeWithBackground {
-        Box(modifier = Modifier.padding(dimensionResource(R.dimen.major_100))) {
-            AddressSectionPortrait(
-                shippingAddresses = WooShippingAddresses(
-                    shipFrom = getShipFrom(),
-                    shipTo = getShipTo(),
-                    originAddresses = listOf(getShipFrom())
-                ),
-                onEditDestinationAddress = {},
-                onEditOriginAddress = {},
-                onOriginAddressSelected = {},
-                isReadOnly = false,
-                destinationStatus = AddressStatus.VERIFIED
-            )
-        }
-    }
-}
-
-@Preview
-@Composable
-private fun AddressSectionPortraitMissingAddressPreview() {
-    WooThemeWithBackground {
-        Box(modifier = Modifier.padding(dimensionResource(R.dimen.major_100))) {
-            AddressSectionPortrait(
-                shippingAddresses = WooShippingAddresses(
-                    shipFrom = getShipFrom(),
-                    shipTo = DestinationShippingAddress.EMPTY,
-                    originAddresses = listOf(getShipFrom())
-                ),
-                onEditDestinationAddress = {},
-                onEditOriginAddress = {},
-                onOriginAddressSelected = {},
-                isReadOnly = false,
-                destinationStatus = AddressStatus.VERIFIED
-            )
-        }
-    }
-}
-
 @Composable
 internal fun AddressSectionLandscape(
     shippingAddresses: WooShippingAddresses,
@@ -472,48 +430,6 @@ fun OriginAddressSelectionItem(
     }
 }
 
-@Preview(widthDp = 750, heightDp = 200)
-@Composable
-private fun AddressSectionLandscapePreview() {
-    WooThemeWithBackground {
-        Box(modifier = Modifier.padding(dimensionResource(R.dimen.major_100))) {
-            AddressSectionLandscape(
-                shippingAddresses = WooShippingAddresses(
-                    shipFrom = getShipFrom(),
-                    shipTo = getShipTo(),
-                    originAddresses = listOf(getShipFrom())
-                ),
-                isReadOnly = false,
-                onEditDestinationAddress = {},
-                onEditOriginAddress = {},
-                onOriginAddressSelected = {},
-                destinationStatus = AddressStatus.VERIFIED
-            )
-        }
-    }
-}
-
-@Preview(widthDp = 750, heightDp = 100)
-@Composable
-private fun AddressSectionLandscapeMissingAddressPreview() {
-    WooThemeWithBackground {
-        Box(modifier = Modifier.padding(dimensionResource(R.dimen.major_100))) {
-            AddressSectionLandscape(
-                shippingAddresses = WooShippingAddresses(
-                    shipFrom = getShipFrom(),
-                    shipTo = DestinationShippingAddress.EMPTY,
-                    originAddresses = listOf(getShipFrom())
-                ),
-                isReadOnly = false,
-                onEditDestinationAddress = {},
-                onEditOriginAddress = {},
-                onOriginAddressSelected = {},
-                destinationStatus = AddressStatus.VERIFIED
-            )
-        }
-    }
-}
-
 @Composable
 fun AddressStatusIndicator(
     addressStatus: AddressStatus,
@@ -597,5 +513,89 @@ fun OriginShippingAddress.getFormattedName(context: Context): String {
         context.getString(R.string.shipping_label_select_origin_default_address, name)
     } else {
         name
+    }
+}
+
+@Preview
+@Composable
+private fun AddressSectionPortraitPreview() {
+    WooThemeWithBackground {
+        Box(modifier = Modifier.padding(dimensionResource(R.dimen.major_100))) {
+            AddressSectionPortrait(
+                shippingAddresses = WooShippingAddresses(
+                    shipFrom = getShipFrom(),
+                    shipTo = getShipTo(),
+                    originAddresses = listOf(getShipFrom())
+                ),
+                onEditDestinationAddress = {},
+                onEditOriginAddress = {},
+                onOriginAddressSelected = {},
+                isReadOnly = false,
+                destinationStatus = AddressStatus.VERIFIED
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun AddressSectionPortraitMissingAddressPreview() {
+    WooThemeWithBackground {
+        Box(modifier = Modifier.padding(dimensionResource(R.dimen.major_100))) {
+            AddressSectionPortrait(
+                shippingAddresses = WooShippingAddresses(
+                    shipFrom = getShipFrom(),
+                    shipTo = DestinationShippingAddress.EMPTY,
+                    originAddresses = listOf(getShipFrom())
+                ),
+                onEditDestinationAddress = {},
+                onEditOriginAddress = {},
+                onOriginAddressSelected = {},
+                isReadOnly = false,
+                destinationStatus = AddressStatus.VERIFIED
+            )
+        }
+    }
+}
+
+@Preview(widthDp = 750, heightDp = 200)
+@Composable
+private fun AddressSectionLandscapePreview() {
+    WooThemeWithBackground {
+        Box(modifier = Modifier.padding(dimensionResource(R.dimen.major_100))) {
+            AddressSectionLandscape(
+                shippingAddresses = WooShippingAddresses(
+                    shipFrom = getShipFrom(),
+                    shipTo = getShipTo(),
+                    originAddresses = listOf(getShipFrom())
+                ),
+                isReadOnly = false,
+                onEditDestinationAddress = {},
+                onEditOriginAddress = {},
+                onOriginAddressSelected = {},
+                destinationStatus = AddressStatus.VERIFIED
+            )
+        }
+    }
+}
+
+@Preview(widthDp = 750, heightDp = 100)
+@Composable
+private fun AddressSectionLandscapeMissingAddressPreview() {
+    WooThemeWithBackground {
+        Box(modifier = Modifier.padding(dimensionResource(R.dimen.major_100))) {
+            AddressSectionLandscape(
+                shippingAddresses = WooShippingAddresses(
+                    shipFrom = getShipFrom(),
+                    shipTo = DestinationShippingAddress.EMPTY,
+                    originAddresses = listOf(getShipFrom())
+                ),
+                isReadOnly = false,
+                onEditDestinationAddress = {},
+                onEditOriginAddress = {},
+                onOriginAddressSelected = {},
+                destinationStatus = AddressStatus.VERIFIED
+            )
+        }
     }
 }
