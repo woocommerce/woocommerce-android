@@ -165,7 +165,7 @@ class WooPosSearchByIdentifierTest {
         // THEN
         assertTrue(result is WooPosSearchByIdentifierResult.Failure)
         assertEquals(
-            WooPosSearchByIdentifierResult.Error.UnsupportedProduct,
+            WooPosSearchByIdentifierResult.Error.UnsupportedProduct(product.name),
             (result as WooPosSearchByIdentifierResult.Failure).error
         )
     }
@@ -184,7 +184,7 @@ class WooPosSearchByIdentifierTest {
         // THEN
         assertTrue(result is WooPosSearchByIdentifierResult.Failure)
         assertEquals(
-            WooPosSearchByIdentifierResult.Error.UnsupportedProduct,
+            WooPosSearchByIdentifierResult.Error.UnsupportedProduct(product.name),
             (result as WooPosSearchByIdentifierResult.Failure).error
         )
     }
@@ -203,7 +203,7 @@ class WooPosSearchByIdentifierTest {
         // THEN
         assertTrue(result is WooPosSearchByIdentifierResult.Failure)
         assertEquals(
-            WooPosSearchByIdentifierResult.Error.UnsupportedProduct,
+            WooPosSearchByIdentifierResult.Error.UnsupportedProduct(product.name),
             (result as WooPosSearchByIdentifierResult.Failure).error
         )
     }
@@ -222,7 +222,7 @@ class WooPosSearchByIdentifierTest {
         // THEN
         assertTrue(result is WooPosSearchByIdentifierResult.Failure)
         assertEquals(
-            WooPosSearchByIdentifierResult.Error.UnsupportedProduct,
+            WooPosSearchByIdentifierResult.Error.UnsupportedProduct(product.name),
             (result as WooPosSearchByIdentifierResult.Failure).error
         )
     }

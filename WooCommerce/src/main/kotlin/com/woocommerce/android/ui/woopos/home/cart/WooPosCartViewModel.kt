@@ -570,8 +570,11 @@ class WooPosCartViewModel @Inject constructor(
                     }
 
                     is WooPosSearchByIdentifierResult.Error.UnknownError -> this.error.message
-                    WooPosSearchByIdentifierResult.Error.UnsupportedProduct -> {
-                        resourceProvider.getString(R.string.woopos_cart_barcode_scan_result_unsupported_product)
+                    is WooPosSearchByIdentifierResult.Error.UnsupportedProduct -> {
+                        resourceProvider.getString(
+                            R.string.woopos_cart_barcode_scan_result_unsupported_product,
+                            this.error.productName
+                        )
                     }
                 }
                 WooPosCartItemViewState.Error(

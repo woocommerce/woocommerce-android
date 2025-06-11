@@ -34,7 +34,8 @@ class WooPosSearchByIdentifier @Inject constructor(
         return if (meetsFilterRequirements(result.product)) {
             result
         } else {
-            WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.UnsupportedProduct)
+            WooPosSearchByIdentifierResult
+                .Failure(WooPosSearchByIdentifierResult.Error.UnsupportedProduct(result.product.name))
         }
     }
 
