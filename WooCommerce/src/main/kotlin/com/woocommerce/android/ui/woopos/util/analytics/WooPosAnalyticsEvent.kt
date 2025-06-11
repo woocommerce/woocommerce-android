@@ -137,7 +137,8 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             val source: ItemsListSource?,
             val sourceType: ItemsListSourceType,
             val itemType: ItemsListItemType,
-            val productType: ItemsListProductType?
+            val productType: ItemsListProductType?,
+            val error: String? = null
         ) : Event() {
             override val name: String = "item_added_to_cart"
 
@@ -181,7 +182,8 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                     is WooPosCartItemViewState.Loading -> null
                     is WooPosCartItemViewState.Product.Simple -> ItemsListProductType.SIMPLE
                     is WooPosCartItemViewState.Product.Variation -> ItemsListProductType.VARIATION
-                }
+                },
+                error = if (item is WooPosCartItemViewState.Error) item.message else null
             )
 
             init {
@@ -194,6 +196,9 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                         put(ItemsListItemType.ITEM_TYPE, itemType.toString())
                         if (productType != null) {
                             put(ItemsListProductType.PRODUCT_TYPE, productType.toString())
+                        }
+                        if (error != null) {
+                            put("error", error)
                         }
                     }
                 )
