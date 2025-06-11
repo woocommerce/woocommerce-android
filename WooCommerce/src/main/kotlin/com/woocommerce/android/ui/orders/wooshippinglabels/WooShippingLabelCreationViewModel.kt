@@ -853,7 +853,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     }
 
     fun onRefundClicked() {
-        val selectedShipment = shipments.value[selectedShipmentIndexFlow.value]
+        val selectedShipment = shipments.value[selectedShipmentIndex]
         triggerEvent(StartRefundRequest(navArgs.orderId, selectedShipment))
     }
 
