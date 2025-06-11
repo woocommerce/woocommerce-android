@@ -451,7 +451,7 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
 
     private val defaultShipments = listOf(
         ShipmentUIModel(
-            id = "0",
+            localId = "0",
             items = listOf(
                 ShippableItemModel(
                     itemId = 1L,
@@ -498,7 +498,7 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
 
     private val twoShipments = listOf(
         ShipmentUIModel(
-            id = "0",
+            localId = "0",
             items = listOf(
                 ShippableItemModel(
                     itemId = 1L,
@@ -529,7 +529,7 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
             )
         ),
         ShipmentUIModel(
-            id = "1",
+            localId = "1",
             items = listOf(
                 ShippableItemModel(
                     itemId = 3L,
@@ -550,7 +550,7 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
 
     private val threeShipments = listOf(
         ShipmentUIModel(
-            id = "0",
+            localId = "0",
             items = listOf(
                 ShippableItemModel(
                     itemId = 1L,
@@ -581,7 +581,7 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
             )
         ),
         ShipmentUIModel(
-            id = "1",
+            localId = "1",
             items = listOf(
                 ShippableItemModel(
                     itemId = 3L,
@@ -599,7 +599,7 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
             )
         ),
         ShipmentUIModel(
-            id = "2",
+            localId = "2",
             items = listOf(
                 ShippableItemModel(
                     itemId = 3L,
@@ -619,7 +619,7 @@ class WooShippingSplitShipmentViewModelTest : BaseUnitTest() {
     )
 
     val purchasedShipmentUIModel = ShipmentUIModel(
-        id = "10",
+        localId = "10",
         items = listOf(
             ShippableItemModel(
                 itemId = 1L,

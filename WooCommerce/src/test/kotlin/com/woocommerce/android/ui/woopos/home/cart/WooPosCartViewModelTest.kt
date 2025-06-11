@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetVariationById
 import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosSearchByIdentifier
 import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosSearchByIdentifierResult
+import com.woocommerce.android.ui.woopos.common.util.WooPosSoundHelper
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
@@ -61,6 +62,7 @@ class WooPosCartViewModelTest {
 
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val parentToChildrenMutableSharedFlow = MutableSharedFlow<ParentToChildrenEvent>()
+    private val soundHelper: WooPosSoundHelper = mock()
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
         on { events }.thenReturn(parentToChildrenMutableSharedFlow)
     }
@@ -1091,6 +1093,30 @@ class WooPosCartViewModelTest {
         }
 
     @Test
+    fun `given barcode scanned, when error occurs, then failure sound played`() =
+        runTest {
+            // GIVEN
+            val errorMessage = "Unknown error"
+            whenever(resourceProvider.getString(R.string.woopos_cart_barcode_scan_result_product_not_found))
+                .thenReturn(errorMessage)
+
+            whenever(searchByIdentifier(eq("123456789"), any())).thenReturn(
+                WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.UnknownError(""))
+            )
+
+            createSut()
+
+            // WHEN
+            parentToChildrenMutableSharedFlow.emit(
+                ParentToChildrenEvent.BarcodeScanned("123456789")
+            )
+            advanceUntilIdle()
+
+            // THEN
+            verify(soundHelper).playBarcodeScanFailure()
+        }
+
+    @Test
     fun `given cart with items, when barcode scanned and product found, then product is added to existing items`() =
         runTest {
             // GIVEN
@@ -1274,6 +1300,7 @@ class WooPosCartViewModelTest {
             cartItemsUpdater,
             getCachedStoreCurrency,
             searchByIdentifier,
+            soundHelper,
             savedState
         )
     }
