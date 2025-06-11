@@ -19,7 +19,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.WindowSizeClass
 import com.woocommerce.android.extensions.isTwoPanesShouldBeUsed
 import com.woocommerce.android.extensions.windowWidthSizeClass
-import com.woocommerce.android.ui.orders.list.OrderListFragment
 import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
