@@ -208,6 +208,25 @@ class WooPosSearchByIdentifierTest {
         )
     }
 
+    @Test
+    fun `given variable product, when search called, then return product not supported`() = runTest {
+        // GIVEN
+        val identifier = "123456"
+        val product = createProduct(type = ProductType.VARIABLE.value)
+
+        whenever(localSearcher(identifier, WooPosBarcodeFormat.FormatUnknown)).thenReturn(product)
+
+        // WHEN
+        val result = sut(identifier)
+
+        // THEN
+        assertTrue(result is WooPosSearchByIdentifierResult.Failure)
+        assertEquals(
+            WooPosSearchByIdentifierResult.Error.UnsupportedProduct,
+            (result as WooPosSearchByIdentifierResult.Failure).error
+        )
+    }
+
     @Suppress("LongMethod")
     private fun createProduct(
         remoteId: Long = 1,
