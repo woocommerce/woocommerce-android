@@ -176,7 +176,7 @@ private fun VariableProductItem(
     onItemClicked: (item: WooPosItemSelectionViewState) -> Unit
 ) {
     val itemContentDescription = stringResource(
-        id = R.string.woopos_variable_product_item_content_description,
+        id = R.string.woopos_variable_product_item_content_description_v2,
         item.name
     )
     WooPosProductCard(
@@ -214,7 +214,7 @@ private fun CouponItem(
     onItemClicked: (item: WooPosItemSelectionViewState) -> Unit
 ) {
     val itemContentDescription = stringResource(
-        id = R.string.woopos_coupon_item_content_description,
+        id = R.string.woopos_coupon_item_content_description_v2,
         item.name,
         item.summary
     )
