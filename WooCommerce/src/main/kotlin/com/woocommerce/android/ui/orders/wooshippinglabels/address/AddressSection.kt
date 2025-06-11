@@ -62,7 +62,7 @@ internal fun AddressSectionPortrait(
     shippingAddresses: WooShippingAddresses,
     onEditDestinationAddress: (DestinationShippingAddress) -> Unit,
     onEditOriginAddress: (OriginShippingAddress) -> Unit,
-    onShippingFromAddressChange: (OriginShippingAddress) -> Unit,
+    onOriginAddressSelected: (OriginShippingAddress) -> Unit,
     destinationStatus: AddressStatus,
     modifier: Modifier = Modifier,
     isReadOnly: Boolean = false
@@ -225,7 +225,7 @@ internal fun AddressSectionPortrait(
             shipFrom = shippingAddresses.shipFrom,
             originAddresses = shippingAddresses.originAddresses,
             onDismiss = { isAddressSelectionBottomSheetVisible = false },
-            onShippingFromAddressChange = onShippingFromAddressChange,
+            onOriginAddressSelected = onOriginAddressSelected,
             onEditOriginAddress = onEditOriginAddress
         )
     }
@@ -244,7 +244,7 @@ private fun AddressSectionPortraitPreview() {
                 ),
                 onEditDestinationAddress = {},
                 onEditOriginAddress = {},
-                onShippingFromAddressChange = {},
+                onOriginAddressSelected = {},
                 isReadOnly = false,
                 destinationStatus = AddressStatus.VERIFIED
             )
@@ -265,7 +265,7 @@ private fun AddressSectionPortraitMissingAddressPreview() {
                 ),
                 onEditDestinationAddress = {},
                 onEditOriginAddress = {},
-                onShippingFromAddressChange = {},
+                onOriginAddressSelected = {},
                 isReadOnly = false,
                 destinationStatus = AddressStatus.VERIFIED
             )
@@ -278,7 +278,7 @@ internal fun AddressSectionLandscape(
     shippingAddresses: WooShippingAddresses,
     onEditDestinationAddress: (DestinationShippingAddress) -> Unit,
     onEditOriginAddress: (OriginShippingAddress) -> Unit,
-    onShippingFromAddressChange: (OriginShippingAddress) -> Unit,
+    onOriginAddressSelected: (OriginShippingAddress) -> Unit,
     destinationStatus: AddressStatus,
     modifier: Modifier = Modifier,
     isReadOnly: Boolean = false
@@ -366,7 +366,7 @@ internal fun AddressSectionLandscape(
             shipFrom = shippingAddresses.shipFrom,
             originAddresses = shippingAddresses.originAddresses,
             onDismiss = { isAddressSelectionBottomSheetVisible = false },
-            onShippingFromAddressChange = onShippingFromAddressChange,
+            onOriginAddressSelected = onOriginAddressSelected,
             onEditOriginAddress = onEditOriginAddress
         )
     }
@@ -428,7 +428,7 @@ fun AddressSelectionBottomSheet(
     shipFrom: OriginShippingAddress,
     originAddresses: List<OriginShippingAddress>,
     onDismiss: () -> Unit,
-    onShippingFromAddressChange: (OriginShippingAddress) -> Unit,
+    onOriginAddressSelected: (OriginShippingAddress) -> Unit,
     onEditOriginAddress: (OriginShippingAddress) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -455,7 +455,7 @@ fun AddressSelectionBottomSheet(
                     isSelected = isSelected,
                     onEdit = onEditOriginAddress,
                     onClick = {
-                        onShippingFromAddressChange(option)
+                        onOriginAddressSelected(option)
                     },
                     modifier = Modifier.padding(
                         top = dimensionResource(id = R.dimen.minor_100),
@@ -539,7 +539,7 @@ private fun AddressSectionLandscapePreview() {
                 isReadOnly = false,
                 onEditDestinationAddress = {},
                 onEditOriginAddress = {},
-                onShippingFromAddressChange = {},
+                onOriginAddressSelected = {},
                 destinationStatus = AddressStatus.VERIFIED
             )
         }
@@ -560,7 +560,7 @@ private fun AddressSectionLandscapeMissingAddressPreview() {
                 isReadOnly = false,
                 onEditDestinationAddress = {},
                 onEditOriginAddress = {},
-                onShippingFromAddressChange = {},
+                onOriginAddressSelected = {},
                 destinationStatus = AddressStatus.VERIFIED
             )
         }

@@ -71,7 +71,7 @@ fun ShipmentDetails(
     onShipmentDetailsExpandedChange: (Boolean) -> Boolean,
     onEditDestinationAddress: (DestinationShippingAddress) -> Unit,
     onEditOriginAddress: (OriginShippingAddress) -> Unit,
-    onShippingFromAddressChange: (OriginShippingAddress) -> Unit,
+    onOriginAddressSelected: (OriginShippingAddress) -> Unit,
     destinationStatus: AddressStatus,
     markOrderComplete: Boolean = false,
     onMarkOrderCompleteChange: (Boolean) -> Unit = {},
@@ -133,7 +133,7 @@ fun ShipmentDetails(
                 isReadOnly = isReadOnly,
                 onEditDestinationAddress = onEditDestinationAddress,
                 onEditOriginAddress = onEditOriginAddress,
-                onShippingFromAddressChange = onShippingFromAddressChange,
+                onOriginAddressSelected = onOriginAddressSelected,
                 destinationStatus = destinationStatus
             )
         } else {
@@ -149,7 +149,7 @@ fun ShipmentDetails(
                 isReadOnly = isReadOnly,
                 onEditDestinationAddress = onEditDestinationAddress,
                 onEditOriginAddress = onEditOriginAddress,
-                onShippingFromAddressChange = onShippingFromAddressChange,
+                onOriginAddressSelected = onOriginAddressSelected,
                 destinationStatus = destinationStatus
             )
         }
@@ -167,7 +167,7 @@ private fun ShipmentDetailsPortrait(
     shippingRateSummary: ShippingRateSummaryUI?,
     onEditDestinationAddress: (DestinationShippingAddress) -> Unit,
     onEditOriginAddress: (OriginShippingAddress) -> Unit,
-    onShippingFromAddressChange: (OriginShippingAddress) -> Unit,
+    onOriginAddressSelected: (OriginShippingAddress) -> Unit,
     destinationStatus: AddressStatus,
     modifier: Modifier = Modifier,
     isReadOnly: Boolean = false
@@ -188,7 +188,7 @@ private fun ShipmentDetailsPortrait(
                 isReadOnly = isReadOnly,
                 onEditDestinationAddress = onEditDestinationAddress,
                 onEditOriginAddress = onEditOriginAddress,
-                onShippingFromAddressChange = onShippingFromAddressChange,
+                onOriginAddressSelected = onOriginAddressSelected,
                 destinationStatus = destinationStatus
             )
             Divider(modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.major_100)))
@@ -216,7 +216,7 @@ private fun ShipmentDetailsLandscape(
     shippingRateSummary: ShippingRateSummaryUI?,
     onEditDestinationAddress: (DestinationShippingAddress) -> Unit,
     onEditOriginAddress: (OriginShippingAddress) -> Unit,
-    onShippingFromAddressChange: (OriginShippingAddress) -> Unit,
+    onOriginAddressSelected: (OriginShippingAddress) -> Unit,
     destinationStatus: AddressStatus,
     modifier: Modifier = Modifier,
     isReadOnly: Boolean = false
@@ -235,7 +235,7 @@ private fun ShipmentDetailsLandscape(
                 isReadOnly = isReadOnly,
                 onEditDestinationAddress = onEditDestinationAddress,
                 onEditOriginAddress = onEditOriginAddress,
-                onShippingFromAddressChange = onShippingFromAddressChange,
+                onOriginAddressSelected = onOriginAddressSelected,
                 destinationStatus = destinationStatus
             )
             Row(
@@ -290,7 +290,7 @@ private fun OrderDetailsSection(
     shippingLines: List<ShippingLineSummaryUI>,
     onEditDestinationAddress: (DestinationShippingAddress) -> Unit,
     onEditOriginAddress: (OriginShippingAddress) -> Unit,
-    onShippingFromAddressChange: (OriginShippingAddress) -> Unit,
+    onOriginAddressSelected: (OriginShippingAddress) -> Unit,
     destinationStatus: AddressStatus,
     modifier: Modifier = Modifier,
     isReadOnly: Boolean = false
@@ -307,7 +307,7 @@ private fun OrderDetailsSection(
             isReadOnly = isReadOnly,
             onEditDestinationAddress = onEditDestinationAddress,
             onEditOriginAddress = onEditOriginAddress,
-            onShippingFromAddressChange = onShippingFromAddressChange,
+            onOriginAddressSelected = onOriginAddressSelected,
             destinationStatus = destinationStatus
         )
         TotalCard(
@@ -360,7 +360,7 @@ fun ShipmentDetailsLandscapePreview() {
                 shippingRateSummary = null,
                 onEditDestinationAddress = {},
                 onEditOriginAddress = {},
-                onShippingFromAddressChange = {},
+                onOriginAddressSelected = {},
                 destinationStatus = AddressStatus.VERIFIED
             )
         }
