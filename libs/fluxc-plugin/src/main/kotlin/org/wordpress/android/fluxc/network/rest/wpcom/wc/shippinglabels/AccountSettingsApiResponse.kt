@@ -21,7 +21,7 @@ data class AccountSettingsApiResponse(
         @SerializedName("can_manage_payments") val canManagePayments: Boolean,
         @SerializedName("master_user_name") val storeOwnerName: String,
         @SerializedName("master_user_login") val storeOwnerUserName: String,
-        @SerializedName("master_user_wpcom_login") val storeOwnerWpcomUserName: String,
+        @SerializedName("master_user_wpcom_login") val storeOwnerWpcomUserName: String?,
         @SerializedName("master_user_email") val storeOwnerWpcomEmail: String,
         @SerializedName("payment_methods") val paymentMethods: List<WCPaymentMethod>?
     )

@@ -10,7 +10,7 @@ data class WCShippingAccountSettings(
     val canManagePayments: Boolean,
     val storeOwnerName: String,
     val storeOwnerUserName: String,
-    val storeOwnerWpcomUserName: String,
+    val storeOwnerWpcomUserName: String?,
     val storeOwnerWpcomEmail: String,
     val selectedPaymentMethodId: Int?,
     val paymentMethods: List<WCPaymentMethod>,
