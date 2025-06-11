@@ -1115,7 +1115,7 @@ class WooPosCartViewModelTest {
             advanceUntilIdle()
 
             // THEN
-           verify(analyticsTracker).track(
+            verify(analyticsTracker).track(
                 eq(
                     WooPosAnalyticsEvent.Event.ItemAddedToCart(
                         item = WooPosCartItemViewState.Product.Simple(

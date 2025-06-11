@@ -140,15 +140,7 @@ class WooPosCartViewModel @Inject constructor(
         }
         viewModelScope.launch {
             items.forEach { item ->
-                when (item) {
-                    is WooPosCartItemViewState.Product,
-                    is WooPosCartItemViewState.Coupon -> {
-                        analyticsTracker.track(ItemRemovedFromCart(item = item, source = source))
-                    }
-
-                    is WooPosCartItemViewState.Loading,
-                    is WooPosCartItemViewState.Error -> Unit
-                }
+                analyticsTracker.track(ItemRemovedFromCart(item = item, source = source))
             }
         }
     }
