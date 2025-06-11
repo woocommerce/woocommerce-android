@@ -72,7 +72,7 @@ fun WooPosBarcodeInfoDialog(
             ConstraintLayout(
                 modifier = Modifier.fillMaxWidth()
             ) {
-                val (header, closeIcon, primaryText, secondaryText, tertiaryText, quaternaryBox, primaryButton) =
+                val (header, closeIcon, introText, primaryText, secondaryText, tertiaryText, quaternaryText, quinaryBox, primaryButton) =
                     createRefs()
 
                 WooPosText(
@@ -94,6 +94,22 @@ fun WooPosBarcodeInfoDialog(
                 )
 
                 WooPosText(
+                    text = stringResource(id = state.introMessage),
+                    style = WooPosTypography.BodyLarge,
+                    textAlign = TextAlign.Start,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            bottom = WooPosSpacing.Medium.value.toAdaptivePadding()
+                        )
+                        .constrainAs(introText) {
+                            top.linkTo(header.bottom)
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                        }
+                )
+
+                WooPosText(
                     text = stringResource(id = state.primaryMessage),
                     style = WooPosTypography.BodyLarge,
                     textAlign = TextAlign.Start,
@@ -101,7 +117,7 @@ fun WooPosBarcodeInfoDialog(
                         .fillMaxWidth()
                         .padding(start = WooPosSpacing.Medium.value.toAdaptivePadding())
                         .constrainAs(primaryText) {
-                            top.linkTo(header.bottom)
+                            top.linkTo(introText.bottom)
                             start.linkTo(parent.start)
                             end.linkTo(parent.end)
                         }
@@ -160,10 +176,26 @@ fun WooPosBarcodeInfoDialog(
                         .padding(
                             start = WooPosSpacing.Medium.value.toAdaptivePadding(),
                             top = WooPosSpacing.Small.value.toAdaptivePadding(),
-                            bottom = WooPosSpacing.Medium.value.toAdaptivePadding()
                         )
                         .constrainAs(tertiaryText) {
                             top.linkTo(secondaryText.bottom)
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                        }
+                )
+
+                WooPosText(
+                    text = stringResource(id = state.quaternaryMessage),
+                    style = WooPosTypography.BodyLarge,
+                    textAlign = TextAlign.Start,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            start = WooPosSpacing.Medium.value.toAdaptivePadding(),
+                            top = WooPosSpacing.Small.value.toAdaptivePadding(),
+                        )
+                        .constrainAs(quaternaryText) {
+                            top.linkTo(tertiaryText.bottom)
                             start.linkTo(parent.start)
                             end.linkTo(parent.end)
                         }
@@ -181,15 +213,15 @@ fun WooPosBarcodeInfoDialog(
                             vertical = WooPosSpacing.XLarge.value.toAdaptivePadding(),
                             horizontal = WooPosSpacing.Medium.value.toAdaptivePadding()
                         )
-                        .constrainAs(quaternaryBox) {
-                            top.linkTo(tertiaryText.bottom, margin = bigMargin)
+                        .constrainAs(quinaryBox) {
+                            top.linkTo(quaternaryText.bottom, margin = bigMargin)
                             start.linkTo(parent.start)
                             end.linkTo(parent.end)
                         },
                     contentAlignment = Alignment.Center,
                 ) {
                     WooPosText(
-                        text = stringResource(id = state.quaternaryMessage),
+                        text = stringResource(id = state.quinaryMessage),
                         style = WooPosTypography.BodySmall,
                         textAlign = TextAlign.Center,
                     )
@@ -205,7 +237,7 @@ fun WooPosBarcodeInfoDialog(
                             contentDescription = primaryButtonContentDescription
                         }
                         .constrainAs(primaryButton) {
-                            top.linkTo(quaternaryBox.bottom, margin = buttonMargin)
+                            top.linkTo(quinaryBox.bottom, margin = buttonMargin)
                             start.linkTo(parent.start)
                             end.linkTo(parent.end)
                         }
@@ -221,8 +253,9 @@ private fun getCombinedContentDescription(state: WooPosHomeState.BarcodeInfoDial
         id = R.string.woopos_dialog_barcode_info_content_description
     )
     return "$dialogContentDescription\n${stringResource(id = state.header)}" +
-        "\n${stringResource(id = state.primaryMessage)}\n${stringResource(id = state.secondaryMessage)}" +
-        "\n${stringResource(id = state.tertiaryMessage)}\n${stringResource(id = state.quaternaryMessage)}"
+        "\n${stringResource(id = state.introMessage)}\n${stringResource(id = state.primaryMessage)}" +
+        "\n${stringResource(id = state.secondaryMessage)}\n${stringResource(id = state.tertiaryMessage)}" +
+        "\n${stringResource(id = state.quaternaryMessage)}\n${stringResource(id = state.quinaryMessage)}"
 }
 
 @WooPosPreview

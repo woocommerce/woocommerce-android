@@ -58,6 +58,9 @@ data class WooPosHomeState(
         val header: Int = R.string.woopos_dialog_barcode_info_heading
 
         @IgnoredOnParcel
+        val introMessage: Int = R.string.woopos_dialog_barcode_info_intro_message
+
+        @IgnoredOnParcel
         val primaryMessage: Int = R.string.woopos_dialog_barcode_info_primary_message
 
         @IgnoredOnParcel
@@ -68,6 +71,9 @@ data class WooPosHomeState(
 
         @IgnoredOnParcel
         val quaternaryMessage: Int = R.string.woopos_dialog_barcode_info_quaternary_message
+
+        @IgnoredOnParcel
+        val quinaryMessage: Int = R.string.woopos_dialog_barcode_info_quinary_message
 
         @IgnoredOnParcel
         val primaryButton: PrimaryButton = PrimaryButton(
