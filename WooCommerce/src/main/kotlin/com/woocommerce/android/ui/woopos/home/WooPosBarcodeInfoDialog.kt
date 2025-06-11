@@ -72,8 +72,17 @@ fun WooPosBarcodeInfoDialog(
             ConstraintLayout(
                 modifier = Modifier.fillMaxWidth()
             ) {
-                val (header, closeIcon, introText, primaryText, secondaryText, tertiaryText, quaternaryText, quinaryBox, primaryButton) =
-                    createRefs()
+                val (
+                    header,
+                    closeIcon,
+                    introText,
+                    primaryText,
+                    secondaryText,
+                    tertiaryText,
+                    quaternaryText,
+                    quinaryBox,
+                    primaryButton
+                ) = createRefs()
 
                 WooPosText(
                     text = stringResource(id = state.header),
