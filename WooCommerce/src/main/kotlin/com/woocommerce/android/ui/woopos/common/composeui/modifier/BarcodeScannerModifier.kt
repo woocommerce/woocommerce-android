@@ -61,7 +61,7 @@ class BarcodeInputDetector(
     private val coroutineScope: CoroutineScope,
     private val currentTimeProvider: CurrentTimeProvider,
 ) {
-    companion object {
+    private companion object {
         const val MAX_SCANNER_TOTAL_SCAN_TIMEOUT_MS = 1500L
         const val MAX_SCANNER_INTER_CHAR_DELAY_MS = 100L
         const val MIN_BARCODE_LENGTH = 4
