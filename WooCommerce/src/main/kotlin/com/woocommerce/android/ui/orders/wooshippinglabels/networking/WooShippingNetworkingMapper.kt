@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.AccountSetting
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.AddressNormalizationModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PaymentMethodModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.PaymentMethodOptions
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PurchasedLabelData
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PurchasedLabelModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
@@ -36,15 +37,18 @@ class WooShippingNetworkingMapper @Inject constructor(
                     weightUnit = storeOptions.weightUnit.orEmpty(),
                     originCountry = storeOptions.originCountry.orEmpty()
                 ),
-                paymentMethods = formMeta.paymentMethods.map { paymentMethodDTO ->
-                    PaymentMethodModel(
-                        paymentMethodId = paymentMethodDTO.paymentMethodId ?: 0,
-                        name = paymentMethodDTO.name.orEmpty(),
-                        cardType = paymentMethodDTO.cardType.orEmpty(),
-                        cardDigits = paymentMethodDTO.cardDigits.orEmpty(),
-                        expiry = paymentMethodDTO.expiry.orEmpty()
-                    )
-                }
+                paymentMethodOptions = PaymentMethodOptions(
+                    selectedPaymentId = formData.selectedPaymentId,
+                    paymentMethods = formMeta.paymentMethods.map { paymentMethod ->
+                        PaymentMethodModel(
+                            paymentMethodId = paymentMethod.paymentMethodId ?: 0,
+                            name = paymentMethod.name.orEmpty(),
+                            cardType = paymentMethod.cardType.orEmpty(),
+                            cardDigits = paymentMethod.cardDigits.orEmpty(),
+                            expiry = paymentMethod.expiry.orEmpty()
+                        )
+                    }
+                )
             )
         }
     }

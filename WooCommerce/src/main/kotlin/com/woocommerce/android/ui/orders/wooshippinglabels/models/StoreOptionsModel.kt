@@ -5,7 +5,7 @@ import kotlinx.parcelize.Parcelize
 
 data class AccountSettingsModel(
     val storeOptions: StoreOptionsModel,
-    val paymentMethods: List<PaymentMethodModel>
+    val paymentMethodOptions: PaymentMethodOptions
 )
 
 @Parcelize
@@ -24,6 +24,11 @@ data class StoreOptionsModel(
         )
     }
 }
+
+data class PaymentMethodOptions(
+    val selectedPaymentId: Int?,
+    val paymentMethods: List<PaymentMethodModel>
+)
 
 data class PaymentMethodModel(
     val paymentMethodId: Int,

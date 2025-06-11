@@ -15,6 +15,7 @@ import java.math.BigDecimal
 
 data class AccountSettingsDTO(
     val storeOptions: StoreOptionsDTO,
+    val formData: FormDataDTO,
     val formMeta: FormMetaDTO,
 )
 
@@ -23,6 +24,10 @@ data class StoreOptionsDTO(
     @SerializedName("dimension_unit") val dimensionUnit: String? = null,
     @SerializedName("weight_unit") val weightUnit: String? = null,
     @SerializedName("origin_country") val originCountry: String? = null
+)
+
+data class FormDataDTO(
+    @SerializedName("selected_payment_method_id") val selectedPaymentId: Int?,
 )
 
 data class FormMetaDTO(
