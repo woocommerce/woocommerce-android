@@ -4,6 +4,7 @@
 22.6
 -----
 - [*] Fix a rare dead-end in the order creation flow. [https://github.com/woocommerce/woocommerce-android/pull/14133]
+- [***] POS: Supports of the HID barcode scanners [https://github.com/woocommerce/woocommerce-android/pull/14178]
 
 22.6
 -----
