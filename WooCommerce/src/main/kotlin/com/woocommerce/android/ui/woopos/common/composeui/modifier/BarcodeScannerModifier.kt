@@ -55,13 +55,14 @@ fun Modifier.listenForBarcodes(
         }
 }
 
-@VisibleForTesting
+@VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
 class BarcodeInputDetector(
     private val onBarcodeScanned: (String) -> Unit,
     private val coroutineScope: CoroutineScope,
     private val currentTimeProvider: CurrentTimeProvider,
 ) {
-    private companion object {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    companion object {
         const val MAX_SCANNER_TOTAL_SCAN_TIMEOUT_MS = 1500L
         const val MAX_SCANNER_INTER_CHAR_DELAY_MS = 100L
         const val MIN_BARCODE_LENGTH = 4
