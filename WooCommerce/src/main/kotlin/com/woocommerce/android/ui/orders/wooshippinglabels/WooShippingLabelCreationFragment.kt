@@ -82,7 +82,7 @@ class WooShippingLabelCreationFragment : BaseFragment(), BackPressListener {
                             flow = EditAddressFlow.EditOriginAddress(event.originAddress)
                         ).let { findNavController().navigateSafely(it) }
 
-                is WooShippingLabelCreationViewModel.StartDestinationAddressEdit ->
+                is WooShippingLabelCreationViewModel.NavigateToDestinationAddressEdit ->
                     WooShippingLabelCreationFragmentDirections
                         .actionWooShippingLabelCreationFragmentToWooShippingEditOriginAddressFragment(
                             flow = EditAddressFlow.EditDestinationAddress(

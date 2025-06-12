@@ -594,7 +594,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
     fun onEditDestinationAddress(destinationAddress: DestinationShippingAddress) {
         triggerEvent(
-            StartDestinationAddressEdit(
+            NavigateToDestinationAddressEdit(
                 destinationAddress = destinationAddress,
                 orderId = navArgs.orderId
             )
@@ -916,7 +916,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     data object NavigatePackageSelection : Event()
 
     data class NavigateToOriginAddressEdit(val originAddress: OriginShippingAddress) : Event()
-    data class StartDestinationAddressEdit(
+    data class NavigateToDestinationAddressEdit(
         val destinationAddress: DestinationShippingAddress,
         val orderId: Long
     ) : Event()
