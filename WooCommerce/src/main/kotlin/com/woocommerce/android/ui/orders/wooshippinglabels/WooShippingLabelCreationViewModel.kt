@@ -852,6 +852,10 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         triggerEvent(OpenLearnMoreScreen)
     }
 
+    fun onEditPaymentMethodClicked() {
+        println("TODO: Implement payment method editing")
+    }
+
     fun allowBackNavigation(): Boolean {
         val state = uiState.value
         return when {

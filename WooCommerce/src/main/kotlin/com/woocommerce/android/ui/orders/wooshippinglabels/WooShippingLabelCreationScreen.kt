@@ -133,7 +133,8 @@ fun WooShippingLabelCreationScreen(viewModel: WooShippingLabelCreationViewModel)
                 onTrackShipmentClicked = viewModel::onTrackShipmentClicked,
                 onSchedulePickUpClicked = viewModel::onSchedulePickUpClicked,
                 onRefundClicked = viewModel::onRefundClicked,
-                onLearnMoreClicked = viewModel::onLearnMoreClicked
+                onLearnMoreClicked = viewModel::onLearnMoreClicked,
+                onEditPaymentMethodClicked = viewModel::onEditPaymentMethodClicked,
             )
         }
 
@@ -184,6 +185,7 @@ fun WooShippingLabelCreationScreen(
     onSchedulePickUpClicked: () -> Unit,
     onRefundClicked: () -> Unit,
     onLearnMoreClicked: () -> Unit,
+    onEditPaymentMethodClicked: () -> Unit,
 ) {
     val shipmentDetailsValue = if (uiState.isShipmentDetailsExpanded) {
         BottomSheetValue.Expanded
@@ -241,6 +243,7 @@ fun WooShippingLabelCreationScreen(
             onSchedulePickUpClicked = onSchedulePickUpClicked,
             onRefundClicked = onRefundClicked,
             onLearnMoreClicked = onLearnMoreClicked,
+            onEditPaymentMethodClicked = onEditPaymentMethodClicked,
         )
         val isDarkTheme = isSystemInDarkTheme()
         val isCollapsed = scaffoldState.bottomSheetState.isCollapsed
@@ -331,6 +334,7 @@ private fun LabelCreationScreenWithBottomSheet(
     onSchedulePickUpClicked: () -> Unit,
     onRefundClicked: () -> Unit,
     onLearnMoreClicked: () -> Unit,
+    onEditPaymentMethodClicked: () -> Unit,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -386,7 +390,8 @@ private fun LabelCreationScreenWithBottomSheet(
                 onOriginAddressSelected = onOriginAddressSelected,
                 destinationStatus = destinationStatus,
                 noticeBannerUiState = uiState.noticeBannerUiState,
-                isReadOnly = selectedShipment.purchased
+                isReadOnly = selectedShipment.purchased,
+                onEditPaymentMethodClicked = onEditPaymentMethodClicked,
             )
         },
         sheetPeekHeight = bottomSheetPeekHeight,
@@ -957,6 +962,7 @@ private fun WooShippingLabelCreationScreenPreview() {
             onSchedulePickUpClicked = {},
             onRefundClicked = {},
             onLearnMoreClicked = {},
+            onEditPaymentMethodClicked = {},
         )
     }
 }
