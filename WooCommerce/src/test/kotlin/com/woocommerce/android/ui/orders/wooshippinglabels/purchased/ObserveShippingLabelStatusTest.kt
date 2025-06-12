@@ -1,5 +1,5 @@
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.wooshippinglabels.models.PurchasedLabelModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus.PURCHASED
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus.PURCHASE_IN_PROGRESS
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus.UNKNOWN
@@ -33,7 +33,7 @@ class ObserveShippingLabelStatusTest : BaseUnitTest() {
     private val mockOrderId = 456L
     private val mockLabelId = 789L
 
-    private val purchaseLabelModel = PurchasedLabelModel(
+    private val purchaseLabelModel = ShippingLabelModel(
         labelId = 0,
         tracking = "",
         refundableAmount = BigDecimal.ZERO,
@@ -46,7 +46,14 @@ class ObserveShippingLabelStatusTest : BaseUnitTest() {
         packageName = "",
         isLetter = false,
         productNames = emptyList(),
-        productIds = emptyList()
+        productIds = emptyList(),
+        shipmentId = "0",
+        receiptItemId = 0L,
+        createdDate = null,
+        mainReceiptId = 0L,
+        rate = BigDecimal.ZERO,
+        currency = "",
+        expiryDate = 0L
     )
 
     @Before
