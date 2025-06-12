@@ -1095,3 +1095,17 @@ data class ShipmentUI(
     val totalItemQuantity
         get() = shippableItems.sumByFloat { it.quantity }.toInt()
 }
+
+@Parcelize
+data class ShippingLineSummaryUI(
+    val title: String,
+    val amount: String
+) : Parcelable
+
+@Parcelize
+data class ShippingRateSummaryUI(
+    val serviceName: String,
+    val total: String,
+    val optionName: String? = null,
+    val optionFee: String? = null
+) : Parcelable

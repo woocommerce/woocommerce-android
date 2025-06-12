@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels
 
 import android.content.res.Configuration
-import android.os.Parcelable
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,6 +26,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -42,20 +42,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.appendWithIfNotEmpty
 import com.woocommerce.android.ui.compose.animations.SkeletonView
+import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
+import com.woocommerce.android.ui.compose.preview.OrientationPreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.AddressSectionLandscape
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.AddressSectionPortrait
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.AddressStatus
-import com.woocommerce.android.ui.orders.wooshippinglabels.address.getShipFrom
-import com.woocommerce.android.ui.orders.wooshippinglabels.address.getShipTo
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeBanner
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeBannerUiState
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
 import com.woocommerce.android.util.StringUtils
-import kotlinx.parcelize.Parcelize
 
 @Composable
 fun ShipmentDetails(
@@ -343,30 +341,6 @@ private fun OrderDetailsSectionLandscape(
     }
 }
 
-@Preview(widthDp = 750, heightDp = 400)
-@Composable
-fun ShipmentDetailsLandscapePreview() {
-    WooThemeWithBackground {
-        Surface {
-            ShipmentDetailsLandscape(
-                totalItems = 6,
-                totalItemsCost = "$92.78",
-                shippingLines = getShippingLines(),
-                shippingAddresses = WooShippingAddresses(
-                    shipFrom = getShipFrom(),
-                    shipTo = getShipTo(),
-                    originAddresses = listOf(getShipFrom())
-                ),
-                shippingRateSummary = null,
-                onEditDestinationAddress = {},
-                onEditOriginAddress = {},
-                onOriginAddressSelected = {},
-                destinationStatus = AddressStatus.VERIFIED
-            )
-        }
-    }
-}
-
 @Composable
 private fun TotalCard(
     totalItems: Int,
@@ -400,14 +374,6 @@ private fun ItemsCost(
     )
 }
 
-@Preview
-@Composable
-private fun ItemsCostPreview() {
-    WooThemeWithBackground {
-        ItemsCost(totalItems = 2, totalItemsCost = "$12.99")
-    }
-}
-
 @Composable
 private fun ShippingLines(
     shippingLines: List<ShippingLineSummaryUI>,
@@ -421,16 +387,6 @@ private fun ShippingLines(
                 iconRes = R.drawable.ic_shipping_label_shipping_line
             )
         }
-    }
-}
-
-@Preview
-@Composable
-private fun ShippingLinesPreview() {
-    WooThemeWithBackground {
-        ShippingLines(
-            shippingLines = getShippingLines()
-        )
     }
 }
 
@@ -537,46 +493,6 @@ private fun ShipmentCostRow(
     }
 }
 
-@Preview
-@Composable
-private fun ShipmentCostSectionPreview() {
-    WooThemeWithBackground {
-        ShipmentCostSection(
-            shippingRateSummary = null,
-            modifier = Modifier.padding(dimensionResource(R.dimen.major_100))
-        )
-    }
-}
-
-fun getShippingLines(number: Int = 3) = List(number) { i ->
-    ShippingLineSummaryUI(
-        title = "Shipping $i",
-        amount = "$12.99"
-    )
-}
-
-fun OriginShippingAddress.toShippingFromString() = StringBuilder()
-    .appendWithIfNotEmpty(this.address1)
-    .appendWithIfNotEmpty(this.address2)
-    .appendWithIfNotEmpty(this.city)
-    .appendWithIfNotEmpty(this.state)
-    .appendWithIfNotEmpty(this.postcode)
-    .toString()
-
-@Parcelize
-data class ShippingLineSummaryUI(
-    val title: String,
-    val amount: String
-) : Parcelable
-
-@Parcelize
-data class ShippingRateSummaryUI(
-    val serviceName: String,
-    val total: String,
-    val optionName: String? = null,
-    val optionFee: String? = null
-) : Parcelable
-
 @Composable
 fun VerticalDivider(
     modifier: Modifier = Modifier,
@@ -588,4 +504,38 @@ fun VerticalDivider(
             .width(thickness)
             .background(MaterialTheme.colors.onSurface.copy(alpha = 0.12f))
     )
+}
+
+@LightDarkThemePreviews
+@OrientationPreviews
+@Composable
+fun ShipmentDetailsLandscapePreview() {
+    WooThemeWithBackground {
+        Surface {
+            ShipmentDetails(
+                scaffoldState = rememberBottomSheetScaffoldState(),
+                totalItems = 6,
+                totalItemsCost = "$92.78",
+                shippingLines = ShippingLabelSampleData.getShippingLines(),
+                shippingAddresses = WooShippingAddresses(
+                    shipFrom = ShippingLabelSampleData.getShipFrom(),
+                    shipTo = ShippingLabelSampleData.getShipTo(),
+                    originAddresses = listOf(ShippingLabelSampleData.getShipFrom())
+                ),
+                shippingRateSummary = null,
+                modifier = Modifier,
+                noticeBannerUiState = null,
+                isShipmentDetailsExpanded = false,
+                onShipmentDetailsExpandedChange = {},
+                onEditDestinationAddress = {},
+                onEditOriginAddress = {},
+                onOriginAddressSelected = {},
+                destinationStatus = AddressStatus.VERIFIED,
+                markOrderComplete = false,
+                onMarkOrderCompleteChange = {},
+                handlerModifier = Modifier,
+                isReadOnly = false
+            )
+        }
+    }
 }
