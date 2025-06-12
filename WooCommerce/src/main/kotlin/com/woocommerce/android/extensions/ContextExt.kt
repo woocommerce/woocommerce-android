@@ -10,7 +10,6 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.graphics.Point
 import android.os.Parcelable
-import android.util.Log
 import android.view.WindowManager
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
