@@ -193,7 +193,7 @@ class MainActivity :
 
     private val toolbarEnabledBehavior = AppBarLayout.Behavior()
     private val toolbarDisabledBehavior = DisabledAppBarLayoutBehavior()
-    
+
     private lateinit var navController: NavController
 
     private lateinit var binding: ActivityMainBinding
