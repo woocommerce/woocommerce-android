@@ -2,10 +2,12 @@ package com.woocommerce.android.ui.woopos.common.data.searchbyidentifier
 
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
+import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.ProductTaxStatus
+import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import com.woocommerce.android.ui.woopos.common.barcode.WooPosBarcodeFormat
@@ -16,15 +18,19 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
 import java.util.Date
+import kotlin.test.assertTrue
 
 class WooPosSearchByIdentifierLocalTest {
 
     private lateinit var sut: WooPosSearchByIdentifierLocal
-    private val productsCache: WooPosProductsCache = mock()
+    private val productsCache: WooPosProductsCache = mock {
+        onBlocking { getProductById(any()) }.thenReturn(ProductTestUtils.generateWCProductModel().toAppModel())
+    }
     private val variationsCache: WooPosVariationsLRUCache = mock()
     private val checkDigitRemover: WooPosSearchByIdentifierCheckDigitRemover = mock()
 
@@ -145,7 +151,8 @@ class WooPosSearchByIdentifierLocalTest {
         val result = sut(identifier, WooPosBarcodeFormat.FormatUnknown)
 
         // THEN
-        assertEquals(WooPosSearchByIdentifierResult.VariationSuccess(variation), result)
+        assertTrue(result is WooPosSearchByIdentifierResult.VariationSuccess)
+        assertEquals(variation, result.variation)
     }
 
     @Test
@@ -168,7 +175,8 @@ class WooPosSearchByIdentifierLocalTest {
         val result = sut(identifier, WooPosBarcodeFormat.FormatUnknown)
 
         // THEN
-        assertEquals(WooPosSearchByIdentifierResult.VariationSuccess(variation), result)
+        assertTrue(result is WooPosSearchByIdentifierResult.VariationSuccess)
+        assertEquals(variation, result.variation)
     }
 
     @Test
@@ -196,7 +204,8 @@ class WooPosSearchByIdentifierLocalTest {
         val result = sut(identifier, WooPosBarcodeFormat.FormatUnknown)
 
         // THEN
-        assertEquals(WooPosSearchByIdentifierResult.VariationSuccess(variation2), result)
+        assertTrue(result is WooPosSearchByIdentifierResult.VariationSuccess)
+        assertEquals(variation2, result.variation)
     }
 
     @Test
@@ -218,7 +227,8 @@ class WooPosSearchByIdentifierLocalTest {
         val result = sut(identifier, WooPosBarcodeFormat.FormatUnknown)
 
         // THEN
-        assertEquals(WooPosSearchByIdentifierResult.VariationSuccess(variation), result)
+        assertTrue(result is WooPosSearchByIdentifierResult.VariationSuccess)
+        assertEquals(variation, result.variation)
     }
 
     @Suppress("LongMethod")

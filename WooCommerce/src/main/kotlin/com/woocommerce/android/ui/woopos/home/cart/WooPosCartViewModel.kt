@@ -353,6 +353,11 @@ class WooPosCartViewModel @Inject constructor(
             }
 
             val searchResult = searchByIdentifier(barcode)
+
+            if (!isItemStillInCart(itemNumber)) {
+                return@launch
+            }
+
             val cartItem = searchResult.mapToCartItem(identifier = barcode, itemNumber = itemNumber)
             if (cartItem is WooPosCartItemViewState.Error) {
                 soundHelper.playBarcodeScanFailure()
@@ -360,6 +365,14 @@ class WooPosCartViewModel @Inject constructor(
 
             analyticsTracker.track(WooPosAnalyticsEvent.Event.ItemAddedToCart(item = cartItem))
             updateCartItem(cartItem)
+        }
+    }
+
+    private fun isItemStillInCart(itemNumber: Int): Boolean {
+        val body = _state.value.body
+        return when (body) {
+            is WooPosCartState.Body.Empty -> false
+            is WooPosCartState.Body.WithItems -> body.itemsInCart.any { it.itemNumber == itemNumber }
         }
     }
 
@@ -554,13 +567,12 @@ class WooPosCartViewModel @Inject constructor(
             }
 
             is WooPosSearchByIdentifierResult.VariationSuccess -> {
-                val product = getProductById(variation.remoteProductId)!!
                 WooPosCartItemViewState.Product.Variation(
                     itemNumber = itemNumber,
                     id = variation.remoteProductId,
                     variationId = variation.remoteVariationId,
-                    name = product.name,
-                    description = variation.getNameForPOS(product, resourceProvider),
+                    name = this.parentProduct.name,
+                    description = variation.getNameForPOS(this.parentProduct, resourceProvider),
                     price = formatPrice(variation.price),
                     imageUrl = variation.image?.source
                 )
@@ -581,8 +593,11 @@ class WooPosCartViewModel @Inject constructor(
                     }
 
                     is WooPosSearchByIdentifierResult.Error.UnknownError -> this.error.message
-                    WooPosSearchByIdentifierResult.Error.UnsupportedProduct -> {
-                        resourceProvider.getString(R.string.woopos_cart_barcode_scan_result_unsupported_product)
+                    is WooPosSearchByIdentifierResult.Error.UnsupportedProduct -> {
+                        resourceProvider.getString(
+                            R.string.woopos_cart_barcode_scan_result_unsupported_product,
+                            this.error.productName
+                        )
                     }
                 }
                 WooPosCartItemViewState.Error(

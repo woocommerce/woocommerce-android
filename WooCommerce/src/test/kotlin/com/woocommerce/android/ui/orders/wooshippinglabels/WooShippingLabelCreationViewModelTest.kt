@@ -12,12 +12,12 @@ import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.CustomsState
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.HazmatState
+import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigateToHazmatFormEdit
+import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigateToRefundRequest
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.OpenLearnMoreScreen
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.OpenShippingLabelFile
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.OpenUrl
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.PackageSelectionState
-import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.StartHazmatFormEdit
-import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.StartRefundRequest
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.WooShippingViewState
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.WooShippingViewState.DataState
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.AddressValidationHelper
@@ -801,83 +801,6 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when address selection is collapsed then changes shipment details are allowed`() = testBlocking {
-        val order = OrderTestUtils.generateTestOrder(orderId = orderId)
-
-        whenever(orderDetailRepository.getOrderById(any())) doReturn order
-        whenever(observeOriginAddresses()) doReturn flowOf(defaultOriginAddresses)
-        whenever(observeStoreOptions()) doReturn flowOf(null)
-
-        createViewModel()
-
-        advanceUntilIdle()
-        // Collapse shipment details and select address
-        var changeAccepted = sut.onShipmentDetailsExpandedChange(false)
-        assertThat(changeAccepted).isTrue()
-        changeAccepted = sut.onSelectAddressExpandedChange(false)
-        assertThat(changeAccepted).isTrue()
-
-        // Check all changes are accepted
-        changeAccepted = sut.onShipmentDetailsExpandedChange(false)
-        assertThat(changeAccepted).isTrue()
-        changeAccepted = sut.onShipmentDetailsExpandedChange(true)
-        assertThat(changeAccepted).isTrue()
-    }
-
-    @Test
-    fun `when address selection is expanded then prevent any change on the shipment details`() = testBlocking {
-        val order = OrderTestUtils.generateTestOrder(orderId = orderId)
-
-        whenever(orderDetailRepository.getOrderById(any())) doReturn order
-        whenever(observeOriginAddresses()) doReturn flowOf(defaultOriginAddresses)
-        whenever(observeStoreOptions()) doReturn flowOf(null)
-
-        createViewModel()
-
-        advanceUntilIdle()
-        // Expand shipment details and select address
-        var changeAccepted = sut.onShipmentDetailsExpandedChange(true)
-        assertThat(changeAccepted).isTrue()
-
-        changeAccepted = sut.onSelectAddressExpandedChange(true)
-        assertThat(changeAccepted).isTrue()
-
-        // Check no changes are accepted when select address is expanded
-        changeAccepted = sut.onShipmentDetailsExpandedChange(false)
-        assertThat(changeAccepted).isFalse()
-        changeAccepted = sut.onShipmentDetailsExpandedChange(true)
-        assertThat(changeAccepted).isFalse()
-    }
-
-    @Test
-    fun `when a bottom sheet is expanded then the back gesture closes the sheet`() = testBlocking {
-        val order = OrderTestUtils.generateTestOrder(orderId = orderId)
-
-        whenever(orderDetailRepository.getOrderById(any())) doReturn order
-        whenever(observeOriginAddresses()) doReturn flowOf(defaultOriginAddresses)
-        whenever(observeStoreOptions()) doReturn flowOf(null)
-
-        createViewModel()
-
-        advanceUntilIdle()
-        // Expand shipment details and select address
-        sut.onShipmentDetailsExpandedChange(true)
-        sut.onSelectAddressExpandedChange(true)
-
-        // Close address selection
-        var shouldNavigateBack = sut.allowBackNavigation()
-        assertThat(shouldNavigateBack).isFalse()
-
-        // Close shipment details
-        shouldNavigateBack = sut.allowBackNavigation()
-        assertThat(shouldNavigateBack).isFalse()
-
-        // Navigate back
-        shouldNavigateBack = sut.allowBackNavigation()
-        assertThat(shouldNavigateBack).isTrue()
-    }
-
-    @Test
     fun `when shipment details is expanded then the back gesture closes the sheet`() = testBlocking {
         val order = OrderTestUtils.generateTestOrder(orderId = orderId)
 
@@ -1045,7 +968,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when StartHazmatFormEdit is triggered with a selected category, the event contains the expected category value`() =
+    fun `when NavigateToHazmatFormEdit is triggered with a selected category, the event contains the expected category value`() =
         testBlocking {
             var event: MultiLiveEvent.Event? = null
             val order = OrderTestUtils.generateTestOrder(orderId = orderId)
@@ -1061,7 +984,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
             sut.event.observeForever { event = it }
 
-            assertThat(event).isEqualTo(StartHazmatFormEdit(ShippingLabelHazmatCategory.CLASS_1))
+            assertThat(event).isEqualTo(NavigateToHazmatFormEdit(ShippingLabelHazmatCategory.CLASS_1))
         }
 
     @Test
@@ -1199,7 +1122,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `onRefundClicked triggers StartRefundRequest event`() = testBlocking {
+    fun `onRefundClicked triggers NavigateToRefundRequest event`() = testBlocking {
         val order = OrderTestUtils.generateTestOrder(orderId = orderId).copy(
             shippingLines = defaultShippingLines,
             customer = Order.Customer(
@@ -1212,12 +1135,12 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
         createViewModel()
 
-        var event: StartRefundRequest? = null
-        sut.event.observeForever { if (it is StartRefundRequest) event = it }
+        var event: NavigateToRefundRequest? = null
+        sut.event.observeForever { if (it is NavigateToRefundRequest) event = it }
 
         sut.onRefundClicked()
 
-        assertThat(event).isEqualTo(StartRefundRequest)
+        assertThat(event).isEqualTo(NavigateToRefundRequest(orderId, defaultShipments.first()))
     }
 
     @Test
