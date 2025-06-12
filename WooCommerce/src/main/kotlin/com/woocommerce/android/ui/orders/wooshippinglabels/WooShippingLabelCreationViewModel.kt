@@ -768,7 +768,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         val destinationCountryCode = shippingAddresses.value
             ?.shipTo?.address?.country?.code.orEmpty()
 
-        val event = StartCustomsFormEdit(
+        val event = NavigateToCustomsFormEdit(
             shippableItems = shipmentItems.value[selectedShipmentIndex],
             destinationCountryCode = destinationCountryCode,
             customData = customsFormDataFlow.value[selectedShipmentIndex]
@@ -930,7 +930,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         val storeOptions: StoreOptionsModel
     ) : Parcelable
 
-    data class StartCustomsFormEdit(
+    data class NavigateToCustomsFormEdit(
         val shippableItems: List<ShippableItemModel>,
         val destinationCountryCode: String,
         val customData: CustomsData?
