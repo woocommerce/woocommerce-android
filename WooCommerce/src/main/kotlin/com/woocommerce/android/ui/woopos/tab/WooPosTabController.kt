@@ -14,12 +14,12 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class WooPosTabController @Inject constructor(
-    private val isWooPosEnabled: WooPosIsEnabled
+    private val isWooPosEnabled: WooPosIsEnabled,
+    private val isPOSAsATabEnabled: WooPosIsPOSAsATabEnabled
 ) {
     private lateinit var activity: MainActivity
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
-    private val wooPosAsATabEnabled: Boolean = FeatureFlag.WOO_POS_AS_A_TAB_I1.isEnabled()
 
     fun initialize(
         activity: MainActivity,
@@ -38,7 +38,7 @@ class WooPosTabController @Inject constructor(
     fun setupPOSTab() {
         setPOSTabVisibility(false) // Hide by default
 
-        if (wooPosAsATabEnabled) {
+        if (isPOSAsATabEnabled()) {
             updatePOSTabVisibility()
             setupPOSTabNavigation()
         }
@@ -52,7 +52,7 @@ class WooPosTabController @Inject constructor(
      * - Feature flags updates
      */
     fun refreshPOSTabVisibility() {
-        if (wooPosAsATabEnabled) {
+        if (isPOSAsATabEnabled()) {
             updatePOSTabVisibility()
         }
     }
