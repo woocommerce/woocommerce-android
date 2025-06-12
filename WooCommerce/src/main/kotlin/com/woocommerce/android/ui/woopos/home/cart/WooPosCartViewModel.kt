@@ -353,6 +353,11 @@ class WooPosCartViewModel @Inject constructor(
             }
 
             val searchResult = searchByIdentifier(barcode)
+
+            if (!isItemStillInCart(itemNumber)) {
+                return@launch
+            }
+
             val cartItem = searchResult.mapToCartItem(identifier = barcode, itemNumber = itemNumber)
             if (cartItem is WooPosCartItemViewState.Error) {
                 soundHelper.playBarcodeScanFailure()
@@ -360,6 +365,14 @@ class WooPosCartViewModel @Inject constructor(
 
             analyticsTracker.track(WooPosAnalyticsEvent.Event.ItemAddedToCart(item = cartItem))
             updateCartItem(cartItem)
+        }
+    }
+
+    private fun isItemStillInCart(itemNumber: Int): Boolean {
+        val body = _state.value.body
+        return when (body) {
+            is WooPosCartState.Body.Empty -> false
+            is WooPosCartState.Body.WithItems -> body.itemsInCart.any { it.itemNumber == itemNumber }
         }
     }
 

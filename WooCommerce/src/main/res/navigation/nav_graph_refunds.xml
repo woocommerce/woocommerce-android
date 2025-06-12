@@ -11,6 +11,23 @@
         <action
             android:id="@+id/action_refundSummaryFragment_to_refundConfirmationDialog"
             app:destination="@id/refundConfirmationDialog" />
+        <action
+            android:id="@+id/action_refundSummaryFragment_to_cardReaderFlow"
+            app:destination="@id/nav_graph_payment_flow">
+            <argument
+                android:name="cardReaderFlowParam"
+                app:argType="com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam"
+                app:nullable="false" />
+        </action>
+        <argument
+            android:name="orderId"
+            app:argType="long" />
+        <argument
+            android:name="refundAmount"
+            app:argType="string" />
+        <argument
+            android:name="refundItems"
+            app:argType="com.woocommerce.android.ui.payments.refunds.RefundItem[]" />
     </fragment>
     <fragment
         android:id="@+id/issueRefundFragment"
@@ -48,16 +65,6 @@
         android:id="@+id/refundConfirmationDialog"
         android:name="com.woocommerce.android.ui.payments.refunds.RefundConfirmationDialog"
         android:label="RefundConfirmationDialog" >
-        <action
-            android:id="@+id/action_refundConfirmationDialog_to_cardReaderFlow"
-            app:destination="@id/nav_graph_payment_flow"
-            app:popUpTo="@+id/refundConfirmationDialog"
-            app:popUpToInclusive="true">
-            <argument
-                android:name="cardReaderFlowParam"
-                app:argType="com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam"
-                app:nullable="false" />
-        </action>
         <argument
             android:name="title"
             app:argType="string" />

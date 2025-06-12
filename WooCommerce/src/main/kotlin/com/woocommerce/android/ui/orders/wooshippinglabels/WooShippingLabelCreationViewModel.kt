@@ -134,7 +134,6 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             markOrderComplete = false,
             selectedIndex = 0,
             isShipmentDetailsExpanded = false,
-            isAddressSelectionExpanded = false,
             paperSizeOption = WooShippingLabelPaperSize.LABEL
         )
     )
@@ -221,8 +220,14 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     private fun observeShippingLabelPurchaseStatus(shipmentId: Int) {
         launch {
             val labelId = shipments.value[shipmentId].labelId ?: return@launch
-            observeShippingLabelStatus(orderId = navArgs.orderId, labelId = labelId).onEach { status ->
-                updateShipment(shipmentId, shipments.value[shipmentId].copy(status = status))
+            observeShippingLabelStatus(orderId = navArgs.orderId, labelId = labelId).onEach { result ->
+                updateShipment(
+                    shipmentId,
+                    shipments.value[shipmentId].copy(
+                        status = result.status,
+                        refundableAmount = result.refundableAmount ?: BigDecimal.ZERO
+                    )
+                )
             }.launchIn(this)
         }
     }
@@ -576,19 +581,19 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         uiState.value = uiState.value.copy(selectedIndex = index)
     }
 
-    fun onShippingFromAddressChange(address: OriginShippingAddress) {
+    fun onOriginAddressSelected(address: OriginShippingAddress) {
         shippingAddresses.value?.let {
             shippingAddresses.value = it.copy(shipFrom = address)
         }
     }
 
     fun onEditOriginAddress(address: OriginShippingAddress) {
-        triggerEvent(StartOriginAddressEdit(address))
+        triggerEvent(NavigateToOriginAddressEdit(address))
     }
 
     fun onEditDestinationAddress(destinationAddress: DestinationShippingAddress) {
         triggerEvent(
-            StartDestinationAddressEdit(
+            NavigateToDestinationAddressEdit(
                 destinationAddress = destinationAddress,
                 orderId = navArgs.orderId
             )
@@ -607,22 +612,12 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         uiState.update { it.copy(markOrderComplete = value) }
     }
 
-    fun onShipmentDetailsExpandedChange(value: Boolean): Boolean {
-        return if (uiState.value.isAddressSelectionExpanded.not()) {
-            uiState.update { it.copy(isShipmentDetailsExpanded = value) }
-            true
-        } else {
-            false
-        }
-    }
-
-    fun onSelectAddressExpandedChange(value: Boolean): Boolean {
-        uiState.update { it.copy(isAddressSelectionExpanded = value) }
-        return true
+    fun onShipmentDetailsExpandedChange(value: Boolean) {
+        uiState.update { it.copy(isShipmentDetailsExpanded = value) }
     }
 
     fun onSelectPackageClicked() {
-        triggerEvent(StartPackageSelection)
+        triggerEvent(NavigatePackageSelection)
     }
 
     @Suppress("ComplexCondition")
@@ -689,7 +684,9 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                         purchased = true,
                         labelId = purchasedLabel.labelId,
                         carrierId = purchasedLabel.carrierId,
-                        trackingNumber = purchasedLabel.tracking
+                        trackingNumber = purchasedLabel.tracking,
+                        refundableAmount = purchasedLabel.refundableAmount,
+                        purchaseDate = purchasedLabel.created
                     )
                 )
                 observeShippingLabelPurchaseStatus(shipmentId)
@@ -713,7 +710,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         val currentShipmentItems = shipmentItems.value
         if (currentStoreOptions != null && currentShipmentItems.isNotEmpty()) {
             triggerEvent(
-                StartSplitShipment(
+                NavigateToSplitShipment(
                     SplitShipmentArgs(
                         orderId = navArgs.orderId,
                         storeOptions = currentStoreOptions,
@@ -760,7 +757,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         val destinationCountryCode = shippingAddresses.value
             ?.shipTo?.address?.country?.code.orEmpty()
 
-        val event = StartCustomsFormEdit(
+        val event = NavigateToCustomsFormEdit(
             shippableItems = shipmentItems.value[selectedShipmentIndex],
             destinationCountryCode = destinationCountryCode,
             customData = customsFormDataFlow.value[selectedShipmentIndex]
@@ -776,7 +773,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         // Disables the current Snackbar before navigation
         // to avoid presentation conflict with the Hazmat selection result
         snackbarData = null
-        triggerEvent(StartHazmatFormEdit(selectedCategory))
+        triggerEvent(NavigateToHazmatFormEdit(selectedCategory))
     }
 
     fun onHazmatCategorySelected(selectedCategory: ShippingLabelHazmatCategory?) {
@@ -845,7 +842,8 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     }
 
     fun onRefundClicked() {
-        triggerEvent(StartRefundRequest)
+        val selectedShipment = shipments.value[selectedShipmentIndex]
+        triggerEvent(NavigateToRefundRequest(navArgs.orderId, selectedShipment))
     }
 
     fun onLearnMoreClicked() {
@@ -855,11 +853,6 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     fun allowBackNavigation(): Boolean {
         val state = uiState.value
         return when {
-            state.isAddressSelectionExpanded -> {
-                uiState.update { it.copy(isAddressSelectionExpanded = false) }
-                false
-            }
-
             state.isShipmentDetailsExpanded -> {
                 uiState.update { it.copy(isShipmentDetailsExpanded = false) }
                 false
@@ -904,15 +897,15 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         return shouldRequireITN(destinationCountryCode, totalShippingValue)
     }
 
-    data object StartPackageSelection : Event()
+    data object NavigatePackageSelection : Event()
 
-    data class StartOriginAddressEdit(val originAddress: OriginShippingAddress) : Event()
-    data class StartDestinationAddressEdit(
+    data class NavigateToOriginAddressEdit(val originAddress: OriginShippingAddress) : Event()
+    data class NavigateToDestinationAddressEdit(
         val destinationAddress: DestinationShippingAddress,
         val orderId: Long
     ) : Event()
 
-    data class StartSplitShipment(val shipmentArgs: SplitShipmentArgs) : Event()
+    data class NavigateToSplitShipment(val shipmentArgs: SplitShipmentArgs) : Event()
 
     @Parcelize
     data class SplitShipmentArgs(
@@ -921,13 +914,13 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         val storeOptions: StoreOptionsModel
     ) : Parcelable
 
-    data class StartCustomsFormEdit(
+    data class NavigateToCustomsFormEdit(
         val shippableItems: List<ShippableItemModel>,
         val destinationCountryCode: String,
         val customData: CustomsData?
     ) : Event()
 
-    data class StartHazmatFormEdit(val selectedCategory: ShippingLabelHazmatCategory?) : Event()
+    data class NavigateToHazmatFormEdit(val selectedCategory: ShippingLabelHazmatCategory?) : Event()
 
     sealed class WooShippingViewState {
         data object Error : WooShippingViewState()
@@ -996,7 +989,6 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         val markOrderComplete: Boolean,
         val selectedIndex: Int = 0,
         val isShipmentDetailsExpanded: Boolean,
-        val isAddressSelectionExpanded: Boolean,
         val noticeBannerUiState: NoticeBannerUiState? = null,
         val paperSizeOption: WooShippingLabelPaperSize,
     )
@@ -1032,7 +1024,8 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     data class OpenShippingLabelFile(val file: File) : Event()
     data class OpenUrl(val url: String) : Event()
     data class ShowError(val errorResId: Int) : Event()
-    object StartRefundRequest : Event()
+    data class NavigateToRefundRequest(val orderId: Long, val shipment: ShipmentUIModel) : Event()
+
     object OpenLearnMoreScreen : Event()
 
     enum class Carrier(val pickupUrl: String) {

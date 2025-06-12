@@ -9,6 +9,8 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemM
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ShippingLabelDTO
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import kotlinx.coroutines.flow.first
+import java.math.BigDecimal
+import java.util.Date
 import javax.inject.Inject
 
 class GetShipments @Inject constructor(
@@ -79,6 +81,8 @@ class GetShipments @Inject constructor(
                 carrierId = labelForShipment.carrierId,
                 trackingNumber = labelForShipment.tracking,
                 status = labelForShipment.status,
+                refundableAmount = labelForShipment.refundableAmount ?: BigDecimal.ZERO,
+                purchaseDate = labelForShipment.createdDate?.let { Date(it) },
             )
         }
     }
