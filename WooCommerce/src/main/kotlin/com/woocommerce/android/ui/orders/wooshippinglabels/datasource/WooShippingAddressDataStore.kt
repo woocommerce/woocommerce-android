@@ -20,7 +20,7 @@ class WooShippingAddressDataStore @Inject constructor(
     private val gson: Gson,
     private val selectedSite: SelectedSite
 ) {
-    private fun getOriginAddressesKey() = "${selectedSite.getOrNull()?.siteId ?: ""}OriginAddresses"
+    private fun getOriginAddressesKey() = "${selectedSite.get().id}OriginAddresses"
 
     fun observeOriginAddresses(): Flow<List<OriginShippingAddress>?> {
         val typeToken = object : TypeToken<List<OriginShippingAddress>>() {}.type

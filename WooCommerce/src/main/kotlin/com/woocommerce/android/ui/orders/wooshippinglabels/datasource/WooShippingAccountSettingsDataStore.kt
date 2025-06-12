@@ -18,7 +18,7 @@ class WooShippingAccountSettingsDataStore @Inject constructor(
     private val gson: Gson,
     private val selectedSite: SelectedSite
 ) {
-    private fun getPrefKey() = "${selectedSite.getOrNull()?.siteId ?: ""}AccountSettings"
+    private fun getPrefKey() = "${selectedSite.get().id}AccountSettings"
 
     fun observeAccountSettings(): Flow<AccountSettingsModel?> {
         return dataStore.data.map { prefs ->

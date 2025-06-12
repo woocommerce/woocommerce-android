@@ -18,7 +18,7 @@ class WooShippingConfigDataStore @Inject constructor(
     private val gson: Gson,
     private val selectedSite: SelectedSite
 ) {
-    private fun getConfigKey(orderId: Long) = "${selectedSite.getOrNull()?.siteId ?: ""}:${orderId}Config"
+    private fun getConfigKey(orderId: Long) = "${selectedSite.get().id}:${orderId}Config"
 
     fun observeConfig(orderId: Long): Flow<ConfigDTO?> = dataStore.data.map { prefs ->
         val config = prefs[stringPreferencesKey(getConfigKey(orderId))]
