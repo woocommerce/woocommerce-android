@@ -41,11 +41,11 @@ class WooShippingNetworkingMapper @Inject constructor(
                     selectedPaymentId = formData.selectedPaymentId,
                     paymentMethods = formMeta.paymentMethods.map { paymentMethod ->
                         PaymentMethodModel(
-                            paymentMethodId = paymentMethod.paymentMethodId ?: 0,
-                            name = paymentMethod.name.orEmpty(),
-                            cardType = paymentMethod.cardType.orEmpty(),
-                            cardDigits = paymentMethod.cardDigits.orEmpty(),
-                            expiry = paymentMethod.expiry.orEmpty()
+                            paymentMethodId = paymentMethod.paymentMethodId,
+                            name = paymentMethod.name,
+                            cardType = paymentMethod.cardType,
+                            cardDigits = paymentMethod.cardDigits,
+                            expiry = paymentMethod.expiry
                         )
                     }
                 )
