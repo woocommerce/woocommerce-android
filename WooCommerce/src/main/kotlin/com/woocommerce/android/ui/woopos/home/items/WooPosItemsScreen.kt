@@ -109,7 +109,6 @@ private fun MainItemsList(
         modifier = modifier
             .fillMaxSize()
             .listenForBarcodes(
-                enabled = state.value.barcodeScanningEnabled,
                 onBarcodeScanned = onBarcodeScanned
             )
     ) {
