@@ -16,7 +16,9 @@ object WooPosAnalyticsEventConstant {
 
     enum class ItemsListItemType(val value: String) {
         PRODUCT("product"),
-        COUPON("coupon");
+        COUPON("coupon"),
+        LOADING("loading"),
+        ERROR("error");
 
         override fun toString(): String {
             return value
@@ -44,7 +46,8 @@ object WooPosAnalyticsEventConstant {
         LIST("list"),
         SEARCH_RESULT("search"),
         SEARCH_RESULT_LOCAL("search_result_local"),
-        POPULAR_PRODUCTS("pre_search");
+        POPULAR_PRODUCTS("pre_search"),
+        BARCODE_SCANNER("scanner");
 
         override fun toString(): String {
             return value
