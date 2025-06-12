@@ -10,7 +10,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.key.utf16CodePoint
@@ -47,8 +49,18 @@ fun Modifier.listenForBarcodes(
             if (!enabled) return@onKeyEvent false
 
             if (keyEvent.type == KeyEventType.KeyDown) {
-                val pressedKey = keyEvent.utf16CodePoint.toChar()
-                return@onKeyEvent detector.handleKeyInput(pressedKey)
+                val isSystemKey = when (keyEvent.key) {
+                    Key.Escape, Key.Back,
+                    Key.DirectionCenter, Key.DirectionUp, Key.DirectionDown,
+                    Key.DirectionLeft, Key.DirectionRight,
+                    Key.SystemNavigationUp, Key.SystemNavigationDown,
+                    Key.SystemNavigationLeft, Key.SystemNavigationRight -> true
+                    else -> false
+                }
+                if (!isSystemKey) {
+                    val pressedKey = keyEvent.utf16CodePoint.toChar()
+                    return@onKeyEvent detector.handleKeyInput(pressedKey)
+                }
             }
 
             false
