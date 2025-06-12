@@ -176,7 +176,6 @@ private fun ShipmentDetailsPortrait(
                 .fillMaxWidth()
                 .weight(1f)
                 .verticalScroll(rememberScrollState())
-
         ) {
             OrderDetailsSection(
                 shippingAddresses = shippingAddresses,
@@ -189,10 +188,12 @@ private fun ShipmentDetailsPortrait(
                 onOriginAddressSelected = onOriginAddressSelected,
                 destinationStatus = destinationStatus
             )
-            Divider(modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.major_100)))
+            Divider(modifier = Modifier.padding(horizontal = 16.dp))
+            PaymentSection(Modifier.padding(16.dp))
+            Divider(modifier = Modifier.padding(horizontal = 16.dp))
             ShipmentCostSection(
                 shippingRateSummary = shippingRateSummary,
-                modifier = Modifier.padding(dimensionResource(R.dimen.major_100))
+                modifier = Modifier.padding(16.dp)
             )
         }
         if (isReadOnly.not()) {
@@ -225,11 +226,10 @@ private fun ShipmentDetailsLandscape(
                 .fillMaxWidth()
                 .weight(1f)
                 .verticalScroll(rememberScrollState())
-
         ) {
             AddressSectionLandscape(
                 shippingAddresses = shippingAddresses,
-                modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.major_100)),
+                modifier = Modifier.padding(horizontal = 16.dp),
                 isReadOnly = isReadOnly,
                 onEditDestinationAddress = onEditDestinationAddress,
                 onEditOriginAddress = onEditOriginAddress,
@@ -247,13 +247,16 @@ private fun ShipmentDetailsLandscape(
                     shippingLines = shippingLines,
                     modifier = Modifier.weight(1f)
                 )
-                VerticalDivider(modifier = Modifier.padding(top = dimensionResource(R.dimen.major_100)))
-                ShipmentCostSection(
-                    shippingRateSummary = shippingRateSummary,
-                    modifier = Modifier
-                        .padding(dimensionResource(R.dimen.major_100))
-                        .weight(1f)
-                )
+                VerticalDivider(modifier = Modifier.padding(top = 16.dp))
+                Column(modifier = Modifier.weight(1f)) {
+                    PaymentSection(Modifier.padding(16.dp))
+                    Divider()
+                    ShipmentCostSection(
+                        shippingRateSummary = shippingRateSummary,
+                        modifier = Modifier
+                            .padding(16.dp)
+                    )
+                }
             }
         }
     }
@@ -432,6 +435,13 @@ private fun TotalItem(
             modifier = Modifier.padding(end = dimensionResource(R.dimen.minor_100))
         )
     }
+}
+
+@Composable
+private fun PaymentSection(
+    modifier: Modifier = Modifier
+) {
+    Text("Payment Section", modifier)
 }
 
 @Composable
