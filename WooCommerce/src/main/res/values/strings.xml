@@ -3982,8 +3982,9 @@
     <string name="blaze_campaign_preview_missing_content_dialog_positive_button">Add</string>
     <string name="blaze_campaign_preview_missing_objective_dialog_text">Please select an objective for the Blaze campaign</string>
     <string name="blaze_campaign_preview_missing_objective_dialog_positive_button">Select objective</string>
-    <string name="blaze_campaign_preview_tos_checkbox_evergreen_campaigns"><![CDATA[I agree to a recurring charge of <b>%1$s</b> and will continue until I cancel. Campaigns can be cancelled at any time from campaign details screen.]]></string>
-    <string name="blaze_campaign_preview_tos_checkbox_end_date_campaigns"> I agree to a recurring charge of %1$s per week. Billing will start when my campaign launches and will continue until %2$. You can cancel at any time from campaign details screen.</string>
+    <string name="blaze_campaign_preview_tos_checkbox_evergreen_campaigns">I agree to a recurring weekly charge up to <b>%1$s</b> starting <b>%2$s</b>. Charges may occur at varying times during the campaign. &lt;a href=\'cancelInstructions\'&gt;&lt;u&gt;I can cancel anytime&lt;/u&gt;&lt;/a&gt;; I/’ll only pay for ads delivered up to cancellation.</string>
+<!--    <string name="blaze_campaign_preview_tos_checkbox_end_date_campaigns"> I agree to a recurring charge of %1$s per week. Billing will start when my campaign launches and will continue until %2$. You can cancel at any time from campaign details screen.</string>-->
+<!--    <string name="blaze_campaign_preview_tos_checkbox_end_date_campaigns"> I agree to a recurring charge of %1$s per week. Billing will start when my campaign launches and will continue until %2$. You can cancel at any time from campaign details screen.</string>-->
     <!--
     Blaze campaign objective screen
     -->

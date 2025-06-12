@@ -51,7 +51,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
+import com.woocommerce.android.model.UiString.UiStringRes
+import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.AdDetailsUi.AdDetails
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.AdDetailsUi.Loading
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignDetailItemUi
@@ -63,7 +66,9 @@ import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
+import com.woocommerce.android.ui.compose.component.getText
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
+import com.woocommerce.android.util.ChromeCustomTabUtils
 
 @Composable
 fun BlazeCampaignCreationPreviewScreen(viewModel: BlazeCampaignCreationPreviewViewModel) {
@@ -131,12 +136,14 @@ private fun ConfirmationFooter(
     onConfirmDetailsClicked: () -> Unit,
     previewState: CampaignPreviewUiState,
 ) {
+    val context = LocalContext.current
     val checked = remember { mutableStateOf(false) }
-//    val checkboxLegalText = if(previewState.campaignDetails.budget){
-//        stringResource(id = R.string.blaze_campaign_preview_tos_checkbox_evergreen_campaigns)
-//    } else {
-//        stringResource(id = R.string.blaze_campaign_preview_tos_checkbox_evergreen_campaigns)
-//    }
+
+    val campaignTosText = annotatedStringRes(
+        stringResId = previewState.campaignDetails.campaignTosText.stringRes,
+        onUrlClick = { ChromeCustomTabUtils.launchUrl(context, AppUrls.BLAZE_CANCEL_INSTRUCTIONS) },
+        args = previewState.campaignDetails.campaignTosText.params.map { it.getText() }.toTypedArray()
+    )
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
         Divider()
         Row(
@@ -149,11 +156,7 @@ private fun ConfirmationFooter(
             )
             Text(
                 modifier = Modifier.padding(start = 4.dp),
-                text = annotatedStringRes(
-                    stringResId = R.string.blaze_campaign_preview_tos_checkbox_evergreen_campaigns,
-                    onUrlClick = null,
-                    previewState.campaignDetails.budget.displayValue
-                ),
+                text = campaignTosText,
                 textAlign = TextAlign.Justify,
                 style = MaterialTheme.typography.caption,
                 color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium),
@@ -528,6 +531,12 @@ fun CampaignScreenPreview() {
                     displayValue = "Sales",
                     onItemSelected = {},
                 ),
+                campaignTosText = UiStringRes(
+                    stringRes = R.string.blaze_campaign_preview_tos_checkbox_evergreen_campaigns,
+                    params = listOf(
+                        UiStringText("35$"), UiStringText("July 15, 2025")
+                    )
+                )
             )
         ),
         onBackPressed = { },
