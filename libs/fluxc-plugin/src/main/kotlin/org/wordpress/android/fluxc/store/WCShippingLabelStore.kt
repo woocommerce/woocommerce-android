@@ -375,7 +375,6 @@ class WCShippingLabelStore @Inject constructor(
                                     canManagePayments = response.result.formMeta.canManagePayments,
                                     storeOwnerName = response.result.formMeta.storeOwnerName,
                                     storeOwnerUserName = response.result.formMeta.storeOwnerUserName,
-                                    storeOwnerWpcomUserName = response.result.formMeta.storeOwnerWpcomUserName,
                                     storeOwnerWpcomEmail = response.result.formMeta.storeOwnerWpcomEmail,
                                     selectedPaymentMethodId = response.result.formData.selectedPaymentId,
                                     paymentMethods = response.result.formMeta.paymentMethods.orEmpty(),
