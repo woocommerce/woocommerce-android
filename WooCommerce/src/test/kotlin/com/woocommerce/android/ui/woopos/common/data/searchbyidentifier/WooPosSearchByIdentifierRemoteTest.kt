@@ -580,7 +580,7 @@ class WooPosSearchByIdentifierRemoteTest {
                 message = "Network connection failed"
             )
         }
-        
+
         val gtinErrorEvent = WCProductStore.OnProductsSearched(
             globalUniqueIdSearchQuery = identifier,
             searchQuery = null,
