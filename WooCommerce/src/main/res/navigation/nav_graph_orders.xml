@@ -717,6 +717,9 @@
         <action
             android:id="@+id/action_wooShippingLabelCreationFragment_to_printShippingLabelInfoFragment"
             app:destination="@id/printShippingLabelInfoFragment" />
+        <action
+            android:id="@+id/action_wooShippingLabelCreationFragment_to_wooShippingLabelRefundRequestFragment"
+            app:destination="@id/wooShippingLabelRefundRequestFragment" />
     </fragment>
     <fragment
         android:id="@+id/wooShippingLabelPackageCreationFragment"
@@ -784,5 +787,16 @@
         <action
             android:id="@+id/action_wooShippingLabelHazmatFormFragment_to_hazmatCategorySelector"
             app:destination="@id/searchFilterFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/wooShippingLabelRefundRequestFragment"
+        android:name="com.woocommerce.android.ui.orders.wooshippinglabels.refund.WooShippingLabelRefundFragment"
+        android:label="WooShippingLabelRefundFragment">
+        <argument
+            android:name="orderId"
+            app:argType="long" />
+        <argument
+            android:name="shipment"
+            app:argType="com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel" />
     </fragment>
 </navigation>

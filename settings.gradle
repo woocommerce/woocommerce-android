@@ -130,8 +130,6 @@ dependencyResolutionManagement {
             url = 'https://a8c-libs.s3.amazonaws.com/android'
             content {
                 includeGroup "org.wordpress"
-                includeGroup "org.wordpress.fluxc"
-                includeGroup "org.wordpress.fluxc.plugins"
                 includeGroup "org.wordpress.wellsql"
                 includeGroup "org.wordpress.mediapicker"
                 includeGroup "com.automattic"
@@ -178,9 +176,6 @@ include ':libs:login'
 include ':WooCommerce', ':WooCommerce-Wear'
 include ':libs:detektrules'
 
-gradle.ext.fluxCBinaryPath = "org.wordpress:fluxc"
-gradle.ext.fluxCWooCommercePluginBinaryPath = "org.wordpress.fluxc.plugins:woocommerce"
-gradle.ext.loginFlowBinaryPath = "org.wordpress:login"
 gradle.ext.mediaPickerBinaryPath = "org.wordpress:mediapicker"
 gradle.ext.mediaPickerDomainBinaryPath = "org.wordpress.mediapicker:domain"
 gradle.ext.mediaPickerSourceCameraBinaryPath = "org.wordpress.mediapicker:source-camera"

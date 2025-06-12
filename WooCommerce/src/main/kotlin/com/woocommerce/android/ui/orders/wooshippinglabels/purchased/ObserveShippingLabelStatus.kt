@@ -8,28 +8,32 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import java.math.BigDecimal
 import javax.inject.Inject
 
 class ObserveShippingLabelStatus @Inject constructor(
     private val selectedSite: SelectedSite,
     private val labelRepository: WooShippingLabelRepository
 ) {
-    operator fun invoke(orderId: Long, labelId: Long): Flow<ShippingLabelStatus> {
+    operator fun invoke(orderId: Long, labelId: Long): Flow<ObserveShippingLabelStatusResult> {
         return flow {
             var latestStatus = PURCHASE_IN_PROGRESS
-            emit(latestStatus)
+            emit(ObserveShippingLabelStatusResult(latestStatus, null))
 
             do {
-                latestStatus = labelRepository.fetchShippingLabelStatus(
+                val response = labelRepository.fetchShippingLabelStatus(
                     site = selectedSite.get(),
                     orderId = orderId,
                     labelId = labelId
-                ).takeIf { it.isError.not() }?.model ?: UNKNOWN
-                emit(latestStatus)
+                ).takeIf { it.isError.not() }?.model
+                latestStatus = response?.status ?: UNKNOWN
+                emit(ObserveShippingLabelStatusResult(latestStatus, response?.refundableAmount))
                 delay(DELAY_BETWEEN_STATUS_CHECKS)
             } while (latestStatus == PURCHASE_IN_PROGRESS)
         }
     }
+
+    data class ObserveShippingLabelStatusResult(val status: ShippingLabelStatus, val refundableAmount: BigDecimal?)
 
     companion object {
         private const val DELAY_BETWEEN_STATUS_CHECKS = 2000L

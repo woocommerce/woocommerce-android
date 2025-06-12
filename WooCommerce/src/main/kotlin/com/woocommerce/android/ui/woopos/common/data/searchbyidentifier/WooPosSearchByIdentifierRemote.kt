@@ -3,10 +3,12 @@ package com.woocommerce.android.ui.woopos.common.data.searchbyidentifier
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.di.LimitedConcurrencyDispatcher
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.barcode.WooPosBarcodeFormat
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
+import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsLRUCache
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.CoroutineDispatcher
@@ -28,6 +30,8 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
     private val dispatcher: Dispatcher,
     private val selectedSite: SelectedSite,
     private val productsCache: WooPosProductsCache,
+    private val productStore: WCProductStore,
+    private val variationsCache: WooPosVariationsLRUCache,
     private val checkDigitRemover: WooPosSearchByIdentifierCheckDigitRemover,
     @LimitedConcurrencyDispatcher private val searchDispatcher: CoroutineDispatcher,
 ) {
@@ -54,13 +58,13 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
         }
 
         val gtinResult = gtinSearchDeferred.await()
-        if (gtinResult is WooPosSearchByIdentifierResult.Success) {
+        if (gtinResult.isSuccess) {
             skuSearchDeferred.cancel()
             return@coroutineScope gtinResult
         }
 
         val identifierResult = skuSearchDeferred.await()
-        if (identifierResult is WooPosSearchByIdentifierResult.Success) {
+        if (identifierResult.isSuccess) {
             return@coroutineScope identifierResult
         }
 
@@ -74,13 +78,13 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
             }
 
             val gtinFallbackResult = gtinFallbackDeferred.await()
-            if (gtinFallbackResult is WooPosSearchByIdentifierResult.Success) {
+            if (gtinFallbackResult.isSuccess) {
                 identifierFallbackDeferred.cancel()
                 return@coroutineScope gtinFallbackResult
             }
 
             val identifierFallbackResult = identifierFallbackDeferred.await()
-            if (identifierFallbackResult is WooPosSearchByIdentifierResult.Success) {
+            if (identifierFallbackResult.isSuccess) {
                 return@coroutineScope identifierFallbackResult
             }
 
@@ -173,15 +177,45 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
             result.isSuccess -> {
                 val products = result.getOrThrow()
                 val product = products.firstOrNull()
-                if (product != null) {
+                    ?: return WooPosSearchByIdentifierResult.Failure(
+                        WooPosSearchByIdentifierResult.Error.ProductNotFound
+                    )
+
+                if (product.type.equals("variation", ignoreCase = true)) {
+                    handleVariationResult(product)
+                } else {
                     productsCache.addAll(listOf(product))
                     WooPosSearchByIdentifierResult.Success(product)
-                } else {
-                    WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.ProductNotFound)
                 }
             }
 
             else -> handleError(result)
+        }
+    }
+
+    @Suppress("ReturnCount")
+    private suspend fun handleVariationResult(product: Product): WooPosSearchByIdentifierResult = coroutineScope {
+        val parentId = product.parentId
+        val variationId = product.remoteId
+
+        if (parentId <= 0) {
+            return@coroutineScope WooPosSearchByIdentifierResult.Failure(
+                WooPosSearchByIdentifierResult.Error.ProductNotFound
+            )
+        }
+
+        val variationJob = async { getOrFetchVariationAndUpdateCache(variationId, parentId) }
+        val parentProductJob = async { getOrFetchProductAndUpdateCache(parentId) }
+
+        val variation = variationJob.await()
+        val parentProduct = parentProductJob.await()
+
+        return@coroutineScope if (variation != null && parentProduct != null) {
+            WooPosSearchByIdentifierResult.VariationSuccess(variation)
+        } else {
+            WooPosSearchByIdentifierResult.Failure(
+                WooPosSearchByIdentifierResult.Error.ProductNotFound
+            )
         }
     }
 
@@ -256,6 +290,58 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
         searchByIdentifierContinuations.clear()
         searchByGlobalUniqueIdContinuations.clear()
         coroutineScope.cancel()
+    }
+
+    @Suppress("ReturnCount")
+    private suspend fun getOrFetchVariationAndUpdateCache(variationId: Long, parentId: Long): ProductVariation? {
+        val cachedVariation = variationsCache.get(variationId)?.find { it.remoteVariationId == variationId }
+
+        if (cachedVariation != null) {
+            return cachedVariation
+        }
+        val variationResult = productStore.fetchSingleVariation(
+            selectedSite.get(),
+            parentId,
+            variationId
+        )
+
+        if (variationResult.isError) {
+            return null
+        }
+
+        return productStore.getVariationByRemoteId(
+            selectedSite.get(),
+            parentId,
+            variationId
+        )?.toAppModel()
+            ?.also {
+                variationsCache.add(parentId, it)
+            }
+    }
+
+    @Suppress("ReturnCount")
+    private suspend fun getOrFetchProductAndUpdateCache(parentProductId: Long): Product? {
+        val cachedProduct = productsCache.getProductById(parentProductId)
+        if (cachedProduct != null) {
+            return cachedProduct
+        }
+
+        val parentProductResult = productStore.fetchSingleProduct(
+            WCProductStore.FetchSingleProductPayload(
+                site = selectedSite.get(),
+                remoteProductId = parentProductId,
+            )
+        )
+
+        if (parentProductResult.isError) {
+            return null
+        }
+
+        return productStore.getProduct(selectedSite.get(), parentProductId)
+            ?.toAppModel()
+            ?.also { product ->
+                productsCache.addAll(listOf(product))
+            }
     }
 }
 
