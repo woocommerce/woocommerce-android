@@ -118,8 +118,33 @@ fun WooPosBarcodeInfoDialog(
                         }
                 )
 
+                val primaryMessage = stringResource(id = state.primaryMessage)
+                val moreDetailsText = stringResource(id = R.string.woopos_dialog_barcode_info_more_details_link)
+                val linkAnnotation = LinkAnnotation.Url(
+                    WOO_POS_BARCODE_DOC_URL
+                ) { urlAnnotation ->
+                    ChromeCustomTabUtils.launchUrl(
+                        context,
+                        WOO_POS_BARCODE_DOC_URL,
+                        enableSlideAnimation = true
+                    )
+                }
+
+                val annotatedText = buildAnnotatedString {
+                    append(primaryMessage)
+                    append(" ")
+                    withStyle(
+                        style = SpanStyle(
+                            color = MaterialTheme.colorScheme.primary,
+                            textDecoration = TextDecoration.Underline
+                        )
+                    ) {
+                        withLink(linkAnnotation) { append(moreDetailsText) }
+                    }
+                    append(".")
+                }
                 WooPosText(
-                    text = stringResource(id = state.primaryMessage),
+                    text = annotatedText,
                     style = WooPosTypography.BodyLarge,
                     textAlign = TextAlign.Start,
                     modifier = Modifier
@@ -132,35 +157,8 @@ fun WooPosBarcodeInfoDialog(
                         }
                 )
 
-                val secondaryMessage = stringResource(id = state.secondaryMessage)
-                val moreDetailsText = stringResource(id = R.string.woopos_dialog_barcode_info_more_details_link)
-
-                val linkAnnotation = LinkAnnotation.Url(
-                    WOO_POS_BARCODE_DOC_URL
-                ) { urlAnnotation ->
-                    ChromeCustomTabUtils.launchUrl(
-                        context,
-                        WOO_POS_BARCODE_DOC_URL,
-                        enableSlideAnimation = true
-                    )
-                }
-
-                val annotatedText = buildAnnotatedString {
-                    append(secondaryMessage)
-                    withStyle(
-                        style = SpanStyle(
-                            color = MaterialTheme.colorScheme.primary,
-                            textDecoration = TextDecoration.Underline
-                        )
-                    ) {
-                        withLink(linkAnnotation) {
-                            append(" $moreDetailsText.")
-                        }
-                    }
-                }
-
                 WooPosText(
-                    text = annotatedText,
+                    text = stringResource(id = state.secondaryMessage),
                     style = WooPosTypography.BodyLarge,
                     textAlign = TextAlign.Start,
                     modifier = Modifier
