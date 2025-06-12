@@ -7,7 +7,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_ADD_CUSTOM_AMOUNT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_EDIT_CUSTOM_AMOUNT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.CurrencySymbol
 import com.woocommerce.android.ui.orders.creation.product.discount.CurrencySymbolFinder
