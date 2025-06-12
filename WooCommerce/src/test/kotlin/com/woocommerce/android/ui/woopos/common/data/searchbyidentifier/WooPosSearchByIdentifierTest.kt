@@ -171,7 +171,7 @@ class WooPosSearchByIdentifierTest {
         // THEN
         assertTrue(result is WooPosSearchByIdentifierResult.Failure)
         assertEquals(
-            WooPosSearchByIdentifierResult.Error.UnsupportedProduct,
+            WooPosSearchByIdentifierResult.Error.UnsupportedProduct(product.name),
             (result as WooPosSearchByIdentifierResult.Failure).error
         )
     }
@@ -191,7 +191,7 @@ class WooPosSearchByIdentifierTest {
         // THEN
         assertTrue(result is WooPosSearchByIdentifierResult.Failure)
         assertEquals(
-            WooPosSearchByIdentifierResult.Error.UnsupportedProduct,
+            WooPosSearchByIdentifierResult.Error.UnsupportedProduct(product.name),
             (result as WooPosSearchByIdentifierResult.Failure).error
         )
     }
@@ -211,7 +211,27 @@ class WooPosSearchByIdentifierTest {
         // THEN
         assertTrue(result is WooPosSearchByIdentifierResult.Failure)
         assertEquals(
-            WooPosSearchByIdentifierResult.Error.UnsupportedProduct,
+            WooPosSearchByIdentifierResult.Error.UnsupportedProduct(product.name),
+            (result as WooPosSearchByIdentifierResult.Failure).error
+        )
+    }
+
+    @Test
+    fun `given variable product, when search called, then return product not supported`() = runTest {
+        // GIVEN
+        val identifier = "123456"
+        val product = createProduct(type = ProductType.VARIABLE.value)
+
+        whenever(localSearcher(identifier, WooPosBarcodeFormat.FormatUnknown))
+            .thenReturn(WooPosSearchByIdentifierResult.Success(product))
+
+        // WHEN
+        val result = sut(identifier)
+
+        // THEN
+        assertTrue(result is WooPosSearchByIdentifierResult.Failure)
+        assertEquals(
+            WooPosSearchByIdentifierResult.Error.UnsupportedProduct(product.name),
             (result as WooPosSearchByIdentifierResult.Failure).error
         )
     }

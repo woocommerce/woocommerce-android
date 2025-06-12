@@ -38,11 +38,17 @@ class WooPosSearchByIdentifierLocal @Inject constructor(
         for (query in searchQueries) {
             allVariations.firstOrNull { variation ->
                 variation.globalUniqueId.equals(query, ignoreCase = true)
-            }?.let { return WooPosSearchByIdentifierResult.VariationSuccess(it) }
+            }?.let {
+                val parentProduct = productsCache.getProductById(it.remoteProductId)
+                return WooPosSearchByIdentifierResult.VariationSuccess(it, parentProduct!!)
+            }
 
             allVariations.firstOrNull { variation ->
                 variation.sku.equals(query, ignoreCase = true)
-            }?.let { return WooPosSearchByIdentifierResult.VariationSuccess(it) }
+            }?.let {
+                val parentProduct = productsCache.getProductById(it.remoteProductId)
+                return WooPosSearchByIdentifierResult.VariationSuccess(it, parentProduct!!)
+            }
         }
 
         return null

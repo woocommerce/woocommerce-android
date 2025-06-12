@@ -12,12 +12,12 @@ import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.CustomsState
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.HazmatState
+import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigateToHazmatFormEdit
+import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigateToRefundRequest
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.OpenLearnMoreScreen
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.OpenShippingLabelFile
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.OpenUrl
-import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.PackageSelectionState.DataAvailable
-import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.StartHazmatFormEdit
-import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.StartRefundRequest
+import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.PackageSelectionState
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.WooShippingViewState
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.WooShippingViewState.DataState
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.AddressValidationHelper
@@ -598,8 +598,9 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         assertThat(currentViewState).isInstanceOf(DataState::class.java)
         val dataState = currentViewState as DataState
 
-        assertThat(dataState.shipmentUIList[0].packageSelectionState).isInstanceOf(DataAvailable::class.java)
-        val dataAvailable = dataState.shipmentUIList[0].packageSelectionState as DataAvailable
+        assertThat(dataState.shipmentUIList[0].packageSelectionState)
+            .isInstanceOf(PackageSelectionState.DataAvailable::class.java)
+        val dataAvailable = dataState.shipmentUIList[0].packageSelectionState as PackageSelectionState.DataAvailable
         assertThat(dataAvailable.selectedPackage).isEqualTo(initialPackageData)
     }
 
@@ -650,8 +651,9 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         assertThat(currentViewState).isInstanceOf(DataState::class.java)
         val dataState = currentViewState as DataState
 
-        assertThat(dataState.shipmentUIList[0].packageSelectionState).isInstanceOf(DataAvailable::class.java)
-        val dataAvailable = dataState.shipmentUIList[0].packageSelectionState as DataAvailable
+        assertThat(dataState.shipmentUIList[0].packageSelectionState)
+            .isInstanceOf(PackageSelectionState.DataAvailable::class.java)
+        val dataAvailable = dataState.shipmentUIList[0].packageSelectionState as PackageSelectionState.DataAvailable
         assertThat(dataAvailable.selectedPackage).isEqualTo(newPackageData)
     }
 
@@ -964,7 +966,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when StartHazmatFormEdit is triggered with a selected category, the event contains the expected category value`() =
+    fun `when NavigateToHazmatFormEdit is triggered with a selected category, the event contains the expected category value`() =
         testBlocking {
             var event: MultiLiveEvent.Event? = null
             val order = OrderTestUtils.generateTestOrder(orderId = orderId)
@@ -979,7 +981,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
             sut.event.observeForever { event = it }
 
-            assertThat(event).isEqualTo(StartHazmatFormEdit(ShippingLabelHazmatCategory.CLASS_1))
+            assertThat(event).isEqualTo(NavigateToHazmatFormEdit(ShippingLabelHazmatCategory.CLASS_1))
         }
 
     @Test
@@ -1115,7 +1117,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `onRefundClicked triggers StartRefundRequest event`() = testBlocking {
+    fun `onRefundClicked triggers NavigateToRefundRequest event`() = testBlocking {
         val order = OrderTestUtils.generateTestOrder(orderId = orderId).copy(
             shippingLines = defaultShippingLines,
             customer = Order.Customer(
@@ -1128,12 +1130,12 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
         createViewModel()
 
-        var event: StartRefundRequest? = null
-        sut.event.observeForever { if (it is StartRefundRequest) event = it }
+        var event: NavigateToRefundRequest? = null
+        sut.event.observeForever { if (it is NavigateToRefundRequest) event = it }
 
         sut.onRefundClicked()
 
-        assertThat(event).isEqualTo(StartRefundRequest)
+        assertThat(event).isEqualTo(NavigateToRefundRequest(orderId, defaultShipments.first()))
     }
 
     @Test
@@ -1156,5 +1158,57 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         sut.onLearnMoreClicked()
 
         assertThat(event).isEqualTo(OpenLearnMoreScreen)
+    }
+
+    @Test
+    fun `after splitting a shipment, then retain the state of previous shipments`() = testBlocking {
+        val order = OrderTestUtils.generateTestOrder(orderId = orderId).copy(
+            shippingLines = defaultShippingLines
+        )
+        whenever(orderDetailRepository.getOrderById(any())) doReturn order
+        whenever(getShipments(any())) doReturn defaultShipments
+        whenever(observeOriginAddresses()) doReturn flowOf(defaultOriginAddresses)
+        whenever(observeStoreOptions()) doReturn flowOf(defaultStoreOptions)
+
+        createViewModel()
+        advanceUntilIdle()
+
+        sut.onPackageSelected(defaultPackageData)
+        sut.onShipmentSplit(
+            listOf(
+                ShipmentUIModel("0", items = defaultShippableItems.take(2)),
+                ShipmentUIModel("1", items = defaultShippableItems.takeLast(1)),
+            )
+        )
+
+        val afterSplitState = sut.viewState.value as DataState
+        assertThat(afterSplitState.shipmentUIList.first().packageSelectionState)
+            .matches { it is PackageSelectionState.DataAvailable && it.selectedPackage == defaultPackageData }
+        assertThat(afterSplitState.shipmentUIList.last().packageSelectionState)
+            .isEqualTo(PackageSelectionState.NotSelected)
+    }
+
+    @Test
+    fun `after merging shipments, then reset state to default values`() = testBlocking {
+        val order = OrderTestUtils.generateTestOrder(orderId = orderId).copy(
+            shippingLines = defaultShippingLines
+        )
+        whenever(orderDetailRepository.getOrderById(any())) doReturn order
+        whenever(getShipments(any())) doReturn listOf(
+            ShipmentUIModel("0", items = defaultShippableItems.take(2)),
+            ShipmentUIModel("1", items = defaultShippableItems.takeLast(1)),
+        )
+        whenever(observeOriginAddresses()) doReturn flowOf(defaultOriginAddresses)
+        whenever(observeStoreOptions()) doReturn flowOf(defaultStoreOptions)
+
+        createViewModel()
+        advanceUntilIdle()
+
+        sut.onPackageSelected(defaultPackageData)
+        sut.onShipmentSplit(defaultShipments)
+
+        val afterSplitState = sut.viewState.value as DataState
+        assertThat(afterSplitState.shipmentUIList.first().packageSelectionState)
+            .isEqualTo(PackageSelectionState.NotSelected)
     }
 }
