@@ -9,17 +9,19 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.R
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
-import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.StartCustomsFormEdit
-import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.StartHazmatFormEdit
-import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.StartPackageSelection
+import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigatePackageSelection
+import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigateToCustomsFormEdit
+import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigateToHazmatFormEdit
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.EditAddressFlow
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.WooShippingEditAddressFragment.Companion.DESTINATION_ADDRESS_UPDATE_RESULT
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
@@ -30,8 +32,11 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIMode
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationFragment.Companion.PACKAGE_SELECTION_RESULT
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
 import com.woocommerce.android.ui.orders.wooshippinglabels.split.WooShippingSplitShipmentFragment
+import com.woocommerce.android.util.ActivityUtils
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
+import java.io.File
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -66,27 +71,18 @@ class WooShippingLabelCreationFragment : BaseFragment(), BackPressListener {
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is StartPackageSelection ->
+                is NavigatePackageSelection ->
                     WooShippingLabelCreationFragmentDirections
                         .actionWooShippingLabelCreationFragmentToWooShippingLabelPackageCreationFragment()
                         .let { findNavController().navigateSafely(it) }
 
-                is WooShippingLabelCreationViewModel.LabelPurchased -> {
-                    WooShippingLabelCreationFragmentDirections
-                        .actionWooShippingLabelCreationFragmentToWooShippingLabelPurchasedFragment(
-                            purchaseData = event.purchaseData,
-                            totalItems = event.totalItems,
-                            totalItemsCost = event.totalItemsCost
-                        ).let { findNavController().navigateSafely(it) }
-                }
-
-                is WooShippingLabelCreationViewModel.StartOriginAddressEdit ->
+                is WooShippingLabelCreationViewModel.NavigateToOriginAddressEdit ->
                     WooShippingLabelCreationFragmentDirections
                         .actionWooShippingLabelCreationFragmentToWooShippingEditOriginAddressFragment(
                             flow = EditAddressFlow.EditOriginAddress(event.originAddress)
                         ).let { findNavController().navigateSafely(it) }
 
-                is WooShippingLabelCreationViewModel.StartDestinationAddressEdit ->
+                is WooShippingLabelCreationViewModel.NavigateToDestinationAddressEdit ->
                     WooShippingLabelCreationFragmentDirections
                         .actionWooShippingLabelCreationFragmentToWooShippingEditOriginAddressFragment(
                             flow = EditAddressFlow.EditDestinationAddress(
@@ -95,7 +91,7 @@ class WooShippingLabelCreationFragment : BaseFragment(), BackPressListener {
                             )
                         ).let { findNavController().navigateSafely(it) }
 
-                is StartCustomsFormEdit -> {
+                is NavigateToCustomsFormEdit -> {
                     WooShippingLabelCreationFragmentDirections
                         .actionWooShippingLabelCreationFragmentToWooShippingLabelCustomsFormFragment(
                             shippableItems = event.shippableItems.toTypedArray(),
@@ -112,7 +108,7 @@ class WooShippingLabelCreationFragment : BaseFragment(), BackPressListener {
                 )
 
                 is MultiLiveEvent.Event.Exit -> findNavController().navigateUp()
-                is WooShippingLabelCreationViewModel.StartSplitShipment -> {
+                is WooShippingLabelCreationViewModel.NavigateToSplitShipment -> {
                     WooShippingLabelCreationFragmentDirections
                         .actionWooShippingLabelCreationFragmentToWooShippingSplitShipmentFragment(
                             shipmentArgs = event.shipmentArgs
@@ -121,12 +117,22 @@ class WooShippingLabelCreationFragment : BaseFragment(), BackPressListener {
                         }
                 }
 
-                is StartHazmatFormEdit -> {
+                is NavigateToHazmatFormEdit -> {
                     WooShippingLabelCreationFragmentDirections
                         .actionWooShippingLabelCreationFragmentToWooShippingLabelHazmatFormFragment(
                             event.selectedCategory?.name
                         ).let { findNavController().navigateSafely(it) }
                 }
+
+                is WooShippingLabelCreationViewModel.OpenShippingLabelFile -> openShippingLabelPreview(event.file)
+                is WooShippingLabelCreationViewModel.OpenLearnMoreScreen -> openLearnMoreView()
+                is WooShippingLabelCreationViewModel.NavigateToRefundRequest -> navigateToRefundRequest(
+                    event.orderId,
+                    event.shipment
+                )
+
+                is WooShippingLabelCreationViewModel.OpenUrl -> openUrl(event.url)
+                is WooShippingLabelCreationViewModel.ShowError -> showErrorDialog(event.errorResId)
             }
         }
     }
@@ -153,4 +159,35 @@ class WooShippingLabelCreationFragment : BaseFragment(), BackPressListener {
     }
 
     override fun onRequestAllowBackPress(): Boolean = viewModel.allowBackNavigation()
+
+    private fun openShippingLabelPreview(file: File) {
+        ActivityUtils.previewPDFFile(requireActivity(), file)
+    }
+
+    private fun openLearnMoreView() {
+        findNavController().navigate(
+            WooShippingLabelCreationFragmentDirections
+                .actionWooShippingLabelCreationFragmentToPrintShippingLabelInfoFragment()
+        )
+    }
+
+    private fun navigateToRefundRequest(orderId: Long, shipment: ShipmentUIModel) {
+        findNavController().navigate(
+            WooShippingLabelCreationFragmentDirections
+                .actionWooShippingLabelCreationFragmentToWooShippingLabelRefundRequestFragment(orderId, shipment)
+        )
+    }
+
+    private fun openUrl(url: String) {
+        ChromeCustomTabUtils.launchUrl(requireContext(), url)
+    }
+
+    private fun showErrorDialog(messageResId: Int) {
+        WooDialog.showDialog(
+            activity = requireActivity(),
+            titleId = R.string.error_generic,
+            messageId = messageResId,
+            positiveButtonId = R.string.dialog_ok
+        )
+    }
 }

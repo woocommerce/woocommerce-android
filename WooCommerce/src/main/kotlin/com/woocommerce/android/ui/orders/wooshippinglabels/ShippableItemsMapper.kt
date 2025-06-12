@@ -36,11 +36,11 @@ fun List<ShippableItemModel>.toUIModel(
     currencyFormatter: CurrencyFormatter,
     dimensionUnit: String,
     weightUnit: String,
-    purchased: Boolean,
+    shipmentUIModel: ShipmentUIModel,
     hazmatCategory: ShippingLabelHazmatCategory?,
     packageSelectionState: PackageSelectionState,
     shippingRates: ShippingRatesState,
-    customsState: CustomsState
+    customsState: CustomsState,
 ): ShipmentUI {
     val shippableItemsUI = map { item -> item.toUIModel(currencyFormatter, dimensionUnit, weightUnit) }
     val formattedTotalPrice = getFormattedTotalPrice(currencyFormatter)
@@ -50,12 +50,14 @@ fun List<ShippableItemModel>.toUIModel(
         shippableItems = shippableItemsUI,
         formattedTotalWeight = formattedTotalWeight,
         formattedTotalPrice = formattedTotalPrice,
-        purchased = purchased,
+        purchased = shipmentUIModel.purchased,
         packageSelectionState = packageSelectionState,
         customsState = customsState,
         hazmatState = hazmatCategory?.let { WooShippingLabelCreationViewModel.HazmatState.Declared(it) }
             ?: WooShippingLabelCreationViewModel.HazmatState.NoSelection,
         shippingRatesState = shippingRates,
+        purchaseState = shipmentUIModel.purchaseState,
+        status = shipmentUIModel.status
     )
 }
 

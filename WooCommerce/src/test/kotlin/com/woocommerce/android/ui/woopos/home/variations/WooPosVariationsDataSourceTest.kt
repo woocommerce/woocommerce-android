@@ -1,8 +1,8 @@
 package com.woocommerce.android.ui.woopos.home.variations
 
-import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.variations.selector.VariationListHandler
+import com.woocommerce.android.ui.woopos.common.data.WooPosVariationsTypesFilterConfig
 import com.woocommerce.android.ui.woopos.home.items.variations.FetchResult
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsDataSource
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsLRUCache
@@ -63,7 +63,7 @@ class WooPosVariationsDataSourceTest {
     )
 
     private val handler: VariationListHandler = mock()
-    private val variationsCache: WooPosVariationsLRUCache<Long, List<ProductVariation>> = mock()
+    private val variationsCache: WooPosVariationsLRUCache = mock()
 
     @Test
     fun `given force refresh, when fetchFirstPage called, then should clear cache`() = runTest {
@@ -72,7 +72,7 @@ class WooPosVariationsDataSourceTest {
         whenever(handler.canLoadMore(5)).thenReturn(true)
         whenever(handler.getVariationsFlow(productId)).thenReturn(flowOf(sampleProducts))
         whenever(variationsCache.get(productId)).thenReturn(sampleProducts)
-        val sut = WooPosVariationsDataSource(handler, variationsCache)
+        val sut = WooPosVariationsDataSource(handler, variationsCache, WooPosVariationsTypesFilterConfig())
 
         sut.fetchFirstPage(productId, forceRefresh = true).first()
         assertThat(
@@ -97,7 +97,7 @@ class WooPosVariationsDataSourceTest {
         whenever(handler.canLoadMore(5)).thenReturn(true)
         whenever(handler.getVariationsFlow(productId)).thenReturn(flowOf(sampleProducts))
         whenever(variationsCache.get(productId)).thenReturn(sampleProducts)
-        val sut = WooPosVariationsDataSource(handler, variationsCache)
+        val sut = WooPosVariationsDataSource(handler, variationsCache, WooPosVariationsTypesFilterConfig())
 
         sut.fetchFirstPage(productId, forceRefresh = true).first()
 
@@ -118,7 +118,7 @@ class WooPosVariationsDataSourceTest {
         whenever(handler.canLoadMore(5)).thenReturn(true)
         whenever(handler.getVariationsFlow(productId)).thenReturn(flowOf(sampleProducts))
         whenever(variationsCache.get(productId)).thenReturn(sampleProducts)
-        val sut = WooPosVariationsDataSource(handler, variationsCache)
+        val sut = WooPosVariationsDataSource(handler, variationsCache, WooPosVariationsTypesFilterConfig())
 
         sut.fetchFirstPage(productId, forceRefresh = true).first()
 
@@ -143,7 +143,7 @@ class WooPosVariationsDataSourceTest {
         whenever(handler.getVariationsFlow(productId)).thenReturn(flowOf(sampleProducts))
         whenever(variationsCache.get(productId)).thenReturn(sampleProducts)
         val exception = Exception("Remote load failed")
-        val sut = WooPosVariationsDataSource(handler, variationsCache)
+        val sut = WooPosVariationsDataSource(handler, variationsCache, WooPosVariationsTypesFilterConfig())
 
         sut.fetchFirstPage(productId, forceRefresh = true).first()
 
@@ -182,7 +182,7 @@ class WooPosVariationsDataSourceTest {
         )
         whenever(variationsCache.get(productId)).thenReturn(sampleProducts + additionalProducts)
         whenever(handler.loadMore(productId)).thenReturn(Result.success(Unit))
-        val sut = WooPosVariationsDataSource(handler, variationsCache)
+        val sut = WooPosVariationsDataSource(handler, variationsCache, WooPosVariationsTypesFilterConfig())
 
         sut.fetchFirstPage(productId, forceRefresh = false).first()
 
@@ -216,7 +216,7 @@ class WooPosVariationsDataSourceTest {
             ),
         ).thenReturn(Result.failure(exception))
         whenever(variationsCache.get(productId)).thenReturn(sampleProducts)
-        val sut = WooPosVariationsDataSource(handler, variationsCache)
+        val sut = WooPosVariationsDataSource(handler, variationsCache, WooPosVariationsTypesFilterConfig())
 
         sut.fetchFirstPage(productId, forceRefresh = false).first()
 
@@ -252,7 +252,7 @@ class WooPosVariationsDataSourceTest {
         ).thenReturn(Result.failure(exception))
         whenever(variationsCache.get(productId)).thenReturn(emptyList())
 
-        val sut = WooPosVariationsDataSource(handler, variationsCache)
+        val sut = WooPosVariationsDataSource(handler, variationsCache, WooPosVariationsTypesFilterConfig())
 
         // WHEN
         val flow = sut.fetchFirstPage(productId, forceRefresh = false).toList()
@@ -271,7 +271,7 @@ class WooPosVariationsDataSourceTest {
         whenever(handler.getVariationsFlow(productId)).thenReturn(flowOf(emptyList()))
         whenever(handler.fetchVariations(productId, forceRefresh = false)).thenReturn(Result.success(Unit))
         whenever(variationsCache.get(productId)).thenReturn(emptyList())
-        val sut = WooPosVariationsDataSource(handler, variationsCache)
+        val sut = WooPosVariationsDataSource(handler, variationsCache, WooPosVariationsTypesFilterConfig())
 
         // WHEN
         val flow = sut.fetchFirstPage(productId, forceRefresh = false).toList()
@@ -303,7 +303,7 @@ class WooPosVariationsDataSourceTest {
         )
         whenever(handler.fetchVariations(productId, forceRefresh = true)).thenReturn(Result.success(Unit))
         whenever(variationsCache.get(productId)).thenReturn(sampleProducts)
-        val sut = WooPosVariationsDataSource(handler, variationsCache)
+        val sut = WooPosVariationsDataSource(handler, variationsCache, WooPosVariationsTypesFilterConfig())
 
         // WHEN
         val flow = sut.fetchFirstPage(productId, forceRefresh = false).toList()
@@ -337,7 +337,7 @@ class WooPosVariationsDataSourceTest {
         )
         whenever(handler.fetchVariations(productId, forceRefresh = true)).thenReturn(Result.success(Unit))
         whenever(variationsCache.get(productId)).thenReturn(sampleProducts)
-        val sut = WooPosVariationsDataSource(handler, variationsCache)
+        val sut = WooPosVariationsDataSource(handler, variationsCache, WooPosVariationsTypesFilterConfig())
 
         // WHEN
         val flow = sut.fetchFirstPage(productId, forceRefresh = false).toList()

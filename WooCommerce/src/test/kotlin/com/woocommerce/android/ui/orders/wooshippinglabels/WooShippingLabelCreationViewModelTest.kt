@@ -12,10 +12,12 @@ import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.CustomsState
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.HazmatState
-import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.LabelPurchased
-import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.PackageSelectionState.DataAvailable
-import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.PurchaseState
-import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.StartHazmatFormEdit
+import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigateToHazmatFormEdit
+import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigateToRefundRequest
+import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.OpenLearnMoreScreen
+import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.OpenShippingLabelFile
+import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.OpenUrl
+import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.PackageSelectionState
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.WooShippingViewState
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.WooShippingViewState.DataState
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.AddressValidationHelper
@@ -24,18 +26,16 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.address.destination.V
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.origin.ObserveOriginAddresses
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeBannerUiState
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeType
+import com.woocommerce.android.ui.orders.wooshippinglabels.components.WooShippingLabelPaperSize
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ShouldRequireCustomsForm
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ShouldRequireITN
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
-import com.woocommerce.android.ui.orders.wooshippinglabels.models.PurchasedLabelData
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
-import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
-import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.StoreOptionsModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingCarrier
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
-import com.woocommerce.android.ui.orders.wooshippinglabels.purchased.PurchasedShippingLabelData
+import com.woocommerce.android.ui.orders.wooshippinglabels.purchased.printing.FetchShippingLabelFile
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel.Option
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.domain.GetShippingRates
@@ -55,14 +55,15 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.isNull
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
+import java.io.File
 import java.math.BigDecimal
-import java.util.Date
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
@@ -85,7 +86,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
             length = it.toFloat()
         )
     }
-    private val defaultShipments = listOf(ShipmentUIModel(id = "0", items = defaultShippableItems))
+    private val defaultShipments = listOf(ShipmentUIModel(localId = "0", items = defaultShippableItems))
     private val defaultShippingLines = List(3) {
         Order.ShippingLine(
             methodTitle = "Shipping Line $it",
@@ -114,30 +115,6 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
             isVerified = true
         )
     )
-
-    private val defaultShippingLabel = ShippingLabelModel(
-        labelId = 12L,
-        carrierId = WooShippingCarrier.UPS.name,
-        tracking = "1234567890",
-        refundableAmount = BigDecimal.ZERO,
-        commercialInvoiceUrl = "",
-        created = Date(),
-        createdDate = Date(),
-        currency = "USD",
-        expiryDate = 9999999999L,
-        isCommercialInvoiceSubmittedElectronically = false,
-        isLetter = false,
-        mainReceiptId = 1434234,
-        packageName = "ups_express",
-        productIds = listOf(123L, 456L),
-        productNames = listOf("Product 1", "Product 2"),
-        rate = BigDecimal.TEN,
-        receiptItemId = 23324L,
-        serviceName = "UPS Express",
-        status = ShippingLabelStatus.PurchaseInProgress
-    )
-
-    private val defaultPackageName = "customPackage"
 
     private val defaultShipToAddress = Address.EMPTY.copy(
         firstName = "first name",
@@ -212,13 +189,6 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         }
     )
 
-    private val defaultPurchasedLabelData = PurchasedLabelData(
-        labels = listOf(defaultShippingLabel),
-        origin = mapOf(defaultPackageName to defaultOriginAddresses.first()),
-        destination = mapOf(defaultPackageName to Address.EMPTY),
-        rates = mapOf(defaultPackageName to defaultShippingRate)
-    )
-
     private val orderDetailRepository: OrderDetailRepository = mock()
     private val getShipments: GetShipments = mock()
     private val currencyFormatter: CurrencyFormatter = mock {
@@ -247,6 +217,8 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     private val shouldRequireITN: ShouldRequireITN = mock {
         on { invoke(any(), any()) } doReturn false
     }
+    private val fetchShippingLabelFile: FetchShippingLabelFile = mock()
+    private val file: File = mock()
 
     private lateinit var sut: WooShippingLabelCreationViewModel
 
@@ -261,11 +233,13 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
             purchaseShippingLabel = purchaseShippingLabel,
             observeStoreOptions = observeStoreOptions,
             fetchAccountSettings = mock(),
-            shouldRequireCustoms = shouldRequireCustomsForm,
             addressValidationHelper = addressValidationHelper,
             verifyDestinationAddress = verifyDestinationAddress,
             observeShippingLabelNotice = observeShippingLabelNotice,
+            shouldRequireCustoms = shouldRequireCustomsForm,
             shouldRequireITN = shouldRequireITN,
+            fetchShippingLabelFile = fetchShippingLabelFile,
+            observeShippingLabelStatus = mock(),
             savedState = savedState
         )
     }
@@ -625,8 +599,9 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         assertThat(currentViewState).isInstanceOf(DataState::class.java)
         val dataState = currentViewState as DataState
 
-        assertThat(dataState.shipmentUIList[0].packageSelectionState).isInstanceOf(DataAvailable::class.java)
-        val dataAvailable = dataState.shipmentUIList[0].packageSelectionState as DataAvailable
+        assertThat(dataState.shipmentUIList[0].packageSelectionState)
+            .isInstanceOf(PackageSelectionState.DataAvailable::class.java)
+        val dataAvailable = dataState.shipmentUIList[0].packageSelectionState as PackageSelectionState.DataAvailable
         assertThat(dataAvailable.selectedPackage).isEqualTo(initialPackageData)
     }
 
@@ -678,8 +653,9 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         assertThat(currentViewState).isInstanceOf(DataState::class.java)
         val dataState = currentViewState as DataState
 
-        assertThat(dataState.shipmentUIList[0].packageSelectionState).isInstanceOf(DataAvailable::class.java)
-        val dataAvailable = dataState.shipmentUIList[0].packageSelectionState as DataAvailable
+        assertThat(dataState.shipmentUIList[0].packageSelectionState)
+            .isInstanceOf(PackageSelectionState.DataAvailable::class.java)
+        val dataAvailable = dataState.shipmentUIList[0].packageSelectionState as PackageSelectionState.DataAvailable
         assertThat(dataAvailable.selectedPackage).isEqualTo(newPackageData)
     }
 
@@ -766,60 +742,6 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when onPurchaseShippingLabel succeed then return the label data`() = testBlocking {
-        val order = OrderTestUtils.generateTestOrder(orderId = orderId).copy(
-            shippingLines = defaultShippingLines
-        )
-        whenever(orderDetailRepository.getOrderById(any())) doReturn order
-        whenever(getShipments(any())) doReturn defaultShipments
-        whenever(observeOriginAddresses()) doReturn flowOf(defaultOriginAddresses)
-        whenever(observeStoreOptions()) doReturn flowOf(defaultStoreOptions)
-        whenever(
-            purchaseShippingLabel(any(), any(), any(), any(), any(), any(), any(), any(), isNull(), isNull())
-        ) doReturn Result.success(defaultPurchasedLabelData)
-
-        val label = defaultPurchasedLabelData.labels.first()
-
-        val expectedLabelData = PurchasedShippingLabelData(
-            labelId = label.labelId,
-            orderId = 1L,
-            carrierId = label.carrierId,
-            trackingNumber = label.tracking,
-            items = mock(),
-            rateSummary = mock(),
-            shippingLines = mock(),
-            addresses = mock(),
-            hazmatSelection = ShippingLabelHazmatCategory.CLASS_1
-        )
-
-        createViewModel()
-
-        val selectedRate = defaultShippingRates.values.first().first()
-
-        sut.onPackageSelected(defaultPackageData)
-        sut.onSelectedSippingRateChanged(selectedRate)
-
-        advanceUntilIdle()
-
-        var event: MultiLiveEvent.Event? = null
-        sut.event.observeForever { latestEvent -> event = latestEvent }
-
-        sut.onPurchaseShippingLabel()
-
-        val currentViewState = sut.viewState.value
-        assertThat(currentViewState).isInstanceOf(DataState::class.java)
-        val dataState = currentViewState as DataState
-        assertThat(dataState.purchaseState).isEqualTo(PurchaseState.Success)
-
-        assertThat(event).isInstanceOf(LabelPurchased::class.java)
-        val data = (event as LabelPurchased).purchaseData
-        assertThat(data.labelId).isEqualTo(expectedLabelData.labelId)
-        assertThat(data.trackingNumber).isEqualTo(expectedLabelData.trackingNumber)
-        assertThat(data.carrierId).isEqualTo(expectedLabelData.carrierId)
-        assertThat(data.orderId).isEqualTo(expectedLabelData.orderId)
-    }
-
-    @Test
     fun `when onPurchaseShippingLabel fails then show a snackbar`() = testBlocking {
         val order = OrderTestUtils.generateTestOrder(orderId = orderId)
 
@@ -876,83 +798,6 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
         val currentViewState = sut.viewState.value
         assertThat(currentViewState).isInstanceOf(WooShippingViewState.Error::class.java)
-    }
-
-    @Test
-    fun `when address selection is collapsed then changes shipment details are allowed`() = testBlocking {
-        val order = OrderTestUtils.generateTestOrder(orderId = orderId)
-
-        whenever(orderDetailRepository.getOrderById(any())) doReturn order
-        whenever(observeOriginAddresses()) doReturn flowOf(defaultOriginAddresses)
-        whenever(observeStoreOptions()) doReturn flowOf(null)
-
-        createViewModel()
-
-        advanceUntilIdle()
-        // Collapse shipment details and select address
-        var changeAccepted = sut.onShipmentDetailsExpandedChange(false)
-        assertThat(changeAccepted).isTrue()
-        changeAccepted = sut.onSelectAddressExpandedChange(false)
-        assertThat(changeAccepted).isTrue()
-
-        // Check all changes are accepted
-        changeAccepted = sut.onShipmentDetailsExpandedChange(false)
-        assertThat(changeAccepted).isTrue()
-        changeAccepted = sut.onShipmentDetailsExpandedChange(true)
-        assertThat(changeAccepted).isTrue()
-    }
-
-    @Test
-    fun `when address selection is expanded then prevent any change on the shipment details`() = testBlocking {
-        val order = OrderTestUtils.generateTestOrder(orderId = orderId)
-
-        whenever(orderDetailRepository.getOrderById(any())) doReturn order
-        whenever(observeOriginAddresses()) doReturn flowOf(defaultOriginAddresses)
-        whenever(observeStoreOptions()) doReturn flowOf(null)
-
-        createViewModel()
-
-        advanceUntilIdle()
-        // Expand shipment details and select address
-        var changeAccepted = sut.onShipmentDetailsExpandedChange(true)
-        assertThat(changeAccepted).isTrue()
-
-        changeAccepted = sut.onSelectAddressExpandedChange(true)
-        assertThat(changeAccepted).isTrue()
-
-        // Check no changes are accepted when select address is expanded
-        changeAccepted = sut.onShipmentDetailsExpandedChange(false)
-        assertThat(changeAccepted).isFalse()
-        changeAccepted = sut.onShipmentDetailsExpandedChange(true)
-        assertThat(changeAccepted).isFalse()
-    }
-
-    @Test
-    fun `when a bottom sheet is expanded then the back gesture closes the sheet`() = testBlocking {
-        val order = OrderTestUtils.generateTestOrder(orderId = orderId)
-
-        whenever(orderDetailRepository.getOrderById(any())) doReturn order
-        whenever(observeOriginAddresses()) doReturn flowOf(defaultOriginAddresses)
-        whenever(observeStoreOptions()) doReturn flowOf(null)
-
-        createViewModel()
-
-        advanceUntilIdle()
-        // Expand shipment details and select address
-        sut.onShipmentDetailsExpandedChange(true)
-        sut.onSelectAddressExpandedChange(true)
-
-        // Close address selection
-        var shouldNavigateBack = sut.allowBackNavigation()
-        assertThat(shouldNavigateBack).isFalse()
-
-        // Close shipment details
-        shouldNavigateBack = sut.allowBackNavigation()
-        assertThat(shouldNavigateBack).isFalse()
-
-        // Navigate back
-        shouldNavigateBack = sut.allowBackNavigation()
-        assertThat(shouldNavigateBack).isTrue()
     }
 
     @Test
@@ -1123,7 +968,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when StartHazmatFormEdit is triggered with a selected category, the event contains the expected category value`() =
+    fun `when NavigateToHazmatFormEdit is triggered with a selected category, the event contains the expected category value`() =
         testBlocking {
             var event: MultiLiveEvent.Event? = null
             val order = OrderTestUtils.generateTestOrder(orderId = orderId)
@@ -1139,7 +984,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
             sut.event.observeForever { event = it }
 
-            assertThat(event).isEqualTo(StartHazmatFormEdit(ShippingLabelHazmatCategory.CLASS_1))
+            assertThat(event).isEqualTo(NavigateToHazmatFormEdit(ShippingLabelHazmatCategory.CLASS_1))
         }
 
     @Test
@@ -1161,5 +1006,214 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         assert(currentViewState is DataState)
         val dataState = currentViewState as DataState
         assertThat(dataState.totalItems).isEqualTo(expectedItemQuantity)
+    }
+
+    @Test
+    fun `onPrintShippingLabelClicked triggers OpenShippingLabelFile event`() = testBlocking {
+        val order = OrderTestUtils.generateTestOrder(orderId = orderId).copy(
+            shippingLines = defaultShippingLines,
+            customer = Order.Customer(
+                billingAddress = defaultShipToAddress,
+                shippingAddress = defaultShipToAddress
+            )
+        )
+        whenever(orderDetailRepository.getOrderById(any())) doReturn order
+        whenever(getShipments(any())) doReturn listOf(
+            ShipmentUIModel(localId = "0", items = defaultShippableItems, labelId = 123)
+        )
+        whenever(fetchShippingLabelFile(eq(listOf(123)), any())).thenReturn(file)
+
+        createViewModel()
+
+        sut.onPrintShippingLabelClicked()
+
+        verify(fetchShippingLabelFile).invoke(eq(listOf(123)), any())
+
+        var event: OpenShippingLabelFile? = null
+        sut.event.observeForever { if (it is OpenShippingLabelFile) event = it }
+        assertThat(event).isEqualTo(OpenShippingLabelFile(file))
+    }
+
+    @Test
+    fun `ViewState starts with LABEL paper size as default`() = testBlocking {
+        val order = OrderTestUtils.generateTestOrder(orderId = orderId)
+        whenever(orderDetailRepository.getOrderById(any())) doReturn order
+        whenever(getShipments(any())) doReturn defaultShipments
+        whenever(observeOriginAddresses()) doReturn flowOf(defaultOriginAddresses)
+        whenever(observeStoreOptions()) doReturn flowOf(defaultStoreOptions)
+
+        createViewModel()
+
+        val currentViewState = sut.viewState.value
+        assert(currentViewState is DataState)
+        val dataState = currentViewState as DataState
+        assertThat(dataState.uiState.paperSizeOption).isEqualTo(WooShippingLabelPaperSize.LABEL)
+    }
+
+    @Test
+    fun `onLabelPaperSizeOptionSelected updates the ViewState as expected`() = testBlocking {
+        val order = OrderTestUtils.generateTestOrder(orderId = orderId)
+        whenever(orderDetailRepository.getOrderById(any())) doReturn order
+        whenever(getShipments(any())) doReturn defaultShipments
+        whenever(observeOriginAddresses()) doReturn flowOf(defaultOriginAddresses)
+        whenever(observeStoreOptions()) doReturn flowOf(defaultStoreOptions)
+
+        createViewModel()
+
+        sut.onLabelPaperSizeOptionSelected(WooShippingLabelPaperSize.LETTER)
+
+        val currentViewState = sut.viewState.value
+        assert(currentViewState is DataState)
+        val dataState = currentViewState as DataState
+        assertThat(dataState.uiState.paperSizeOption).isEqualTo(WooShippingLabelPaperSize.LETTER)
+    }
+
+    @Test
+    fun `onTrackShipmentClicked triggers OpenUrl event`() = testBlocking {
+        val order = OrderTestUtils.generateTestOrder(orderId = orderId).copy(
+            shippingLines = defaultShippingLines,
+            customer = Order.Customer(
+                billingAddress = defaultShipToAddress,
+                shippingAddress = defaultShipToAddress
+            )
+        )
+        whenever(orderDetailRepository.getOrderById(any())) doReturn order
+        whenever(getShipments(any())) doReturn listOf(
+            ShipmentUIModel(
+                localId = "0",
+                items = defaultShippableItems,
+                carrierId = "usps",
+                trackingNumber = "123456"
+            )
+        )
+
+        createViewModel()
+
+        var event: OpenUrl? = null
+        sut.event.observeForever { if (it is OpenUrl) event = it }
+
+        sut.onTrackShipmentClicked()
+
+        assertThat(event).isEqualTo(OpenUrl("https://tools.usps.com/go/TrackConfirmAction.action?tLabels=123456"))
+    }
+
+    @Test
+    fun `onSchedulePickUpClicked triggers OpenUrl event`() = testBlocking {
+        val order = OrderTestUtils.generateTestOrder(orderId = orderId).copy(
+            shippingLines = defaultShippingLines,
+            customer = Order.Customer(
+                billingAddress = defaultShipToAddress,
+                shippingAddress = defaultShipToAddress
+            )
+        )
+        whenever(orderDetailRepository.getOrderById(any())) doReturn order
+        whenever(getShipments(any())) doReturn listOf(
+            ShipmentUIModel(localId = "0", items = defaultShippableItems, carrierId = "usps")
+        )
+
+        createViewModel()
+
+        var event: OpenUrl? = null
+        sut.event.observeForever { if (it is OpenUrl) event = it }
+
+        sut.onSchedulePickUpClicked()
+
+        assertThat(event).isEqualTo(OpenUrl("https://tools.usps.com/schedule-pickup-steps.htm"))
+    }
+
+    @Test
+    fun `onRefundClicked triggers NavigateToRefundRequest event`() = testBlocking {
+        val order = OrderTestUtils.generateTestOrder(orderId = orderId).copy(
+            shippingLines = defaultShippingLines,
+            customer = Order.Customer(
+                billingAddress = defaultShipToAddress,
+                shippingAddress = defaultShipToAddress
+            )
+        )
+        whenever(orderDetailRepository.getOrderById(any())) doReturn order
+        whenever(getShipments(any())) doReturn defaultShipments
+
+        createViewModel()
+
+        var event: NavigateToRefundRequest? = null
+        sut.event.observeForever { if (it is NavigateToRefundRequest) event = it }
+
+        sut.onRefundClicked()
+
+        assertThat(event).isEqualTo(NavigateToRefundRequest(orderId, defaultShipments.first()))
+    }
+
+    @Test
+    fun `onLearnMoreClicked triggers OpenLearnMoreScreen event`() = testBlocking {
+        val order = OrderTestUtils.generateTestOrder(orderId = orderId).copy(
+            shippingLines = defaultShippingLines,
+            customer = Order.Customer(
+                billingAddress = defaultShipToAddress,
+                shippingAddress = defaultShipToAddress
+            )
+        )
+        whenever(orderDetailRepository.getOrderById(any())) doReturn order
+        whenever(getShipments(any())) doReturn defaultShipments
+
+        createViewModel()
+
+        var event: OpenLearnMoreScreen? = null
+        sut.event.observeForever { if (it is OpenLearnMoreScreen) event = it }
+
+        sut.onLearnMoreClicked()
+
+        assertThat(event).isEqualTo(OpenLearnMoreScreen)
+    }
+
+    @Test
+    fun `after splitting a shipment, then retain the state of previous shipments`() = testBlocking {
+        val order = OrderTestUtils.generateTestOrder(orderId = orderId).copy(
+            shippingLines = defaultShippingLines
+        )
+        whenever(orderDetailRepository.getOrderById(any())) doReturn order
+        whenever(getShipments(any())) doReturn defaultShipments
+        whenever(observeOriginAddresses()) doReturn flowOf(defaultOriginAddresses)
+        whenever(observeStoreOptions()) doReturn flowOf(defaultStoreOptions)
+
+        createViewModel()
+        advanceUntilIdle()
+
+        sut.onPackageSelected(defaultPackageData)
+        sut.onShipmentSplit(
+            listOf(
+                ShipmentUIModel("0", items = defaultShippableItems.take(2)),
+                ShipmentUIModel("1", items = defaultShippableItems.takeLast(1)),
+            )
+        )
+
+        val afterSplitState = sut.viewState.value as DataState
+        assertThat(afterSplitState.shipmentUIList.first().packageSelectionState)
+            .matches { it is PackageSelectionState.DataAvailable && it.selectedPackage == defaultPackageData }
+        assertThat(afterSplitState.shipmentUIList.last().packageSelectionState)
+            .isEqualTo(PackageSelectionState.NotSelected)
+    }
+
+    @Test
+    fun `after merging shipments, then reset state to default values`() = testBlocking {
+        val order = OrderTestUtils.generateTestOrder(orderId = orderId).copy(
+            shippingLines = defaultShippingLines
+        )
+        whenever(orderDetailRepository.getOrderById(any())) doReturn order
+        whenever(getShipments(any())) doReturn listOf(
+            ShipmentUIModel("0", items = defaultShippableItems.take(2)),
+            ShipmentUIModel("1", items = defaultShippableItems.takeLast(1)),
+        )
+        whenever(observeOriginAddresses()) doReturn flowOf(defaultOriginAddresses)
+        whenever(observeStoreOptions()) doReturn flowOf(defaultStoreOptions)
+
+        createViewModel()
+        advanceUntilIdle()
+
+        sut.onPackageSelected(defaultPackageData)
+        sut.onShipmentSplit(defaultShipments)
+
+        val afterSplitState = sut.viewState.value as DataState
+        assertThat(afterSplitState.shipmentUIList.first().packageSelectionState)
+            .isEqualTo(PackageSelectionState.NotSelected)
     }
 }

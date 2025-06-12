@@ -2,37 +2,38 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.purchased
 
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus
-import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus.PurchaseInProgress
-import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus.Unknown
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus.PURCHASE_IN_PROGRESS
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus.UNKNOWN
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingLabelRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import java.math.BigDecimal
 import javax.inject.Inject
 
 class ObserveShippingLabelStatus @Inject constructor(
     private val selectedSite: SelectedSite,
     private val labelRepository: WooShippingLabelRepository
 ) {
-    suspend operator fun invoke(
-        orderId: Long,
-        labelId: Long
-    ): Flow<ShippingLabelStatus> {
+    operator fun invoke(orderId: Long, labelId: Long): Flow<ObserveShippingLabelStatusResult> {
         return flow {
-            var latestStatus = PurchaseInProgress
-            emit(latestStatus)
+            var latestStatus = PURCHASE_IN_PROGRESS
+            emit(ObserveShippingLabelStatusResult(latestStatus, null))
 
             do {
-                latestStatus = labelRepository.fetchShippingLabelStatus(
+                val response = labelRepository.fetchShippingLabelStatus(
                     site = selectedSite.get(),
                     orderId = orderId,
                     labelId = labelId
-                ).takeIf { it.isError.not() }?.model ?: Unknown
-                emit(latestStatus)
+                ).takeIf { it.isError.not() }?.model
+                latestStatus = response?.status ?: UNKNOWN
+                emit(ObserveShippingLabelStatusResult(latestStatus, response?.refundableAmount))
                 delay(DELAY_BETWEEN_STATUS_CHECKS)
-            } while (latestStatus == PurchaseInProgress)
+            } while (latestStatus == PURCHASE_IN_PROGRESS)
         }
     }
+
+    data class ObserveShippingLabelStatusResult(val status: ShippingLabelStatus, val refundableAmount: BigDecimal?)
 
     companion object {
         private const val DELAY_BETWEEN_STATUS_CHECKS = 2000L

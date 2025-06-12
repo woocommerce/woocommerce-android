@@ -10,7 +10,6 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.AddressNormali
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PurchasedLabelData
-import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel
 import org.wordpress.android.fluxc.model.SiteModel
@@ -75,11 +74,7 @@ class WooShippingLabelRepository @Inject constructor(
         site = site,
         orderId = orderId,
         labelId = labelId,
-    ).asWooResult { response ->
-        response.shippingLabel?.let {
-            mapper(it).status
-        } ?: ShippingLabelStatus.Unknown
-    }
+    ).asWooResult { response -> response.shippingLabel?.let { mapper(it) } }
 
     @Suppress("LongParameterList")
     suspend fun purchaseShippingLabel(
@@ -242,6 +237,12 @@ class WooShippingLabelRepository @Inject constructor(
     suspend fun updateShipments(
         site: SiteModel,
         orderId: Long,
-        shipments: ShipmentMap
-    ) = restClient.updateShipments(site = site, orderId = orderId, shipments = shipments).asWooResult()
+        shipments: ShipmentMap,
+        shipmentIdsToUpdate: Map<String, Int>
+    ) = restClient.updateShipments(
+        site = site,
+        orderId = orderId,
+        shipments = shipments,
+        shipmentIdsToUpdate = shipmentIdsToUpdate
+    ).asWooResult()
 }
