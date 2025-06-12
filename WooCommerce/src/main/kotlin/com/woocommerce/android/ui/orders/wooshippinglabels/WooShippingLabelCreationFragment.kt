@@ -19,9 +19,9 @@ import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
+import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigatePackageSelection
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.StartCustomsFormEdit
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.StartHazmatFormEdit
-import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.StartPackageSelection
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.EditAddressFlow
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.WooShippingEditAddressFragment.Companion.DESTINATION_ADDRESS_UPDATE_RESULT
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
@@ -71,7 +71,7 @@ class WooShippingLabelCreationFragment : BaseFragment(), BackPressListener {
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is StartPackageSelection ->
+                is NavigatePackageSelection ->
                     WooShippingLabelCreationFragmentDirections
                         .actionWooShippingLabelCreationFragmentToWooShippingLabelPackageCreationFragment()
                         .let { findNavController().navigateSafely(it) }

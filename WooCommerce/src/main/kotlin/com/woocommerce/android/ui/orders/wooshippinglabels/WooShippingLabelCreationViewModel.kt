@@ -628,7 +628,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     }
 
     fun onSelectPackageClicked() {
-        triggerEvent(StartPackageSelection)
+        triggerEvent(NavigatePackageSelection)
     }
 
     @Suppress("ComplexCondition")
@@ -913,7 +913,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         return shouldRequireITN(destinationCountryCode, totalShippingValue)
     }
 
-    data object StartPackageSelection : Event()
+    data object NavigatePackageSelection : Event()
 
     data class StartOriginAddressEdit(val originAddress: OriginShippingAddress) : Event()
     data class StartDestinationAddressEdit(
