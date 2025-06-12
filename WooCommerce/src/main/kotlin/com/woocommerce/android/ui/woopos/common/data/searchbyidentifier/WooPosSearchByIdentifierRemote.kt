@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.common.data.searchbyidentifier
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.di.LimitedConcurrencyDispatcher
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.barcode.WooPosBarcodeFormat
@@ -193,36 +194,23 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
     }
 
     @Suppress("ReturnCount")
-    private suspend fun handleVariationResult(product: Product): WooPosSearchByIdentifierResult {
+    private suspend fun handleVariationResult(product: Product): WooPosSearchByIdentifierResult = coroutineScope {
         val parentId = product.parentId
         val variationId = product.remoteId
 
         if (parentId <= 0) {
-            return WooPosSearchByIdentifierResult.Failure(
+            return@coroutineScope WooPosSearchByIdentifierResult.Failure(
                 WooPosSearchByIdentifierResult.Error.ProductNotFound
             )
         }
 
-        val variationResult = productStore.fetchSingleVariation(
-            selectedSite.get(),
-            parentId,
-            variationId
-        )
+        val variationJob = async { getOrFetchVariationAndUpdateCache(variationId, parentId) }
+        val parentProductJob = async { getOrFetchProductAndUpdateCache(parentId) }
 
-        if (variationResult.isError) {
-            return WooPosSearchByIdentifierResult.Failure(
-                WooPosSearchByIdentifierResult.Error.ProductNotFound
-            )
-        }
+        val variation = variationJob.await()
+        val parentProduct = parentProductJob.await()
 
-        val variation = productStore.getVariationByRemoteId(
-            selectedSite.get(),
-            parentId,
-            variationId
-        )?.toAppModel()
-
-        return if (variation != null) {
-            variationsCache.add(variation.remoteProductId, variation)
+        return@coroutineScope if (variation != null && parentProduct != null) {
             WooPosSearchByIdentifierResult.VariationSuccess(variation)
         } else {
             WooPosSearchByIdentifierResult.Failure(
@@ -302,6 +290,56 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
         searchByIdentifierContinuations.clear()
         searchByGlobalUniqueIdContinuations.clear()
         coroutineScope.cancel()
+    }
+
+    private suspend fun getOrFetchVariationAndUpdateCache(variationId: Long, parentId: Long): ProductVariation? {
+            val cachedVariation = variationsCache.get(variationId)?.find { it.remoteVariationId == variationId }
+
+            if (cachedVariation != null) {
+                return cachedVariation
+            }
+            val variationResult = productStore.fetchSingleVariation(
+                selectedSite.get(),
+                parentId,
+                variationId
+            )
+
+            if (variationResult.isError) {
+                return null
+            }
+
+            return productStore.getVariationByRemoteId(
+                selectedSite.get(),
+                parentId,
+                variationId
+            )?.toAppModel()
+                ?.also {
+                    variationsCache.add(parentId, it)
+                }
+        }
+
+    private suspend fun getOrFetchProductAndUpdateCache(parentProductId: Long): Product? {
+        val cachedProduct = productsCache.getProductById(parentProductId)
+        if (cachedProduct != null) {
+            return cachedProduct
+        }
+
+        val parentProductResult = productStore.fetchSingleProduct(
+            WCProductStore.FetchSingleProductPayload(
+                site = selectedSite.get(),
+                remoteProductId = parentProductId,
+            )
+        )
+
+        if (parentProductResult.isError) {
+            return null
+        }
+
+        return productStore.getProduct(selectedSite.get(), parentProductId)
+            ?.toAppModel()
+            ?.also { product ->
+                productsCache.addAll(listOf(product))
+            }
     }
 }
 
