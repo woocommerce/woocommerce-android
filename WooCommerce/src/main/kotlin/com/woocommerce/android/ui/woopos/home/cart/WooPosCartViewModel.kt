@@ -567,13 +567,12 @@ class WooPosCartViewModel @Inject constructor(
             }
 
             is WooPosSearchByIdentifierResult.VariationSuccess -> {
-                val product = getProductById(variation.remoteProductId)!!
                 WooPosCartItemViewState.Product.Variation(
                     itemNumber = itemNumber,
                     id = variation.remoteProductId,
                     variationId = variation.remoteVariationId,
-                    name = product.name,
-                    description = variation.getNameForPOS(product, resourceProvider),
+                    name = this.parentProduct.name,
+                    description = variation.getNameForPOS(this.parentProduct, resourceProvider),
                     price = formatPrice(variation.price),
                     imageUrl = variation.image?.source
                 )

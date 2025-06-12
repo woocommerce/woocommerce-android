@@ -45,7 +45,7 @@ class WooPosSearchByIdentifier @Inject constructor(
                     result
                 } else {
                     WooPosSearchByIdentifierResult
-                        .Failure(WooPosSearchByIdentifierResult.Error.UnsupportedProduct((result.variation.name)))
+                        .Failure(WooPosSearchByIdentifierResult.Error.UnsupportedProduct((result.parentProduct.name)))
                 }
             }
             is WooPosSearchByIdentifierResult.Failure -> result
