@@ -1168,7 +1168,6 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         whenever(orderDetailRepository.getOrderById(any())) doReturn order
         whenever(getShipments(any())) doReturn defaultShipments
         whenever(observeOriginAddresses()) doReturn flowOf(defaultOriginAddresses)
-        whenever(observeStoreOptions()) doReturn flowOf(defaultStoreOptions)
 
         createViewModel()
         advanceUntilIdle()
@@ -1199,7 +1198,6 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
             ShipmentUIModel("1", items = defaultShippableItems.takeLast(1)),
         )
         whenever(observeOriginAddresses()) doReturn flowOf(defaultOriginAddresses)
-        whenever(observeStoreOptions()) doReturn flowOf(defaultStoreOptions)
 
         createViewModel()
         advanceUntilIdle()
