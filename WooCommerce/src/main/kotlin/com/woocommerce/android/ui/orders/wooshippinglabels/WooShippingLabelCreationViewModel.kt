@@ -784,7 +784,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         // Disables the current Snackbar before navigation
         // to avoid presentation conflict with the Hazmat selection result
         snackbarData = null
-        triggerEvent(StartHazmatFormEdit(selectedCategory))
+        triggerEvent(NavigateToHazmatFormEdit(selectedCategory))
     }
 
     fun onHazmatCategorySelected(selectedCategory: ShippingLabelHazmatCategory?) {
@@ -936,7 +936,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         val customData: CustomsData?
     ) : Event()
 
-    data class StartHazmatFormEdit(val selectedCategory: ShippingLabelHazmatCategory?) : Event()
+    data class NavigateToHazmatFormEdit(val selectedCategory: ShippingLabelHazmatCategory?) : Event()
 
     sealed class WooShippingViewState {
         data object Error : WooShippingViewState()

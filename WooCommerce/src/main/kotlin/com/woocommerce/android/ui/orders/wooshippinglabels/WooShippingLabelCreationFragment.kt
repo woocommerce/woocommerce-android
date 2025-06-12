@@ -21,7 +21,7 @@ import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigatePackageSelection
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigateToCustomsFormEdit
-import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.StartHazmatFormEdit
+import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigateToHazmatFormEdit
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.EditAddressFlow
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.WooShippingEditAddressFragment.Companion.DESTINATION_ADDRESS_UPDATE_RESULT
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
@@ -117,7 +117,7 @@ class WooShippingLabelCreationFragment : BaseFragment(), BackPressListener {
                         }
                 }
 
-                is StartHazmatFormEdit -> {
+                is NavigateToHazmatFormEdit -> {
                     WooShippingLabelCreationFragmentDirections
                         .actionWooShippingLabelCreationFragmentToWooShippingLabelHazmatFormFragment(
                             event.selectedCategory?.name
