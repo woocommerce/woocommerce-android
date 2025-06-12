@@ -495,7 +495,7 @@ class ProductRestClient @Inject constructor(
 
                 is WPAPIResponse.Error -> {
                     val productError = wpAPINetworkErrorToProductError(response.error)
-                    if (searchQuery == null) {
+                    if (searchQuery == null && globalUniqueIdSearchQuery == null) {
                         val payload = RemoteProductListPayload(productError, site)
                         dispatcher.dispatch(WCProductActionBuilder.newFetchedProductsAction(payload))
                     } else {

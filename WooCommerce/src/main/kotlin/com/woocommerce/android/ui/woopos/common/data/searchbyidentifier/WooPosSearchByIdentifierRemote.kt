@@ -36,9 +36,9 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
     @LimitedConcurrencyDispatcher private val searchDispatcher: CoroutineDispatcher,
 ) {
     private val searchByIdentifierContinuations =
-        mutableMapOf<String, MutableList<ContinuationWrapper<List<Product>>>>()
+        mutableMapOf<String, MutableList<ContinuationWrapper<Result<List<Product>>>>>()
     private val searchByGlobalUniqueIdContinuations =
-        mutableMapOf<String, MutableList<ContinuationWrapper<List<Product>>>>()
+        mutableMapOf<String, MutableList<ContinuationWrapper<Result<List<Product>>>>>()
 
     private val coroutineScope = CoroutineScope(SupervisorJob() + searchDispatcher)
 
@@ -53,17 +53,20 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
         val gtinSearchDeferred = async {
             searchAndConvertResult { searchProductsByGlobalUniqueId(identifier) }
         }
+
         val skuSearchDeferred = async {
             searchAndConvertResult { searchProductsBySku(identifier) }
         }
 
         val gtinResult = gtinSearchDeferred.await()
+
         if (gtinResult.isSuccess) {
             skuSearchDeferred.cancel()
             return@coroutineScope gtinResult
         }
 
         val identifierResult = skuSearchDeferred.await()
+
         if (identifierResult.isSuccess) {
             return@coroutineScope identifierResult
         }
@@ -139,11 +142,11 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
 
     private suspend fun <T> performSearch(
         identifier: String,
-        continuations: MutableMap<String, MutableList<ContinuationWrapper<List<Product>>>>,
+        continuations: MutableMap<String, MutableList<ContinuationWrapper<Result<List<Product>>>>>,
         createPayload: () -> T,
         dispatchAction: (T) -> Unit
     ): Result<List<Product>> {
-        val continuation = ContinuationWrapper<List<Product>>(WooLog.T.PRODUCTS)
+        val continuation = ContinuationWrapper<Result<List<Product>>>(WooLog.T.PRODUCTS)
 
         return withContext(searchDispatcher) {
             val requestWithIdInProgress = continuations.containsKey(identifier)
@@ -159,11 +162,13 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
             val result = continuation.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {}
 
             when (result) {
-                is ContinuationWrapper.ContinuationResult.Cancellation ->
+                is ContinuationWrapper.ContinuationResult.Cancellation -> {
                     Result.failure(SearchException(WooPosSearchByIdentifierResult.Error.RequestCancelled))
+                }
 
-                is ContinuationWrapper.ContinuationResult.Success ->
-                    Result.success(result.value)
+                is ContinuationWrapper.ContinuationResult.Success -> {
+                    result.value
+                }
             }
         }
     }
@@ -177,9 +182,11 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
             result.isSuccess -> {
                 val products = result.getOrThrow()
                 val product = products.firstOrNull()
-                    ?: return WooPosSearchByIdentifierResult.Failure(
+                if (product == null) {
+                    return WooPosSearchByIdentifierResult.Failure(
                         WooPosSearchByIdentifierResult.Error.ProductNotFound
                     )
+                }
 
                 if (product.type.equals("variation", ignoreCase = true)) {
                     handleVariationResult(product)
@@ -262,15 +269,15 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
 
             val continuationsList = continuations[query]
 
-            val products = if (event.isError) {
-                emptyList()
+            val result = if (event.isError) {
+                Result.failure(SearchException(WooPosSearchByIdentifierResult.Error.NetworkError))
             } else {
                 val productsList = event.searchResults.map { it.toAppModel() }
-                productsList
+                Result.success(productsList)
             }
 
             continuationsList?.forEach { continuation ->
-                continuation.continueWith(products)
+                continuation.continueWith(result)
             }
 
             continuations.remove(query)
