@@ -180,10 +180,10 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
                         WooPosSearchByIdentifierResult.Error.ProductNotFound
                     )
 
+                productsCache.addAll(listOf(product))
                 if (product.type.equals("variation", ignoreCase = true)) {
                     handleVariationResult(product)
                 } else {
-                    productsCache.addAll(listOf(product))
                     WooPosSearchByIdentifierResult.Success(product)
                 }
             }
