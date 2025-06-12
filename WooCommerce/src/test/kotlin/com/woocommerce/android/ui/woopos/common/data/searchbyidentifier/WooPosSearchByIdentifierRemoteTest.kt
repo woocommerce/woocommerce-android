@@ -563,4 +563,58 @@ class WooPosSearchByIdentifierRemoteTest {
 
         sut.onCleanup()
     }
+
+    @Test
+    fun `given network error, when searching by identifier, then returns immediately with error`() = runTest {
+        // GIVEN
+        val identifier = "test-sku"
+        val skuErrorEvent = WCProductStore.OnProductsSearched(
+            globalUniqueIdSearchQuery = null,
+            searchQuery = identifier,
+            searchResults = emptyList(),
+            canLoadMore = false,
+            isSkuSearch = WCProductStore.SkuSearchOptions.ExactSearch
+        ).apply {
+            error = WCProductStore.ProductError(
+                type = WCProductStore.ProductErrorType.GENERIC_ERROR,
+                message = "Network connection failed"
+            )
+        }
+        
+        val gtinErrorEvent = WCProductStore.OnProductsSearched(
+            globalUniqueIdSearchQuery = identifier,
+            searchQuery = null,
+            searchResults = emptyList(),
+            canLoadMore = false,
+            isSkuSearch = WCProductStore.SkuSearchOptions.Disabled
+        ).apply {
+            error = WCProductStore.ProductError(
+                type = WCProductStore.ProductErrorType.GENERIC_ERROR,
+                message = "Network connection failed"
+            )
+        }
+
+        // WHEN
+        val job = launch {
+            val result = sut.invoke(identifier, WooPosBarcodeFormat.FormatUnknown)
+            assertTrue(result is WooPosSearchByIdentifierResult.Failure)
+            assertEquals(
+                WooPosSearchByIdentifierResult.Error.NetworkError,
+                (result as WooPosSearchByIdentifierResult.Failure).error
+            )
+        }
+
+        advanceTimeBy(1)
+
+        // Send error responses for both GTIN and SKU searches
+        sut.onProductsSearched(gtinErrorEvent)
+        sut.onProductsSearched(skuErrorEvent)
+
+        advanceTimeBy(1)
+
+        // THEN
+        job.join()
+
+        sut.onCleanup()
+    }
 }
