@@ -32,15 +32,10 @@ val Context.windowWidthSizeClass: WindowSizeClass
 
 private const val MIN_SCREEN_SHORT_SIZE_DP = 674
 private const val MIN_SCREEN_LONG_SIZE_DP = 800
-
 private fun determineIfTwoPanesShouldBeUsed(widthDp: Int, heightDp: Int): Boolean {
-    val minScreenShortSizeDP = MIN_SCREEN_SHORT_SIZE_DP
-    val minScreenLongSizeDP = MIN_SCREEN_LONG_SIZE_DP
-
     val shortSize = min(widthDp, heightDp)
     val longSize = max(widthDp, heightDp)
-
-    return shortSize >= minScreenShortSizeDP && longSize >= minScreenLongSizeDP
+    return shortSize >= MIN_SCREEN_SHORT_SIZE_DP && longSize >= MIN_SCREEN_LONG_SIZE_DP
 }
 
 private fun determineWindowHeightSizeClassByGivenSize(sizeDp: Int): WindowSizeClass {

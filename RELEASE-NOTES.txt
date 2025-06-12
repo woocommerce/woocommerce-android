@@ -14,6 +14,7 @@
 - [*] Fixed an issue with taxes not being correctly included during refunds [https://github.com/woocommerce/woocommerce-android/pull/14064]
 - [*] Fixed start padding for the back navigation icon in the toolbars [https://github.com/woocommerce/woocommerce-android/pull/14151]
 - [*] Improved payments UI in accessibility screen mode (increased screen size) [https://github.com/woocommerce/woocommerce-android/pull/14148]
+- [**] Improved large screen detection logic to better handle devices with large screens [https://github.com/woocommerce/woocommerce-android/pull/14160]
 
 22.5
 -----

@@ -348,6 +348,8 @@ class OrderListFragment :
     }
 
     private fun setListDetailsLayoutWidthRatio() {
+        if (!requireContext().isTwoPanesShouldBeUsed) return
+
         val ratio = when (resources.configuration.orientation) {
             Configuration.ORIENTATION_LANDSCAPE -> TABLET_LANDSCAPE_WIDTH_RATIO
             else -> TABLET_PORTRAIT_WIDTH_RATIO
