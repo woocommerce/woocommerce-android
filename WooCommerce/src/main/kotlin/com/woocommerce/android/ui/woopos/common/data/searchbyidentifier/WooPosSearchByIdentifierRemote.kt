@@ -211,7 +211,7 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
         val parentProduct = parentProductJob.await()
 
         return@coroutineScope if (variation != null && parentProduct != null) {
-            WooPosSearchByIdentifierResult.VariationSuccess(variation)
+            WooPosSearchByIdentifierResult.VariationSuccess(variation, parentProduct)
         } else {
             WooPosSearchByIdentifierResult.Failure(
                 WooPosSearchByIdentifierResult.Error.ProductNotFound
