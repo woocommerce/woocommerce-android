@@ -410,7 +410,9 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
     private fun CampaignDetails.buildCampaignTosText(): UiStringRes {
         val stringRes = when {
             budget.isEndlessCampaign -> R.string.blaze_campaign_preview_tos_checkbox_evergreen_campaigns
-            budget.durationInDays <= 7 -> R.string.blaze_campaign_preview_tos_checkbox_less_than_7_days_campaign
+            budget.durationInDays <= WEEK_LONG_CAMPAIGN_IN_DAYS ->
+                R.string.blaze_campaign_preview_tos_checkbox_less_than_7_days_campaign
+
             else -> R.string.blaze_campaign_preview_tos_checkbox_over_7_days_campaign
         }
         return UiStringRes(
@@ -502,4 +504,8 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
     data class NavigateToPaymentSummary(
         val campaignDetails: CampaignDetails
     ) : MultiLiveEvent.Event()
+
+    companion object {
+        const val WEEK_LONG_CAMPAIGN_IN_DAYS = 7
+    }
 }

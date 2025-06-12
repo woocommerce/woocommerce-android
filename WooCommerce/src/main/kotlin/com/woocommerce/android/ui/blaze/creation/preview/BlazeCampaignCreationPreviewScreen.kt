@@ -536,9 +536,7 @@ fun CampaignScreenPreview() {
                 ),
                 campaignTosText = UiStringRes(
                     stringRes = R.string.blaze_campaign_preview_tos_checkbox_evergreen_campaigns,
-                    params = listOf(
-                        UiStringText("35$"), UiStringText("July 15, 2025")
-                    )
+                    params = listOf(UiStringText("35$"), UiStringText("July 15, 2025"))
                 ),
                 campaignTosAccepted = false
             )
