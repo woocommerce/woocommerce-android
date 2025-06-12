@@ -9,6 +9,7 @@ import com.woocommerce.android.databinding.ActivityMainBinding
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.woopos.WooPosIsEnabled
 import com.woocommerce.android.ui.woopos.root.WooPosActivity
+import com.woocommerce.android.util.FeatureFlag
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -18,6 +19,7 @@ class WooPosTabController @Inject constructor(
     private lateinit var activity: MainActivity
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
+    private val wooPosAsATabEnabled: Boolean = FeatureFlag.WOO_POS_AS_A_TAB_I1.isEnabled()
 
     fun initialize(
         activity: MainActivity,
@@ -35,8 +37,11 @@ class WooPosTabController @Inject constructor(
      */
     fun setupPOSTab() {
         setPOSTabVisibility(false) // Hide by default
-        updatePOSTabVisibility()
-        setupPOSTabNavigation()
+
+        if (wooPosAsATabEnabled) {
+            updatePOSTabVisibility()
+            setupPOSTabNavigation()
+        }
     }
 
     /**
@@ -47,7 +52,9 @@ class WooPosTabController @Inject constructor(
      * - Feature flags updates
      */
     fun refreshPOSTabVisibility() {
-        updatePOSTabVisibility()
+        if (wooPosAsATabEnabled) {
+            updatePOSTabVisibility()
+        }
     }
 
     private fun updatePOSTabVisibility() {
