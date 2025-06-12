@@ -1,10 +1,12 @@
 package com.woocommerce.android.ui.woopos.common.data.searchbyidentifier
 
+import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.woopos.common.barcode.WooPosBarcodeFormat
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
+import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsLRUCache
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
@@ -17,6 +19,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
@@ -24,8 +27,11 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.annotations.action.Action
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCProductModel
+import org.wordpress.android.fluxc.model.WCProductVariationModel
 import org.wordpress.android.fluxc.store.WCProductStore
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -39,6 +45,8 @@ class WooPosSearchByIdentifierRemoteTest {
     private val dispatcher: Dispatcher = mock()
     private val selectedSite: SelectedSite = mock()
     private val productsCache: WooPosProductsCache = mock()
+    private val productStore: WCProductStore = mock()
+    private val variationsCache: WooPosVariationsLRUCache = mock()
     private val checkDigitRemover: WooPosSearchByIdentifierCheckDigitRemover =
         WooPosSearchByIdentifierCheckDigitRemover()
 
@@ -51,6 +59,8 @@ class WooPosSearchByIdentifierRemoteTest {
             dispatcher,
             selectedSite,
             productsCache,
+            productStore,
+            variationsCache,
             checkDigitRemover,
             coroutinesTestRule.testDispatcher
         )
@@ -75,6 +85,8 @@ class WooPosSearchByIdentifierRemoteTest {
             dispatcher,
             selectedSite,
             productsCache,
+            productStore,
+            variationsCache,
             checkDigitRemover,
             coroutinesTestRule.testDispatcher
         )
@@ -277,4 +289,156 @@ class WooPosSearchByIdentifierRemoteTest {
 
             sut.onCleanup()
         }
+
+    @Test
+    fun `given variable product found, when variations fetched, then returns first matching variation`() = runTest {
+        // GIVEN
+        val identifier = "VAR-SKU-123"
+        val productId = 100L
+        val variationId = 200L
+        val wcVariationProduct = ProductTestUtils.generateWCProductModel(
+            productId = variationId,
+            productType = "variation"
+        ).copy(
+            parentId = productId,
+            sku = identifier
+        )
+
+        val wcVariationModel = WCProductVariationModel(LocalId(1)).copy(
+            remoteProductId = RemoteId(productId),
+            remoteVariationId = RemoteId(variationId),
+            sku = identifier
+        )
+        val variation: ProductVariation = wcVariationModel.toAppModel()
+
+        val onVariationChanged = WCProductStore.OnVariationChanged(productId, variationId)
+        whenever(productStore.fetchSingleVariation(any(), any(), any())).thenReturn(onVariationChanged)
+        whenever(productStore.getVariationByRemoteId(any(), any(), any())).thenReturn(wcVariationModel)
+
+        // WHEN
+        val job = launch {
+            val result = sut.invoke(identifier, WooPosBarcodeFormat.FormatUnknown)
+            assertEquals(WooPosSearchByIdentifierResult.VariationSuccess(variation), result)
+        }
+
+        advanceTimeBy(1)
+
+        // Return the variation product when searched
+        sut.onProductsSearched(
+            WCProductStore.OnProductsSearched(
+                globalUniqueIdSearchQuery = null,
+                searchQuery = identifier,
+                searchResults = listOf(wcVariationProduct),
+                canLoadMore = false,
+                isSkuSearch = WCProductStore.SkuSearchOptions.Disabled
+            )
+        )
+
+        advanceTimeBy(1)
+
+        // THEN
+        job.join()
+        sut.onCleanup()
+    }
+
+    @Test
+    fun `given no variations in cache, when variable product found, then fetches variations from remote`() = runTest {
+        // GIVEN
+        val identifier = "VAR-GLOBAL-ID"
+        val productId = 100L
+        val variationId = 200L
+
+        val wcVariationProduct = ProductTestUtils.generateWCProductModel(
+            productId = variationId,
+            productType = "variation"
+        ).copy(
+            parentId = productId,
+            globalUniqueId = identifier
+        )
+        val wcVariationModel = WCProductVariationModel(LocalId(1)).copy(
+            remoteProductId = RemoteId(productId),
+            remoteVariationId = RemoteId(variationId),
+            globalUniqueId = identifier
+        )
+        val variation: ProductVariation = wcVariationModel.toAppModel()
+
+        val onVariationChanged = WCProductStore.OnVariationChanged(productId, variationId)
+        whenever(productStore.fetchSingleVariation(any(), any(), any())).thenReturn(onVariationChanged)
+        whenever(productStore.getVariationByRemoteId(any(), any(), any())).thenReturn(wcVariationModel)
+
+        // WHEN
+        val job = launch {
+            val result = sut.invoke(identifier, WooPosBarcodeFormat.FormatUnknown)
+            assertEquals(WooPosSearchByIdentifierResult.VariationSuccess(variation), result)
+        }
+
+        advanceTimeBy(1)
+
+        sut.onProductsSearched(
+            WCProductStore.OnProductsSearched(
+                globalUniqueIdSearchQuery = identifier,
+                searchQuery = null,
+                searchResults = listOf(wcVariationProduct),
+                canLoadMore = false,
+                isSkuSearch = WCProductStore.SkuSearchOptions.Disabled
+            )
+        )
+
+        advanceTimeBy(1)
+
+        // THEN
+        job.join()
+        verify(variationsCache).add(productId, variation)
+        sut.onCleanup()
+    }
+
+    @Test
+    fun `given multiple variations, when searching by identifier, then returns matching variation`() = runTest {
+        // GIVEN
+        val identifier = "MATCH-VAR-SKU"
+        val productId = 100L
+        val variationId = 202L
+
+        val wcVariationProduct = ProductTestUtils.generateWCProductModel(
+            productId = variationId,
+            productType = "variation"
+        ).copy(
+            parentId = productId,
+            sku = identifier
+        )
+        val wcVariationModel = WCProductVariationModel(LocalId(1)).copy(
+            remoteProductId = RemoteId(productId),
+            remoteVariationId = RemoteId(variationId),
+            sku = identifier
+        )
+        val variation2: ProductVariation = wcVariationModel.toAppModel()
+
+        val onVariationChanged = WCProductStore.OnVariationChanged(productId, variationId)
+        whenever(productStore.fetchSingleVariation(any(), any(), any())).thenReturn(onVariationChanged)
+        whenever(productStore.getVariationByRemoteId(any(), any(), any())).thenReturn(wcVariationModel)
+
+        // WHEN
+        val job = launch {
+            val result = sut.invoke(identifier, WooPosBarcodeFormat.FormatUnknown)
+            assertEquals(WooPosSearchByIdentifierResult.VariationSuccess(variation2), result)
+        }
+
+        advanceTimeBy(1)
+
+        sut.onProductsSearched(
+            WCProductStore.OnProductsSearched(
+                globalUniqueIdSearchQuery = null,
+                searchQuery = identifier,
+                searchResults = listOf(wcVariationProduct),
+                canLoadMore = false,
+                isSkuSearch = WCProductStore.SkuSearchOptions.Disabled
+            )
+        )
+
+        advanceTimeBy(1)
+
+        // THEN
+        job.join()
+        sut.onCleanup()
+    }
 }

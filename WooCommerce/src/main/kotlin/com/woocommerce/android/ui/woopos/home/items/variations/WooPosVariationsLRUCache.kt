@@ -1,28 +1,56 @@
 package com.woocommerce.android.ui.woopos.home.items.variations
 
 import android.util.LruCache
+import com.woocommerce.android.model.ProductVariation
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
+import javax.inject.Singleton
 
-class WooPosVariationsLRUCache<K, V> @Inject constructor() {
-
+@Singleton
+class WooPosVariationsLRUCache @Inject constructor() {
     companion object {
         private const val VARIATION_CACHE_MAX_SIZE = 50
     }
 
-    private val cache = LruCache<K, V>(VARIATION_CACHE_MAX_SIZE)
+    private val cache = LruCache<Long, List<ProductVariation>>(VARIATION_CACHE_MAX_SIZE)
     private val mutex = Mutex()
 
-    suspend fun get(key: K): V? {
+    suspend fun get(key: Long): List<ProductVariation>? {
         return mutex.withLock {
             cache.get(key)
         }
     }
 
-    suspend fun put(key: K, value: V) {
+    suspend fun put(key: Long, value: List<ProductVariation>) {
         mutex.withLock {
             cache.put(key, value)
+        }
+    }
+
+    suspend fun add(key: Long, value: ProductVariation) {
+        mutex.withLock {
+            val list = cache.get(key)
+            if (list != null) {
+                val mutableList = list.toMutableList()
+                val index = mutableList.indexOfFirst { it.remoteVariationId == value.remoteVariationId }
+
+                if (index != -1) {
+                    mutableList[index] = value
+                } else {
+                    mutableList.add(value)
+                }
+
+                cache.put(key, mutableList)
+            } else {
+                cache.put(key, listOf(value))
+            }
+        }
+    }
+
+    suspend fun getAll(): List<ProductVariation> {
+        return mutex.withLock {
+            cache.snapshot().values.flatten()
         }
     }
 }
