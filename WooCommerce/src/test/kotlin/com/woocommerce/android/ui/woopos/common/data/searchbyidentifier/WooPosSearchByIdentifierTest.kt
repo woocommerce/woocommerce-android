@@ -222,7 +222,8 @@ class WooPosSearchByIdentifierTest {
         val identifier = "123456"
         val product = createProduct(type = ProductType.VARIABLE.value)
 
-        whenever(localSearcher(identifier, WooPosBarcodeFormat.FormatUnknown)).thenReturn(product)
+        whenever(localSearcher(identifier, WooPosBarcodeFormat.FormatUnknown))
+            .thenReturn(WooPosSearchByIdentifierResult.Success(product))
 
         // WHEN
         val result = sut(identifier)
