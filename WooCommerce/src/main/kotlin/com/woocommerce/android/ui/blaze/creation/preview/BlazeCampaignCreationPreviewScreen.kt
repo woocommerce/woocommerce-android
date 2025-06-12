@@ -33,8 +33,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material3.Checkbox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -78,7 +76,8 @@ fun BlazeCampaignCreationPreviewScreen(viewModel: BlazeCampaignCreationPreviewVi
             onBackPressed = viewModel::onBackPressed,
             onEditAdClicked = viewModel::onEditAdClicked,
             onConfirmDetailsClicked = viewModel::onConfirmClicked,
-            onHelpTapped = viewModel::onHelpTapped
+            onHelpTapped = viewModel::onHelpTapped,
+            onTosAccepted = viewModel::onTosAccepted
         )
     }
 }
@@ -89,7 +88,8 @@ private fun BlazeCampaignCreationPreviewScreen(
     onBackPressed: () -> Unit,
     onEditAdClicked: () -> Unit,
     onConfirmDetailsClicked: () -> Unit,
-    onHelpTapped: () -> Unit
+    onHelpTapped: () -> Unit,
+    onTosAccepted: (Boolean) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -124,7 +124,11 @@ private fun BlazeCampaignCreationPreviewScreen(
                     .padding(16.dp)
             )
             Spacer(modifier = Modifier.height(16.dp))
-            ConfirmationFooter(onConfirmDetailsClicked, previewState)
+            ConfirmationFooter(
+                previewState,
+                onConfirmDetailsClicked,
+                onTosAccepted
+            )
         }
     }
 
@@ -133,12 +137,11 @@ private fun BlazeCampaignCreationPreviewScreen(
 
 @Composable
 private fun ConfirmationFooter(
-    onConfirmDetailsClicked: () -> Unit,
     previewState: CampaignPreviewUiState,
+    onConfirmDetailsClicked: () -> Unit,
+    onTosAccepted: (Boolean) -> Unit
 ) {
     val context = LocalContext.current
-    val checked = remember { mutableStateOf(false) }
-
     val campaignTosText = annotatedStringRes(
         stringResId = previewState.campaignDetails.campaignTosText.stringRes,
         onUrlClick = { ChromeCustomTabUtils.launchUrl(context, AppUrls.BLAZE_CANCEL_INSTRUCTIONS) },
@@ -151,8 +154,8 @@ private fun ConfirmationFooter(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Checkbox(
-                checked = checked.value,
-                onCheckedChange = { checked.value = it }
+                checked = previewState.campaignDetails.campaignTosAccepted,
+                onCheckedChange = onTosAccepted
             )
             Text(
                 modifier = Modifier.padding(start = 4.dp),
@@ -168,7 +171,7 @@ private fun ConfirmationFooter(
                 .padding(vertical = 16.dp),
             text = stringResource(id = R.string.blaze_campaign_preview_details_confirm_details_button),
             onClick = onConfirmDetailsClicked,
-            enabled = previewState.adDetails != Loading && checked.value
+            enabled = previewState.adDetails != Loading && previewState.campaignDetails.campaignTosAccepted
         )
     }
 }
@@ -536,13 +539,15 @@ fun CampaignScreenPreview() {
                     params = listOf(
                         UiStringText("35$"), UiStringText("July 15, 2025")
                     )
-                )
+                ),
+                campaignTosAccepted = false
             )
         ),
         onBackPressed = { },
         onEditAdClicked = { },
         onConfirmDetailsClicked = { },
-        onHelpTapped = { }
+        onHelpTapped = { },
+        onTosAccepted = {}
     )
 }
 

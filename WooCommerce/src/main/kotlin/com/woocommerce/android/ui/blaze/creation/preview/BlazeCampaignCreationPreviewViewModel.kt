@@ -13,7 +13,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.formatToLocalizedMedium
 import com.woocommerce.android.extensions.formatToMMMdd
-import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.support.help.HelpOrigin
@@ -299,7 +298,8 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         ),
         destinationUrl = getTargetDestinationDetails(),
         selectedObjective = getSelectedObjective(campaignObjectives),
-        campaignTosText = buildCampaignTosText()
+        campaignTosText = buildCampaignTosText(),
+        campaignTosAccepted = acceptedTos
     )
 
     private fun getSelectedObjective(objectives: List<Objective>): CampaignDetailItemUi {
@@ -423,6 +423,12 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         )
     }
 
+    fun onTosAccepted(accepted: Boolean) {
+        campaignDetails.update {
+            it?.copy(acceptedTos = accepted)
+        }
+    }
+
     data class CampaignPreviewUiState(
         val adDetails: AdDetailsUi,
         val campaignDetails: CampaignDetailsUi,
@@ -453,6 +459,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         val destinationUrl: CampaignDetailItemUi,
         val selectedObjective: CampaignDetailItemUi,
         val campaignTosText: UiStringRes,
+        val campaignTosAccepted: Boolean
     )
 
     data class CampaignDetailItemUi(
