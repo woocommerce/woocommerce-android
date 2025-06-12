@@ -9,7 +9,6 @@ import com.woocommerce.android.databinding.ActivityMainBinding
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.woopos.WooPosIsEnabled
 import com.woocommerce.android.ui.woopos.root.WooPosActivity
-import com.woocommerce.android.util.FeatureFlag
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -59,8 +58,7 @@ class WooPosTabController @Inject constructor(
 
     private fun updatePOSTabVisibility() {
         activity.lifecycleScope.launch {
-            val shouldShow = isWooPosEnabled()
-            setPOSTabVisibility(shouldShow)
+            setPOSTabVisibility(isWooPosEnabled())
         }
     }
 
@@ -71,14 +69,12 @@ class WooPosTabController @Inject constructor(
     private fun setupPOSTabNavigation() {
         binding.bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.point_of_sale -> handlePOSTabSelection()
+                R.id.point_of_sale -> {
+                    activity.startActivity(Intent(activity, WooPosActivity::class.java))
+                    false // return false to *not* keep the tab selected
+                }
                 else -> NavigationUI.onNavDestinationSelected(item, navController)
             }
         }
-    }
-
-    private fun handlePOSTabSelection(): Boolean {
-        activity.startActivity(Intent(activity, WooPosActivity::class.java))
-        return false // return false to *not* keep the tab selected
     }
 }
