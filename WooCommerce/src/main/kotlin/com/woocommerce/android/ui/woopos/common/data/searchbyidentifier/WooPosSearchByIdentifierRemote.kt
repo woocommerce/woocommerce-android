@@ -50,41 +50,22 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
         identifier: String,
         format: WooPosBarcodeFormat
     ): WooPosSearchByIdentifierResult = coroutineScope {
-        WooLog.v(
-            WooLog.T.PRODUCTS,
-            "WooPosSearchByIdentifierRemote.invoke() started for identifier: $identifier, format: $format"
-        )
-        
         val gtinSearchDeferred = async {
-            WooLog.v(WooLog.T.PRODUCTS, "Starting GTIN search for: $identifier")
-            searchAndConvertResult("GTIN") { searchProductsByGlobalUniqueId(identifier) }
+            searchAndConvertResult { searchProductsByGlobalUniqueId(identifier) }
         }
 
         val skuSearchDeferred = async {
-            WooLog.v(WooLog.T.PRODUCTS, "Starting SKU search for: $identifier")
-            searchAndConvertResult("SKU") { searchProductsBySku(identifier) }
+            searchAndConvertResult { searchProductsBySku(identifier) }
         }
 
-        WooLog.v(WooLog.T.PRODUCTS, "Waiting for GTIN search result...")
         val gtinResult = gtinSearchDeferred.await()
 
-        WooLog.v(
-            WooLog.T.PRODUCTS,
-            "GTIN search result for identifier: $identifier, result: $gtinResult"
-        )
-
         if (gtinResult.isSuccess) {
-            WooLog.v(WooLog.T.PRODUCTS, "GTIN search successful, cancelling SKU search")
             skuSearchDeferred.cancel()
             return@coroutineScope gtinResult
         }
 
-        WooLog.v(WooLog.T.PRODUCTS, "GTIN search failed, waiting for SKU search result...")
         val identifierResult = skuSearchDeferred.await()
-        WooLog.v(
-            WooLog.T.PRODUCTS,
-            "SKU search result for identifier: $identifier, result: $identifierResult"
-        )
 
         if (identifierResult.isSuccess) {
             return@coroutineScope identifierResult
@@ -92,12 +73,11 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
 
         val identifierWithoutCheckDigit = checkDigitRemover(identifier, format)
         if (identifierWithoutCheckDigit != identifier) {
-            WooLog.v(WooLog.T.PRODUCTS, "Starting fallback searches for: $identifierWithoutCheckDigit")
             val gtinFallbackDeferred = async {
-                searchAndConvertResult("GTIN-fallback") { searchProductsByGlobalUniqueId(identifierWithoutCheckDigit) }
+                searchAndConvertResult { searchProductsByGlobalUniqueId(identifierWithoutCheckDigit) }
             }
             val identifierFallbackDeferred = async {
-                searchAndConvertResult("SKU-fallback") { searchProductsBySku(identifierWithoutCheckDigit) }
+                searchAndConvertResult { searchProductsBySku(identifierWithoutCheckDigit) }
             }
 
             val gtinFallbackResult = gtinFallbackDeferred.await()
@@ -170,36 +150,23 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
 
         return withContext(searchDispatcher) {
             val requestWithIdInProgress = continuations.containsKey(identifier)
-            
-            WooLog.v(
-                WooLog.T.PRODUCTS,
-                "performSearch: identifier=$identifier, requestInProgress=$requestWithIdInProgress"
-            )
 
             val continuationsList = continuations.getOrPut(identifier) { mutableListOf() }
             continuationsList.add(continuation)
 
             if (!requestWithIdInProgress) {
-                WooLog.v(WooLog.T.PRODUCTS, "performSearch: Dispatching action for identifier=$identifier")
                 val payload = createPayload()
                 dispatchAction(payload)
-            } else {
-                WooLog.v(WooLog.T.PRODUCTS, "performSearch: Joining existing request for identifier=$identifier")
             }
 
-            WooLog.v(WooLog.T.PRODUCTS, "performSearch: Waiting for continuation result...")
             val result = continuation.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {}
-
-            WooLog.v(WooLog.T.PRODUCTS, "performSearch: Continuation result received: $result")
 
             when (result) {
                 is ContinuationWrapper.ContinuationResult.Cancellation -> {
-                    WooLog.v(WooLog.T.PRODUCTS, "performSearch: Request was cancelled")
                     Result.failure(SearchException(WooPosSearchByIdentifierResult.Error.RequestCancelled))
                 }
 
                 is ContinuationWrapper.ContinuationResult.Success -> {
-                    WooLog.v(WooLog.T.PRODUCTS, "performSearch: Request successful: ${result.value}")
                     result.value
                 }
             }
@@ -207,24 +174,15 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
     }
 
     private suspend fun searchAndConvertResult(
-        searchType: String,
         searchFunction: suspend () -> Result<List<Product>>
     ): WooPosSearchByIdentifierResult {
-        WooLog.v(WooLog.T.PRODUCTS, "searchAndConvertResult: Starting $searchType search")
         val result = searchFunction()
-
-        WooLog.v(WooLog.T.PRODUCTS, "searchAndConvertResult: $searchType result: $result")
 
         return when {
             result.isSuccess -> {
                 val products = result.getOrThrow()
-                WooLog.v(
-                    WooLog.T.PRODUCTS,
-                    "searchAndConvertResult: $searchType found ${products.size} products"
-                )
                 val product = products.firstOrNull()
                 if (product == null) {
-                    WooLog.v(WooLog.T.PRODUCTS, "searchAndConvertResult: $searchType no products found, returning ProductNotFound")
                     return WooPosSearchByIdentifierResult.Failure(
                         WooPosSearchByIdentifierResult.Error.ProductNotFound
                     )
@@ -304,43 +262,25 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
     fun onProductsSearched(event: WCProductStore.OnProductsSearched) {
         coroutineScope.launch {
             val query = event.globalUniqueIdSearchQuery ?: event.searchQuery ?: return@launch
-            val searchType = if (event.globalUniqueIdSearchQuery != null) "GTIN" else "SKU"
             val continuations = when {
                 event.globalUniqueIdSearchQuery != null -> searchByGlobalUniqueIdContinuations
                 else -> searchByIdentifierContinuations
             }
 
-            WooLog.v(
-                WooLog.T.PRODUCTS,
-                "onProductsSearched: $searchType query=$query, isError=${event.isError}, searchResults=${event.searchResults.size}, error=${event.error?.message}"
-            )
-            
             val continuationsList = continuations[query]
-            WooLog.v(
-                WooLog.T.PRODUCTS,
-                "onProductsSearched: Found ${continuationsList?.size ?: 0} continuations for query=$query"
-            )
 
             val result = if (event.isError) {
-                WooLog.v(WooLog.T.PRODUCTS, "onProductsSearched: Creating error result for $searchType")
                 Result.failure(SearchException(WooPosSearchByIdentifierResult.Error.NetworkError))
             } else {
-                WooLog.v(WooLog.T.PRODUCTS, "onProductsSearched: Creating success result for $searchType with ${event.searchResults.size} products")
                 val productsList = event.searchResults.map { it.toAppModel() }
                 Result.success(productsList)
             }
 
-            if (continuationsList != null) {
-                WooLog.v(WooLog.T.PRODUCTS, "onProductsSearched: Continuing ${continuationsList.size} continuations for $searchType")
-                continuationsList.forEach { continuation ->
-                    continuation.continueWith(result)
-                }
-            } else {
-                WooLog.w(WooLog.T.PRODUCTS, "onProductsSearched: No continuations found for $searchType query=$query")
+            continuationsList?.forEach { continuation ->
+                continuation.continueWith(result)
             }
 
             continuations.remove(query)
-            WooLog.v(WooLog.T.PRODUCTS, "onProductsSearched: Removed continuations for $searchType query=$query")
         }
     }
 
