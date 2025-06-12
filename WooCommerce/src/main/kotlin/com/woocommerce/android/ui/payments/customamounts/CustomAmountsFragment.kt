@@ -27,7 +27,6 @@ import com.woocommerce.android.ui.orders.CustomAmountUIModel
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
 import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel.CustomAmountType.PERCENTAGE_CUSTOM_AMOUNT
-import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel.PopulatePercentage
 import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel.TaxStatus
 import com.woocommerce.android.ui.payments.customamounts.views.TaxToggle
 import com.woocommerce.android.util.CurrencyFormatter
@@ -36,7 +35,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
 import org.wordpress.android.util.DisplayUtils
 import java.math.BigDecimal
-import java.math.RoundingMode
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -60,7 +58,6 @@ class CustomAmountsFragment : BaseFragment(R.layout.dialog_custom_amounts) {
         setupClickListeners(binding)
         showKeyboard(isLandscape, binding)
         setupObservers(binding)
-        setupEventObservers(binding)
     }
 
     private fun showKeyboard(
@@ -147,18 +144,6 @@ class CustomAmountsFragment : BaseFragment(R.layout.dialog_custom_amounts) {
                 )
             )
             findNavController().navigateUp()
-        }
-    }
-
-    private fun setupEventObservers(binding: DialogCustomAmountsBinding) {
-        viewModel.event.observe(viewLifecycleOwner) { event ->
-            when (event) {
-                is PopulatePercentage -> {
-                    binding.editPercentage.setText(
-                        viewModel.currentPercentage.setScale(2, RoundingMode.HALF_UP).toPlainString()
-                    )
-                }
-            }
         }
     }
 

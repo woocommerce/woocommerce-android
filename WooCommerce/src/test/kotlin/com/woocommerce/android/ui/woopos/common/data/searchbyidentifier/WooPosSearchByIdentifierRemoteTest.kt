@@ -321,7 +321,8 @@ class WooPosSearchByIdentifierRemoteTest {
         // WHEN
         val job = launch {
             val result = sut.invoke(identifier, WooPosBarcodeFormat.FormatUnknown)
-            assertEquals(WooPosSearchByIdentifierResult.VariationSuccess(variation), result)
+            assertTrue(result is WooPosSearchByIdentifierResult.VariationSuccess)
+            assertEquals(variation, (result as WooPosSearchByIdentifierResult.VariationSuccess).variation)
         }
 
         advanceTimeBy(1)
@@ -372,7 +373,8 @@ class WooPosSearchByIdentifierRemoteTest {
         // WHEN
         val job = launch {
             val result = sut.invoke(identifier, WooPosBarcodeFormat.FormatUnknown)
-            assertEquals(WooPosSearchByIdentifierResult.VariationSuccess(variation), result)
+            assertTrue(result is WooPosSearchByIdentifierResult.VariationSuccess)
+            assertEquals(variation, (result as WooPosSearchByIdentifierResult.VariationSuccess).variation)
         }
 
         advanceTimeBy(1)
@@ -423,7 +425,8 @@ class WooPosSearchByIdentifierRemoteTest {
         // WHEN
         val job = launch {
             val result = sut.invoke(identifier, WooPosBarcodeFormat.FormatUnknown)
-            assertEquals(WooPosSearchByIdentifierResult.VariationSuccess(variation2), result)
+            assertTrue(result is WooPosSearchByIdentifierResult.VariationSuccess)
+            assertEquals(variation2, (result as WooPosSearchByIdentifierResult.VariationSuccess).variation)
         }
 
         advanceTimeBy(1)
@@ -481,7 +484,8 @@ class WooPosSearchByIdentifierRemoteTest {
         // WHEN
         val job = launch {
             val result = sut.invoke(identifier, WooPosBarcodeFormat.FormatUnknown)
-            assertEquals(WooPosSearchByIdentifierResult.VariationSuccess(variation), result)
+            assertTrue(result is WooPosSearchByIdentifierResult.VariationSuccess)
+            assertEquals(variation, (result as WooPosSearchByIdentifierResult.VariationSuccess).variation)
         }
 
         advanceTimeBy(1)
@@ -539,7 +543,8 @@ class WooPosSearchByIdentifierRemoteTest {
         // WHEN
         val job = launch {
             val result = sut.invoke(identifier, WooPosBarcodeFormat.FormatUnknown)
-            assertEquals(WooPosSearchByIdentifierResult.VariationSuccess(variation), result)
+            assertTrue(result is WooPosSearchByIdentifierResult.VariationSuccess)
+            assertEquals(variation, (result as WooPosSearchByIdentifierResult.VariationSuccess).variation)
         }
 
         advanceTimeBy(1)
