@@ -292,32 +292,34 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
         coroutineScope.cancel()
     }
 
+    @Suppress("ReturnCount")
     private suspend fun getOrFetchVariationAndUpdateCache(variationId: Long, parentId: Long): ProductVariation? {
-            val cachedVariation = variationsCache.get(variationId)?.find { it.remoteVariationId == variationId }
+        val cachedVariation = variationsCache.get(variationId)?.find { it.remoteVariationId == variationId }
 
-            if (cachedVariation != null) {
-                return cachedVariation
-            }
-            val variationResult = productStore.fetchSingleVariation(
-                selectedSite.get(),
-                parentId,
-                variationId
-            )
+        if (cachedVariation != null) {
+            return cachedVariation
+        }
+        val variationResult = productStore.fetchSingleVariation(
+            selectedSite.get(),
+            parentId,
+            variationId
+        )
 
-            if (variationResult.isError) {
-                return null
-            }
-
-            return productStore.getVariationByRemoteId(
-                selectedSite.get(),
-                parentId,
-                variationId
-            )?.toAppModel()
-                ?.also {
-                    variationsCache.add(parentId, it)
-                }
+        if (variationResult.isError) {
+            return null
         }
 
+        return productStore.getVariationByRemoteId(
+            selectedSite.get(),
+            parentId,
+            variationId
+        )?.toAppModel()
+            ?.also {
+                variationsCache.add(parentId, it)
+            }
+    }
+
+    @Suppress("ReturnCount")
     private suspend fun getOrFetchProductAndUpdateCache(parentProductId: Long): Product? {
         val cachedProduct = productsCache.getProductById(parentProductId)
         if (cachedProduct != null) {
