@@ -5,6 +5,7 @@ import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.woopos.common.barcode.WooPosBarcodeFormat
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsTypesFilterConfig
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariationsTypesFilterConfig
+import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.DownloadableOptions
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 import org.wordpress.android.fluxc.store.WCProductStore.VariationFilterOption
@@ -35,14 +36,16 @@ class WooPosSearchByIdentifier @Inject constructor(
                 if (meetsFilterRequirements(result.product)) {
                     result
                 } else {
-                    WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.UnsupportedProduct)
+                    WooPosSearchByIdentifierResult
+                        .Failure(WooPosSearchByIdentifierResult.Error.UnsupportedProduct((result.product.name)))
                 }
             }
             is WooPosSearchByIdentifierResult.VariationSuccess -> {
                 if (meetsVariationFilterRequirements(result.variation)) {
                     result
                 } else {
-                    WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.UnsupportedProduct)
+                    WooPosSearchByIdentifierResult
+                        .Failure(WooPosSearchByIdentifierResult.Error.UnsupportedProduct((result.parentProduct.name)))
                 }
             }
             is WooPosSearchByIdentifierResult.Failure -> result
@@ -55,9 +58,9 @@ class WooPosSearchByIdentifier @Inject constructor(
         val meetsDownloadableRequirement = !product.isDownloadable ||
             filterConfig.filters[ProductFilterOption.DOWNLOADABLE] != DownloadableOptions.FALSE.toString()
 
-        val hasValidType = filterConfig.includeTypes.any {
-            it.toString().equals(product.type, ignoreCase = true)
-        }
+        val hasValidType = filterConfig.includeTypes
+            .filterNot { it == WCProductStore.IncludeType.Variable }
+            .any { it.toString().equals(product.type, ignoreCase = true) }
 
         return hasValidStatus && meetsDownloadableRequirement && hasValidType
     }

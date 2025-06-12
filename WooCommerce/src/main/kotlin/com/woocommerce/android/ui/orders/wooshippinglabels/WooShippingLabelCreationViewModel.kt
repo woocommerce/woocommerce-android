@@ -69,10 +69,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
@@ -132,7 +134,6 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             markOrderComplete = false,
             selectedIndex = 0,
             isShipmentDetailsExpanded = false,
-            isAddressSelectionExpanded = false,
             paperSizeOption = WooShippingLabelPaperSize.LABEL
         )
     )
@@ -149,10 +150,12 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         r1.defaultRate.rate.deliveryDays.compareTo(r2.defaultRate.rate.deliveryDays)
     }
 
-    private val selectedShipmentIndexFlow = MutableStateFlow<Int>(0)
     private val selectedRatesFlow = MutableStateFlow<List<ShippingRateUI?>>(emptyList())
     private val shippingRatesListFlow = MutableStateFlow<List<Map<CarrierUI, List<ShippingRateUI>>>>(emptyList())
     private val shippingRatesStatesFlow = MutableStateFlow<List<ShippingRatesState>>(emptyList())
+
+    private val selectedShipmentIndex: Int
+        get() = uiState.value.selectedIndex
 
     val viewState: MutableStateFlow<WooShippingViewState> = MutableStateFlow(
         WooShippingViewState.Loading(R.string.shipping_label_create_title)
@@ -185,7 +188,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     private suspend fun observeNotices() = observeShippingLabelNotice(
         shippingAddresses,
         customsStatesFlow.filter { it.isNotEmpty() },
-        selectedShipmentIndexFlow,
+        uiState.map { it.selectedIndex }.distinctUntilChanged(),
         viewModelScope
     ).onStart { delay(NOTIFICATIONS_DELAY) }
         .collectLatest { noticeBanner ->
@@ -217,8 +220,14 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     private fun observeShippingLabelPurchaseStatus(shipmentId: Int) {
         launch {
             val labelId = shipments.value[shipmentId].labelId ?: return@launch
-            observeShippingLabelStatus(orderId = navArgs.orderId, labelId = labelId).onEach { status ->
-                updateShipment(shipmentId, shipments.value[shipmentId].copy(status = status))
+            observeShippingLabelStatus(orderId = navArgs.orderId, labelId = labelId).onEach { result ->
+                updateShipment(
+                    shipmentId,
+                    shipments.value[shipmentId].copy(
+                        status = result.status,
+                        refundableAmount = result.refundableAmount ?: BigDecimal.ZERO
+                    )
+                )
             }.launchIn(this)
         }
     }
@@ -262,25 +271,25 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             hazmatStatesFlow.filter { it.isNotEmpty() },
             refreshShippingRates.onStart { emit(Unit) },
         ) { selectedPackages, addresses, packageWeight, customState, hazmatStates, _ ->
-            val customsFulfilled = customState[selectedShipmentIndexFlow.value] is CustomsState.DataAvailable ||
-                customState[selectedShipmentIndexFlow.value] is NotRequired
-            val selectedPackage = selectedPackages[selectedShipmentIndexFlow.value]
+            val customsFulfilled = customState[selectedShipmentIndex] is CustomsState.DataAvailable ||
+                customState[selectedShipmentIndex] is NotRequired
+            val selectedPackage = selectedPackages[selectedShipmentIndex]
             if (selectedPackage != null && addresses != null && customsFulfilled) {
                 ShippingRatesInfo(
                     orderId = navArgs.orderId,
                     packageSelected = selectedPackage,
                     shipFrom = addresses.shipFrom,
                     shipTo = addresses.shipTo.address,
-                    weight = packageWeight[selectedShipmentIndexFlow.value]?.totalWeight,
+                    weight = packageWeight[selectedShipmentIndex]?.totalWeight,
                     currencyCode = order.value.currency,
-                    customsData = customsFormDataFlow.value[selectedShipmentIndexFlow.value],
-                    hazmatSelection = hazmatStates[selectedShipmentIndexFlow.value].hazmatSelection
+                    customsData = customsFormDataFlow.value[selectedShipmentIndex],
+                    hazmatSelection = hazmatStates[selectedShipmentIndex].hazmatSelection
                 )
             } else {
                 null
             }
         }.debounce(MULTIPLE_CALLS_DELAY)
-            .collectLatest { updateShippingRates(selectedShipmentIndexFlow.value, it) }
+            .collectLatest { updateShippingRates(selectedShipmentIndex, it) }
     }
 
     private suspend fun observeShippingRatesState() {
@@ -308,7 +317,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     @OptIn(FlowPreview::class)
     private suspend fun observePackageWeight() {
         combine(
-            shipmentItems.filter { it.isNotEmpty() && it.size > selectedShipmentIndexFlow.value },
+            shipmentItems.filter { it.isNotEmpty() && it.size > selectedShipmentIndex },
             selectedPackagesFlow.filter { it.isNotEmpty() && it.size == shipments.value.size },
             snapshotFlow { customWeight }
                 .filter { it.isNotEmpty() && it.size == shipments.value.size }
@@ -488,7 +497,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             }
 
             shipmentItems.value = shipments.map { it.items }
-            initFlows(shipments.size)
+            adjustFlowSizesToShipmentCount(shipments.size)
 
             val shippingLineSummary = order.getShippingLinesSummary(currencyFormatter)
             val shipmentUIList = shipmentItems.value.mapIndexed { index, shippableItemModels ->
@@ -520,39 +529,30 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         }
     }
 
-    private fun initFlows(shipmentSize: Int) {
-        if (selectedPackagesFlow.value.size != shipmentSize) {
-            selectedPackagesFlow.value = List(shipmentSize) { null }
+    private fun adjustFlowSizesToShipmentCount(shipmentSize: Int) {
+        fun <T> MutableStateFlow<List<T>>.updateSize(defaultValue: T) = this.update { currentList ->
+            if (currentList.size <= shipmentSize) {
+                currentList + List(shipmentSize - currentList.size) { defaultValue }
+            } else {
+                List(shipmentSize) { defaultValue }
+            }
         }
-        if (customsFormDataFlow.value.size != shipmentSize) {
-            customsFormDataFlow.value = List(shipmentSize) { null }
-        }
-        if (packageWeightsFlow.value.size != shipmentSize) {
-            packageWeightsFlow.value = List(shipmentSize) { null }
-        }
-        if (packageSelectionsFlow.value.size != shipmentSize) {
-            packageSelectionsFlow.value = List(shipmentSize) { NotSelected }
-        }
-        if (customsStatesFlow.value.size != shipmentSize) {
-            customsStatesFlow.value = List(shipmentSize) { NotRequired }
-        }
-        if (hazmatStatesFlow.value.size != shipmentSize) {
-            hazmatStatesFlow.value = List(shipmentSize) { NoSelection }
-        }
-        if (selectedRatesSortOrdersFlow.value.size != shipmentSize) {
-            selectedRatesSortOrdersFlow.value = List(shipmentSize) { ShippingSortOption.FASTEST }
-        }
-        if (selectedRatesFlow.value.size != shipmentSize) {
-            selectedRatesFlow.value = List(shipmentSize) { null }
-        }
-        if (shippingRatesListFlow.value.size != shipmentSize) {
-            shippingRatesListFlow.value = List(shipmentSize) { emptyMap() }
-        }
-        if (shippingRatesStatesFlow.value.size != shipmentSize) {
-            shippingRatesStatesFlow.value = List(shipmentSize) { ShippingRatesState.NoAvailable }
-        }
-        if (customWeight.size != shipmentSize) {
-            customWeight = List(shipmentSize) { "" }
+
+        selectedPackagesFlow.updateSize(null)
+        customsFormDataFlow.updateSize(null)
+        packageWeightsFlow.updateSize(null)
+        packageSelectionsFlow.updateSize(NotSelected)
+        customsStatesFlow.updateSize(NotRequired)
+        hazmatStatesFlow.updateSize(NoSelection)
+        selectedRatesSortOrdersFlow.updateSize(ShippingSortOption.FASTEST)
+        selectedRatesFlow.updateSize(null)
+        shippingRatesListFlow.updateSize(emptyMap())
+        shippingRatesStatesFlow.updateSize(ShippingRatesState.NoAvailable)
+
+        customWeight = if (customWeight.size <= shipmentSize) {
+            customWeight + List(shipmentSize - customWeight.size) { "" }
+        } else {
+            List(shipmentSize) { "" }
         }
     }
 
@@ -561,6 +561,11 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     }
 
     fun onShipmentSplit(newShipments: List<ShipmentUIModel>) {
+        if (selectedShipmentIndex >= newShipments.size) {
+            uiState.update {
+                it.copy(selectedIndex = it.selectedIndex.coerceAtMost(newShipments.size - 1))
+            }
+        }
         shipments.value = newShipments
     }
 
@@ -571,23 +576,24 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     }
 
     fun onSelectedShipmentChanged(index: Int) {
-        selectedShipmentIndexFlow.value = index
+        if (index >= shipments.value.size) return // This can happen after shipment split when the UI is not updated yet
+
         uiState.value = uiState.value.copy(selectedIndex = index)
     }
 
-    fun onShippingFromAddressChange(address: OriginShippingAddress) {
+    fun onOriginAddressSelected(address: OriginShippingAddress) {
         shippingAddresses.value?.let {
             shippingAddresses.value = it.copy(shipFrom = address)
         }
     }
 
     fun onEditOriginAddress(address: OriginShippingAddress) {
-        triggerEvent(StartOriginAddressEdit(address))
+        triggerEvent(NavigateToOriginAddressEdit(address))
     }
 
     fun onEditDestinationAddress(destinationAddress: DestinationShippingAddress) {
         triggerEvent(
-            StartDestinationAddressEdit(
+            NavigateToDestinationAddressEdit(
                 destinationAddress = destinationAddress,
                 orderId = navArgs.orderId
             )
@@ -606,27 +612,17 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         uiState.update { it.copy(markOrderComplete = value) }
     }
 
-    fun onShipmentDetailsExpandedChange(value: Boolean): Boolean {
-        return if (uiState.value.isAddressSelectionExpanded.not()) {
-            uiState.update { it.copy(isShipmentDetailsExpanded = value) }
-            true
-        } else {
-            false
-        }
-    }
-
-    fun onSelectAddressExpandedChange(value: Boolean): Boolean {
-        uiState.update { it.copy(isAddressSelectionExpanded = value) }
-        return true
+    fun onShipmentDetailsExpandedChange(value: Boolean) {
+        uiState.update { it.copy(isShipmentDetailsExpanded = value) }
     }
 
     fun onSelectPackageClicked() {
-        triggerEvent(StartPackageSelection)
+        triggerEvent(NavigatePackageSelection)
     }
 
     @Suppress("ComplexCondition")
     fun onPurchaseShippingLabel() {
-        val selectedShipmentIndex = selectedShipmentIndexFlow.value
+        val selectedShipmentIndex = selectedShipmentIndex
         val selectedPackage = selectedPackagesFlow.value[selectedShipmentIndex]
         val addresses = shippingAddresses.value
         val shippingRate = selectedRatesFlow.value[selectedShipmentIndex]?.selectedOption?.rate
@@ -688,7 +684,9 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                         purchased = true,
                         labelId = purchasedLabel.labelId,
                         carrierId = purchasedLabel.carrierId,
-                        trackingNumber = purchasedLabel.tracking
+                        trackingNumber = purchasedLabel.tracking,
+                        refundableAmount = purchasedLabel.refundableAmount,
+                        purchaseDate = purchasedLabel.created
                     )
                 )
                 observeShippingLabelPurchaseStatus(shipmentId)
@@ -697,13 +695,13 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
     fun onSelectedRateSortOrderChanged(option: ShippingSortOption) {
         selectedRatesSortOrdersFlow.value = selectedRatesSortOrdersFlow.value.toMutableList().apply {
-            set(selectedShipmentIndexFlow.value, option)
+            set(selectedShipmentIndex, option)
         }
     }
 
     fun onSelectedSippingRateChanged(rate: ShippingRateUI) {
         selectedRatesFlow.update {
-            selectedRatesFlow.value.toMutableList().apply { set(selectedShipmentIndexFlow.value, rate) }
+            selectedRatesFlow.value.toMutableList().apply { set(selectedShipmentIndex, rate) }
         }
     }
 
@@ -712,7 +710,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         val currentShipmentItems = shipmentItems.value
         if (currentStoreOptions != null && currentShipmentItems.isNotEmpty()) {
             triggerEvent(
-                StartSplitShipment(
+                NavigateToSplitShipment(
                     SplitShipmentArgs(
                         orderId = navArgs.orderId,
                         storeOptions = currentStoreOptions,
@@ -741,41 +739,41 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
     fun onPackageSelected(packageData: PackageData) {
         selectedPackagesFlow.value = selectedPackagesFlow.value.toMutableList().apply {
-            set(selectedShipmentIndexFlow.value, packageData)
+            set(selectedShipmentIndex, packageData)
         }
     }
 
     fun onCustomsDataAvailable(customsData: CustomsData) {
         customsFormDataFlow.value = customsFormDataFlow.value.toMutableList().apply {
-            set(selectedShipmentIndexFlow.value, customsData)
+            set(selectedShipmentIndex, customsData)
         }
     }
 
     fun onCustomWeightChange(input: String) {
-        customWeight = customWeight.toMutableList().apply { set(selectedShipmentIndexFlow.value, input) }
+        customWeight = customWeight.toMutableList().apply { set(selectedShipmentIndex, input) }
     }
 
     fun onEditCustomsClick() {
         val destinationCountryCode = shippingAddresses.value
             ?.shipTo?.address?.country?.code.orEmpty()
 
-        val event = StartCustomsFormEdit(
-            shippableItems = shipmentItems.value[selectedShipmentIndexFlow.value],
+        val event = NavigateToCustomsFormEdit(
+            shippableItems = shipmentItems.value[selectedShipmentIndex],
             destinationCountryCode = destinationCountryCode,
-            customData = customsFormDataFlow.value[selectedShipmentIndexFlow.value]
+            customData = customsFormDataFlow.value[selectedShipmentIndex]
         )
         triggerEvent(event)
     }
 
     fun onHazmatNoticeClick() {
-        val selectedCategory = hazmatStatesFlow.value[selectedShipmentIndexFlow.value]
+        val selectedCategory = hazmatStatesFlow.value[selectedShipmentIndex]
             .run { this as? Declared }
             ?.hazmatCategory
 
         // Disables the current Snackbar before navigation
         // to avoid presentation conflict with the Hazmat selection result
         snackbarData = null
-        triggerEvent(StartHazmatFormEdit(selectedCategory))
+        triggerEvent(NavigateToHazmatFormEdit(selectedCategory))
     }
 
     fun onHazmatCategorySelected(selectedCategory: ShippingLabelHazmatCategory?) {
@@ -784,10 +782,10 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             null -> NoSelection
             else -> Declared(selectedCategory)
         }
-        if (newState == previousStates[selectedShipmentIndexFlow.value]) return
+        if (newState == previousStates[selectedShipmentIndex]) return
 
         hazmatStatesFlow.value = previousStates.toMutableList().apply {
-            this[selectedShipmentIndexFlow.value] = newState
+            this[selectedShipmentIndex] = newState
         }.toList()
 
         val snackbarMessage = if (selectedCategory != null) {
@@ -813,7 +811,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         val fallbackViewState = viewState.value
         viewState.value = WooShippingViewState.Loading(R.string.shipping_label_print_screen_title)
         launch {
-            val labelId = shipments.value[selectedShipmentIndexFlow.value].labelId ?: return@launch
+            val labelId = shipments.value[selectedShipmentIndex].labelId ?: return@launch
             val paperSize = uiState.value.paperSizeOption
             val labelFile = fetchShippingLabelFile(
                 labelIds = listOf(labelId),
@@ -829,22 +827,23 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     }
 
     fun onTrackShipmentClicked() {
-        val carrierId = shipments.value[selectedShipmentIndexFlow.value].carrierId ?: return
-        val trackingNumber = shipments.value[selectedShipmentIndexFlow.value].trackingNumber ?: return
+        val carrierId = shipments.value[selectedShipmentIndex].carrierId ?: return
+        val trackingNumber = shipments.value[selectedShipmentIndex].trackingNumber ?: return
         ShipmentTrackingUrls.fromCarrier(carrierId, trackingNumber)
             ?.let { triggerEvent(OpenUrl(it)) }
             ?: triggerEvent(ShowError(R.string.shipping_label_purchased_tracking_error))
     }
 
     fun onSchedulePickUpClicked() {
-        val carrierId = shipments.value[selectedShipmentIndexFlow.value].carrierId ?: return
+        val carrierId = shipments.value[selectedShipmentIndex].carrierId ?: return
         Carrier.fromCarrierId(carrierId)?.let {
             triggerEvent(OpenUrl(it.pickupUrl))
         } ?: triggerEvent(ShowError(R.string.shipping_label_purchased_pickup_error))
     }
 
     fun onRefundClicked() {
-        triggerEvent(StartRefundRequest)
+        val selectedShipment = shipments.value[selectedShipmentIndex]
+        triggerEvent(NavigateToRefundRequest(navArgs.orderId, selectedShipment))
     }
 
     fun onLearnMoreClicked() {
@@ -854,11 +853,6 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     fun allowBackNavigation(): Boolean {
         val state = uiState.value
         return when {
-            state.isAddressSelectionExpanded -> {
-                uiState.update { it.copy(isAddressSelectionExpanded = false) }
-                false
-            }
-
             state.isShipmentDetailsExpanded -> {
                 uiState.update { it.copy(isShipmentDetailsExpanded = false) }
                 false
@@ -903,15 +897,15 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         return shouldRequireITN(destinationCountryCode, totalShippingValue)
     }
 
-    data object StartPackageSelection : Event()
+    data object NavigatePackageSelection : Event()
 
-    data class StartOriginAddressEdit(val originAddress: OriginShippingAddress) : Event()
-    data class StartDestinationAddressEdit(
+    data class NavigateToOriginAddressEdit(val originAddress: OriginShippingAddress) : Event()
+    data class NavigateToDestinationAddressEdit(
         val destinationAddress: DestinationShippingAddress,
         val orderId: Long
     ) : Event()
 
-    data class StartSplitShipment(val shipmentArgs: SplitShipmentArgs) : Event()
+    data class NavigateToSplitShipment(val shipmentArgs: SplitShipmentArgs) : Event()
 
     @Parcelize
     data class SplitShipmentArgs(
@@ -920,13 +914,13 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         val storeOptions: StoreOptionsModel
     ) : Parcelable
 
-    data class StartCustomsFormEdit(
+    data class NavigateToCustomsFormEdit(
         val shippableItems: List<ShippableItemModel>,
         val destinationCountryCode: String,
         val customData: CustomsData?
     ) : Event()
 
-    data class StartHazmatFormEdit(val selectedCategory: ShippingLabelHazmatCategory?) : Event()
+    data class NavigateToHazmatFormEdit(val selectedCategory: ShippingLabelHazmatCategory?) : Event()
 
     sealed class WooShippingViewState {
         data object Error : WooShippingViewState()
@@ -995,7 +989,6 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         val markOrderComplete: Boolean,
         val selectedIndex: Int = 0,
         val isShipmentDetailsExpanded: Boolean,
-        val isAddressSelectionExpanded: Boolean,
         val noticeBannerUiState: NoticeBannerUiState? = null,
         val paperSizeOption: WooShippingLabelPaperSize,
     )
@@ -1031,7 +1024,8 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     data class OpenShippingLabelFile(val file: File) : Event()
     data class OpenUrl(val url: String) : Event()
     data class ShowError(val errorResId: Int) : Event()
-    object StartRefundRequest : Event()
+    data class NavigateToRefundRequest(val orderId: Long, val shipment: ShipmentUIModel) : Event()
+
     object OpenLearnMoreScreen : Event()
 
     enum class Carrier(val pickupUrl: String) {

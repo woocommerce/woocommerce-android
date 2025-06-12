@@ -27,6 +27,9 @@ val Context.isTwoPanesShouldBeUsed: Boolean
 val Context.windowHeightSizeClass: WindowSizeClass
     get() = determineWindowHeightSizeClassByGivenSize(resources.configuration.screenHeightDp)
 
+val Context.windowWidthSizeClass: WindowSizeClass
+    get() = determineWindowWidthSizeClassByGivenSize(resources.configuration.screenWidthDp)
+
 private const val MIN_SCREEN_SHORT_SIZE_DP = 674
 private const val MIN_SCREEN_LONG_SIZE_DP = 800
 
@@ -44,6 +47,14 @@ private fun determineWindowHeightSizeClassByGivenSize(sizeDp: Int): WindowSizeCl
     return when {
         sizeDp < WindowSizeClass.Compact.maxHeightDp -> WindowSizeClass.Compact
         sizeDp < WindowSizeClass.Medium.maxHeightDp -> WindowSizeClass.Medium
+        else -> WindowSizeClass.ExpandedAndBigger
+    }
+}
+
+private fun determineWindowWidthSizeClassByGivenSize(sizeDp: Int): WindowSizeClass {
+    return when {
+        sizeDp < WindowSizeClass.Compact.maxWidthDp -> WindowSizeClass.Compact
+        sizeDp < WindowSizeClass.Medium.maxWidthDp -> WindowSizeClass.Medium
         else -> WindowSizeClass.ExpandedAndBigger
     }
 }

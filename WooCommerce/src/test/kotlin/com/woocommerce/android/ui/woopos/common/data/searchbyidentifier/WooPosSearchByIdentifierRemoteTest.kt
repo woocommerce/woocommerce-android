@@ -21,6 +21,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -44,7 +45,9 @@ class WooPosSearchByIdentifierRemoteTest {
     private lateinit var sut: WooPosSearchByIdentifierRemote
     private val dispatcher: Dispatcher = mock()
     private val selectedSite: SelectedSite = mock()
-    private val productsCache: WooPosProductsCache = mock()
+    private val productsCache: WooPosProductsCache = mock {
+        onBlocking { getProductById(any()) }.thenReturn(ProductTestUtils.generateWCProductModel().toAppModel())
+    }
     private val productStore: WCProductStore = mock()
     private val variationsCache: WooPosVariationsLRUCache = mock()
     private val checkDigitRemover: WooPosSearchByIdentifierCheckDigitRemover =
@@ -318,7 +321,8 @@ class WooPosSearchByIdentifierRemoteTest {
         // WHEN
         val job = launch {
             val result = sut.invoke(identifier, WooPosBarcodeFormat.FormatUnknown)
-            assertEquals(WooPosSearchByIdentifierResult.VariationSuccess(variation), result)
+            assertTrue(result is WooPosSearchByIdentifierResult.VariationSuccess)
+            assertEquals(variation, (result as WooPosSearchByIdentifierResult.VariationSuccess).variation)
         }
 
         advanceTimeBy(1)
@@ -369,7 +373,8 @@ class WooPosSearchByIdentifierRemoteTest {
         // WHEN
         val job = launch {
             val result = sut.invoke(identifier, WooPosBarcodeFormat.FormatUnknown)
-            assertEquals(WooPosSearchByIdentifierResult.VariationSuccess(variation), result)
+            assertTrue(result is WooPosSearchByIdentifierResult.VariationSuccess)
+            assertEquals(variation, (result as WooPosSearchByIdentifierResult.VariationSuccess).variation)
         }
 
         advanceTimeBy(1)
@@ -420,7 +425,8 @@ class WooPosSearchByIdentifierRemoteTest {
         // WHEN
         val job = launch {
             val result = sut.invoke(identifier, WooPosBarcodeFormat.FormatUnknown)
-            assertEquals(WooPosSearchByIdentifierResult.VariationSuccess(variation2), result)
+            assertTrue(result is WooPosSearchByIdentifierResult.VariationSuccess)
+            assertEquals(variation2, (result as WooPosSearchByIdentifierResult.VariationSuccess).variation)
         }
 
         advanceTimeBy(1)
@@ -439,6 +445,127 @@ class WooPosSearchByIdentifierRemoteTest {
 
         // THEN
         job.join()
+        sut.onCleanup()
+    }
+
+    @Test
+    fun `given parent product not in cache, when variation found, then fetches parent product from remote`() = runTest {
+        // GIVEN
+        val identifier = "test-variation-sku"
+        val parentProductId = 100L
+        val variationId = 200L
+        val wcVariationProduct = ProductTestUtils.generateWCProductModel(
+            productId = variationId,
+            productType = "variation"
+        ).copy(
+            parentId = parentProductId,
+            sku = identifier
+        )
+        val wcVariationModel = WCProductVariationModel(LocalId(1)).copy(
+            remoteProductId = RemoteId(parentProductId),
+            remoteVariationId = RemoteId(variationId),
+            sku = identifier
+        )
+        val variation: ProductVariation = wcVariationModel.toAppModel()
+
+        val parentWcProductModel = ProductTestUtils.generateWCProductModel(productId = parentProductId)
+        parentWcProductModel.toAppModel()
+
+        val onVariationChanged = WCProductStore.OnVariationChanged(parentProductId, variationId)
+        whenever(productStore.fetchSingleVariation(any(), any(), any())).thenReturn(onVariationChanged)
+        whenever(productStore.getVariationByRemoteId(any(), any(), any())).thenReturn(wcVariationModel)
+        whenever(productsCache.getProductById(parentProductId)).thenReturn(null)
+
+        val fetchSingleProductPayload = argumentCaptor<WCProductStore.FetchSingleProductPayload>()
+        val parentProductResult = WCProductStore.OnProductChanged(remoteProductId = parentProductId)
+        whenever(productStore.fetchSingleProduct(fetchSingleProductPayload.capture())).thenReturn(parentProductResult)
+        whenever(productStore.getProduct(any(), eq(parentProductId))).thenReturn(parentWcProductModel)
+
+        // WHEN
+        val job = launch {
+            val result = sut.invoke(identifier, WooPosBarcodeFormat.FormatUnknown)
+            assertTrue(result is WooPosSearchByIdentifierResult.VariationSuccess)
+            assertEquals(variation, (result as WooPosSearchByIdentifierResult.VariationSuccess).variation)
+        }
+
+        advanceTimeBy(1)
+
+        sut.onProductsSearched(
+            WCProductStore.OnProductsSearched(
+                globalUniqueIdSearchQuery = null,
+                searchQuery = identifier,
+                searchResults = listOf(wcVariationProduct),
+                canLoadMore = false,
+                isSkuSearch = WCProductStore.SkuSearchOptions.Disabled
+            )
+        )
+
+        advanceTimeBy(1)
+
+        // THEN
+        job.join()
+
+        verify(productStore).fetchSingleProduct(any())
+        assertEquals(parentProductId, fetchSingleProductPayload.firstValue.remoteProductId)
+        verify(productsCache).addAll(any())
+
+        sut.onCleanup()
+    }
+
+    @Test
+    fun `given parent product in cache, when variation found, then uses cached parent product`() = runTest {
+        // GIVEN
+        val identifier = "test-variation-sku"
+        val parentProductId = 100L
+        val variationId = 200L
+        val wcVariationProduct = ProductTestUtils.generateWCProductModel(
+            productId = variationId,
+            productType = "variation"
+        ).copy(
+            parentId = parentProductId,
+            sku = identifier
+        )
+        val wcVariationModel = WCProductVariationModel(LocalId(1)).copy(
+            remoteProductId = RemoteId(parentProductId),
+            remoteVariationId = RemoteId(variationId),
+            sku = identifier
+        )
+        val variation: ProductVariation = wcVariationModel.toAppModel()
+
+        val parentProduct = ProductTestUtils.generateProduct(productId = parentProductId)
+
+        val onVariationChanged = WCProductStore.OnVariationChanged(parentProductId, variationId)
+        whenever(productStore.fetchSingleVariation(any(), any(), any())).thenReturn(onVariationChanged)
+        whenever(productStore.getVariationByRemoteId(any(), any(), any())).thenReturn(wcVariationModel)
+
+        whenever(productsCache.getProductById(parentProductId)).thenReturn(parentProduct)
+
+        // WHEN
+        val job = launch {
+            val result = sut.invoke(identifier, WooPosBarcodeFormat.FormatUnknown)
+            assertTrue(result is WooPosSearchByIdentifierResult.VariationSuccess)
+            assertEquals(variation, (result as WooPosSearchByIdentifierResult.VariationSuccess).variation)
+        }
+
+        advanceTimeBy(1)
+
+        sut.onProductsSearched(
+            WCProductStore.OnProductsSearched(
+                globalUniqueIdSearchQuery = null,
+                searchQuery = identifier,
+                searchResults = listOf(wcVariationProduct),
+                canLoadMore = false,
+                isSkuSearch = WCProductStore.SkuSearchOptions.Disabled
+            )
+        )
+
+        advanceTimeBy(1)
+
+        // THEN
+        job.join()
+
+        verify(productStore, times(0)).fetchSingleProduct(any())
+
         sut.onCleanup()
     }
 }

@@ -4271,18 +4271,21 @@
     <string name="woopos_checkout_button">Check out</string>
     <string name="woopos_remove_item_button_from_cart_content_description">Remove %s from cart</string>
     <string name="woopos_product_item_content_description">Product %s, Price %s</string>
-    <string name="woopos_variable_product_item_content_description">Variable Product %s, Price %s</string>
+    <string name="woopos_variable_product_item_content_description_v2">Variable Product %s</string>
     <string name="woopos_variation_item_content_description">Variation %s, Price %s</string>
     <string name="woopos_cart_item_product_content_description">Product in cart %s, Price %s</string>
     <string name="woopos_cart_item_loading_content_description">Loading item %s</string>
     <string name="woopos_cart_item_error_content_description">Error loading item %s</string>
-    <string name="woopos_coupon_item_content_description">Coupon %s</string>
+    <string name="woopos_coupon_item_content_description_v2">Coupon %s, %s</string>
     <string name="woopos_coupon_item_expired_label">Expired on %s</string>
+    <string name="woopos_add_product_to_cart_accessibility_label">Add product to cart</string>
+    <string name="woopos_add_variable_product_to_cart_accessibility_label">Open list of variations</string>
+    <string name="woopos_add_coupon_to_cart_accessibility_label">Add coupon to cart</string>
     <string name="woopos_cart_item_coupon_content_description">Coupon in cart %s</string>
     <string name="woopos_cart_title">Cart</string>
     <string name="woopos_cart_changes_in_the_cart">There are changes in the cart</string>
     <string name="woopos_cart_barcode_scan_result_product_not_found">Unknown scanned item</string>
-    <string name="woopos_cart_barcode_scan_result_unsupported_product">Unsupported item type</string>
+    <string name="woopos_cart_barcode_scan_result_unsupported_product">Unsupported item – %s</string>
     <string name="woopos_cart_barcode_scan_result_network_error">No internet connection</string>
     <string name="woopos_cart_barcode_scan_result_request_cancelled">Request cancelled</string>
     <string name="woopos_clear_cart_button">Clear</string>
@@ -4353,6 +4356,10 @@
     <string name="woopos_products_empty_list_message_two">POS currently only supports simple products</string>
     <string name="woopos_products_loading_error_title">Unable to load products</string>
     <string name="woopos_products_loading_error_message">Please try again.</string>
+    <string name="woopos_cart_product_added_to_cart_accessibility">Product %1$s added to cart, price %2$s</string>
+    <string name="woopos_cart_coupon_added_to_cart_accessibility">Coupon %1$s added to cart</string>
+    <string name="woopos_cart_adding_item_to_cart_failed">Adding item to cart failed, %s.</string>
+    <string name="woopos_cart_searching_for_item">Searching</string>
 
     <string name="woopos_coupons_empty_list_image_description">No coupons</string>
     <string name="woopos_coupons_empty_list_title">No coupons found</string>
@@ -4576,7 +4583,6 @@
     <string name="woo_shipping_labels_hazmat_selection_set">Hazardous materials category set</string>
     <string name="woo_shipping_labels_hazmat_selection_removed">Removed hazardous materials category</string>
 
-
     <string name="email_not_registered_wpcom">Hmm, we can\'t find a WordPress.com account connected to this email address.</string>
 
     <string name="woo_shipping_edit_origin_address_title">Edit Origin</string>
@@ -4608,7 +4614,6 @@
     <string name="woo_shipping_address_notification_destination_verified">Verified destination address</string>
     <string name="woo_shipping_address_notification_origin_verified">Verified origin address</string>
 
-
     <string name="woo_shipping_address_validate_and_save">Validate &amp; Save</string>
     <string name="woo_shipping_address_missing_info_hint">Add missing information</string>
     <string name="woo_shipping_labels_loading_order_error">Unable to load the order</string>
@@ -4630,7 +4635,6 @@
 
     <string name="woo_shipping_confirm_submit_address_suggested">Confirm Suggested Address</string>
     <string name="woo_shipping_confirm_submit_address_entered">Confirm Entered Address</string>
-
 
     <string name="error_user_username_instead_of_email">Please log in using your WordPress.com username instead of your email address.</string>
     <string name="about_automattic_x_item_title">X</string>
@@ -4655,6 +4659,12 @@
     <string name="woo_shipping_split_shipment_merge_unfulfilled_desc">This will remove all unfulfilled split shipments and move all items into one shipment.</string>
     <string name="woo_shipping_split_shipment_merge_unfulfilled_button">Merge all shipments</string>
     <string name="purchased_shipment_content_description">Purchased</string>
+
+    <string name="woo_shipping_refund_title">Request a shipping label refund</string>
+    <string name="woo_shipping_refund_description">Request a refund for your unused shipping label. The refund process for the shipping label will begin immediately and is typically completed within 14 business days.</string>
+    <string name="woo_shipping_refund_purchase_date"><![CDATA[<b>Purchase date:</b> %s]]></string>
+    <string name="woo_shipping_refund_amount_eligible_for_refund"><![CDATA[<b>Amount eligible for refund:</b> %s]]></string>
+    <string name="woo_shipping_refund_note">Please note that this refund request applies only to the unused shipping label and will not affect the order itself.</string>
 
     <string name="media_library_title">WordPress Media Library</string>
     <string name="media_loading_failed">Media loading failed</string>
