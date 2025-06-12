@@ -250,7 +250,8 @@ class BlazeCreationRestClient @Inject constructor(
                 ).filterNotNull()
             },
             "is_evergreen" to request.isEndlessCampaign,
-            "objective" to request.objectiveId
+            "objective" to request.objectiveId,
+            "accepted_tos" to request.acceptedTos
         ).filterNotNull()
 
         val response = wpComNetwork.executePostGsonRequest(

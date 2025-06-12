@@ -325,7 +325,8 @@ class BlazeRepository @Inject constructor(
                     )
                 },
                 isEndlessCampaign = campaignDetails.budget.isEndlessCampaign,
-                objectiveId = campaignDetails.objectiveId
+                objectiveId = campaignDetails.objectiveId,
+                acceptedTos = campaignDetails.acceptedTos,
             )
         )
 
