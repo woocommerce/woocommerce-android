@@ -126,7 +126,7 @@ class WooShippingLabelCreationFragment : BaseFragment(), BackPressListener {
 
                 is WooShippingLabelCreationViewModel.OpenShippingLabelFile -> openShippingLabelPreview(event.file)
                 is WooShippingLabelCreationViewModel.OpenLearnMoreScreen -> openLearnMoreView()
-                is WooShippingLabelCreationViewModel.StartRefundRequest -> startRefundRequest(
+                is WooShippingLabelCreationViewModel.NavigateToRefundRequest -> navigateToRefundRequest(
                     event.orderId,
                     event.shipment
                 )
@@ -171,7 +171,7 @@ class WooShippingLabelCreationFragment : BaseFragment(), BackPressListener {
         )
     }
 
-    private fun startRefundRequest(orderId: Long, shipment: ShipmentUIModel) {
+    private fun navigateToRefundRequest(orderId: Long, shipment: ShipmentUIModel) {
         findNavController().navigate(
             WooShippingLabelCreationFragmentDirections
                 .actionWooShippingLabelCreationFragmentToWooShippingLabelRefundRequestFragment(orderId, shipment)
