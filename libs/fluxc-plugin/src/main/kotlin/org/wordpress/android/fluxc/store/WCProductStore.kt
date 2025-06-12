@@ -2074,7 +2074,7 @@ class WCProductStore @Inject internal constructor(
                     searchQuery = payload.searchQuery,
                     isSkuSearch = payload.skuSearchOptions,
                     globalUniqueIdSearchQuery = payload.globalUniqueIdSearchQuery
-                )
+                ).also { it.error = payload.error }
             )
         } else {
             coroutineEngine.launch(T.DB, this, "handleSearchProductsCompleted") {
