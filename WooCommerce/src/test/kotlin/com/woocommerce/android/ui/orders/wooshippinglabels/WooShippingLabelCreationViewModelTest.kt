@@ -1053,4 +1053,48 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         assertThat(afterSplitState.shipmentUIList.first().packageSelectionState)
             .isEqualTo(PackageSelectionState.NotSelected)
     }
+
+    @Test
+    fun `given selected payment method, when the screen is loaded, then show the payment method`() = testBlocking {
+        val accountSettings = defaultAccountSettings.copy(
+            paymentMethodOptions = PaymentMethodOptions(
+                selectedPaymentId = 1,
+                paymentMethods = listOf(
+                    PaymentMethodModel(
+                        paymentMethodId = 1,
+                        name = "Visa",
+                        cardType = "VISA",
+                        cardDigits = "1234",
+                        expiry = "12/25"
+                    )
+                )
+            )
+        )
+        given(observeAccountSettings()).willReturn(flowOf(accountSettings))
+
+        createViewModel()
+        advanceUntilIdle()
+
+        val viewState = sut.viewState.value as DataState
+        assertThat(viewState.paymentsSectionUI.selectedPaymentMethod).isNotNull
+        assertThat(viewState.paymentsSectionUI.selectedPaymentMethod)
+            .isEqualTo(accountSettings.paymentMethodOptions.selectedPaymentMethod)
+    }
+
+    @Test
+    fun `given no selected payment method, when the screen is loaded, then show no payment method`() = testBlocking {
+        val accountSettings = defaultAccountSettings.copy(
+            paymentMethodOptions = PaymentMethodOptions(
+                selectedPaymentId = null,
+                paymentMethods = emptyList()
+            )
+        )
+        given(observeAccountSettings()).willReturn(flowOf(accountSettings))
+
+        createViewModel()
+        advanceUntilIdle()
+
+        val viewState = sut.viewState.value as DataState
+        assertThat(viewState.paymentsSectionUI.selectedPaymentMethod).isNull()
+    }
 }
