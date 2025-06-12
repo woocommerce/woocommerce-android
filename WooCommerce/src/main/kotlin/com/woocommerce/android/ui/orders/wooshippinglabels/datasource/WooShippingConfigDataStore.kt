@@ -10,6 +10,7 @@ import com.woocommerce.android.datastore.DataStoreType
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ConfigDTO
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
@@ -23,7 +24,7 @@ class WooShippingConfigDataStore @Inject constructor(
     fun observeConfig(orderId: Long): Flow<ConfigDTO?> = dataStore.data.map { prefs ->
         val config = prefs[stringPreferencesKey(getConfigKey(orderId))]
         runCatching { gson.fromJson(config, ConfigDTO::class.java) }.getOrNull()
-    }
+    }.distinctUntilChanged()
 
     suspend fun saveConfig(orderId: Long, config: ConfigDTO) {
         dataStore.edit { preferences ->

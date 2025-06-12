@@ -10,6 +10,7 @@ import com.woocommerce.android.datastore.DataStoreType
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.AccountSettingsModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
@@ -26,7 +27,7 @@ class WooShippingAccountSettingsDataStore @Inject constructor(
             runCatching {
                 gson.fromJson(accountSettings, AccountSettingsModel::class.java)
             }.getOrNull()
-        }
+        }.distinctUntilChanged()
     }
 
     suspend fun saveAccountSettings(accountSettings: AccountSettingsModel) {
