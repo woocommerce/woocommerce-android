@@ -589,12 +589,12 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     }
 
     fun onEditOriginAddress(address: OriginShippingAddress) {
-        triggerEvent(StartOriginAddressEdit(address))
+        triggerEvent(NavigateToOriginAddressEdit(address))
     }
 
     fun onEditDestinationAddress(destinationAddress: DestinationShippingAddress) {
         triggerEvent(
-            StartDestinationAddressEdit(
+            NavigateToDestinationAddressEdit(
                 destinationAddress = destinationAddress,
                 orderId = navArgs.orderId
             )
@@ -628,7 +628,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     }
 
     fun onSelectPackageClicked() {
-        triggerEvent(StartPackageSelection)
+        triggerEvent(NavigatePackageSelection)
     }
 
     @Suppress("ComplexCondition")
@@ -721,7 +721,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         val currentShipmentItems = shipmentItems.value
         if (currentStoreOptions != null && currentShipmentItems.isNotEmpty()) {
             triggerEvent(
-                StartSplitShipment(
+                NavigateToSplitShipment(
                     SplitShipmentArgs(
                         orderId = navArgs.orderId,
                         storeOptions = currentStoreOptions,
@@ -768,7 +768,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         val destinationCountryCode = shippingAddresses.value
             ?.shipTo?.address?.country?.code.orEmpty()
 
-        val event = StartCustomsFormEdit(
+        val event = NavigateToCustomsFormEdit(
             shippableItems = shipmentItems.value[selectedShipmentIndex],
             destinationCountryCode = destinationCountryCode,
             customData = customsFormDataFlow.value[selectedShipmentIndex]
@@ -784,7 +784,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         // Disables the current Snackbar before navigation
         // to avoid presentation conflict with the Hazmat selection result
         snackbarData = null
-        triggerEvent(StartHazmatFormEdit(selectedCategory))
+        triggerEvent(NavigateToHazmatFormEdit(selectedCategory))
     }
 
     fun onHazmatCategorySelected(selectedCategory: ShippingLabelHazmatCategory?) {
@@ -854,7 +854,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
     fun onRefundClicked() {
         val selectedShipment = shipments.value[selectedShipmentIndex]
-        triggerEvent(StartRefundRequest(navArgs.orderId, selectedShipment))
+        triggerEvent(NavigateToRefundRequest(navArgs.orderId, selectedShipment))
     }
 
     fun onLearnMoreClicked() {
@@ -913,15 +913,15 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         return shouldRequireITN(destinationCountryCode, totalShippingValue)
     }
 
-    data object StartPackageSelection : Event()
+    data object NavigatePackageSelection : Event()
 
-    data class StartOriginAddressEdit(val originAddress: OriginShippingAddress) : Event()
-    data class StartDestinationAddressEdit(
+    data class NavigateToOriginAddressEdit(val originAddress: OriginShippingAddress) : Event()
+    data class NavigateToDestinationAddressEdit(
         val destinationAddress: DestinationShippingAddress,
         val orderId: Long
     ) : Event()
 
-    data class StartSplitShipment(val shipmentArgs: SplitShipmentArgs) : Event()
+    data class NavigateToSplitShipment(val shipmentArgs: SplitShipmentArgs) : Event()
 
     @Parcelize
     data class SplitShipmentArgs(
@@ -930,13 +930,13 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         val storeOptions: StoreOptionsModel
     ) : Parcelable
 
-    data class StartCustomsFormEdit(
+    data class NavigateToCustomsFormEdit(
         val shippableItems: List<ShippableItemModel>,
         val destinationCountryCode: String,
         val customData: CustomsData?
     ) : Event()
 
-    data class StartHazmatFormEdit(val selectedCategory: ShippingLabelHazmatCategory?) : Event()
+    data class NavigateToHazmatFormEdit(val selectedCategory: ShippingLabelHazmatCategory?) : Event()
 
     sealed class WooShippingViewState {
         data object Error : WooShippingViewState()
@@ -1041,7 +1041,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     data class OpenShippingLabelFile(val file: File) : Event()
     data class OpenUrl(val url: String) : Event()
     data class ShowError(val errorResId: Int) : Event()
-    data class StartRefundRequest(val orderId: Long, val shipment: ShipmentUIModel) : Event()
+    data class NavigateToRefundRequest(val orderId: Long, val shipment: ShipmentUIModel) : Event()
 
     object OpenLearnMoreScreen : Event()
 
