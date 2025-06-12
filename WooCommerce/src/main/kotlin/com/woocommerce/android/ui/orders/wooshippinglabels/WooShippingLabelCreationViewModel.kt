@@ -721,7 +721,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         val currentShipmentItems = shipmentItems.value
         if (currentStoreOptions != null && currentShipmentItems.isNotEmpty()) {
             triggerEvent(
-                StartSplitShipment(
+                NavigateToSplitShipment(
                     SplitShipmentArgs(
                         orderId = navArgs.orderId,
                         storeOptions = currentStoreOptions,
@@ -921,7 +921,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         val orderId: Long
     ) : Event()
 
-    data class StartSplitShipment(val shipmentArgs: SplitShipmentArgs) : Event()
+    data class NavigateToSplitShipment(val shipmentArgs: SplitShipmentArgs) : Event()
 
     @Parcelize
     data class SplitShipmentArgs(

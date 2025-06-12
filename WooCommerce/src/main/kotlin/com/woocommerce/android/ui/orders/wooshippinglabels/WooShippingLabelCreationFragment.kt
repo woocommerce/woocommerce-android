@@ -108,7 +108,7 @@ class WooShippingLabelCreationFragment : BaseFragment(), BackPressListener {
                 )
 
                 is MultiLiveEvent.Event.Exit -> findNavController().navigateUp()
-                is WooShippingLabelCreationViewModel.StartSplitShipment -> {
+                is WooShippingLabelCreationViewModel.NavigateToSplitShipment -> {
                     WooShippingLabelCreationFragmentDirections
                         .actionWooShippingLabelCreationFragmentToWooShippingSplitShipmentFragment(
                             shipmentArgs = event.shipmentArgs
