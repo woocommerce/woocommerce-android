@@ -1293,6 +1293,9 @@
     <string name="shipping_label_shipment_details_mark_order_complete">After purchasing a label, mark this order as complete and notify the customer.</string>
     <string name="shipping_label_shipment_details_purchase_label">Purchase Label · %1$s </string>
     <string name="shipping_label_shipment_details_purchase_label_disabled">Purchase Label</string>
+    <string name="shipping_label_shipment_details_payment_method">Payment method</string>
+    <string name="shipping_label_shipment_details_add_payment_method">Add payment method</string>
+    <string name="shipping_label_shipment_details_edit_payment_method">Edit payment method</string>
     <string name="shipping_label_shipping_rates_sort_option_cheapest">Cheapest</string>
     <string name="shipping_label_shipping_rates_sort_option_fastest">Fastest</string>
     <string name="shipping_label_shipping_service_title">Shipping service</string>

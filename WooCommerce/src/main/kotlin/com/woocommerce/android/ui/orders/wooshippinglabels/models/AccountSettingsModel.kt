@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.models
 
 import android.os.Parcelable
+import com.woocommerce.android.extensions.capitalize
 import kotlinx.parcelize.Parcelize
 
 data class AccountSettingsModel(
@@ -28,7 +29,10 @@ data class StoreOptionsModel(
 data class PaymentMethodOptions(
     val selectedPaymentId: Int?,
     val paymentMethods: List<PaymentMethodModel>
-)
+) {
+    val selectedPaymentMethod: PaymentMethodModel?
+        get() = paymentMethods.find { it.paymentMethodId == selectedPaymentId }
+}
 
 data class PaymentMethodModel(
     val paymentMethodId: Int,
@@ -36,4 +40,15 @@ data class PaymentMethodModel(
     val cardType: String,
     val cardDigits: String,
     val expiry: String
-)
+) {
+    val cardTypeWithDigits: String
+        get() {
+            val cardTypeFormatted = when (cardType.lowercase()) {
+                "visa" -> "VISA"
+                "mastercard" -> "MasterCard"
+                "amex" -> "American Express"
+                else -> cardType.capitalize()
+            }
+            return "$cardTypeFormatted****$cardDigits"
+        }
+}

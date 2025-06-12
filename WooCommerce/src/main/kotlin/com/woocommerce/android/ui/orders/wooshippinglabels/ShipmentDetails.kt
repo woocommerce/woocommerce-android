@@ -26,6 +26,9 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -63,6 +66,7 @@ fun ShipmentDetails(
     shippingLines: List<ShippingLineSummaryUI>,
     shippingAddresses: WooShippingAddresses,
     shippingRateSummary: ShippingRateSummaryUI?,
+    paymentsSectionUI: PaymentsSectionUI,
     modifier: Modifier = Modifier,
     noticeBannerUiState: NoticeBannerUiState? = null,
     isShipmentDetailsExpanded: Boolean = false,
@@ -127,6 +131,7 @@ fun ShipmentDetails(
                 shippingLines = shippingLines,
                 shippingAddresses = shippingAddresses,
                 shippingRateSummary = shippingRateSummary,
+                paymentsSectionUI = paymentsSectionUI,
                 modifier = modifier.padding(top = dimensionResource(R.dimen.major_100)),
                 isReadOnly = isReadOnly,
                 onEditDestinationAddress = onEditDestinationAddress,
@@ -140,11 +145,12 @@ fun ShipmentDetails(
                 totalItemsCost = totalItemsCost,
                 shippingLines = shippingLines,
                 markOrderComplete = markOrderComplete,
-                onMarkOrderCompleteChange = onMarkOrderCompleteChange,
                 shippingAddresses = shippingAddresses,
                 shippingRateSummary = shippingRateSummary,
+                paymentsSectionUI = paymentsSectionUI,
                 modifier = modifier.padding(top = dimensionResource(R.dimen.minor_100)),
                 isReadOnly = isReadOnly,
+                onMarkOrderCompleteChange = onMarkOrderCompleteChange,
                 onEditDestinationAddress = onEditDestinationAddress,
                 onEditOriginAddress = onEditOriginAddress,
                 onOriginAddressSelected = onOriginAddressSelected,
@@ -161,8 +167,9 @@ private fun ShipmentDetailsPortrait(
     shippingLines: List<ShippingLineSummaryUI>,
     shippingAddresses: WooShippingAddresses,
     markOrderComplete: Boolean,
-    onMarkOrderCompleteChange: (Boolean) -> Unit,
     shippingRateSummary: ShippingRateSummaryUI?,
+    paymentsSectionUI: PaymentsSectionUI,
+    onMarkOrderCompleteChange: (Boolean) -> Unit,
     onEditDestinationAddress: (DestinationShippingAddress) -> Unit,
     onEditOriginAddress: (OriginShippingAddress) -> Unit,
     onOriginAddressSelected: (OriginShippingAddress) -> Unit,
@@ -189,7 +196,10 @@ private fun ShipmentDetailsPortrait(
                 destinationStatus = destinationStatus
             )
             Divider(modifier = Modifier.padding(horizontal = 16.dp))
-            PaymentSection(Modifier.padding(16.dp))
+            PaymentSection(
+                paymentsSectionUI = paymentsSectionUI,
+                modifier = Modifier.padding(16.dp)
+            )
             Divider(modifier = Modifier.padding(horizontal = 16.dp))
             ShipmentCostSection(
                 shippingRateSummary = shippingRateSummary,
@@ -213,6 +223,7 @@ private fun ShipmentDetailsLandscape(
     shippingLines: List<ShippingLineSummaryUI>,
     shippingAddresses: WooShippingAddresses,
     shippingRateSummary: ShippingRateSummaryUI?,
+    paymentsSectionUI: PaymentsSectionUI,
     onEditDestinationAddress: (DestinationShippingAddress) -> Unit,
     onEditOriginAddress: (OriginShippingAddress) -> Unit,
     onOriginAddressSelected: (OriginShippingAddress) -> Unit,
@@ -249,7 +260,10 @@ private fun ShipmentDetailsLandscape(
                 )
                 VerticalDivider(modifier = Modifier.padding(top = 16.dp))
                 Column(modifier = Modifier.weight(1f)) {
-                    PaymentSection(Modifier.padding(16.dp))
+                    PaymentSection(
+                        paymentsSectionUI = paymentsSectionUI,
+                        modifier = Modifier.padding(16.dp)
+                    )
                     Divider()
                     ShipmentCostSection(
                         shippingRateSummary = shippingRateSummary,
@@ -439,9 +453,50 @@ private fun TotalItem(
 
 @Composable
 private fun PaymentSection(
+    paymentsSectionUI: PaymentsSectionUI,
     modifier: Modifier = Modifier
 ) {
-    Text("Payment Section", modifier)
+    Column(
+        modifier = modifier
+    ) {
+        ShipmentDetailsSectionTitle(
+            title = stringResource(R.string.shipping_label_shipment_details_payment_method),
+            modifier = Modifier.padding(bottom = 4.dp)
+        )
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .clickable(onClick = { TODO() })
+                .padding(vertical = 4.dp)
+        ) {
+            if (paymentsSectionUI.selectedPaymentMethod != null) {
+                Text(
+                    text = paymentsSectionUI.selectedPaymentMethod.cardTypeWithDigits,
+                    style = MaterialTheme.typography.body1,
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                Icon(
+                    imageVector = Icons.Default.Edit,
+                    contentDescription = stringResource(R.string.shipping_label_shipment_details_edit_payment_method),
+                    tint = MaterialTheme.colors.primary,
+                    modifier = Modifier.padding(end = 8.dp)
+                )
+            } else {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = null,
+                    tint = MaterialTheme.colors.primary,
+                    modifier = Modifier.padding(end = 8.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = stringResource(R.string.shipping_label_shipment_details_add_payment_method),
+                    style = MaterialTheme.typography.body1
+                )
+            }
+        }
+    }
 }
 
 @Composable
@@ -533,6 +588,7 @@ fun ShipmentDetailsLandscapePreview() {
                     originAddresses = listOf(ShippingLabelSampleData.getShipFrom())
                 ),
                 shippingRateSummary = null,
+                paymentsSectionUI = ShippingLabelSampleData.getPaymentsSection(),
                 modifier = Modifier,
                 noticeBannerUiState = null,
                 isShipmentDetailsExpanded = false,

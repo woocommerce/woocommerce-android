@@ -42,6 +42,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.Should
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ShouldRequireITN
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.PaymentMethodModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PurchaseState
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PurchasedLabelData
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
@@ -518,7 +519,8 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                 shippingLines = shippingLineSummary,
                 shippingAddresses = addresses,
                 uiState = uiState,
-                destinationStatus = destinationStatus
+                destinationStatus = destinationStatus,
+                paymentsSectionUI = PaymentsSectionUI(accountSettings.paymentMethodOptions.selectedPaymentMethod)
             )
         }.combine(loadTrigger.onStart { emit(Unit) }) { viewState, _ ->
             viewState
@@ -933,6 +935,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             val shippingAddresses: WooShippingAddresses,
             val uiState: UIControlsState,
             val destinationStatus: AddressStatus,
+            val paymentsSectionUI: PaymentsSectionUI
         ) : WooShippingViewState() {
             val shouldShowSplitShipmentButton: Boolean
                 get() {
@@ -1109,3 +1112,7 @@ data class ShippingRateSummaryUI(
     val optionName: String? = null,
     val optionFee: String? = null
 ) : Parcelable
+
+data class PaymentsSectionUI(
+    val selectedPaymentMethod: PaymentMethodModel?
+)
