@@ -1315,7 +1315,7 @@ class WooPosCartViewModelTest {
         )
 
         whenever(searchByIdentifier(eq("VAR123456"), any())).thenReturn(
-            WooPosSearchByIdentifierResult.VariationSuccess(variation)
+            WooPosSearchByIdentifierResult.VariationSuccess(variation, product)
         )
         whenever(formatPrice(eq(BigDecimal("45.0")))).thenReturn("45.0$")
         whenever(getProductById(eq(productId))).thenReturn(product)
