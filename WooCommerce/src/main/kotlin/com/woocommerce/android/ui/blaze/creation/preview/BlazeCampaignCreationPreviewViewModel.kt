@@ -407,15 +407,21 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
             currencyCode
         )
 
-    private fun CampaignDetails.buildCampaignTosText() = UiStringRes(
-        stringRes = R.string.blaze_campaign_preview_tos_checkbox_evergreen_campaigns,
-        params = listOf(
-            UiStringText(budget.toDisplayTotalBudget()),
-            UiStringText(budget.startDate.formatToLocalizedMedium())
-        ),
-        containsHtml = true
-    )
-
+    private fun CampaignDetails.buildCampaignTosText(): UiStringRes {
+        val stringRes = when {
+            budget.isEndlessCampaign -> R.string.blaze_campaign_preview_tos_checkbox_evergreen_campaigns
+            budget.durationInDays <= 7 -> R.string.blaze_campaign_preview_tos_checkbox_less_than_7_days_campaign
+            else -> R.string.blaze_campaign_preview_tos_checkbox_over_7_days_campaign
+        }
+        return UiStringRes(
+            stringRes = stringRes,
+            params = listOf(
+                UiStringText(budget.toDisplayTotalBudget()),
+                UiStringText(budget.startDate.formatToLocalizedMedium())
+            ),
+            containsHtml = true
+        )
+    }
 
     data class CampaignPreviewUiState(
         val adDetails: AdDetailsUi,
