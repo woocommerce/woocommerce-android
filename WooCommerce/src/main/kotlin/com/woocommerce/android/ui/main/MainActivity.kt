@@ -394,6 +394,8 @@ class MainActivity :
         // Track if App was opened from a widget
         trackIfOpenedFromWidget()
 
+        posTabController.refreshPOSTabVisibility()
+
         if (selectedSite.exists()) {
             if (VERSION.SDK_INT >= VERSION_CODES.TIRAMISU) {
                 viewModel.checkForNotificationsPermission(WooPermissionUtils.hasNotificationsPermission(this))

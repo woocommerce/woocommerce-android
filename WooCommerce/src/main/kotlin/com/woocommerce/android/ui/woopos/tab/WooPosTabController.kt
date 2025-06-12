@@ -31,14 +31,12 @@ class WooPosTabController @Inject constructor(
     }
 
     /**
-     * Initializes the POS tab with default settings and navigation handling, updating its visibility.
+     * Initializes the POS tab with default settings and navigation handling.
      * Should be called once during activity setup (e.g., in onCreate).
      */
     fun setupPOSTab() {
-        setPOSTabVisibility(false) // Hide by default
-
+        setPOSTabVisibility(false)
         if (isPOSAsATabEnabled()) {
-            updatePOSTabVisibility()
             setupPOSTabNavigation()
         }
     }
