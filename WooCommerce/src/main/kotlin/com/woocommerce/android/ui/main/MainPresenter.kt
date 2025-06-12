@@ -13,7 +13,6 @@ import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite.SelectedSiteChangedEvent
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.payments.cardreader.ClearCardReaderDataAction
-import com.woocommerce.android.ui.woopos.WooPosIsEnabled
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -38,8 +37,7 @@ class MainPresenter @Inject constructor(
     private val clearCardReaderDataAction: ClearCardReaderDataAction,
     private val accountRepository: AccountRepository,
     private val tracks: AnalyticsTrackerWrapper,
-    private val observeProcessingOrdersCount: ObserveProcessingOrdersCount,
-    private val isWooPosEnabled: WooPosIsEnabled
+    private val observeProcessingOrdersCount: ObserveProcessingOrdersCount
 ) : MainContract.Presenter {
     private var mainView: MainContract.View? = null
 
@@ -187,6 +185,4 @@ class MainPresenter @Inject constructor(
             mapOf(AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_BANNER)
         )
     }
-
-    override suspend fun shouldShowPOSFeature() = isWooPosEnabled.invoke()
 }
