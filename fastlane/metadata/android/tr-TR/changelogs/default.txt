@@ -1,0 +1,2 @@
+22.5:
+Bu güncellemeyle WooCommerce deneyiminiz geliştirildi! İyileştirilmiş özel tutar düzenleme formumuz, Varyasyon Özellikleri için eklenen araç çubuğu ile tablette daha iyi gezinme, gelişmiş POS algoritmalarımızla daha hızlı ürün aramaları ve indirimlerinizi hızla bulmanıza yardımcı olacak yeni bir Kupon arama özelliğiyle daha sorunsuz bir sipariş oluşturma deneyiminin keyfini çıkarın. İyi satışlar!

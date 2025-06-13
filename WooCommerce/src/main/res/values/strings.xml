@@ -4040,6 +4040,8 @@
     <string name="blaze_campaign_product_photo_picker_title">Product Photos</string>
     <string name="blaze_campaign_product_photo_picker_empty">No photos found</string>
     <string name="blaze_campaign_product_photo_picker_photo_content_description">Product photo</string>
+    <string name="blaze_campaign_edit_ad_arrow_forward_description">Next suggestion</string>
+    <string name="blaze_campaign_edit_ad_arrow_back_description">Previous suggestion</string>
 
     <!--
     Blaze campaign payment

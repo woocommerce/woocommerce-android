@@ -810,4 +810,8 @@ theme across the entire app. Overridden versions should be added to the styles.x
     <style name="Woo.Theme.BottomSheetDialog.Resizeable" parent="Woo.Theme.BottomSheetDialog">
         <item name="android:windowSoftInputMode">adjustResize</item>
     </style>
+
+    <style name="Woo.Theme.CalendarView" parent="android:Widget.CalendarView">
+        <item name="android:textColorPrimary">@color/color_on_surface_medium</item>
+    </style>
 </resources>

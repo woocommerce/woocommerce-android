@@ -1,16 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-05-20 09:54:04+0000
+Translation-Revision-Date: 2025-06-03 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_search_items_error_description">もう一度お試しください。</string>
+    <string name="woopos_search_coupons_error_title">クーポンを読み込めません</string>
+    <string name="woopos_search_items_error_title">商品を読み込めません</string>
+    <string name="woopos_search_empty_coupons_description">一致するクーポンが見つかりませんでした。検索語句を調整してみてください。</string>
+    <string name="woopos_search_empty_description">一致する商品が見つかりませんでした。検索語句を調整してみてください。</string>
+    <string name="woopos_search_coupons_empty_title">クーポンが見つかりません</string>
+    <string name="woopos_search_coupons">クーポンを検索</string>
+    <string name="woopos_coupons_pagination_error_description">ネットワーク接続を確認して、もう一度お試しください。</string>
+    <string name="woopos_variations_loading_error_message">ネットワーク接続を確認して、もう一度お試しください。</string>
+    <string name="woopos_items_pagination_error_description">ネットワーク接続を確認して、もう一度お試しください。</string>
+    <string name="woopos_coupons_loading_error_message">ネットワーク接続を確認して、もう一度お試しください。</string>
+    <string name="woopos_coupons_empty_list_message">クーポンはビジネスを促進する効果的な方法になり得ます。 作成しますか ?</string>
+    <string name="woopos_coupons_loading_error_coupons_disabled_message">WooCommerce の設定でクーポンコードを有効にして、顧客向けのクーポンコードの作成を開始します。</string>
+    <string name="woopos_products_loading_error_message">もう一度お試しください。</string>
+    <string name="blaze_campaign_preview_product_image_content_description">広告に使用された商品画像</string>
+    <string name="custom_amounts_save_changes">変更を保存</string>
     <string name="purchased_shipment_content_description">購入済</string>
-    <string name="woopos_totals_invalid_coupon_error">クーポンを適用できませんでした</string>
+    <string name="woopos_totals_invalid_coupon_error">クーポンを適用できません</string>
     <string name="woopos_coupons_empty_list_create_coupon_label">クーポンを作成</string>
-    <string name="woopos_coupons_loading_error_coupons_disabled_message">WooCommerce 設定でクーポンを有効にしてください。</string>
-    <string name="woopos_coupons_loading_error_coupons_disabled_title">クーポンが見つかりません</string>
+    <string name="woopos_coupons_loading_error_coupons_disabled_title">クーポンの受け付けを開始</string>
     <string name="woopos_totals_coupons_validation_failed_remove_coupons">クーポンを削除</string>
     <string name="woopos_totals_coupons_validation_failed_edit_order">注文を編集</string>
     <string name="woopos_cart_coupon_invalid_subtitle">クーポンが適用されませんでした</string>
@@ -21,14 +36,11 @@ Language: ja_JP
     <string name="woo_shipping_split_shipment_merge_unfulfilled_menu">すべての未処理をマージ</string>
     <string name="woo_shipping_labels_package_creation_unstarred">このアイテムのスターを解除</string>
     <string name="woo_shipping_labels_package_creation_starred">このアイテムにスターを付ける</string>
-    <string name="woopos_coupons_pagination_error_content_description">「クーポンをこれ以上読み込めませんでした。 ダブルタップしてもう一度お試しください」</string>
-    <string name="woopos_coupons_pagination_error_description">「クーポンの読み込み中にエラーが発生しました」</string>
-    <string name="woopos_coupons_pagination_error_title">その他のアイテムの読み込みに失敗しました」</string>
-    <string name="woopos_coupons_pagination_try_again_label">もう一度お試しください</string>
+    <string name="woopos_coupons_pagination_error_content_description">クーポンをこれ以上読み込めません。 ダブルタップしてもう一度お試しください。</string>
+    <string name="woopos_coupons_pagination_error_title">クーポンをこれ以上読み込めません</string>
+    <string name="woopos_coupons_pagination_try_again_label">再試行</string>
     <string name="woopos_coupons_loading_error_retry_button">再試行</string>
-    <string name="woopos_coupons_loading_error_message">もう一度試しますか ?</string>
-    <string name="woopos_coupons_loading_error_title">クーポンの読み込み中にエラーが発生しました</string>
-    <string name="woopos_coupons_empty_list_message">顧客に特別オファーや割引を提供して売上を向上</string>
+    <string name="woopos_coupons_loading_error_title">クーポンを読み込めません</string>
     <string name="woopos_coupons_empty_list_title">クーポンが見つかりません</string>
     <string name="woopos_coupons_empty_list_image_description">クーポンがありません</string>
     <string name="woopos_coupons_screen_title">クーポン</string>
@@ -60,11 +72,8 @@ Language: ja_JP
     <string name="woo_shipping_labels_hazmat_info_full_description">危険性が高いと考えられる品目には、電池、ドライアイス、可燃性液体、エアロゾル、弾薬、花火、マニキュア、香水、塗料、溶剤などがあります。 危険物は個別に梱包して発送する必要があります。</string>
     <string name="woo_shipping_labels_hazmat_info_contains_hazmat">有害物質を含む</string>
     <string name="woo_shipping_labels_hazmat_info_title">危険物または有害物質を発送しようとしていますか ?</string>
-    <string name="woopos_search_items_error_description">もう一度試しますか ?</string>
-    <string name="woopos_search_items_error_title">項目を読み込めませんでした</string>
     <string name="woopos_search_empty_image_content_description">項目が見つかりませんでした</string>
-    <string name="woopos_search_empty_description">検索に一致するものが見つかりませんでした。</string>
-    <string name="woopos_search_items_empty_title">見つかりません</string>
+    <string name="woopos_search_items_empty_title">商品が見つかりません</string>
     <string name="woopos_payment_discount_label">割引合計</string>
     <string name="woopos_cart_item_coupon_content_description">お買い物カゴ %s のクーポン </string>
     <string name="shipping_label_package_title">荷物を選択</string>
@@ -221,9 +230,8 @@ Language: ja_JP
     <string name="woopos_complete_cash_order_button">支払いを完了としてマーク</string>
     <string name="woopos_cash_payment_title">現金での支払い</string>
     <string name="woopos_items_pagination_error_content_description">「その他のアイテムの読み込みに失敗しました。 ダブルタップしてもう一度お試しください」</string>
-    <string name="woopos_items_pagination_error_description">「商品の読み込み中にエラーが発生しました」</string>
-    <string name="woopos_items_pagination_error_title">「その他のアイテムの読み込みに失敗しました」</string>
-    <string name="woopos_items_pagination_try_again_label">もう一度お試しください</string>
+    <string name="woopos_items_pagination_error_title">商品をこれ以上読み込めません</string>
+    <string name="woopos_items_pagination_try_again_label">再試行</string>
     <string name="woo_pos_payment_failed_go_back_to_checkout">購入手続きに戻る</string>
     <string name="woo_pos_payment_failed_try_again">再度支払いを試す</string>
     <string name="woo_pos_payment_failed_try_another_payment_method">別の支払い方法を試す</string>
@@ -259,7 +267,7 @@ Language: ja_JP
     <string name="site_picker_edit_store_list_footer">選択解除されたストアはアプリでサイトの選択画面に表示されず、新しい注文または商品レビューのプッシュ通知は送信されません</string>
     <string name="site_picker_edit_store_list_title">表示されるストア</string>
     <string name="site_picker_edit_store_list">ストアを編集</string>
-    <string name="woopos_variations_loading_error_title">バリエーションの読み込み中にエラーが発生しました</string>
+    <string name="woopos_variations_loading_error_title">バリエーションを読み込めません</string>
     <string name="woopos_variations_back_content_description">戻る</string>
     <string name="woopos_variation_item_content_description">バリエーション %s、価格 %s</string>
     <string name="woopos_variable_product_item_content_description">バリエーションのある商品 %s、価格 %s</string>
@@ -410,8 +418,7 @@ Language: ja_JP
     <string name="woopos_totals_order_creation_error">注文を作成できませんでした</string>
     <string name="woopos_products_loading_error_retry_button">再試行</string>
     <string name="woopos_error_icon_content_description">エラー表示アイコン</string>
-    <string name="woopos_products_loading_error_message">もう一度試しますか ?</string>
-    <string name="woopos_products_loading_error_title">商品の読み込み中にエラーが発生しました</string>
+    <string name="woopos_products_loading_error_title">商品を読み込めません</string>
     <string name="woopos_products_empty_list_message_two">現在、POS はシンプルな商品のみに対応しています</string>
     <string name="woopos_variations_empty_list_message">現在、POS はシンプルな商品、バリエーションのある商品、仮想商品のみに対応しています – \n作成して開始します。</string>
     <string name="woopos_products_empty_list_title">サポート対象の商品が見つかりません</string>
@@ -1572,8 +1579,6 @@ Language: ja_JP
     <string name="settings_confirm_logout_site_credentials">アカウントからログアウトしてもよろしいですか ?</string>
     <string name="domains_generic_error_title">サイトドメインを読み込めません</string>
     <string name="store_onboarding_completed_tasks_status">%1$d/%2$d 完了</string>
-    <string name="store_onboarding_task_change_domain_description">ストアをホストするカスタム URL を所有する。</string>
-    <string name="store_onboarding_task_change_domain_title">ドメインをカスタマイズ</string>
     <string name="store_onboarding_task_launch_store_description">いつでも好きなときに、自分のサイトを世界中に公開できます。</string>
     <string name="store_onboarding_task_launch_store_title">ストアを立ち上げる</string>
     <string name="store_onboarding_task_add_product_description">ストアに商品やサービスを追加して販売を開始します。</string>

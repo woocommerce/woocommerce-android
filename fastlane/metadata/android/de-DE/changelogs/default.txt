@@ -1,0 +1,2 @@
+22.5:
+Mit diesem Update haben wir dein WooCommerce-Erlebnis verbessert! Die Erstellung von Bestellungen ist jetzt noch nahtloser – dank unserem verbesserten und individuell anpassbaren Formular zur Mengenbearbeitung, einer besseren Navigation auf dem Tablet sowie einer zusätzlichen Werkzeugleiste für Variantenattribute, schnelleren Produktsuchen mit unseren verbesserten POS-Algorithmen und einer neuen Gutschein-Suchfunktion, mit der du Rabatte schnell finden kannst. Viel Spaß beim Verkaufen!
