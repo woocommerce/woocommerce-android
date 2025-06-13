@@ -37,6 +37,7 @@ class WooShippingLabelRefundViewModelTest : BaseUnitTest() {
             ).toSavedStateHandle(),
             selectedSite = selectedSite,
             repository = repository,
+            configDataStore = mock(),
             networkStatus = networkStatus,
             currencyFormatter = mock()
         )
