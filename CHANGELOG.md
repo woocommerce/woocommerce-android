@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 22.6
+This release brings smoother order creation, better UI on tablets, and enhanced accessibility. POS now supports HID barcode scanners, sends detailed receipts, and checks feature availability for WooCommerce 10.0+. We've also improved refunds, payments UI, and large screen support.
+
 ## 22.5
 We've enhanced your WooCommerce experience with this update! Enjoy smoother order creation with our improved custom amount editing form, better tablet navigation with the added toolbar for Variation Attributes, faster product searches with our enhanced POS algorithms, and a new Coupons search feature to help you find discounts quickly. Happy selling!
 
