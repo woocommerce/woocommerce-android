@@ -7,6 +7,8 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.formatToLocalizedMedium
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingLabelRepository
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -23,6 +25,8 @@ import javax.inject.Inject
 @HiltViewModel
 class WooShippingLabelRefundViewModel @Inject constructor(
     savedState: SavedStateHandle,
+    private val selectedSite: SelectedSite,
+    private val repository: WooShippingLabelRepository,
     private val networkStatus: NetworkStatus,
     private val currencyFormatter: CurrencyFormatter,
 ) : ScopedViewModel(savedState) {
@@ -56,6 +60,17 @@ class WooShippingLabelRefundViewModel @Inject constructor(
         if (networkStatus.isConnected()) {
             _viewState.update { ViewState.Loading }
             launch {
+                repository.refundLabel(
+                    selectedSite.get(),
+                    arguments.orderId,
+                    arguments.shipment.labelId ?: return@launch
+                ).takeIf { it.isError.not() }?.let {
+                    triggerEvent(ShowSnackbar(R.string.shipping_label_refund_success))
+                    triggerEvent(Exit)
+                } ?: run {
+                    triggerEvent(ShowSnackbar(R.string.order_refunds_amount_refund_error))
+                    loadDataState()
+                }
             }
         } else {
             triggerEvent(ShowSnackbar(R.string.offline_error))

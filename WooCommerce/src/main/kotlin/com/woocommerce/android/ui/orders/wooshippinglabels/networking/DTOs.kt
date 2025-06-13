@@ -214,6 +214,8 @@ data class CustomsItemDTO(
     @SerializedName("product_id") val productId: Long
 )
 
+data class RefundLabelResponseDTO(val success: Boolean)
+
 private class ShipmentMapDeserializer : JsonDeserializer<ShipmentMap> {
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): ShipmentMap {
         // Handle string-encoded JSON or direct JSON object

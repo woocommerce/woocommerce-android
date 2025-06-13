@@ -245,4 +245,10 @@ class WooShippingLabelRepository @Inject constructor(
         shipments = shipments,
         shipmentIdsToUpdate = shipmentIdsToUpdate
     ).asWooResult()
+
+    suspend fun refundLabel(
+        site: SiteModel,
+        orderId: Long,
+        labelId: Long
+    ): WooResult<RefundLabelResponseDTO> = restClient.refundShippingLabel(orderId, labelId, site).asWooResult()
 }
