@@ -5,7 +5,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.preview.FontScalePreviews
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosDialogWrapper
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
@@ -46,6 +49,7 @@ fun WooPosBarcodeInfoDialog(
     onDismissRequest: () -> Unit,
 ) {
     val context = LocalContext.current
+    val scrollState = rememberScrollState()
     val dialogContentDescription = getCombinedContentDescription(state = state)
     val primaryButtonContentDescription = stringResource(
         id = R.string.woopos_banner_simple_products_dialog_primary_button_content_description
@@ -70,7 +74,9 @@ fun WooPosBarcodeInfoDialog(
         ) {
             @Suppress("DestructuringDeclarationWithTooManyEntries")
             ConstraintLayout(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(scrollState)
             ) {
                 val (
                     header,
@@ -265,6 +271,7 @@ private fun getCombinedContentDescription(state: WooPosHomeState.BarcodeInfoDial
         "\n${stringResource(id = state.quaternaryMessage)}\n${stringResource(id = state.quinaryMessage)}"
 }
 
+@FontScalePreviews
 @WooPosPreview
 @Composable
 fun BarcodeInfoDialogPreview() {
