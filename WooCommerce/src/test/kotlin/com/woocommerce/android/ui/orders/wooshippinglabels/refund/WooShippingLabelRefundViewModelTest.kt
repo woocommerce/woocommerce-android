@@ -59,7 +59,7 @@ class WooShippingLabelRefundViewModelTest : BaseUnitTest() {
         assertThat(capturedEvents.first()).isInstanceOf(Event.ShowSnackbar::class.java)
         assertThat((capturedEvents.first() as Event.ShowSnackbar).message)
             .isEqualTo(R.string.shipping_label_refund_success)
-        assertThat(capturedEvents.last()).isEqualTo(Event.Exit)
+        assertThat(capturedEvents.last()).isEqualTo(Event.ExitWithResult(mockLabelId))
     }
 
     @Test
