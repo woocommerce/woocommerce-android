@@ -16,6 +16,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.disabled
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
@@ -58,16 +59,18 @@ fun WooPosBarcodeInfoDialog(
         id = R.string.woopos_dialog_barcode_info_background_content_description
     )
     WooPosDialogWrapper(
-        modifier = Modifier,
+        modifier = Modifier.semantics {
+            disabled() // enforce talkback to read dialog content first while allowing to dismiss the dialog
+        },
         isVisible = state.isVisible,
         dialogBackgroundContentDescription = dialogBackgroundContentDescription,
-        onDismissRequest = onDismissRequest
+        onDismissRequest = onDismissRequest,
     ) {
         Box(
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.surfaceBright)
                 .padding(WooPosSpacing.XLarge.value.toAdaptivePadding())
-                .semantics(mergeDescendants = true) {
+                .semantics {
                     contentDescription = dialogContentDescription
                 },
             contentAlignment = Alignment.Center
