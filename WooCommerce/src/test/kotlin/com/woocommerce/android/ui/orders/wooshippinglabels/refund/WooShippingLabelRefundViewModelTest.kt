@@ -25,7 +25,7 @@ class WooShippingLabelRefundViewModelTest : BaseUnitTest() {
     private val mockLabelId = 789L
     val mockSite = SiteModel().apply { siteId = 123 }
 
-    private val selectedSite: SelectedSite = mock { on { getOrNull() } doReturn mockSite }
+    private val selectedSite: SelectedSite = mock { on { get() } doReturn mockSite }
     private val repository: WooShippingLabelRepository = mock()
     private val networkStatus: NetworkStatus = mock { on { isConnected() } doReturn true }
 
@@ -34,7 +34,11 @@ class WooShippingLabelRefundViewModelTest : BaseUnitTest() {
         viewModel = WooShippingLabelRefundViewModel(
             WooShippingLabelRefundFragmentArgs(
                 orderId = mockOrderId,
-                shipment = ShipmentUIModel(localId = "0", items = emptyList(), labelId = mockLabelId)
+                shipment = ShipmentUIModel(
+                    localId = "0",
+                    items = emptyList(),
+                    labelId = mockLabelId
+                )
             ).toSavedStateHandle(),
             selectedSite = selectedSite,
             repository = repository,

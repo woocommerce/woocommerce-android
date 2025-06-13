@@ -60,13 +60,11 @@ class WooShippingLabelRefundViewModel @Inject constructor(
         if (networkStatus.isConnected()) {
             _viewState.update { ViewState.Loading }
             launch {
-                selectedSite.getOrNull()?.let {
-                    repository.refundLabel(
-                        it,
-                        arguments.orderId,
-                        arguments.shipment.labelId ?: return@launch
-                    )
-                }?.takeIf { it.isError.not() }?.let {
+                repository.refundLabel(
+                    selectedSite.get(),
+                    arguments.orderId,
+                    arguments.shipment.labelId ?: return@launch
+                ).takeIf { it.isError.not() }?.let {
                     triggerEvent(ShowSnackbar(R.string.shipping_label_refund_success))
                     triggerEvent(Exit)
                 } ?: run {
