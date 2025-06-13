@@ -28,7 +28,7 @@ class ShippingLabelRefundViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     private var refundJob: Job? = null
     val isRefundInProgress: Boolean
-        get() = refundJob?.isActive ?: false
+        get() = refundJob?.isActive == true
 
     private val arguments: ShippingLabelRefundFragmentArgs by savedState.navArgs()
 
@@ -79,6 +79,6 @@ class ShippingLabelRefundViewModel @Inject constructor(
         @IgnoredOnParcel
         val isRefundExpired: Boolean
             get() = shippingLabel?.isAnonymized == true ||
-                shippingLabel?.refundExpiryDate?.let { Date().after(it) } ?: false
+                shippingLabel?.refundExpiryDate?.let { Date().after(it) } == true
     }
 }
