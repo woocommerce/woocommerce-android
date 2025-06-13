@@ -88,6 +88,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
+import com.woocommerce.android.ui.woopos.common.composeui.modifier.listenForBarcodes
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState.Coupon.CouponValidationState
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartUIEvent.ItemRemovedFromCart
 
@@ -111,6 +112,9 @@ private fun WooPosCartScreen(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.surfaceBright)
+            .listenForBarcodes(
+                onBarcodeScanned = { onUIEvent(WooPosCartUIEvent.OnBarcodeScanned(it)) },
+            )
     ) {
         val (topMargin, toolbar, body, checkoutButton) = createRefs()
 
