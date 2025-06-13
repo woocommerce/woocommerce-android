@@ -56,7 +56,7 @@ fun WooPosBarcodeInfoDialog(
     )
     WooPosDialogWrapper(
         modifier = Modifier.semantics {
-            disabled()
+            disabled() // enforce talkback to read dialog content first while allowing to dismiss the dialog
         },
         isVisible = state.isVisible,
         dialogBackgroundContentDescription = dialogBackgroundContentDescription,
@@ -66,7 +66,7 @@ fun WooPosBarcodeInfoDialog(
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.surfaceBright)
                 .padding(WooPosSpacing.XLarge.value.toAdaptivePadding())
-                .semantics(mergeDescendants = true) {
+                .semantics {
                     contentDescription = dialogContentDescription
                 },
             contentAlignment = Alignment.Center
