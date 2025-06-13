@@ -478,7 +478,7 @@ private fun ProductItem(
 
     WooPosCard(
         modifier = modifier
-            .height(96.dp)
+            .wrapContentHeight()
             .semantics { contentDescription = itemContentDescription },
         backgroundColor = if (item.productDoesNotExist) {
             WooPosTheme.colors.disabledContainer
@@ -490,13 +490,16 @@ private fun ProductItem(
         shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
     ) {
         Row(
+            modifier = Modifier.height(IntrinsicSize.Min),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier
                     .background(MaterialTheme.colorScheme.surfaceDim)
-                    .size(96.dp),
+                    .width(96.dp)
+                    .fillMaxHeight()
+                    .heightIn(min = 96.dp),
                 contentAlignment = Alignment.Center
             ) {
                 val asyncImagePainter = rememberAsyncImagePainter(
@@ -538,7 +541,8 @@ private fun ProductItem(
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(end = WooPosSpacing.Medium.value.toAdaptivePadding())
+                    .padding(end = WooPosSpacing.Medium.value.toAdaptivePadding(),)
+                    .padding(vertical = WooPosSpacing.Medium.value.toAdaptivePadding())
             ) {
                 WooPosText(
                     text = item.name,
