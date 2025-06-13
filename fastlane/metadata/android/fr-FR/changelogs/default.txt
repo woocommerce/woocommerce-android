@@ -1,2 +1,0 @@
-22.5 :
-Nous améliorons votre expérience WooCommerce avec cette mise à jour ! Profitez d’une création de commande plus fluide avec notre formulaire d’édition de montant personnalisé amélioré, d’une meilleure navigation sur tablette avec la barre d’outils ajoutée pour les attributs des variantes, de recherches de produits plus rapides avec nos algorithmes de PDV améliorés et d’une nouvelle fonctionnalité de recherche de codes promo pour vous aider à trouver rapidement des remises. Bonnes ventes !

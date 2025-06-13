@@ -1,2 +1,0 @@
-22.5:
-Nesta atualização, melhoramos sua experiência no WooCommerce! Aproveite a criação de pedidos mais tranquila com nosso formulário de edição de quantidade personalizada aprimorado, melhor navegação no tablet com a nova barra de ferramentas para atributos de variação, pesquisas mais rápidas de produtos com nossos algoritmos de PDV aprimorados e um novo recurso de pesquisa de cupons para ajudar você a encontrar descontos rapidamente. Boas vendas!
