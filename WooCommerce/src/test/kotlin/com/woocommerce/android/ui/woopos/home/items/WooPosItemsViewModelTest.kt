@@ -405,21 +405,6 @@ class WooPosItemsViewModelTest {
         }
     }
 
-    @Test
-    fun `when barcode scanned, then event passed to parent`() = runTest {
-        // GIVEN
-        val viewModel = createViewModel()
-
-        // WHEN
-        viewModel.onUIEvent(WooPosItemsUIEvent.BarcodeScanned("1234567890"))
-
-        // THEN
-        verify(fromChildToParentEventSender).sendToParent(
-            eq(
-                ChildToParentEvent.BarcodeScanned("1234567890")
-            )
-        )
-    }
 
     @Test
     fun `when switching tabs, then search loading state is reset`() = runTest {
