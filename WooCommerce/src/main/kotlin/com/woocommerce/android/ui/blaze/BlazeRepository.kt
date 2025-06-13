@@ -194,7 +194,8 @@ class BlazeRepository @Inject constructor(
                 parameters = emptyMap()
             ),
             objectiveId = appPrefsWrapper.blazeCampaignSelectedObjective,
-            ctaText = ""
+            ctaText = "",
+            acceptedTos = false
         )
     }
 
@@ -324,7 +325,8 @@ class BlazeRepository @Inject constructor(
                     )
                 },
                 isEndlessCampaign = campaignDetails.budget.isEndlessCampaign,
-                objectiveId = campaignDetails.objectiveId
+                objectiveId = campaignDetails.objectiveId,
+                acceptedTos = campaignDetails.acceptedTos,
             )
         )
 
@@ -401,7 +403,8 @@ class BlazeRepository @Inject constructor(
         val budget: Budget,
         val targetingParameters: TargetingParameters,
         val destinationParameters: DestinationParameters,
-        val objectiveId: String
+        val objectiveId: String,
+        val acceptedTos: Boolean
     ) : Parcelable
 
     sealed interface BlazeCampaignImage : Parcelable {
