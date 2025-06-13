@@ -260,13 +260,14 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     @OptIn(FlowPreview::class)
     private suspend fun observeShippingRates() {
         combine(
+            accountSettings,
             selectedPackagesFlow.filter { it.isNotEmpty() },
             shippingAddresses,
             packageWeightsFlow.filter { it.isNotEmpty() },
             customsStatesFlow.filter { it.isNotEmpty() },
             hazmatStatesFlow.filter { it.isNotEmpty() },
             refreshShippingRates.onStart { emit(Unit) },
-        ) { selectedPackages, addresses, packageWeight, customState, hazmatStates, _ ->
+        ) { accountSettings, selectedPackages, addresses, packageWeight, customState, hazmatStates, _ ->
             val customsFulfilled = customState[selectedShipmentIndex] is CustomsState.DataAvailable ||
                 customState[selectedShipmentIndex] is NotRequired
             val selectedPackage = selectedPackages[selectedShipmentIndex]
@@ -277,7 +278,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                     shipFrom = addresses.shipFrom,
                     shipTo = addresses.shipTo.address,
                     weight = packageWeight[selectedShipmentIndex]?.totalWeight,
-                    currencyCode = order.value.currency,
+                    currencyCode = accountSettings?.storeOptions?.currencySymbol,
                     customsData = customsFormDataFlow.value[selectedShipmentIndex],
                     hazmatSelection = hazmatStates[selectedShipmentIndex].hazmatSelection
                 )
