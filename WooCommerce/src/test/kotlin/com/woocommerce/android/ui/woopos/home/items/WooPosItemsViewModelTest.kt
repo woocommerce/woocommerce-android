@@ -405,7 +405,6 @@ class WooPosItemsViewModelTest {
         }
     }
 
-
     @Test
     fun `when switching tabs, then search loading state is reset`() = runTest {
         // GIVEN
