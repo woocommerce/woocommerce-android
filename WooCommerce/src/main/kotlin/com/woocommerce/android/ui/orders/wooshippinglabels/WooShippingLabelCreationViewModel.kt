@@ -228,10 +228,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             observeShippingLabelStatus(orderId = navArgs.orderId, labelId = labelId).onEach { result ->
                 updateShipment(
                     shipmentId,
-                    shipments.value[shipmentId].copy(
-                        status = result.status,
-                        refundableAmount = result.refundableAmount ?: BigDecimal.ZERO
-                    )
+                    shipments.value[shipmentId].copy(status = result.status)
                 )
             }.launchIn(this)
         }
@@ -685,8 +682,6 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                         labelId = purchasedLabel.labelId,
                         carrierId = purchasedLabel.carrierId,
                         trackingNumber = purchasedLabel.tracking,
-                        refundableAmount = purchasedLabel.refundableAmount,
-                        purchaseDate = purchasedLabel.created
                     )
                 )
                 observeShippingLabelPurchaseStatus(shipmentId)
