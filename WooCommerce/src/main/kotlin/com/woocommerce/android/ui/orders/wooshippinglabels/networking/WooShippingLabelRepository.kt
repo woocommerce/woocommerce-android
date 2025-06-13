@@ -3,9 +3,9 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.networking
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
+import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingAccountSettingsDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingAddressDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigDataStore
-import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingStoreOptionsDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.AddressNormalizationModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
@@ -23,7 +23,7 @@ class WooShippingLabelRepository @Inject constructor(
     private val restClient: WooShippingLabelRestClient,
     private val mapper: WooShippingNetworkingMapper,
     private val configDataStore: WooShippingConfigDataStore,
-    private val configurationDataStore: WooShippingStoreOptionsDataStore,
+    private val accountSettingsDataStore: WooShippingAccountSettingsDataStore,
     private val addressDataStore: WooShippingAddressDataStore
 ) {
     suspend fun fetchShippingLabelPrinting(
@@ -40,12 +40,12 @@ class WooShippingLabelRepository @Inject constructor(
         site: SiteModel,
     ) = restClient.fetchAccountSettings(
         site = site,
-    ).asWooResult { mapper(it.storeOptions) }
+    ).asWooResult { mapper(it) }
         .also { response ->
             response.model
                 ?.takeIf { response.isError.not() }
                 ?.let {
-                    configurationDataStore.saveStoreOptions(it)
+                    accountSettingsDataStore.saveAccountSettings(it)
                 }
         }
 
