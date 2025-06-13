@@ -3983,7 +3983,9 @@
     <string name="blaze_campaign_preview_missing_content_dialog_positive_button">Add</string>
     <string name="blaze_campaign_preview_missing_objective_dialog_text">Please select an objective for the Blaze campaign</string>
     <string name="blaze_campaign_preview_missing_objective_dialog_positive_button">Select objective</string>
-
+    <string name="blaze_campaign_preview_tos_checkbox_less_than_7_days_campaign">I agree to be charged up to %1$s starting %2$s. Charges may occur in one or more payments while the campaign is active. &lt;a href=\'cancelInstructions\'&gt;&lt;u&gt;I can cancel anytime&lt;/u&gt;&lt;/a&gt;; I\’ll only pay for ads delivered up to cancellation.</string>
+    <string name="blaze_campaign_preview_tos_checkbox_over_7_days_campaign">I agree to a recurring charge of up to %1$s weekly, starting %2$s. Charges may occur at varying times during the campaign. &lt;a href=\'cancelInstructions\'&gt;&lt;u&gt;I can cancel anytime&lt;/u&gt;&lt;/a&gt;; I\’ll only pay for ads delivered up to cancellation.</string>
+    <string name="blaze_campaign_preview_tos_checkbox_evergreen_campaigns">I agree to a recurring weekly charge up to %1$s starting %2$s. Charges may occur at varying times during the campaign. &lt;a href=\'cancelInstructions\'&gt;&lt;u&gt;I can cancel anytime&lt;/u&gt;&lt;/a&gt;; I\’ll only pay for ads delivered up to cancellation.</string>
     <!--
     Blaze campaign objective screen
     -->
