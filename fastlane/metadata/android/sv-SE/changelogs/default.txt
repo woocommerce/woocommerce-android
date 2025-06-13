@@ -1,2 +1,0 @@
-22.5:
-Vi har förbättrat din WooCommerce-upplevelse med den här uppdateringen. Ta del av smidigare beställningsskapande med vårt förbättrade redigeringsformulär för anpassade belopp, bättre navigering på surfplattor med det tillagda verktygsfältet för variationsattribut, snabbare produktsökningar med våra förbättrade POS-algoritmer och en ny sökfunktion för rabattkoder som hjälper dig att hitta rabatter snabbt. Lycka till med försäljningen.

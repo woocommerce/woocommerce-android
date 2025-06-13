@@ -1,2 +1,0 @@
-22.5:
-Met deze update hebben we je WooCommerce-ervaring verbeterd! Bestellingen aanmaken gaat eenvoudiger met ons verbeterde formulier voor aangepaste bedragen, tabletnavigatie is verbeterd met de toegevoegde werkbalk voor variatie-eigenschappen, het zoeken naar producten gaat sneller met onze verbeterde POS-algoritmen en er is een nieuwe zoekfunctie voor coupons om snel kortingen te vinden. Veel verkoopplezier!
