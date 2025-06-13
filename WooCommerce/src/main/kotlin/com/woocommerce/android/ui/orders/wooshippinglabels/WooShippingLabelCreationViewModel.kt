@@ -110,7 +110,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     private val shouldRequireCustoms: ShouldRequireCustomsForm,
     private val shouldRequireITN: ShouldRequireITN,
     private val fetchShippingLabelFile: FetchShippingLabelFile,
-    private val observeShippingLabelStatus: ObserveShippingLabelStatus
+    private val observeShippingLabelStatus: ObserveShippingLabelStatus,
 ) : ScopedViewModel(savedState) {
     private val navArgs: WooShippingLabelCreationFragmentArgs by savedState.navArgs()
 
@@ -565,6 +565,26 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             }
         }
         shipments.value = newShipments
+    }
+
+    fun onShippingLabelRefunded(labelId: Long) {
+        // Find the shipment with the given labelId
+        val shipmentIndex = shipments.value.indexOfFirst { it.labelId == labelId }
+
+        // If the shipment is found, reset its purchased state
+        if (shipmentIndex != -1) {
+            updateShipment(
+                shipmentIndex,
+                shipments.value[shipmentIndex].copy(
+                    purchased = false,
+                    labelId = null,
+                    carrierId = null,
+                    trackingNumber = null,
+                    purchaseState = PurchaseState.NoStarted,
+                    status = ShippingLabelStatus.UNKNOWN
+                )
+            )
+        }
     }
 
     private fun getSelectedOriginAddress(originAddresses: List<OriginShippingAddress>): OriginShippingAddress {
