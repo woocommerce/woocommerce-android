@@ -5,6 +5,7 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
 import java.util.Date
+import java.util.concurrent.TimeUnit
 
 @Parcelize
 data class ShippingLabelModel(
@@ -29,6 +30,13 @@ data class ShippingLabelModel(
     val currency: String,
     val expiryDate: Long,
 ) : Parcelable {
+    val isRefundAvailable: Boolean
+        get() {
+            val createdTime = createdDate?.time ?: return true
+            return status != ShippingLabelStatus.ANONYMIZED &&
+                Date().before(Date(createdTime + TimeUnit.DAYS.toMillis(REFUND_EXPIRY_DAYS))) == true
+        }
+
     companion object {
         private const val REFUND_EXPIRY_DAYS = 30L
     }
