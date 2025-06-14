@@ -1,9 +1,12 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.models
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
 import java.util.Date
 
+@Parcelize
 data class ShippingLabelModel(
     val labelId: Long,
     val tracking: String,
@@ -25,7 +28,8 @@ data class ShippingLabelModel(
     val rate: BigDecimal,
     val currency: String,
     val expiryDate: Long,
-)
+) : Parcelable {
+}
 
 enum class ShippingLabelStatus {
     @SerializedName("UNKNOWN")
