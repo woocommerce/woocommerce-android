@@ -29,6 +29,9 @@ data class ShippingLabelModel(
     val currency: String,
     val expiryDate: Long,
 ) : Parcelable {
+    companion object {
+        private const val REFUND_EXPIRY_DAYS = 30L
+    }
 }
 
 enum class ShippingLabelStatus {
