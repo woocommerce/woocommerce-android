@@ -35,7 +35,7 @@ class GetShipmentsTests : BaseUnitTest() {
         doReturn(flowOf(null)).whenever(it).observeConfig(any())
     }
 
-    private val sut = GetShipments(orderDetailRepository, productDetailRepository, configDataStore)
+    private val sut = GetShipments(orderDetailRepository, productDetailRepository, configDataStore, mock())
 
     @Test
     fun `when order only contains refunded products then should return empty list`() = testBlocking {
