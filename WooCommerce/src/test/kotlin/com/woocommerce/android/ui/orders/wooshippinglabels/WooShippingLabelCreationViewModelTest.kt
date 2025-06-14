@@ -35,6 +35,8 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.PaymentMethodM
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PaymentMethodOptions
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus.UNKNOWN
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.StoreOptionsModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingCarrier
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
@@ -188,6 +190,29 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         rate = defaultShippingRate,
         feeDescription = "fee description",
         formattedOptionName = Option.DEFAULT.name
+    )
+
+    private val shippingLabelModel = ShippingLabelModel(
+        labelId = 1,
+        tracking = "",
+        refundableAmount = BigDecimal.ZERO,
+        status = UNKNOWN,
+        created = null,
+        carrierId = "",
+        serviceName = "",
+        commercialInvoiceUrl = "",
+        isCommercialInvoiceSubmittedElectronically = false,
+        packageName = "",
+        isLetter = false,
+        productNames = emptyList(),
+        productIds = emptyList(),
+        shipmentId = "0",
+        receiptItemId = 0L,
+        createdDate = null,
+        mainReceiptId = 0L,
+        rate = BigDecimal.ZERO,
+        currency = "",
+        expiryDate = 0L
     )
 
     private val defaultShippingRates = mapOf(
@@ -912,7 +937,11 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     @Test
     fun `onPrintShippingLabelClicked triggers OpenShippingLabelFile event`() = testBlocking {
         whenever(getShipments(any())) doReturn listOf(
-            ShipmentUIModel(localId = "0", items = defaultShippableItems, labelId = 123)
+            ShipmentUIModel(
+                localId = "0",
+                items = defaultShippableItems,
+                label = shippingLabelModel.copy(labelId = 123L)
+            )
         )
         whenever(fetchShippingLabelFile(eq(listOf(123)), any())).thenReturn(file)
 
@@ -961,8 +990,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
             ShipmentUIModel(
                 localId = "0",
                 items = defaultShippableItems,
-                carrierId = "usps",
-                trackingNumber = "123456"
+                label = shippingLabelModel.copy(carrierId = "usps", tracking = "123456"),
             )
         )
 
@@ -979,7 +1007,11 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     @Test
     fun `onSchedulePickUpClicked triggers OpenUrl event`() = testBlocking {
         whenever(getShipments(any())) doReturn listOf(
-            ShipmentUIModel(localId = "0", items = defaultShippableItems, carrierId = "usps")
+            ShipmentUIModel(
+                localId = "0",
+                items = defaultShippableItems,
+                label = shippingLabelModel.copy(carrierId = "usps")
+            )
         )
 
         createViewModel()
@@ -996,7 +1028,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     fun `onRefundClicked triggers NavigateToRefundRequest event`() = testBlocking {
         val labelId = 123L
         whenever(getShipments(any())) doReturn defaultShipments.toMutableList().apply {
-            set(0, defaultShipments.first().copy(labelId = labelId))
+            set(0, defaultShipments.first().copy(label = shippingLabelModel.copy(labelId = labelId)))
         }
 
         createViewModel()
