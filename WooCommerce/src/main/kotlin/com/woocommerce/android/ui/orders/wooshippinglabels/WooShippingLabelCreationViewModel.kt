@@ -1116,6 +1116,7 @@ data class ShipmentUI(
     val shippingRatesState: ShippingRatesState,
     val purchaseState: PurchaseState = PurchaseState.NoStarted,
     val status: ShippingLabelStatus = ShippingLabelStatus.UNKNOWN,
+    val isRefundAvailable: Boolean = false,
 ) : Parcelable {
     val totalItemQuantity
         get() = shippableItems.sumByFloat { it.quantity }.toInt()
