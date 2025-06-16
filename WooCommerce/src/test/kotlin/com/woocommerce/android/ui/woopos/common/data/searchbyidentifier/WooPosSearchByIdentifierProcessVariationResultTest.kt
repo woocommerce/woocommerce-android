@@ -36,7 +36,9 @@ class WooPosSearchByIdentifierProcessVariationResultTest {
             whenever(
                 variationFetch.invoke(variationId, parentId)
             ).thenReturn(WooPosSearchByIdentifierVariationFetch.VariationFetchResult.Success(variation))
-            whenever(productGetOrFetch.invoke(parentId)).thenReturn(WooPosSearchByIdentifierResult.Success(parentProduct))
+            whenever(productGetOrFetch.invoke(parentId)).thenReturn(
+                WooPosSearchByIdentifierResult.Success(parentProduct)
+            )
         }
 
         // WHEN
