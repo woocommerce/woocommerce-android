@@ -135,7 +135,7 @@ private fun WooShippingEditPaymentContent(
             .padding(vertical = 16.dp)
             .verticalScroll(rememberScrollState())
     ) {
-        if (!viewState.editEnabled) {
+        if (!viewState.canManagePaymentMethods) {
             EditDisabledWarning(
                 storeOwnerName = viewState.storeOwnerName,
                 storeOwnerUsername = viewState.storeOwnerUsername
@@ -146,7 +146,7 @@ private fun WooShippingEditPaymentContent(
         when {
             viewState.paymentMethods.isEmpty() -> {
                 EmptyPaymentMethodsView(
-                    editEnabled = viewState.editEnabled,
+                    editEnabled = viewState.canManagePaymentMethods,
                     storeOwnerUsername = viewState.storeOwnerUsername,
                     onAddNewPaymentMethod = onAddNewPaymentClicked,
                 )
@@ -253,7 +253,7 @@ private fun PaymentMethodsList(
             PaymentMethodItem(
                 paymentMethod = paymentMethod,
                 isSelected = paymentMethod.paymentMethodId == viewState.selectedPaymentMethodId,
-                enabled = viewState.editEnabled,
+                enabled = viewState.canManagePaymentMethods,
                 onClick = { onPaymentMethodSelected(paymentMethod.paymentMethodId) },
                 modifier = Modifier.fillMaxWidth()
             )
@@ -293,6 +293,7 @@ private fun PaymentMethodsList(
         WCSwitch(
             text = stringResource(R.string.woo_shipping_payment_email_receipt_toggle),
             checked = viewState.emailTheReceipt,
+            enabled = viewState.canEditSettings,
             onCheckedChange = { TODO() },
             modifier = Modifier.fillMaxWidth()
         )
@@ -389,7 +390,8 @@ private fun ContentScreenEmptyPreview() {
     WooThemeWithBackground {
         WooShippingEditPaymentScreen(
             viewState = WooShippingEditPaymentViewModel.ViewState.Content(
-                editEnabled = false,
+                canManagePaymentMethods = false,
+                canEditSettings = true,
                 emailTheReceipt = true,
                 storeOwnerName = "John Doe",
                 storeOwnerUsername = "johndoe",
@@ -409,7 +411,8 @@ private fun ContentScreenWithPaymentMethodsPreview() {
     WooThemeWithBackground {
         WooShippingEditPaymentScreen(
             viewState = WooShippingEditPaymentViewModel.ViewState.Content(
-                editEnabled = true,
+                canManagePaymentMethods = true,
+                canEditSettings = true,
                 emailTheReceipt = true,
                 storeOwnerName = "John Doe",
                 storeOwnerUsername = "johndoe",

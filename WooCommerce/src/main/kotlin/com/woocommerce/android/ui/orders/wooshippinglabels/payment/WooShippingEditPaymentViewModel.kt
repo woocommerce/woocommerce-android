@@ -31,7 +31,8 @@ class WooShippingEditPaymentViewModel @Inject constructor(
         if (accountSettings == null) return@combine ViewState.Loading
 
         ViewState.Content(
-            editEnabled = true, // TODO
+            canManagePaymentMethods = true, // TODO
+            canEditSettings = true, // TODO
             emailTheReceipt = true, // TODO
             storeOwnerName = "John Doe", // TODO
             storeOwnerUsername = "johndoe", // TODO
@@ -57,7 +58,8 @@ class WooShippingEditPaymentViewModel @Inject constructor(
     sealed interface ViewState {
         data object Loading : ViewState
         data class Content(
-            val editEnabled: Boolean,
+            val canManagePaymentMethods: Boolean,
+            val canEditSettings: Boolean,
             val emailTheReceipt: Boolean,
             val selectedPaymentMethodId: Int?,
             val storeOwnerName: String,
