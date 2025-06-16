@@ -62,26 +62,7 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
         }
     }
 
-    @Suppress("ReturnCount")
     private fun prioritizeError(
         vararg results: WooPosSearchByIdentifierResult
-    ): WooPosSearchByIdentifierResult {
-        results.forEach { result ->
-            if (result is WooPosSearchByIdentifierResult.Failure &&
-                result.error == WooPosSearchByIdentifierResult.Error.RequestCancelled
-            ) {
-                return result
-            }
-        }
-
-        results.forEach { result ->
-            if (result is WooPosSearchByIdentifierResult.Failure &&
-                result.error == WooPosSearchByIdentifierResult.Error.NetworkError
-            ) {
-                return result
-            }
-        }
-
-        return WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.ProductNotFound)
-    }
+    ): WooPosSearchByIdentifierResult = results.filterIsInstance<WooPosSearchByIdentifierResult.Failure>().first()
 }
