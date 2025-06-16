@@ -129,7 +129,6 @@ class WooPosSearchByIdentifierTest {
         )
     }
 
-
     @Test
     fun `given product meets filter criteria, when search called, then return product`() = runTest {
         // GIVEN

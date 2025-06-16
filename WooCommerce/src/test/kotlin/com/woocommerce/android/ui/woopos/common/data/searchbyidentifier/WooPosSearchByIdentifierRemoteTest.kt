@@ -47,7 +47,9 @@ class WooPosSearchByIdentifierRemoteTest {
         val format = WooPosBarcodeFormat.FormatUPCA
         val searchResult = WooPosSearchByIdentifierResult.Success(testProduct)
 
-        whenever(gtinSearch(identifier)).thenReturn(WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.ProductNotFound))
+        whenever(gtinSearch(identifier)).thenReturn(
+            WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.ProductNotFound)
+        )
         whenever(skuSearch(identifier)).thenReturn(searchResult)
         whenever(resultConverter.invoke(any())).thenReturn(searchResult)
 

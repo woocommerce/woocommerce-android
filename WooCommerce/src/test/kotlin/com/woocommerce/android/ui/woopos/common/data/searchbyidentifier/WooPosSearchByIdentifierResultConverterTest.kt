@@ -55,7 +55,7 @@ class WooPosSearchByIdentifierResultConverterTest {
         val successResult = WooPosSearchByIdentifierResult.Success(variationProduct)
         val variationSuccessResult = WooPosSearchByIdentifierResult.VariationSuccess(testVariation, testProduct)
         val searchFunction: suspend () -> WooPosSearchByIdentifierResult = { successResult }
-        
+
         whenever(variationProcess(variationProduct)).thenReturn(variationSuccessResult)
 
         // WHEN
