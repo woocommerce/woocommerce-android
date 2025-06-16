@@ -93,6 +93,7 @@ class WooShippingLabelRestClient @Inject constructor(
         origin: OriginAddressPurchaseDTO,
         destination: DestinationAddressDTO,
         selectedPackage: PackagePurchaseDTO,
+        shipmentId: String,
         selectedRate: RateDTO,
         markOrderComplete: Boolean,
         hazmat: HazmatDTO = HazmatDTO(),
@@ -106,7 +107,8 @@ class WooShippingLabelRestClient @Inject constructor(
                 "async" to true,
                 "origin" to origin,
                 "destination" to destination,
-                "packages" to listOf(selectedPackage),
+                // For this purchase endpoint, `id` represents the shipment ID instead of the package ID
+                "packages" to listOf(selectedPackage.copy(id = shipmentId)),
                 "selected_rate" to mapOf(
                     selectedPackage.boxId to mapOf(
                         "rate" to selectedRate,
