@@ -11,13 +11,13 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 class WooPosSearchByIdentifierVariationProcessTest {
-    private lateinit var sut: WooPosSearchByIdentifierVariationProcess
+    private lateinit var sut: WooPosSearchByIdentifierProcessVariationResult
     private val variationGetOrFetcher: WooPosSearchByIdentifierVariationFetch = mock()
     private val productFetch: WooPosSearchByIdentifierProductGetOrFetch = mock()
 
     @Before
     fun setup() {
-        sut = WooPosSearchByIdentifierVariationProcess(variationGetOrFetcher, productFetch)
+        sut = WooPosSearchByIdentifierProcessVariationResult(variationGetOrFetcher, productFetch)
     }
 
     @Test

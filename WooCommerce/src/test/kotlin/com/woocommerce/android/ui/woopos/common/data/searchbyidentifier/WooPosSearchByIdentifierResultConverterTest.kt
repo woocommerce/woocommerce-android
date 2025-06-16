@@ -23,7 +23,7 @@ class WooPosSearchByIdentifierResultConverterTest {
 
     private lateinit var sut: WooPosSearchByIdentifierResultConverter
     private val productsCache: WooPosProductsCache = mock()
-    private val variationProcess: WooPosSearchByIdentifierVariationProcess = mock()
+    private val variationProcess: WooPosSearchByIdentifierProcessVariationResult = mock()
 
     private val testProduct = ProductTestUtils.generateProduct()
     private val testVariation = ProductTestUtils.generateProductVariation()

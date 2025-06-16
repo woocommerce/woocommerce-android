@@ -5,7 +5,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import javax.inject.Inject
 
-class WooPosSearchByIdentifierVariationProcess @Inject constructor(
+class WooPosSearchByIdentifierProcessVariationResult @Inject constructor(
     private val variationGetOrFetcher: WooPosSearchByIdentifierVariationFetch,
     private val productFetch: WooPosSearchByIdentifierProductGetOrFetch
 ) {
