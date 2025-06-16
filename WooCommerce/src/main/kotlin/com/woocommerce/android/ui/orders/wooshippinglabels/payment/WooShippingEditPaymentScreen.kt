@@ -299,7 +299,7 @@ private fun PaymentMethodsList(
         Spacer(Modifier.height(16.dp))
         WCColoredButton(
             onClick = onSaveClicked,
-            enabled = viewState.editEnabled,
+            enabled = viewState.hasChanges,
             text = stringResource(R.string.woo_shipping_payment_use_card_button),
             modifier = Modifier.fillMaxWidth()
         )
@@ -393,8 +393,8 @@ private fun ContentScreenEmptyPreview() {
                 emailTheReceipt = true,
                 storeOwnerName = "John Doe",
                 storeOwnerUsername = "johndoe",
-                paymentMethods = emptyList(),
-                selectedPaymentMethodId = null
+                selectedPaymentMethodId = null,
+                currentPaymentOptions = ShippingLabelSampleData.getPaymentOptions(countOfPaymentMethods = 0)
             ),
             onAddNewPaymentMethod = {},
             onPaymentMethodSelected = {},
@@ -413,8 +413,8 @@ private fun ContentScreenWithPaymentMethodsPreview() {
                 emailTheReceipt = true,
                 storeOwnerName = "John Doe",
                 storeOwnerUsername = "johndoe",
-                paymentMethods = List(3) { ShippingLabelSampleData.getPaymentMethod(it) },
-                selectedPaymentMethodId = 1
+                selectedPaymentMethodId = 1,
+                currentPaymentOptions = ShippingLabelSampleData.getPaymentOptions()
             ),
             onAddNewPaymentMethod = {},
             onPaymentMethodSelected = {},
