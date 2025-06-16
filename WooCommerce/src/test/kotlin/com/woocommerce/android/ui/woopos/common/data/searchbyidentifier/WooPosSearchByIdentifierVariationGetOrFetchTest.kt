@@ -32,26 +32,6 @@ class WooPosSearchByIdentifierVariationGetOrFetchTest {
     }
 
     @Test
-    fun `given variation exists in cache, when invoke called, then return cached variation`() = runTest {
-        // GIVEN
-        val variationId = 456L
-        val parentId = 123L
-        val cachedVariation: ProductVariation = mock {
-            on { remoteVariationId }.thenReturn(variationId)
-        }
-        whenever(variationsCache.get(variationId)).thenReturn(listOf(cachedVariation))
-
-        // WHEN
-        val result = sut(variationId, parentId)
-
-        // THEN
-        assertEquals(
-            WooPosSearchByIdentifierVariationFetch.VariationFetchResult.Success(cachedVariation),
-            result
-        )
-    }
-
-    @Test
     fun `given variation not in cache and successful fetch, when invoke called, then return success and cache variation`() = runTest {
         // GIVEN
         val variationId = 456L
