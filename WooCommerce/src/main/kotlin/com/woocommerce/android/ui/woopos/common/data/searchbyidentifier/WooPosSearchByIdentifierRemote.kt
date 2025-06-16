@@ -7,7 +7,7 @@ import javax.inject.Inject
 
 class WooPosSearchByIdentifierRemote @Inject constructor(
     private val skuSearch: WooPosSearchByIdentifierSkuSearch,
-    private val gtinSearch: WooPosSearchByIdentifierGtinSearch,
+    private val globalUniqueIdSearch: WooPosSearchByIdentifierGlobalUniqueSearch,
     private val resultConverter: WooPosSearchByIdentifierResultConverter,
     private val checkDigitRemover: WooPosSearchByIdentifierCheckDigitRemover,
 ) {
@@ -16,7 +16,7 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
         format: WooPosBarcodeFormat
     ): WooPosSearchByIdentifierResult = coroutineScope {
         val globalUniqueIdentifierSearchDeferred = async {
-            resultConverter { gtinSearch(identifier) }
+            resultConverter { globalUniqueIdSearch(identifier) }
         }
 
         val skuSearchDeferred = async {
@@ -39,7 +39,7 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
         val identifierWithoutCheckDigit = checkDigitRemover(identifier, format)
         if (identifierWithoutCheckDigit != identifier) {
             val globalUniqueIdentifierFallbackDeferred = async {
-                resultConverter { gtinSearch(identifierWithoutCheckDigit) }
+                resultConverter { globalUniqueIdSearch(identifierWithoutCheckDigit) }
             }
             val identifierFallbackDeferred = async {
                 resultConverter { skuSearch(identifierWithoutCheckDigit) }

@@ -5,15 +5,15 @@ import com.woocommerce.android.tools.SelectedSite
 import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
 
-class WooPosSearchByIdentifierGtinSearch @Inject constructor(
+class WooPosSearchByIdentifierGlobalUniqueSearch @Inject constructor(
     private val selectedSite: SelectedSite,
     private val productStore: WCProductStore
 ) {
-    suspend operator fun invoke(gtin: String): WooPosSearchByIdentifierResult {
+    suspend operator fun invoke(globalUniqueId: String): WooPosSearchByIdentifierResult {
         val result = productStore.searchProducts(
             site = selectedSite.get(),
             searchString = null,
-            globalUniqueIdSearchQuery = gtin,
+            globalUniqueIdSearchQuery = globalUniqueId,
             offset = 0,
             pageSize = WCProductStore.DEFAULT_PRODUCT_PAGE_SIZE,
             filterOptions = emptyMap()
@@ -38,7 +38,7 @@ class WooPosSearchByIdentifierGtinSearch @Inject constructor(
 
             else -> WooPosSearchByIdentifierResult.Failure(
                 WooPosSearchByIdentifierResult.Error.UnknownError(
-                    "Results not found for GTIN: $gtin"
+                    "Results not found for Global Unique ID: $globalUniqueId"
                 )
             )
         }

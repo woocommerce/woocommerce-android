@@ -24,7 +24,7 @@ class WooPosSearchByIdentifierRemoteTest {
 
     private lateinit var sut: WooPosSearchByIdentifierRemote
     private val skuSearch: WooPosSearchByIdentifierSkuSearch = mock()
-    private val gtinSearch: WooPosSearchByIdentifierGtinSearch = mock()
+    private val gtinSearch: WooPosSearchByIdentifierGlobalUniqueSearch = mock()
     private val resultConverter: WooPosSearchByIdentifierResultConverter = mock()
     private val checkDigitRemover: WooPosSearchByIdentifierCheckDigitRemover = mock()
 
@@ -34,7 +34,7 @@ class WooPosSearchByIdentifierRemoteTest {
     fun setup() {
         sut = WooPosSearchByIdentifierRemote(
             skuSearch = skuSearch,
-            gtinSearch = gtinSearch,
+            globalUniqueIdSearch = gtinSearch,
             resultConverter = resultConverter,
             checkDigitRemover = checkDigitRemover
         )
