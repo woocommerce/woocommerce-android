@@ -152,10 +152,12 @@ class WooPosHomeViewModel @Inject constructor(
                         )
                     }
 
-                    is ChildToParentEvent.NewTransactionClicked -> {
-                        _state.value = _state.value.copy(
-                            screenPositionState = ScreenPositionState.Cart
-                        )
+                    is ChildToParentEvent.OnNewTransactionStarted -> {
+                        if (_state.value.screenPositionState !is ScreenPositionState.Cart) {
+                            _state.value = _state.value.copy(
+                                screenPositionState = ScreenPositionState.Cart
+                            )
+                        }
                     }
 
                     is ChildToParentEvent.OrderSuccessfullyPaidByCard -> onOrderSuccessfullyPaid(

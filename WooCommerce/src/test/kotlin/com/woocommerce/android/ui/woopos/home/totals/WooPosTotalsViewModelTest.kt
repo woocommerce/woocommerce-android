@@ -347,7 +347,7 @@ class WooPosTotalsViewModelTest {
 
             // THEN
             assertThat(viewModel.state.value).isEqualTo(WooPosTotalsViewState.Loading)
-            verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.NewTransactionClicked)
+            verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.OnNewTransactionStarted)
         }
 
     @Test

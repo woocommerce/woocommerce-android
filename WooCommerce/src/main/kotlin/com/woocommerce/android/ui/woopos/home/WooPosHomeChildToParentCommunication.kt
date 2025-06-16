@@ -30,7 +30,7 @@ sealed class ChildToParentEvent {
         val itemData: WooPosItemsViewModel.ItemClickedData,
         val eventForTracking: WooPosAnalyticsEvent.Event.ItemAddedToCart?
     ) : ChildToParentEvent()
-    data object NewTransactionClicked : ChildToParentEvent()
+    data object OnNewTransactionStarted : ChildToParentEvent()
     data object PaymentCollecting : ChildToParentEvent()
     data object PaymentInProgress : ChildToParentEvent()
     data object PaymentFailed : ChildToParentEvent()
