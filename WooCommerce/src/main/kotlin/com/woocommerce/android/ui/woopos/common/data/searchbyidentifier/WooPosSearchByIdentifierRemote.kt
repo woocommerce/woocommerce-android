@@ -15,7 +15,7 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
         identifier: String,
         format: WooPosBarcodeFormat
     ): WooPosSearchByIdentifierResult = coroutineScope {
-        val gtinSearchDeferred = async {
+        val globalUniqueIdentifierSearchDeferred = async {
             resultConverter { gtinSearch(identifier) }
         }
 
@@ -23,11 +23,11 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
             resultConverter { skuSearch(identifier) }
         }
 
-        val gtinResult = gtinSearchDeferred.await()
+        val globalUniqueIdentifierResult = globalUniqueIdentifierSearchDeferred.await()
 
-        if (gtinResult.isSuccess) {
+        if (globalUniqueIdentifierResult.isSuccess) {
             skuSearchDeferred.cancel()
-            return@coroutineScope gtinResult
+            return@coroutineScope globalUniqueIdentifierResult
         }
 
         val identifierResult = skuSearchDeferred.await()
@@ -38,17 +38,17 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
 
         val identifierWithoutCheckDigit = checkDigitRemover(identifier, format)
         if (identifierWithoutCheckDigit != identifier) {
-            val gtinFallbackDeferred = async {
+            val globalUniqueIdentifierFallbackDeferred = async {
                 resultConverter { gtinSearch(identifierWithoutCheckDigit) }
             }
             val identifierFallbackDeferred = async {
                 resultConverter { skuSearch(identifierWithoutCheckDigit) }
             }
 
-            val gtinFallbackResult = gtinFallbackDeferred.await()
-            if (gtinFallbackResult.isSuccess) {
+            val globalUniqueIdentifierFallbackResult = globalUniqueIdentifierFallbackDeferred.await()
+            if (globalUniqueIdentifierFallbackResult.isSuccess) {
                 identifierFallbackDeferred.cancel()
-                return@coroutineScope gtinFallbackResult
+                return@coroutineScope globalUniqueIdentifierFallbackResult
             }
 
             val identifierFallbackResult = identifierFallbackDeferred.await()
@@ -56,9 +56,14 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
                 return@coroutineScope identifierFallbackResult
             }
 
-            prioritizeError(gtinFallbackResult, identifierFallbackResult, gtinResult, identifierResult)
+            prioritizeError(
+                globalUniqueIdentifierFallbackResult,
+                identifierFallbackResult,
+                globalUniqueIdentifierResult,
+                identifierResult
+            )
         } else {
-            prioritizeError(gtinResult, identifierResult)
+            prioritizeError(globalUniqueIdentifierResult, identifierResult)
         }
     }
 
