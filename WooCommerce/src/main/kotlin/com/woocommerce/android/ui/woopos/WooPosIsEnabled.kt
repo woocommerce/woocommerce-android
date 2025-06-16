@@ -5,7 +5,8 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.IsRemoteFeatureFlagEnabled
 import com.woocommerce.android.util.RemoteFeatureFlag.WOO_POS
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -20,17 +21,17 @@ class WooPosIsEnabled @Inject constructor(
     private val isRemotelyEnabled: WooPOSIsRemotelyEnabled
 ) {
     @Suppress("ReturnCount")
-    suspend operator fun invoke(): Boolean = coroutineScope {
-        val selectedSite = selectedSite.getOrNull() ?: return@coroutineScope false
+    suspend operator fun invoke(): Boolean = withContext(Dispatchers.IO) {
+        val selectedSite = selectedSite.getOrNull() ?: return@withContext false
 
-        if (!isRemoteFeatureFlagEnabled(WOO_POS)) return@coroutineScope false
-        if (!isScreenSizeAllowed()) return@coroutineScope false
-        if (!isWooCoreSupportsOrderAutoDraftsAndExtraPaymentsProps()) return@coroutineScope false
-        if (isFeatureSwitchSupported() && isRemotelyEnabled() != true) return@coroutineScope false
+        if (!isRemoteFeatureFlagEnabled(WOO_POS)) return@withContext false
+        if (!isScreenSizeAllowed()) return@withContext false
+        if (!isWooCoreSupportsOrderAutoDraftsAndExtraPaymentsProps()) return@withContext false
+        if (isFeatureSwitchSupported() && isRemotelyEnabled() != true) return@withContext false
 
-        val siteSettings = wooCommerceStore.getSiteSettings(selectedSite) ?: return@coroutineScope false
+        val siteSettings = wooCommerceStore.getSiteSettings(selectedSite) ?: return@withContext false
 
-        return@coroutineScope isCountryAndCurrencySupported(
+        return@withContext isCountryAndCurrencySupported(
             countryCode = siteSettings.countryCode,
             currency = siteSettings.currencyCode
         )
