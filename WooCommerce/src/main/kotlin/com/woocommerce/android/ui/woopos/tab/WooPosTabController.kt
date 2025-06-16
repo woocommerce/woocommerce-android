@@ -65,6 +65,7 @@ class WooPosTabController @Inject constructor(
      * Refreshes the visibility of the POS tab based on current conditions.
      */
     fun refreshPOSTabVisibility() {
+        setPOSTabVisibility(false)
         if (isPosAsTabEnabled()) {
             updatePOSTabVisibility()
         }
