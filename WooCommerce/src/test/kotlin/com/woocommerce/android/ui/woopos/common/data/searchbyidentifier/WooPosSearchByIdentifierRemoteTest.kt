@@ -48,7 +48,7 @@ class WooPosSearchByIdentifierRemoteTest {
         val searchResult = WooPosSearchByIdentifierResult.Success(testProduct)
 
         whenever(gtinSearch(identifier)).thenReturn(
-            WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.ProductNotFound)
+            WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.NotFound)
         )
         whenever(skuSearch(identifier)).thenReturn(searchResult)
         whenever(resultConverter.invoke(any())).thenReturn(searchResult)
@@ -84,7 +84,7 @@ class WooPosSearchByIdentifierRemoteTest {
         // GIVEN
         val identifier = "test-identifier"
         val format = WooPosBarcodeFormat.FormatUPCA
-        val failureResult = WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.ProductNotFound)
+        val failureResult = WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.NotFound)
 
         whenever(gtinSearch(identifier)).thenReturn(failureResult)
         whenever(skuSearch(identifier)).thenReturn(failureResult)

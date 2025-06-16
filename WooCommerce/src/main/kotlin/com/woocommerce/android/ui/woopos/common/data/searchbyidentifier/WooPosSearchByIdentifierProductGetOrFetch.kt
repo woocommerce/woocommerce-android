@@ -6,12 +6,16 @@ import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
 import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
 
-class WooPosSearchByIdentifierProductFetch @Inject constructor(
+class WooPosSearchByIdentifierProductGetOrFetch @Inject constructor(
     private val selectedSite: SelectedSite,
     private val productStore: WCProductStore,
     private val productsCache: WooPosProductsCache
 ) {
     suspend operator fun invoke(productId: Long): WooPosSearchByIdentifierResult {
+        productsCache.getProductById(productId)?.let { cachedProduct ->
+            return WooPosSearchByIdentifierResult.Success(cachedProduct)
+        }
+
         val result = productStore.fetchSingleProduct(
             WCProductStore.FetchSingleProductPayload(
                 site = selectedSite.get(),

@@ -7,7 +7,7 @@ import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsL
 import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
 
-class WooPosSearchByIdentifierVariationGetOrFetch @Inject constructor(
+class WooPosSearchByIdentifierVariationFetch @Inject constructor(
     private val selectedSite: SelectedSite,
     private val productStore: WCProductStore,
     private val variationsCache: WooPosVariationsLRUCache
@@ -20,12 +20,6 @@ class WooPosSearchByIdentifierVariationGetOrFetch @Inject constructor(
 
     @Suppress("ReturnCount")
     suspend operator fun invoke(variationId: Long, parentId: Long): VariationFetchResult {
-        val cachedVariation = variationsCache.get(variationId)?.find { it.remoteVariationId == variationId }
-
-        if (cachedVariation != null) {
-            return VariationFetchResult.Success(cachedVariation)
-        }
-
         val variationResult = productStore.fetchSingleVariation(
             selectedSite.get(),
             parentId,

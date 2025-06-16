@@ -19,7 +19,7 @@ import org.wordpress.android.fluxc.store.WCProductStore
 
 class WooPosSearchByIdentifierVariationGetOrFetchTest {
 
-    private lateinit var sut: WooPosSearchByIdentifierVariationGetOrFetch
+    private lateinit var sut: WooPosSearchByIdentifierVariationFetch
     private val selectedSite: SelectedSite = mock()
     private val productStore: WCProductStore = mock()
     private val variationsCache: WooPosVariationsLRUCache = mock()
@@ -27,7 +27,7 @@ class WooPosSearchByIdentifierVariationGetOrFetchTest {
 
     @Before
     fun setup() {
-        sut = WooPosSearchByIdentifierVariationGetOrFetch(selectedSite, productStore, variationsCache)
+        sut = WooPosSearchByIdentifierVariationFetch(selectedSite, productStore, variationsCache)
         whenever(selectedSite.get()).thenReturn(site)
     }
 
@@ -46,7 +46,7 @@ class WooPosSearchByIdentifierVariationGetOrFetchTest {
 
         // THEN
         assertEquals(
-            WooPosSearchByIdentifierVariationGetOrFetch.VariationFetchResult.Success(cachedVariation),
+            WooPosSearchByIdentifierVariationFetch.VariationFetchResult.Success(cachedVariation),
             result
         )
     }
@@ -74,7 +74,7 @@ class WooPosSearchByIdentifierVariationGetOrFetchTest {
 
         // THEN
         assertEquals(
-            WooPosSearchByIdentifierVariationGetOrFetch.VariationFetchResult.Success(variation),
+            WooPosSearchByIdentifierVariationFetch.VariationFetchResult.Success(variation),
             result
         )
         verify(variationsCache).add(parentId, variation)
@@ -96,7 +96,7 @@ class WooPosSearchByIdentifierVariationGetOrFetchTest {
         val result = sut(variationId, parentId)
 
         // THEN
-        assertEquals(WooPosSearchByIdentifierVariationGetOrFetch.VariationFetchResult.NetworkError, result)
+        assertEquals(WooPosSearchByIdentifierVariationFetch.VariationFetchResult.NetworkError, result)
     }
 
     @Test
@@ -116,7 +116,7 @@ class WooPosSearchByIdentifierVariationGetOrFetchTest {
         val result = sut(variationId, parentId)
 
         // THEN
-        assertEquals(WooPosSearchByIdentifierVariationGetOrFetch.VariationFetchResult.NotFound, result)
+        assertEquals(WooPosSearchByIdentifierVariationFetch.VariationFetchResult.NotFound, result)
     }
 
     @Test
@@ -145,7 +145,7 @@ class WooPosSearchByIdentifierVariationGetOrFetchTest {
 
         // THEN
         assertEquals(
-            WooPosSearchByIdentifierVariationGetOrFetch.VariationFetchResult.Success(variation),
+            WooPosSearchByIdentifierVariationFetch.VariationFetchResult.Success(variation),
             result
         )
         verify(variationsCache).add(parentId, variation)

@@ -92,7 +92,7 @@ class WooPosSearchByIdentifierGlobalUniqueSearchTest {
 
         // THEN
         assertEquals(
-            WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.ProductNotFound),
+            WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.NotFound),
             actualResult
         )
     }

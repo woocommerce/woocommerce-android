@@ -29,7 +29,7 @@ class WooPosSearchByIdentifierGlobalUniqueSearch @Inject constructor(
                 val products = productSearchResult.products.map { it.toAppModel() }
                 when {
                     products.isEmpty() -> WooPosSearchByIdentifierResult.Failure(
-                        WooPosSearchByIdentifierResult.Error.ProductNotFound
+                        WooPosSearchByIdentifierResult.Error.NotFound
                     )
 
                     else -> WooPosSearchByIdentifierResult.Success(products.first())

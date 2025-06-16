@@ -84,7 +84,7 @@ class WooPosSearchByIdentifierResultConverterTest {
     @Test
     fun `given failure result, when converting, should return failure unchanged`() = runTest {
         // GIVEN
-        val failureResult = WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.ProductNotFound)
+        val failureResult = WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.NotFound)
         val searchFunction: suspend () -> WooPosSearchByIdentifierResult = { failureResult }
 
         // WHEN

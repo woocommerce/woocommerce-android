@@ -35,7 +35,7 @@ class WooPosSearchByIdentifierResultTest {
     @Test
     fun `given Failure result, when checking isFailure, then return true`() {
         // GIVEN
-        val result = WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.ProductNotFound)
+        val result = WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.NotFound)
 
         // WHEN & THEN
         assertTrue(result.isFailure)

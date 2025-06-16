@@ -80,7 +80,7 @@ class WooPosSearchByIdentifierTest {
         val format = WooPosBarcodeFormat.FormatUnknown
         whenever(localSearcher(identifier, format)).thenReturn(null)
         whenever(remoteSearcher(identifier, format))
-            .thenReturn(WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.ProductNotFound))
+            .thenReturn(WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.NotFound))
 
         // WHEN
         val result = sut(identifier, format)
@@ -88,7 +88,7 @@ class WooPosSearchByIdentifierTest {
         // THEN
         assertTrue(result is WooPosSearchByIdentifierResult.Failure)
         assertEquals(
-            WooPosSearchByIdentifierResult.Error.ProductNotFound,
+            WooPosSearchByIdentifierResult.Error.NotFound,
             (result as WooPosSearchByIdentifierResult.Failure).error
         )
     }

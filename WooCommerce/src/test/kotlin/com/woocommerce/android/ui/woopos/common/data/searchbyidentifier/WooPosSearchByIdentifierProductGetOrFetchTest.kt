@@ -15,9 +15,9 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCProductStore
 
-class WooPosSearchByIdentifierProductFetchTest {
+class WooPosSearchByIdentifierProductGetOrFetchTest {
 
-    private lateinit var sut: WooPosSearchByIdentifierProductFetch
+    private lateinit var sut: WooPosSearchByIdentifierProductGetOrFetch
     private val selectedSite: SelectedSite = mock()
     private val productStore: WCProductStore = mock()
     private val productsCache: WooPosProductsCache = mock()
@@ -25,7 +25,7 @@ class WooPosSearchByIdentifierProductFetchTest {
 
     @Before
     fun setup() {
-        sut = WooPosSearchByIdentifierProductFetch(selectedSite, productStore, productsCache)
+        sut = WooPosSearchByIdentifierProductGetOrFetch(selectedSite, productStore, productsCache)
         whenever(selectedSite.get()).thenReturn(site)
     }
 

@@ -12,8 +12,8 @@ import org.mockito.kotlin.whenever
 
 class WooPosSearchByIdentifierVariationProcessTest {
     private lateinit var sut: WooPosSearchByIdentifierVariationProcess
-    private val variationGetOrFetcher: WooPosSearchByIdentifierVariationGetOrFetch = mock()
-    private val productFetch: WooPosSearchByIdentifierProductFetch = mock()
+    private val variationGetOrFetcher: WooPosSearchByIdentifierVariationFetch = mock()
+    private val productFetch: WooPosSearchByIdentifierProductGetOrFetch = mock()
 
     @Before
     fun setup() {
@@ -35,7 +35,7 @@ class WooPosSearchByIdentifierVariationProcessTest {
         runBlocking {
             whenever(
                 variationGetOrFetcher.invoke(variationId, parentId)
-            ).thenReturn(WooPosSearchByIdentifierVariationGetOrFetch.VariationFetchResult.Success(variation))
+            ).thenReturn(WooPosSearchByIdentifierVariationFetch.VariationFetchResult.Success(variation))
             whenever(productFetch.invoke(parentId)).thenReturn(WooPosSearchByIdentifierResult.Success(parentProduct))
         }
 
@@ -59,7 +59,7 @@ class WooPosSearchByIdentifierVariationProcessTest {
 
         // THEN
         assertEquals(
-            WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.ProductNotFound),
+            WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.NotFound),
             result
         )
     }
@@ -77,7 +77,7 @@ class WooPosSearchByIdentifierVariationProcessTest {
         runBlocking {
             whenever(
                 variationGetOrFetcher.invoke(variationId, parentId)
-            ).thenReturn(WooPosSearchByIdentifierVariationGetOrFetch.VariationFetchResult.NetworkError)
+            ).thenReturn(WooPosSearchByIdentifierVariationFetch.VariationFetchResult.NetworkError)
             whenever(
                 productFetch.invoke(parentId)
             ).thenReturn(WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.NetworkError))
@@ -108,7 +108,7 @@ class WooPosSearchByIdentifierVariationProcessTest {
         runBlocking {
             whenever(
                 variationGetOrFetcher.invoke(variationId, parentId)
-            ).thenReturn(WooPosSearchByIdentifierVariationGetOrFetch.VariationFetchResult.Success(variation))
+            ).thenReturn(WooPosSearchByIdentifierVariationFetch.VariationFetchResult.Success(variation))
             whenever(productFetch.invoke(parentId)).thenReturn(expectedFailure)
         }
 
@@ -129,12 +129,12 @@ class WooPosSearchByIdentifierVariationProcessTest {
             on { remoteId }.thenReturn(variationId)
         }
 
-        val variationResult = WooPosSearchByIdentifierVariationGetOrFetch.VariationFetchResult.NotFound
+        val variationResult = WooPosSearchByIdentifierVariationFetch.VariationFetchResult.NotFound
         val parentProductResult = WooPosSearchByIdentifierResult.Failure(
             WooPosSearchByIdentifierResult.Error.NetworkError
         )
         val expectedFailure = WooPosSearchByIdentifierResult.Failure(
-            WooPosSearchByIdentifierResult.Error.ProductNotFound
+            WooPosSearchByIdentifierResult.Error.NotFound
         )
 
         runBlocking {

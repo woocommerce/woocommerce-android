@@ -579,7 +579,7 @@ class WooPosCartViewModel @Inject constructor(
 
             is WooPosSearchByIdentifierResult.Failure -> {
                 val errorMessage = when (this.error) {
-                    WooPosSearchByIdentifierResult.Error.ProductNotFound -> {
+                    WooPosSearchByIdentifierResult.Error.NotFound -> {
                         resourceProvider.getString(R.string.woopos_cart_barcode_scan_result_product_not_found)
                     }
 
