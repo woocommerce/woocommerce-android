@@ -87,7 +87,6 @@ class WooPosCartViewModel @Inject constructor(
 
     override fun onCleared() {
         super.onCleared()
-        searchByIdentifier.onCleanup()
         soundHelper.onCleanup()
     }
 
