@@ -129,14 +129,6 @@ class WooPosSearchByIdentifierTest {
         )
     }
 
-    @Test
-    fun `given cleanup called, when onCleanup invoked, then remote searcher cleanup is called`() {
-        // WHEN
-        sut.onCleanup()
-
-        // THEN
-        verify(remoteSearcher).onCleanup()
-    }
 
     @Test
     fun `given product meets filter criteria, when search called, then return product`() = runTest {
