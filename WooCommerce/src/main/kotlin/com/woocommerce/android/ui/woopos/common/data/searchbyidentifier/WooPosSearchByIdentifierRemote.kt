@@ -62,7 +62,6 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
         }
     }
 
-
     @Suppress("ReturnCount")
     private fun prioritizeError(
         vararg results: WooPosSearchByIdentifierResult

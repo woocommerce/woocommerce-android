@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.common.data.searchbyidentifier
 
-import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import org.wordpress.android.fluxc.store.WCProductStore
@@ -10,7 +9,7 @@ class WooPosSearchByIdentifierSkuSearch @Inject constructor(
     private val selectedSite: SelectedSite,
     private val productStore: WCProductStore
 ) {
-    suspend operator fun invoke(sku: String): Result<List<Product>> {
+    suspend operator fun invoke(sku: String): WooPosSearchByIdentifierResult {
         val result = productStore.searchProducts(
             site = selectedSite.get(),
             searchString = sku,
@@ -21,17 +20,23 @@ class WooPosSearchByIdentifierSkuSearch @Inject constructor(
         )
 
         return when {
-            result.isError -> Result.failure(
-                WooPosSearchByIdentifierException(WooPosSearchByIdentifierResult.Error.NetworkError)
+            result.isError -> WooPosSearchByIdentifierResult.Failure(
+                WooPosSearchByIdentifierResult.Error.NetworkError
             )
 
             result.model != null -> {
                 val productSearchResult = result.model!!
-                Result.success(productSearchResult.products.map { it.toAppModel() })
+                val products = productSearchResult.products.map { it.toAppModel() }
+                when {
+                    products.isEmpty() -> WooPosSearchByIdentifierResult.Failure(
+                        WooPosSearchByIdentifierResult.Error.ProductNotFound
+                    )
+                    else -> WooPosSearchByIdentifierResult.Success(products.first())
+                }
             }
 
-            else -> Result.failure(
-                WooPosSearchByIdentifierException(WooPosSearchByIdentifierResult.Error.RequestCancelled)
+            else -> WooPosSearchByIdentifierResult.Failure(
+                WooPosSearchByIdentifierResult.Error.UnknownError("Results not found for SKU: $sku")
             )
         }
     }
