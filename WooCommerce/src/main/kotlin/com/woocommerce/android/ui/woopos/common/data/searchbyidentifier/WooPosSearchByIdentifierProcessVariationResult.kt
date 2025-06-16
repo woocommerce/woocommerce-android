@@ -6,8 +6,8 @@ import kotlinx.coroutines.coroutineScope
 import javax.inject.Inject
 
 class WooPosSearchByIdentifierProcessVariationResult @Inject constructor(
-    private val variationGetOrFetcher: WooPosSearchByIdentifierVariationFetch,
-    private val productFetch: WooPosSearchByIdentifierProductGetOrFetch
+    private val variationFetch: WooPosSearchByIdentifierVariationFetch,
+    private val productGetOrFetch: WooPosSearchByIdentifierProductGetOrFetch
 ) {
     suspend operator fun invoke(product: Product): WooPosSearchByIdentifierResult = coroutineScope {
         val parentId = product.parentId
@@ -19,8 +19,8 @@ class WooPosSearchByIdentifierProcessVariationResult @Inject constructor(
             )
         }
 
-        val variationJob = async { variationGetOrFetcher(variationId, parentId) }
-        val parentProductJob = async { productFetch(parentId) }
+        val variationJob = async { variationFetch(variationId, parentId) }
+        val parentProductJob = async { productGetOrFetch(parentId) }
 
         val variationResult = variationJob.await()
         val parentProductResult = parentProductJob.await()
