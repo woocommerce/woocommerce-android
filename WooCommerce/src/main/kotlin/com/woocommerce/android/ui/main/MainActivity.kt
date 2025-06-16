@@ -331,7 +331,6 @@ class MainActivity :
         binding.bottomNav.init(navController, this)
 
         posTabController.initialize(this, binding, navController)
-        posTabController.setupPOSTab()
 
         presenter.takeView(this)
 
@@ -393,8 +392,6 @@ class MainActivity :
 
         // Track if App was opened from a widget
         trackIfOpenedFromWidget()
-
-        posTabController.refreshPOSTabVisibility()
 
         if (selectedSite.exists()) {
             if (VERSION.SDK_INT >= VERSION_CODES.TIRAMISU) {
@@ -733,7 +730,6 @@ class MainActivity :
         )
         finish()
         startActivity(intent)
-        posTabController.refreshPOSTabVisibility()
     }
 
     private fun hasMagicLinkLoginIntent(): Boolean {

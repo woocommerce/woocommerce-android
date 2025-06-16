@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.woopos.tab
 
 import android.content.Intent
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.ui.NavigationUI
@@ -15,7 +17,8 @@ import javax.inject.Inject
 class WooPosTabController @Inject constructor(
     private val isWooPosEnabled: WooPosIsEnabled,
     private val isPosAsTabEnabled: WooPosIsPosAsTabEnabled
-) {
+) : DefaultLifecycleObserver {
+
     private lateinit var activity: MainActivity
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
@@ -28,13 +31,30 @@ class WooPosTabController @Inject constructor(
         this.activity = activity
         this.binding = binding
         this.navController = navController
+
+        // Register this controller as a lifecycle observer
+        activity.lifecycle.addObserver(this)
+    }
+
+    override fun onCreate(owner: LifecycleOwner) {
+        super.onCreate(owner)
+        setupPOSTab()
+    }
+
+    override fun onResume(owner: LifecycleOwner) {
+        super.onResume(owner)
+        refreshPOSTabVisibility()
+    }
+
+    override fun onDestroy(owner: LifecycleOwner) {
+        super.onDestroy(owner)
+        owner.lifecycle.removeObserver(this)
     }
 
     /**
      * Initializes the POS tab with default settings and navigation handling.
-     * Should be called once during activity setup (e.g., in onCreate).
      */
-    fun setupPOSTab() {
+    private fun setupPOSTab() {
         setPOSTabVisibility(false)
         if (isPosAsTabEnabled()) {
             setupPOSTabNavigation()
@@ -43,10 +63,6 @@ class WooPosTabController @Inject constructor(
 
     /**
      * Refreshes the visibility of the POS tab based on current conditions.
-     * Call this when conditions that affect POS availability change, such as:
-     * - User login/logout
-     * - Store selection changes
-     * - Feature flags updates
      */
     fun refreshPOSTabVisibility() {
         if (isPosAsTabEnabled()) {
