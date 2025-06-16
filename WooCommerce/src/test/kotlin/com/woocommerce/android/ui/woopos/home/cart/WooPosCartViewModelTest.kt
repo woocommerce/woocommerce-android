@@ -1140,7 +1140,7 @@ class WooPosCartViewModelTest {
                 .thenReturn(errorMessage)
 
             whenever(searchByIdentifier(eq("123456789"), any())).thenReturn(
-                WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.ProductNotFound)
+                WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.NotFound)
             )
 
             val sut = createSut()

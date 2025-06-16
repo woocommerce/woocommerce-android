@@ -87,7 +87,6 @@ class WooPosCartViewModel @Inject constructor(
 
     override fun onCleared() {
         super.onCleared()
-        searchByIdentifier.onCleanup()
         soundHelper.onCleanup()
     }
 
@@ -580,16 +579,12 @@ class WooPosCartViewModel @Inject constructor(
 
             is WooPosSearchByIdentifierResult.Failure -> {
                 val errorMessage = when (this.error) {
-                    WooPosSearchByIdentifierResult.Error.ProductNotFound -> {
+                    WooPosSearchByIdentifierResult.Error.NotFound -> {
                         resourceProvider.getString(R.string.woopos_cart_barcode_scan_result_product_not_found)
                     }
 
                     WooPosSearchByIdentifierResult.Error.NetworkError -> {
                         resourceProvider.getString(R.string.woopos_cart_barcode_scan_result_network_error)
-                    }
-
-                    WooPosSearchByIdentifierResult.Error.RequestCancelled -> {
-                        resourceProvider.getString(R.string.woopos_cart_barcode_scan_result_request_cancelled)
                     }
 
                     is WooPosSearchByIdentifierResult.Error.UnknownError -> this.error.message

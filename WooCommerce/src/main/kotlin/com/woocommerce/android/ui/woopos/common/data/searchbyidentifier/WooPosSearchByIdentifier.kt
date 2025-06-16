@@ -77,8 +77,4 @@ class WooPosSearchByIdentifier @Inject constructor(
 
         return hasValidStatus && meetsDownloadableRequirement
     }
-
-    fun onCleanup() {
-        remoteSearcher.onCleanup()
-    }
 }
