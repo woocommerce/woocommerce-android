@@ -20,6 +20,7 @@ import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.orders.OrderShipmentTrackingHelper
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.ShippingLabelsViewHolder
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import java.math.BigDecimal
@@ -189,20 +190,26 @@ class OrderDetailShippingLabelsAdapter(
                 }
             }
 
-            // click on view more details section
-            viewBinding.shippingLabelItemViewMore.setOnClickListener {
-                val isChecked = viewBinding.shippingLabelItemViewMoreButtonImage.rotation == 0F
-                if (isChecked) {
-                    viewBinding.shippingLabelItemMorePanel.expand()
-                    viewBinding.shippingLabelItemViewMoreButtonImage.animate().rotation(180F).setDuration(200).start()
-                    with(viewBinding.shippingLabelItemViewMoreButtonTitle) {
-                        text = context.getString(R.string.orderdetail_shipping_label_item_hide_shipping)
-                    }
-                } else {
-                    viewBinding.shippingLabelItemMorePanel.collapse()
-                    viewBinding.shippingLabelItemViewMoreButtonImage.animate().rotation(0F).setDuration(200).start()
-                    with(viewBinding.shippingLabelItemViewMoreButtonTitle) {
-                        text = context.getString(R.string.orderdetail_shipping_label_item_show_shipping)
+            if (FeatureFlag.REVAMP_WOO_SHIPPING.isEnabled() && shippingLabel.refund != null) {
+                viewBinding.shippingLabelItemViewMore.isVisible = false
+            } else {
+                viewBinding.shippingLabelItemViewMore.isVisible = true
+                // click on view more details section
+                viewBinding.shippingLabelItemViewMore.setOnClickListener {
+                    val isChecked = viewBinding.shippingLabelItemViewMoreButtonImage.rotation == 0F
+                    if (isChecked) {
+                        viewBinding.shippingLabelItemMorePanel.expand()
+                        viewBinding.shippingLabelItemViewMoreButtonImage.animate().rotation(180F).setDuration(200)
+                            .start()
+                        with(viewBinding.shippingLabelItemViewMoreButtonTitle) {
+                            text = context.getString(R.string.orderdetail_shipping_label_item_hide_shipping)
+                        }
+                    } else {
+                        viewBinding.shippingLabelItemMorePanel.collapse()
+                        viewBinding.shippingLabelItemViewMoreButtonImage.animate().rotation(0F).setDuration(200).start()
+                        with(viewBinding.shippingLabelItemViewMoreButtonTitle) {
+                            text = context.getString(R.string.orderdetail_shipping_label_item_show_shipping)
+                        }
                     }
                 }
             }
