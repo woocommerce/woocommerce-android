@@ -21,6 +21,7 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
+import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -29,12 +30,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalDensity
@@ -262,6 +265,7 @@ private fun PaymentMethodsList(
         WCOutlinedButton(
             onClick = onAddNewPaymentClicked,
             colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colors.onSurface),
+            enabled = viewState.canManagePaymentMethods,
             modifier = Modifier.fillMaxWidth()
         ) {
             Row(
@@ -270,7 +274,11 @@ private fun PaymentMethodsList(
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
-                    tint = MaterialTheme.colors.primary,
+                    tint = if (viewState.canManagePaymentMethods) {
+                        MaterialTheme.colors.primary
+                    } else {
+                        LocalContentColor.current.copy(LocalContentAlpha.current)
+                    },
                     contentDescription = null
                 )
                 Text(
@@ -315,29 +323,36 @@ private fun PaymentMethodItem(
     onClick: () -> Unit,
     modifier: Modifier
 ) {
-    Column(
-        modifier
-            .border(
-                color = if (isSelected) MaterialTheme.colors.primary else colorResource(R.color.divider_color),
-                width = 1.dp,
-                shape = MaterialTheme.shapes.medium
-            )
-            .then(if (isSelected) Modifier.background(colorResource(R.color.woo_item_selected)) else Modifier)
-            .clickable(onClick = onClick, enabled = enabled)
-            .padding(16.dp)
+    val borderColor = if (enabled && isSelected) MaterialTheme.colors.primary else colorResource(R.color.divider_color)
+    val borderWidth = if (isSelected) 2.dp else 1.dp
+    val backgroundColor = when {
+        enabled && isSelected -> colorResource(R.color.woo_item_selected)
+        isSelected -> colorResource(R.color.woo_item_selected_disabled)
+        else -> Color.Transparent
+    }
+    CompositionLocalProvider(
+        LocalContentAlpha provides if (enabled) LocalContentAlpha.current else ContentAlpha.disabled
     ) {
-        Text(
-            text = paymentMethod.cardTypeWithDigits,
-            style = MaterialTheme.typography.subtitle1,
-        )
-        Text(
-            text = paymentMethod.name,
-            style = MaterialTheme.typography.body2,
-        )
-        Text(
-            text = paymentMethod.expiry,
-            style = MaterialTheme.typography.body2,
-        )
+        Column(
+            modifier
+                .border(color = borderColor, width = borderWidth, shape = MaterialTheme.shapes.medium)
+                .background(color = backgroundColor, shape = MaterialTheme.shapes.medium)
+                .clickable(onClick = onClick, enabled = enabled)
+                .padding(16.dp)
+        ) {
+            Text(
+                text = paymentMethod.cardTypeWithDigits,
+                style = MaterialTheme.typography.subtitle1
+            )
+            Text(
+                text = paymentMethod.name,
+                style = MaterialTheme.typography.body2,
+            )
+            Text(
+                text = paymentMethod.expiry,
+                style = MaterialTheme.typography.body2,
+            )
+        }
     }
 }
 
@@ -411,7 +426,7 @@ private fun ContentScreenWithPaymentMethodsPreview() {
     WooThemeWithBackground {
         WooShippingEditPaymentScreen(
             viewState = WooShippingEditPaymentViewModel.ViewState.Content(
-                canManagePaymentMethods = true,
+                canManagePaymentMethods = false,
                 canEditSettings = true,
                 emailTheReceipt = true,
                 storeOwnerName = "John Doe",

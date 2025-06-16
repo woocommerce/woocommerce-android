@@ -18,7 +18,7 @@ class WooShippingEditPaymentViewModel @Inject constructor(
     observeAccountSettings: ObserveAccountSettings
 ) : ScopedViewModel(savedStateHandle) {
     private val selectedPaymentMethod = savedStateHandle.getNullableStateFlow(
-        viewModelScope,
+        scope = viewModelScope,
         initialValue = null,
         clazz = Int::class.java,
         key = "selectedPaymentMethod",

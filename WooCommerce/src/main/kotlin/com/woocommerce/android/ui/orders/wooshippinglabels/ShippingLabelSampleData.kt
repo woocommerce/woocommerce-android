@@ -59,7 +59,7 @@ object ShippingLabelSampleData {
         paymentMethods = List(countOfPaymentMethods) { getPaymentMethod(it) }
     )
 
-    fun getPaymentMethod(index: Int = 1) = PaymentMethodModel(
+    fun getPaymentMethod(index: Int = 0) = PaymentMethodModel(
         paymentMethodId = index,
         name = "John Doe",
         cardType = "VISA",
