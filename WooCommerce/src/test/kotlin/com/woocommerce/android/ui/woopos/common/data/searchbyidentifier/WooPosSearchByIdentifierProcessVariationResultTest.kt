@@ -10,14 +10,14 @@ import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
-class WooPosSearchByIdentifierVariationProcessTest {
+class WooPosSearchByIdentifierProcessVariationResultTest {
     private lateinit var sut: WooPosSearchByIdentifierProcessVariationResult
-    private val variationGetOrFetcher: WooPosSearchByIdentifierVariationFetch = mock()
-    private val productFetch: WooPosSearchByIdentifierProductGetOrFetch = mock()
+    private val variationFetch: WooPosSearchByIdentifierVariationFetch = mock()
+    private val productGetOrFetch: WooPosSearchByIdentifierProductGetOrFetch = mock()
 
     @Before
     fun setup() {
-        sut = WooPosSearchByIdentifierProcessVariationResult(variationGetOrFetcher, productFetch)
+        sut = WooPosSearchByIdentifierProcessVariationResult(variationFetch, productGetOrFetch)
     }
 
     @Test
@@ -34,9 +34,9 @@ class WooPosSearchByIdentifierVariationProcessTest {
 
         runBlocking {
             whenever(
-                variationGetOrFetcher.invoke(variationId, parentId)
+                variationFetch.invoke(variationId, parentId)
             ).thenReturn(WooPosSearchByIdentifierVariationFetch.VariationFetchResult.Success(variation))
-            whenever(productFetch.invoke(parentId)).thenReturn(WooPosSearchByIdentifierResult.Success(parentProduct))
+            whenever(productGetOrFetch.invoke(parentId)).thenReturn(WooPosSearchByIdentifierResult.Success(parentProduct))
         }
 
         // WHEN
@@ -76,10 +76,10 @@ class WooPosSearchByIdentifierVariationProcessTest {
 
         runBlocking {
             whenever(
-                variationGetOrFetcher.invoke(variationId, parentId)
+                variationFetch.invoke(variationId, parentId)
             ).thenReturn(WooPosSearchByIdentifierVariationFetch.VariationFetchResult.NetworkError)
             whenever(
-                productFetch.invoke(parentId)
+                productGetOrFetch.invoke(parentId)
             ).thenReturn(WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.NetworkError))
         }
 
@@ -107,9 +107,9 @@ class WooPosSearchByIdentifierVariationProcessTest {
 
         runBlocking {
             whenever(
-                variationGetOrFetcher.invoke(variationId, parentId)
+                variationFetch.invoke(variationId, parentId)
             ).thenReturn(WooPosSearchByIdentifierVariationFetch.VariationFetchResult.Success(variation))
-            whenever(productFetch.invoke(parentId)).thenReturn(expectedFailure)
+            whenever(productGetOrFetch.invoke(parentId)).thenReturn(expectedFailure)
         }
 
         // WHEN
@@ -138,8 +138,8 @@ class WooPosSearchByIdentifierVariationProcessTest {
         )
 
         runBlocking {
-            whenever(variationGetOrFetcher.invoke(variationId, parentId)).thenReturn(variationResult)
-            whenever(productFetch.invoke(parentId)).thenReturn(parentProductResult)
+            whenever(variationFetch.invoke(variationId, parentId)).thenReturn(variationResult)
+            whenever(productGetOrFetch.invoke(parentId)).thenReturn(parentProductResult)
         }
 
         // WHEN
