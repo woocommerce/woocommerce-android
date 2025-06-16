@@ -33,7 +33,9 @@ class WooPosSearchByIdentifierVariationProcessTest {
         val variation: ProductVariation = mock()
 
         runBlocking {
-            whenever(variationGetOrFetcher.invoke(variationId, parentId)).thenReturn(WooPosSearchByIdentifierVariationGetOrFetch.VariationFetchResult.Success(variation))
+            whenever(
+                variationGetOrFetcher.invoke(variationId, parentId)
+            ).thenReturn(WooPosSearchByIdentifierVariationGetOrFetch.VariationFetchResult.Success(variation))
             whenever(productFetch.invoke(parentId)).thenReturn(WooPosSearchByIdentifierResult.Success(parentProduct))
         }
 
@@ -73,8 +75,12 @@ class WooPosSearchByIdentifierVariationProcessTest {
         }
 
         runBlocking {
-            whenever(variationGetOrFetcher.invoke(variationId, parentId)).thenReturn(WooPosSearchByIdentifierVariationGetOrFetch.VariationFetchResult.NetworkError)
-            whenever(productFetch.invoke(parentId)).thenReturn(WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.NetworkError))
+            whenever(
+                variationGetOrFetcher.invoke(variationId, parentId)
+            ).thenReturn(WooPosSearchByIdentifierVariationGetOrFetch.VariationFetchResult.NetworkError)
+            whenever(
+                productFetch.invoke(parentId)
+            ).thenReturn(WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.NetworkError))
         }
 
         // WHEN
@@ -100,7 +106,9 @@ class WooPosSearchByIdentifierVariationProcessTest {
         val expectedFailure = WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.NetworkError)
 
         runBlocking {
-            whenever(variationGetOrFetcher.invoke(variationId, parentId)).thenReturn(WooPosSearchByIdentifierVariationGetOrFetch.VariationFetchResult.Success(variation))
+            whenever(
+                variationGetOrFetcher.invoke(variationId, parentId)
+            ).thenReturn(WooPosSearchByIdentifierVariationGetOrFetch.VariationFetchResult.Success(variation))
             whenever(productFetch.invoke(parentId)).thenReturn(expectedFailure)
         }
 
@@ -122,8 +130,12 @@ class WooPosSearchByIdentifierVariationProcessTest {
         }
 
         val variationResult = WooPosSearchByIdentifierVariationGetOrFetch.VariationFetchResult.NotFound
-        val parentProductResult = WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.NetworkError)
-        val expectedFailure = WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.ProductNotFound)
+        val parentProductResult = WooPosSearchByIdentifierResult.Failure(
+            WooPosSearchByIdentifierResult.Error.NetworkError
+        )
+        val expectedFailure = WooPosSearchByIdentifierResult.Failure(
+            WooPosSearchByIdentifierResult.Error.ProductNotFound
+        )
 
         runBlocking {
             whenever(variationGetOrFetcher.invoke(variationId, parentId)).thenReturn(variationResult)

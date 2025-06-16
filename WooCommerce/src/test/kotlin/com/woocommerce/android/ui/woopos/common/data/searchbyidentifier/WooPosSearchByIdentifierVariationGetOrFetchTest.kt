@@ -8,16 +8,13 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
-import org.mockito.kotlin.any
-import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCProductVariationModel
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCProductStore
 
 class WooPosSearchByIdentifierVariationGetOrFetchTest {
@@ -67,7 +64,7 @@ class WooPosSearchByIdentifierVariationGetOrFetchTest {
         val fetchResult: WCProductStore.OnVariationChanged = mock {
             on { isError }.thenReturn(false)
         }
-        
+
         whenever(variationsCache.get(variationId)).thenReturn(null)
         whenever(productStore.fetchSingleVariation(site, parentId, variationId)).thenReturn(fetchResult)
         whenever(productStore.getVariationByRemoteId(site, parentId, variationId)).thenReturn(wcVariation)
@@ -91,7 +88,7 @@ class WooPosSearchByIdentifierVariationGetOrFetchTest {
         val fetchResult: WCProductStore.OnVariationChanged = mock {
             on { isError }.thenReturn(true)
         }
-        
+
         whenever(variationsCache.get(variationId)).thenReturn(null)
         whenever(productStore.fetchSingleVariation(site, parentId, variationId)).thenReturn(fetchResult)
 
@@ -110,7 +107,7 @@ class WooPosSearchByIdentifierVariationGetOrFetchTest {
         val fetchResult: WCProductStore.OnVariationChanged = mock {
             on { isError }.thenReturn(false)
         }
-        
+
         whenever(variationsCache.get(variationId)).thenReturn(null)
         whenever(productStore.fetchSingleVariation(site, parentId, variationId)).thenReturn(fetchResult)
         whenever(productStore.getVariationByRemoteId(site, parentId, variationId)).thenReturn(null)
@@ -138,7 +135,7 @@ class WooPosSearchByIdentifierVariationGetOrFetchTest {
         val fetchResult: WCProductStore.OnVariationChanged = mock {
             on { isError }.thenReturn(false)
         }
-        
+
         whenever(variationsCache.get(variationId)).thenReturn(listOf(differentVariation))
         whenever(productStore.fetchSingleVariation(site, parentId, variationId)).thenReturn(fetchResult)
         whenever(productStore.getVariationByRemoteId(site, parentId, variationId)).thenReturn(wcVariation)

@@ -151,7 +151,9 @@ class WooPosSearchByIdentifierGlobalUniqueSearchTest {
         // THEN
         assertEquals(
             WooPosSearchByIdentifierResult.Failure(
-                WooPosSearchByIdentifierResult.Error.UnknownError("Results not found for Global Unique ID: $globalUniqueId")
+                WooPosSearchByIdentifierResult.Error.UnknownError(
+                    "Results not found for Global Unique ID: $globalUniqueId"
+                )
             ),
             actualResult
         )
