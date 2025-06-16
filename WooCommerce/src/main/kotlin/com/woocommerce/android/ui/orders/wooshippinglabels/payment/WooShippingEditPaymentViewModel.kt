@@ -31,11 +31,15 @@ class WooShippingEditPaymentViewModel @Inject constructor(
         .onStart { emit(ViewState.Loading) }
         .asLiveData()
 
-    fun onUpdatePaymentMethod(paymentMethodId: Int) {
+    fun onAddNewPaymentMethod() {
         TODO()
     }
 
-    fun onAddNewPaymentMethod() {
+    fun onPaymentMethodSelected(paymentMethodId: Int?) {
+        TODO()
+    }
+
+    fun onSaveClicked() {
         TODO()
     }
 

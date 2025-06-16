@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.payment
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,18 +11,22 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
+import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
@@ -41,8 +47,12 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.BottomSheetHandle
 import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.ui.compose.component.WCOutlinedButton
+import com.woocommerce.android.ui.compose.component.WCSwitch
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.orders.wooshippinglabels.ShippingLabelSampleData
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.PaymentMethodModel
 
 @Composable
 fun WooShippingEditPaymentScreen(
@@ -51,7 +61,9 @@ fun WooShippingEditPaymentScreen(
     viewModel.viewState.observeAsState().value?.let {
         WooShippingEditPaymentScreen(
             viewState = it,
-            onAddNewPaymentMethod = viewModel::onAddNewPaymentMethod
+            onAddNewPaymentMethod = viewModel::onAddNewPaymentMethod,
+            onPaymentMethodSelected = viewModel::onPaymentMethodSelected,
+            onSaveClicked = viewModel::onSaveClicked
         )
     }
 }
@@ -59,7 +71,9 @@ fun WooShippingEditPaymentScreen(
 @Composable
 private fun WooShippingEditPaymentScreen(
     viewState: WooShippingEditPaymentViewModel.ViewState,
-    onAddNewPaymentMethod: () -> Unit
+    onAddNewPaymentMethod: () -> Unit,
+    onPaymentMethodSelected: (Int) -> Unit,
+    onSaveClicked: () -> Unit,
 ) {
     Surface(
         shape = RoundedCornerShape(
@@ -97,7 +111,9 @@ private fun WooShippingEditPaymentScreen(
                 is WooShippingEditPaymentViewModel.ViewState.Content -> {
                     WooShippingEditPaymentContent(
                         viewState = viewState,
-                        onAddNewPaymentMethod = onAddNewPaymentMethod,
+                        onAddNewPaymentClicked = onAddNewPaymentMethod,
+                        onSaveClicked = onSaveClicked,
+                        onPaymentMethodSelected = onPaymentMethodSelected,
                         modifier = Modifier
                     )
                 }
@@ -109,7 +125,9 @@ private fun WooShippingEditPaymentScreen(
 @Composable
 private fun WooShippingEditPaymentContent(
     viewState: WooShippingEditPaymentViewModel.ViewState.Content,
-    onAddNewPaymentMethod: () -> Unit,
+    onAddNewPaymentClicked: () -> Unit,
+    onPaymentMethodSelected: (Int) -> Unit,
+    onSaveClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -130,12 +148,17 @@ private fun WooShippingEditPaymentContent(
                 EmptyPaymentMethodsView(
                     editEnabled = viewState.editEnabled,
                     storeOwnerUsername = viewState.storeOwnerUsername,
-                    onAddNewPaymentMethod = onAddNewPaymentMethod,
+                    onAddNewPaymentMethod = onAddNewPaymentClicked,
                 )
             }
 
             else -> {
-                TODO()
+                PaymentMethodsList(
+                    viewState = viewState,
+                    onAddNewPaymentClicked = onAddNewPaymentClicked,
+                    onPaymentMethodSelected = onPaymentMethodSelected,
+                    onSaveClicked = onSaveClicked
+                )
             }
         }
     }
@@ -215,6 +238,109 @@ fun EmptyPaymentMethodsView(
 }
 
 @Composable
+private fun PaymentMethodsList(
+    viewState: WooShippingEditPaymentViewModel.ViewState.Content,
+    onAddNewPaymentClicked: () -> Unit,
+    onPaymentMethodSelected: (Int) -> Unit,
+    onSaveClicked: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+    ) {
+        viewState.paymentMethods.forEach { paymentMethod ->
+            PaymentMethodItem(
+                paymentMethod = paymentMethod,
+                isSelected = paymentMethod.paymentMethodId == viewState.selectedPaymentMethodId,
+                enabled = viewState.editEnabled,
+                onClick = { onPaymentMethodSelected(paymentMethod.paymentMethodId) },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(Modifier.height(8.dp))
+        }
+        WCOutlinedButton(
+            onClick = onAddNewPaymentClicked,
+            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colors.onSurface),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    tint = MaterialTheme.colors.primary,
+                    contentDescription = null
+                )
+                Text(
+                    text = stringResource(R.string.woo_shipping_payment_add_new_button)
+                )
+            }
+        }
+        Spacer(Modifier.height(16.dp))
+        Row(Modifier.fillMaxWidth()) {
+            Icon(Icons.Outlined.Info, contentDescription = null)
+            Spacer(Modifier.width(8.dp))
+            Text(
+                text = stringResource(R.string.woo_shipping_payment_methods_info_footer, viewState.storeOwnerUsername),
+                style = MaterialTheme.typography.caption
+            )
+        }
+        Spacer(Modifier.height(16.dp))
+        Divider()
+        Spacer(Modifier.height(16.dp))
+        WCSwitch(
+            text = stringResource(R.string.woo_shipping_payment_email_receipt_toggle),
+            checked = viewState.emailTheReceipt,
+            onCheckedChange = { TODO() },
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(Modifier.height(16.dp))
+        WCColoredButton(
+            onClick = onSaveClicked,
+            enabled = viewState.editEnabled,
+            text = stringResource(R.string.woo_shipping_payment_use_card_button),
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+@Composable
+private fun PaymentMethodItem(
+    paymentMethod: PaymentMethodModel,
+    isSelected: Boolean,
+    enabled: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier
+) {
+    Column(
+        modifier
+            .border(
+                color = if (isSelected) MaterialTheme.colors.primary else colorResource(R.color.divider_color),
+                width = 1.dp,
+                shape = MaterialTheme.shapes.medium
+            )
+            .then(if (isSelected) Modifier.background(colorResource(R.color.woo_item_selected)) else Modifier)
+            .clickable(onClick = onClick, enabled = enabled)
+            .padding(16.dp)
+    ) {
+        Text(
+            text = paymentMethod.cardTypeWithDigits,
+            style = MaterialTheme.typography.subtitle1,
+        )
+        Text(
+            text = paymentMethod.name,
+            style = MaterialTheme.typography.body2,
+        )
+        Text(
+            text = paymentMethod.expiry,
+            style = MaterialTheme.typography.body2,
+        )
+    }
+}
+
+@Composable
 private fun EditDisabledWarning(
     storeOwnerName: String,
     storeOwnerUsername: String,
@@ -250,14 +376,16 @@ private fun LoadingScreenPreview() {
     WooThemeWithBackground {
         WooShippingEditPaymentScreen(
             viewState = WooShippingEditPaymentViewModel.ViewState.Loading,
-            onAddNewPaymentMethod = {}
+            onAddNewPaymentMethod = {},
+            onPaymentMethodSelected = {},
+            onSaveClicked = {}
         )
     }
 }
 
 @LightDarkThemePreviews
 @Composable
-private fun ContentScreenPreview() {
+private fun ContentScreenEmptyPreview() {
     WooThemeWithBackground {
         WooShippingEditPaymentScreen(
             viewState = WooShippingEditPaymentViewModel.ViewState.Content(
@@ -268,7 +396,29 @@ private fun ContentScreenPreview() {
                 paymentMethods = emptyList(),
                 selectedPaymentMethodId = null
             ),
-            onAddNewPaymentMethod = {}
+            onAddNewPaymentMethod = {},
+            onPaymentMethodSelected = {},
+            onSaveClicked = {}
+        )
+    }
+}
+
+@LightDarkThemePreviews
+@Composable
+private fun ContentScreenWithPaymentMethodsPreview() {
+    WooThemeWithBackground {
+        WooShippingEditPaymentScreen(
+            viewState = WooShippingEditPaymentViewModel.ViewState.Content(
+                editEnabled = true,
+                emailTheReceipt = true,
+                storeOwnerName = "John Doe",
+                storeOwnerUsername = "johndoe",
+                paymentMethods = List(3) { ShippingLabelSampleData.getPaymentMethod(it) },
+                selectedPaymentMethodId = 1
+            ),
+            onAddNewPaymentMethod = {},
+            onPaymentMethodSelected = {},
+            onSaveClicked = {}
         )
     }
 }

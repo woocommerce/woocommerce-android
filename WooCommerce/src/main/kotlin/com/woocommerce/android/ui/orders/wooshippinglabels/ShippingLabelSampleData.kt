@@ -50,12 +50,14 @@ object ShippingLabelSampleData {
     }
 
     fun getPaymentsSection() = PaymentsSectionUI(
-        selectedPaymentMethod = PaymentMethodModel(
-            paymentMethodId = 1,
-            name = "Visa",
-            cardType = "VISA",
-            cardDigits = "1234",
-            expiry = "12/25"
-        )
+        selectedPaymentMethod = getPaymentMethod()
+    )
+
+    fun getPaymentMethod(index: Int = 0) = PaymentMethodModel(
+        paymentMethodId = index,
+        name = "John Doe",
+        cardType = "VISA",
+        cardDigits = "${index}234",
+        expiry = "12/25"
     )
 }
