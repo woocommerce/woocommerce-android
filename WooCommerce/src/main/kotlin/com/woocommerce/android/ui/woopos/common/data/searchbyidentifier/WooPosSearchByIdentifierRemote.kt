@@ -91,7 +91,12 @@ class WooPosSearchByIdentifierRemote @Inject constructor(
                 return@coroutineScope identifierFallbackResult
             }
 
-            prioritizeError(globalUniqueIdentifierFallbackResult, identifierFallbackResult, globalUniqueIdentifierResult, identifierResult)
+            prioritizeError(
+                globalUniqueIdentifierFallbackResult,
+                identifierFallbackResult,
+                globalUniqueIdentifierResult,
+                identifierResult
+            )
         } else {
             prioritizeError(globalUniqueIdentifierResult, identifierResult)
         }
