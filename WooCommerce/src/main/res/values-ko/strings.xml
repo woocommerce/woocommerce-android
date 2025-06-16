@@ -1,16 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-05-20 09:54:04+0000
+Translation-Revision-Date: 2025-06-04 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_search_items_error_description">다시 시도해 주세요.</string>
+    <string name="woopos_search_coupons_error_title">쿠폰을 로드할 수 없음</string>
+    <string name="woopos_search_items_error_title">상품을 로드할 수 없음</string>
+    <string name="woopos_search_empty_coupons_description">일치하는 쿠폰을 찾을 수 없습니다. 검색어를 조정해 보세요.</string>
+    <string name="woopos_search_empty_description">일치하는 상품을 찾을 수 없습니다. 검색어를 조정해 보세요.</string>
+    <string name="woopos_search_coupons_empty_title">쿠폰을 찾을 수 없음</string>
+    <string name="woopos_search_coupons">쿠폰 검색</string>
+    <string name="woopos_coupons_pagination_error_description">인터넷 연결을 확인하고 다시 시도하세요.</string>
+    <string name="woopos_variations_loading_error_message">인터넷 연결을 확인하고 다시 시도하세요.</string>
+    <string name="woopos_items_pagination_error_description">인터넷 연결을 확인하고 다시 시도하세요.</string>
+    <string name="woopos_coupons_loading_error_message">인터넷 연결을 확인하고 다시 시도하세요.</string>
+    <string name="woopos_coupons_empty_list_message">쿠폰은 비즈니스를 촉진하는 효과적인 방법이 될 수 있습니다. 만드시겠어요?</string>
+    <string name="woopos_coupons_loading_error_coupons_disabled_message">우커머스 설정에서 쿠폰 코드를 활성화하여 고객용 생성을 시작하세요.</string>
+    <string name="woopos_products_loading_error_message">다시 시도해 주세요.</string>
+    <string name="blaze_campaign_preview_product_image_content_description">광고에 사용된 상품 이미지</string>
+    <string name="custom_amounts_save_changes">변경 사항 저장</string>
     <string name="purchased_shipment_content_description">구매</string>
     <string name="woopos_totals_invalid_coupon_error">쿠폰을 적용할 수 없음</string>
     <string name="woopos_coupons_empty_list_create_coupon_label">쿠폰 생성</string>
-    <string name="woopos_coupons_loading_error_coupons_disabled_message">우커머스 설정에서 쿠폰을 활성화하세요.</string>
-    <string name="woopos_coupons_loading_error_coupons_disabled_title">쿠폰을 찾을 수 없음</string>
+    <string name="woopos_coupons_loading_error_coupons_disabled_title">쿠폰 수락 시작</string>
     <string name="woopos_totals_coupons_validation_failed_remove_coupons">쿠폰 제거</string>
     <string name="woopos_totals_coupons_validation_failed_edit_order">주문 편집</string>
     <string name="woopos_cart_coupon_invalid_subtitle">쿠폰이 적용되지 않음</string>
@@ -21,14 +36,11 @@ Language: ko_KR
     <string name="woo_shipping_split_shipment_merge_unfulfilled_menu">이행되지 않은 모든 항목 병합</string>
     <string name="woo_shipping_labels_package_creation_unstarred">이 아이템의 별 취소</string>
     <string name="woo_shipping_labels_package_creation_starred">이 아이템에 별 표시</string>
-    <string name="woopos_coupons_pagination_error_content_description">\"추가 쿠폰이 로드되지 않았습니다. 다시 시도하려면 두 번 누르세요.\"</string>
-    <string name="woopos_coupons_pagination_error_description">\"쿠폰 로드 중 오류가 발생했습니다.</string>
-    <string name="woopos_coupons_pagination_error_title">추가 아이템이 로드되지 않았습니다.\"</string>
+    <string name="woopos_coupons_pagination_error_content_description">추가 쿠폰을 로드할 수 없습니다. 다시 시도하려면 두 번 누르세요.</string>
+    <string name="woopos_coupons_pagination_error_title">추가 쿠폰을 로드할 수 없음</string>
     <string name="woopos_coupons_pagination_try_again_label">다시 시도</string>
     <string name="woopos_coupons_loading_error_retry_button">다시 시도</string>
-    <string name="woopos_coupons_loading_error_message">한 번 더 시도할까요?</string>
-    <string name="woopos_coupons_loading_error_title">쿠폰 로딩 오류</string>
-    <string name="woopos_coupons_empty_list_message">고객에게 특별한 혜택과 할인을 발송하여 비즈니스를 증진하세요.</string>
+    <string name="woopos_coupons_loading_error_title">쿠폰을 로드할 수 없음</string>
     <string name="woopos_coupons_empty_list_title">쿠폰을 찾을 수 없음</string>
     <string name="woopos_coupons_empty_list_image_description">쿠폰 없음</string>
     <string name="woopos_coupons_screen_title">쿠폰</string>
@@ -60,11 +72,8 @@ Language: ko_KR
     <string name="woo_shipping_labels_hazmat_info_full_description">잠재적 유해물질에는 배터리, 드라이아이스, 가연성 액체, 에어로졸, 탄약, 폭죽, 매니큐어, 향수, 페인트, 용제 등과 같은 품목이 포함됩니다. 유해 아이템은 별도의 패키지로 배송되어야 합니다.</string>
     <string name="woo_shipping_labels_hazmat_info_contains_hazmat">유해물질 있음</string>
     <string name="woo_shipping_labels_hazmat_info_title">위험물 또는 유해물질을 배송하시나요?</string>
-    <string name="woopos_search_items_error_description">한 번 더 시도할까요?</string>
-    <string name="woopos_search_items_error_title">아이템를 로드할 수 없음</string>
     <string name="woopos_search_empty_image_content_description">아이템을 찾을 수 없음</string>
-    <string name="woopos_search_empty_description">검색과 일치하는 항목을 찾을 수 없습니다.</string>
-    <string name="woopos_search_items_empty_title">찾을 수 없음</string>
+    <string name="woopos_search_items_empty_title">상품을 찾을 수 없음</string>
     <string name="woopos_payment_discount_label">할인 합계</string>
     <string name="woopos_cart_item_coupon_content_description">장바구니의 쿠폰 %s</string>
     <string name="shipping_label_package_title">패키지 선택</string>
@@ -221,8 +230,7 @@ Language: ko_KR
     <string name="woopos_complete_cash_order_button">결제 완료로 표시</string>
     <string name="woopos_cash_payment_title">현금 결제</string>
     <string name="woopos_items_pagination_error_content_description">\"항목을 더 로드하지 못했습니다. 다시 시도하려면 두 번 누르세요.\"</string>
-    <string name="woopos_items_pagination_error_description">\"상품 로드 중 오류가 발생했습니다.\"</string>
-    <string name="woopos_items_pagination_error_title">\"항목을 더 로드하지 못했습니다\"</string>
+    <string name="woopos_items_pagination_error_title">추가 상품을 로드할 수 없음</string>
     <string name="woopos_items_pagination_try_again_label">다시 시도</string>
     <string name="woo_pos_payment_failed_go_back_to_checkout">계산으로 돌아가기</string>
     <string name="woo_pos_payment_failed_try_again">다시 결제 시도</string>
@@ -259,7 +267,7 @@ Language: ko_KR
     <string name="site_picker_edit_store_list_footer">선택하지 않은 스토어는 앱 사이트의 선택기에 표시되지 않으며 새 주문 또는 상품 리뷰에 대한 푸시 알림이 수신되지 않습니다.</string>
     <string name="site_picker_edit_store_list_title">표시되는 스토어</string>
     <string name="site_picker_edit_store_list">스토어 편집</string>
-    <string name="woopos_variations_loading_error_title">상품 옵션 로드 오류</string>
+    <string name="woopos_variations_loading_error_title">변형을 로드할 수 없음</string>
     <string name="woopos_variations_back_content_description">뒤로</string>
     <string name="woopos_variation_item_content_description">상품 옵션 %s, 가격 %s</string>
     <string name="woopos_variable_product_item_content_description">변형 상품 %s, 가격 %s</string>
@@ -410,8 +418,7 @@ Language: ko_KR
     <string name="woopos_totals_order_creation_error">주문을 생성할 수 없음</string>
     <string name="woopos_products_loading_error_retry_button">다시 시도</string>
     <string name="woopos_error_icon_content_description">오류 표시 아이콘</string>
-    <string name="woopos_products_loading_error_message">한 번 더 시도할까요?</string>
-    <string name="woopos_products_loading_error_title">상품 로드 오류</string>
+    <string name="woopos_products_loading_error_title">상품을 로드할 수 없음</string>
     <string name="woopos_products_empty_list_message_two">현재 POS에서는 단순 상품만 지원합니다.</string>
     <string name="woopos_variations_empty_list_message">현재 POS에서는 단순, 변형 및 가상 상품만 지원 - \n시작하려면 하나를 생성하세요.</string>
     <string name="woopos_products_empty_list_title">지원되는 상품을 찾을 수 없음</string>
@@ -1572,8 +1579,6 @@ Language: ko_KR
     <string name="settings_confirm_logout_site_credentials">계정에서 로그아웃하시겠나요?</string>
     <string name="domains_generic_error_title">사이트 도메인을 로드할 수 없음</string>
     <string name="store_onboarding_completed_tasks_status">%1$d/%2$d개 완료됨</string>
-    <string name="store_onboarding_task_change_domain_description">스토어를 호스팅할 사용자 정의 URL을 가지세요.</string>
-    <string name="store_onboarding_task_change_domain_title">도메인 사용자 정의</string>
     <string name="store_onboarding_task_launch_store_description">언제든지 원할 때 사이트를 세상에 공개하세요.</string>
     <string name="store_onboarding_task_launch_store_title">스토어 시작</string>
     <string name="store_onboarding_task_add_product_description">스토어에 상품 또는 서비스를 추가하여 판매를 시작하세요.</string>

@@ -38,17 +38,15 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.woocommerce.android.R
-import com.woocommerce.android.model.Address
-import com.woocommerce.android.model.AmbiguousLocation
-import com.woocommerce.android.model.Location
+import com.woocommerce.android.extensions.appendWithIfNotEmpty
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.RoundedCornerBoxWithBorder
+import com.woocommerce.android.ui.orders.wooshippinglabels.ShippingLabelSampleData
 import com.woocommerce.android.ui.orders.wooshippinglabels.VerticalDivider
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingAddresses
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.shippingSelectedBackgroundColor
-import com.woocommerce.android.ui.orders.wooshippinglabels.toShippingFromString
 
 @Composable
 @Suppress("DestructuringDeclarationWithTooManyEntries")
@@ -467,41 +465,7 @@ fun AddressStatusIndicator(
     }
 }
 
-internal fun getShipFrom() = OriginShippingAddress(
-    firstName = "first name",
-    lastName = "last name",
-    company = "Company",
-    phone = "",
-    address1 = "A huge address that should be truncated",
-    address2 = "",
-    city = "City",
-    postcode = "",
-    email = "email",
-    country = "USA",
-    state = "California",
-    id = "id_1",
-    isDefault = true,
-    isVerified = true
-)
-
-internal fun getShipTo() = DestinationShippingAddress(
-    address = Address(
-        firstName = "first name",
-        lastName = "last name",
-        company = "Company",
-        phone = "",
-        address1 = "Another Address",
-        address2 = "",
-        city = "City",
-        postcode = "",
-        email = "email",
-        country = Location("US", "USA"),
-        state = AmbiguousLocation.Defined(Location("CA", "California", "USA")),
-    ),
-    isVerified = true
-)
-
-fun OriginShippingAddress.getFormattedName(context: Context): String {
+private fun OriginShippingAddress.getFormattedName(context: Context): String {
     val name = when {
         !firstName.isNullOrEmpty() && !lastName.isNullOrEmpty() -> "$firstName $lastName"
         !firstName.isNullOrEmpty() -> firstName
@@ -516,6 +480,14 @@ fun OriginShippingAddress.getFormattedName(context: Context): String {
     }
 }
 
+private fun OriginShippingAddress.toShippingFromString() = StringBuilder()
+    .appendWithIfNotEmpty(this.address1)
+    .appendWithIfNotEmpty(this.address2)
+    .appendWithIfNotEmpty(this.city)
+    .appendWithIfNotEmpty(this.state)
+    .appendWithIfNotEmpty(this.postcode)
+    .toString()
+
 @Preview
 @Composable
 private fun AddressSectionPortraitPreview() {
@@ -523,9 +495,9 @@ private fun AddressSectionPortraitPreview() {
         Box(modifier = Modifier.padding(dimensionResource(R.dimen.major_100))) {
             AddressSectionPortrait(
                 shippingAddresses = WooShippingAddresses(
-                    shipFrom = getShipFrom(),
-                    shipTo = getShipTo(),
-                    originAddresses = listOf(getShipFrom())
+                    shipFrom = ShippingLabelSampleData.getShipFrom(),
+                    shipTo = ShippingLabelSampleData.getShipTo(),
+                    originAddresses = listOf(ShippingLabelSampleData.getShipFrom())
                 ),
                 onEditDestinationAddress = {},
                 onEditOriginAddress = {},
@@ -544,9 +516,9 @@ private fun AddressSectionPortraitMissingAddressPreview() {
         Box(modifier = Modifier.padding(dimensionResource(R.dimen.major_100))) {
             AddressSectionPortrait(
                 shippingAddresses = WooShippingAddresses(
-                    shipFrom = getShipFrom(),
+                    shipFrom = ShippingLabelSampleData.getShipFrom(),
                     shipTo = DestinationShippingAddress.EMPTY,
-                    originAddresses = listOf(getShipFrom())
+                    originAddresses = listOf(ShippingLabelSampleData.getShipFrom())
                 ),
                 onEditDestinationAddress = {},
                 onEditOriginAddress = {},
@@ -565,9 +537,9 @@ private fun AddressSectionLandscapePreview() {
         Box(modifier = Modifier.padding(dimensionResource(R.dimen.major_100))) {
             AddressSectionLandscape(
                 shippingAddresses = WooShippingAddresses(
-                    shipFrom = getShipFrom(),
-                    shipTo = getShipTo(),
-                    originAddresses = listOf(getShipFrom())
+                    shipFrom = ShippingLabelSampleData.getShipFrom(),
+                    shipTo = ShippingLabelSampleData.getShipTo(),
+                    originAddresses = listOf(ShippingLabelSampleData.getShipFrom())
                 ),
                 isReadOnly = false,
                 onEditDestinationAddress = {},
@@ -586,9 +558,9 @@ private fun AddressSectionLandscapeMissingAddressPreview() {
         Box(modifier = Modifier.padding(dimensionResource(R.dimen.major_100))) {
             AddressSectionLandscape(
                 shippingAddresses = WooShippingAddresses(
-                    shipFrom = getShipFrom(),
+                    shipFrom = ShippingLabelSampleData.getShipFrom(),
                     shipTo = DestinationShippingAddress.EMPTY,
-                    originAddresses = listOf(getShipFrom())
+                    originAddresses = listOf(ShippingLabelSampleData.getShipFrom())
                 ),
                 isReadOnly = false,
                 onEditDestinationAddress = {},

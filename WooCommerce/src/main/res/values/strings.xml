@@ -1293,6 +1293,9 @@
     <string name="shipping_label_shipment_details_mark_order_complete">After purchasing a label, mark this order as complete and notify the customer.</string>
     <string name="shipping_label_shipment_details_purchase_label">Purchase Label · %1$s </string>
     <string name="shipping_label_shipment_details_purchase_label_disabled">Purchase Label</string>
+    <string name="shipping_label_shipment_details_payment_method">Payment method</string>
+    <string name="shipping_label_shipment_details_add_payment_method">Add payment method</string>
+    <string name="shipping_label_shipment_details_edit_payment_method">Edit payment method</string>
     <string name="shipping_label_shipping_rates_sort_option_cheapest">Cheapest</string>
     <string name="shipping_label_shipping_rates_sort_option_fastest">Fastest</string>
     <string name="shipping_label_shipping_service_title">Shipping service</string>
@@ -4040,6 +4043,8 @@
     <string name="blaze_campaign_product_photo_picker_title">Product Photos</string>
     <string name="blaze_campaign_product_photo_picker_empty">No photos found</string>
     <string name="blaze_campaign_product_photo_picker_photo_content_description">Product photo</string>
+    <string name="blaze_campaign_edit_ad_arrow_forward_description">Next suggestion</string>
+    <string name="blaze_campaign_edit_ad_arrow_back_description">Previous suggestion</string>
 
     <!--
     Blaze campaign payment
@@ -4305,7 +4310,7 @@
 
     <string name="woopos_dialog_barcode_info_heading">Barcode scanning</string>
     <string name="woopos_dialog_barcode_info_intro_message">You can scan barcodes using an external scanner to quickly build a cart.</string>
-    <string name="woopos_dialog_barcode_info_primary_message">• Set up barcodes in the "GTIN, UPC, EAN, ISBN" field in Products > Product Details > Inventory. </string>
+    <string name="woopos_dialog_barcode_info_primary_message">• Set up barcodes in the "GTIN, UPC, EAN, ISBN" field in Products &gt; Product Details &gt; Inventory. </string>
     <string name="woopos_dialog_barcode_info_more_details_link">More details</string>
     <string name="woopos_dialog_barcode_info_secondary_message">• Refer to your Bluetooth barcode scanner\'s instructions to set HID mode.</string>
     <string name="woopos_dialog_barcode_info_tertiary_message">• Connect your barcode scanner in System Bluetooth settings.</string>

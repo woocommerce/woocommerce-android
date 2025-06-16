@@ -1,1 +1,1 @@
-This update brings product search and coupon support to Woo POS, making in-person selling smoother than ever. We've also polished the coupon creation flow and improved the "Custom amount" UI. Plus, a pesky crash caused by malformed tax data is now fixed for a more stable experience.
+Our latest update brings a refreshed look and feel, aligning the app with the new WooCommerce branding. Enjoy a fresh, modern design!

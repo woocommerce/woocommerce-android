@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels
 
 import android.content.res.Configuration
-import android.os.Parcelable
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,6 +26,10 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -42,20 +45,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.appendWithIfNotEmpty
 import com.woocommerce.android.ui.compose.animations.SkeletonView
+import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
+import com.woocommerce.android.ui.compose.preview.OrientationPreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.AddressSectionLandscape
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.AddressSectionPortrait
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.AddressStatus
-import com.woocommerce.android.ui.orders.wooshippinglabels.address.getShipFrom
-import com.woocommerce.android.ui.orders.wooshippinglabels.address.getShipTo
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeBanner
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeBannerUiState
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
 import com.woocommerce.android.util.StringUtils
-import kotlinx.parcelize.Parcelize
 
 @Composable
 fun ShipmentDetails(
@@ -65,6 +66,7 @@ fun ShipmentDetails(
     shippingLines: List<ShippingLineSummaryUI>,
     shippingAddresses: WooShippingAddresses,
     shippingRateSummary: ShippingRateSummaryUI?,
+    paymentsSectionUI: PaymentsSectionUI,
     modifier: Modifier = Modifier,
     noticeBannerUiState: NoticeBannerUiState? = null,
     isShipmentDetailsExpanded: Boolean = false,
@@ -74,7 +76,8 @@ fun ShipmentDetails(
     onOriginAddressSelected: (OriginShippingAddress) -> Unit,
     destinationStatus: AddressStatus,
     markOrderComplete: Boolean = false,
-    onMarkOrderCompleteChange: (Boolean) -> Unit = {},
+    onMarkOrderCompleteChange: (Boolean) -> Unit,
+    onEditPaymentMethodClicked: () -> Unit,
     handlerModifier: Modifier = Modifier,
     isReadOnly: Boolean = false
 ) {
@@ -129,11 +132,13 @@ fun ShipmentDetails(
                 shippingLines = shippingLines,
                 shippingAddresses = shippingAddresses,
                 shippingRateSummary = shippingRateSummary,
+                paymentsSectionUI = paymentsSectionUI,
                 modifier = modifier.padding(top = dimensionResource(R.dimen.major_100)),
                 isReadOnly = isReadOnly,
                 onEditDestinationAddress = onEditDestinationAddress,
                 onEditOriginAddress = onEditOriginAddress,
                 onOriginAddressSelected = onOriginAddressSelected,
+                onEditPaymentMethodClicked = onEditPaymentMethodClicked,
                 destinationStatus = destinationStatus
             )
         } else {
@@ -142,14 +147,16 @@ fun ShipmentDetails(
                 totalItemsCost = totalItemsCost,
                 shippingLines = shippingLines,
                 markOrderComplete = markOrderComplete,
-                onMarkOrderCompleteChange = onMarkOrderCompleteChange,
                 shippingAddresses = shippingAddresses,
                 shippingRateSummary = shippingRateSummary,
+                paymentsSectionUI = paymentsSectionUI,
                 modifier = modifier.padding(top = dimensionResource(R.dimen.minor_100)),
                 isReadOnly = isReadOnly,
+                onMarkOrderCompleteChange = onMarkOrderCompleteChange,
                 onEditDestinationAddress = onEditDestinationAddress,
                 onEditOriginAddress = onEditOriginAddress,
                 onOriginAddressSelected = onOriginAddressSelected,
+                onEditPaymentMethodClicked = onEditPaymentMethodClicked,
                 destinationStatus = destinationStatus
             )
         }
@@ -163,11 +170,13 @@ private fun ShipmentDetailsPortrait(
     shippingLines: List<ShippingLineSummaryUI>,
     shippingAddresses: WooShippingAddresses,
     markOrderComplete: Boolean,
-    onMarkOrderCompleteChange: (Boolean) -> Unit,
     shippingRateSummary: ShippingRateSummaryUI?,
+    paymentsSectionUI: PaymentsSectionUI,
+    onMarkOrderCompleteChange: (Boolean) -> Unit,
     onEditDestinationAddress: (DestinationShippingAddress) -> Unit,
     onEditOriginAddress: (OriginShippingAddress) -> Unit,
     onOriginAddressSelected: (OriginShippingAddress) -> Unit,
+    onEditPaymentMethodClicked: () -> Unit,
     destinationStatus: AddressStatus,
     modifier: Modifier = Modifier,
     isReadOnly: Boolean = false
@@ -178,7 +187,6 @@ private fun ShipmentDetailsPortrait(
                 .fillMaxWidth()
                 .weight(1f)
                 .verticalScroll(rememberScrollState())
-
         ) {
             OrderDetailsSection(
                 shippingAddresses = shippingAddresses,
@@ -191,10 +199,16 @@ private fun ShipmentDetailsPortrait(
                 onOriginAddressSelected = onOriginAddressSelected,
                 destinationStatus = destinationStatus
             )
-            Divider(modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.major_100)))
+            Divider(modifier = Modifier.padding(horizontal = 16.dp))
+            PaymentSection(
+                paymentsSectionUI = paymentsSectionUI,
+                onEditPaymentMethodClicked = onEditPaymentMethodClicked,
+                modifier = Modifier.padding(16.dp)
+            )
+            Divider(modifier = Modifier.padding(horizontal = 16.dp))
             ShipmentCostSection(
                 shippingRateSummary = shippingRateSummary,
-                modifier = Modifier.padding(dimensionResource(R.dimen.major_100))
+                modifier = Modifier.padding(16.dp)
             )
         }
         if (isReadOnly.not()) {
@@ -214,9 +228,11 @@ private fun ShipmentDetailsLandscape(
     shippingLines: List<ShippingLineSummaryUI>,
     shippingAddresses: WooShippingAddresses,
     shippingRateSummary: ShippingRateSummaryUI?,
+    paymentsSectionUI: PaymentsSectionUI,
     onEditDestinationAddress: (DestinationShippingAddress) -> Unit,
     onEditOriginAddress: (OriginShippingAddress) -> Unit,
     onOriginAddressSelected: (OriginShippingAddress) -> Unit,
+    onEditPaymentMethodClicked: () -> Unit,
     destinationStatus: AddressStatus,
     modifier: Modifier = Modifier,
     isReadOnly: Boolean = false
@@ -227,11 +243,10 @@ private fun ShipmentDetailsLandscape(
                 .fillMaxWidth()
                 .weight(1f)
                 .verticalScroll(rememberScrollState())
-
         ) {
             AddressSectionLandscape(
                 shippingAddresses = shippingAddresses,
-                modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.major_100)),
+                modifier = Modifier.padding(horizontal = 16.dp),
                 isReadOnly = isReadOnly,
                 onEditDestinationAddress = onEditDestinationAddress,
                 onEditOriginAddress = onEditOriginAddress,
@@ -249,13 +264,20 @@ private fun ShipmentDetailsLandscape(
                     shippingLines = shippingLines,
                     modifier = Modifier.weight(1f)
                 )
-                VerticalDivider(modifier = Modifier.padding(top = dimensionResource(R.dimen.major_100)))
-                ShipmentCostSection(
-                    shippingRateSummary = shippingRateSummary,
-                    modifier = Modifier
-                        .padding(dimensionResource(R.dimen.major_100))
-                        .weight(1f)
-                )
+                VerticalDivider(modifier = Modifier.padding(top = 16.dp))
+                Column(modifier = Modifier.weight(1f)) {
+                    PaymentSection(
+                        paymentsSectionUI = paymentsSectionUI,
+                        onEditPaymentMethodClicked = onEditPaymentMethodClicked,
+                        modifier = Modifier.padding(16.dp)
+                    )
+                    Divider()
+                    ShipmentCostSection(
+                        shippingRateSummary = shippingRateSummary,
+                        modifier = Modifier
+                            .padding(16.dp)
+                    )
+                }
             }
         }
     }
@@ -343,30 +365,6 @@ private fun OrderDetailsSectionLandscape(
     }
 }
 
-@Preview(widthDp = 750, heightDp = 400)
-@Composable
-fun ShipmentDetailsLandscapePreview() {
-    WooThemeWithBackground {
-        Surface {
-            ShipmentDetailsLandscape(
-                totalItems = 6,
-                totalItemsCost = "$92.78",
-                shippingLines = getShippingLines(),
-                shippingAddresses = WooShippingAddresses(
-                    shipFrom = getShipFrom(),
-                    shipTo = getShipTo(),
-                    originAddresses = listOf(getShipFrom())
-                ),
-                shippingRateSummary = null,
-                onEditDestinationAddress = {},
-                onEditOriginAddress = {},
-                onOriginAddressSelected = {},
-                destinationStatus = AddressStatus.VERIFIED
-            )
-        }
-    }
-}
-
 @Composable
 private fun TotalCard(
     totalItems: Int,
@@ -400,14 +398,6 @@ private fun ItemsCost(
     )
 }
 
-@Preview
-@Composable
-private fun ItemsCostPreview() {
-    WooThemeWithBackground {
-        ItemsCost(totalItems = 2, totalItemsCost = "$12.99")
-    }
-}
-
 @Composable
 private fun ShippingLines(
     shippingLines: List<ShippingLineSummaryUI>,
@@ -421,16 +411,6 @@ private fun ShippingLines(
                 iconRes = R.drawable.ic_shipping_label_shipping_line
             )
         }
-    }
-}
-
-@Preview
-@Composable
-private fun ShippingLinesPreview() {
-    WooThemeWithBackground {
-        ShippingLines(
-            shippingLines = getShippingLines()
-        )
     }
 }
 
@@ -475,6 +455,55 @@ private fun TotalItem(
             color = MaterialTheme.colors.onSurface,
             modifier = Modifier.padding(end = dimensionResource(R.dimen.minor_100))
         )
+    }
+}
+
+@Composable
+private fun PaymentSection(
+    paymentsSectionUI: PaymentsSectionUI,
+    onEditPaymentMethodClicked: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+    ) {
+        ShipmentDetailsSectionTitle(
+            title = stringResource(R.string.shipping_label_shipment_details_payment_method),
+            modifier = Modifier.padding(bottom = 4.dp)
+        )
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .clickable(onClick = onEditPaymentMethodClicked)
+                .padding(vertical = 4.dp)
+        ) {
+            if (paymentsSectionUI.selectedPaymentMethod != null) {
+                Text(
+                    text = paymentsSectionUI.selectedPaymentMethod.cardTypeWithDigits,
+                    style = MaterialTheme.typography.body1,
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                Icon(
+                    imageVector = Icons.Default.Edit,
+                    contentDescription = stringResource(R.string.shipping_label_shipment_details_edit_payment_method),
+                    tint = MaterialTheme.colors.primary,
+                    modifier = Modifier.padding(end = 8.dp)
+                )
+            } else {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = null,
+                    tint = MaterialTheme.colors.primary,
+                    modifier = Modifier.padding(end = 8.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = stringResource(R.string.shipping_label_shipment_details_add_payment_method),
+                    style = MaterialTheme.typography.body1
+                )
+            }
+        }
     }
 }
 
@@ -537,46 +566,6 @@ private fun ShipmentCostRow(
     }
 }
 
-@Preview
-@Composable
-private fun ShipmentCostSectionPreview() {
-    WooThemeWithBackground {
-        ShipmentCostSection(
-            shippingRateSummary = null,
-            modifier = Modifier.padding(dimensionResource(R.dimen.major_100))
-        )
-    }
-}
-
-fun getShippingLines(number: Int = 3) = List(number) { i ->
-    ShippingLineSummaryUI(
-        title = "Shipping $i",
-        amount = "$12.99"
-    )
-}
-
-fun OriginShippingAddress.toShippingFromString() = StringBuilder()
-    .appendWithIfNotEmpty(this.address1)
-    .appendWithIfNotEmpty(this.address2)
-    .appendWithIfNotEmpty(this.city)
-    .appendWithIfNotEmpty(this.state)
-    .appendWithIfNotEmpty(this.postcode)
-    .toString()
-
-@Parcelize
-data class ShippingLineSummaryUI(
-    val title: String,
-    val amount: String
-) : Parcelable
-
-@Parcelize
-data class ShippingRateSummaryUI(
-    val serviceName: String,
-    val total: String,
-    val optionName: String? = null,
-    val optionFee: String? = null
-) : Parcelable
-
 @Composable
 fun VerticalDivider(
     modifier: Modifier = Modifier,
@@ -588,4 +577,40 @@ fun VerticalDivider(
             .width(thickness)
             .background(MaterialTheme.colors.onSurface.copy(alpha = 0.12f))
     )
+}
+
+@LightDarkThemePreviews
+@OrientationPreviews
+@Composable
+fun ShipmentDetailsLandscapePreview() {
+    WooThemeWithBackground {
+        Surface {
+            ShipmentDetails(
+                scaffoldState = rememberBottomSheetScaffoldState(),
+                totalItems = 6,
+                totalItemsCost = "$92.78",
+                shippingLines = ShippingLabelSampleData.getShippingLines(),
+                shippingAddresses = WooShippingAddresses(
+                    shipFrom = ShippingLabelSampleData.getShipFrom(),
+                    shipTo = ShippingLabelSampleData.getShipTo(),
+                    originAddresses = listOf(ShippingLabelSampleData.getShipFrom())
+                ),
+                shippingRateSummary = null,
+                paymentsSectionUI = ShippingLabelSampleData.getPaymentsSection(),
+                modifier = Modifier,
+                noticeBannerUiState = null,
+                isShipmentDetailsExpanded = false,
+                onShipmentDetailsExpandedChange = {},
+                onEditDestinationAddress = {},
+                onEditOriginAddress = {},
+                onOriginAddressSelected = {},
+                destinationStatus = AddressStatus.VERIFIED,
+                markOrderComplete = false,
+                onMarkOrderCompleteChange = {},
+                onEditPaymentMethodClicked = {},
+                handlerModifier = Modifier,
+                isReadOnly = false
+            )
+        }
+    }
 }

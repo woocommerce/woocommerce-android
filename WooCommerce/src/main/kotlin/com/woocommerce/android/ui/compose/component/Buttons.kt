@@ -60,7 +60,9 @@ fun WCColoredButton(
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     colors: ButtonColors = ButtonDefaults.buttonColors(
         contentColor = colorResource(id = R.color.woo_white),
-        backgroundColor = colorResource(id = R.color.primary_colored_button_background)
+        backgroundColor = colorResource(id = R.color.primary_colored_button_background),
+        disabledBackgroundColor = MaterialTheme.colors.onSurface.copy(alpha = 0.06f),
+        disabledContentColor = colorResource(id = R.color.color_on_surface_medium)
     ),
     rippleColor: Color = MaterialTheme.colors.primaryVariant,
     elevation: ButtonElevation? = null,
@@ -101,7 +103,9 @@ fun WCColoredButton(
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     colors: ButtonColors = ButtonDefaults.buttonColors(
         contentColor = colorResource(id = R.color.woo_white),
-        backgroundColor = colorResource(id = R.color.primary_colored_button_background)
+        backgroundColor = colorResource(id = R.color.primary_colored_button_background),
+        disabledBackgroundColor = MaterialTheme.colors.onSurface.copy(alpha = 0.06f),
+        disabledContentColor = colorResource(id = R.color.color_on_surface_medium)
     ),
 ) {
     WCColoredButton(
@@ -131,7 +135,9 @@ fun WCOutlinedButton(
     enabled: Boolean = true,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
-    colors: ButtonColors = ButtonDefaults.outlinedButtonColors(),
+    colors: ButtonColors = ButtonDefaults.outlinedButtonColors(
+        disabledContentColor = colorResource(id = R.color.color_on_surface_medium)
+    ),
     border: BorderStroke? = ButtonDefaults.outlinedBorder,
     content: @Composable RowScope.() -> Unit
 ) {
@@ -267,7 +273,9 @@ fun WCTextButton(
     enabled: Boolean = true,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     contentPadding: PaddingValues = ButtonDefaults.TextButtonContentPadding,
-    colors: ButtonColors = ButtonDefaults.textButtonColors(),
+    colors: ButtonColors = ButtonDefaults.textButtonColors(
+        disabledContentColor = colorResource(id = R.color.color_on_surface_medium),
+    ),
     content: @Composable RowScope.() -> Unit
 ) {
     TextButton(
@@ -316,7 +324,9 @@ fun WCTextButton(
     allCaps: Boolean = true,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     contentPadding: PaddingValues = ButtonDefaults.TextButtonContentPadding,
-    colors: ButtonColors = ButtonDefaults.textButtonColors(),
+    colors: ButtonColors = ButtonDefaults.textButtonColors(
+        disabledContentColor = colorResource(id = R.color.color_on_surface_medium),
+    ),
 ) {
     TextButton(
         onClick = onClick,

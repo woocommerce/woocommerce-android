@@ -7,8 +7,11 @@ import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.Location
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.AccountSettingsModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.AddressNormalizationModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.PaymentMethodModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.PaymentMethodOptions
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PurchasedLabelData
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PurchasedLabelModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
@@ -25,13 +28,29 @@ import javax.inject.Inject
 class WooShippingNetworkingMapper @Inject constructor(
     private val ratesMapper: WooShippingRatesDatasourceMapper
 ) {
-    operator fun invoke(storeOptionsDTO: StoreOptionsDTO): StoreOptionsModel {
-        return StoreOptionsModel(
-            currencySymbol = storeOptionsDTO.currencySymbol.orEmpty(),
-            dimensionUnit = storeOptionsDTO.dimensionUnit.orEmpty(),
-            weightUnit = storeOptionsDTO.weightUnit.orEmpty(),
-            originCountry = storeOptionsDTO.originCountry.orEmpty()
-        )
+    operator fun invoke(accountSettingsDTO: AccountSettingsDTO): AccountSettingsModel {
+        return with(accountSettingsDTO) {
+            AccountSettingsModel(
+                storeOptions = StoreOptionsModel(
+                    currencySymbol = storeOptions.currencySymbol.orEmpty(),
+                    dimensionUnit = storeOptions.dimensionUnit.orEmpty(),
+                    weightUnit = storeOptions.weightUnit.orEmpty(),
+                    originCountry = storeOptions.originCountry.orEmpty()
+                ),
+                paymentMethodOptions = PaymentMethodOptions(
+                    selectedPaymentId = formData.selectedPaymentId,
+                    paymentMethods = formMeta.paymentMethods.map { paymentMethod ->
+                        PaymentMethodModel(
+                            paymentMethodId = paymentMethod.paymentMethodId,
+                            name = paymentMethod.name,
+                            cardType = paymentMethod.cardType,
+                            cardDigits = paymentMethod.cardDigits,
+                            expiry = paymentMethod.expiry
+                        )
+                    }
+                )
+            )
+        }
     }
 
     operator fun invoke(shippingLabelDTO: ShippingLabelDTO): ShippingLabelModel {

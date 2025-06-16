@@ -14,7 +14,9 @@ import java.lang.reflect.Type
 import java.math.BigDecimal
 
 data class AccountSettingsDTO(
-    val storeOptions: StoreOptionsDTO
+    val storeOptions: StoreOptionsDTO,
+    val formData: FormDataDTO,
+    val formMeta: FormMetaDTO,
 )
 
 data class StoreOptionsDTO(
@@ -22,6 +24,27 @@ data class StoreOptionsDTO(
     @SerializedName("dimension_unit") val dimensionUnit: String? = null,
     @SerializedName("weight_unit") val weightUnit: String? = null,
     @SerializedName("origin_country") val originCountry: String? = null
+)
+
+data class FormDataDTO(
+    @SerializedName("selected_payment_method_id") val selectedPaymentId: Int?,
+)
+
+data class FormMetaDTO(
+    @SerializedName("payment_methods") val paymentMethods: List<PaymentMethodDTO>
+)
+
+data class PaymentMethodDTO(
+    @SerializedName("payment_method_id")
+    val paymentMethodId: Int,
+    @SerializedName("name")
+    val name: String,
+    @SerializedName("card_type")
+    val cardType: String,
+    @SerializedName("card_digits")
+    val cardDigits: String,
+    @SerializedName("expiry")
+    val expiry: String
 )
 
 data class ConfigResponse(
@@ -190,6 +213,8 @@ data class CustomsItemDTO(
     @SerializedName("origin_country") val originCountry: String,
     @SerializedName("product_id") val productId: Long
 )
+
+data class RefundLabelResponseDTO(val success: Boolean)
 
 private class ShipmentMapDeserializer : JsonDeserializer<ShipmentMap> {
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): ShipmentMap {
