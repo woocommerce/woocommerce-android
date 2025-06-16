@@ -586,7 +586,7 @@ class WooPosSearchByIdentifierRemoteTest {
             )
         }
 
-        val gtinErrorEvent = WCProductStore.OnProductsSearched(
+        val globalUniqueIdentifierErrorEvent = WCProductStore.OnProductsSearched(
             globalUniqueIdSearchQuery = identifier,
             searchQuery = null,
             searchResults = emptyList(),
@@ -611,8 +611,8 @@ class WooPosSearchByIdentifierRemoteTest {
 
         advanceTimeBy(1)
 
-        // Send error responses for both GTIN and SKU searches
-        sut.onProductsSearched(gtinErrorEvent)
+        // Send error responses for both Global Unique Identifier and SKU searches
+        sut.onProductsSearched(globalUniqueIdentifierErrorEvent)
         sut.onProductsSearched(skuErrorEvent)
 
         advanceTimeBy(1)
