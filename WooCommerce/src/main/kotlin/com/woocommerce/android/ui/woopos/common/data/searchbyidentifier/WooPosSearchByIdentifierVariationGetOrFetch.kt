@@ -7,19 +7,25 @@ import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsL
 import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
 
-class WooPosSearchByIdentifierVariationFetcher @Inject constructor(
+class WooPosSearchByIdentifierVariationGetOrFetch @Inject constructor(
     private val selectedSite: SelectedSite,
     private val productStore: WCProductStore,
     private val variationsCache: WooPosVariationsLRUCache
 ) {
+    sealed class VariationFetchResult {
+        data class Success(val variation: ProductVariation) : VariationFetchResult()
+        data object NetworkError : VariationFetchResult()
+        data object NotFound : VariationFetchResult()
+    }
+
     @Suppress("ReturnCount")
-    suspend operator fun invoke(variationId: Long, parentId: Long): ProductVariation? {
+    suspend operator fun invoke(variationId: Long, parentId: Long): VariationFetchResult {
         val cachedVariation = variationsCache.get(variationId)?.find { it.remoteVariationId == variationId }
 
         if (cachedVariation != null) {
-            return cachedVariation
+            return VariationFetchResult.Success(cachedVariation)
         }
-        
+
         val variationResult = productStore.fetchSingleVariation(
             selectedSite.get(),
             parentId,
@@ -27,16 +33,20 @@ class WooPosSearchByIdentifierVariationFetcher @Inject constructor(
         )
 
         if (variationResult.isError) {
-            return null
+            return VariationFetchResult.NetworkError
         }
 
-        return productStore.getVariationByRemoteId(
+        val variation = productStore.getVariationByRemoteId(
             selectedSite.get(),
             parentId,
             variationId
         )?.toAppModel()
-            ?.also {
-                variationsCache.add(parentId, it)
-            }
+
+        return if (variation != null) {
+            variationsCache.add(parentId, variation)
+            VariationFetchResult.Success(variation)
+        } else {
+            VariationFetchResult.NotFound
+        }
     }
 }

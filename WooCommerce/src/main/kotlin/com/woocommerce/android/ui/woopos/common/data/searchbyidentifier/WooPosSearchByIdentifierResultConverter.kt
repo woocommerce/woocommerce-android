@@ -5,7 +5,7 @@ import javax.inject.Inject
 
 class WooPosSearchByIdentifierResultConverter @Inject constructor(
     private val productsCache: WooPosProductsCache,
-    private val variationProcessor: WooPosSearchByIdentifierVariationProcessor
+    private val variationProcess: WooPosSearchByIdentifierVariationProcess
 ) {
     suspend operator fun invoke(
         searchFunction: suspend () -> WooPosSearchByIdentifierResult
@@ -16,7 +16,7 @@ class WooPosSearchByIdentifierResultConverter @Inject constructor(
             is WooPosSearchByIdentifierResult.Success -> {
                 val product = result.product
                 if (product.type.equals("variation", ignoreCase = true)) {
-                    variationProcessor(product)
+                    variationProcess(product)
                 } else {
                     productsCache.addAll(listOf(product))
                     result
