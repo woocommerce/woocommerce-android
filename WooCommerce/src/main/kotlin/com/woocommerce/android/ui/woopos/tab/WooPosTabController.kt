@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 class WooPosTabController @Inject constructor(
     private val isWooPosEnabled: WooPosIsEnabled,
-    private val isPOSAsATabEnabled: WooPosIsPOSAsATabEnabled
+    private val isPosAsTabEnabled: WooPosIsPosAsTabEnabled
 ) {
     private lateinit var activity: MainActivity
     private lateinit var binding: ActivityMainBinding
@@ -36,7 +36,7 @@ class WooPosTabController @Inject constructor(
      */
     fun setupPOSTab() {
         setPOSTabVisibility(false)
-        if (isPOSAsATabEnabled()) {
+        if (isPosAsTabEnabled()) {
             setupPOSTabNavigation()
         }
     }
@@ -49,7 +49,7 @@ class WooPosTabController @Inject constructor(
      * - Feature flags updates
      */
     fun refreshPOSTabVisibility() {
-        if (isPOSAsATabEnabled()) {
+        if (isPosAsTabEnabled()) {
             updatePOSTabVisibility()
         }
     }
