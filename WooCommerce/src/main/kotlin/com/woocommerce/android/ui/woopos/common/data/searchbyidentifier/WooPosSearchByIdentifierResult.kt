@@ -14,6 +14,7 @@ sealed class WooPosSearchByIdentifierResult {
         data object NotFound : Error()
         data class UnsupportedProduct(val productName: String) : Error()
         data object NetworkError : Error()
+        data class ServerError(val message: String) : Error()
         data class UnknownError(val message: String) : Error()
     }
 

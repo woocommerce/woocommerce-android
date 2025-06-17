@@ -4293,6 +4293,7 @@
     <string name="woopos_cart_changes_in_the_cart">There are changes in the cart</string>
     <string name="woopos_cart_barcode_scan_result_product_not_found">Unknown scanned item</string>
     <string name="woopos_cart_barcode_scan_result_unsupported_product">Unsupported item – %s</string>
+    <string name="woopos_cart_barcode_scan_result_server_error">Server error - %s</string>
     <string name="woopos_cart_barcode_scan_result_network_error">No internet connection</string>
     <string name="woopos_clear_cart_button">Clear</string>
 
