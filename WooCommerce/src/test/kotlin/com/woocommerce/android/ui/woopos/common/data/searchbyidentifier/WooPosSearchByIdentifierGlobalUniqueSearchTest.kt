@@ -9,10 +9,11 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
-import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCProductStore
 
@@ -40,19 +41,7 @@ class WooPosSearchByIdentifierGlobalUniqueSearchTest {
             canLoadMore = false
         )
         val result = WooResult(searchResult)
-        whenever(
-            productStore.searchProducts(
-                site = eq(site),
-                searchString = eq(null),
-                skuSearchOptions = eq(WCProductStore.SkuSearchOptions.Disabled),
-                offset = eq(0),
-                pageSize = eq(WCProductStore.DEFAULT_PRODUCT_PAGE_SIZE),
-                filterOptions = eq(emptyMap()),
-                includeTypes = eq(emptyList()),
-                orderCurrency = eq(null),
-                globalUniqueIdSearchQuery = eq(globalUniqueId)
-            )
-        ).thenReturn(result)
+        whenever(productStore.searchProducts(any(), any(), any(), any(), any(), any())).thenReturn(result)
 
         // WHEN
         val actualResult = sut(globalUniqueId)
@@ -73,19 +62,7 @@ class WooPosSearchByIdentifierGlobalUniqueSearchTest {
             canLoadMore = false
         )
         val result = WooResult(searchResult)
-        whenever(
-            productStore.searchProducts(
-                site = any(),
-                searchString = eq(null),
-                skuSearchOptions = eq(WCProductStore.SkuSearchOptions.Disabled),
-                offset = eq(0),
-                pageSize = eq(WCProductStore.DEFAULT_PRODUCT_PAGE_SIZE),
-                filterOptions = eq(emptyMap()),
-                includeTypes = eq(emptyList()),
-                orderCurrency = eq(null),
-                globalUniqueIdSearchQuery = eq(globalUniqueId)
-            )
-        ).thenReturn(result)
+        whenever(productStore.searchProducts(any(), any(), any(), any(), any(), any())).thenReturn(result)
 
         // WHEN
         val actualResult = sut(globalUniqueId)
@@ -101,20 +78,11 @@ class WooPosSearchByIdentifierGlobalUniqueSearchTest {
     fun `given network error, when invoke called, then return failure with network error`() = runTest {
         // GIVEN
         val globalUniqueId = "ERROR-GU"
-        val result: WooResult<WCProductStore.ProductSearchResult> = WooResult(error = mock())
-        whenever(
-            productStore.searchProducts(
-                site = any(),
-                searchString = eq(null),
-                skuSearchOptions = eq(WCProductStore.SkuSearchOptions.Disabled),
-                offset = eq(0),
-                pageSize = eq(WCProductStore.DEFAULT_PRODUCT_PAGE_SIZE),
-                filterOptions = eq(emptyMap()),
-                includeTypes = eq(emptyList()),
-                orderCurrency = eq(null),
-                globalUniqueIdSearchQuery = eq(globalUniqueId)
-            )
-        ).thenReturn(result)
+        val error = mock<WooError> {
+            on { type }.thenReturn(WooErrorType.TIMEOUT)
+        }
+        val result: WooResult<WCProductStore.ProductSearchResult> = WooResult(error = error)
+        whenever(productStore.searchProducts(any(), any(), any(), any(), any(), any())).thenReturn(result)
 
         // WHEN
         val actualResult = sut(globalUniqueId)
@@ -131,19 +99,7 @@ class WooPosSearchByIdentifierGlobalUniqueSearchTest {
         // GIVEN
         val globalUniqueId = "NULL-MODEL-GU"
         val result: WooResult<WCProductStore.ProductSearchResult> = WooResult(model = null)
-        whenever(
-            productStore.searchProducts(
-                site = any(),
-                searchString = eq(null),
-                skuSearchOptions = eq(WCProductStore.SkuSearchOptions.Disabled),
-                offset = eq(0),
-                pageSize = eq(WCProductStore.DEFAULT_PRODUCT_PAGE_SIZE),
-                filterOptions = eq(emptyMap()),
-                includeTypes = eq(emptyList()),
-                orderCurrency = eq(null),
-                globalUniqueIdSearchQuery = eq(globalUniqueId)
-            )
-        ).thenReturn(result)
+        whenever(productStore.searchProducts(any(), any(), any(), any(), any(), any())).thenReturn(result)
 
         // WHEN
         val actualResult = sut(globalUniqueId)

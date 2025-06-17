@@ -2,6 +2,17 @@ package com.woocommerce.android.ui.woopos.common.data.searchbyidentifier
 
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.API_ERROR
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.API_NOT_FOUND
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.AUTHORIZATION_REQUIRED
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.EMPTY_RESPONSE
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.GENERIC_ERROR
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.INVALID_COUPON
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.INVALID_ID
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.INVALID_PARAM
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.INVALID_RESPONSE
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.RESOURCE_ALREADY_EXISTS
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.TIMEOUT
 import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
 
@@ -20,9 +31,57 @@ class WooPosSearchByIdentifierGlobalUniqueSearch @Inject constructor(
         )
 
         return when {
-            result.isError -> WooPosSearchByIdentifierResult.Failure(
-                WooPosSearchByIdentifierResult.Error.NetworkError
-            )
+            result.isError -> {
+                when (result.error.type) {
+                    TIMEOUT -> WooPosSearchByIdentifierResult.Failure(
+                        WooPosSearchByIdentifierResult.Error.NetworkError
+                    )
+                    API_ERROR -> WooPosSearchByIdentifierResult.Failure(
+                        WooPosSearchByIdentifierResult.Error.ServerError(
+                            result.error.message ?: "API error occurred"
+                        )
+                    )
+                    INVALID_ID -> WooPosSearchByIdentifierResult.Failure(
+                        WooPosSearchByIdentifierResult.Error.NotFound
+                    )
+                    GENERIC_ERROR -> WooPosSearchByIdentifierResult.Failure(
+                        WooPosSearchByIdentifierResult.Error.UnknownError(
+                            result.error.message ?: "Generic error occurred"
+                        )
+                    )
+                    INVALID_RESPONSE -> WooPosSearchByIdentifierResult.Failure(
+                        WooPosSearchByIdentifierResult.Error.ServerError(
+                            result.error.message ?: "Invalid response from server"
+                        )
+                    )
+                    AUTHORIZATION_REQUIRED -> WooPosSearchByIdentifierResult.Failure(
+                        WooPosSearchByIdentifierResult.Error.ServerError(
+                            "Authorization required"
+                        )
+                    )
+                    INVALID_PARAM -> WooPosSearchByIdentifierResult.Failure(
+                        WooPosSearchByIdentifierResult.Error.ServerError(
+                            result.error.message ?: "Invalid parameter"
+                        )
+                    )
+                    API_NOT_FOUND -> WooPosSearchByIdentifierResult.Failure(
+                        WooPosSearchByIdentifierResult.Error.NotFound
+                    )
+                    EMPTY_RESPONSE -> WooPosSearchByIdentifierResult.Failure(
+                        WooPosSearchByIdentifierResult.Error.NotFound
+                    )
+                    INVALID_COUPON -> WooPosSearchByIdentifierResult.Failure(
+                        WooPosSearchByIdentifierResult.Error.ServerError(
+                            "Invalid coupon"
+                        )
+                    )
+                    RESOURCE_ALREADY_EXISTS -> WooPosSearchByIdentifierResult.Failure(
+                        WooPosSearchByIdentifierResult.Error.ServerError(
+                            "Resource already exists"
+                        )
+                    )
+                }
+            }
 
             result.model != null -> {
                 val productSearchResult = result.model!!
@@ -37,8 +96,8 @@ class WooPosSearchByIdentifierGlobalUniqueSearch @Inject constructor(
             }
 
             else -> WooPosSearchByIdentifierResult.Failure(
-                WooPosSearchByIdentifierResult.Error.UnknownError(
-                    "Results not found for Global Unique ID: $globalUniqueId"
+                WooPosSearchByIdentifierResult.Error.ServerError(
+                    "No products found for global unique ID: $globalUniqueId"
                 )
             )
         }
