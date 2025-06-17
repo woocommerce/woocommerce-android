@@ -20,7 +20,4 @@ sealed class WooPosSearchByIdentifierResult {
 
     val isSuccess: Boolean
         get() = this is Success || this is VariationSuccess
-
-    val isFailure: Boolean
-        get() = this is Failure
 }
