@@ -109,6 +109,8 @@ import kotlinx.coroutines.launch
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 
+private const val ANIMATION_DURATION = 200L
+
 @Suppress("LargeClass")
 @AndroidEntryPoint
 class OrderCreateEditFormFragment :
@@ -567,13 +569,13 @@ class OrderCreateEditFormFragment :
                     binding.orderUpdateOverlay.isVisible = true
                     binding.orderUpdateOverlay.animate()
                         .alpha(1f)
-                        .setDuration(200)
+                        .setDuration(ANIMATION_DURATION)
                         .start()
                 } else {
                     // Hide overlay with fade out animation
                     binding.orderUpdateOverlay.animate()
                         .alpha(0f)
-                        .setDuration(200)
+                        .setDuration(ANIMATION_DURATION)
                         .withEndAction {
                             binding.orderUpdateOverlay.isVisible = false
                         }
