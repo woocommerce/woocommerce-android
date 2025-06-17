@@ -1421,10 +1421,10 @@ class OrderCreateEditViewModel @Inject constructor(
     /**
      * Monitor order changes, and update the remote draft to update price totals
      */
+    @Suppress("LongMethod")
     private fun monitorOrderChanges() {
         viewModelScope.launch {
-            var orderUpdatedFromRemote = false
-
+            var ignoreIfOrderJustUpdatedFromRemote = false
             val changes =
                 if (mode is Mode.Edit) {
                     _orderDraft.drop(1)
@@ -1439,7 +1439,7 @@ class OrderCreateEditViewModel @Inject constructor(
                     }
                     .filter {
                         // We don't need to sync changes with the remote when the order we just received is from remote.
-                        !orderUpdatedFromRemote
+                        !ignoreIfOrderJustUpdatedFromRemote
                     }
             syncStrategy.syncOrderChanges(changes, retryOrderDraftUpdateTrigger)
                 .collect { updateStatus ->
@@ -1474,8 +1474,8 @@ class OrderCreateEditViewModel @Inject constructor(
                                 showOrderUpdateSnackbar = false,
                                 isEditable = isOrderEditable(updateStatus)
                             )
-                            orderUpdatedFromRemote = true
                             try {
+                                ignoreIfOrderJustUpdatedFromRemote = true
                                 _orderDraft.updateAndGet { currentDraft ->
                                     if (mode is Mode.Creation) {
                                         // Once the order is synced, revert the auto-draft status and keep
@@ -1490,7 +1490,7 @@ class OrderCreateEditViewModel @Inject constructor(
                                     updateAddGiftCardButtonVisibility(it)
                                 }
                             } finally {
-                                orderUpdatedFromRemote = false
+                                ignoreIfOrderJustUpdatedFromRemote = false
                             }
                         }
                     }
