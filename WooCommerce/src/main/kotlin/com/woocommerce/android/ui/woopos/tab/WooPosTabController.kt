@@ -32,7 +32,6 @@ class WooPosTabController @Inject constructor(
         this.binding = binding
         this.navController = navController
 
-        // Register this controller as a lifecycle observer
         activity.lifecycle.addObserver(this)
     }
 
@@ -51,9 +50,6 @@ class WooPosTabController @Inject constructor(
         owner.lifecycle.removeObserver(this)
     }
 
-    /**
-     * Initializes the POS tab with default settings and navigation handling.
-     */
     private fun setupPOSTab() {
         setPOSTabVisibility(false)
         if (isPosAsTabEnabled()) {
@@ -61,9 +57,6 @@ class WooPosTabController @Inject constructor(
         }
     }
 
-    /**
-     * Refreshes the visibility of the POS tab based on current conditions.
-     */
     fun refreshPOSTabVisibility() {
         setPOSTabVisibility(false)
         if (isPosAsTabEnabled()) {
