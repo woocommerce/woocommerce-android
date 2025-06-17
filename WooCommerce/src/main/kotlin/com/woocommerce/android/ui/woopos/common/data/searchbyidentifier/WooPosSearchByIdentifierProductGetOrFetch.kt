@@ -53,7 +53,7 @@ class WooPosSearchByIdentifierProductGetOrFetch @Inject constructor(
         }
     }
 
-    fun ProductError.mapError(): WooPosSearchByIdentifierResult.Error =
+    private fun ProductError.mapError(): WooPosSearchByIdentifierResult.Error =
         when (type) {
             INVALID_PRODUCT_ID -> WooPosSearchByIdentifierResult.Error.NotFound
 

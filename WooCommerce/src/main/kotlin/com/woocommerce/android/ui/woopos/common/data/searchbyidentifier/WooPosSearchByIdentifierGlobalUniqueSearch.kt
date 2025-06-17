@@ -54,42 +54,18 @@ class WooPosSearchByIdentifierGlobalUniqueSearch @Inject constructor(
         }
     }
 
-    fun WooError.mapError(): WooPosSearchByIdentifierResult.Error =
+    private fun WooError.mapError(): WooPosSearchByIdentifierResult.Error =
         when (type) {
             TIMEOUT -> WooPosSearchByIdentifierResult.Error.NetworkError
-
-            API_ERROR -> WooPosSearchByIdentifierResult.Error.ServerError(
-                message ?: "API error occurred"
-            )
-
-            INVALID_ID -> WooPosSearchByIdentifierResult.Error.NotFound
-
-            GENERIC_ERROR -> WooPosSearchByIdentifierResult.Error.UnknownError(
-                message ?: "Generic error occurred"
-            )
-
+            API_ERROR -> WooPosSearchByIdentifierResult.Error.ServerError(message ?: "API error occurred")
+            INVALID_ID, API_NOT_FOUND, EMPTY_RESPONSE -> WooPosSearchByIdentifierResult.Error.NotFound
+            GENERIC_ERROR -> WooPosSearchByIdentifierResult.Error.UnknownError(message ?: "Generic error occurred")
             INVALID_RESPONSE -> WooPosSearchByIdentifierResult.Error.ServerError(
                 message ?: "Invalid response from server"
             )
-
-            AUTHORIZATION_REQUIRED -> WooPosSearchByIdentifierResult.Error.ServerError(
-                "Authorization required"
-            )
-
-            INVALID_PARAM -> WooPosSearchByIdentifierResult.Error.ServerError(
-                message ?: "Invalid parameter"
-            )
-
-            API_NOT_FOUND -> WooPosSearchByIdentifierResult.Error.NotFound
-
-            EMPTY_RESPONSE -> WooPosSearchByIdentifierResult.Error.NotFound
-
-            INVALID_COUPON -> WooPosSearchByIdentifierResult.Error.ServerError(
-                "Invalid coupon"
-            )
-
-            RESOURCE_ALREADY_EXISTS -> WooPosSearchByIdentifierResult.Error.ServerError(
-                "Resource already exists"
-            )
+            AUTHORIZATION_REQUIRED -> WooPosSearchByIdentifierResult.Error.ServerError("Authorization required")
+            INVALID_PARAM -> WooPosSearchByIdentifierResult.Error.ServerError(message ?: "Invalid parameter")
+            INVALID_COUPON -> WooPosSearchByIdentifierResult.Error.ServerError("Invalid coupon")
+            RESOURCE_ALREADY_EXISTS -> WooPosSearchByIdentifierResult.Error.ServerError("Resource already exists")
         }
 }
