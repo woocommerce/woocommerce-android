@@ -182,4 +182,17 @@
         app:layout_constraintStart_toEndOf="@+id/product_selector_nav_container"
         app:layout_constraintTop_toBottomOf="@id/two_pane_mode_toolbar" />
 
+    <View
+        android:id="@+id/order_update_overlay"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        android:background="@color/order_update_overlay_background"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintBottom_toTopOf="@+id/feedback_section"
+        app:layout_constraintEnd_toEndOf="@+id/scrollView"
+        app:layout_constraintStart_toStartOf="@+id/scrollView"
+        app:layout_constraintTop_toBottomOf="@+id/loadingProgress" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

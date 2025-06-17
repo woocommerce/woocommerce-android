@@ -561,6 +561,25 @@ class OrderCreateEditFormFragment :
                 binding.taxRateSelectorSection.isVisible = it.isShown
                 binding.setTaxRateButton.text = it.label
             }
+            new.isUpdatingOrderDraft.takeIfNotEqualTo(old?.isUpdatingOrderDraft) { isUpdatingOrderDraft ->
+                if (isUpdatingOrderDraft) {
+                    // Show overlay with fade in animation
+                    binding.orderUpdateOverlay.isVisible = true
+                    binding.orderUpdateOverlay.animate()
+                        .alpha(1f)
+                        .setDuration(200)
+                        .start()
+                } else {
+                    // Hide overlay with fade out animation
+                    binding.orderUpdateOverlay.animate()
+                        .alpha(0f)
+                        .setDuration(200)
+                        .withEndAction {
+                            binding.orderUpdateOverlay.isVisible = false
+                        }
+                        .start()
+                }
+            }
         }
     }
 
