@@ -57,14 +57,22 @@ class WooPosSearchByIdentifierGlobalUniqueSearch @Inject constructor(
     private fun WooError.mapError(): WooPosSearchByIdentifierResult.Error =
         when (type) {
             TIMEOUT -> WooPosSearchByIdentifierResult.Error.NetworkError
-            API_ERROR -> WooPosSearchByIdentifierResult.Error.ServerError(message ?: "API error occurred")
+            API_ERROR -> WooPosSearchByIdentifierResult.Error.ServerError(message?.ifEmpty { null }
+                ?: "API error occurred")
+
             INVALID_ID, API_NOT_FOUND, EMPTY_RESPONSE -> WooPosSearchByIdentifierResult.Error.NotFound
-            GENERIC_ERROR -> WooPosSearchByIdentifierResult.Error.UnknownError(message ?: "Generic error occurred")
+            GENERIC_ERROR -> WooPosSearchByIdentifierResult.Error.UnknownError(message?.ifEmpty { null }
+                ?: "Generic error occurred")
+
             INVALID_RESPONSE -> WooPosSearchByIdentifierResult.Error.ServerError(
                 message ?: "Invalid response from server"
             )
+
             AUTHORIZATION_REQUIRED -> WooPosSearchByIdentifierResult.Error.ServerError("Authorization required")
-            INVALID_PARAM -> WooPosSearchByIdentifierResult.Error.ServerError(message ?: "Invalid parameter")
+            INVALID_PARAM -> WooPosSearchByIdentifierResult.Error.ServerError(
+                message?.ifEmpty { null } ?: "Invalid parameter"
+            )
+
             INVALID_COUPON -> WooPosSearchByIdentifierResult.Error.ServerError("Invalid coupon")
             RESOURCE_ALREADY_EXISTS -> WooPosSearchByIdentifierResult.Error.ServerError("Resource already exists")
         }
