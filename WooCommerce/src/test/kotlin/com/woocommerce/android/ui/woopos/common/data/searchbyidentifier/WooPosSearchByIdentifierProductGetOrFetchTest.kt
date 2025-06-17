@@ -24,10 +24,11 @@ class WooPosSearchByIdentifierProductGetOrFetchTest {
     private val productStore: WCProductStore = mock()
     private val productsCache: WooPosProductsCache = mock()
     private val site: SiteModel = mock()
+    private val errorMapper: WooPosSearchByIdentifierProductErrorMapper = WooPosSearchByIdentifierProductErrorMapper()
 
     @Before
     fun setup() {
-        sut = WooPosSearchByIdentifierProductGetOrFetch(selectedSite, productStore, productsCache)
+        sut = WooPosSearchByIdentifierProductGetOrFetch(selectedSite, productStore, productsCache, errorMapper)
         whenever(selectedSite.get()).thenReturn(site)
     }
 

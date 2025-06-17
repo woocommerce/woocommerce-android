@@ -57,12 +57,14 @@ class WooPosSearchByIdentifierGlobalUniqueSearch @Inject constructor(
     private fun WooError.mapError(): WooPosSearchByIdentifierResult.Error =
         when (type) {
             TIMEOUT -> WooPosSearchByIdentifierResult.Error.NetworkError
-            API_ERROR -> WooPosSearchByIdentifierResult.Error.ServerError(message?.ifEmpty { null }
-                ?: "API error occurred")
+            API_ERROR -> WooPosSearchByIdentifierResult.Error.ServerError(
+                message?.ifEmpty { null } ?: "API error occurred"
+            )
 
             INVALID_ID, API_NOT_FOUND, EMPTY_RESPONSE -> WooPosSearchByIdentifierResult.Error.NotFound
-            GENERIC_ERROR -> WooPosSearchByIdentifierResult.Error.UnknownError(message?.ifEmpty { null }
-                ?: "Generic error occurred")
+            GENERIC_ERROR -> WooPosSearchByIdentifierResult.Error.UnknownError(
+                message?.ifEmpty { null } ?: "Generic error occurred"
+            )
 
             INVALID_RESPONSE -> WooPosSearchByIdentifierResult.Error.ServerError(
                 message ?: "Invalid response from server"
