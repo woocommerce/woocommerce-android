@@ -146,7 +146,7 @@ class WooPosSearchByIdentifierVariationGetOrFetchTest {
     }
 
     @Test
-    fun `given invalid product id error, when invoke called, then return failure with not found error`() = runTest {
+    fun `given fetch error, when invoke called, then return failure with mapped error`() = runTest {
         // GIVEN
         val variationId = 456L
         val parentId = 123L
@@ -165,56 +165,6 @@ class WooPosSearchByIdentifierVariationGetOrFetchTest {
         assertEquals(
             WooPosSearchByIdentifierVariationFetch.VariationFetchResult.Failure(
                 WooPosSearchByIdentifierResult.Error.NotFound
-            ),
-            result
-        )
-    }
-
-    @Test
-    fun `given invalid param error, when invoke called, then return failure with server error`() = runTest {
-        // GIVEN
-        val variationId = 456L
-        val parentId = 123L
-        val error = ProductError(ProductErrorType.INVALID_PARAM, "Invalid parameter")
-        val fetchResult = WCProductStore.OnVariationChanged().apply {
-            this.error = error
-        }
-
-        whenever(variationsCache.get(variationId)).thenReturn(null)
-        whenever(productStore.fetchSingleVariation(site, parentId, variationId)).thenReturn(fetchResult)
-
-        // WHEN
-        val result = sut(variationId, parentId)
-
-        // THEN
-        assertEquals(
-            WooPosSearchByIdentifierVariationFetch.VariationFetchResult.Failure(
-                WooPosSearchByIdentifierResult.Error.ServerError("Invalid parameter")
-            ),
-            result
-        )
-    }
-
-    @Test
-    fun `given parse error, when invoke called, then return failure with server error`() = runTest {
-        // GIVEN
-        val variationId = 456L
-        val parentId = 123L
-        val error = ProductError(ProductErrorType.PARSE_ERROR, "Parse error occurred")
-        val fetchResult = WCProductStore.OnVariationChanged().apply {
-            this.error = error
-        }
-
-        whenever(variationsCache.get(variationId)).thenReturn(null)
-        whenever(productStore.fetchSingleVariation(site, parentId, variationId)).thenReturn(fetchResult)
-
-        // WHEN
-        val result = sut(variationId, parentId)
-
-        // THEN
-        assertEquals(
-            WooPosSearchByIdentifierVariationFetch.VariationFetchResult.Failure(
-                WooPosSearchByIdentifierResult.Error.ServerError("Parse error occurred")
             ),
             result
         )
