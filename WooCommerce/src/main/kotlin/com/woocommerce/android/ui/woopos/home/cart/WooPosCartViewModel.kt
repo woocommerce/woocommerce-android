@@ -347,9 +347,9 @@ class WooPosCartViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            childrenToParentEventSender.sendToParent(OnNewTransactionStarted)
-
             if (_state.value.body == WooPosCartState.Body.Empty) {
+                childrenToParentEventSender.sendToParent(OnNewTransactionStarted)
+
                 analyticsTracker.track(InteractionWithCustomerStarted)
             }
             val itemNumber = getItemNumber()
