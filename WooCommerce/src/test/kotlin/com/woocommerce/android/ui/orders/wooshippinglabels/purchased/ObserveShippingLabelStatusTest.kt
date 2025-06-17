@@ -1,4 +1,5 @@
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus.PURCHASED
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus.PURCHASE_IN_PROGRESS
@@ -7,6 +8,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippin
 import com.woocommerce.android.ui.orders.wooshippinglabels.purchased.ObserveShippingLabelStatus
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.junit.Before
@@ -28,6 +30,7 @@ class ObserveShippingLabelStatusTest : BaseUnitTest() {
     private lateinit var observeShippingLabelStatus: ObserveShippingLabelStatus
     private val selectedSite: SelectedSite = mock()
     private val labelRepository: WooShippingLabelRepository = mock()
+    private val shippingConfigDataStore: WooShippingConfigDataStore = mock()
 
     private val mockSite = SiteModel().apply { id = 123 }
     private val mockOrderId = 456L
@@ -59,7 +62,7 @@ class ObserveShippingLabelStatusTest : BaseUnitTest() {
     @Before
     fun setup() {
         whenever(selectedSite.get()).thenReturn(mockSite)
-        observeShippingLabelStatus = ObserveShippingLabelStatus(selectedSite, labelRepository)
+        observeShippingLabelStatus = ObserveShippingLabelStatus(selectedSite, labelRepository, shippingConfigDataStore)
     }
 
     @Test
@@ -85,6 +88,7 @@ class ObserveShippingLabelStatusTest : BaseUnitTest() {
                     WooResult(purchaseLabelModel.copy(status = PURCHASED))
                 }
             }
+        whenever(shippingConfigDataStore.observeConfig(mockOrderId)).thenReturn(flowOf(null))
 
         val result = observeShippingLabelStatus(mockOrderId, mockLabelId).toList()
         advanceUntilIdle()
