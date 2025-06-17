@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosSe
 import com.woocommerce.android.ui.woopos.common.util.WooPosSoundHelper
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.CouponsRemoved
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OnNewTransactionStarted
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
@@ -121,6 +122,10 @@ class WooPosCartViewModel @Inject constructor(
                     body = WooPosCartState.Body.Empty
                 )
             }
+
+            is WooPosCartUIEvent.OnBarcodeScanned -> {
+                onBarcodeScanned(event.barcode)
+            }
         }
     }
 
@@ -203,10 +208,6 @@ class WooPosCartViewModel @Inject constructor(
 
                     is ParentToChildrenEvent.RemoveCouponsClicked -> {
                         removeCouponsFromCart()
-                    }
-
-                    is ParentToChildrenEvent.BarcodeScanned -> {
-                        onBarcodeScanned(event.barcode)
                     }
                 }
             }
@@ -340,8 +341,14 @@ class WooPosCartViewModel @Inject constructor(
     }
 
     private fun onBarcodeScanned(barcode: String) {
+        if (_state.value.cartStatus !in listOf(EDITABLE, EMPTY)) {
+            return
+        }
+
         viewModelScope.launch {
             if (_state.value.body == WooPosCartState.Body.Empty) {
+                childrenToParentEventSender.sendToParent(OnNewTransactionStarted)
+
                 analyticsTracker.track(InteractionWithCustomerStarted)
             }
             val itemNumber = getItemNumber()

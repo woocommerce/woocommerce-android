@@ -1019,9 +1019,7 @@ class WooPosCartViewModelTest {
         val states = sut.state.captureValues()
 
         // WHEN
-        parentToChildrenMutableSharedFlow.emit(
-            ParentToChildrenEvent.BarcodeScanned("123456789")
-        )
+        sut.onUIEvent(WooPosCartUIEvent.OnBarcodeScanned("123456789"))
 
         // THEN
         val itemsInCart = (states[1].body as WooPosCartState.Body.WithItems).itemsInCart
@@ -1043,12 +1041,10 @@ class WooPosCartViewModelTest {
                 )
             )
         }
-        createSut()
+        val sut = createSut()
 
         // WHEN
-        parentToChildrenMutableSharedFlow.emit(
-            ParentToChildrenEvent.BarcodeScanned("123456789")
-        )
+        sut.onUIEvent(WooPosCartUIEvent.OnBarcodeScanned("123456789"))
 
         // THEN
         verify(analyticsTracker).track(
@@ -1078,9 +1074,7 @@ class WooPosCartViewModelTest {
             val states = sut.state.captureValues()
 
             // WHEN
-            parentToChildrenMutableSharedFlow.emit(
-                ParentToChildrenEvent.BarcodeScanned("123456789")
-            )
+            sut.onUIEvent(WooPosCartUIEvent.OnBarcodeScanned("123456789"))
             advanceUntilIdle()
 
             // THEN
@@ -1106,12 +1100,10 @@ class WooPosCartViewModelTest {
                 WooPosSearchByIdentifierResult.Success(product)
             )
 
-            createSut()
+            val sut = createSut()
 
             // WHEN
-            parentToChildrenMutableSharedFlow.emit(
-                ParentToChildrenEvent.BarcodeScanned("123456789")
-            )
+            sut.onUIEvent(WooPosCartUIEvent.OnBarcodeScanned("123456789"))
             advanceUntilIdle()
 
             // THEN
@@ -1147,9 +1139,7 @@ class WooPosCartViewModelTest {
             val states = sut.state.captureValues()
 
             // WHEN
-            parentToChildrenMutableSharedFlow.emit(
-                ParentToChildrenEvent.BarcodeScanned("123456789")
-            )
+            sut.onUIEvent(WooPosCartUIEvent.OnBarcodeScanned("123456789"))
             advanceUntilIdle()
 
             // THEN
@@ -1173,12 +1163,10 @@ class WooPosCartViewModelTest {
                 WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.UnknownError(""))
             )
 
-            createSut()
+            val sut = createSut()
 
             // WHEN
-            parentToChildrenMutableSharedFlow.emit(
-                ParentToChildrenEvent.BarcodeScanned("123456789")
-            )
+            sut.onUIEvent(WooPosCartUIEvent.OnBarcodeScanned("123456789"))
             advanceUntilIdle()
 
             // THEN
@@ -1217,9 +1205,7 @@ class WooPosCartViewModelTest {
             )
 
             // WHEN
-            parentToChildrenMutableSharedFlow.emit(
-                ParentToChildrenEvent.BarcodeScanned("123456789")
-            )
+            sut.onUIEvent(WooPosCartUIEvent.OnBarcodeScanned("123456789"))
             advanceUntilIdle()
 
             // THEN
@@ -1248,9 +1234,7 @@ class WooPosCartViewModelTest {
         val states = sut.state.captureValues()
 
         // WHEN
-        parentToChildrenMutableSharedFlow.emit(
-            ParentToChildrenEvent.BarcodeScanned("123456789")
-        )
+        sut.onUIEvent(WooPosCartUIEvent.OnBarcodeScanned("123456789"))
         advanceUntilIdle()
 
         // THEN
@@ -1271,12 +1255,10 @@ class WooPosCartViewModelTest {
             WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.NetworkError)
         )
 
-        createSut()
+        val sut = createSut()
 
         // WHEN
-        parentToChildrenMutableSharedFlow.emit(
-            ParentToChildrenEvent.BarcodeScanned("123456789")
-        )
+        sut.onUIEvent(WooPosCartUIEvent.OnBarcodeScanned("123456789"))
         advanceUntilIdle()
 
         // THEN
@@ -1324,9 +1306,7 @@ class WooPosCartViewModelTest {
         val states = sut.state.captureValues()
 
         // WHEN
-        parentToChildrenMutableSharedFlow.emit(
-            ParentToChildrenEvent.BarcodeScanned("VAR123456")
-        )
+        sut.onUIEvent(WooPosCartUIEvent.OnBarcodeScanned("VAR123456"))
         advanceUntilIdle()
 
         // THEN

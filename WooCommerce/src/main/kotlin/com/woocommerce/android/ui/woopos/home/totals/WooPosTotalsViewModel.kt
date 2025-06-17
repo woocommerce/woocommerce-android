@@ -19,7 +19,7 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToCashPayment
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToEmailReceipt
-import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NewTransactionClicked
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OnNewTransactionStarted
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OrderCreated.CouponInfo
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OrderSuccessfullyPaidByCard
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.ToastMessageDisplayed
@@ -149,7 +149,7 @@ class WooPosTotalsViewModel @Inject constructor(
     fun onUIEvent(event: WooPosTotalsUIEvent) {
         when (event) {
             is WooPosTotalsUIEvent.OnNewTransactionClicked -> viewModelScope.launch {
-                childrenToParentEventSender.sendToParent(NewTransactionClicked)
+                childrenToParentEventSender.sendToParent(OnNewTransactionStarted)
                 totalsAnalyticsTracker.trackCreateNewOrderTapped()
             }
 
@@ -320,8 +320,7 @@ class WooPosTotalsViewModel @Inject constructor(
                     ParentToChildrenEvent.SearchEvent.Started,
                     ParentToChildrenEvent.RemoveCouponsClicked,
                     ParentToChildrenEvent.RefreshProductList,
-                    ParentToChildrenEvent.CouponsValidationFailed,
-                    is ParentToChildrenEvent.BarcodeScanned -> Unit
+                    ParentToChildrenEvent.CouponsValidationFailed -> Unit
                 }
             }
         }
