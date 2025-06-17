@@ -16,14 +16,12 @@ class WooPosSearchByIdentifierLocal @Inject constructor(
         }?.let { return WooPosSearchByIdentifierResult.Success(it) }
 
         val allVariations = variationsCache.getAll()
-        allVariations.firstOrNull { variation ->
+        return allVariations.firstOrNull { variation ->
             variation.globalUniqueId.equals(identifier, ignoreCase = true)
         }?.let {
             val parentProduct = productsCache.getProductById(it.remoteProductId)
-            return WooPosSearchByIdentifierResult.VariationSuccess(it, parentProduct!!)
-        }
-
-        return WooPosSearchByIdentifierResult.Failure(
+            WooPosSearchByIdentifierResult.VariationSuccess(it, parentProduct!!)
+        } ?: WooPosSearchByIdentifierResult.Failure(
             WooPosSearchByIdentifierResult.Error.NotFound
         )
     }
