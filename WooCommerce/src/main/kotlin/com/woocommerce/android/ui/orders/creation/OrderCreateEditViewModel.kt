@@ -1423,6 +1423,8 @@ class OrderCreateEditViewModel @Inject constructor(
      */
     private fun monitorOrderChanges() {
         viewModelScope.launch {
+            var orderUpdatedFromRemote = false
+
             val changes =
                 if (mode is Mode.Edit) {
                     _orderDraft.drop(1)
@@ -1434,6 +1436,10 @@ class OrderCreateEditViewModel @Inject constructor(
                 }
                     .map {
                         sanitizeUnsyncedOrderItemsData(it)
+                    }
+                    .filter {
+                        // We don't need to sync changes with the remote when the order we just received is from remote.
+                        !orderUpdatedFromRemote
                     }
             syncStrategy.syncOrderChanges(changes, retryOrderDraftUpdateTrigger)
                 .collect { updateStatus ->
@@ -1468,18 +1474,23 @@ class OrderCreateEditViewModel @Inject constructor(
                                 showOrderUpdateSnackbar = false,
                                 isEditable = isOrderEditable(updateStatus)
                             )
-                            _orderDraft.updateAndGet { currentDraft ->
-                                if (mode is Mode.Creation) {
-                                    // Once the order is synced, revert the auto-draft status and keep
-                                    // the user's selected one
-                                    updateStatus.order.copy(status = currentDraft.status)
-                                } else {
-                                    updateStatus.order
+                            orderUpdatedFromRemote = true
+                            try {
+                                _orderDraft.updateAndGet { currentDraft ->
+                                    if (mode is Mode.Creation) {
+                                        // Once the order is synced, revert the auto-draft status and keep
+                                        // the user's selected one
+                                        updateStatus.order.copy(status = currentDraft.status)
+                                    } else {
+                                        updateStatus.order
+                                    }
+                                }.also {
+                                    updateCouponAndDiscountButtonsState(it)
+                                    updateAddShippingButtonVisibility(it)
+                                    updateAddGiftCardButtonVisibility(it)
                                 }
-                            }.also {
-                                updateCouponAndDiscountButtonsState(it)
-                                updateAddShippingButtonVisibility(it)
-                                updateAddGiftCardButtonVisibility(it)
+                            } finally {
+                                orderUpdatedFromRemote = false
                             }
                         }
                     }
@@ -2013,6 +2024,7 @@ class OrderCreateEditViewModel @Inject constructor(
             !isEditingExistingCustomAmount && orderContainsProductsOrCustomAmounts() -> {
                 triggerEvent(ShowCustomAmountBottomSheet)
             }
+
             else -> {
                 triggerEvent(
                     ShowCustomAmountDialog(
