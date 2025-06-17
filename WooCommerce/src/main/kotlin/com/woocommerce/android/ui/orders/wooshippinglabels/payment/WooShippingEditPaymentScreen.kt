@@ -150,6 +150,7 @@ private fun WooShippingEditPaymentContent(
             viewState.paymentMethods.isEmpty() -> {
                 EmptyPaymentMethodsView(
                     editEnabled = viewState.canManagePaymentMethods,
+                    storeOwnerName = viewState.storeOwnerName,
                     storeOwnerUsername = viewState.storeOwnerUsername,
                     onAddNewPaymentMethod = onAddNewPaymentClicked,
                 )
@@ -170,6 +171,7 @@ private fun WooShippingEditPaymentContent(
 @Composable
 fun EmptyPaymentMethodsView(
     editEnabled: Boolean,
+    storeOwnerName: String,
     storeOwnerUsername: String,
     onAddNewPaymentMethod: () -> Unit,
     modifier: Modifier = Modifier
@@ -233,7 +235,11 @@ fun EmptyPaymentMethodsView(
         }
         Spacer(Modifier.height(16.dp))
         Text(
-            text = stringResource(R.string.woo_shipping_payment_methods_info_footer, storeOwnerUsername),
+            text = stringResource(
+                R.string.woo_shipping_payment_methods_info_footer,
+                storeOwnerName,
+                storeOwnerUsername
+            ),
             style = MaterialTheme.typography.caption,
             color = LocalContentColor.current.copy(alpha = ContentAlpha.medium)
         )
@@ -291,7 +297,11 @@ private fun PaymentMethodsList(
             Icon(Icons.Outlined.Info, contentDescription = null)
             Spacer(Modifier.width(8.dp))
             Text(
-                text = stringResource(R.string.woo_shipping_payment_methods_info_footer, viewState.storeOwnerUsername),
+                text = stringResource(
+                    R.string.woo_shipping_payment_methods_info_footer,
+                    viewState.storeOwnerName,
+                    viewState.storeOwnerUsername
+                ),
                 style = MaterialTheme.typography.caption
             )
         }

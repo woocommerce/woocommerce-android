@@ -4679,7 +4679,7 @@
     <string name="woo_shipping_payment_no_payment_methods_title">Add a payment method</string>
     <string name="woo_shipping_payment_no_payment_methods_description">Add a payment method to  purchase a shipping label</string>
     <string name="woo_shipping_payment_add_new_button">New credit or debit card</string>
-    <string name="woo_shipping_payment_methods_info_footer">Credit cards are retrieved from the following WordPress.com account: @%1$s</string>
+    <string name="woo_shipping_payment_methods_info_footer"><![CDATA[Credit cards are retrieved from the following WordPress.com account: %1$s <%2$s>]]></string>
     <string name="woo_shipping_payment_email_receipt_toggle">Email the receipt</string>
     <string name="woo_shipping_payment_use_card_button">Use this card</string>
 
