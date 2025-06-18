@@ -29,7 +29,10 @@ class WooPosIsEnabled @Inject constructor(
         if (!isWooCoreSupportsOrderAutoDraftsAndExtraPaymentsProps()) return@withContext false
         if (isFeatureSwitchSupported() && isRemotelyEnabled() != true) return@withContext false
 
-        val siteSettings = wooCommerceStore.getSiteSettings(selectedSite) ?: return@withContext false
+        val siteSettings = wooCommerceStore.getSiteSettings(selectedSite)
+            ?: wooCommerceStore.fetchSiteGeneralSettings(selectedSite).model
+
+        if (siteSettings == null) return@withContext false
 
         return@withContext isCountryAndCurrencySupported(
             countryCode = siteSettings.countryCode,
