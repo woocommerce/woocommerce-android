@@ -14,6 +14,9 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.BaseRequest
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import kotlin.test.Test
 
@@ -59,22 +62,28 @@ class WooShippingLabelRefundViewModelTest : BaseUnitTest() {
         assertThat(capturedEvents.first()).isInstanceOf(Event.ShowSnackbar::class.java)
         assertThat((capturedEvents.first() as Event.ShowSnackbar).message)
             .isEqualTo(R.string.shipping_label_refund_success)
-        assertThat(capturedEvents.last()).isEqualTo(Event.Exit)
+        assertThat(capturedEvents.last()).isEqualTo(Event.ExitWithResult(mockLabelId))
     }
 
     @Test
     fun `when refund fails, show error message`() = testBlocking {
         // Given
-        var capturedEvent: Event.Exit? = null
-        viewModel.event.observeForever { capturedEvent = it as? Event.Exit }
+        var capturedEvent: Event.ShowSnackbar? = null
+        viewModel.event.observeForever { capturedEvent = it as? Event.ShowSnackbar }
         whenever(
             repository.refundLabel(site = mockSite, orderId = mockOrderId, labelId = mockLabelId)
-        ) doReturn WooResult(RefundLabelResponseDTO(false))
+        ) doReturn WooResult(
+            WooError(
+                type = WooErrorType.API_ERROR,
+                original = BaseRequest.GenericErrorType.PARSE_ERROR,
+                message = "Error"
+            )
+        )
 
         // When
         viewModel.onRefundShippingLabelButtonClicked()
 
         // Then
-        assertThat(capturedEvent).isNotNull()
+        assertThat(capturedEvent).isEqualTo(Event.ShowSnackbar(R.string.order_refunds_amount_refund_error))
     }
 }

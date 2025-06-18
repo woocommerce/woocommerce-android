@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippin
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingLabelRepository
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -63,7 +64,7 @@ class WooShippingLabelRefundViewModel @Inject constructor(
                 repository.refundLabel(selectedSite.get(), arguments.orderId, arguments.labelId)
                     .takeIf { it.isError.not() }?.let {
                         triggerEvent(ShowSnackbar(R.string.shipping_label_refund_success))
-                        triggerEvent(Exit)
+                        triggerEvent(ExitWithResult(arguments.labelId))
                     } ?: run {
                     triggerEvent(ShowSnackbar(R.string.order_refunds_amount_refund_error))
                     isLoadingFlow.value = false
