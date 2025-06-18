@@ -71,18 +71,20 @@ class GetShipments @Inject constructor(
         shipmentUIModelList: List<ShipmentUIModel>,
         currentOrderLabels: List<ShippingLabelDTO>
     ) = shipmentUIModelList.map { shipmentUIModel ->
-        val labelForShipment = currentOrderLabels.find { it.shipmentId.toString() == shipmentUIModel.remoteId }
-        if (labelForShipment == null) {
+        val noRefundedLabelForShipment = currentOrderLabels.find {
+            it.shipmentId == shipmentUIModel.remoteId && it.refund == null
+        }
+        if (noRefundedLabelForShipment == null) {
             shipmentUIModel
         } else {
             shipmentUIModel.copy(
                 purchased = true,
-                labelId = labelForShipment.labelId,
-                carrierId = labelForShipment.carrierId,
-                trackingNumber = labelForShipment.tracking,
-                status = labelForShipment.status,
-                refundableAmount = labelForShipment.refundableAmount ?: BigDecimal.ZERO,
-                purchaseDate = labelForShipment.createdDate?.let { Date(it) },
+                labelId = noRefundedLabelForShipment.labelId,
+                carrierId = noRefundedLabelForShipment.carrierId,
+                trackingNumber = noRefundedLabelForShipment.tracking,
+                status = noRefundedLabelForShipment.status,
+                refundableAmount = noRefundedLabelForShipment.refundableAmount ?: BigDecimal.ZERO,
+                purchaseDate = noRefundedLabelForShipment.createdDate?.let { Date(it) },
             )
         }
     }

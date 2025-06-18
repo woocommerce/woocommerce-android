@@ -58,7 +58,6 @@ import com.woocommerce.android.ui.orders.creation.shipping.GetShippingMethodsWit
 import com.woocommerce.android.ui.orders.creation.shipping.RefreshShippingMethods
 import com.woocommerce.android.ui.orders.creation.shipping.ShippingLineDetails
 import com.woocommerce.android.ui.orders.creation.shipping.ShippingMethodsRepository
-import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingLabelRepository
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
@@ -103,7 +102,6 @@ class OrderDetailViewModel @Inject constructor(
     private val networkStatus: NetworkStatus,
     private val resourceProvider: ResourceProvider,
     private val orderDetailRepository: OrderDetailRepository,
-    private val configDataStore: WooShippingConfigDataStore,
     private val addonsRepository: AddonRepository,
     private val selectedSite: SelectedSite,
     private val productImageMap: ProductImageMap,
@@ -889,12 +887,8 @@ class OrderDetailViewModel @Inject constructor(
         return ListInfo(isVisible = false)
     }
 
-    private suspend fun loadShippingConfig() = configDataStore.observeConfig(navArgs.orderId).first()?.shipments
-        ?: emptyMap()
-
     private suspend fun displayProductAndShippingDetails() {
         val shippingLabels = loadOrderShippingLabels()
-        val shipments = loadShippingConfig()
         val shipmentTracking = loadShipmentTracking(shippingLabels)
         val orderRefunds = loadOrderRefunds()
         val orderProducts = loadOrderProducts(orderRefunds)
@@ -934,10 +928,8 @@ class OrderDetailViewModel @Inject constructor(
             tracker.trackOrderEligibleForShippingLabelCreation(awaitOrder().status.value)
         }
 
-        val allShipmentsFulfilled = shipments.isNotEmpty() && shipments.size == shippingLabels.list.size
-
         viewState = viewState.copy(
-            isCreateShippingLabelButtonVisible = isOrderEligibleForSLCreation && !allShipmentsFulfilled,
+            isCreateShippingLabelButtonVisible = isOrderEligibleForSLCreation,
             isProductListMenuVisible = isOrderEligibleForSLCreation && shippingLabels.isVisible,
             isShipmentTrackingAvailable = shipmentTracking.isVisible,
             isProductListVisible = orderProducts.isVisible,
