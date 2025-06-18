@@ -565,14 +565,12 @@ class OrderCreateEditFormFragment :
             }
             new.isUpdatingOrderDraft.takeIfNotEqualTo(old?.isUpdatingOrderDraft) { isUpdatingOrderDraft ->
                 if (isUpdatingOrderDraft) {
-                    // Show overlay with fade in animation
                     binding.orderUpdateOverlay.isVisible = true
                     binding.orderUpdateOverlay.animate()
                         .alpha(1f)
                         .setDuration(ANIMATION_DURATION)
                         .start()
                 } else {
-                    // Hide overlay with fade out animation
                     binding.orderUpdateOverlay.animate()
                         .alpha(0f)
                         .setDuration(ANIMATION_DURATION)
