@@ -131,6 +131,7 @@ class WooShippingLabelCreationFragment : BaseFragment(), BackPressListener {
                     event.orderId,
                     event.labelId
                 )
+                is WooShippingLabelCreationViewModel.NavigateToPaymentMethodEdit -> navigateToPaymentMethodEdit()
 
                 is WooShippingLabelCreationViewModel.OpenUrl -> openUrl(event.url)
                 is WooShippingLabelCreationViewModel.ShowError -> showErrorDialog(event.errorResId)
@@ -180,6 +181,13 @@ class WooShippingLabelCreationFragment : BaseFragment(), BackPressListener {
         findNavController().navigate(
             WooShippingLabelCreationFragmentDirections
                 .actionWooShippingLabelCreationFragmentToWooShippingLabelRefundRequestFragment(orderId, labelId)
+        )
+    }
+
+    private fun navigateToPaymentMethodEdit() {
+        findNavController().navigate(
+            WooShippingLabelCreationFragmentDirections
+                .actionWooShippingLabelCreationFragmentToWooShippingEditPaymentDialogFragment()
         )
     }
 

@@ -6,6 +6,7 @@ import com.woocommerce.android.model.Location
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PaymentMethodModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.PaymentMethodOptions
 
 object ShippingLabelSampleData {
     fun getShipFrom() = OriginShippingAddress(
@@ -50,12 +51,19 @@ object ShippingLabelSampleData {
     }
 
     fun getPaymentsSection() = PaymentsSectionUI(
-        selectedPaymentMethod = PaymentMethodModel(
-            paymentMethodId = 1,
-            name = "Visa",
-            cardType = "VISA",
-            cardDigits = "1234",
-            expiry = "12/25"
-        )
+        selectedPaymentMethod = getPaymentMethod()
+    )
+
+    fun getPaymentOptions(countOfPaymentMethods: Int = 3) = PaymentMethodOptions(
+        selectedPaymentId = if (countOfPaymentMethods > 0) 1 else null,
+        paymentMethods = List(countOfPaymentMethods) { getPaymentMethod(it) }
+    )
+
+    fun getPaymentMethod(index: Int = 0) = PaymentMethodModel(
+        paymentMethodId = index,
+        name = "John Doe",
+        cardType = "VISA",
+        cardDigits = "${index}234",
+        expiry = "12/25"
     )
 }
