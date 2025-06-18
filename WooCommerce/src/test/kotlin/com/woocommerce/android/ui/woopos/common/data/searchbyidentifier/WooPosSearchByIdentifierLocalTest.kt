@@ -10,12 +10,10 @@ import com.woocommerce.android.ui.products.ProductTaxStatus
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
-import com.woocommerce.android.ui.woopos.common.barcode.WooPosBarcodeFormat
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsLRUCache
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -32,11 +30,10 @@ class WooPosSearchByIdentifierLocalTest {
         onBlocking { getProductById(any()) }.thenReturn(ProductTestUtils.generateWCProductModel().toAppModel())
     }
     private val variationsCache: WooPosVariationsLRUCache = mock()
-    private val checkDigitRemover: WooPosSearchByIdentifierCheckDigitRemover = mock()
 
     @Before
     fun setup() {
-        sut = WooPosSearchByIdentifierLocal(productsCache, variationsCache, checkDigitRemover)
+        sut = WooPosSearchByIdentifierLocal(productsCache, variationsCache)
     }
 
     @Test
@@ -48,57 +45,24 @@ class WooPosSearchByIdentifierLocalTest {
         whenever(variationsCache.getAll()).thenReturn(emptyList<ProductVariation>())
 
         // WHEN
-        val result = sut(identifier, WooPosBarcodeFormat.FormatEAN13)
+        val result = sut(identifier)
 
         // THEN
         assertEquals(WooPosSearchByIdentifierResult.Success(product), result)
     }
 
     @Test
-    fun `given product with matching sku, when search called, then return product`() = runTest {
-        // GIVEN
-        val identifier = "SKU123"
-        val product = createProduct(sku = identifier)
-        whenever(productsCache.getAll()).thenReturn(listOf(product))
-        whenever(variationsCache.getAll()).thenReturn(emptyList<ProductVariation>())
-
-        // WHEN
-        val result = sut(identifier, WooPosBarcodeFormat.FormatUnknown)
-
-        // THEN
-        assertEquals(WooPosSearchByIdentifierResult.Success(product), result)
-    }
-
-    @Test
-    fun `given product with identifier without check digit, when search called, then return product`() = runTest {
-        // GIVEN
-        val identifier = "1234567890123"
-        val identifierWithoutCheckDigit = "123456789012"
-        val product = createProduct(globalUniqueId = identifierWithoutCheckDigit)
-        whenever(productsCache.getAll()).thenReturn(listOf(product))
-        whenever(variationsCache.getAll()).thenReturn(emptyList<ProductVariation>())
-        whenever(checkDigitRemover(identifier, WooPosBarcodeFormat.FormatEAN13))
-            .thenReturn(identifierWithoutCheckDigit)
-
-        // WHEN
-        val result = sut(identifier, WooPosBarcodeFormat.FormatEAN13)
-
-        // THEN
-        assertEquals(WooPosSearchByIdentifierResult.Success(product), result)
-    }
-
-    @Test
-    fun `given no matching products, when search called, then return null`() = runTest {
+    fun `given no matching products, when search called, then return failure`() = runTest {
         // GIVEN
         val identifier = "NOTFOUND"
         whenever(productsCache.getAll()).thenReturn(emptyList())
         whenever(variationsCache.getAll()).thenReturn(emptyList<ProductVariation>())
 
         // WHEN
-        val result = sut(identifier, WooPosBarcodeFormat.FormatUnknown)
+        val result = sut(identifier)
 
         // THEN
-        assertNull(result)
+        assertEquals(WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.NotFound), result)
     }
 
     @Test
@@ -110,22 +74,7 @@ class WooPosSearchByIdentifierLocalTest {
         whenever(variationsCache.getAll()).thenReturn(emptyList<ProductVariation>())
 
         // WHEN
-        val result = sut(identifier, WooPosBarcodeFormat.FormatUnknown)
-
-        // THEN
-        assertEquals(WooPosSearchByIdentifierResult.Success(product), result)
-    }
-
-    @Test
-    fun `given product with lowercase sku, when search with uppercase, then return product`() = runTest {
-        // GIVEN
-        val identifier = "SKU123"
-        val product = createProduct(sku = "sku123")
-        whenever(productsCache.getAll()).thenReturn(listOf(product))
-        whenever(variationsCache.getAll()).thenReturn(emptyList<ProductVariation>())
-
-        // WHEN
-        val result = sut(identifier, WooPosBarcodeFormat.FormatUnknown)
+        val result = sut(identifier)
 
         // THEN
         assertEquals(WooPosSearchByIdentifierResult.Success(product), result)
@@ -145,38 +94,16 @@ class WooPosSearchByIdentifierLocalTest {
             on { sku }.thenReturn("")
         }
         whenever(productsCache.getAll()).thenReturn(listOf(product))
+        whenever(productsCache.getProductById(productId)).thenReturn(product)
         whenever(variationsCache.getAll()).thenReturn(listOf(variation))
 
         // WHEN
-        val result = sut(identifier, WooPosBarcodeFormat.FormatUnknown)
+        val result = sut(identifier)
 
         // THEN
         assertTrue(result is WooPosSearchByIdentifierResult.VariationSuccess)
         assertEquals(variation, result.variation)
-    }
-
-    @Test
-    fun `given variation with matching sku, when search called, then return variation`() = runTest {
-        // GIVEN
-        val identifier = "VAR-SKU-123"
-        val productId = 1L
-        val variationId = 10L
-        val product = createProduct(remoteId = productId).copy(type = ProductType.VARIABLE.value)
-        val variation: ProductVariation = mock {
-            on { remoteVariationId }.thenReturn(variationId)
-            on { remoteProductId }.thenReturn(productId)
-            on { sku }.thenReturn(identifier)
-            on { globalUniqueId }.thenReturn("")
-        }
-        whenever(productsCache.getAll()).thenReturn(listOf(product))
-        whenever(variationsCache.getAll()).thenReturn(listOf(variation))
-
-        // WHEN
-        val result = sut(identifier, WooPosBarcodeFormat.FormatUnknown)
-
-        // THEN
-        assertTrue(result is WooPosSearchByIdentifierResult.VariationSuccess)
-        assertEquals(variation, result.variation)
+        assertEquals(product, result.parentProduct)
     }
 
     @Test
@@ -198,14 +125,16 @@ class WooPosSearchByIdentifierLocalTest {
             on { sku }.thenReturn("")
         }
         whenever(productsCache.getAll()).thenReturn(listOf(product))
+        whenever(productsCache.getProductById(productId)).thenReturn(product)
         whenever(variationsCache.getAll()).thenReturn(listOf(variation1, variation2))
 
         // WHEN
-        val result = sut(identifier, WooPosBarcodeFormat.FormatUnknown)
+        val result = sut(identifier)
 
         // THEN
         assertTrue(result is WooPosSearchByIdentifierResult.VariationSuccess)
         assertEquals(variation2, result.variation)
+        assertEquals(product, result.parentProduct)
     }
 
     @Test
@@ -221,14 +150,16 @@ class WooPosSearchByIdentifierLocalTest {
             on { sku }.thenReturn("")
         }
         whenever(productsCache.getAll()).thenReturn(listOf(product))
+        whenever(productsCache.getProductById(productId)).thenReturn(product)
         whenever(variationsCache.getAll()).thenReturn(listOf(variation))
 
         // WHEN
-        val result = sut(identifier, WooPosBarcodeFormat.FormatUnknown)
+        val result = sut(identifier)
 
         // THEN
         assertTrue(result is WooPosSearchByIdentifierResult.VariationSuccess)
         assertEquals(variation, result.variation)
+        assertEquals(product, result.parentProduct)
     }
 
     @Suppress("LongMethod")
