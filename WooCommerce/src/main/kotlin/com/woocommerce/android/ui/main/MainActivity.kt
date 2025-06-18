@@ -103,6 +103,7 @@ import com.woocommerce.android.ui.prefs.RequestedAnalyticsValue
 import com.woocommerce.android.ui.products.details.ProductDetailFragment
 import com.woocommerce.android.ui.products.list.ProductListFragmentDirections
 import com.woocommerce.android.ui.reviews.ReviewListFragmentDirections
+import com.woocommerce.android.ui.woopos.tab.WooPosTabController
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
@@ -182,6 +183,8 @@ class MainActivity :
     @Inject lateinit var animatorHelper: MainAnimatorHelper
 
     @Inject lateinit var edgeToEdgeHelper: MainActivityEdgeToEdgeHelper
+
+    @Inject lateinit var posTabController: WooPosTabController
 
     private val viewModel: MainActivityViewModel by viewModels()
 
@@ -326,6 +329,8 @@ class MainActivity :
         navController.graph = navGraph
         navHostFragment.childFragmentManager.registerFragmentLifecycleCallbacks(fragmentLifecycleObserver, false)
         binding.bottomNav.init(navController, this)
+
+        posTabController.initialize(this, binding, navController)
 
         presenter.takeView(this)
 

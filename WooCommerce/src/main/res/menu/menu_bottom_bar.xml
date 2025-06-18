@@ -16,6 +16,11 @@
         android:title="@string/products" />
 
     <item
+        android:id="@+id/point_of_sale"
+        android:icon="@drawable/ic_gridicons_credit_card"
+        android:title="@string/point_of_sale" />
+
+    <item
         android:id="@+id/moreMenu"
         android:icon="@drawable/as_menu_more"
         android:title="@string/more_menu" />
