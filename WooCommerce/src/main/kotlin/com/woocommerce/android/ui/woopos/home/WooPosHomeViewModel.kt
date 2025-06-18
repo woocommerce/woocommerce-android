@@ -43,6 +43,7 @@ class WooPosHomeViewModel @Inject constructor(
             productsInfoDialog = ProductsInfoDialog(isVisible = false),
             barcodeInfoDialog = BarcodeInfoDialog(isVisible = false),
             exitConfirmationDialog = ExitConfirmationDialog(isVisible = false),
+            continuousScanning = WooPosHomeState.ContinuousScanning(isEnabled = false),
         )
     )
     val state: StateFlow<WooPosHomeState> = _state
@@ -52,6 +53,10 @@ class WooPosHomeViewModel @Inject constructor(
 
     private val _navigationEvent = MutableSharedFlow<NavigationEvent>()
     val navigationEvent: SharedFlow<NavigationEvent> = _navigationEvent
+
+    private var lastScannedBarcode: String? = null
+    private var lastScanTime: Long = 0
+    private val scanDebounceTimeMs = 2000 // 2 seconds debounce
 
     init {
         listenBottomEvents()
@@ -67,31 +72,7 @@ class WooPosHomeViewModel @Inject constructor(
 
     fun onUIEvent(event: WooPosHomeUIEvent) {
         when (event) {
-            WooPosHomeUIEvent.SystemBackClicked -> {
-                when (_state.value.screenPositionState) {
-                    ScreenPositionState.Checkout.CartWithTotals -> {
-                        _state.value = _state.value.copy(
-                            screenPositionState = ScreenPositionState.Cart
-                        )
-                        sendEventToChildren(ParentToChildrenEvent.BackFromCheckoutToCartClicked)
-                        viewModelScope.launch {
-                            analyticsTracker.track(BackToCartTapped)
-                        }
-                    }
-
-                    ScreenPositionState.Checkout.FullScreenTotals -> {
-                        _state.value = _state.value.copy(
-                            screenPositionState = ScreenPositionState.Cart
-                        )
-                    }
-
-                    is ScreenPositionState.Cart -> {
-                        _state.value = _state.value.copy(
-                            exitConfirmationDialog = ExitConfirmationDialog(isVisible = true)
-                        )
-                    }
-                }
-            }
+            WooPosHomeUIEvent.SystemBackClicked -> handleSystemBackClicked()
 
             WooPosHomeUIEvent.ExitConfirmationDialogDismissed -> {
                 _state.value = _state.value.copy(
@@ -121,7 +102,61 @@ class WooPosHomeViewModel @Inject constructor(
                     analyticsTracker.track(WooPosAnalyticsEvent.Event.ExitConfirmed)
                 }
             }
+
+            WooPosHomeUIEvent.ToggleContinuousScanning -> {
+                _state.value = _state.value.copy(
+                    continuousScanning = _state.value.continuousScanning.copy(
+                        isEnabled = !_state.value.continuousScanning.isEnabled
+                    )
+                )
+            }
+
+            is WooPosHomeUIEvent.OnCameraBarcodeScanned -> {
+                handleCameraBarcodeScanned(event.barcode)
+            }
         }
+    }
+
+    private fun handleSystemBackClicked() {
+        when (_state.value.screenPositionState) {
+            ScreenPositionState.Checkout.CartWithTotals -> {
+                _state.value = _state.value.copy(
+                    screenPositionState = ScreenPositionState.Cart
+                )
+                sendEventToChildren(ParentToChildrenEvent.BackFromCheckoutToCartClicked)
+                viewModelScope.launch {
+                    analyticsTracker.track(BackToCartTapped)
+                }
+            }
+
+            ScreenPositionState.Checkout.FullScreenTotals -> {
+                _state.value = _state.value.copy(
+                    screenPositionState = ScreenPositionState.Cart
+                )
+            }
+
+            is ScreenPositionState.Cart -> {
+                _state.value = _state.value.copy(
+                    exitConfirmationDialog = ExitConfirmationDialog(isVisible = true)
+                )
+            }
+        }
+    }
+
+    private fun handleCameraBarcodeScanned(barcode: String) {
+        val currentTime = System.currentTimeMillis()
+
+        // Check if this is a duplicate scan within the debounce period
+        if (lastScannedBarcode == barcode && (currentTime - lastScanTime) < scanDebounceTimeMs) {
+            return
+        }
+
+        // Update debounce tracking
+        lastScannedBarcode = barcode
+        lastScanTime = currentTime
+
+        // Send to cart for processing
+        sendEventToChildren(ParentToChildrenEvent.BarcodeScanned(barcode))
     }
 
     @Suppress("LongMethod", "CyclomaticComplexMethod")

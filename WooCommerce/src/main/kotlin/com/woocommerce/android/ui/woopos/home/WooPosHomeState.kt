@@ -12,6 +12,7 @@ data class WooPosHomeState(
     val productsInfoDialog: ProductsInfoDialog,
     val barcodeInfoDialog: BarcodeInfoDialog,
     val exitConfirmationDialog: ExitConfirmationDialog,
+    val continuousScanning: ContinuousScanning = ContinuousScanning(isEnabled = false),
 ) : Parcelable {
     @Parcelize
     sealed class ScreenPositionState : Parcelable {
@@ -96,4 +97,9 @@ data class WooPosHomeState(
         @IgnoredOnParcel
         val confirmButton: Int = R.string.woopos_exit_dialog_confirmation_confirm_button
     }
+
+    @Parcelize
+    data class ContinuousScanning(
+        val isEnabled: Boolean
+    ) : Parcelable
 }

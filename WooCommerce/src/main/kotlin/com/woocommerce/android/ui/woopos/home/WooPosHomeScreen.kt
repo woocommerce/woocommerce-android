@@ -1,3 +1,5 @@
+@file:Suppress("ImportOrdering")
+
 package com.woocommerce.android.ui.woopos.home
 
 import androidx.activity.compose.BackHandler
@@ -11,8 +13,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.QrCodeScanner
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -28,6 +36,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosExitConfirmationDialog
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosContinuousScanner
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosScanningIndicator
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
@@ -171,6 +181,44 @@ private fun WooPosHomeScreen(
 
         HandleProductsInfoDialog(state.productsInfoDialog, onHomeUIEvent)
         HandleBarcodeInfoDialog(state.barcodeInfoDialog, onHomeUIEvent)
+
+        WooPosScanningIndicator(
+            isScanning = state.continuousScanning.isEnabled,
+            modifier = Modifier
+                .padding(WooPosSpacing.Large.value.toAdaptivePadding())
+                .align(Alignment.TopEnd)
+        )
+
+        FloatingActionButton(
+            onClick = { onHomeUIEvent(WooPosHomeUIEvent.ToggleContinuousScanning) },
+            modifier = Modifier
+                .padding(WooPosSpacing.Large.value.toAdaptivePadding())
+                .align(Alignment.TopCenter)
+                .size(56.dp),
+            shape = CircleShape,
+            containerColor = if (state.continuousScanning.isEnabled) {
+                MaterialTheme.colorScheme.primary
+            } else {
+                MaterialTheme.colorScheme.surfaceVariant
+            }
+        ) {
+            Icon(
+                imageVector = Icons.Default.QrCodeScanner,
+                contentDescription = "Toggle continuous barcode scanning",
+                tint = if (state.continuousScanning.isEnabled) {
+                    MaterialTheme.colorScheme.onPrimary
+                } else {
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                }
+            )
+        }
+
+        if (!isPreviewMode()) {
+            WooPosHomeScreenContinuousScanner(
+                state = state,
+                onHomeUIEvent = onHomeUIEvent
+            )
+        }
     }
 }
 
@@ -237,6 +285,24 @@ private fun WooPosHomeScreenToolbar(modifier: Modifier) {
 }
 
 @Composable
+private fun WooPosHomeScreenContinuousScanner(
+    state: WooPosHomeState,
+    onHomeUIEvent: (WooPosHomeUIEvent) -> Unit
+) {
+    if (state.continuousScanning.isEnabled) {
+        WooPosContinuousScanner(
+            isEnabled = state.continuousScanning.isEnabled,
+            onBarcodeDetected = { barcode ->
+                onHomeUIEvent(WooPosHomeUIEvent.OnCameraBarcodeScanned(barcode))
+            },
+            onBindingException = {
+                // Handle camera binding exceptions silently for the proof of concept
+            }
+        )
+    }
+}
+
+@Composable
 private fun buildScrollStateForNavigationBetweenState(state: WooPosHomeState.ScreenPositionState): ScrollState {
     val scrollState = rememberScrollState()
     LaunchedEffect(state) {
@@ -267,6 +333,7 @@ fun WooPosHomeCartScreenPreview() {
                 productsInfoDialog = ProductsInfoDialog(isVisible = false),
                 barcodeInfoDialog = BarcodeInfoDialog(isVisible = false),
                 exitConfirmationDialog = ExitConfirmationDialog(isVisible = false),
+                continuousScanning = WooPosHomeState.ContinuousScanning(isEnabled = false),
             ),
             onHomeUIEvent = { },
         )
@@ -283,6 +350,7 @@ fun WooPosHomeCheckoutScreenPreview() {
                 productsInfoDialog = ProductsInfoDialog(isVisible = false),
                 barcodeInfoDialog = BarcodeInfoDialog(isVisible = false),
                 exitConfirmationDialog = ExitConfirmationDialog(isVisible = false),
+                continuousScanning = WooPosHomeState.ContinuousScanning(isEnabled = false),
             ),
             onHomeUIEvent = { },
         )
@@ -299,6 +367,7 @@ fun WooPosHomeCheckoutPaidScreenPreview() {
                 productsInfoDialog = ProductsInfoDialog(isVisible = false),
                 barcodeInfoDialog = BarcodeInfoDialog(isVisible = false),
                 exitConfirmationDialog = ExitConfirmationDialog(isVisible = false),
+                continuousScanning = WooPosHomeState.ContinuousScanning(isEnabled = false),
             ),
             onHomeUIEvent = { },
         )

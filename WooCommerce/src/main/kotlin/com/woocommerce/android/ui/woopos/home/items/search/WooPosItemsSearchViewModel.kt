@@ -198,6 +198,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
                             storeRecentSearch()
                         }
                     }
+                    is ParentToChildrenEvent.BarcodeScanned -> Unit
                 }
             }
         }
