@@ -102,7 +102,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     private val fetchOriginAddresses: FetchOriginAddresses,
     private val getShippingRates: GetShippingRates,
     private val purchaseShippingLabel: PurchaseShippingLabel,
-    private val observeAccountSettings: ObserveAccountSettings,
+    observeAccountSettings: ObserveAccountSettings,
     private val fetchAccountSettings: FetchAccountSettings,
     private val addressValidationHelper: AddressValidationHelper,
     private val verifyDestinationAddress: VerifyDestinationAddress,
@@ -228,10 +228,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             observeShippingLabelStatus(orderId = navArgs.orderId, labelId = labelId).onEach { result ->
                 updateShipment(
                     shipmentId,
-                    shipments.value[shipmentId].copy(
-                        status = result.status,
-                        refundableAmount = result.refundableAmount ?: BigDecimal.ZERO
-                    )
+                    shipments.value[shipmentId].copy(status = result.status)
                 )
             }.launchIn(this)
         }
@@ -263,13 +260,14 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     @OptIn(FlowPreview::class)
     private suspend fun observeShippingRates() {
         combine(
+            accountSettings,
             selectedPackagesFlow.filter { it.isNotEmpty() },
             shippingAddresses,
             packageWeightsFlow.filter { it.isNotEmpty() },
             customsStatesFlow.filter { it.isNotEmpty() },
             hazmatStatesFlow.filter { it.isNotEmpty() },
             refreshShippingRates.onStart { emit(Unit) },
-        ) { selectedPackages, addresses, packageWeight, customState, hazmatStates, _ ->
+        ) { accountSettings, selectedPackages, addresses, packageWeight, customState, hazmatStates, _ ->
             val customsFulfilled = customState[selectedShipmentIndex] is CustomsState.DataAvailable ||
                 customState[selectedShipmentIndex] is NotRequired
             val selectedPackage = selectedPackages[selectedShipmentIndex]
@@ -280,7 +278,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                     shipFrom = addresses.shipFrom,
                     shipTo = addresses.shipTo.address,
                     weight = packageWeight[selectedShipmentIndex]?.totalWeight,
-                    currencyCode = order.value.currency,
+                    currencyCode = accountSettings?.storeOptions?.currencySymbol,
                     customsData = customsFormDataFlow.value[selectedShipmentIndex],
                     hazmatSelection = hazmatStates[selectedShipmentIndex].hazmatSelection
                 )
@@ -685,8 +683,6 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                         labelId = purchasedLabel.labelId,
                         carrierId = purchasedLabel.carrierId,
                         trackingNumber = purchasedLabel.tracking,
-                        refundableAmount = purchasedLabel.refundableAmount,
-                        purchaseDate = purchasedLabel.created
                     )
                 )
                 observeShippingLabelPurchaseStatus(shipmentId)
@@ -844,8 +840,9 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     }
 
     fun onRefundClicked() {
-        val selectedShipment = shipments.value[selectedShipmentIndex]
-        triggerEvent(NavigateToRefundRequest(navArgs.orderId, selectedShipment))
+        shipments.value[selectedShipmentIndex].labelId?.let { labelId ->
+            triggerEvent(NavigateToRefundRequest(navArgs.orderId, labelId))
+        }
     }
 
     fun onLearnMoreClicked() {
@@ -1031,7 +1028,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     data class OpenShippingLabelFile(val file: File) : Event()
     data class OpenUrl(val url: String) : Event()
     data class ShowError(val errorResId: Int) : Event()
-    data class NavigateToRefundRequest(val orderId: Long, val shipment: ShipmentUIModel) : Event()
+    data class NavigateToRefundRequest(val orderId: Long, val labelId: Long) : Event()
 
     object OpenLearnMoreScreen : Event()
 

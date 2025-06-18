@@ -128,7 +128,7 @@ class WooShippingLabelCreationFragment : BaseFragment(), BackPressListener {
                 is WooShippingLabelCreationViewModel.OpenLearnMoreScreen -> openLearnMoreView()
                 is WooShippingLabelCreationViewModel.NavigateToRefundRequest -> navigateToRefundRequest(
                     event.orderId,
-                    event.shipment
+                    event.labelId
                 )
 
                 is WooShippingLabelCreationViewModel.OpenUrl -> openUrl(event.url)
@@ -171,10 +171,10 @@ class WooShippingLabelCreationFragment : BaseFragment(), BackPressListener {
         )
     }
 
-    private fun navigateToRefundRequest(orderId: Long, shipment: ShipmentUIModel) {
+    private fun navigateToRefundRequest(orderId: Long, labelId: Long) {
         findNavController().navigate(
             WooShippingLabelCreationFragmentDirections
-                .actionWooShippingLabelCreationFragmentToWooShippingLabelRefundRequestFragment(orderId, shipment)
+                .actionWooShippingLabelCreationFragmentToWooShippingLabelRefundRequestFragment(orderId, labelId)
         )
     }
 

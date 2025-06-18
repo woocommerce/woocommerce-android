@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.refund
 import com.woocommerce.android.R
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.RefundLabelResponseDTO
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingLabelRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -34,14 +33,11 @@ class WooShippingLabelRefundViewModelTest : BaseUnitTest() {
         viewModel = WooShippingLabelRefundViewModel(
             WooShippingLabelRefundFragmentArgs(
                 orderId = mockOrderId,
-                shipment = ShipmentUIModel(
-                    localId = "0",
-                    items = emptyList(),
-                    labelId = mockLabelId
-                )
+                labelId = mockLabelId
             ).toSavedStateHandle(),
             selectedSite = selectedSite,
             repository = repository,
+            configDataStore = mock(),
             networkStatus = networkStatus,
             currencyFormatter = mock()
         )
