@@ -43,6 +43,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,6 +54,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -86,6 +88,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
+import com.woocommerce.android.ui.woopos.common.composeui.modifier.listenForBarcodes
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState.Coupon.CouponValidationState
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartUIEvent.ItemRemovedFromCart
 
@@ -109,6 +112,9 @@ private fun WooPosCartScreen(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.surfaceBright)
+            .listenForBarcodes(
+                onBarcodeScanned = { onUIEvent(WooPosCartUIEvent.OnBarcodeScanned(it)) },
+            )
     ) {
         val (topMargin, toolbar, body, checkoutButton) = createRefs()
 
@@ -237,6 +243,8 @@ private fun CartBodyWithItems(
         label = "cart list height animation"
     )
 
+    AnnounceCartItemChangesForAccessibility(items)
+
     WooPosLazyColumn(
         modifier = modifier
             .padding(horizontal = WooPosSpacing.Medium.value.toAdaptivePadding())
@@ -275,6 +283,7 @@ private fun CartBodyWithItems(
                     canRemoveItems = areItemsRemovable,
                     onUIEvent = onUIEvent,
                 )
+
                 is WooPosCartItemViewState.Loading -> LoadingItem(
                     modifier = Modifier.animateItem(),
                     item = item,
@@ -286,6 +295,49 @@ private fun CartBodyWithItems(
         item {
             Spacer(modifier = Modifier.height(spacerHeight))
         }
+    }
+}
+
+@Composable
+private fun AnnounceCartItemChangesForAccessibility(
+    items: List<WooPosCartItemViewState>,
+) {
+    val localView = LocalView.current
+    val previousItems = remember { mutableStateOf<List<WooPosCartItemViewState>>(emptyList()) }
+    LaunchedEffect(items) {
+        val changedItem = items.firstOrNull { currentItem ->
+            val previousItem = previousItems.value.find { it.itemNumber == currentItem.itemNumber }
+            previousItem == null || currentItem::class != previousItem::class
+        }
+
+        changedItem?.let { currentItem ->
+            val message = when (currentItem) {
+                is WooPosCartItemViewState.Product ->
+                    localView.context.getString(
+                        R.string.woopos_cart_product_added_to_cart_accessibility,
+                        currentItem.name,
+                        currentItem.price
+                    )
+
+                is WooPosCartItemViewState.Coupon ->
+                    localView.context.getString(
+                        R.string.woopos_cart_coupon_added_to_cart_accessibility,
+                        currentItem.name
+                    )
+
+                is WooPosCartItemViewState.Error ->
+                    localView.context.getString(
+                        R.string.woopos_cart_adding_item_to_cart_failed,
+                        currentItem.message
+                    )
+
+                is WooPosCartItemViewState.Loading ->
+                    localView.context.getString(R.string.woopos_cart_searching_for_item)
+            }
+
+            localView.announceForAccessibility(message)
+        }
+        previousItems.value = items
     }
 }
 
@@ -430,7 +482,7 @@ private fun ProductItem(
 
     WooPosCard(
         modifier = modifier
-            .height(96.dp)
+            .wrapContentHeight()
             .semantics { contentDescription = itemContentDescription },
         backgroundColor = if (item.productDoesNotExist) {
             WooPosTheme.colors.disabledContainer
@@ -442,13 +494,16 @@ private fun ProductItem(
         shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
     ) {
         Row(
+            modifier = Modifier.height(IntrinsicSize.Min),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier
                     .background(MaterialTheme.colorScheme.surfaceDim)
-                    .size(96.dp),
+                    .width(96.dp)
+                    .fillMaxHeight()
+                    .heightIn(min = 96.dp),
                 contentAlignment = Alignment.Center
             ) {
                 val asyncImagePainter = rememberAsyncImagePainter(
@@ -490,7 +545,8 @@ private fun ProductItem(
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(end = WooPosSpacing.Medium.value.toAdaptivePadding())
+                    .padding(end = WooPosSpacing.Medium.value.toAdaptivePadding(),)
+                    .padding(vertical = WooPosSpacing.Medium.value.toAdaptivePadding())
             ) {
                 WooPosText(
                     text = item.name,
@@ -637,6 +693,7 @@ private fun CouponItem(
                             modifier = Modifier.clearAndSetSemantics { }
                         )
                     }
+
                     is CouponValidationState.Valid -> {
                         Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value.toAdaptivePadding()))
                         WooPosText(

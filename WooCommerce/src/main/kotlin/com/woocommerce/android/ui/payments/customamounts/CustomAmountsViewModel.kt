@@ -7,13 +7,10 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_ADD_CUSTOM_AMOUNT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_CREATION_EDIT_CUSTOM_AMOUNT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.CurrencySymbol
-import com.woocommerce.android.ui.orders.CustomAmountUIModel
 import com.woocommerce.android.ui.orders.creation.product.discount.CurrencySymbolFinder
 import com.woocommerce.android.viewmodel.LiveDataDelegate
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -54,18 +51,11 @@ class CustomAmountsViewModel @Inject constructor(
     var currentPercentage: BigDecimal
         get() {
             val orderTotal = BigDecimal(args.orderTotal ?: "0")
-            // When in edit mode for percentage type, adjust the base for percentage calculation
-            val adjustedBase =
-                if (!isInCreateMode() && args.customAmountUIModel.type == CustomAmountType.PERCENTAGE_CUSTOM_AMOUNT) {
-                    orderTotal - args.customAmountUIModel.amount
-                } else {
-                    orderTotal
-                }
 
-            return if (adjustedBase > BigDecimal.ZERO) {
+            return if (orderTotal > BigDecimal.ZERO) {
                 (
                     viewState.customAmountUIModel.currentPrice.divide(
-                        adjustedBase,
+                        orderTotal,
                         DIVISION_SCALE_FACTOR,
                         RoundingMode.HALF_UP
                     )
@@ -78,18 +68,11 @@ class CustomAmountsViewModel @Inject constructor(
         }
         set(value) {
             val orderTotal = BigDecimal(args.orderTotal ?: "0")
-            // When in edit mode for percentage type, adjust the base for percentage calculation
-            val adjustedBase =
-                if (!isInCreateMode() && args.customAmountUIModel.type == CustomAmountType.PERCENTAGE_CUSTOM_AMOUNT) {
-                    orderTotal - args.customAmountUIModel.amount
-                } else {
-                    orderTotal
-                }
 
-            if (adjustedBase > BigDecimal.ZERO) {
+            if (orderTotal > BigDecimal.ZERO) {
                 val percentage = value.setScale(2, RoundingMode.HALF_UP)
                 val updatedAmount = (
-                    adjustedBase.multiply(percentage)
+                    orderTotal.multiply(percentage)
                         .divide(BigDecimal(PERCENTAGE_SCALE_FACTOR), 2, RoundingMode.HALF_UP)
                     )
                 viewState = viewState.copy(
@@ -152,18 +135,7 @@ class CustomAmountsViewModel @Inject constructor(
 
     private fun populateUIWithExistingData() {
         args.customAmountUIModel.apply {
-            val orderTotalValue = BigDecimal(args.orderTotal ?: "0")
-            if (orderTotalValue > BigDecimal.ZERO) {
-                when (type) {
-                    CustomAmountType.FIXED_CUSTOM_AMOUNT -> {
-                        currentPrice = amount
-                    }
-
-                    CustomAmountType.PERCENTAGE_CUSTOM_AMOUNT -> {
-                        populateUIWithPercentageMode(orderTotalValue)
-                    }
-                }
-            }
+            currentPrice = amount
 
             viewState = viewState.copy(
                 customAmountUIModel = viewState.customAmountUIModel.copy(
@@ -177,28 +149,6 @@ class CustomAmountsViewModel @Inject constructor(
         }
     }
 
-    private fun CustomAmountUIModel.populateUIWithPercentageMode(orderTotalValue: BigDecimal) {
-        if (orderTotalValue > BigDecimal.ZERO) {
-            // When in edit mode for percentage type, adjust the base for percentage calculation
-            val adjustedBase = if (!isInCreateMode() && this.type == CustomAmountType.PERCENTAGE_CUSTOM_AMOUNT) {
-                orderTotalValue - this.amount
-            } else {
-                orderTotalValue
-            }
-
-            if (adjustedBase > BigDecimal.ZERO) {
-                val percentage = (amount.divide(adjustedBase, DIVISION_SCALE_FACTOR, RoundingMode.HALF_UP))
-                    .multiply(BigDecimal(PERCENTAGE_SCALE_FACTOR))
-                populatePercentage(this)
-                currentPercentage = percentage
-            }
-        }
-    }
-
-    private fun populatePercentage(customAmountUIModel: CustomAmountUIModel) {
-        triggerEvent(PopulatePercentage(customAmountUIModel))
-    }
-
     fun isInCreateMode() = args.customAmountUIModel.amount.compareTo(BigDecimal.ZERO) == 0
 
     @Parcelize
@@ -207,7 +157,6 @@ class CustomAmountsViewModel @Inject constructor(
         val currencySymbol: CurrencySymbol? = null,
         val isDoneButtonEnabled: Boolean = false,
         val isProgressShowing: Boolean = false,
-        val createdOrder: Order? = null,
     ) : Parcelable
 
     @Parcelize
@@ -229,8 +178,6 @@ class CustomAmountsViewModel @Inject constructor(
         FIXED_CUSTOM_AMOUNT,
         PERCENTAGE_CUSTOM_AMOUNT
     }
-
-    data class PopulatePercentage(val customAmountUIModel: CustomAmountUIModel) : Event()
 
     companion object {
         const val PERCENTAGE_SCALE_FACTOR = 100

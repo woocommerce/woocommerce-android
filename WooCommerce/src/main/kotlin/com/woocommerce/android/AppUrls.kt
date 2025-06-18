@@ -118,6 +118,7 @@ object AppUrls {
         "https://woocommerce.com/documentation/woocommerce/getting-started/sell-products/core-payment-options/"
     const val ADVERTISING_POLICY = "https://automattic.com/advertising-policy/"
     const val BLAZE_SUPPORT = "https://wordpress.com/support/promote-a-post/"
+    const val BLAZE_CANCEL_INSTRUCTIONS = BLAZE_SUPPORT + "manage-your-blaze-ad-campaign/#stop-an-ad-campaign"
 
     fun getScreenshotUrl(themeDemoUrl: String) =
         "https://s0.wp.com/mshots/v1/$themeDemoUrl?demo=true/?w=1200&h=2400&vpw=400&vph=800"

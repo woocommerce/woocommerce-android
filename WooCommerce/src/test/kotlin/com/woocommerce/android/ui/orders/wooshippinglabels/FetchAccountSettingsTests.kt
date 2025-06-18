@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels
 
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.AccountSettingsModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.PaymentMethodOptions
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.StoreOptionsModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingLabelRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -25,11 +27,17 @@ class FetchAccountSettingsTests : BaseUnitTest() {
         }
     }
 
-    private val defaultStoreOptions = StoreOptionsModel(
-        weightUnit = "kg",
-        currencySymbol = "$",
-        dimensionUnit = "cm",
-        originCountry = "US"
+    private val defaultAccountSettings = AccountSettingsModel(
+        storeOptions = StoreOptionsModel(
+            weightUnit = "kg",
+            currencySymbol = "$",
+            dimensionUnit = "cm",
+            originCountry = "US"
+        ),
+        paymentMethodOptions = PaymentMethodOptions(
+            selectedPaymentId = null,
+            paymentMethods = emptyList()
+        )
     )
 
     val sut = FetchAccountSettings(
@@ -55,19 +63,9 @@ class FetchAccountSettingsTests : BaseUnitTest() {
     }
 
     @Test
-    fun `when fetch account settings is empty then return failure`() = testBlocking {
-        whenever(shippingRepository.fetchAccountSettings(any())).doReturn(
-            WooResult(StoreOptionsModel.EMPTY)
-        )
-
-        val result = sut.invoke()
-        assert(result.isFailure)
-    }
-
-    @Test
     fun `when fetch account settings succeed then return success`() = testBlocking {
         whenever(shippingRepository.fetchAccountSettings(any())).doReturn(
-            WooResult(defaultStoreOptions)
+            WooResult(defaultAccountSettings)
         )
 
         val result = sut.invoke()

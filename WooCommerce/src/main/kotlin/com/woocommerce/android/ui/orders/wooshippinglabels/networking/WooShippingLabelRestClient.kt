@@ -222,4 +222,17 @@ class WooShippingLabelRestClient @Inject constructor(
 
         return result.toWooPayload()
     }
+
+    suspend fun refundShippingLabel(
+        orderId: Long,
+        labelId: Long,
+        site: SiteModel
+    ): WooPayload<RefundLabelResponseDTO> {
+        val url = "/wcshipping/v1/label/refund/$orderId/$labelId"
+        return wooNetwork.executePostGsonRequest(
+            site = site,
+            path = url,
+            clazz = RefundLabelResponseDTO::class.java,
+        ).toWooPayload()
+    }
 }

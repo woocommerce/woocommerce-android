@@ -1,32 +1,18 @@
 package com.woocommerce.android.ui.woopos.common.data.searchbyidentifier
 
-import com.woocommerce.android.model.toAppModel
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductTestUtils
-import com.woocommerce.android.ui.woopos.common.barcode.WooPosBarcodeFormat
-import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
-import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.annotations.action.Action
-import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.WCProductModel
-import org.wordpress.android.fluxc.store.WCProductStore
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooPosSearchByIdentifierRemoteTest {
@@ -36,245 +22,67 @@ class WooPosSearchByIdentifierRemoteTest {
     val coroutinesTestRule = WooPosCoroutineTestRule(UnconfinedTestDispatcher())
 
     private lateinit var sut: WooPosSearchByIdentifierRemote
-    private val dispatcher: Dispatcher = mock()
-    private val selectedSite: SelectedSite = mock()
-    private val productsCache: WooPosProductsCache = mock()
-    private val checkDigitRemover: WooPosSearchByIdentifierCheckDigitRemover =
-        WooPosSearchByIdentifierCheckDigitRemover()
+    private val globalUniqueIdSearch: WooPosSearchByIdentifierGlobalUniqueSearch = mock()
+    private val resultConverter: WooPosSearchByIdentifierResultConverter = mock()
 
-    private val testSite = SiteModel().apply { id = 1 }
+    private val testProduct = ProductTestUtils.generateProduct()
 
     @Before
     fun setup() {
-        whenever(selectedSite.get()).thenReturn(testSite)
         sut = WooPosSearchByIdentifierRemote(
-            dispatcher,
-            selectedSite,
-            productsCache,
-            checkDigitRemover,
-            coroutinesTestRule.testDispatcher
+            globalUniqueIdSearch = globalUniqueIdSearch,
+            resultConverter = resultConverter
         )
     }
 
     @Test
-    fun `given WooPosSearchByIdentifierRemote created, when onCleanup called, then dispatcher unregistered`() {
+    fun `given search result success, when searching by global unique id, should return success result`() = runTest {
         // GIVEN
-        // Remote searcher is created
+        val identifier = "test-gtin"
+        val searchResult = WooPosSearchByIdentifierResult.Success(testProduct)
+
+        whenever(globalUniqueIdSearch(identifier)).thenReturn(searchResult)
+        whenever(resultConverter.invoke(any())).thenReturn(searchResult)
 
         // WHEN
-        sut.onCleanup()
+        val result = sut(identifier)
 
         // THEN
-        assertTrue(true)
+        assertTrue(result.isSuccess)
+        assertEquals(searchResult, result)
     }
 
     @Test
-    fun `given remote searcher initialized, when constructor called, then searcher is created successfully`() {
-        // GIVEN & WHEN
-        val remoteSearcher = WooPosSearchByIdentifierRemote(
-            dispatcher,
-            selectedSite,
-            productsCache,
-            checkDigitRemover,
-            coroutinesTestRule.testDispatcher
-        )
-
-        // Test that object creation succeeds without exceptions
-        assertEquals("WooPosSearchByIdentifierRemote", remoteSearcher::class.simpleName)
-    }
-
-    @Test
-    fun `when invoke is called twice with same identifier, only dispatches once for each search type`() = runTest {
+    fun `when search fails, should return failure result`() = runTest {
         // GIVEN
-        val identifier = "test-sku"
-        val actionCaptor = argumentCaptor<Action<*>>()
+        val identifier = "test-identifier"
+        val failureResult = WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.NotFound)
+
+        whenever(globalUniqueIdSearch(identifier)).thenReturn(failureResult)
+        whenever(resultConverter.invoke(any())).thenReturn(failureResult)
 
         // WHEN
-        val job1 = launch {
-            sut.invoke(identifier, WooPosBarcodeFormat.FormatUnknown)
-        }
-        val job2 = launch {
-            sut.invoke(identifier, WooPosBarcodeFormat.FormatUnknown)
-        }
-
-        advanceTimeBy(1)
+        val result = sut(identifier)
 
         // THEN
-        verify(dispatcher, times(2)).dispatch(actionCaptor.capture())
-
-        sut.onCleanup()
-        job1.cancel()
-        job2.cancel()
+        assertTrue(result.isFailure)
+        assertEquals(failureResult, result)
     }
 
     @Test
-    fun `given two invoke calls with same identifier, when results are returned, then both calls receive results`() =
-        runTest {
-            // GIVEN
-            val identifier = "test-sku"
-            val wcProductModel: WCProductModel = ProductTestUtils.generateWCProductModel()
+    fun `when network error occurs, should return network error`() = runTest {
+        // GIVEN
+        val identifier = "test-identifier"
+        val networkError = WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.NetworkError)
 
-            var firstResult: WooPosSearchByIdentifierResult? = null
-            var secondResult: WooPosSearchByIdentifierResult? = null
+        whenever(globalUniqueIdSearch(identifier)).thenReturn(networkError)
+        whenever(resultConverter.invoke(any())).thenReturn(networkError)
 
-            // WHEN
-            val job1 = launch {
-                firstResult = sut.invoke(identifier, WooPosBarcodeFormat.FormatUnknown)
-            }
+        // WHEN
+        val result = sut(identifier)
 
-            val job2 = launch {
-                secondResult = sut.invoke(identifier, WooPosBarcodeFormat.FormatUnknown)
-            }
-
-            advanceTimeBy(1)
-
-            sut.onProductsSearched(
-                WCProductStore.OnProductsSearched(
-                    globalUniqueIdSearchQuery = identifier,
-                    searchQuery = null,
-                    searchResults = listOf(wcProductModel),
-                    canLoadMore = false,
-                    isSkuSearch = WCProductStore.SkuSearchOptions.Disabled
-                )
-            )
-
-            advanceTimeBy(1)
-
-            // THEN
-            job1.join()
-            job2.join()
-
-            assertTrue(firstResult is WooPosSearchByIdentifierResult.Success)
-            assertTrue(secondResult is WooPosSearchByIdentifierResult.Success)
-            assertTrue(
-                wcProductModel.toAppModel()
-                    .isSameProduct((firstResult as WooPosSearchByIdentifierResult.Success).product)
-            )
-            assertTrue(
-                wcProductModel.toAppModel()
-                    .isSameProduct((secondResult as WooPosSearchByIdentifierResult.Success).product)
-            )
-        }
-
-    @Test
-    fun `given different identifiers, when invoke called for each, then dispatches action for each identifier`() =
-        runTest {
-            // GIVEN
-            val identifier1 = "test-sku-1"
-            val identifier2 = "test-sku-2"
-            val actionCaptor = argumentCaptor<Action<*>>()
-
-            // WHEN
-            val job1 = launch {
-                sut.invoke(identifier1, WooPosBarcodeFormat.FormatUnknown)
-            }
-
-            val job2 = launch {
-                sut.invoke(identifier2, WooPosBarcodeFormat.FormatUnknown)
-            }
-
-            advanceTimeBy(1)
-
-            // THEN
-            verify(dispatcher, times(4)).dispatch(actionCaptor.capture())
-
-            val payloads = actionCaptor.allValues.map { it.payload }
-
-            assertTrue(
-                payloads.any { payload ->
-                    payload is WCProductStore.SearchProductsByGlobalUniqueIdPayload &&
-                        payload.globalUniqueId == identifier1
-                }
-            )
-
-            assertTrue(
-                payloads.any { payload ->
-                    payload is WCProductStore.SearchProductsByGlobalUniqueIdPayload &&
-                        payload.globalUniqueId == identifier2
-                }
-            )
-
-            assertTrue(
-                payloads.any { payload ->
-                    payload is WCProductStore.SearchProductsPayload &&
-                        payload.searchQuery == identifier1
-                }
-            )
-
-            assertTrue(
-                payloads.any { payload ->
-                    payload is WCProductStore.SearchProductsPayload &&
-                        payload.searchQuery == identifier2
-                }
-            )
-
-            job1.cancel()
-            job2.cancel()
-            sut.onCleanup()
-        }
-
-    @Test
-    fun `given different identifiers,when one receives result,then other continues waiting until it receives result`() =
-        runTest {
-            // GIVEN
-            val identifier1 = "test-sku-1"
-            val identifier2 = "test-sku-2"
-            val wcProductModel1 = ProductTestUtils.generateWCProductModel()
-            val wcProductModel2 = ProductTestUtils.generateWCProductModel()
-
-            var result1: WooPosSearchByIdentifierResult? = null
-            var result2: WooPosSearchByIdentifierResult? = null
-
-            // WHEN
-            val job1 = async {
-                result1 = sut.invoke(identifier1, WooPosBarcodeFormat.FormatUnknown)
-            }
-
-            val job2 = async {
-                result2 = sut.invoke(identifier2, WooPosBarcodeFormat.FormatUnknown)
-            }
-
-            advanceTimeBy(1)
-
-            sut.onProductsSearched(
-                WCProductStore.OnProductsSearched(
-                    globalUniqueIdSearchQuery = identifier1,
-                    searchQuery = null,
-                    searchResults = listOf(wcProductModel1),
-                    canLoadMore = false,
-                    isSkuSearch = WCProductStore.SkuSearchOptions.Disabled
-                )
-            )
-
-            advanceTimeBy(1)
-
-            // THEN
-            assertTrue(job1.isCompleted)
-            assertTrue(!job2.isCompleted)
-            assertTrue(result1 is WooPosSearchByIdentifierResult.Success)
-
-            sut.onProductsSearched(
-                WCProductStore.OnProductsSearched(
-                    globalUniqueIdSearchQuery = identifier2,
-                    searchQuery = null,
-                    searchResults = listOf(wcProductModel2),
-                    canLoadMore = false,
-                    isSkuSearch = WCProductStore.SkuSearchOptions.Disabled
-                )
-            )
-
-            advanceTimeBy(1)
-
-            assertTrue(job2.isCompleted)
-            assertTrue(result2 is WooPosSearchByIdentifierResult.Success)
-
-            assertTrue(
-                wcProductModel1.toAppModel().isSameProduct((result1 as WooPosSearchByIdentifierResult.Success).product)
-            )
-            assertTrue(
-                wcProductModel2.toAppModel().isSameProduct((result2 as WooPosSearchByIdentifierResult.Success).product)
-            )
-
-            sut.onCleanup()
-        }
+        // THEN
+        assertTrue(result.isFailure)
+        assertEquals(networkError, result)
+    }
 }

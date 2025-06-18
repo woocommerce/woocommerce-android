@@ -3,14 +3,13 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.networking
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
+import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingAccountSettingsDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingAddressDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigDataStore
-import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingStoreOptionsDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.AddressNormalizationModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PurchasedLabelData
-import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel
 import org.wordpress.android.fluxc.model.SiteModel
@@ -24,7 +23,7 @@ class WooShippingLabelRepository @Inject constructor(
     private val restClient: WooShippingLabelRestClient,
     private val mapper: WooShippingNetworkingMapper,
     private val configDataStore: WooShippingConfigDataStore,
-    private val configurationDataStore: WooShippingStoreOptionsDataStore,
+    private val accountSettingsDataStore: WooShippingAccountSettingsDataStore,
     private val addressDataStore: WooShippingAddressDataStore
 ) {
     suspend fun fetchShippingLabelPrinting(
@@ -41,12 +40,12 @@ class WooShippingLabelRepository @Inject constructor(
         site: SiteModel,
     ) = restClient.fetchAccountSettings(
         site = site,
-    ).asWooResult { mapper(it.storeOptions) }
+    ).asWooResult { mapper(it) }
         .also { response ->
             response.model
                 ?.takeIf { response.isError.not() }
                 ?.let {
-                    configurationDataStore.saveStoreOptions(it)
+                    accountSettingsDataStore.saveAccountSettings(it)
                 }
         }
 
@@ -75,11 +74,7 @@ class WooShippingLabelRepository @Inject constructor(
         site = site,
         orderId = orderId,
         labelId = labelId,
-    ).asWooResult { response ->
-        response.shippingLabel?.let {
-            mapper(it).status
-        } ?: ShippingLabelStatus.UNKNOWN
-    }
+    ).asWooResult { response -> response.shippingLabel?.let { mapper(it) } }
 
     @Suppress("LongParameterList")
     suspend fun purchaseShippingLabel(
@@ -250,4 +245,10 @@ class WooShippingLabelRepository @Inject constructor(
         shipments = shipments,
         shipmentIdsToUpdate = shipmentIdsToUpdate
     ).asWooResult()
+
+    suspend fun refundLabel(
+        site: SiteModel,
+        orderId: Long,
+        labelId: Long
+    ): WooResult<RefundLabelResponseDTO> = restClient.refundShippingLabel(orderId, labelId, site).asWooResult()
 }

@@ -8,30 +8,31 @@ import com.google.gson.Gson
 import com.woocommerce.android.datastore.DataStoreQualifier
 import com.woocommerce.android.datastore.DataStoreType
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.wooshippinglabels.models.StoreOptionsModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.AccountSettingsModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class WooShippingStoreOptionsDataStore @Inject constructor(
-    @DataStoreQualifier(DataStoreType.SHIPPING_LABEL_STORE_OPTIONS) private val dataStore: DataStore<Preferences>,
+class WooShippingAccountSettingsDataStore @Inject constructor(
+    @DataStoreQualifier(DataStoreType.SHIPPING_LABELS_DATA) private val dataStore: DataStore<Preferences>,
     private val gson: Gson,
     private val selectedSite: SelectedSite
 ) {
-    private fun getStoreOptionsKey() = "${selectedSite.getOrNull()?.siteId ?: ""}StoreOptions"
+    private fun getPrefKey() = "${selectedSite.get().id}AccountSettings"
 
-    fun observeStoreOptions(): Flow<StoreOptionsModel?> {
+    fun observeAccountSettings(): Flow<AccountSettingsModel?> {
         return dataStore.data.map { prefs ->
-            val storeOptions = prefs[stringPreferencesKey(getStoreOptionsKey())]
+            val accountSettings = prefs[stringPreferencesKey(getPrefKey())]
             runCatching {
-                gson.fromJson(storeOptions, StoreOptionsModel::class.java)
+                gson.fromJson(accountSettings, AccountSettingsModel::class.java)
             }.getOrNull()
-        }
+        }.distinctUntilChanged()
     }
 
-    suspend fun saveStoreOptions(storeOptions: StoreOptionsModel) {
+    suspend fun saveAccountSettings(accountSettings: AccountSettingsModel) {
         dataStore.edit { preferences ->
-            preferences[stringPreferencesKey(getStoreOptionsKey())] = gson.toJson(storeOptions)
+            preferences[stringPreferencesKey(getPrefKey())] = gson.toJson(accountSettings)
         }
     }
 }
