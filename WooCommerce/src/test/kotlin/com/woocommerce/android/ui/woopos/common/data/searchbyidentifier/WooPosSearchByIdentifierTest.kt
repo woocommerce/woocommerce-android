@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsTypesFilterConfig
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariationsTypesFilterConfig
+import com.woocommerce.android.util.WooLogWrapper
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -28,10 +29,12 @@ class WooPosSearchByIdentifierTest {
     private val remoteSearcher: WooPosSearchByIdentifierRemote = mock()
     private val filterConfig: WooPosProductsTypesFilterConfig = WooPosProductsTypesFilterConfig()
     private val variationFilterConfig: WooPosVariationsTypesFilterConfig = WooPosVariationsTypesFilterConfig()
+    private val wooLogWrapper: WooLogWrapper = mock()
 
     @Before
     fun setup() {
-        sut = WooPosSearchByIdentifier(localSearcher, remoteSearcher, filterConfig, variationFilterConfig)
+        sut =
+            WooPosSearchByIdentifier(localSearcher, remoteSearcher, filterConfig, variationFilterConfig, wooLogWrapper)
     }
 
     @Test
