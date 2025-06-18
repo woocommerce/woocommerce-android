@@ -1006,7 +1006,7 @@ class WooPosCartViewModelTest {
     fun `given empty cart, when barcode scanned, then loading item is added to cart`() = runTest {
         // GIVEN
         whenever(
-            searchByIdentifier(any(), any())
+            searchByIdentifier(any())
         ).doSuspendableAnswer {
             delay(1)
             WooPosSearchByIdentifierResult.Success(
@@ -1019,9 +1019,7 @@ class WooPosCartViewModelTest {
         val states = sut.state.captureValues()
 
         // WHEN
-        parentToChildrenMutableSharedFlow.emit(
-            ParentToChildrenEvent.BarcodeScanned("123456789")
-        )
+        sut.onUIEvent(WooPosCartUIEvent.OnBarcodeScanned("123456789"))
 
         // THEN
         val itemsInCart = (states[1].body as WooPosCartState.Body.WithItems).itemsInCart
@@ -1034,7 +1032,7 @@ class WooPosCartViewModelTest {
     fun `when barcode scanned, then item added to cart event tracked`() = runTest {
         // GIVEN
         whenever(
-            searchByIdentifier(any(), any())
+            searchByIdentifier(any())
         ).doSuspendableAnswer {
             delay(1)
             WooPosSearchByIdentifierResult.Success(
@@ -1043,12 +1041,10 @@ class WooPosCartViewModelTest {
                 )
             )
         }
-        createSut()
+        val sut = createSut()
 
         // WHEN
-        parentToChildrenMutableSharedFlow.emit(
-            ParentToChildrenEvent.BarcodeScanned("123456789")
-        )
+        sut.onUIEvent(WooPosCartUIEvent.OnBarcodeScanned("123456789"))
 
         // THEN
         verify(analyticsTracker).track(
@@ -1070,7 +1066,7 @@ class WooPosCartViewModelTest {
                 amount = "10.0"
             ).copy(firstImageUrl = "url")
 
-            whenever(searchByIdentifier(eq("123456789"), any())).thenReturn(
+            whenever(searchByIdentifier(eq("123456789"))).thenReturn(
                 WooPosSearchByIdentifierResult.Success(product)
             )
 
@@ -1078,9 +1074,7 @@ class WooPosCartViewModelTest {
             val states = sut.state.captureValues()
 
             // WHEN
-            parentToChildrenMutableSharedFlow.emit(
-                ParentToChildrenEvent.BarcodeScanned("123456789")
-            )
+            sut.onUIEvent(WooPosCartUIEvent.OnBarcodeScanned("123456789"))
             advanceUntilIdle()
 
             // THEN
@@ -1102,16 +1096,14 @@ class WooPosCartViewModelTest {
                 amount = "10.0"
             ).copy(firstImageUrl = "url")
 
-            whenever(searchByIdentifier(eq("123456789"), any())).thenReturn(
+            whenever(searchByIdentifier(eq("123456789"))).thenReturn(
                 WooPosSearchByIdentifierResult.Success(product)
             )
 
-            createSut()
+            val sut = createSut()
 
             // WHEN
-            parentToChildrenMutableSharedFlow.emit(
-                ParentToChildrenEvent.BarcodeScanned("123456789")
-            )
+            sut.onUIEvent(WooPosCartUIEvent.OnBarcodeScanned("123456789"))
             advanceUntilIdle()
 
             // THEN
@@ -1139,17 +1131,15 @@ class WooPosCartViewModelTest {
             whenever(resourceProvider.getString(R.string.woopos_cart_barcode_scan_result_product_not_found))
                 .thenReturn(errorMessage)
 
-            whenever(searchByIdentifier(eq("123456789"), any())).thenReturn(
-                WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.ProductNotFound)
+            whenever(searchByIdentifier(eq("123456789"))).thenReturn(
+                WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.NotFound)
             )
 
             val sut = createSut()
             val states = sut.state.captureValues()
 
             // WHEN
-            parentToChildrenMutableSharedFlow.emit(
-                ParentToChildrenEvent.BarcodeScanned("123456789")
-            )
+            sut.onUIEvent(WooPosCartUIEvent.OnBarcodeScanned("123456789"))
             advanceUntilIdle()
 
             // THEN
@@ -1169,16 +1159,14 @@ class WooPosCartViewModelTest {
             whenever(resourceProvider.getString(R.string.woopos_cart_barcode_scan_result_product_not_found))
                 .thenReturn(errorMessage)
 
-            whenever(searchByIdentifier(eq("123456789"), any())).thenReturn(
+            whenever(searchByIdentifier(eq("123456789"))).thenReturn(
                 WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.UnknownError(""))
             )
 
-            createSut()
+            val sut = createSut()
 
             // WHEN
-            parentToChildrenMutableSharedFlow.emit(
-                ParentToChildrenEvent.BarcodeScanned("123456789")
-            )
+            sut.onUIEvent(WooPosCartUIEvent.OnBarcodeScanned("123456789"))
             advanceUntilIdle()
 
             // THEN
@@ -1202,7 +1190,7 @@ class WooPosCartViewModelTest {
             ).copy(firstImageUrl = "url2")
 
             whenever(getProductById(eq(existingProduct.remoteId))).thenReturn(existingProduct)
-            whenever(searchByIdentifier(eq("123456789"), any())).thenReturn(
+            whenever(searchByIdentifier(eq("123456789"))).thenReturn(
                 WooPosSearchByIdentifierResult.Success(scannedProduct)
             )
 
@@ -1217,9 +1205,7 @@ class WooPosCartViewModelTest {
             )
 
             // WHEN
-            parentToChildrenMutableSharedFlow.emit(
-                ParentToChildrenEvent.BarcodeScanned("123456789")
-            )
+            sut.onUIEvent(WooPosCartUIEvent.OnBarcodeScanned("123456789"))
             advanceUntilIdle()
 
             // THEN
@@ -1240,7 +1226,7 @@ class WooPosCartViewModelTest {
         whenever(resourceProvider.getString(R.string.woopos_cart_barcode_scan_result_network_error))
             .thenReturn(errorMessage)
 
-        whenever(searchByIdentifier(eq("123456789"), any())).thenReturn(
+        whenever(searchByIdentifier(eq("123456789"))).thenReturn(
             WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.NetworkError)
         )
 
@@ -1248,9 +1234,7 @@ class WooPosCartViewModelTest {
         val states = sut.state.captureValues()
 
         // WHEN
-        parentToChildrenMutableSharedFlow.emit(
-            ParentToChildrenEvent.BarcodeScanned("123456789")
-        )
+        sut.onUIEvent(WooPosCartUIEvent.OnBarcodeScanned("123456789"))
         advanceUntilIdle()
 
         // THEN
@@ -1267,16 +1251,14 @@ class WooPosCartViewModelTest {
         whenever(resourceProvider.getString(R.string.woopos_cart_barcode_scan_result_network_error))
             .thenReturn(errorMessage)
 
-        whenever(searchByIdentifier(eq("123456789"), any())).thenReturn(
+        whenever(searchByIdentifier(eq("123456789"))).thenReturn(
             WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.NetworkError)
         )
 
-        createSut()
+        val sut = createSut()
 
         // WHEN
-        parentToChildrenMutableSharedFlow.emit(
-            ParentToChildrenEvent.BarcodeScanned("123456789")
-        )
+        sut.onUIEvent(WooPosCartUIEvent.OnBarcodeScanned("123456789"))
         advanceUntilIdle()
 
         // THEN
@@ -1314,7 +1296,7 @@ class WooPosCartViewModelTest {
             amount = "45.0"
         )
 
-        whenever(searchByIdentifier(eq("VAR123456"), any())).thenReturn(
+        whenever(searchByIdentifier(eq("VAR123456"))).thenReturn(
             WooPosSearchByIdentifierResult.VariationSuccess(variation, product)
         )
         whenever(formatPrice(eq(BigDecimal("45.0")))).thenReturn("45.0$")
@@ -1324,9 +1306,7 @@ class WooPosCartViewModelTest {
         val states = sut.state.captureValues()
 
         // WHEN
-        parentToChildrenMutableSharedFlow.emit(
-            ParentToChildrenEvent.BarcodeScanned("VAR123456")
-        )
+        sut.onUIEvent(WooPosCartUIEvent.OnBarcodeScanned("VAR123456"))
         advanceUntilIdle()
 
         // THEN

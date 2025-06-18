@@ -4294,7 +4294,6 @@
     <string name="woopos_cart_barcode_scan_result_product_not_found">Unknown scanned item</string>
     <string name="woopos_cart_barcode_scan_result_unsupported_product">Unsupported item – %s</string>
     <string name="woopos_cart_barcode_scan_result_network_error">No internet connection</string>
-    <string name="woopos_cart_barcode_scan_result_request_cancelled">Request cancelled</string>
     <string name="woopos_clear_cart_button">Clear</string>
 
     <string name="woopos_banner_simple_products_dialog_content_description">Simple, variable and virtual products only dialog</string>

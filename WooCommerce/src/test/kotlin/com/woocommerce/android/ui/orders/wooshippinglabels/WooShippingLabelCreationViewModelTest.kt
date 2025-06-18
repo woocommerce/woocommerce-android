@@ -994,6 +994,11 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
     @Test
     fun `onRefundClicked triggers NavigateToRefundRequest event`() = testBlocking {
+        val labelId = 123L
+        whenever(getShipments(any())) doReturn defaultShipments.toMutableList().apply {
+            set(0, defaultShipments.first().copy(labelId = labelId))
+        }
+
         createViewModel()
 
         var event: NavigateToRefundRequest? = null
@@ -1001,7 +1006,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
         sut.onRefundClicked()
 
-        assertThat(event).isEqualTo(NavigateToRefundRequest(orderId, defaultShipments.first()))
+        assertThat(event).isEqualTo(NavigateToRefundRequest(orderId, labelId))
     }
 
     @Test

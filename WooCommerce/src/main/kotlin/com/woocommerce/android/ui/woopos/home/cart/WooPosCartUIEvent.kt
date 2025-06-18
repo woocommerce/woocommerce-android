@@ -7,4 +7,5 @@ sealed class WooPosCartUIEvent {
     ) : WooPosCartUIEvent()
     data object ClearAllClicked : WooPosCartUIEvent()
     data object BackClicked : WooPosCartUIEvent()
+    data class OnBarcodeScanned(val barcode: String) : WooPosCartUIEvent()
 }

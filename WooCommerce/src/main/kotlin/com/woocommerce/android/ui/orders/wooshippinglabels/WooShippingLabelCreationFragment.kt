@@ -31,6 +31,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShi
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationFragment.Companion.PACKAGE_SELECTION_RESULT
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
+import com.woocommerce.android.ui.orders.wooshippinglabels.refund.WooShippingLabelRefundFragment
 import com.woocommerce.android.ui.orders.wooshippinglabels.split.WooShippingSplitShipmentFragment
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -128,7 +129,7 @@ class WooShippingLabelCreationFragment : BaseFragment(), BackPressListener {
                 is WooShippingLabelCreationViewModel.OpenLearnMoreScreen -> openLearnMoreView()
                 is WooShippingLabelCreationViewModel.NavigateToRefundRequest -> navigateToRefundRequest(
                     event.orderId,
-                    event.shipment
+                    event.labelId
                 )
                 is WooShippingLabelCreationViewModel.NavigateToPaymentMethodEdit -> navigateToPaymentMethodEdit()
 
@@ -157,6 +158,10 @@ class WooShippingLabelCreationFragment : BaseFragment(), BackPressListener {
         handleResult<List<ShipmentUIModel>>(WooShippingSplitShipmentFragment.SPLIT_SHIPMENT_RESULT) {
             viewModel.onShipmentSplit(it)
         }
+
+        handleResult<Long>(WooShippingLabelRefundFragment.KEY_REFUND_SHIPPING_LABEL_RESULT) {
+            viewModel.onShippingLabelRefunded(it)
+        }
     }
 
     override fun onRequestAllowBackPress(): Boolean = viewModel.allowBackNavigation()
@@ -172,10 +177,10 @@ class WooShippingLabelCreationFragment : BaseFragment(), BackPressListener {
         )
     }
 
-    private fun navigateToRefundRequest(orderId: Long, shipment: ShipmentUIModel) {
+    private fun navigateToRefundRequest(orderId: Long, labelId: Long) {
         findNavController().navigate(
             WooShippingLabelCreationFragmentDirections
-                .actionWooShippingLabelCreationFragmentToWooShippingLabelRefundRequestFragment(orderId, shipment)
+                .actionWooShippingLabelCreationFragmentToWooShippingLabelRefundRequestFragment(orderId, labelId)
         )
     }
 

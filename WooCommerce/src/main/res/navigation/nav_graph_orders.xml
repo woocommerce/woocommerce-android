@@ -799,8 +799,8 @@
             android:name="orderId"
             app:argType="long" />
         <argument
-            android:name="shipment"
-            app:argType="com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel" />
+            android:name="labelId"
+            app:argType="long" />
     </fragment>
     <dialog
         android:id="@+id/wooShippingEditPaymentDialogFragment"

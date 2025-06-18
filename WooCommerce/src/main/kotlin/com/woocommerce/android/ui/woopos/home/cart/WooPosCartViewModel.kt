@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosSe
 import com.woocommerce.android.ui.woopos.common.util.WooPosSoundHelper
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.CouponsRemoved
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OnNewTransactionStarted
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
@@ -87,7 +88,6 @@ class WooPosCartViewModel @Inject constructor(
 
     override fun onCleared() {
         super.onCleared()
-        searchByIdentifier.onCleanup()
         soundHelper.onCleanup()
     }
 
@@ -121,6 +121,10 @@ class WooPosCartViewModel @Inject constructor(
                 _state.value = currentState.copy(
                     body = WooPosCartState.Body.Empty
                 )
+            }
+
+            is WooPosCartUIEvent.OnBarcodeScanned -> {
+                onBarcodeScanned(event.barcode)
             }
         }
     }
@@ -204,10 +208,6 @@ class WooPosCartViewModel @Inject constructor(
 
                     is ParentToChildrenEvent.RemoveCouponsClicked -> {
                         removeCouponsFromCart()
-                    }
-
-                    is ParentToChildrenEvent.BarcodeScanned -> {
-                        onBarcodeScanned(event.barcode)
                     }
                 }
             }
@@ -341,8 +341,14 @@ class WooPosCartViewModel @Inject constructor(
     }
 
     private fun onBarcodeScanned(barcode: String) {
+        if (_state.value.cartStatus !in listOf(EDITABLE, EMPTY)) {
+            return
+        }
+
         viewModelScope.launch {
             if (_state.value.body == WooPosCartState.Body.Empty) {
+                childrenToParentEventSender.sendToParent(OnNewTransactionStarted)
+
                 analyticsTracker.track(InteractionWithCustomerStarted)
             }
             val itemNumber = getItemNumber()
@@ -580,16 +586,12 @@ class WooPosCartViewModel @Inject constructor(
 
             is WooPosSearchByIdentifierResult.Failure -> {
                 val errorMessage = when (this.error) {
-                    WooPosSearchByIdentifierResult.Error.ProductNotFound -> {
+                    WooPosSearchByIdentifierResult.Error.NotFound -> {
                         resourceProvider.getString(R.string.woopos_cart_barcode_scan_result_product_not_found)
                     }
 
                     WooPosSearchByIdentifierResult.Error.NetworkError -> {
                         resourceProvider.getString(R.string.woopos_cart_barcode_scan_result_network_error)
-                    }
-
-                    WooPosSearchByIdentifierResult.Error.RequestCancelled -> {
-                        resourceProvider.getString(R.string.woopos_cart_barcode_scan_result_request_cancelled)
                     }
 
                     is WooPosSearchByIdentifierResult.Error.UnknownError -> this.error.message

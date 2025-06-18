@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.woopos.common.data.searchbyidentifier
 
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
-import com.woocommerce.android.ui.woopos.common.barcode.WooPosBarcodeFormat
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsTypesFilterConfig
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariationsTypesFilterConfig
 import org.wordpress.android.fluxc.store.WCProductStore
@@ -17,16 +16,13 @@ class WooPosSearchByIdentifier @Inject constructor(
     private val filterConfig: WooPosProductsTypesFilterConfig,
     private val variationFilterConfig: WooPosVariationsTypesFilterConfig,
 ) {
-    suspend operator fun invoke(
-        identifier: String,
-        format: WooPosBarcodeFormat = WooPosBarcodeFormat.FormatUnknown
-    ): WooPosSearchByIdentifierResult {
-        val localResult = localSearcher(identifier, format)
-        if (localResult != null) {
+    suspend operator fun invoke(identifier: String): WooPosSearchByIdentifierResult {
+        val localResult = localSearcher(identifier)
+        if (localResult.isSuccess) {
             return filterUnsupportedProductResult(localResult)
         }
 
-        val remoteResult = remoteSearcher(identifier, format)
+        val remoteResult = remoteSearcher(identifier)
         return filterUnsupportedProductResult(remoteResult)
     }
 
@@ -76,9 +72,5 @@ class WooPosSearchByIdentifier @Inject constructor(
             variationFilterConfig.filters[VariationFilterOption.DOWNLOADABLE] != DownloadableOptions.FALSE.toString()
 
         return hasValidStatus && meetsDownloadableRequirement
-    }
-
-    fun onCleanup() {
-        remoteSearcher.onCleanup()
     }
 }
