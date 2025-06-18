@@ -63,14 +63,15 @@ class WooPosSearchByIdentifier @Inject constructor(
             .filterNot { it == WCProductStore.IncludeType.Variable }
             .any { it.toString().equals(product.type, ignoreCase = true) }
 
-
         return (hasValidStatus && meetsDownloadableRequirement && hasValidType)
             .also { meetsRequirements ->
                 if (!meetsRequirements) {
                     wooLogWrapper.w(
-                        WooLog.T.POS, "Product does not meet filter requirements: " +
-                            "Status: $hasValidStatus, Downloadable: $meetsDownloadableRequirement, Type: $hasValidType, " +
-                            "Product: ${product.name}, Type: ${product.type}, Status: ${product.status}"
+                        WooLog.T.POS,
+                        "Product does not meet filter requirements: " +
+                            "Status: $hasValidStatus, Downloadable: $meetsDownloadableRequirement," +
+                            "Type: $hasValidType, Product: ${product.name}, Type: ${product.type}," +
+                            "Status: ${product.status}"
                     )
                 }
             }
