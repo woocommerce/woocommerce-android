@@ -276,6 +276,7 @@ private fun PaymentMethodsList(
         ) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Icon(
