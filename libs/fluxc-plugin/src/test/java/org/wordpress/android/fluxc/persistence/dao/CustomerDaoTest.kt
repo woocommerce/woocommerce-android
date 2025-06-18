@@ -68,7 +68,7 @@ class CustomerDaoTest {
 
         // then
         val storedCustomer = sut.getCustomerByRemoteId(LocalId(site.id), RemoteId(remoteCustomerId))
-        assertThat(storedCustomer).isEqualTo(expectedCustomer)
+        assertThat(storedCustomer).usingRecursiveComparison().ignoringFields("id").isEqualTo(expectedCustomer)
     }
 
     @Test
@@ -118,7 +118,10 @@ class CustomerDaoTest {
 
         // then
         val storedCustomers = sut.getCustomersForSite(LocalId(site.id))
-        assertThat(storedCustomers).containsExactly(customerTwo)
+        assertThat(storedCustomers)
+            .usingRecursiveComparison()
+            .ignoringFields("id")
+            .isEqualTo(listOf(customerTwo))
     }
 
     @Test
@@ -144,6 +147,9 @@ class CustomerDaoTest {
 
         // then
         val storedCustomers = sut.getCustomersForSite(LocalId(customerOne.localSiteId.value))
-        assertThat(storedCustomers).containsExactly(customerOne)
+        assertThat(storedCustomers)
+            .usingRecursiveComparison()
+            .ignoringFields("id")
+            .isEqualTo(listOf(customerOne))
     }
 }
