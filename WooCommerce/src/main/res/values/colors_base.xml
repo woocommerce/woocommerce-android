@@ -346,4 +346,9 @@
     <color name="woo_message_surface">#1C1C1E</color>
     <color name="woo_message_on_surface">@color/woo_purple_30</color>
 
+    <!--
+        Order Creation
+    -->
+    <color name="order_update_overlay_background">@color/woo_white_alpha_060</color>
+
 </resources>
