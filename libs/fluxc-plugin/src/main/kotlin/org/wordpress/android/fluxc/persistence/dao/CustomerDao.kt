@@ -14,7 +14,6 @@ internal abstract class CustomerDao {
         SELECT * FROM CustomerEntity
         WHERE localSiteId = :siteId
         AND remoteCustomerId = :customerId
-        LIMIT 1
         """
     )
     abstract suspend fun getCustomerByRemoteId(siteId: LocalId, customerId: RemoteId): WCCustomerModel?

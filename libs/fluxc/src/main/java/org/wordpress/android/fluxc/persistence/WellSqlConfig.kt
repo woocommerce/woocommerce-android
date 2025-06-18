@@ -2190,6 +2190,7 @@ open class WellSqlConfig : DefaultWellConfig {
                 215 -> migrateAddOn(ADDON_WOOCOMMERCE, version) {
                     db.execSQL("DROP TABLE IF EXISTS WCProductSettingsModel")
                 }
+
                 216 -> migrateAddOn(ADDON_WOOCOMMERCE, version) {
                     db.execSQL("DROP TABLE IF EXISTS WCCustomerModel")
                 }
