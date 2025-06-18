@@ -1,17 +1,25 @@
 package org.wordpress.android.fluxc.model.customer
 
 import androidx.room.Entity
+import androidx.room.PrimaryKey
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 
 /**
  * Single Woo customer - see https://woocommerce.github.io/woocommerce-rest-api-docs/#customer-properties
  */
-@Entity(
-    tableName = "CustomerEntity",
-    primaryKeys = ["localSiteId", "remoteCustomerId"]
-)
+@Entity(tableName = "CustomerEntity",)
 data class WCCustomerModel(
+    /**
+     * Synthetic primary key used to uniquely identify a customer.
+     *
+     * Some customers, such as guest customers from the Analytics API (represented by
+     * [org.wordpress.android.fluxc.persistence.entity.CustomerFromAnalyticsEntity]), have `remoteCustomerId = 0`,
+     * which means they cannot be uniquely identified by (remote id x local site id) pair.
+     *
+     * To ensure uniqueness across both registered and guest customers, this synthetic ID is used.
+     */
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val localSiteId: LocalId = LocalId(0),
     val remoteCustomerId: RemoteId = RemoteId(0),
     val avatarUrl: String = "",
