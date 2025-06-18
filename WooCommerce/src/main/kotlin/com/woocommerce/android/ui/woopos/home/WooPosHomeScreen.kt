@@ -9,9 +9,12 @@ import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -36,8 +39,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosExitConfirmationDialog
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosContinuousScanner
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosScanningIndicator
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCameraPreview
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
@@ -189,35 +192,45 @@ private fun WooPosHomeScreen(
                 .align(Alignment.TopEnd)
         )
 
-        FloatingActionButton(
-            onClick = { onHomeUIEvent(WooPosHomeUIEvent.ToggleContinuousScanning) },
+        Column(
             modifier = Modifier
                 .padding(WooPosSpacing.Large.value.toAdaptivePadding())
-                .align(Alignment.TopCenter)
-                .size(56.dp),
-            shape = CircleShape,
-            containerColor = if (state.continuousScanning.isEnabled) {
-                MaterialTheme.colorScheme.primary
-            } else {
-                MaterialTheme.colorScheme.surfaceVariant
-            }
+                .align(Alignment.TopCenter),
+            horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally
         ) {
-            Icon(
-                imageVector = Icons.Default.QrCodeScanner,
-                contentDescription = "Toggle continuous barcode scanning",
-                tint = if (state.continuousScanning.isEnabled) {
-                    MaterialTheme.colorScheme.onPrimary
-                } else {
-                    MaterialTheme.colorScheme.onSurfaceVariant
-                }
-            )
-        }
+            if (!isPreviewMode()) {
+                WooPosCameraPreview(
+                    isEnabled = state.continuousScanning.isEnabled,
+                    onBarcodeDetected = { barcode ->
+                        onHomeUIEvent(WooPosHomeUIEvent.OnCameraBarcodeScanned(barcode))
+                    },
+                    onBindingException = {
+                        // Handle camera binding exceptions silently for the proof of concept
+                    }
+                )
+                Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+            }
 
-        if (!isPreviewMode()) {
-            WooPosHomeScreenContinuousScanner(
-                state = state,
-                onHomeUIEvent = onHomeUIEvent
-            )
+            FloatingActionButton(
+                onClick = { onHomeUIEvent(WooPosHomeUIEvent.ToggleContinuousScanning) },
+                modifier = Modifier.size(56.dp),
+                shape = CircleShape,
+                containerColor = if (state.continuousScanning.isEnabled) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    MaterialTheme.colorScheme.surfaceVariant
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.QrCodeScanner,
+                    contentDescription = "Toggle continuous barcode scanning",
+                    tint = if (state.continuousScanning.isEnabled) {
+                        MaterialTheme.colorScheme.onPrimary
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    }
+                )
+            }
         }
     }
 }
@@ -281,24 +294,6 @@ private fun WooPosHomeScreenToolbar(modifier: Modifier) {
         PreviewWooPosFloatingToolbarStatusConnectedWithMenu()
     } else {
         WooPosFloatingToolbar(modifier = modifier)
-    }
-}
-
-@Composable
-private fun WooPosHomeScreenContinuousScanner(
-    state: WooPosHomeState,
-    onHomeUIEvent: (WooPosHomeUIEvent) -> Unit
-) {
-    if (state.continuousScanning.isEnabled) {
-        WooPosContinuousScanner(
-            isEnabled = state.continuousScanning.isEnabled,
-            onBarcodeDetected = { barcode ->
-                onHomeUIEvent(WooPosHomeUIEvent.OnCameraBarcodeScanned(barcode))
-            },
-            onBindingException = {
-                // Handle camera binding exceptions silently for the proof of concept
-            }
-        )
     }
 }
 
