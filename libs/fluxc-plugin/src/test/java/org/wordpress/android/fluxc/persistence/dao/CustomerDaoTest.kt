@@ -37,6 +37,11 @@ class CustomerDaoTest {
         sut = database.customerDao
     }
 
+    @After
+    fun closeDb() {
+        database.close()
+    }
+
     @Test
     fun `get customer by remote id returns null when there is no customer stored`() = runTest {
         // given
@@ -140,10 +145,5 @@ class CustomerDaoTest {
         // then
         val storedCustomers = sut.getCustomersForSite(LocalId(customerOne.localSiteId.value))
         assertThat(storedCustomers).containsExactly(customerOne)
-    }
-
-    @After
-    fun closeDb() {
-        database.close()
     }
 }

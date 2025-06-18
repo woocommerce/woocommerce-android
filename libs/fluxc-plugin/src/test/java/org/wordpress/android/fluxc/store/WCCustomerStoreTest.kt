@@ -59,6 +59,11 @@ class WCCustomerStoreTest {
         )
     }
 
+    @After
+    fun closeDb() {
+        roomDb.close()
+    }
+
     @Test
     fun `fetchSingleCustomer with success returns customer model`() = runTest {
         // given
@@ -112,11 +117,6 @@ class WCCustomerStoreTest {
         // then
         assertThat(result.isError).isTrue
         assertThat(customerDao.getCustomersForSite(DEFAULT_SITE_MODEL.localId())).isEmpty()
-    }
-
-    @After
-    fun closeDb() {
-        roomDb.close()
     }
 
     private companion object {
