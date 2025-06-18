@@ -67,9 +67,6 @@ class WooShippingEditPaymentViewModel @Inject constructor(
             val currentPaymentOptions: PaymentMethodOptions
         ) : ViewState {
             val paymentMethods get() = currentPaymentOptions.paymentMethods
-
-            val hasChanges: Boolean
-                get() = selectedPaymentMethodId != currentPaymentOptions.selectedPaymentId
         }
     }
 }
