@@ -7,13 +7,10 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
-import com.woocommerce.android.NavGraphMainDirections
-import com.woocommerce.android.R
-import com.woocommerce.android.extensions.findNavController
-import com.woocommerce.android.extensions.handleNotice
+import androidx.lifecycle.distinctUntilChanged
+import androidx.lifecycle.map
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewFragment
-import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewViewModel
 import com.woocommerce.android.ui.compose.theme.WooTheme
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
@@ -44,33 +41,24 @@ class WooShippingEditPaymentDialogFragment : WCBottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         handleEvents()
-        handleResults()
+        disableDraggingOnWebViewState()
     }
 
     private fun handleEvents() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is WooShippingEditPaymentViewModel.ShowPaymentMethodAddWebView -> {
-                    showWebView(event.url, event.successUrl)
-                }
                 is MultiLiveEvent.Event.ShowSnackbar -> uiMessageResolver.showSnack(event.message)
             }
         }
     }
 
-    private fun handleResults() {
-        handleNotice(AuthenticatedWebViewFragment.WEBVIEW_RESULT, navHostId = R.id.nav_host_fragment_main) {
-            viewModel.onPaymentMethodAdded()
-        }
-    }
-
-    private fun showWebView(url: String, exitUrl: String) {
-        findNavController(R.id.nav_host_fragment_main).navigate(
-            NavGraphMainDirections.actionGlobalAuthenticatedWebViewFragment(
-                urlToLoad = url,
-                urlsToTriggerExit = arrayOf(exitUrl),
-                urlComparisonMode = AuthenticatedWebViewViewModel.UrlComparisonMode.PARTIAL
-            )
-        )
+    private fun disableDraggingOnWebViewState() {
+        viewModel.viewState.map { it.javaClass }
+            .distinctUntilChanged()
+            .observe(viewLifecycleOwner) {
+                val dialog = requireDialog() as BottomSheetDialog
+                dialog.behavior.isDraggable =
+                    it != WooShippingEditPaymentViewModel.ViewState.AddPaymentMethodWebView::class.java
+            }
     }
 }
