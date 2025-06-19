@@ -1,26 +1,25 @@
 package com.woocommerce.android.ui.woopos.common.util
 
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLogWrapper
+import dagger.Reusable
 import javax.inject.Inject
 
-class WooPosLogWrapper @Inject constructor(
-    private val wooLogWrapper: WooLogWrapper
-) {
+@Reusable
+class WooPosLogWrapper @Inject constructor() {
     fun d(message: String) {
         WooLog.d(WooLog.T.POS, message)
     }
 
     fun e(message: String) {
-        wooLogWrapper.e(WooLog.T.POS, message)
+        WooLog.e(WooLog.T.POS, message)
     }
 
     fun w(message: String) {
-        wooLogWrapper.w(WooLog.T.POS, message)
+        WooLog.w(WooLog.T.POS, message)
     }
 
     fun i(message: String) {
-        wooLogWrapper.i(WooLog.T.POS, message)
+        WooLog.i(WooLog.T.POS, message)
     }
 
     companion object {
