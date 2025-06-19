@@ -6,15 +6,21 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.ui.NavigationUI
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.ActivityMainBinding
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.woopos.WooPosIsEnabled
 import com.woocommerce.android.ui.woopos.root.WooPosActivity
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class WooPosTabController @Inject constructor(
+    private val appPrefs: AppPrefs,
+    private val selectedSite: SelectedSite,
     private val isWooPosEnabled: WooPosIsEnabled,
     private val isPosAsTabEnabled: WooPosIsPosAsTabEnabled
 ) : DefaultLifecycleObserver {
@@ -60,13 +66,25 @@ class WooPosTabController @Inject constructor(
     fun refreshPOSTabVisibility() {
         setPOSTabVisibility(false)
         if (isPosAsTabEnabled()) {
-            updatePOSTabVisibility()
+            // Load visibility from prefs for fast UI feedback
+            updatePOSTabVisibilityFromPrefs()
+
+            // Then update with the remote value
+            updateTabVisibilityFromRemoteAndPersist()
         }
     }
 
-    private fun updatePOSTabVisibility() {
+    private fun updatePOSTabVisibilityFromPrefs() = setPOSTabVisibility(
+        appPrefs.isPOSTabVisibleForSite(selectedSite.getSelectedSiteId())
+    )
+
+    private fun updateTabVisibilityFromRemoteAndPersist() {
         activity.lifecycleScope.launch {
-            setPOSTabVisibility(isWooPosEnabled())
+            val isWooPosEnabledValue = withContext(Dispatchers.Default) {
+                isWooPosEnabled()
+            }
+            setPOSTabVisibility(isWooPosEnabledValue)
+            appPrefs.setPOSTabVisibilityForSite(selectedSite.getSelectedSiteId(), isWooPosEnabledValue)
         }
     }
 

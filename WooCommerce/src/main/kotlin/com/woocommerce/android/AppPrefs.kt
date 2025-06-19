@@ -1176,6 +1176,20 @@ object AppPrefs {
         return getInt(PrefKeyString(channel.name), 0).takeIf { it != 0 }
     }
 
+    fun setPOSTabVisibilityForSite(siteId: Int, visible: Boolean) {
+        setBoolean(
+            key = PrefKeyString("POS_TAB_VISIBILITY:$siteId"),
+            value = visible
+        )
+    }
+
+    fun isPOSTabVisibleForSite(siteId: Int): Boolean {
+        return getBoolean(
+            key = PrefKeyString("POS_TAB_VISIBILITY:$siteId"),
+            default = false
+        )
+    }
+
     /**
      * Remove all user and site-related preferences.
      */
