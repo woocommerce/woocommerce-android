@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetVariationById
 import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosSearchByIdentifier
 import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosSearchByIdentifierResult
+import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.common.util.WooPosSoundHelper
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.CouponsRemoved
@@ -39,8 +40,6 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTrackingDataKeeper
 import com.woocommerce.android.ui.woopos.util.format.WooPosCouponsFormatter
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
-import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLogWrapper
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -64,7 +63,7 @@ class WooPosCartViewModel @Inject constructor(
     private val updateCartItemsWithChanges: WooPosCartItemsUpdater,
     private val getCachedStoreCurrency: WooPosGetCachedStoreCurrency,
     private val searchByIdentifier: WooPosSearchByIdentifier,
-    private val wooLogWrapper: WooLogWrapper,
+    private val wooPosLogWrapper: WooPosLogWrapper,
     private val soundHelper: WooPosSoundHelper,
     savedState: SavedStateHandle,
 ) : ViewModel() {
@@ -364,7 +363,7 @@ class WooPosCartViewModel @Inject constructor(
             val searchResult = searchByIdentifier(barcode)
 
             if (!isItemStillInCart(itemNumber)) {
-                wooLogWrapper.w(WooLog.T.POS, "Item no longer in the cart. Ignoring barcode scan result.")
+                wooPosLogWrapper.w("Item no longer in the cart. Ignoring barcode scan result.")
                 return@launch
             }
 

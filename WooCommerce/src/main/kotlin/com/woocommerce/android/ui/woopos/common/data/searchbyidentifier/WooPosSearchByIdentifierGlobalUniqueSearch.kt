@@ -2,15 +2,14 @@ package com.woocommerce.android.ui.woopos.common.data.searchbyidentifier
 
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLogWrapper
+import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
 
 class WooPosSearchByIdentifierGlobalUniqueSearch @Inject constructor(
     private val selectedSite: SelectedSite,
     private val productStore: WCProductStore,
-    private val wooLogWrapper: WooLogWrapper,
+    private val wooPosLogWrapper: WooPosLogWrapper,
 ) {
     suspend operator fun invoke(globalUniqueId: String): WooPosSearchByIdentifierResult {
         val result = productStore.searchProducts(
@@ -40,7 +39,7 @@ class WooPosSearchByIdentifierGlobalUniqueSearch @Inject constructor(
             }
 
             else -> {
-                wooLogWrapper.e(WooLog.T.POS, "Result.isError == false but the model is missing.")
+                wooPosLogWrapper.e("Result.isError == false but the model is missing.")
                 WooPosSearchByIdentifierResult.Failure(
                     WooPosSearchByIdentifierResult.Error.UnknownError(
                         "Results not found for Global Unique ID: $globalUniqueId"

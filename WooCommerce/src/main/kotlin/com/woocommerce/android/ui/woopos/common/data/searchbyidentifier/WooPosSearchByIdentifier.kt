@@ -4,8 +4,7 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsTypesFilterConfig
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariationsTypesFilterConfig
-import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLogWrapper
+import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.DownloadableOptions
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
@@ -17,7 +16,7 @@ class WooPosSearchByIdentifier @Inject constructor(
     private val remoteSearcher: WooPosSearchByIdentifierRemote,
     private val filterConfig: WooPosProductsTypesFilterConfig,
     private val variationFilterConfig: WooPosVariationsTypesFilterConfig,
-    private val wooLogWrapper: WooLogWrapper,
+    private val wooPosLogWrapper: WooPosLogWrapper,
 ) {
     suspend operator fun invoke(identifier: String): WooPosSearchByIdentifierResult {
         val localResult = localSearcher(identifier)
@@ -66,8 +65,7 @@ class WooPosSearchByIdentifier @Inject constructor(
         return (hasValidStatus && meetsDownloadableRequirement && hasValidType)
             .also { meetsRequirements ->
                 if (!meetsRequirements) {
-                    wooLogWrapper.w(
-                        WooLog.T.POS,
+                    wooPosLogWrapper.w(
                         "Product does not meet filter requirements: " +
                             "Status: $hasValidStatus, Downloadable: $meetsDownloadableRequirement," +
                             "Type: $hasValidType, Product: ${product.name}, Type: ${product.type}," +
@@ -90,8 +88,7 @@ class WooPosSearchByIdentifier @Inject constructor(
         return (hasValidStatus && meetsDownloadableRequirement)
             .also { meetsRequirements ->
                 if (!meetsRequirements) {
-                    wooLogWrapper.w(
-                        WooLog.T.POS,
+                    wooPosLogWrapper.w(
                         "Variation does not meet filter requirements: " +
                             "Status: $hasValidStatus, Downloadable: $meetsDownloadableRequirement, " +
                             "Variation ID: ${variation.remoteVariationId}, Product ID: ${variation.remoteProductId}"
