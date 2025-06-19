@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetVariationById
 import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosSearchByIdentifier
 import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosSearchByIdentifierResult
+import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.common.util.WooPosSoundHelper
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
@@ -31,7 +32,6 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTrackingDataKeeper
 import com.woocommerce.android.ui.woopos.util.format.WooPosCouponsFormatter
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
-import com.woocommerce.android.util.WooLogWrapper
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -109,7 +109,7 @@ class WooPosCartViewModelTest {
     private val trackerData: WooPosAnalyticsTrackingDataKeeper = WooPosAnalyticsTrackingDataKeeper()
     private val cartItemsUpdater: WooPosCartItemsUpdater = mock()
     private val searchByIdentifier: WooPosSearchByIdentifier = mock()
-    private val wooLogWrapper: WooLogWrapper = mock()
+    private val wooPosLogWrapper: WooPosLogWrapper = mock()
 
     @Test
     fun `given empty cart, when product clicked in product selector, then should add product to cart`() = runTest {
@@ -1384,7 +1384,7 @@ class WooPosCartViewModelTest {
             cartItemsUpdater,
             getCachedStoreCurrency,
             searchByIdentifier,
-            wooLogWrapper,
+            wooPosLogWrapper,
             soundHelper,
             savedState,
         )
