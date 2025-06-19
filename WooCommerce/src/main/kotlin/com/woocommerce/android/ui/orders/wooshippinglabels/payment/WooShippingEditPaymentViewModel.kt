@@ -72,6 +72,10 @@ class WooShippingEditPaymentViewModel @Inject constructor(
         TODO()
     }
 
+    fun onPaymentMethodAdded() {
+        TODO()
+    }
+
     sealed interface ViewState {
         data object Loading : ViewState
         data class Content(
