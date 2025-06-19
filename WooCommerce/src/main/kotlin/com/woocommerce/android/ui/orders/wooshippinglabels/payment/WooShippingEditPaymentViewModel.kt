@@ -128,12 +128,16 @@ class WooShippingEditPaymentViewModel @Inject constructor(
             isAddPaymentMethodWebViewVisible.value = false
             loadingState.value = LoadingState.LoadingAddedPaymentMethod
 
-            val countOfCurrentPaymentMethods = accountSettings.value?.paymentMethodOptions
-                ?.paymentMethods?.size ?: return@launch
+            val existingPaymentMethods = accountSettings.value?.paymentMethodOptions
+                ?.paymentMethods ?: return@launch
 
             fetchAccountSettings().fold(
-                onSuccess = {
-                    if (it.paymentMethodOptions.paymentMethods.size == countOfCurrentPaymentMethods + 1) {
+                onSuccess = { accountSettings ->
+                    if (accountSettings.paymentMethodOptions.paymentMethods.size == existingPaymentMethods.size + 1) {
+                        val newPaymentMethod = accountSettings.paymentMethodOptions.paymentMethods.firstOrNull {
+                            it !in existingPaymentMethods
+                        }
+                        selectedPaymentMethod.value = newPaymentMethod?.paymentMethodId
                         triggerEvent(ShowSnackbar(R.string.woo_shipping_payment_method_added))
                     }
                 },
