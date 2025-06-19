@@ -524,4 +524,30 @@ class AppPrefsTest {
             )
         ).isTrue
     }
+
+    @Test
+    fun givenSetPOSTabVisibilityForSiteCalledThenGetterReturnsTrue() {
+        // GIVEN
+        val siteId = 123
+
+        // WHEN
+        AppPrefs.setPOSTabVisibilityForSite(siteId, true)
+        val result = AppPrefs.isPOSTabVisibleForSite(siteId)
+
+        // THEN
+        assertThat(result).isTrue
+    }
+
+    @Test
+    fun givenPOSTabVisibilityNotSetThenGetterReturnsFalseByDefault() {
+        // GIVEN
+        val siteId = 456
+
+        // WHEN
+        val result = AppPrefs.isPOSTabVisibleForSite(siteId)
+
+        // THEN
+        assertThat(result).isFalse
+    }
+
 }
