@@ -31,8 +31,11 @@ class WCDataStore @Inject internal constructor(
     /**
      * Returns a list of states
      */
-    fun getStates(country: String): List<WCLocationModel> =
-            runBlocking { locationsDao.getStates(country) }
+    fun getStates(country: String): List<WCLocationModel> = if (country.isEmpty()) {
+        emptyList()
+    } else {
+        runBlocking { locationsDao.getStates(country) }
+    }
 
     suspend fun fetchCountriesAndStates(site: SiteModel): WooResult<List<WCLocationModel>> {
         return coroutineEngine.withDefaultContext(AppLog.T.API, this, "fetchCountries") {
