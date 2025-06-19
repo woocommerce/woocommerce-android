@@ -78,4 +78,5 @@ class OrderDto : Response {
     val needs_payment: Boolean? = null
     val needs_processing: Boolean? = null
     val shipping_tax: String? = null
+    val created_via: String? = null
 }
