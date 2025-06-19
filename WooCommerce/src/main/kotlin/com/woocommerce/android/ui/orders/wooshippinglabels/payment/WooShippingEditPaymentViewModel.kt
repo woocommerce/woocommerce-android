@@ -14,10 +14,15 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.FlowCollector
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.network.UserAgent
 import javax.inject.Inject
@@ -47,56 +52,63 @@ class WooShippingEditPaymentViewModel @Inject constructor(
         key = "isAddPaymentMethodWebViewVisible"
     )
 
+    private val loadingState = MutableStateFlow(LoadingState.Idle)
+
     private val accountSettings = observeAccountSettings()
         .stateIn(viewModelScope, initialValue = null, started = SharingStarted.Lazily)
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     val viewState = combine(
         isAddPaymentMethodWebViewVisible,
-        accountSettings,
-        selectedPaymentMethod
-    ) { isAddPaymentMethodWebViewVisible, accountSettings, selectedPaymentMethod ->
-        if (accountSettings == null) return@combine ViewState.Loading
-
-        if (isAddPaymentMethodWebViewVisible) {
-            initAddPaymentMethodWebView(accountSettings)
-        } else {
-            initContentViewState(
-                accountSettings = accountSettings,
-                selectedPaymentMethod = selectedPaymentMethod
-            )
-        }
+        accountSettings
+    ) { isAddPaymentMethodWebViewVisible, accountSettings ->
+        Pair(isAddPaymentMethodWebViewVisible, accountSettings)
     }
+        .transformLatest { (isAddPaymentMethodWebViewVisible, accountSettings) ->
+            if (accountSettings == null) {
+                emit(ViewState.Loading)
+                return@transformLatest
+            }
+
+            if (isAddPaymentMethodWebViewVisible) {
+                initAddPaymentMethodWebView(accountSettings)
+            } else {
+                initContentViewState(accountSettings)
+            }
+        }
         .onStart { emit(ViewState.Loading) }
         .asLiveData()
 
-    private fun initAddPaymentMethodWebView(accountSettings: AccountSettingsModel): ViewState.AddPaymentMethodWebView {
-        return ViewState.AddPaymentMethodWebView(
-            url = accountSettings.paymentMethodOptions.addPaymentMethodUrl,
-            userAgent = userAgent,
-            authenticator = webViewAuthenticator,
-            onUrlLoaded = { url ->
-                if (url.contains(PAYMENT_METHOD_SUCCESS_URL)) {
-                    onPaymentMethodAdded()
-                }
-            },
-            onDismiss = { this.isAddPaymentMethodWebViewVisible.value = false }
+    private suspend fun FlowCollector<ViewState>.initAddPaymentMethodWebView(accountSettings: AccountSettingsModel) {
+        emit(
+            ViewState.AddPaymentMethodWebView(
+                url = accountSettings.paymentMethodOptions.addPaymentMethodUrl,
+                userAgent = userAgent,
+                authenticator = webViewAuthenticator,
+                onUrlLoaded = { url ->
+                    if (url.contains(PAYMENT_METHOD_SUCCESS_URL)) {
+                        onPaymentMethodAdded()
+                    }
+                },
+                onDismiss = { isAddPaymentMethodWebViewVisible.value = false }
+            )
         )
     }
 
-    private fun initContentViewState(
-        accountSettings: AccountSettingsModel,
-        selectedPaymentMethod: Int?
-    ): ViewState.Content {
-        return ViewState.Content(
-            canManagePaymentMethods = true, // TODO
-            canEditSettings = true, // TODO
-            emailTheReceipt = true, // TODO
-            storeOwnerName = "John Doe", // TODO
-            storeOwnerUsername = "johndoe", // TODO
-            selectedPaymentMethodId = selectedPaymentMethod
-                ?: accountSettings.paymentMethodOptions.selectedPaymentId,
-            currentPaymentOptions = accountSettings.paymentMethodOptions
-        )
+    private suspend fun FlowCollector<ViewState>.initContentViewState(accountSettings: AccountSettingsModel) {
+        combine(selectedPaymentMethod, loadingState) { selectedPaymentMethod, loadingState ->
+            ViewState.Content(
+                loadingState = loadingState,
+                canManagePaymentMethods = true, // TODO
+                canEditSettings = true, // TODO
+                emailTheReceipt = true, // TODO
+                storeOwnerName = "John Doe", // TODO
+                storeOwnerUsername = "johndoe", // TODO
+                selectedPaymentMethodId = selectedPaymentMethod
+                    ?: accountSettings.paymentMethodOptions.selectedPaymentId,
+                currentPaymentOptions = accountSettings.paymentMethodOptions
+            )
+        }.let { emitAll(it) }
     }
 
     fun onAddNewPaymentMethod() {
@@ -112,8 +124,10 @@ class WooShippingEditPaymentViewModel @Inject constructor(
     }
 
     private fun onPaymentMethodAdded() {
-        isAddPaymentMethodWebViewVisible.value = false
         launch {
+            isAddPaymentMethodWebViewVisible.value = false
+            loadingState.value = LoadingState.LoadingAddedPaymentMethod
+
             val countOfCurrentPaymentMethods = accountSettings.value?.paymentMethodOptions
                 ?.paymentMethods?.size ?: return@launch
 
@@ -127,12 +141,14 @@ class WooShippingEditPaymentViewModel @Inject constructor(
                     TODO()
                 }
             )
+            loadingState.value = LoadingState.Idle
         }
     }
 
     sealed interface ViewState {
         data object Loading : ViewState
         data class Content(
+            val loadingState: LoadingState = LoadingState.Idle,
             val canManagePaymentMethods: Boolean,
             val canEditSettings: Boolean,
             val emailTheReceipt: Boolean,
@@ -151,5 +167,9 @@ class WooShippingEditPaymentViewModel @Inject constructor(
             val onUrlLoaded: (String) -> Unit,
             val onDismiss: () -> Unit
         ) : ViewState
+    }
+
+    enum class LoadingState {
+        Idle, LoadingAddedPaymentMethod, Saving
     }
 }

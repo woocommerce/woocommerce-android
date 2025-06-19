@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
@@ -339,23 +340,27 @@ private fun PaymentMethodsList(
             enabled = viewState.canManagePaymentMethods,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    tint = if (viewState.canManagePaymentMethods) {
-                        MaterialTheme.colors.primary
-                    } else {
-                        LocalContentColor.current.copy(LocalContentAlpha.current)
-                    },
-                    contentDescription = null
-                )
-                Text(
-                    text = stringResource(R.string.woo_shipping_payment_add_new_button)
-                )
+            if (viewState.loadingState == WooShippingEditPaymentViewModel.LoadingState.LoadingAddedPaymentMethod) {
+                CircularProgressIndicator(Modifier.size(24.dp))
+            } else {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        tint = if (viewState.canManagePaymentMethods) {
+                            MaterialTheme.colors.primary
+                        } else {
+                            LocalContentColor.current.copy(LocalContentAlpha.current)
+                        },
+                        contentDescription = null
+                    )
+                    Text(
+                        text = stringResource(R.string.woo_shipping_payment_add_new_button)
+                    )
+                }
             }
         }
         Spacer(Modifier.height(16.dp))
