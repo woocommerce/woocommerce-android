@@ -52,6 +52,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.Render
 import com.woocommerce.android.ui.compose.component.BottomSheetHandle
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
@@ -205,6 +206,10 @@ private fun WooShippingEditPaymentContent(
                 )
             }
         }
+    }
+
+    viewState.dialogState?.let {
+        it.Render()
     }
 }
 

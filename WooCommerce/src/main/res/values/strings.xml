@@ -4683,6 +4683,7 @@
     <string name="woo_shipping_payment_email_receipt_toggle">Email the receipt</string>
     <string name="woo_shipping_payment_use_card_button">Use this card</string>
     <string name="woo_shipping_payment_method_added">Payment method added</string>
+    <string name="woo_shipping_payment_fetching_cards_failed">Unable to refresh your payment methods</string>
 
     <string name="media_library_title">WordPress Media Library</string>
     <string name="media_loading_failed">Media loading failed</string>

@@ -5,6 +5,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.common.webview.WebViewAuthenticator
+import com.woocommerce.android.ui.compose.DialogState
 import com.woocommerce.android.ui.orders.wooshippinglabels.FetchAccountSettings
 import com.woocommerce.android.ui.orders.wooshippinglabels.ObserveAccountSettings
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.AccountSettingsModel
@@ -52,10 +53,11 @@ class WooShippingEditPaymentViewModel @Inject constructor(
         key = "isAddPaymentMethodWebViewVisible"
     )
 
-    private val loadingState = MutableStateFlow(LoadingState.Idle)
-
     private val accountSettings = observeAccountSettings()
         .stateIn(viewModelScope, initialValue = null, started = SharingStarted.Lazily)
+
+    private val loadingState = MutableStateFlow(LoadingState.Idle)
+    private val dialogState = MutableStateFlow<DialogState?>(null)
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val viewState = combine(
@@ -96,9 +98,10 @@ class WooShippingEditPaymentViewModel @Inject constructor(
     }
 
     private suspend fun FlowCollector<ViewState>.initContentViewState(accountSettings: AccountSettingsModel) {
-        combine(selectedPaymentMethod, loadingState) { selectedPaymentMethod, loadingState ->
+        combine(selectedPaymentMethod, loadingState, dialogState) { selectedPaymentMethod, loadingState, dialogState ->
             ViewState.Content(
                 loadingState = loadingState,
+                dialogState = dialogState,
                 canManagePaymentMethods = true, // TODO
                 canEditSettings = true, // TODO
                 emailTheReceipt = true, // TODO
@@ -142,7 +145,20 @@ class WooShippingEditPaymentViewModel @Inject constructor(
                     }
                 },
                 onFailure = {
-                    TODO()
+                    dialogState.value = DialogState(
+                        message = R.string.woo_shipping_payment_fetching_cards_failed,
+                        positiveButton = DialogState.DialogButton(
+                            text = R.string.retry,
+                            onClick = {
+                                dialogState.value = null
+                                onPaymentMethodAdded()
+                            }
+                        ),
+                        negativeButton = DialogState.DialogButton(
+                            text = R.string.cancel,
+                            onClick = { dialogState.value = null }
+                        )
+                    )
                 }
             )
             loadingState.value = LoadingState.Idle
@@ -153,6 +169,7 @@ class WooShippingEditPaymentViewModel @Inject constructor(
         data object Loading : ViewState
         data class Content(
             val loadingState: LoadingState = LoadingState.Idle,
+            val dialogState: DialogState? = null,
             val canManagePaymentMethods: Boolean,
             val canEditSettings: Boolean,
             val emailTheReceipt: Boolean,
