@@ -7,6 +7,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.common.webview.WebViewAuthenticator
 import com.woocommerce.android.ui.orders.wooshippinglabels.FetchAccountSettings
 import com.woocommerce.android.ui.orders.wooshippinglabels.ObserveAccountSettings
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.AccountSettingsModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PaymentMethodOptions
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -57,32 +58,46 @@ class WooShippingEditPaymentViewModel @Inject constructor(
         if (accountSettings == null) return@combine ViewState.Loading
 
         if (isAddPaymentMethodWebViewVisible) {
-            ViewState.AddPaymentMethodWebView(
-                url = accountSettings.paymentMethodOptions.addPaymentMethodUrl,
-                userAgent = userAgent,
-                authenticator = webViewAuthenticator,
-                onUrlLoaded = { url ->
-                    if (url.contains(PAYMENT_METHOD_SUCCESS_URL)) {
-                        onPaymentMethodAdded()
-                    }
-                },
-                onDismiss = { this.isAddPaymentMethodWebViewVisible.value = false }
-            )
+            initAddPaymentMethodWebView(accountSettings)
         } else {
-            ViewState.Content(
-                canManagePaymentMethods = true, // TODO
-                canEditSettings = true, // TODO
-                emailTheReceipt = true, // TODO
-                storeOwnerName = "John Doe", // TODO
-                storeOwnerUsername = "johndoe", // TODO
-                selectedPaymentMethodId = selectedPaymentMethod
-                    ?: accountSettings.paymentMethodOptions.selectedPaymentId,
-                currentPaymentOptions = accountSettings.paymentMethodOptions
+            initContentViewState(
+                accountSettings = accountSettings,
+                selectedPaymentMethod = selectedPaymentMethod
             )
         }
     }
         .onStart { emit(ViewState.Loading) }
         .asLiveData()
+
+    private fun initAddPaymentMethodWebView(accountSettings: AccountSettingsModel): ViewState.AddPaymentMethodWebView {
+        return ViewState.AddPaymentMethodWebView(
+            url = accountSettings.paymentMethodOptions.addPaymentMethodUrl,
+            userAgent = userAgent,
+            authenticator = webViewAuthenticator,
+            onUrlLoaded = { url ->
+                if (url.contains(PAYMENT_METHOD_SUCCESS_URL)) {
+                    onPaymentMethodAdded()
+                }
+            },
+            onDismiss = { this.isAddPaymentMethodWebViewVisible.value = false }
+        )
+    }
+
+    private fun initContentViewState(
+        accountSettings: AccountSettingsModel,
+        selectedPaymentMethod: Int?
+    ): ViewState.Content {
+        return ViewState.Content(
+            canManagePaymentMethods = true, // TODO
+            canEditSettings = true, // TODO
+            emailTheReceipt = true, // TODO
+            storeOwnerName = "John Doe", // TODO
+            storeOwnerUsername = "johndoe", // TODO
+            selectedPaymentMethodId = selectedPaymentMethod
+                ?: accountSettings.paymentMethodOptions.selectedPaymentId,
+            currentPaymentOptions = accountSettings.paymentMethodOptions
+        )
+    }
 
     fun onAddNewPaymentMethod() {
         isAddPaymentMethodWebViewVisible.value = true
