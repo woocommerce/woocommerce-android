@@ -3,9 +3,12 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.payment
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.R
+import com.woocommerce.android.ui.orders.wooshippinglabels.FetchAccountSettings
 import com.woocommerce.android.ui.orders.wooshippinglabels.ObserveAccountSettings
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PaymentMethodOptions
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -13,12 +16,14 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class WooShippingEditPaymentViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    observeAccountSettings: ObserveAccountSettings
+    observeAccountSettings: ObserveAccountSettings,
+    private val fetchAccountSettings: FetchAccountSettings
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val PAYMENT_METHOD_SUCCESS_URL = "me/payment-methods"
@@ -73,7 +78,21 @@ class WooShippingEditPaymentViewModel @Inject constructor(
     }
 
     fun onPaymentMethodAdded() {
-        TODO()
+        launch {
+            val countOfCurrentPaymentMethods = accountSettings.value?.paymentMethodOptions
+                ?.paymentMethods?.size ?: return@launch
+
+            fetchAccountSettings().fold(
+                onSuccess = {
+                    if (it.paymentMethodOptions.paymentMethods.size == countOfCurrentPaymentMethods + 1) {
+                        triggerEvent(ShowSnackbar(R.string.woo_shipping_payment_method_added))
+                    }
+                },
+                onFailure = {
+                    TODO()
+                }
+            )
+        }
     }
 
     sealed interface ViewState {

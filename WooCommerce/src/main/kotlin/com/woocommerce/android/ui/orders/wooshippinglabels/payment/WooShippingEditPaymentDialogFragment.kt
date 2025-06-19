@@ -11,15 +11,21 @@ import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.findNavController
 import com.woocommerce.android.extensions.handleNotice
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewFragment
 import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewViewModel
 import com.woocommerce.android.ui.compose.theme.WooTheme
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class WooShippingEditPaymentDialogFragment : WCBottomSheetDialogFragment() {
     private val viewModel: WooShippingEditPaymentViewModel by viewModels()
+
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return ComposeView(requireContext()).apply {
@@ -47,6 +53,7 @@ class WooShippingEditPaymentDialogFragment : WCBottomSheetDialogFragment() {
                 is WooShippingEditPaymentViewModel.ShowPaymentMethodAddWebView -> {
                     showWebView(event.url, event.successUrl)
                 }
+                is MultiLiveEvent.Event.ShowSnackbar -> uiMessageResolver.showSnack(event.message)
             }
         }
     }
