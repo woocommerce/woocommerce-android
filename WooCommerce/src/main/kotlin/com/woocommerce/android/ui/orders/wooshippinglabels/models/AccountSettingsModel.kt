@@ -28,7 +28,8 @@ data class StoreOptionsModel(
 
 data class PaymentMethodOptions(
     val selectedPaymentId: Int?,
-    val paymentMethods: List<PaymentMethodModel>
+    val paymentMethods: List<PaymentMethodModel>,
+    val addPaymentMethodUrl: String
 ) {
     val selectedPaymentMethod: PaymentMethodModel?
         get() = paymentMethods.find { it.paymentMethodId == selectedPaymentId }

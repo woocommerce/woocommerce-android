@@ -31,7 +31,8 @@ data class FormDataDTO(
 )
 
 data class FormMetaDTO(
-    @SerializedName("payment_methods") val paymentMethods: List<PaymentMethodDTO>
+    @SerializedName("payment_methods") val paymentMethods: List<PaymentMethodDTO>,
+    @SerializedName("add_payment_method_url") val addPaymentMethodUrl: String,
 )
 
 data class PaymentMethodDTO(

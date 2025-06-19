@@ -138,7 +138,8 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         ),
         paymentMethodOptions = PaymentMethodOptions(
             selectedPaymentId = null,
-            paymentMethods = emptyList()
+            paymentMethods = emptyList(),
+            addPaymentMethodUrl = "https://example.com/add-payment-method"
         )
     )
 
@@ -1072,7 +1073,8 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
                         cardDigits = "1234",
                         expiry = "12/25"
                     )
-                )
+                ),
+                addPaymentMethodUrl = "https://example.com/add-payment-method"
             )
         )
         given(observeAccountSettings()).willReturn(flowOf(accountSettings))
@@ -1091,7 +1093,8 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         val accountSettings = defaultAccountSettings.copy(
             paymentMethodOptions = PaymentMethodOptions(
                 selectedPaymentId = null,
-                paymentMethods = emptyList()
+                paymentMethods = emptyList(),
+                addPaymentMethodUrl = "https://example.com/add-payment-method"
             )
         )
         given(observeAccountSettings()).willReturn(flowOf(accountSettings))

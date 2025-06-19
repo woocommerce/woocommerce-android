@@ -46,7 +46,8 @@ class WooShippingNetworkingMapper @Inject constructor(
                             cardDigits = paymentMethod.cardDigits,
                             expiry = paymentMethod.expiry
                         )
-                    }
+                    },
+                    addPaymentMethodUrl = formMeta.addPaymentMethodUrl
                 )
             )
         }
