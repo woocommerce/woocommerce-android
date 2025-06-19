@@ -19,7 +19,6 @@ import javax.inject.Singleton
 class WCDataStore @Inject internal constructor(
     private val restClient: WCDataRestClient,
     private val coroutineEngine: CoroutineEngine,
-    private val mapper: WCCountryMapper,
     private val locationsDao: LocationsDao,
 ) {
     /**
@@ -46,7 +45,7 @@ class WCDataStore @Inject internal constructor(
                 }
                 response.result != null -> {
                     val locationModels = response.result.flatMap {
-                        mapper.map(it)
+                        WCCountryMapper.map(it)
                     }
 
                     locationsDao.upsertLocations(locationModels)

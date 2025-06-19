@@ -31,7 +31,6 @@ import org.wordpress.android.fluxc.utils.CountryTestUtils
 class WCDataStoreTest {
     private val restClient = mock<WCDataRestClient>()
     private val site = SiteModel().apply { id = 321 }
-    private val mapper = WCCountryMapper()
     private lateinit var roomDb: WCAndroidDatabase
     private lateinit var locationsDao: LocationsDao
     private lateinit var store: WCDataStore
@@ -53,9 +52,7 @@ class WCDataStoreTest {
             .build()
         locationsDao = roomDb.locationsDao
 
-        store = WCDataStore(
-            restClient, initCoroutineEngine(), mapper, locationsDao
-        )
+        store = WCDataStore(restClient, initCoroutineEngine(), locationsDao)
 
         TestSiteSqlUtils.siteSqlUtils.insertOrUpdateSite(site)
     }
@@ -65,7 +62,7 @@ class WCDataStoreTest {
         val result = fetchCountries()
 
         Assertions.assertThat(result.model?.size).isEqualTo(sampleData.size)
-        val first = mapper.map(sampleResponse.first()).first()
+        val first = WCCountryMapper.map(sampleResponse.first()).first()
         Assertions.assertThat(result.model?.first()?.name).isEqualTo(first.name)
         Assertions.assertThat(result.model?.first()?.code).isEqualTo(first.code)
         Assertions.assertThat(result.model?.first()?.parentCode).isEqualTo(first.parentCode)

@@ -1,9 +1,8 @@
 package org.wordpress.android.fluxc.model.data
 
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.data.WCDataRestClient.CountryApiResponse
-import javax.inject.Inject
 
-class WCCountryMapper @Inject constructor() {
+object WCCountryMapper {
     fun map(country: CountryApiResponse): List<WCLocationModel> {
         return country.states.map { state ->
             WCLocationModel(
