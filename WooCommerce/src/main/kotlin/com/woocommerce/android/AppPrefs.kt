@@ -207,6 +207,8 @@ object AppPrefs {
         USER_CLICKED_ON_PAYMENTS_MORE_SCREEN,
 
         APPLICATION_STORE_SNAPSHOT_TRACKED_FOR_SITE,
+
+        POS_TAB_VISIBILITY,
     }
 
     fun init(context: Context) {
@@ -1178,14 +1180,14 @@ object AppPrefs {
 
     fun setPOSTabVisibilityForSite(siteId: Int, visible: Boolean) {
         setBoolean(
-            key = PrefKeyString("POS_TAB_VISIBILITY:$siteId"),
+            key = PrefKeyString("${UndeletablePrefKey.POS_TAB_VISIBILITY}:$siteId"),
             value = visible
         )
     }
 
     fun isPOSTabVisibleForSite(siteId: Int): Boolean {
         return getBoolean(
-            key = PrefKeyString("POS_TAB_VISIBILITY:$siteId"),
+            key = PrefKeyString("${UndeletablePrefKey.POS_TAB_VISIBILITY}:$siteId"),
             default = false
         )
     }
