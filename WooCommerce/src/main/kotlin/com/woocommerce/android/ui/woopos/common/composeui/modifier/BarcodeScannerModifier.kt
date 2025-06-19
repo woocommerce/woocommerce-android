@@ -15,6 +15,7 @@ import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.key.utf16CodePoint
 import com.woocommerce.android.ui.woopos.common.composeui.modifier.BarcodeInputDetector.Companion.FIRST_PRINTABLE_CHAR_CODE
+import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -144,6 +145,7 @@ class BarcodeInputDetector(
 
         if (scannedBarcode.length >= MIN_BARCODE_LENGTH) {
             onBarcodeScanned(scannedBarcode)
+            WooPosLogWrapper.d("Barcode scanned: $scannedBarcode")
         }
 
         clear()

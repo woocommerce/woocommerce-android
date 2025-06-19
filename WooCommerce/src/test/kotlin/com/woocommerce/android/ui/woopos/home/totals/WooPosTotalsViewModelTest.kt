@@ -32,6 +32,7 @@ import com.woocommerce.android.ui.payments.receipt.PaymentReceiptShare
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
+import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.BackFromCheckoutToCartClicked
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OrderCreated
@@ -52,7 +53,6 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTrackingD
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.UiStringParser
-import com.woocommerce.android.util.WooLogWrapper
 import com.woocommerce.android.viewmodel.ResourceProvider
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -120,7 +120,7 @@ class WooPosTotalsViewModelTest {
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker = mock()
     private val paymentReceiptShare: PaymentReceiptShare = mock()
     private val uiStringParser: UiStringParser = mock()
-    private val wooLogWrapper: WooLogWrapper = mock()
+    private val wooPosLogWrapper: WooPosLogWrapper = mock()
     private val paymentControllerFactory = WooPosCardReaderPaymentControllerFactory(
         cardReaderManager = cardReaderManager,
         orderRepository = orderRepository,
@@ -1708,6 +1708,6 @@ class WooPosTotalsViewModelTest {
             analyticsTracker = analyticsTracker,
             analyticsData = WooPosAnalyticsTrackingDataKeeper()
         ),
-        wooLogWrapper = wooLogWrapper,
+        wooPosLogWrapper = wooPosLogWrapper,
     )
 }
