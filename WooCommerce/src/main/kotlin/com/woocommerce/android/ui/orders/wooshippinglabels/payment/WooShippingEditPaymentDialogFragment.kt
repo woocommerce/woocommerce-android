@@ -7,6 +7,9 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.NavGraphMainDirections
+import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewViewModel
 import com.woocommerce.android.ui.compose.theme.WooTheme
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
@@ -27,5 +30,30 @@ class WooShippingEditPaymentDialogFragment : WCBottomSheetDialogFragment() {
                 }
             }
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        handleEvents()
+    }
+
+    private fun handleEvents() {
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is WooShippingEditPaymentViewModel.ShowPaymentMethodAddWebView -> {
+                    showWebView(event.url, event.successUrl)
+                }
+            }
+        }
+    }
+
+    private fun showWebView(url: String, exitUrl: String) {
+        findNavController(R.id.nav_host_fragment_main).navigate(
+            NavGraphMainDirections.actionGlobalAuthenticatedWebViewFragment(
+                urlToLoad = url,
+                urlsToTriggerExit = arrayOf(exitUrl),
+                urlComparisonMode = AuthenticatedWebViewViewModel.UrlComparisonMode.PARTIAL
+            )
+        )
     }
 }

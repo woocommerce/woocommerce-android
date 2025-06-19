@@ -5,11 +5,14 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ui.orders.wooshippinglabels.ObserveAccountSettings
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PaymentMethodOptions
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 @HiltViewModel
@@ -17,6 +20,10 @@ class WooShippingEditPaymentViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     observeAccountSettings: ObserveAccountSettings
 ) : ScopedViewModel(savedStateHandle) {
+    companion object {
+        private const val PAYMENT_METHOD_SUCCESS_URL = "me/payment-methods"
+    }
+
     private val selectedPaymentMethod = savedStateHandle.getNullableStateFlow(
         scope = viewModelScope,
         initialValue = null,
@@ -24,8 +31,11 @@ class WooShippingEditPaymentViewModel @Inject constructor(
         key = "selectedPaymentMethod",
     )
 
+    private val accountSettings = observeAccountSettings()
+        .stateIn(viewModelScope, initialValue = null, started = SharingStarted.Lazily)
+
     val viewState = combine(
-        observeAccountSettings(),
+        accountSettings,
         selectedPaymentMethod
     ) { accountSettings, selectedPaymentMethod ->
         if (accountSettings == null) return@combine ViewState.Loading
@@ -44,7 +54,14 @@ class WooShippingEditPaymentViewModel @Inject constructor(
         .asLiveData()
 
     fun onAddNewPaymentMethod() {
-        TODO()
+        accountSettings.value?.let {
+            triggerEvent(
+                ShowPaymentMethodAddWebView(
+                    url = it.paymentMethodOptions.addPaymentMethodUrl,
+                    successUrl = PAYMENT_METHOD_SUCCESS_URL
+                )
+            )
+        }
     }
 
     fun onPaymentMethodSelected(paymentMethodId: Int?) {
@@ -69,4 +86,7 @@ class WooShippingEditPaymentViewModel @Inject constructor(
             val paymentMethods get() = currentPaymentOptions.paymentMethods
         }
     }
+
+    data class ShowPaymentMethodAddWebView(val url: String, val successUrl: String) : MultiLiveEvent.Event()
 }
+
