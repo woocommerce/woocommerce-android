@@ -193,6 +193,8 @@ private fun WooShippingEditPaymentContent(
                     editEnabled = viewState.canManagePaymentMethods,
                     storeOwnerName = viewState.storeOwnerName,
                     storeOwnerUsername = viewState.storeOwnerUsername,
+                    loadingAddedPaymentMethod = viewState.loadingState ==
+                        WooShippingEditPaymentViewModel.LoadingState.LoadingAddedPaymentMethod,
                     onAddNewPaymentMethod = onAddNewPaymentClicked,
                 )
             }
@@ -244,6 +246,7 @@ fun EmptyPaymentMethodsView(
     editEnabled: Boolean,
     storeOwnerName: String,
     storeOwnerUsername: String,
+    loadingAddedPaymentMethod: Boolean,
     onAddNewPaymentMethod: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -293,6 +296,7 @@ fun EmptyPaymentMethodsView(
             WCColoredButton(
                 onClick = onAddNewPaymentMethod,
                 enabled = editEnabled,
+                loading = loadingAddedPaymentMethod,
                 text = stringResource(R.string.woo_shipping_payment_add_new_button),
                 leadingIcon = {
                     Icon(
