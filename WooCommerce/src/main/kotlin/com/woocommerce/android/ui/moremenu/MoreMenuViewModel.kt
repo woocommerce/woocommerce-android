@@ -35,7 +35,7 @@ import com.woocommerce.android.ui.payments.taptopay.isAvailable
 import com.woocommerce.android.ui.plans.domain.SitePlan
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
 import com.woocommerce.android.ui.woopos.WooPosIsEnabled
-import com.woocommerce.android.ui.woopos.tab.WooPosIsPOSAsATabEnabled
+import com.woocommerce.android.ui.woopos.tab.WooPosIsPosAsTabEnabled
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -73,7 +73,7 @@ class MoreMenuViewModel @Inject constructor(
     private val hasGoogleAdsCampaigns: HasGoogleAdsCampaigns,
     private val isWooPosEnabled: WooPosIsEnabled,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    private val isPOSAsATabEnabled: WooPosIsPOSAsATabEnabled
+    private val isPOSAsATabEnabled: WooPosIsPosAsTabEnabled
 ) : ScopedViewModel(savedState) {
     private var storeHasGoogleAdsCampaigns = false
 
