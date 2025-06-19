@@ -7,10 +7,12 @@ import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.Location
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.AccountSettingsModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.AddressNormalizationModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.PaymentMethodModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.PaymentMethodOptions
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PurchasedLabelData
-import com.woocommerce.android.ui.orders.wooshippinglabels.models.PurchasedLabelModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.StoreOptionsModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
@@ -25,13 +27,29 @@ import javax.inject.Inject
 class WooShippingNetworkingMapper @Inject constructor(
     private val ratesMapper: WooShippingRatesDatasourceMapper
 ) {
-    operator fun invoke(storeOptionsDTO: StoreOptionsDTO): StoreOptionsModel {
-        return StoreOptionsModel(
-            currencySymbol = storeOptionsDTO.currencySymbol.orEmpty(),
-            dimensionUnit = storeOptionsDTO.dimensionUnit.orEmpty(),
-            weightUnit = storeOptionsDTO.weightUnit.orEmpty(),
-            originCountry = storeOptionsDTO.originCountry.orEmpty()
-        )
+    operator fun invoke(accountSettingsDTO: AccountSettingsDTO): AccountSettingsModel {
+        return with(accountSettingsDTO) {
+            AccountSettingsModel(
+                storeOptions = StoreOptionsModel(
+                    currencySymbol = storeOptions.currencySymbol.orEmpty(),
+                    dimensionUnit = storeOptions.dimensionUnit.orEmpty(),
+                    weightUnit = storeOptions.weightUnit.orEmpty(),
+                    originCountry = storeOptions.originCountry.orEmpty()
+                ),
+                paymentMethodOptions = PaymentMethodOptions(
+                    selectedPaymentId = formData.selectedPaymentId,
+                    paymentMethods = formMeta.paymentMethods.map { paymentMethod ->
+                        PaymentMethodModel(
+                            paymentMethodId = paymentMethod.paymentMethodId,
+                            name = paymentMethod.name,
+                            cardType = paymentMethod.cardType,
+                            cardDigits = paymentMethod.cardDigits,
+                            expiry = paymentMethod.expiry
+                        )
+                    }
+                )
+            )
+        }
     }
 
     operator fun invoke(shippingLabelDTO: ShippingLabelDTO): ShippingLabelModel {
@@ -50,7 +68,7 @@ class WooShippingNetworkingMapper @Inject constructor(
             isLetter = shippingLabelDTO.isLetter == true,
             productNames = shippingLabelDTO.productNames.orEmpty(),
             productIds = shippingLabelDTO.productIds.orEmpty(),
-            shipmentId = shippingLabelDTO.shipmentId ?: 0,
+            shipmentId = shippingLabelDTO.shipmentId.orEmpty(),
             receiptItemId = shippingLabelDTO.receiptItemId ?: 0,
             createdDate = shippingLabelDTO.createdDate?.let { Date(it) },
             mainReceiptId = shippingLabelDTO.mainReceiptId ?: 0,
@@ -59,23 +77,6 @@ class WooShippingNetworkingMapper @Inject constructor(
             expiryDate = shippingLabelDTO.expiryDate ?: 0
         )
     }
-
-    operator fun invoke(purchasedLabelDTO: PurchasedLabelDTO) = PurchasedLabelModel(
-        labelId = purchasedLabelDTO.labelId ?: 0,
-        tracking = purchasedLabelDTO.tracking.orEmpty(),
-        refundableAmount = purchasedLabelDTO.refundableAmount ?: BigDecimal.ZERO,
-        status = purchasedLabelDTO.status,
-        created = purchasedLabelDTO.created?.let { Date(it) },
-        carrierId = purchasedLabelDTO.carrierId.orEmpty(),
-        serviceName = purchasedLabelDTO.serviceName.orEmpty(),
-        commercialInvoiceUrl = purchasedLabelDTO.commercialInvoiceUrl.orEmpty(),
-        isCommercialInvoiceSubmittedElectronically = purchasedLabelDTO
-            .isCommercialInvoiceSubmittedElectronically == true,
-        packageName = purchasedLabelDTO.packageName.orEmpty(),
-        isLetter = purchasedLabelDTO.isLetter == true,
-        productNames = purchasedLabelDTO.productNames.orEmpty(),
-        productIds = purchasedLabelDTO.productIds.orEmpty()
-    )
 
     operator fun invoke(destinationAddressDTO: DestinationAddressDTO): Address {
         val name = destinationAddressDTO.name?.split(" ") ?: listOf("", "")

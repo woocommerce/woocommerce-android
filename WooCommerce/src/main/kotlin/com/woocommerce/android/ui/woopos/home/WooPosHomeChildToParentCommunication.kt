@@ -30,7 +30,7 @@ sealed class ChildToParentEvent {
         val itemData: WooPosItemsViewModel.ItemClickedData,
         val eventForTracking: WooPosAnalyticsEvent.Event.ItemAddedToCart?
     ) : ChildToParentEvent()
-    data object NewTransactionClicked : ChildToParentEvent()
+    data object OnNewTransactionStarted : ChildToParentEvent()
     data object PaymentCollecting : ChildToParentEvent()
     data object PaymentInProgress : ChildToParentEvent()
     data object PaymentFailed : ChildToParentEvent()
@@ -48,8 +48,6 @@ sealed class ChildToParentEvent {
 
     data class ToastMessageDisplayed(val message: String) : ChildToParentEvent()
     data object RefreshProductList : ChildToParentEvent()
-
-    data class BarcodeScanned(val barcode: String) : ChildToParentEvent()
 
     sealed class NavigationEvent : ChildToParentEvent() {
         data class ToCashPayment(val orderId: Long) : NavigationEvent()

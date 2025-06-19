@@ -22,7 +22,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearch
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
-import com.woocommerce.android.ui.woopos.common.composeui.modifier.listenForBarcodes
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.Tab.Coupons
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.Tab.HighlightLevel
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.Tab.Products
@@ -85,9 +84,6 @@ private fun WooPosItemsScreen(
             onUIEvent(WooPosItemsUIEvent.AddCouponIconClicked)
         },
         onTabClicked = { onUIEvent(WooPosItemsUIEvent.OnTabClicked(it)) },
-        onBarcodeScanned = { barcode ->
-            onUIEvent(WooPosItemsUIEvent.BarcodeScanned(barcode))
-        },
         onBackClicked = { onUIEvent(WooPosItemsUIEvent.BackFromVariationsClicked) },
     )
 }
@@ -102,16 +98,11 @@ private fun MainItemsList(
     onSearchEvent: (WooPosSearchUIEvent) -> Unit,
     onTabClicked: (WooPosItemsToolbarViewState.Tab) -> Unit,
     onAddCouponEvent: () -> Unit,
-    onBarcodeScanned: (String) -> Unit,
     onBackClicked: () -> Unit,
 ) {
     Box(
         modifier = modifier
             .fillMaxSize()
-            .listenForBarcodes(
-                enabled = state.value.barcodeScanningEnabled,
-                onBarcodeScanned = onBarcodeScanned
-            )
     ) {
         Column(
             modifier.fillMaxHeight()

@@ -75,6 +75,8 @@ interface WCDatabaseModule {
             return database.customerFromAnalyticsDao
         }
 
+        @Provides internal fun provideCustomerDao(database: WCAndroidDatabase) = database.customerDao
+
         @Provides internal fun provideProductsDao(database: WCAndroidDatabase) = database.productsDao
 
         @Provides internal fun provideProductVariationsDao(database: WCAndroidDatabase) = database.productVariationsDao

@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.plans.domain.SitePlan
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
 import com.woocommerce.android.ui.woopos.WooPosIsEnabled
+import com.woocommerce.android.ui.woopos.tab.WooPosIsPosAsTabEnabled
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -92,6 +93,8 @@ class MoreMenuViewModelTests : BaseUnitTest() {
 
     private val blazeCampaignsStore: BlazeCampaignsStore = mock()
 
+    private val isPOSAsATabEnabled: WooPosIsPosAsTabEnabled = mock()
+
     private lateinit var viewModel: MoreMenuViewModel
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus = mock()
 
@@ -113,6 +116,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             hasGoogleAdsCampaigns = hasGoogleAdsCampaigns,
             isWooPosEnabled = isWooPosEnabled,
             analyticsTrackerWrapper = analyticsTrackerWrapper,
+            isPOSAsATabEnabled = isPOSAsATabEnabled
         )
     }
 
@@ -450,10 +454,30 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         }
 
     @Test
-    fun `given isWooPosEnabled returns true, when building state, then WooPOS section is displayed`() = testBlocking {
+    fun `given isWooPosEnabled returns true, but isPOSAsATabEnabled returns true, when building state, then WooPOS section is not displayed`() =
+        testBlocking {
+            // GIVEN
+            setup {
+                whenever(isWooPosEnabled.invoke()).thenReturn(true)
+                whenever(isPOSAsATabEnabled.invoke()).thenReturn(true)
+            }
+
+            // WHEN
+            val states = viewModel.moreMenuViewState.captureValues()
+
+            // THEN
+            assertThat(
+                states.last().menuSections.flatMap { it.items }
+                    .firstOrNull { it.title == R.string.more_menu_button_woo_pos }
+            ).isNull()
+        }
+
+    @Test
+    fun `given isWooPosEnabled returns true, and isPOSAsATabEnabled returns false, when building state, then WooPOS section is displayed`() = testBlocking {
         // GIVEN
         setup {
             whenever(isWooPosEnabled.invoke()).thenReturn(true)
+            whenever(isPOSAsATabEnabled.invoke()).thenReturn(false)
         }
 
         // WHEN

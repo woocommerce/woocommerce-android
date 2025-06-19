@@ -5,7 +5,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -14,6 +16,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.disabled
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
@@ -27,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.preview.FontScalePreviews
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosDialogWrapper
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
@@ -46,6 +50,7 @@ fun WooPosBarcodeInfoDialog(
     onDismissRequest: () -> Unit,
 ) {
     val context = LocalContext.current
+    val scrollState = rememberScrollState()
     val dialogContentDescription = getCombinedContentDescription(state = state)
     val primaryButtonContentDescription = stringResource(
         id = R.string.woopos_banner_simple_products_dialog_primary_button_content_description
@@ -54,26 +59,39 @@ fun WooPosBarcodeInfoDialog(
         id = R.string.woopos_dialog_barcode_info_background_content_description
     )
     WooPosDialogWrapper(
-        modifier = Modifier,
+        modifier = Modifier.semantics {
+            disabled() // enforce talkback to read dialog content first while allowing to dismiss the dialog
+        },
         isVisible = state.isVisible,
         dialogBackgroundContentDescription = dialogBackgroundContentDescription,
-        onDismissRequest = onDismissRequest
+        onDismissRequest = onDismissRequest,
     ) {
         Box(
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.surfaceBright)
                 .padding(WooPosSpacing.XLarge.value.toAdaptivePadding())
-                .semantics(mergeDescendants = true) {
+                .semantics {
                     contentDescription = dialogContentDescription
                 },
             contentAlignment = Alignment.Center
         ) {
             @Suppress("DestructuringDeclarationWithTooManyEntries")
             ConstraintLayout(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(scrollState)
             ) {
-                val (header, closeIcon, primaryText, secondaryText, tertiaryText, quaternaryBox, primaryButton) =
-                    createRefs()
+                val (
+                    header,
+                    closeIcon,
+                    introText,
+                    primaryText,
+                    secondaryText,
+                    tertiaryText,
+                    quaternaryText,
+                    quinaryBox,
+                    primaryButton
+                ) = createRefs()
 
                 WooPosText(
                     text = stringResource(id = state.header),
@@ -94,22 +112,23 @@ fun WooPosBarcodeInfoDialog(
                 )
 
                 WooPosText(
-                    text = stringResource(id = state.primaryMessage),
+                    text = stringResource(id = state.introMessage),
                     style = WooPosTypography.BodyLarge,
                     textAlign = TextAlign.Start,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = WooPosSpacing.Medium.value.toAdaptivePadding())
-                        .constrainAs(primaryText) {
+                        .padding(
+                            bottom = WooPosSpacing.Medium.value.toAdaptivePadding()
+                        )
+                        .constrainAs(introText) {
                             top.linkTo(header.bottom)
                             start.linkTo(parent.start)
                             end.linkTo(parent.end)
                         }
                 )
 
-                val secondaryMessage = stringResource(id = state.secondaryMessage)
+                val primaryMessage = stringResource(id = state.primaryMessage)
                 val moreDetailsText = stringResource(id = R.string.woopos_dialog_barcode_info_more_details_link)
-
                 val linkAnnotation = LinkAnnotation.Url(
                     WOO_POS_BARCODE_DOC_URL
                 ) { urlAnnotation ->
@@ -121,21 +140,34 @@ fun WooPosBarcodeInfoDialog(
                 }
 
                 val annotatedText = buildAnnotatedString {
-                    append(secondaryMessage)
+                    append(primaryMessage)
+                    append(" ")
                     withStyle(
                         style = SpanStyle(
                             color = MaterialTheme.colorScheme.primary,
                             textDecoration = TextDecoration.Underline
                         )
                     ) {
-                        withLink(linkAnnotation) {
-                            append(" $moreDetailsText.")
-                        }
+                        withLink(linkAnnotation) { append(moreDetailsText) }
                     }
+                    append(".")
                 }
-
                 WooPosText(
                     text = annotatedText,
+                    style = WooPosTypography.BodyLarge,
+                    textAlign = TextAlign.Start,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = WooPosSpacing.Medium.value.toAdaptivePadding())
+                        .constrainAs(primaryText) {
+                            top.linkTo(introText.bottom)
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                        }
+                )
+
+                WooPosText(
+                    text = stringResource(id = state.secondaryMessage),
                     style = WooPosTypography.BodyLarge,
                     textAlign = TextAlign.Start,
                     modifier = Modifier
@@ -160,10 +192,26 @@ fun WooPosBarcodeInfoDialog(
                         .padding(
                             start = WooPosSpacing.Medium.value.toAdaptivePadding(),
                             top = WooPosSpacing.Small.value.toAdaptivePadding(),
-                            bottom = WooPosSpacing.Medium.value.toAdaptivePadding()
                         )
                         .constrainAs(tertiaryText) {
                             top.linkTo(secondaryText.bottom)
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                        }
+                )
+
+                WooPosText(
+                    text = stringResource(id = state.quaternaryMessage),
+                    style = WooPosTypography.BodyLarge,
+                    textAlign = TextAlign.Start,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            start = WooPosSpacing.Medium.value.toAdaptivePadding(),
+                            top = WooPosSpacing.Small.value.toAdaptivePadding(),
+                        )
+                        .constrainAs(quaternaryText) {
+                            top.linkTo(tertiaryText.bottom)
                             start.linkTo(parent.start)
                             end.linkTo(parent.end)
                         }
@@ -181,15 +229,15 @@ fun WooPosBarcodeInfoDialog(
                             vertical = WooPosSpacing.XLarge.value.toAdaptivePadding(),
                             horizontal = WooPosSpacing.Medium.value.toAdaptivePadding()
                         )
-                        .constrainAs(quaternaryBox) {
-                            top.linkTo(tertiaryText.bottom, margin = bigMargin)
+                        .constrainAs(quinaryBox) {
+                            top.linkTo(quaternaryText.bottom, margin = bigMargin)
                             start.linkTo(parent.start)
                             end.linkTo(parent.end)
                         },
                     contentAlignment = Alignment.Center,
                 ) {
                     WooPosText(
-                        text = stringResource(id = state.quaternaryMessage),
+                        text = stringResource(id = state.quinaryMessage),
                         style = WooPosTypography.BodySmall,
                         textAlign = TextAlign.Center,
                     )
@@ -205,7 +253,7 @@ fun WooPosBarcodeInfoDialog(
                             contentDescription = primaryButtonContentDescription
                         }
                         .constrainAs(primaryButton) {
-                            top.linkTo(quaternaryBox.bottom, margin = buttonMargin)
+                            top.linkTo(quinaryBox.bottom, margin = buttonMargin)
                             start.linkTo(parent.start)
                             end.linkTo(parent.end)
                         }
@@ -221,10 +269,12 @@ private fun getCombinedContentDescription(state: WooPosHomeState.BarcodeInfoDial
         id = R.string.woopos_dialog_barcode_info_content_description
     )
     return "$dialogContentDescription\n${stringResource(id = state.header)}" +
-        "\n${stringResource(id = state.primaryMessage)}\n${stringResource(id = state.secondaryMessage)}" +
-        "\n${stringResource(id = state.tertiaryMessage)}\n${stringResource(id = state.quaternaryMessage)}"
+        "\n${stringResource(id = state.introMessage)}\n${stringResource(id = state.primaryMessage)}" +
+        "\n${stringResource(id = state.secondaryMessage)}\n${stringResource(id = state.tertiaryMessage)}" +
+        "\n${stringResource(id = state.quaternaryMessage)}\n${stringResource(id = state.quinaryMessage)}"
 }
 
+@FontScalePreviews
 @WooPosPreview
 @Composable
 fun BarcodeInfoDialogPreview() {

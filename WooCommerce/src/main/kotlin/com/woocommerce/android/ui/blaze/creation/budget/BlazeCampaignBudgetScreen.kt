@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -500,7 +501,10 @@ private fun EditDurationBottomSheet(
                         delay(400)
                         onCancelTapped()
                     }
-                }
+                },
+                colors = ButtonDefaults.textButtonColors(
+                    contentColor = colorResource(id = R.color.text_button_over_bottom_sheet)
+                )
             ) {
                 Text(
                     text = stringResource(id = R.string.blaze_campaign_budget_duration_cancel_button),

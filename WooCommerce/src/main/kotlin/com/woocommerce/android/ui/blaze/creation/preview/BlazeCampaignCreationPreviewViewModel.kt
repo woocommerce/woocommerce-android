@@ -13,6 +13,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.formatToLocalizedMedium
 import com.woocommerce.android.extensions.formatToMMMdd
+import com.woocommerce.android.model.UiString.UiStringRes
+import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.blaze.BlazeRepository.AiSuggestionForAd
@@ -295,7 +297,9 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
             getTargetInterestsDetails(),
         ),
         destinationUrl = getTargetDestinationDetails(),
-        selectedObjective = getSelectedObjective(campaignObjectives)
+        selectedObjective = getSelectedObjective(campaignObjectives),
+        campaignTosText = buildCampaignTosText(),
+        campaignTosAccepted = acceptedTos
     )
 
     private fun getSelectedObjective(objectives: List<Objective>): CampaignDetailItemUi {
@@ -380,10 +384,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         )
 
     private fun BlazeRepository.Budget.toDisplayValue(): String {
-        val totalBudgetWithCurrency = currencyFormatter.formatCurrency(
-            totalBudget.toBigDecimal(),
-            currencyCode
-        )
+        val totalBudgetWithCurrency = toDisplayTotalBudget()
         return when {
             isEndlessCampaign -> resourceProvider.getString(
                 R.string.blaze_campaign_preview_days_duration_endless,
@@ -397,6 +398,36 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
                     durationInDays,
                     startDate.formatToMMMdd()
                 )
+        }
+    }
+
+    private fun BlazeRepository.Budget.toDisplayTotalBudget(): String =
+        currencyFormatter.formatCurrency(
+            totalBudget.toBigDecimal(),
+            currencyCode
+        )
+
+    private fun CampaignDetails.buildCampaignTosText(): UiStringRes {
+        val stringRes = when {
+            budget.isEndlessCampaign -> R.string.blaze_campaign_preview_tos_checkbox_evergreen_campaigns
+            budget.durationInDays <= WEEK_LONG_CAMPAIGN_IN_DAYS ->
+                R.string.blaze_campaign_preview_tos_checkbox_less_than_7_days_campaign
+
+            else -> R.string.blaze_campaign_preview_tos_checkbox_over_7_days_campaign
+        }
+        return UiStringRes(
+            stringRes = stringRes,
+            params = listOf(
+                UiStringText(budget.toDisplayTotalBudget()),
+                UiStringText(budget.startDate.formatToLocalizedMedium())
+            ),
+            containsHtml = true
+        )
+    }
+
+    fun onTosAccepted(accepted: Boolean) {
+        campaignDetails.update {
+            it?.copy(acceptedTos = accepted)
         }
     }
 
@@ -428,7 +459,9 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         val budget: CampaignDetailItemUi,
         val targetDetails: List<CampaignDetailItemUi>,
         val destinationUrl: CampaignDetailItemUi,
-        val selectedObjective: CampaignDetailItemUi
+        val selectedObjective: CampaignDetailItemUi,
+        val campaignTosText: UiStringRes,
+        val campaignTosAccepted: Boolean
     )
 
     data class CampaignDetailItemUi(
@@ -471,4 +504,8 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
     data class NavigateToPaymentSummary(
         val campaignDetails: CampaignDetails
     ) : MultiLiveEvent.Event()
+
+    companion object {
+        const val WEEK_LONG_CAMPAIGN_IN_DAYS = 7
+    }
 }

@@ -2,17 +2,16 @@ package com.woocommerce.android.ui.woopos.home.cart
 
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
+import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState.Coupon.CouponValidationState
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
-import com.woocommerce.android.util.WooLog.T
-import com.woocommerce.android.util.WooLogWrapper
 import javax.inject.Inject
 
 class WooPosCartItemsUpdater @Inject constructor(
     private val formatPrice: WooPosFormatPrice,
     private val productsCache: WooPosProductsCache,
-    private val wooLogWrapper: WooLogWrapper,
+    private val wooPosLogWrapper: WooPosLogWrapper,
     private val crashLogger: CrashLogging,
 ) {
     suspend operator fun invoke(
@@ -101,7 +100,7 @@ class WooPosCartItemsUpdater @Inject constructor(
         item.copy(validationState = CouponValidationState.Valid("-${formatPrice(it.discountAmount)}"))
     } ?: item.also {
         val message = "Coupon not found in the cart"
-        wooLogWrapper.e(T.POS, message)
+        wooPosLogWrapper.e(message)
         crashLogger.sendReport(IllegalStateException(message))
     }
 

@@ -6,6 +6,8 @@ import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ConfigDTO
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.Item
+import com.woocommerce.android.ui.orders.wooshippinglabels.networking.LabelRefund
+import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ShippingLabelDTO
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ShippingLabelDataDTO
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
@@ -23,6 +25,7 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class GetShipmentsTests : BaseUnitTest() {
@@ -180,5 +183,36 @@ class GetShipmentsTests : BaseUnitTest() {
 
         assertEquals(shipment1.items.first().quantity, 5f)
         assertEquals(shipment2.items.first().quantity, 5f)
+    }
+
+    @Test
+    fun `when label is refunded then purchased should be false`() = testBlocking {
+        val orderItem = OrderTestUtils.generateTestOrderItems(count = 1).first()
+        val order = OrderTestUtils.generateTestOrder().copy(items = listOf(orderItem))
+        val shipmentId = "0"
+        val labelId = 123L
+
+        whenever(orderDetailRepository.getOrderRefunds(eq(order.id))) doReturn emptyList()
+        whenever(productDetailRepository.getProductAsync(any())).thenAnswer { invocation ->
+            val productId = invocation.arguments[0] as Long
+            ProductTestUtils.generateProduct(productId = productId, productName = "Product $productId")
+        }
+
+        val shipments = mapOf(shipmentId to listOf(Item(id = orderItem.itemId, subItems = emptyList())))
+        val shippingLabel = ShippingLabelDTO(
+            labelId = labelId,
+            shipmentId = shipmentId,
+            refund = LabelRefund(status = "") // Mark as refunded
+        )
+        val configDTO = ConfigDTO(
+            shipments = shipments,
+            shippingLabelData = ShippingLabelDataDTO(currentOrderLabels = listOf(shippingLabel))
+        )
+        whenever(configDataStore.observeConfig(eq(order.id))) doReturn flowOf(configDTO)
+
+        val result = sut.invoke(order)
+        val shipmentUIModel = result.first()
+
+        assertFalse(shipmentUIModel.purchased)
     }
 }

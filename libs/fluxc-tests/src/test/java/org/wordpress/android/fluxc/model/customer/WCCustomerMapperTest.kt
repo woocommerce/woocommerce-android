@@ -74,7 +74,7 @@ class WCCustomerMapperTest {
             assertEquals("dateModifiedGmt", dateModifiedGmt)
             assertEquals("email", email)
             assertEquals("firstName", firstName)
-            assertEquals(remoteCustomerId, remoteId)
+            assertEquals(remoteCustomerId.value, remoteId)
             assertTrue(isPayingCustomer)
             assertEquals("lastName", lastName)
             assertEquals("role", role)
@@ -108,41 +108,41 @@ class WCCustomerMapperTest {
     @Suppress("LongMethod")
     fun `mapper maps to correct customer dto`() {
         // given
-        val model = WCCustomerModel().apply {
-            avatarUrl = "avatarUrl"
-            dateCreated = "dateCreated"
-            dateCreatedGmt = "dateCreatedGmt"
-            dateModified = "dateModified"
-            dateModifiedGmt = "dateModifiedGmt"
-            email = "email"
-            firstName = "firstName"
-            isPayingCustomer = true
-            lastName = "lastName"
-            role = "role"
-            username = "username"
+        val model = WCCustomerModel(
+            avatarUrl = "avatarUrl",
+            dateCreated = "dateCreated",
+            dateCreatedGmt = "dateCreatedGmt",
+            dateModified = "dateModified",
+            dateModifiedGmt = "dateModifiedGmt",
+            email = "email",
+            firstName = "firstName",
+            isPayingCustomer = true,
+            lastName = "lastName",
+            role = "role",
+            username = "username",
 
-            billingAddress1 = "address1"
-            billingAddress2 = "address2"
-            billingCity = "city"
-            billingCompany = "company"
-            billingCountry = "country"
-            billingEmail = "email"
-            billingFirstName = "firstName"
-            billingLastName = "lastName"
-            billingPhone = "phone"
-            billingPostcode = "postcode"
-            billingState = "state"
+            billingAddress1 = "address1",
+            billingAddress2 = "address2",
+            billingCity = "city",
+            billingCompany = "company",
+            billingCountry = "country",
+            billingEmail = "email",
+            billingFirstName = "firstName",
+            billingLastName = "lastName",
+            billingPhone = "phone",
+            billingPostcode = "postcode",
+            billingState = "state",
 
-            shippingAddress1 = "address1"
-            shippingAddress2 = "address2"
-            shippingCity = "city"
-            shippingCompany = "company"
-            shippingCountry = "country"
-            shippingFirstName = "firstName"
-            shippingLastName = "lastName"
-            shippingPostcode = "postcode"
-            shippingState = "state"
-        }
+            shippingAddress1 = "address1",
+            shippingAddress2 = "address2",
+            shippingCity = "city",
+            shippingCompany = "company",
+            shippingCountry = "country",
+            shippingFirstName = "firstName",
+            shippingLastName = "lastName",
+            shippingPostcode = "postcode",
+            shippingState = "state",
+        )
 
         // when
         val result = mapper.mapToDTO(model)
@@ -219,7 +219,7 @@ class WCCustomerMapperTest {
         assertThat(result.lastName).isEqualTo("lastname")
         assertThat(result.email).isEqualTo("email")
         assertThat(result.isPayingCustomer).isEqualTo(true)
-        assertThat(result.remoteCustomerId).isEqualTo(1L)
+        assertThat(result.remoteCustomerId.value).isEqualTo(1L)
         assertThat(result.dateCreated).isEqualTo("dateRegistered")
         assertThat(result.dateModified).isEqualTo("dateLastActive")
 

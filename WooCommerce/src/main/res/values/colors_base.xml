@@ -48,6 +48,7 @@
         Color resource used to indicate selected state of an item
     -->
     <color name="woo_item_selected">@color/woo_purple_0</color>
+    <color name="woo_item_selected_disabled">@color/woo_gray_0</color>
     <color name="color_item_selected">@color/woo_item_selected</color>
 
     <!--
@@ -237,6 +238,7 @@
     <color name="light_colored_button_background">@color/woo_gray_6</color>
     <color name="light_colored_button_text_secondary">@color/color_primary</color>
     <color name="primary_colored_button_background">@color/woo_purple_40</color>
+    <color name="text_button_over_bottom_sheet">@color/color_primary</color>
 
     <!--
     Analytics
@@ -344,5 +346,10 @@
     -->
     <color name="woo_message_surface">#1C1C1E</color>
     <color name="woo_message_on_surface">@color/woo_purple_30</color>
+
+    <!--
+        Order Creation
+    -->
+    <color name="order_update_overlay_background">@color/woo_white_alpha_060</color>
 
 </resources>

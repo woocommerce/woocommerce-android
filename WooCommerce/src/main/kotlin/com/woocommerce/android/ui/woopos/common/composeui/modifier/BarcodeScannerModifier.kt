@@ -14,6 +14,8 @@ import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.key.utf16CodePoint
+import com.woocommerce.android.ui.woopos.common.composeui.modifier.BarcodeInputDetector.Companion.FIRST_PRINTABLE_CHAR_CODE
+import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -47,8 +49,16 @@ fun Modifier.listenForBarcodes(
             if (!enabled) return@onKeyEvent false
 
             if (keyEvent.type == KeyEventType.KeyDown) {
-                val pressedKey = keyEvent.utf16CodePoint.toChar()
-                return@onKeyEvent detector.handleKeyInput(pressedKey)
+                val charCode = keyEvent.utf16CodePoint
+                val isValidChar = charCode > 0
+                val isPrintableOrNewline = charCode == '\n'.code ||
+                    charCode == '\r'.code ||
+                    charCode >= FIRST_PRINTABLE_CHAR_CODE
+
+                if (isValidChar && isPrintableOrNewline) {
+                    val pressedKey = charCode.toChar()
+                    return@onKeyEvent detector.handleKeyInput(pressedKey)
+                }
             }
 
             false
@@ -65,6 +75,7 @@ class BarcodeInputDetector(
     companion object {
         const val MAX_SCANNER_TOTAL_SCAN_TIMEOUT_MS = 1500L
         const val MAX_SCANNER_INTER_CHAR_DELAY_MS = 100L
+        const val FIRST_PRINTABLE_CHAR_CODE = 32
         const val MIN_BARCODE_LENGTH = 4
     }
 
@@ -134,6 +145,7 @@ class BarcodeInputDetector(
 
         if (scannedBarcode.length >= MIN_BARCODE_LENGTH) {
             onBarcodeScanned(scannedBarcode)
+            WooPosLogWrapper.d("Barcode scanned: $scannedBarcode")
         }
 
         clear()

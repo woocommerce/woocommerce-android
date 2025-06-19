@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.list
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -97,6 +98,7 @@ class OrderListFragment :
         const val FILTER_CHANGE_NOTICE_KEY = "filters_changed_notice"
 
         private const val JITM_FRAGMENT_TAG = "jitm_orders_fragment"
+        private const val TABLET_PORTRAIT_WIDTH_RATIO = 0.4f
         private const val TABLET_LANDSCAPE_WIDTH_RATIO = 0.3f
         private const val LAST_WINDOW_SIZE_WAS_LARGER_THAN_COMPACT = "last_window_size_was_larger_than_compact"
         private const val HANDLER_DELAY = 200L
@@ -338,11 +340,21 @@ class OrderListFragment :
         when (requireContext().isTwoPanesShouldBeUsed) {
             false -> return
             true -> {
-                binding.twoPaneLayoutGuideline.setGuidelinePercent(TABLET_LANDSCAPE_WIDTH_RATIO)
+                setListDetailsLayoutWidthRatio()
             }
         }
         binding.listPaneContainer.visibility = View.VISIBLE
         binding.detailPaneContainer.visibility = View.VISIBLE
+    }
+
+    private fun setListDetailsLayoutWidthRatio() {
+        if (!requireContext().isTwoPanesShouldBeUsed) return
+
+        val ratio = when (resources.configuration.orientation) {
+            Configuration.ORIENTATION_LANDSCAPE -> TABLET_LANDSCAPE_WIDTH_RATIO
+            else -> TABLET_PORTRAIT_WIDTH_RATIO
+        }
+        binding.twoPaneLayoutGuideline.setGuidelinePercent(ratio)
     }
 
     private fun adjustLayoutForNonTablet(savedInstanceState: Bundle?) {

@@ -37,10 +37,10 @@ class CustomerListSelectionViewModel @Inject constructor(
     override fun onCustomerSelected(customerModel: WCCustomerModel) {
         analyticsTracker.track(
             AnalyticsEvent.ORDER_CREATION_CUSTOMER_ADDED,
-            mapOf("is_customer_registered" to (customerModel.remoteCustomerId > 0L).toString())
+            mapOf("is_customer_registered" to (customerModel.remoteCustomerId.value > 0L).toString())
         )
         when {
-            customerModel.remoteCustomerId > 0L -> {
+            customerModel.remoteCustomerId.value > 0L -> {
                 // this customer is registered, so we may have more info on them
                 tryLoadMoreInfo(customerModel)
             }
@@ -64,7 +64,7 @@ class CustomerListSelectionViewModel @Inject constructor(
         loadingMoreInfoAboutCustomerJob?.cancel()
         loadingMoreInfoAboutCustomerJob = launch {
             _viewState.value = _viewState.value!!.copy(partialLoading = true)
-            val result = repository.fetchCustomerByRemoteId(customerModel.remoteCustomerId)
+            val result = repository.fetchCustomerByRemoteId(customerModel.remoteCustomerId.value)
             _viewState.value = _viewState.value!!.copy(partialLoading = false)
             if (result.isError || result.model == null) {
                 // just use what we have
@@ -88,7 +88,7 @@ class CustomerListSelectionViewModel @Inject constructor(
         triggerEvent(
             CustomerSelected(
                 Order.Customer(
-                    customerId = wcCustomer.remoteCustomerId,
+                    customerId = wcCustomer.remoteCustomerId.value,
                     firstName = wcCustomer.firstName,
                     lastName = wcCustomer.lastName,
                     email = wcCustomer.email,

@@ -1,6 +1,7 @@
 package com.woocommerce.android.util
 
 import android.content.Context
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +16,9 @@ import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.WindowSizeClass
 import com.woocommerce.android.extensions.isTwoPanesShouldBeUsed
+import com.woocommerce.android.extensions.windowWidthSizeClass
 import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
@@ -92,19 +95,14 @@ class TabletLayoutSetupHelper @Inject constructor(private val context: Context) 
 
     private fun setDetailsMargins(rootView: View) {
         if (rootView !is ViewGroup) return
+        if (!context.isTwoPanesShouldBeUsed) return
 
-        val marginPart = when (context.isTwoPanesShouldBeUsed) {
-            false -> return
-            true -> MARGINS_FOR_TABLET
-        }
-
-        val windowWidth = DisplayUtils.getWindowPixelWidth(context)
         rootView.children.filter {
             it !is Toolbar
         }.forEach { viewToApplyMargins ->
             val layoutParams = viewToApplyMargins.layoutParams
             if (layoutParams is MarginLayoutParams) {
-                val marginHorizontal = (windowWidth * marginPart).toInt()
+                val marginHorizontal = getMarginHorizontal(DisplayUtils.getWindowPixelWidth(context))
                 layoutParams.setMargins(
                     marginHorizontal,
                     layoutParams.topMargin,
@@ -115,6 +113,12 @@ class TabletLayoutSetupHelper @Inject constructor(private val context: Context) 
                 viewToApplyMargins.layoutParams = layoutParams
             }
         }
+    }
+
+    private fun getMarginHorizontal(windowWidth: Int): Int = when (context.windowWidthSizeClass) {
+        WindowSizeClass.Medium -> context.resources.getDimension(R.dimen.major_100).toInt()
+        WindowSizeClass.ExpandedAndBigger -> (windowWidth * MARGINS_FOR_TABLET).toInt()
+        WindowSizeClass.Compact -> 0
     }
 
     private fun initNavFragment(screen: Screen) {
@@ -145,12 +149,13 @@ class TabletLayoutSetupHelper @Inject constructor(private val context: Context) 
     }
 
     private fun adjustLayoutForTablet(screen: Screen) {
-        when (context.isTwoPanesShouldBeUsed) {
-            false -> return
-            true -> {
-                screen.twoPaneLayoutGuideline.setGuidelinePercent(TABLET_LANDSCAPE_WIDTH_RATIO)
-            }
+        if (!context.isTwoPanesShouldBeUsed) return
+
+        val ratio = when (context.resources.configuration.orientation) {
+            Configuration.ORIENTATION_LANDSCAPE -> TABLET_LANDSCAPE_WIDTH_RATIO
+            else -> TABLET_PORTRAIT_WIDTH_RATIO
         }
+        screen.twoPaneLayoutGuideline.setGuidelinePercent(ratio)
         screen.listPaneContainer.visibility = View.VISIBLE
         screen.detailPaneContainer.visibility = View.VISIBLE
     }
@@ -176,6 +181,7 @@ class TabletLayoutSetupHelper @Inject constructor(private val context: Context) 
     }
 
     private companion object {
+        private const val TABLET_PORTRAIT_WIDTH_RATIO = 0.4f
         private const val TABLET_LANDSCAPE_WIDTH_RATIO = 0.3f
 
         private const val MARGINS_FOR_TABLET: Float = 0.1F
