@@ -52,7 +52,13 @@ data class Order(
     val selectedGiftCard: String?,
     val giftCardDiscountedAmount: BigDecimal?,
     val shippingTax: BigDecimal,
+    val salesChannel: SalesChannel,
 ) : Parcelable {
+    enum class SalesChannel {
+        POS,
+        ALL_OTHER
+    }
+
     @IgnoredOnParcel
     val isOrderPaid = datePaid != null
 
@@ -413,7 +419,8 @@ data class Order(
                 isEditable = true,
                 selectedGiftCard = "",
                 giftCardDiscountedAmount = null,
-                shippingTax = BigDecimal(0)
+                shippingTax = BigDecimal(0),
+                salesChannel = SalesChannel.ALL_OTHER
             )
         }
 
