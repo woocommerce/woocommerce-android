@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 46,
-    "identityHash": "2d02624d271e830fa818c4c901198d1e",
+    "identityHash": "c86a97d46e996fa9739bfe683545f1c7",
     "entities": [
       {
         "tableName": "AddonEntity",
@@ -524,7 +524,7 @@
       },
       {
         "tableName": "OrderEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`localSiteId` INTEGER NOT NULL, `orderId` INTEGER NOT NULL, `number` TEXT NOT NULL, `status` TEXT NOT NULL, `currency` TEXT NOT NULL, `orderKey` TEXT NOT NULL, `dateCreated` TEXT NOT NULL, `dateModified` TEXT NOT NULL, `total` TEXT NOT NULL, `totalTax` TEXT NOT NULL, `shippingTotal` TEXT NOT NULL, `paymentMethod` TEXT NOT NULL, `paymentMethodTitle` TEXT NOT NULL, `datePaid` TEXT NOT NULL, `pricesIncludeTax` INTEGER NOT NULL, `customerNote` TEXT NOT NULL, `discountTotal` TEXT NOT NULL, `discountCodes` TEXT NOT NULL, `refundTotal` TEXT NOT NULL, `customerId` INTEGER NOT NULL DEFAULT 0, `billingFirstName` TEXT NOT NULL, `billingLastName` TEXT NOT NULL, `billingCompany` TEXT NOT NULL, `billingAddress1` TEXT NOT NULL, `billingAddress2` TEXT NOT NULL, `billingCity` TEXT NOT NULL, `billingState` TEXT NOT NULL, `billingPostcode` TEXT NOT NULL, `billingCountry` TEXT NOT NULL, `billingEmail` TEXT NOT NULL, `billingPhone` TEXT NOT NULL, `shippingFirstName` TEXT NOT NULL, `shippingLastName` TEXT NOT NULL, `shippingCompany` TEXT NOT NULL, `shippingAddress1` TEXT NOT NULL, `shippingAddress2` TEXT NOT NULL, `shippingCity` TEXT NOT NULL, `shippingState` TEXT NOT NULL, `shippingPostcode` TEXT NOT NULL, `shippingCountry` TEXT NOT NULL, `shippingPhone` TEXT NOT NULL, `lineItems` TEXT NOT NULL, `shippingLines` TEXT NOT NULL, `feeLines` TEXT NOT NULL, `taxLines` TEXT NOT NULL, `couponLines` TEXT NOT NULL DEFAULT '', `metaData` TEXT NOT NULL, `paymentUrl` TEXT NOT NULL DEFAULT '', `isEditable` INTEGER NOT NULL DEFAULT 1, `needsPayment` INTEGER, `needsProcessing` INTEGER, `giftCardCode` TEXT NOT NULL DEFAULT '', `giftCardAmount` TEXT NOT NULL DEFAULT '', `shippingTax` TEXT NOT NULL DEFAULT '', PRIMARY KEY(`localSiteId`, `orderId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`localSiteId` INTEGER NOT NULL, `orderId` INTEGER NOT NULL, `number` TEXT NOT NULL, `status` TEXT NOT NULL, `currency` TEXT NOT NULL, `orderKey` TEXT NOT NULL, `dateCreated` TEXT NOT NULL, `dateModified` TEXT NOT NULL, `total` TEXT NOT NULL, `totalTax` TEXT NOT NULL, `shippingTotal` TEXT NOT NULL, `paymentMethod` TEXT NOT NULL, `paymentMethodTitle` TEXT NOT NULL, `datePaid` TEXT NOT NULL, `pricesIncludeTax` INTEGER NOT NULL, `customerNote` TEXT NOT NULL, `discountTotal` TEXT NOT NULL, `discountCodes` TEXT NOT NULL, `refundTotal` TEXT NOT NULL, `customerId` INTEGER NOT NULL DEFAULT 0, `billingFirstName` TEXT NOT NULL, `billingLastName` TEXT NOT NULL, `billingCompany` TEXT NOT NULL, `billingAddress1` TEXT NOT NULL, `billingAddress2` TEXT NOT NULL, `billingCity` TEXT NOT NULL, `billingState` TEXT NOT NULL, `billingPostcode` TEXT NOT NULL, `billingCountry` TEXT NOT NULL, `billingEmail` TEXT NOT NULL, `billingPhone` TEXT NOT NULL, `shippingFirstName` TEXT NOT NULL, `shippingLastName` TEXT NOT NULL, `shippingCompany` TEXT NOT NULL, `shippingAddress1` TEXT NOT NULL, `shippingAddress2` TEXT NOT NULL, `shippingCity` TEXT NOT NULL, `shippingState` TEXT NOT NULL, `shippingPostcode` TEXT NOT NULL, `shippingCountry` TEXT NOT NULL, `shippingPhone` TEXT NOT NULL, `lineItems` TEXT NOT NULL, `shippingLines` TEXT NOT NULL, `feeLines` TEXT NOT NULL, `taxLines` TEXT NOT NULL, `couponLines` TEXT NOT NULL DEFAULT '', `metaData` TEXT NOT NULL, `paymentUrl` TEXT NOT NULL DEFAULT '', `isEditable` INTEGER NOT NULL DEFAULT 1, `needsPayment` INTEGER, `needsProcessing` INTEGER, `giftCardCode` TEXT NOT NULL DEFAULT '', `giftCardAmount` TEXT NOT NULL DEFAULT '', `shippingTax` TEXT NOT NULL DEFAULT '', `createdVia` TEXT NOT NULL DEFAULT '', PRIMARY KEY(`localSiteId`, `orderId`))",
         "fields": [
           {
             "fieldPath": "localSiteId",
@@ -853,6 +853,13 @@
           {
             "fieldPath": "shippingTax",
             "columnName": "shippingTax",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "''"
+          },
+          {
+            "fieldPath": "createdVia",
+            "columnName": "createdVia",
             "affinity": "TEXT",
             "notNull": true,
             "defaultValue": "''"
@@ -3029,7 +3036,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2d02624d271e830fa818c4c901198d1e')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c86a97d46e996fa9739bfe683545f1c7')"
     ]
   }
 }
