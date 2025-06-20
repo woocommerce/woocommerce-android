@@ -71,6 +71,9 @@ class ProductInventoryViewModel @Inject constructor(
      * in the local db. Only if it is not available, the API verification call is initiated.
      */
     fun onSkuChanged(sku: String) {
+        if (sku == viewState.inventoryData.sku) {
+            return
+        }
         // verify if the sku exists only if the text entered by the user does not match the sku stored locally
         if (sku.length > 2) {
             onDataChanged(sku = sku)
@@ -105,6 +108,9 @@ class ProductInventoryViewModel @Inject constructor(
     }
 
     fun onProductUniqueGlobalIdChanged(globalUniqueId: String) {
+        if(globalUniqueId == viewState.inventoryData.globalUniqueId) {
+            return
+        }
         onDataChanged(globalUniqueId = globalUniqueId)
 
         if (isOnlyNumbersAndHyphens(globalUniqueId)) {
