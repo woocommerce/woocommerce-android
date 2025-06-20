@@ -80,9 +80,7 @@ class WooPosTabController @Inject constructor(
 
     private fun updateTabVisibilityFromRemoteAndPersist() {
         activity.lifecycleScope.launch {
-            val isWooPosEnabledValue = withContext(Dispatchers.Default) {
-                isWooPosEnabled()
-            }
+            val isWooPosEnabledValue = isWooPosEnabled()
             setPOSTabVisibility(isWooPosEnabledValue)
             appPrefs.setPOSTabVisibilityForSite(selectedSite.getSelectedSiteId(), isWooPosEnabledValue)
         }
