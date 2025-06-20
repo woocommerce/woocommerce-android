@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 47,
-    "identityHash": "0c77ea0cfea36eccb37cffd631854ea4",
+    "identityHash": "2be82e1cc597e62087517e799d0495de",
     "entities": [
       {
         "tableName": "AddonEntity",
@@ -3027,7 +3027,7 @@
       },
       {
         "tableName": "LocationEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`parentCode` TEXT NOT NULL, `code` TEXT NOT NULL, `name` TEXT NOT NULL, PRIMARY KEY(`parentCode`, `code`, `name`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`parentCode` TEXT NOT NULL, `code` TEXT NOT NULL, `name` TEXT NOT NULL, PRIMARY KEY(`parentCode`, `code`))",
         "fields": [
           {
             "fieldPath": "parentCode",
@@ -3052,8 +3052,7 @@
           "autoGenerate": false,
           "columnNames": [
             "parentCode",
-            "code",
-            "name"
+            "code"
           ]
         },
         "indices": [],
@@ -3063,7 +3062,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0c77ea0cfea36eccb37cffd631854ea4')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2be82e1cc597e62087517e799d0495de')"
     ]
   }
 }
