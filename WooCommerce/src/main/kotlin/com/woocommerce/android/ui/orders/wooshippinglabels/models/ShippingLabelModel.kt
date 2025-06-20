@@ -32,6 +32,13 @@ data class ShippingLabelModel(
     val expiryDate: Long,
     val usedDate: Long?,
 ) : Parcelable {
+    val refundDuration: Int
+        get() = if (carrierId == CARRIER_DHL_EXPRESS_KEY) {
+            REFUND_DURATION_DHL_EXPRESS
+        } else {
+            REFUND_DURATION_DEFAULT
+        }
+
     val isRefundAvailable: Boolean
         get() {
             val createdDate = createdDate?.time ?: return true
@@ -48,6 +55,8 @@ data class ShippingLabelModel(
 
     companion object {
         private const val REFUND_EXPIRY_DAYS = 30L
+        private const val REFUND_DURATION_DHL_EXPRESS = 14
+        const val REFUND_DURATION_DEFAULT = 31
     }
 }
 
