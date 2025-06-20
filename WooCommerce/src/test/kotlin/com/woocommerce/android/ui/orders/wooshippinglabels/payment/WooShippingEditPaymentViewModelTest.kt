@@ -13,6 +13,7 @@ import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
@@ -66,6 +67,7 @@ class WooShippingEditPaymentViewModelTest : BaseUnitTest() {
     private val fetchAccountSettings: FetchAccountSettings = mock {
         onBlocking { invoke() } doReturn Result.success(defaultAccountSettings)
     }
+    private val updatePaymentOptions: UpdatePaymentOptions = mock()
     private val webViewAuthenticator: WebViewAuthenticator = mock()
     private val userAgent: UserAgent = mock()
     private val savedStateHandle = SavedStateHandle()
@@ -78,6 +80,7 @@ class WooShippingEditPaymentViewModelTest : BaseUnitTest() {
             savedStateHandle = savedStateHandle,
             observeAccountSettings = observeAccountSettings,
             fetchAccountSettings = fetchAccountSettings,
+            updatePaymentOptions = updatePaymentOptions,
             webViewAuthenticator = webViewAuthenticator,
             userAgent = userAgent
         )
@@ -178,11 +181,10 @@ class WooShippingEditPaymentViewModelTest : BaseUnitTest() {
         }.last() as WooShippingEditPaymentViewModel.ViewState.AddPaymentMethodWebView
 
         // Simulate successful URL load with payment method success URL
-        val events = mutableListOf<Any>()
-        viewModel.event.observeForever { events.add(it) }
-
-        webViewState.onUrlLoaded("https://wordpress.com/me/payment-methods")
-        advanceUntilIdle()
+        val events = viewModel.event.runAndCaptureValues {
+            webViewState.onUrlLoaded("https://wordpress.com/me/payment-methods")
+            advanceUntilIdle()
+        }
 
         // Verify that the snackbar is shown
         assertThat(events).anyMatch { it is ShowSnackbar && it.message == R.string.woo_shipping_payment_method_added }
@@ -250,4 +252,95 @@ class WooShippingEditPaymentViewModelTest : BaseUnitTest() {
 
         assertThat(newState.emailReceipts).isEqualTo(!defaultAccountSettings.paymentMethodOptions.emailReceipts)
     }
+
+    @Test
+    fun `when save is clicked with no changes, then exit without calling updatePaymentOptions`() = testBlocking {
+        setup()
+
+        // Get the content state and call onSaveClicked
+        val contentState =
+            viewModel.viewState.captureValues().last() as WooShippingEditPaymentViewModel.ViewState.Content
+
+        // Capture events
+        val events = viewModel.event.runAndCaptureValues {
+            contentState.onSaveClicked()
+            advanceUntilIdle()
+        }
+
+        // Verify that Exit event is triggered and updatePaymentOptions is not called
+        assertThat(events).anyMatch { it is Exit }
+        org.mockito.kotlin.verify(updatePaymentOptions, org.mockito.kotlin.never()).invoke(
+            org.mockito.kotlin.any(),
+            org.mockito.kotlin.any()
+        )
+    }
+
+    @Test
+    fun `when save is clicked with changes and save is successful, then call updatePaymentOptions and exit`() =
+        testBlocking {
+            // Setup with successful update
+            whenever(updatePaymentOptions.invoke(org.mockito.kotlin.any(), org.mockito.kotlin.any()))
+                .thenReturn(Result.success(Unit))
+
+            setup()
+
+            // Get the content state, make changes, and call onSaveClicked
+            val contentState =
+                viewModel.viewState.captureValues().last() as WooShippingEditPaymentViewModel.ViewState.Content
+
+            // Change payment method
+            val newPaymentMethodId = 2L
+            contentState.onPaymentMethodSelected(newPaymentMethodId)
+
+            // Change email receipts
+            contentState.onEmailReceiptsChanged(!defaultAccountSettings.paymentMethodOptions.emailReceipts)
+
+            // Capture events and save changes
+            val events = viewModel.event.runAndCaptureValues {
+                contentState.onSaveClicked()
+                advanceUntilIdle()
+            }
+
+            // Verify that updatePaymentOptions is called with the correct parameters
+            org.mockito.kotlin.verify(updatePaymentOptions).invoke(
+                selectedPaymentMethodId = newPaymentMethodId,
+                emailReceipts = !defaultAccountSettings.paymentMethodOptions.emailReceipts
+            )
+
+            // Verify that Exit event is triggered
+            assertThat(events).anyMatch { it is Exit }
+        }
+
+    @Test
+    fun `when save is clicked with changes and save fails, then call updatePaymentOptions and show error`() =
+        testBlocking {
+            // Setup with failed update
+            whenever(updatePaymentOptions.invoke(org.mockito.kotlin.any(), org.mockito.kotlin.any()))
+                .thenReturn(Result.failure(Exception("Failed to update payment options")))
+
+            setup()
+
+            // Get the content state, make changes, and call onSaveClicked
+            val contentState =
+                viewModel.viewState.captureValues().last() as WooShippingEditPaymentViewModel.ViewState.Content
+
+            // Change payment method
+            val newPaymentMethodId = 2L
+            contentState.onPaymentMethodSelected(newPaymentMethodId)
+
+            // Capture events and save changes
+            val events = viewModel.event.runAndCaptureValues {
+                contentState.onSaveClicked()
+                advanceUntilIdle()
+            }
+
+            // Verify that updatePaymentOptions is called with the correct parameters
+            org.mockito.kotlin.verify(updatePaymentOptions).invoke(
+                selectedPaymentMethodId = newPaymentMethodId,
+                emailReceipts = defaultAccountSettings.paymentMethodOptions.emailReceipts
+            )
+
+            // Verify that ShowSnackbar event is triggered with error message
+            assertThat(events).anyMatch { it is ShowSnackbar && it.message == R.string.error_generic }
+        }
 }
