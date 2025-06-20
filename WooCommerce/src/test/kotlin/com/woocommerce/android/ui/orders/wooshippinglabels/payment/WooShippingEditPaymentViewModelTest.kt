@@ -141,7 +141,8 @@ class WooShippingEditPaymentViewModelTest : BaseUnitTest() {
         setup()
 
         val newPaymentMethodId = 2
-        val initialState = viewModel.viewState.captureValues().last() as WooShippingEditPaymentViewModel.ViewState.Content
+        val initialState = viewModel.viewState.captureValues().last()
+            as WooShippingEditPaymentViewModel.ViewState.Content
         val states = viewModel.viewState.runAndCaptureValues {
             initialState.onPaymentMethodSelected(newPaymentMethodId)
         }
