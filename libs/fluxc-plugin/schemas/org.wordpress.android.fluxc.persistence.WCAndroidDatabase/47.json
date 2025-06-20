@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 47,
-    "identityHash": "0c77ea0cfea36eccb37cffd631854ea4",
+    "identityHash": "643867ce5a25e0c6ecda62bb83606d4a",
     "entities": [
       {
         "tableName": "AddonEntity",
@@ -3058,12 +3058,52 @@
         },
         "indices": [],
         "foreignKeys": []
+      },
+      {
+        "tableName": "OrderShipmentProviderEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`localSiteId` INTEGER NOT NULL, `country` TEXT NOT NULL, `carrierName` TEXT NOT NULL, `carrierLink` TEXT NOT NULL, PRIMARY KEY(`localSiteId`, `carrierName`, `country`))",
+        "fields": [
+          {
+            "fieldPath": "localSiteId",
+            "columnName": "localSiteId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "country",
+            "columnName": "country",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "carrierName",
+            "columnName": "carrierName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "carrierLink",
+            "columnName": "carrierLink",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "localSiteId",
+            "carrierName",
+            "country"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0c77ea0cfea36eccb37cffd631854ea4')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '643867ce5a25e0c6ecda62bb83606d4a')"
     ]
   }
 }

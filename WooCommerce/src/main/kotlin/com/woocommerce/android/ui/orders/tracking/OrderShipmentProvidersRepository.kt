@@ -8,6 +8,7 @@ import com.woocommerce.android.util.WooLog.T.ORDERS
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderShipmentProvidersPayload
 import javax.inject.Inject
+import kotlinx.coroutines.runBlocking
 
 class OrderShipmentProvidersRepository @Inject constructor(
     private val selectedSite: SelectedSite,
@@ -37,7 +38,7 @@ class OrderShipmentProvidersRepository @Inject constructor(
                 WooLog.e(ORDERS, "Error fetching shipment providers: ${result.error.message}")
                 null
             }
-            result.rowsAffected == 0 -> {
+            result.shipmentProvidersFetchedCount == 0 -> {
                 WooLog.i(ORDERS, "No shipment providers fetched")
                 emptyList()
             }
@@ -46,5 +47,5 @@ class OrderShipmentProvidersRepository @Inject constructor(
     }
 
     private fun getShipmentProvidersFromDB(): List<OrderShipmentProvider> =
-        orderStore.getShipmentProvidersForSite(selectedSite.get()).map { it.toAppModel() }
+        runBlocking { orderStore.getShipmentProvidersForSite(selectedSite.get()).map { it.toAppModel() } }
 }

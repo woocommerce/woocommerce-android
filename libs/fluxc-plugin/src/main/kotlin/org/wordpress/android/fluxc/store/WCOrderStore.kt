@@ -34,6 +34,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient.S
 import org.wordpress.android.fluxc.persistence.OrderSqlUtils
 import org.wordpress.android.fluxc.persistence.dao.MetaDataDao
 import org.wordpress.android.fluxc.persistence.dao.OrderNotesDao
+import org.wordpress.android.fluxc.persistence.dao.OrderShipmentProvidersDao
 import org.wordpress.android.fluxc.persistence.dao.OrdersDaoDecorator
 import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.fluxc.persistence.entity.OrderNoteEntity
@@ -56,7 +57,7 @@ import javax.inject.Singleton
 
 @Suppress("LargeClass", "LongParameterList", "TooManyFunctions")
 @Singleton
-class WCOrderStore @Inject constructor(
+class WCOrderStore @Inject internal constructor(
     dispatcher: Dispatcher,
     private val wcOrderRestClient: OrderRestClient,
     private val wcOrderFetcher: WCOrderFetcher,
@@ -64,6 +65,7 @@ class WCOrderStore @Inject constructor(
     private val ordersDaoDecorator: OrdersDaoDecorator,
     private val orderNotesDao: OrderNotesDao,
     private val metaDataDao: MetaDataDao,
+    private val orderShipmentProvidersDao: OrderShipmentProvidersDao,
     private val insertOrder: InsertOrder
 ) : Store(dispatcher) {
     companion object {
@@ -393,8 +395,8 @@ class WCOrderStore @Inject constructor(
         var rowsAffected: Int
     ) : OnChanged<OrderError>()
 
-    class OnOrderShipmentProvidersChanged(
-        var rowsAffected: Int
+    data class OnOrderShipmentProvidersChanged(
+        val shipmentProvidersFetchedCount: Int
     ) : OnChanged<OrderError>()
 
     override fun onRegister() = AppLog.d(API, "WCOrderStore onRegister")
@@ -523,8 +525,8 @@ class WCOrderStore @Inject constructor(
     /**
      * Returns the shipment providers as a list of [WCOrderShipmentProviderModel]
      */
-    fun getShipmentProvidersForSite(site: SiteModel): List<WCOrderShipmentProviderModel> =
-        OrderSqlUtils.getOrderShipmentProvidersForSite(site)
+    suspend fun getShipmentProvidersForSite(site: SiteModel): List<WCOrderShipmentProviderModel> =
+        orderShipmentProvidersDao.getOrderShipmentProvidersForSite(site.localId())
 
     @Suppress("ComplexMethod", "UseCheckOrError")
     @Subscribe(threadMode = ThreadMode.ASYNC)
@@ -680,7 +682,7 @@ class WCOrderStore @Inject constructor(
     ): Flow<UpdateOrderResult> =
         updateOrderStatusAndPaymentDetails(orderId, site, newStatus, null, null)
 
-    suspend fun updateOrderStatusAndPaymentDetails(
+    fun updateOrderStatusAndPaymentDetails(
         orderId: Long,
         site: SiteModel,
         newStatus: WCOrderStatusModel,
@@ -907,12 +909,10 @@ class WCOrderStore @Inject constructor(
             return@withDefaultContext if (result.isError) {
                 OnOrderShipmentProvidersChanged(0).also { it.error = result.error }
             } else {
-                // Delete all providers from the db
-                OrderSqlUtils.deleteOrderShipmentProvidersForSite(payload.site)
-
-                // Add new list to the database
-                val rowsAffected = result.providers.sumBy { OrderSqlUtils.insertOrIgnoreOrderShipmentProvider(it) }
-                OnOrderShipmentProvidersChanged(rowsAffected)
+                // Delete all providers from the db and add new ones
+                orderShipmentProvidersDao.deleteOrderShipmentProvidersForSite(payload.site.localId())
+                orderShipmentProvidersDao.upsertOrderShipmentProviders(result.providers)
+                OnOrderShipmentProvidersChanged(shipmentProvidersFetchedCount = result.providers.size)
             }
         }
     }
