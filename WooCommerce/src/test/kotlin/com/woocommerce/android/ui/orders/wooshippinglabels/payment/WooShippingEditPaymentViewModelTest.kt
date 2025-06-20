@@ -51,7 +51,12 @@ class WooShippingEditPaymentViewModelTest : BaseUnitTest() {
                 )
             ),
             addPaymentMethodUrl = "https://example.com/add-payment-method"
-        )
+        ),
+        canManagePayments = true,
+        canEditSettings = true,
+        isEmailReceiptEnabled = true,
+        storeOwnerName = "John Doe",
+        storeOwnerUsername = "johndoe"
     )
 
     private val observeAccountSettings: ObserveAccountSettings = mock {
@@ -104,6 +109,11 @@ class WooShippingEditPaymentViewModelTest : BaseUnitTest() {
         assertThat(contentState.selectedPaymentMethodId)
             .isEqualTo(defaultAccountSettings.paymentMethodOptions.selectedPaymentId)
         assertThat(contentState.paymentMethods).isEqualTo(defaultAccountSettings.paymentMethodOptions.paymentMethods)
+        assertThat(contentState.canManagePaymentMethods).isEqualTo(defaultAccountSettings.canManagePayments)
+        assertThat(contentState.canEditSettings).isEqualTo(defaultAccountSettings.canEditSettings)
+        assertThat(contentState.emailTheReceipt).isEqualTo(defaultAccountSettings.isEmailReceiptEnabled)
+        assertThat(contentState.storeOwnerName).isEqualTo(defaultAccountSettings.storeOwnerName)
+        assertThat(contentState.storeOwnerUsername).isEqualTo(defaultAccountSettings.storeOwnerUsername)
     }
 
     @Test
