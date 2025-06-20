@@ -88,16 +88,4 @@ class WooPosTabController @Inject constructor(
     private fun setPOSTabVisibility(isVisible: Boolean) {
         binding.bottomNav.menu.findItem(R.id.point_of_sale)?.isVisible = isVisible
     }
-
-    private fun setupPOSTabNavigation() {
-        binding.bottomNav.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.point_of_sale -> {
-                    activity.startActivity(Intent(activity, WooPosActivity::class.java))
-                    false // return false to *not* keep the tab selected
-                }
-                else -> NavigationUI.onNavDestinationSelected(item, navController)
-            }
-        }
-    }
 }
