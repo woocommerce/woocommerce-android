@@ -2196,7 +2196,7 @@ open class WellSqlConfig : DefaultWellConfig {
                 }
 
                 217 -> migrateAddOn(ADDON_WOOCOMMERCE, version) {
-                    db.execSQL("DROP TABLE IF EXISTS WCLocationModel")
+                    db.execSQL("DROP TABLE IF EXISTS WCLocations")
                 }
             }
         }
