@@ -79,7 +79,12 @@ class OrderListItemDataSource @Inject constructor(
                         status = order.status,
                         dateCreated = getFormattedDateWithSiteTimeZone(order.dateCreated),
                         currencyCode = order.currency,
-                        isLastItemInSection = isLastItemByRemoteIdMap[order.orderId] ?: false
+                        isLastItemInSection = isLastItemByRemoteIdMap[order.orderId] ?: false,
+                        salesChannelLabel = if (order.createdVia == "pos-rest-api") {
+                            OrderListItemUI.SalesChannelLabel.Visible("POS")
+                        } else {
+                            OrderListItemUI.SalesChannelLabel.Hidden
+                        }
                     )
                 }
             }
