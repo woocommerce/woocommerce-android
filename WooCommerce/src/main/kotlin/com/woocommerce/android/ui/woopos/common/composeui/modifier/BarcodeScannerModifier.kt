@@ -13,9 +13,10 @@ import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.key.utf16CodePoint
-import com.woocommerce.android.ui.woopos.common.composeui.modifier.BarcodeInputDetector.Companion.FIRST_PRINTABLE_CHAR_CODE
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import org.wordpress.android.fluxc.utils.CurrentTimeProvider
+
+private const val FIRST_PRINTABLE_CHAR_CODE = 32
 
 fun Modifier.listenForBarcodes(
     onBarcodeScanned: (String) -> Unit,
@@ -64,10 +65,8 @@ class BarcodeInputDetector(
     private val onBarcodeScanned: (String) -> Unit,
     private val currentTimeProvider: CurrentTimeProvider,
 ) {
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    companion object {
+    private companion object {
         const val MAX_SCANNER_INTER_CHAR_DELAY_MS = 200L
-        const val FIRST_PRINTABLE_CHAR_CODE = 32
         const val MIN_BARCODE_LENGTH = 4
     }
 
