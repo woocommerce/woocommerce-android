@@ -10,6 +10,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.FetchAccountSettings
 import com.woocommerce.android.ui.orders.wooshippinglabels.ObserveAccountSettings
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.AccountSettingsModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PaymentMethodOptions
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
@@ -33,6 +34,7 @@ class WooShippingEditPaymentViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     observeAccountSettings: ObserveAccountSettings,
     private val fetchAccountSettings: FetchAccountSettings,
+    private val updatePaymentOptions: UpdatePaymentOptions,
     private val webViewAuthenticator: WebViewAuthenticator,
     private val userAgent: UserAgent
 ) : ScopedViewModel(savedStateHandle) {
@@ -138,12 +140,38 @@ class WooShippingEditPaymentViewModel @Inject constructor(
         selectedPaymentMethod.value = paymentMethodId
     }
 
-    private fun onSaveClicked() {
-        TODO()
-    }
-
     private fun onEmailReceiptsChanged(value: Boolean) {
         emailReceipts.value = value
+    }
+
+    private fun onSaveClicked() {
+        val currentPaymentOptions = accountSettings.value?.paymentMethodOptions ?: return
+        val selectedPaymentMethod = selectedPaymentMethod.value ?: currentPaymentOptions.selectedPaymentId
+        val emailReceipts = emailReceipts.value ?: currentPaymentOptions.emailReceipts
+
+        if (selectedPaymentMethod == currentPaymentOptions.selectedPaymentId &&
+            emailReceipts == currentPaymentOptions.emailReceipts
+        ) {
+            // No changes were made, return right away
+            triggerEvent(MultiLiveEvent.Event.Exit)
+            return
+        }
+
+        launch {
+            loadingState.value = LoadingState.Saving
+            updatePaymentOptions(
+                selectedPaymentMethodId = selectedPaymentMethod,
+                emailReceipts = emailReceipts
+            ).fold(
+                onSuccess = {
+                    triggerEvent(MultiLiveEvent.Event.Exit)
+                },
+                onFailure = {
+                    triggerEvent(ShowSnackbar(R.string.error_generic))
+                }
+            )
+            loadingState.value = LoadingState.Idle
+        }
     }
 
     private fun onPaymentMethodAdded() {

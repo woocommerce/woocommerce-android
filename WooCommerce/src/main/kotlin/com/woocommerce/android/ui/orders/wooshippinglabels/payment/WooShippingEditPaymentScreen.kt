@@ -385,6 +385,7 @@ private fun PaymentMethodsList(
                     R.string.save
                 }
             ),
+            loading = viewState.loadingState == WooShippingEditPaymentViewModel.LoadingState.Saving,
             modifier = Modifier.fillMaxWidth()
         )
     }
