@@ -9,7 +9,8 @@ import javax.inject.Inject
 class WooPosSearchByIdentifierProductGetOrFetch @Inject constructor(
     private val selectedSite: SelectedSite,
     private val productStore: WCProductStore,
-    private val productsCache: WooPosProductsCache
+    private val productsCache: WooPosProductsCache,
+    private val errorMapper: WooPosSearchByIdentifierProductErrorMapper
 ) {
     suspend operator fun invoke(productId: Long): WooPosSearchByIdentifierResult {
         productsCache.getProductById(productId)?.let { cachedProduct ->
@@ -24,9 +25,7 @@ class WooPosSearchByIdentifierProductGetOrFetch @Inject constructor(
         )
 
         return when {
-            result.isError -> WooPosSearchByIdentifierResult.Failure(
-                WooPosSearchByIdentifierResult.Error.NetworkError
-            )
+            result.isError -> WooPosSearchByIdentifierResult.Failure(errorMapper(result.error))
 
             else -> {
                 val product = productStore.getProduct(selectedSite.get(), productId)?.toAppModel()

@@ -14,12 +14,10 @@ sealed class WooPosSearchByIdentifierResult {
         data object NotFound : Error()
         data class UnsupportedProduct(val productName: String) : Error()
         data object NetworkError : Error()
+        data class ServerError(val message: String) : Error()
         data class UnknownError(val message: String) : Error()
     }
 
     val isSuccess: Boolean
         get() = this is Success || this is VariationSuccess
-
-    val isFailure: Boolean
-        get() = this is Failure
 }
