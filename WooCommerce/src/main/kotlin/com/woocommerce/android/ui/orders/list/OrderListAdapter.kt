@@ -260,7 +260,6 @@ class OrderListAdapter(
             salesChannelLabel: OrderListItemUI.SalesChannelLabel,
             holder: OrderItemUIViewHolder
         ) {
-            // Add order status tag
             val orderStatus = activeOrderStatusMap[status]
                 ?: createTempOrderStatus(status)
             val orderTag = OrderStatusTag(orderStatus.toOrderStatus())
@@ -268,7 +267,6 @@ class OrderListAdapter(
             orderTagView.tag = orderTag
             holder.viewBinding.orderTags.addView(orderTagView)
 
-            // Add sales channel badge if visible
             when (salesChannelLabel) {
                 is OrderListItemUI.SalesChannelLabel.Visible -> {
                     val salesChannelTag = createSalesChannelTag(salesChannelLabel.text)
@@ -276,9 +274,7 @@ class OrderListAdapter(
                     salesChannelTagView.tag = salesChannelTag
                     holder.viewBinding.orderTags.addView(salesChannelTagView)
                 }
-                is OrderListItemUI.SalesChannelLabel.Hidden -> {
-                    // Do nothing, no badge to show
-                }
+                is OrderListItemUI.SalesChannelLabel.Hidden -> Unit
             }
         }
 
