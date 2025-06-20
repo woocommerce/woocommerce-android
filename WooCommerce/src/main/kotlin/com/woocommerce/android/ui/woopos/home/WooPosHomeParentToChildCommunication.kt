@@ -32,6 +32,7 @@ sealed class ParentToChildrenEvent {
         val itemData: WooPosItemsViewModel.ItemClickedData,
         val eventForTracking: WooPosAnalyticsEvent.Event.ItemAddedToCart?
     ) : ParentToChildrenEvent()
+    data class BarcodeScanned(val barcode: String) : ParentToChildrenEvent()
 
     data class CheckoutClicked(
         val itemClickedDataList: List<WooPosItemsViewModel.ItemClickedData>

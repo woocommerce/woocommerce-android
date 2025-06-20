@@ -211,6 +211,10 @@ class WooPosCartViewModel @Inject constructor(
                     is ParentToChildrenEvent.RemoveCouponsClicked -> {
                         removeCouponsFromCart()
                     }
+
+                    is ParentToChildrenEvent.BarcodeScanned -> {
+                        onBarcodeScanned(event.barcode)
+                    }
                 }
             }
         }
