@@ -69,6 +69,7 @@ import com.woocommerce.android.ui.main.BottomNavigationPosition.MORE
 import com.woocommerce.android.ui.main.BottomNavigationPosition.MY_STORE
 import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
 import com.woocommerce.android.ui.main.BottomNavigationPosition.PRODUCTS
+import com.woocommerce.android.ui.main.BottomNavigationPosition.POS
 import com.woocommerce.android.ui.main.MainActivityViewModel.BottomBarState
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.NewFeature
@@ -754,6 +755,7 @@ class MainActivity :
             MY_STORE -> AnalyticsEvent.MAIN_TAB_DASHBOARD_SELECTED
             ORDERS -> AnalyticsEvent.MAIN_TAB_ORDERS_SELECTED
             PRODUCTS -> AnalyticsEvent.MAIN_TAB_PRODUCTS_SELECTED
+            POS -> AnalyticsEvent.MAIN_TAB_POS_SELECTED
             MORE -> AnalyticsEvent.MAIN_TAB_HUB_MENU_SELECTED
         }
         AnalyticsTracker.track(stat, mapOf(KEY_HORIZONTAL_SIZE_CLASS to deviceTypeToAnalyticsString))
@@ -768,6 +770,7 @@ class MainActivity :
             MY_STORE -> AnalyticsEvent.MAIN_TAB_DASHBOARD_RESELECTED
             ORDERS -> AnalyticsEvent.MAIN_TAB_ORDERS_RESELECTED
             PRODUCTS -> AnalyticsEvent.MAIN_TAB_PRODUCTS_RESELECTED
+            POS -> AnalyticsEvent.MAIN_TAB_POS_RESELECTED
             MORE -> AnalyticsEvent.MAIN_TAB_HUB_MENU_RESELECTED
         }
         AnalyticsTracker.track(stat, mapOf(KEY_HORIZONTAL_SIZE_CLASS to deviceTypeToAnalyticsString))

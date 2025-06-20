@@ -13,6 +13,8 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.woopos.WooPosIsEnabled
 import com.woocommerce.android.ui.woopos.root.WooPosActivity
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -22,7 +24,8 @@ class WooPosTabController @Inject constructor(
     private val appPrefs: AppPrefs,
     private val selectedSite: SelectedSite,
     private val isWooPosEnabled: WooPosIsEnabled,
-    private val isPosAsTabEnabled: WooPosIsPosAsTabEnabled
+    private val isPosAsTabEnabled: WooPosIsPosAsTabEnabled,
+    private val analyticsTracker: WooPosAnalyticsTracker
 ) : DefaultLifecycleObserver {
 
     private lateinit var activity: MainActivity
@@ -43,7 +46,7 @@ class WooPosTabController @Inject constructor(
 
     override fun onCreate(owner: LifecycleOwner) {
         super.onCreate(owner)
-        setupPOSTab()
+        //setupPOSTab()
     }
 
     override fun onResume(owner: LifecycleOwner) {
@@ -85,6 +88,7 @@ class WooPosTabController @Inject constructor(
             }
             setPOSTabVisibility(isWooPosEnabledValue)
             appPrefs.setPOSTabVisibilityForSite(selectedSite.getSelectedSiteId(), isWooPosEnabledValue)
+            analyticsTracker.track(WooPosAnalyticsEvent.Event.TabVisibilityChecked(isWooPosEnabledValue))
         }
     }
 
