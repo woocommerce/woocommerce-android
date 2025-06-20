@@ -55,8 +55,8 @@ data class ShippingLabelModel(
 
     companion object {
         private const val REFUND_EXPIRY_DAYS = 30L
-        private const val REFUND_DURATION_DHL_EXPRESS = 14
-        const val REFUND_DURATION_DEFAULT = 31
+        private const val REFUND_DURATION_DHL_EXPRESS = 31
+        const val REFUND_DURATION_DEFAULT = 14
     }
 }
 
