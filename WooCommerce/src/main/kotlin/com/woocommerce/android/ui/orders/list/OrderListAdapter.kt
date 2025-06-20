@@ -19,6 +19,7 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.TimeGroup
 import com.woocommerce.android.model.toOrderStatus
 import com.woocommerce.android.ui.orders.OrderStatusTag
+import com.woocommerce.android.ui.orders.SalesChannelTag
 import com.woocommerce.android.ui.orders.list.OrderListItemUIType.LoadingItem
 import com.woocommerce.android.ui.orders.list.OrderListItemUIType.OrderListItemUI
 import com.woocommerce.android.ui.orders.list.OrderListItemUIType.SectionHeader
@@ -205,7 +206,7 @@ class OrderListAdapter(
 
             // clear existing tags and add new ones
             viewBinding.orderTags.removeAllViews()
-            processTagView(orderItemUI.status, this)
+            processTagView(orderItemUI.status, orderItemUI.salesChannelLabel, this)
 
             ViewCompat.setTransitionName(
                 viewBinding.root,
@@ -251,15 +252,34 @@ class OrderListAdapter(
 
         /**
          * Converts the order status label into an [OrderStatusTag], creates the associated [TagView],
-         * and add it to the holder. No need to trim the label text since this is done in [OrderStatusTag]
+         * and adds it to the holder. Also adds a sales channel badge if visible.
+         * No need to trim the label text since this is done in [OrderStatusTag]
          */
-        private fun processTagView(status: String, holder: OrderItemUIViewHolder) {
+        private fun processTagView(
+            status: String,
+            salesChannelLabel: OrderListItemUI.SalesChannelLabel,
+            holder: OrderItemUIViewHolder
+        ) {
+            // Add order status tag
             val orderStatus = activeOrderStatusMap[status]
                 ?: createTempOrderStatus(status)
             val orderTag = OrderStatusTag(orderStatus.toOrderStatus())
-            val tagView = TagView(holder.itemView.context)
-            tagView.tag = orderTag
-            holder.viewBinding.orderTags.addView(tagView)
+            val orderTagView = TagView(holder.itemView.context)
+            orderTagView.tag = orderTag
+            holder.viewBinding.orderTags.addView(orderTagView)
+
+            // Add sales channel badge if visible
+            when (salesChannelLabel) {
+                is OrderListItemUI.SalesChannelLabel.Visible -> {
+                    val salesChannelTag = createSalesChannelTag(salesChannelLabel.text)
+                    val salesChannelTagView = TagView(holder.itemView.context)
+                    salesChannelTagView.tag = salesChannelTag
+                    holder.viewBinding.orderTags.addView(salesChannelTagView)
+                }
+                is OrderListItemUI.SalesChannelLabel.Hidden -> {
+                    // Do nothing, no badge to show
+                }
+            }
         }
 
         private fun createTempOrderStatus(status: String): WCOrderStatusModel {
@@ -267,6 +287,10 @@ class OrderListAdapter(
                 statusKey = status
                 label = status
             }
+        }
+
+        private fun createSalesChannelTag(text: String): SalesChannelTag {
+            return SalesChannelTag(text)
         }
 
         override fun isSwipeAble(): Boolean = isNotCompleted
