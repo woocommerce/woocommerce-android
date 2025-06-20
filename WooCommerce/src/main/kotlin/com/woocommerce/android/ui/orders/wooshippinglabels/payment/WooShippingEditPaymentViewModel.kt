@@ -47,6 +47,13 @@ class WooShippingEditPaymentViewModel @Inject constructor(
         key = "selectedPaymentMethod",
     )
 
+    private val emailReceipts = savedStateHandle.getNullableStateFlow(
+        scope = viewModelScope,
+        initialValue = null,
+        clazz = Boolean::class.java,
+        key = "emailReceipts",
+    )
+
     private val isAddPaymentMethodWebViewVisible = savedStateHandle.getStateFlow(
         scope = viewModelScope,
         initialValue = false,
@@ -98,18 +105,24 @@ class WooShippingEditPaymentViewModel @Inject constructor(
     }
 
     private suspend fun FlowCollector<ViewState>.initContentViewState(accountSettings: AccountSettingsModel) {
-        combine(selectedPaymentMethod, loadingState, dialogState) { selectedPaymentMethod, loadingState, dialogState ->
+        combine(
+            selectedPaymentMethod,
+            emailReceipts,
+            loadingState,
+            dialogState
+        ) { selectedPaymentMethod, emailReceipts, loadingState, dialogState ->
             ViewState.Content(
                 loadingState = loadingState,
                 dialogState = dialogState,
                 canManagePaymentMethods = accountSettings.canManagePayments,
                 canEditSettings = accountSettings.canEditSettings,
-                emailReceipts = accountSettings.paymentMethodOptions.emailReceipts,
+                emailReceipts = emailReceipts ?: accountSettings.paymentMethodOptions.emailReceipts,
                 storeOwnerName = accountSettings.storeOwnerName,
                 storeOwnerUsername = accountSettings.storeOwnerUsername,
                 selectedPaymentMethodId = selectedPaymentMethod
                     ?: accountSettings.paymentMethodOptions.selectedPaymentId,
-                currentPaymentOptions = accountSettings.paymentMethodOptions
+                currentPaymentOptions = accountSettings.paymentMethodOptions,
+                onEmailReceiptsChanged = ::onEmailReceiptsChanged
             )
         }.let { emitAll(it) }
     }
@@ -124,6 +137,10 @@ class WooShippingEditPaymentViewModel @Inject constructor(
 
     fun onSaveClicked() {
         TODO()
+    }
+
+    private fun onEmailReceiptsChanged(value: Boolean) {
+        emailReceipts.value = value
     }
 
     private fun onPaymentMethodAdded() {
@@ -176,7 +193,8 @@ class WooShippingEditPaymentViewModel @Inject constructor(
             val selectedPaymentMethodId: Int?,
             val storeOwnerName: String,
             val storeOwnerUsername: String,
-            val currentPaymentOptions: PaymentMethodOptions
+            val currentPaymentOptions: PaymentMethodOptions,
+            val onEmailReceiptsChanged: (Boolean) -> Unit,
         ) : ViewState {
             val paymentMethods get() = currentPaymentOptions.paymentMethods
         }

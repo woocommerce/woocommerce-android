@@ -392,7 +392,7 @@ private fun PaymentMethodsList(
             text = stringResource(R.string.woo_shipping_payment_email_receipt_toggle),
             checked = viewState.emailReceipts,
             enabled = viewState.canEditSettings,
-            onCheckedChange = { TODO() },
+            onCheckedChange = viewState.onEmailReceiptsChanged,
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(Modifier.height(16.dp))
@@ -506,7 +506,8 @@ private fun ContentScreenEmptyPreview() {
                 storeOwnerName = "John Doe",
                 storeOwnerUsername = "johndoe",
                 selectedPaymentMethodId = null,
-                currentPaymentOptions = ShippingLabelSampleData.getPaymentOptions(countOfPaymentMethods = 0)
+                currentPaymentOptions = ShippingLabelSampleData.getPaymentOptions(countOfPaymentMethods = 0),
+                onEmailReceiptsChanged = {}
             ),
             onAddNewPaymentMethod = {},
             onPaymentMethodSelected = {},
@@ -527,7 +528,8 @@ private fun ContentScreenWithPaymentMethodsPreview() {
                 storeOwnerName = "John Doe",
                 storeOwnerUsername = "johndoe",
                 selectedPaymentMethodId = 1,
-                currentPaymentOptions = ShippingLabelSampleData.getPaymentOptions()
+                currentPaymentOptions = ShippingLabelSampleData.getPaymentOptions(),
+                onEmailReceiptsChanged = {}
             ),
             onAddNewPaymentMethod = {},
             onPaymentMethodSelected = {},
