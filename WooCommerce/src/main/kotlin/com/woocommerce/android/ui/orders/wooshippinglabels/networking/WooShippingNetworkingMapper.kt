@@ -48,7 +48,12 @@ class WooShippingNetworkingMapper @Inject constructor(
                         )
                     },
                     addPaymentMethodUrl = formMeta.addPaymentMethodUrl
-                )
+                ),
+                canManagePayments = formMeta.canManagePayments,
+                canEditSettings = formMeta.canEditSettings,
+                isEmailReceiptEnabled = formData.emailReceipts,
+                storeOwnerName = formMeta.masterUserName,
+                storeOwnerUsername = formMeta.masterUserWpcomLogin
             )
         }
     }

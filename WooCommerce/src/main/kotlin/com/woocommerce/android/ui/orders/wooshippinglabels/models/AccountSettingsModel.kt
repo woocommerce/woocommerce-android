@@ -6,7 +6,12 @@ import kotlinx.parcelize.Parcelize
 
 data class AccountSettingsModel(
     val storeOptions: StoreOptionsModel,
-    val paymentMethodOptions: PaymentMethodOptions
+    val paymentMethodOptions: PaymentMethodOptions,
+    val canManagePayments: Boolean,
+    val canEditSettings: Boolean,
+    val isEmailReceiptEnabled: Boolean,
+    val storeOwnerName: String,
+    val storeOwnerUsername: String
 )
 
 @Parcelize
