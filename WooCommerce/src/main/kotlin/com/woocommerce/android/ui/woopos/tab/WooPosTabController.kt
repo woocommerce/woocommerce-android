@@ -13,9 +13,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.woopos.WooPosIsEnabled
 import com.woocommerce.android.ui.woopos.root.WooPosActivity
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class WooPosTabController @Inject constructor(

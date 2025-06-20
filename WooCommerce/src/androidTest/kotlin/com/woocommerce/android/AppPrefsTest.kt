@@ -549,5 +549,4 @@ class AppPrefsTest {
         // THEN
         assertThat(result).isFalse
     }
-
 }
