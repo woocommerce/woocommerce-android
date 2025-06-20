@@ -5,10 +5,10 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.ORDERS
+import kotlinx.coroutines.runBlocking
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderShipmentProvidersPayload
 import javax.inject.Inject
-import kotlinx.coroutines.runBlocking
 
 class OrderShipmentProvidersRepository @Inject constructor(
     private val selectedSite: SelectedSite,
