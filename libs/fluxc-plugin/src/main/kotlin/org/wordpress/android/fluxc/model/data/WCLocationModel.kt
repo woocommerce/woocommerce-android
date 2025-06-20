@@ -4,7 +4,7 @@ import androidx.room.Entity
 
 @Entity(
     tableName = "LocationEntity",
-    primaryKeys = ["parentCode", "code", "name"]
+    primaryKeys = ["parentCode", "code"]
 )
 data class WCLocationModel(
     val parentCode: String = "",

@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 47,
-    "identityHash": "643867ce5a25e0c6ecda62bb83606d4a",
+    "identityHash": "2be82e1cc597e62087517e799d0495de",
     "entities": [
       {
         "tableName": "AddonEntity",
@@ -3027,7 +3027,7 @@
       },
       {
         "tableName": "LocationEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`parentCode` TEXT NOT NULL, `code` TEXT NOT NULL, `name` TEXT NOT NULL, PRIMARY KEY(`parentCode`, `code`, `name`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`parentCode` TEXT NOT NULL, `code` TEXT NOT NULL, `name` TEXT NOT NULL, PRIMARY KEY(`parentCode`, `code`))",
         "fields": [
           {
             "fieldPath": "parentCode",
@@ -3052,48 +3052,7 @@
           "autoGenerate": false,
           "columnNames": [
             "parentCode",
-            "code",
-            "name"
-          ]
-        },
-        "indices": [],
-        "foreignKeys": []
-      },
-      {
-        "tableName": "OrderShipmentProviderEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`localSiteId` INTEGER NOT NULL, `country` TEXT NOT NULL, `carrierName` TEXT NOT NULL, `carrierLink` TEXT NOT NULL, PRIMARY KEY(`localSiteId`, `carrierName`, `country`))",
-        "fields": [
-          {
-            "fieldPath": "localSiteId",
-            "columnName": "localSiteId",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "country",
-            "columnName": "country",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "carrierName",
-            "columnName": "carrierName",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "carrierLink",
-            "columnName": "carrierLink",
-            "affinity": "TEXT",
-            "notNull": true
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": false,
-          "columnNames": [
-            "localSiteId",
-            "carrierName",
-            "country"
+            "code"
           ]
         },
         "indices": [],
@@ -3103,7 +3062,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '643867ce5a25e0c6ecda62bb83606d4a')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2be82e1cc597e62087517e799d0495de')"
     ]
   }
 }
