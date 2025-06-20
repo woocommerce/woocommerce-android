@@ -37,7 +37,13 @@ sealed class OrderListItemUIType {
         val currencyCode: String,
         val isLastItemInSection: Boolean = false,
         var isSelected: Boolean = false,
-    ) : OrderListItemUIType()
+        val salesChannelLabel: SalesChannelLabel = SalesChannelLabel.Hidden,
+    ) : OrderListItemUIType() {
+        sealed class SalesChannelLabel {
+            object Hidden : SalesChannelLabel()
+            data class Visible(val text: String) : SalesChannelLabel()
+        }
+    }
 
     override fun equals(other: Any?) = other?.let { this::class == other::class } ?: false
 
