@@ -14,4 +14,3 @@ class SalesChannelTag(private val salesChannelText: String) : ITag(salesChannelT
         }
     }
 }
-
