@@ -168,19 +168,7 @@ class ProductInventoryFragment :
     private fun setupViews() {
         if (!isAdded) return
 
-        with(binding.productSku) {
-            setOnTextChangedListener {
-                viewModel.onSkuChanged(it.toString())
-            }
-        }
-
-        with(binding.productSkuBarcodeScan) {
-            setOnClickListener {
-                lastClickedBarcodeButton = R.id.product_sku_barcode_scan
-                navigateToBarcodeScanningFragment()
-            }
-        }
-
+        setupSkuView()
         setupProductUniqueGlobalIdView()
 
         with(binding.manageStockSwitch) {
@@ -239,6 +227,21 @@ class ProductInventoryFragment :
         )
     }
 
+    private fun setupSkuView() {
+        with(binding.productSku) {
+            setOnTextChangedListener {
+                viewModel.onSkuChanged(it.toString())
+            }
+        }
+
+        with(binding.productSkuBarcodeScan) {
+            setOnClickListener {
+                lastClickedBarcodeButton = R.id.product_sku_barcode_scan
+                navigateToBarcodeScanningFragment()
+            }
+        }
+    }
+
     private fun setupProductUniqueGlobalIdView() {
         with(binding.productGlobalUniqueId) {
             setOnTextChangedListener {
@@ -281,7 +284,6 @@ class ProductInventoryFragment :
             }
         }
     }
-
 
     private fun navigateToBarcodeScanningFragment() {
         findNavController().navigateSafely(

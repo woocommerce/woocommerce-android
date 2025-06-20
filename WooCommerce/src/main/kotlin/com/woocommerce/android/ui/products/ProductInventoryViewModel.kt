@@ -108,7 +108,7 @@ class ProductInventoryViewModel @Inject constructor(
     }
 
     fun onProductUniqueGlobalIdChanged(globalUniqueId: String) {
-        if(globalUniqueId == viewState.inventoryData.globalUniqueId) {
+        if (globalUniqueId == viewState.inventoryData.globalUniqueId) {
             return
         }
         onDataChanged(globalUniqueId = globalUniqueId)
