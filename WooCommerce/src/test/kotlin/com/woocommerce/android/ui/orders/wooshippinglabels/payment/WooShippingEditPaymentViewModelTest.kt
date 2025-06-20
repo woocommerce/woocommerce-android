@@ -140,7 +140,7 @@ class WooShippingEditPaymentViewModelTest : BaseUnitTest() {
     fun `when payment method is selected, then update selected payment method`() = testBlocking {
         setup()
 
-        val newPaymentMethodId = 2
+        val newPaymentMethodId = 2L
         val initialState = viewModel.viewState.captureValues().last()
             as WooShippingEditPaymentViewModel.ViewState.Content
         val states = viewModel.viewState.runAndCaptureValues {

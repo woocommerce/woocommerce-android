@@ -43,7 +43,7 @@ class WooShippingEditPaymentViewModel @Inject constructor(
     private val selectedPaymentMethod = savedStateHandle.getNullableStateFlow(
         scope = viewModelScope,
         initialValue = null,
-        clazz = Int::class.java,
+        clazz = Long::class.java,
         key = "selectedPaymentMethod",
     )
 
@@ -134,7 +134,7 @@ class WooShippingEditPaymentViewModel @Inject constructor(
         isAddPaymentMethodWebViewVisible.value = true
     }
 
-    private fun onPaymentMethodSelected(paymentMethodId: Int?) {
+    private fun onPaymentMethodSelected(paymentMethodId: Long?) {
         selectedPaymentMethod.value = paymentMethodId
     }
 
@@ -193,12 +193,12 @@ class WooShippingEditPaymentViewModel @Inject constructor(
             val canManagePaymentMethods: Boolean,
             val canEditSettings: Boolean,
             val emailReceipts: Boolean,
-            val selectedPaymentMethodId: Int?,
+            val selectedPaymentMethodId: Long?,
             val storeOwnerName: String,
             val storeOwnerUsername: String,
             val currentPaymentOptions: PaymentMethodOptions,
             val onAddNewPaymentMethod: () -> Unit,
-            val onPaymentMethodSelected: (Int) -> Unit,
+            val onPaymentMethodSelected: (Long) -> Unit,
             val onEmailReceiptsChanged: (Boolean) -> Unit,
             val onSaveClicked: () -> Unit
         ) : ViewState {

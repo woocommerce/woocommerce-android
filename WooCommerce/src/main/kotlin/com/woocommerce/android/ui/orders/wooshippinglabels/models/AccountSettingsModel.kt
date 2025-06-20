@@ -31,7 +31,7 @@ data class StoreOptionsModel(
 }
 
 data class PaymentMethodOptions(
-    val selectedPaymentId: Int?,
+    val selectedPaymentId: Long?,
     val paymentMethods: List<PaymentMethodModel>,
     val addPaymentMethodUrl: String,
     val emailReceipts: Boolean
@@ -41,7 +41,7 @@ data class PaymentMethodOptions(
 }
 
 data class PaymentMethodModel(
-    val paymentMethodId: Int,
+    val paymentMethodId: Long,
     val name: String,
     val cardType: String,
     val cardDigits: String,

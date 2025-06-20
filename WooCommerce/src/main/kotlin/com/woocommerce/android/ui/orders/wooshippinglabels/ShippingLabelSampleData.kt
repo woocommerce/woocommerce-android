@@ -62,7 +62,7 @@ object ShippingLabelSampleData {
     )
 
     fun getPaymentMethod(index: Int = 0) = PaymentMethodModel(
-        paymentMethodId = index,
+        paymentMethodId = index.toLong(),
         name = "John Doe",
         cardType = "VISA",
         cardDigits = "${index}234",
