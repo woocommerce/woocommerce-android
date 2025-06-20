@@ -102,11 +102,11 @@ class WooShippingEditPaymentViewModel @Inject constructor(
             ViewState.Content(
                 loadingState = loadingState,
                 dialogState = dialogState,
-                canManagePaymentMethods = true, // TODO
-                canEditSettings = true, // TODO
-                emailTheReceipt = true, // TODO
-                storeOwnerName = "John Doe", // TODO
-                storeOwnerUsername = "johndoe", // TODO
+                canManagePaymentMethods = accountSettings.canManagePayments,
+                canEditSettings = accountSettings.canEditSettings,
+                emailTheReceipt = accountSettings.isEmailReceiptEnabled,
+                storeOwnerName = accountSettings.storeOwnerName,
+                storeOwnerUsername = accountSettings.storeOwnerUsername,
                 selectedPaymentMethodId = selectedPaymentMethod
                     ?: accountSettings.paymentMethodOptions.selectedPaymentId,
                 currentPaymentOptions = accountSettings.paymentMethodOptions
