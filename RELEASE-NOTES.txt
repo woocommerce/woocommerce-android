@@ -5,6 +5,7 @@
 -----
 - [*] Improved filtering UI in the order's screen [https://github.com/woocommerce/woocommerce-android/pull/14212]
 - [**] Allow setting SKU and Global Unique Identifier fields on Products by scanning a barcode. [https://github.com/woocommerce/woocommerce-android/pull/14228]
+- [*] Fixed issue which prevented users from clearing SKU and Global Unique Identifier fields on Products. [https://github.com/woocommerce/woocommerce-android/pull/14229]
 
 22.6
 -----
