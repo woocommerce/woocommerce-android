@@ -9,7 +9,6 @@ data class AccountSettingsModel(
     val paymentMethodOptions: PaymentMethodOptions,
     val canManagePayments: Boolean,
     val canEditSettings: Boolean,
-    val isEmailReceiptEnabled: Boolean,
     val storeOwnerName: String,
     val storeOwnerUsername: String
 )
@@ -34,7 +33,8 @@ data class StoreOptionsModel(
 data class PaymentMethodOptions(
     val selectedPaymentId: Int?,
     val paymentMethods: List<PaymentMethodModel>,
-    val addPaymentMethodUrl: String
+    val addPaymentMethodUrl: String,
+    val emailReceipts: Boolean
 ) {
     val selectedPaymentMethod: PaymentMethodModel?
         get() = paymentMethods.find { it.paymentMethodId == selectedPaymentId }

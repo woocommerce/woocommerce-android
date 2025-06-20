@@ -50,11 +50,11 @@ class WooShippingEditPaymentViewModelTest : BaseUnitTest() {
                     name = "Mastercard *5678"
                 )
             ),
-            addPaymentMethodUrl = "https://example.com/add-payment-method"
+            addPaymentMethodUrl = "https://example.com/add-payment-method",
+            emailReceipts = true
         ),
         canManagePayments = true,
         canEditSettings = true,
-        isEmailReceiptEnabled = true,
         storeOwnerName = "John Doe",
         storeOwnerUsername = "johndoe"
     )
@@ -111,7 +111,7 @@ class WooShippingEditPaymentViewModelTest : BaseUnitTest() {
         assertThat(contentState.paymentMethods).isEqualTo(defaultAccountSettings.paymentMethodOptions.paymentMethods)
         assertThat(contentState.canManagePaymentMethods).isEqualTo(defaultAccountSettings.canManagePayments)
         assertThat(contentState.canEditSettings).isEqualTo(defaultAccountSettings.canEditSettings)
-        assertThat(contentState.emailTheReceipt).isEqualTo(defaultAccountSettings.isEmailReceiptEnabled)
+        assertThat(contentState.emailTheReceipt).isEqualTo(defaultAccountSettings.paymentMethodOptions.emailReceipts)
         assertThat(contentState.storeOwnerName).isEqualTo(defaultAccountSettings.storeOwnerName)
         assertThat(contentState.storeOwnerUsername).isEqualTo(defaultAccountSettings.storeOwnerUsername)
     }

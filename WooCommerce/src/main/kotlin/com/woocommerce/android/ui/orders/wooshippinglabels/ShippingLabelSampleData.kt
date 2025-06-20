@@ -57,7 +57,8 @@ object ShippingLabelSampleData {
     fun getPaymentOptions(countOfPaymentMethods: Int = 3) = PaymentMethodOptions(
         selectedPaymentId = if (countOfPaymentMethods > 0) 1 else null,
         paymentMethods = List(countOfPaymentMethods) { getPaymentMethod(it) },
-        addPaymentMethodUrl = "https://example.com/add-payment-method"
+        addPaymentMethodUrl = "https://example.com/add-payment-method",
+        emailReceipts = true
     )
 
     fun getPaymentMethod(index: Int = 0) = PaymentMethodModel(
