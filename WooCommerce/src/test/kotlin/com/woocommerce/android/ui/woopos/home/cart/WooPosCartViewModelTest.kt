@@ -4,12 +4,15 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Coupon
+import com.woocommerce.android.model.ProductVariation
+import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetCouponById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetVariationById
 import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosSearchByIdentifier
 import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosSearchByIdentifierResult
+import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.common.util.WooPosSoundHelper
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
@@ -106,6 +109,7 @@ class WooPosCartViewModelTest {
     private val trackerData: WooPosAnalyticsTrackingDataKeeper = WooPosAnalyticsTrackingDataKeeper()
     private val cartItemsUpdater: WooPosCartItemsUpdater = mock()
     private val searchByIdentifier: WooPosSearchByIdentifier = mock()
+    private val wooPosLogWrapper: WooPosLogWrapper = mock()
 
     @Test
     fun `given empty cart, when product clicked in product selector, then should add product to cart`() = runTest {
@@ -1004,7 +1008,7 @@ class WooPosCartViewModelTest {
     fun `given empty cart, when barcode scanned, then loading item is added to cart`() = runTest {
         // GIVEN
         whenever(
-            searchByIdentifier(any(), any())
+            searchByIdentifier(any())
         ).doSuspendableAnswer {
             delay(1)
             WooPosSearchByIdentifierResult.Success(
@@ -1017,15 +1021,41 @@ class WooPosCartViewModelTest {
         val states = sut.state.captureValues()
 
         // WHEN
-        parentToChildrenMutableSharedFlow.emit(
-            ParentToChildrenEvent.BarcodeScanned("123456789")
-        )
+        sut.onUIEvent(WooPosCartUIEvent.OnBarcodeScanned("123456789"))
 
         // THEN
         val itemsInCart = (states[1].body as WooPosCartState.Body.WithItems).itemsInCart
         assertThat(itemsInCart).hasSize(1)
         assertThat(itemsInCart.first()).isInstanceOf(WooPosCartItemViewState.Loading::class.java)
         assertThat((itemsInCart.first() as WooPosCartItemViewState.Loading).name).isEqualTo("123456789")
+    }
+
+    @Test
+    fun `when barcode scanned, then item added to cart event tracked`() = runTest {
+        // GIVEN
+        whenever(
+            searchByIdentifier(any())
+        ).doSuspendableAnswer {
+            delay(1)
+            WooPosSearchByIdentifierResult.Success(
+                ProductTestUtils.generateProduct(
+                    amount = "10.0"
+                )
+            )
+        }
+        val sut = createSut()
+
+        // WHEN
+        sut.onUIEvent(WooPosCartUIEvent.OnBarcodeScanned("123456789"))
+
+        // THEN
+        verify(analyticsTracker).track(
+            eq(
+                WooPosAnalyticsEvent.Event.ItemAddedToCart(
+                    item = WooPosCartItemViewState.Loading(1, "123456789")
+                )
+            )
+        )
     }
 
     @Test
@@ -1038,7 +1068,7 @@ class WooPosCartViewModelTest {
                 amount = "10.0"
             ).copy(firstImageUrl = "url")
 
-            whenever(searchByIdentifier(eq("123456789"), any())).thenReturn(
+            whenever(searchByIdentifier(eq("123456789"))).thenReturn(
                 WooPosSearchByIdentifierResult.Success(product)
             )
 
@@ -1046,9 +1076,7 @@ class WooPosCartViewModelTest {
             val states = sut.state.captureValues()
 
             // WHEN
-            parentToChildrenMutableSharedFlow.emit(
-                ParentToChildrenEvent.BarcodeScanned("123456789")
-            )
+            sut.onUIEvent(WooPosCartUIEvent.OnBarcodeScanned("123456789"))
             advanceUntilIdle()
 
             // THEN
@@ -1061,6 +1089,43 @@ class WooPosCartViewModelTest {
         }
 
     @Test
+    fun `when barcode scanned and product found, then track item added to cart event`() =
+        runTest {
+            // GIVEN
+            val product = ProductTestUtils.generateProduct(
+                productId = 23L,
+                productName = "Scanned Product",
+                amount = "10.0"
+            ).copy(firstImageUrl = "url")
+
+            whenever(searchByIdentifier(eq("123456789"))).thenReturn(
+                WooPosSearchByIdentifierResult.Success(product)
+            )
+
+            val sut = createSut()
+
+            // WHEN
+            sut.onUIEvent(WooPosCartUIEvent.OnBarcodeScanned("123456789"))
+            advanceUntilIdle()
+
+            // THEN
+            verify(analyticsTracker).track(
+                eq(
+                    WooPosAnalyticsEvent.Event.ItemAddedToCart(
+                        item = WooPosCartItemViewState.Product.Simple(
+                            itemNumber = 1,
+                            id = product.remoteId,
+                            name = product.name,
+                            price = "$10.0",
+                            imageUrl = product.firstImageUrl,
+                            description = product.description,
+                        )
+                    )
+                )
+            )
+        }
+
+    @Test
     fun `given empty cart, when barcode scanned and product not found, then loading item is replaced with error`() =
         runTest {
             // GIVEN
@@ -1068,17 +1133,15 @@ class WooPosCartViewModelTest {
             whenever(resourceProvider.getString(R.string.woopos_cart_barcode_scan_result_product_not_found))
                 .thenReturn(errorMessage)
 
-            whenever(searchByIdentifier(eq("123456789"), any())).thenReturn(
-                WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.ProductNotFound)
+            whenever(searchByIdentifier(eq("123456789"))).thenReturn(
+                WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.NotFound)
             )
 
             val sut = createSut()
             val states = sut.state.captureValues()
 
             // WHEN
-            parentToChildrenMutableSharedFlow.emit(
-                ParentToChildrenEvent.BarcodeScanned("123456789")
-            )
+            sut.onUIEvent(WooPosCartUIEvent.OnBarcodeScanned("123456789"))
             advanceUntilIdle()
 
             // THEN
@@ -1098,16 +1161,14 @@ class WooPosCartViewModelTest {
             whenever(resourceProvider.getString(R.string.woopos_cart_barcode_scan_result_product_not_found))
                 .thenReturn(errorMessage)
 
-            whenever(searchByIdentifier(eq("123456789"), any())).thenReturn(
+            whenever(searchByIdentifier(eq("123456789"))).thenReturn(
                 WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.UnknownError(""))
             )
 
-            createSut()
+            val sut = createSut()
 
             // WHEN
-            parentToChildrenMutableSharedFlow.emit(
-                ParentToChildrenEvent.BarcodeScanned("123456789")
-            )
+            sut.onUIEvent(WooPosCartUIEvent.OnBarcodeScanned("123456789"))
             advanceUntilIdle()
 
             // THEN
@@ -1131,7 +1192,7 @@ class WooPosCartViewModelTest {
             ).copy(firstImageUrl = "url2")
 
             whenever(getProductById(eq(existingProduct.remoteId))).thenReturn(existingProduct)
-            whenever(searchByIdentifier(eq("123456789"), any())).thenReturn(
+            whenever(searchByIdentifier(eq("123456789"))).thenReturn(
                 WooPosSearchByIdentifierResult.Success(scannedProduct)
             )
 
@@ -1146,9 +1207,7 @@ class WooPosCartViewModelTest {
             )
 
             // WHEN
-            parentToChildrenMutableSharedFlow.emit(
-                ParentToChildrenEvent.BarcodeScanned("123456789")
-            )
+            sut.onUIEvent(WooPosCartUIEvent.OnBarcodeScanned("123456789"))
             advanceUntilIdle()
 
             // THEN
@@ -1169,7 +1228,7 @@ class WooPosCartViewModelTest {
         whenever(resourceProvider.getString(R.string.woopos_cart_barcode_scan_result_network_error))
             .thenReturn(errorMessage)
 
-        whenever(searchByIdentifier(eq("123456789"), any())).thenReturn(
+        whenever(searchByIdentifier(eq("123456789"))).thenReturn(
             WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.NetworkError)
         )
 
@@ -1177,9 +1236,7 @@ class WooPosCartViewModelTest {
         val states = sut.state.captureValues()
 
         // WHEN
-        parentToChildrenMutableSharedFlow.emit(
-            ParentToChildrenEvent.BarcodeScanned("123456789")
-        )
+        sut.onUIEvent(WooPosCartUIEvent.OnBarcodeScanned("123456789"))
         advanceUntilIdle()
 
         // THEN
@@ -1187,6 +1244,80 @@ class WooPosCartViewModelTest {
         assertThat(finalItemsInCart).hasSize(1)
         val errorItem = finalItemsInCart.first() as WooPosCartItemViewState.Error
         assertThat(errorItem.message).isEqualTo(errorMessage)
+    }
+
+    @Test
+    fun `when barcode scan fails, then item added to cart tracked`() = runTest {
+        // GIVEN
+        val errorMessage = "Network error occurred"
+        whenever(resourceProvider.getString(R.string.woopos_cart_barcode_scan_result_network_error))
+            .thenReturn(errorMessage)
+
+        whenever(searchByIdentifier(eq("123456789"))).thenReturn(
+            WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.NetworkError)
+        )
+
+        val sut = createSut()
+
+        // WHEN
+        sut.onUIEvent(WooPosCartUIEvent.OnBarcodeScanned("123456789"))
+        advanceUntilIdle()
+
+        // THEN
+        verify(analyticsTracker).track(
+            eq(
+                WooPosAnalyticsEvent.Event.ItemAddedToCart(
+                    item = WooPosCartItemViewState.Error(
+                        itemNumber = 1,
+                        name = "123456789",
+                        message = "Network error occurred",
+                    )
+                )
+            )
+        )
+    }
+
+    @Test
+    fun `given barcode scanned, when variation found, then variation added to cart`() = runTest {
+        // GIVEN
+        val productId = 100L
+        val variationId = 200L
+        val variation: ProductVariation = mock {
+            on { remoteVariationId }.thenReturn(variationId)
+            on { remoteProductId }.thenReturn(productId)
+            on { getName() }.thenReturn("Red Hoodie - Size L")
+            on { price }.thenReturn(BigDecimal("45.0"))
+            on { stockStatus }.thenReturn(ProductStockStatus.InStock)
+            on { image }.thenReturn(null)
+            on { attributes }.thenReturn(emptyArray())
+        }
+
+        val product = ProductTestUtils.generateProduct(
+            productId = productId,
+            productName = "Red Hoodie",
+            amount = "45.0"
+        )
+
+        whenever(searchByIdentifier(eq("VAR123456"))).thenReturn(
+            WooPosSearchByIdentifierResult.VariationSuccess(variation, product)
+        )
+        whenever(formatPrice(eq(BigDecimal("45.0")))).thenReturn("45.0$")
+        whenever(getProductById(eq(productId))).thenReturn(product)
+
+        val sut = createSut()
+        val states = sut.state.captureValues()
+
+        // WHEN
+        sut.onUIEvent(WooPosCartUIEvent.OnBarcodeScanned("VAR123456"))
+        advanceUntilIdle()
+
+        // THEN
+        val itemsInCart = (states.last().body as WooPosCartState.Body.WithItems).itemsInCart
+        assertThat(itemsInCart).hasSize(1)
+        assertThat(itemsInCart.first()).isInstanceOf(WooPosCartItemViewState.Product.Variation::class.java)
+        val variationItem = itemsInCart.first() as WooPosCartItemViewState.Product.Variation
+        assertThat(variationItem.variationId).isEqualTo(variationId)
+        assertThat(variationItem.name).isEqualTo("Red Hoodie")
     }
 
     private suspend fun createSutWithItemsInCart(): Pair<WooPosCartViewModel, List<WooPosCartState>> {
@@ -1253,8 +1384,9 @@ class WooPosCartViewModelTest {
             cartItemsUpdater,
             getCachedStoreCurrency,
             searchByIdentifier,
+            wooPosLogWrapper,
             soundHelper,
-            savedState
+            savedState,
         )
     }
 }

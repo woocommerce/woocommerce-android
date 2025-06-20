@@ -20,7 +20,6 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Colors
 import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
@@ -72,9 +71,6 @@ import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
 import kotlin.random.Random
-
-@Suppress("MagicNumber")
-val Colors.shippingSelectedBackgroundColor: Color get() = if (isLight) Color(0xFFF2EDFF) else Color(0x22F2EDFF)
 
 @Composable
 internal fun ShippingRatesCard(
@@ -383,7 +379,7 @@ private fun ShippingRateItem(
 
     val backgroundColor = if (isSelected) {
         animateColorAsState(
-            targetValue = MaterialTheme.colors.shippingSelectedBackgroundColor,
+            targetValue = colorResource(R.color.woo_item_selected),
             label = "colorAnimation"
         )
     } else {

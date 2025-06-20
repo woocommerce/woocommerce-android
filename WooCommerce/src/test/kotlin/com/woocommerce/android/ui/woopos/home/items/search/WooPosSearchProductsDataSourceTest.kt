@@ -163,6 +163,7 @@ class WooPosSearchProductsDataSourceTest {
                 filterOptions = anyOrNull(),
                 includeTypes = anyOrNull(),
                 orderCurrency = anyOrNull(),
+                globalUniqueIdSearchQuery = anyOrNull(),
             )
         }
 }

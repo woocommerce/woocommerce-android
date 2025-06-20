@@ -495,7 +495,7 @@ class ProductRestClient @Inject constructor(
 
                 is WPAPIResponse.Error -> {
                     val productError = wpAPINetworkErrorToProductError(response.error)
-                    if (searchQuery == null) {
+                    if (searchQuery == null && globalUniqueIdSearchQuery == null) {
                         val payload = RemoteProductListPayload(productError, site)
                         dispatcher.dispatch(WCProductActionBuilder.newFetchedProductsAction(payload))
                     } else {
@@ -572,6 +572,7 @@ class ProductRestClient @Inject constructor(
         searchQuery: String? = null,
         searchNameOrSkuQuery: String? = null,
         skuSearchOptions: SkuSearchOptions = SkuSearchOptions.Disabled,
+        globalUniqueIdSearchQuery: String? = null,
         filterOptions: Map<ProductFilterOption, String>? = null,
         includeTypes: List<WCProductStore.IncludeType> = emptyList(),
         orderCurrency: String? = null,
@@ -583,6 +584,7 @@ class ProductRestClient @Inject constructor(
             searchQuery = searchQuery,
             searchNameOrSkuQuery = searchNameOrSkuQuery,
             skuSearchOptions = skuSearchOptions,
+            globalUniqueIdSearchQuery = globalUniqueIdSearchQuery,
             includedProductIds = includedProductIds,
             excludedProductIds = excludedProductIds,
             filterOptions = filterOptions,

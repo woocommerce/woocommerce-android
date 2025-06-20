@@ -1,36 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-05-19 18:54:04+0000
+Translation-Revision-Date: 2025-06-03 15:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_search_items_error_description">Tente novamente.</string>
+    <string name="woopos_search_coupons_error_title">Não foi possível carregar os cupons</string>
+    <string name="woopos_search_items_error_title">Não foi possível carregar os produtos</string>
+    <string name="woopos_search_empty_coupons_description">Não foi possível encontrar nenhum cupom correspondente. Mude o termo de pesquisa.</string>
+    <string name="woopos_search_empty_description">Não foi possível encontrar nenhum produto correspondente. Mude o termo de pesquisa.</string>
+    <string name="woopos_search_coupons_empty_title">Nenhum cupom encontrado</string>
+    <string name="woopos_search_coupons">Pesquisar cupons</string>
+    <string name="woopos_coupons_pagination_error_description">Verifique sua conexão com a Internet e tente novamente.</string>
+    <string name="woopos_variations_loading_error_message">Verifique sua conexão com a Internet e tente novamente.</string>
+    <string name="woopos_items_pagination_error_description">Verifique sua conexão com a Internet e tente novamente.</string>
+    <string name="woopos_coupons_loading_error_message">Verifique sua conexão com a Internet e tente novamente.</string>
+    <string name="woopos_coupons_empty_list_message">Cupons podem ser uma maneira eficaz de aumentar suas vendas. Deseja criar um?</string>
+    <string name="woopos_coupons_loading_error_coupons_disabled_message">Ative os códigos de cupom nas configurações do WooCommerce para começar a criar descontos para seus clientes.</string>
+    <string name="woopos_products_loading_error_message">Tente novamente.</string>
+    <string name="blaze_campaign_preview_product_image_content_description">Imagem do produto usada para o anúncio</string>
+    <string name="custom_amounts_save_changes">Salvar alterações</string>
     <string name="purchased_shipment_content_description">Comprado</string>
-    <string name="woopos_totals_invalid_coupon_error">Não foi possível aplicar os cupons</string>
     <string name="woopos_coupons_empty_list_create_coupon_label">Criar cupom</string>
-    <string name="woopos_coupons_loading_error_coupons_disabled_message">Ative os cupons nas configurações do WooCommerce.</string>
-    <string name="woopos_coupons_loading_error_coupons_disabled_title">Nenhum cupom encontrado</string>
     <string name="woopos_totals_coupons_validation_failed_remove_coupons">Remover cupons</string>
     <string name="woopos_totals_coupons_validation_failed_edit_order">Editar pedido</string>
     <string name="woopos_cart_coupon_invalid_subtitle">Cupom não aplicado</string>
     <string name="woopos_coupon_item_expired_label">Expirou em %s</string>
+    <string name="woopos_totals_invalid_coupon_error">Não foi possível aplicar os cupons</string>
+    <string name="woopos_coupons_loading_error_coupons_disabled_title">Comece a aceitar cupons</string>
     <string name="woo_shipping_split_shipment_merge_unfulfilled_button">Mesclar todos os envios</string>
     <string name="woo_shipping_split_shipment_merge_unfulfilled_desc">Isso removerá todos os envios divididos não atendidos e moverá todos os itens para um único envio.</string>
     <string name="woo_shipping_split_shipment_merge_unfulfilled_title">Mesclar todos os envios não atendidos</string>
     <string name="woo_shipping_split_shipment_merge_unfulfilled_menu">Mesclar todos os não atendidos</string>
     <string name="woo_shipping_labels_package_creation_unstarred">Remover este item dos favoritos</string>
     <string name="woo_shipping_labels_package_creation_starred">Favoritar este item</string>
-    <string name="woopos_coupons_pagination_error_content_description">\"Falha ao carregar mais cupons. Toque duas vezes para tentar de novo.\"</string>
-    <string name="woopos_coupons_pagination_error_description">\"Ocorreu um erro ao carregar cupons.\"</string>
-    <string name="woopos_coupons_pagination_error_title">Falha ao carregar mais itens\"</string>
-    <string name="woopos_coupons_pagination_try_again_label">Tente novamente</string>
     <string name="woopos_coupons_loading_error_retry_button">Tentar novamente</string>
-    <string name="woopos_coupons_loading_error_message">Tentar novamente?</string>
-    <string name="woopos_coupons_loading_error_title">Erro ao carregar cupons</string>
-    <string name="woopos_coupons_empty_list_message">Envie descontos e ofertas especiais aos seus clientes para turbinar seus negócios.</string>
+    <string name="woopos_coupons_pagination_error_content_description">Não foi possível carregar mais cupons. Toque duas vezes para tentar de novo.</string>
+    <string name="woopos_coupons_pagination_error_title">Não foi possível carregar mais cupons</string>
+    <string name="woopos_coupons_pagination_try_again_label">Tentar novamente</string>
     <string name="woopos_coupons_empty_list_title">Nenhum cupom encontrado</string>
     <string name="woopos_coupons_empty_list_image_description">Sem cupons</string>
+    <string name="woopos_coupons_loading_error_title">Não foi possível carregar os cupons</string>
     <string name="woopos_coupons_screen_title">Cupons</string>
     <string name="woopos_product_limitations_title">Onde estão meus produtos?</string>
     <string name="woopos_coupon_item_content_description">Cupom %s</string>
@@ -59,12 +71,9 @@ Language: pt_BR
     <string name="woo_shipping_labels_hazmat_info_tooltip_2">No momento, o WooCommerce Shipping não permite o envio de materiais perigosos (HAZMAT) por meio da &lt;a href=\'dhl-hazmat\'&gt;&lt;u&gt;DHL Express&lt;/u&gt;&lt;/a&gt;.</string>
     <string name="woo_shipping_labels_hazmat_info_full_description">Os materiais que podem ser perigosos incluem itens como baterias, gelo seco, líquidos inflamáveis, aerossol, munição, fogos de artifício, esmalte de unha, perfume, tinta, solventes, entre outros. Itens perigosos devem ser enviados em pacotes separados.</string>
     <string name="woo_shipping_labels_hazmat_info_contains_hazmat">Contém materiais perigosos</string>
-    <string name="woopos_search_items_error_description">Tentar novamente?</string>
-    <string name="woopos_search_items_error_title">Não foi possível carregar seus itens</string>
     <string name="woopos_search_empty_image_content_description">Nenhum item encontrado</string>
-    <string name="woopos_search_empty_description">Não encontramos nada que corresponda à sua pesquisa.</string>
-    <string name="woopos_search_items_empty_title">Nada encontrado</string>
     <string name="woo_shipping_labels_hazmat_info_title">Você está enviando mercadorias ou materiais perigosos?</string>
+    <string name="woopos_search_items_empty_title">Nenhum produto encontrado</string>
     <string name="woopos_cart_item_coupon_content_description">Cupom no carrinho %s</string>
     <string name="woopos_payment_discount_label">Desconto total</string>
     <string name="shipping_label_package_title">Selecionar um pacote</string>
@@ -221,8 +230,6 @@ Language: pt_BR
     <string name="woopos_complete_cash_order_button">Marcar pagamento como concluído</string>
     <string name="woopos_cash_payment_title">Pagamento em dinheiro</string>
     <string name="woopos_items_pagination_error_content_description">\"Falha ao carregar mais itens. Toque duas vezes para tentar de novo.\"</string>
-    <string name="woopos_items_pagination_error_description">\"Ocorreu um erro ao carregar produtos.\"</string>
-    <string name="woopos_items_pagination_try_again_label">Tentar novamente</string>
     <string name="woo_pos_payment_failed_go_back_to_checkout">Voltar ao pagamento</string>
     <string name="woo_pos_payment_failed_try_again">Tentar pagar novamente</string>
     <string name="woo_pos_payment_failed_try_another_payment_method">Tentar outro método de pagamento</string>
@@ -235,8 +242,9 @@ Language: pt_BR
     <string name="woopos_totals_reader_getting_ready">Quase pronto</string>
     <string name="woopos_success_totals_error_reader_not_connected_cta_button_label">Conectar-se ao leitor</string>
     <string name="woopos_success_totals_error_reader_not_connected_subtitle">Para processar esse pagamento, conecte seu leitor.</string>
-    <string name="woopos_items_pagination_error_title">\"Falha ao carregar mais itens\"</string>
     <string name="woopos_totals_reader_preparing_reader_for_payment">Preparando o leitor para pagamento</string>
+    <string name="woopos_items_pagination_try_again_label">Tentar novamente</string>
+    <string name="woopos_items_pagination_error_title">Não foi possível carregar mais produtos</string>
     <string name="woopos_success_totals_error_reader_not_connected_title">Leitor não conectado</string>
     <string name="woopos_receipt_button">Enviar recibo por e-mail</string>
     <string name="woopos_payment_take_cash_payment_label">Pagamento em dinheiro</string>
@@ -259,7 +267,6 @@ Language: pt_BR
     <string name="site_picker_edit_store_list_footer">As lojas não selecionadas não aparecerão no seletor do site do app nem receberão notificações por push relacionadas a novos pedidos ou avaliações de produto</string>
     <string name="site_picker_edit_store_list_title">Lojas visíveis</string>
     <string name="site_picker_edit_store_list">Editar lojas</string>
-    <string name="woopos_variations_loading_error_title">Erro ao carregar variações</string>
     <string name="woopos_variations_back_content_description">Voltar</string>
     <string name="woopos_variation_item_content_description">Variação: %s; preço: %s</string>
     <string name="woopos_variable_product_item_content_description">Produto variável: %s; preço: %s</string>
@@ -267,6 +274,7 @@ Language: pt_BR
     <string name="blaze_campaign_edit_ad_change_cta_text_title">Chamada para ação</string>
     <string name="blaze_campaign_edit_ad_change_tagline_empty_error">A descrição não pode ficar em branco</string>
     <string name="login_magic_links_email_sent_double_check_email">Confirme se o e-mail está correto e verifique sua pasta de spam.</string>
+    <string name="woopos_variations_loading_error_title">Não foi possível carregar variações</string>
     <string name="username_not_registered_wpcom">Não encontramos nenhuma conta do WordPress.com conectada a este nome de usuário. Insira um e-mail para criar uma conta nova.</string>
     <string name="product_global_unique_id_summary">Insira um código de barras ou algum outro identificador exclusivo deste produto. Isso pode ajudar a listar o produto em outros canais ou marketplaces.</string>
     <string name="product_global_unique_id">GTIN, UPC, EAN, ISBN</string>
@@ -408,12 +416,11 @@ Language: pt_BR
     <string name="google_ads_campaign_created_success_description">Sua nova campanha foi criada. Bons tempos estão por vir para suas vendas!</string>
     <string name="google_ads_campaign_created_success_title">Tudo pronto!</string>
     <string name="woopos_error_icon_content_description">Ícone de erro</string>
-    <string name="woopos_products_loading_error_message">Tentar de novo?</string>
-    <string name="woopos_products_loading_error_title">Erro ao carregar produtos</string>
     <string name="woopos_products_empty_list_message_two">No momento, o PDV só é compatível com produtos simples</string>
     <string name="woopos_totals_order_creation_error">Não foi possível criar o pedido</string>
     <string name="woopos_products_loading_error_retry_button">Tentar novamente</string>
     <string name="woopos_variations_empty_list_message">No momento, o ponto de venda só aceita produtos simples, variáveis e virtuais: \ncrie um para começar.</string>
+    <string name="woopos_products_loading_error_title">Não foi possível carregar os produtos</string>
     <string name="woopos_products_empty_list_image_description">Nenhum produto</string>
     <string name="woopos_products_empty_list_title">Nenhum produto compatível encontrado</string>
     <string name="woopos_get_support_title">Obter suporte</string>
@@ -1571,8 +1578,6 @@ Language: pt_BR
     <string name="domains_free_with_credits">Gratuito no primeiro ano</string>
     <string name="settings_confirm_logout_site_credentials">Tem certeza de que deseja fazer logout da sua conta?</string>
     <string name="domains_generic_error_title">Não foi possível carregar os domínios do site</string>
-    <string name="store_onboarding_task_change_domain_description">Tenha uma URL personalizada para hospedar sua loja.</string>
-    <string name="store_onboarding_task_change_domain_title">Personalize seu domínio</string>
     <string name="store_onboarding_task_launch_store_description">Publique seu site para o mundo quando quiser!</string>
     <string name="store_onboarding_task_launch_store_title">Publique sua loja</string>
     <string name="store_onboarding_task_add_product_description">Adicione produtos ou serviços à loja para começar a vender.</string>

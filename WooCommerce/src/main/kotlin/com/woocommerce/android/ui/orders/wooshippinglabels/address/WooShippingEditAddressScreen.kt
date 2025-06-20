@@ -85,7 +85,6 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.RoundedCornerBoxWithBorder
 import com.woocommerce.android.ui.orders.wooshippinglabels.ShipmentDetailsSectionTitle
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.RoundedBorderDropDownWithLabel
-import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.shippingSelectedBackgroundColor
 import kotlinx.coroutines.launch
 
 @Composable
@@ -826,7 +825,7 @@ private fun AddressSelectionItem(
 
     val backgroundColor = if (isSelected) {
         animateColorAsState(
-            targetValue = MaterialTheme.colors.shippingSelectedBackgroundColor,
+            targetValue = colorResource(R.color.woo_item_selected),
             label = "colorAnimation"
         )
     } else {

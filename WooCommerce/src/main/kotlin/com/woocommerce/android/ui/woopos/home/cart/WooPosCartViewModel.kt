@@ -14,9 +14,11 @@ import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetVariationById
 import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosSearchByIdentifier
 import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosSearchByIdentifierResult
+import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.common.util.WooPosSoundHelper
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.CouponsRemoved
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OnNewTransactionStarted
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
@@ -27,6 +29,7 @@ import com.woocommerce.android.ui.woopos.home.cart.WooPosCartStatus.EMPTY
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.home.items.variations.getNameForPOS
 import com.woocommerce.android.ui.woopos.util.WooPosGetCachedStoreCurrency
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCartTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.CheckoutTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ClearCartTapped
@@ -60,6 +63,7 @@ class WooPosCartViewModel @Inject constructor(
     private val updateCartItemsWithChanges: WooPosCartItemsUpdater,
     private val getCachedStoreCurrency: WooPosGetCachedStoreCurrency,
     private val searchByIdentifier: WooPosSearchByIdentifier,
+    private val wooPosLogWrapper: WooPosLogWrapper,
     private val soundHelper: WooPosSoundHelper,
     savedState: SavedStateHandle,
 ) : ViewModel() {
@@ -86,7 +90,6 @@ class WooPosCartViewModel @Inject constructor(
 
     override fun onCleared() {
         super.onCleared()
-        searchByIdentifier.onCleanup()
         soundHelper.onCleanup()
     }
 
@@ -121,6 +124,10 @@ class WooPosCartViewModel @Inject constructor(
                     body = WooPosCartState.Body.Empty
                 )
             }
+
+            is WooPosCartUIEvent.OnBarcodeScanned -> {
+                onBarcodeScanned(event.barcode)
+            }
         }
     }
 
@@ -139,15 +146,7 @@ class WooPosCartViewModel @Inject constructor(
         }
         viewModelScope.launch {
             items.forEach { item ->
-                when (item) {
-                    is WooPosCartItemViewState.Product,
-                    is WooPosCartItemViewState.Coupon -> {
-                        analyticsTracker.track(ItemRemovedFromCart(item = item, source = source))
-                    }
-
-                    is WooPosCartItemViewState.Loading,
-                    is WooPosCartItemViewState.Error -> Unit
-                }
+                analyticsTracker.track(ItemRemovedFromCart(item = item, source = source))
             }
         }
     }
@@ -348,20 +347,45 @@ class WooPosCartViewModel @Inject constructor(
     }
 
     private fun onBarcodeScanned(barcode: String) {
+        if (_state.value.cartStatus !in listOf(EDITABLE, EMPTY)) {
+            return
+        }
+
         viewModelScope.launch {
             if (_state.value.body == WooPosCartState.Body.Empty) {
+                childrenToParentEventSender.sendToParent(OnNewTransactionStarted)
+
                 analyticsTracker.track(InteractionWithCustomerStarted)
             }
             val itemNumber = getItemNumber()
 
-            updateCartItem(WooPosCartItemViewState.Loading(itemNumber = itemNumber, name = barcode))
+            WooPosCartItemViewState.Loading(itemNumber = itemNumber, name = barcode).let { loadingItem ->
+                analyticsTracker.track(WooPosAnalyticsEvent.Event.ItemAddedToCart(item = loadingItem))
+                updateCartItem(loadingItem)
+            }
 
             val searchResult = searchByIdentifier(barcode)
+
+            if (!isItemStillInCart(itemNumber)) {
+                wooPosLogWrapper.w("Item no longer in the cart. Ignoring barcode scan result.")
+                return@launch
+            }
+
             val cartItem = searchResult.mapToCartItem(identifier = barcode, itemNumber = itemNumber)
             if (cartItem is WooPosCartItemViewState.Error) {
                 soundHelper.playBarcodeScanFailure()
             }
+
+            analyticsTracker.track(WooPosAnalyticsEvent.Event.ItemAddedToCart(item = cartItem))
             updateCartItem(cartItem)
+        }
+    }
+
+    private fun isItemStillInCart(itemNumber: Int): Boolean {
+        val body = _state.value.body
+        return when (body) {
+            is WooPosCartState.Body.Empty -> false
+            is WooPosCartState.Body.WithItems -> body.itemsInCart.any { it.itemNumber == itemNumber }
         }
     }
 
@@ -555,9 +579,21 @@ class WooPosCartViewModel @Inject constructor(
                 )
             }
 
+            is WooPosSearchByIdentifierResult.VariationSuccess -> {
+                WooPosCartItemViewState.Product.Variation(
+                    itemNumber = itemNumber,
+                    id = variation.remoteProductId,
+                    variationId = variation.remoteVariationId,
+                    name = this.parentProduct.name,
+                    description = variation.getNameForPOS(this.parentProduct, resourceProvider),
+                    price = formatPrice(variation.price),
+                    imageUrl = variation.image?.source
+                )
+            }
+
             is WooPosSearchByIdentifierResult.Failure -> {
                 val errorMessage = when (this.error) {
-                    WooPosSearchByIdentifierResult.Error.ProductNotFound -> {
+                    WooPosSearchByIdentifierResult.Error.NotFound -> {
                         resourceProvider.getString(R.string.woopos_cart_barcode_scan_result_product_not_found)
                     }
 
@@ -565,13 +601,12 @@ class WooPosCartViewModel @Inject constructor(
                         resourceProvider.getString(R.string.woopos_cart_barcode_scan_result_network_error)
                     }
 
-                    WooPosSearchByIdentifierResult.Error.RequestCancelled -> {
-                        resourceProvider.getString(R.string.woopos_cart_barcode_scan_result_request_cancelled)
-                    }
-
                     is WooPosSearchByIdentifierResult.Error.UnknownError -> this.error.message
-                    WooPosSearchByIdentifierResult.Error.UnsupportedProduct -> {
-                        resourceProvider.getString(R.string.woopos_cart_barcode_scan_result_unsupported_product)
+                    is WooPosSearchByIdentifierResult.Error.UnsupportedProduct -> {
+                        resourceProvider.getString(
+                            R.string.woopos_cart_barcode_scan_result_unsupported_product,
+                            this.error.productName
+                        )
                     }
                 }
                 WooPosCartItemViewState.Error(

@@ -147,10 +147,11 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
 
         @ExposedCopyVisibility
         data class ItemAddedToCart private constructor(
-            val source: ItemsListSource,
+            val source: ItemsListSource?,
             val sourceType: ItemsListSourceType,
             val itemType: ItemsListItemType,
-            val productType: ItemsListProductType?
+            val productType: ItemsListProductType?,
+            val error: String? = null
         ) : Event() {
             override val name: String = "item_added_to_cart"
 
@@ -178,14 +179,39 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                 }
             )
 
+            constructor(item: WooPosCartItemViewState) : this(
+                source = null,
+                sourceType = ItemsListSourceType.BARCODE_SCANNER,
+                itemType = when (item) {
+                    is WooPosCartItemViewState.Loading -> ItemsListItemType.LOADING
+                    is WooPosCartItemViewState.Coupon -> ItemsListItemType.COUPON
+                    is WooPosCartItemViewState.Product.Simple -> ItemsListItemType.PRODUCT
+                    is WooPosCartItemViewState.Product.Variation -> ItemsListItemType.PRODUCT
+                    is WooPosCartItemViewState.Error -> ItemsListItemType.ERROR
+                },
+                productType = when (item) {
+                    is WooPosCartItemViewState.Coupon,
+                    is WooPosCartItemViewState.Error,
+                    is WooPosCartItemViewState.Loading -> null
+                    is WooPosCartItemViewState.Product.Simple -> ItemsListProductType.SIMPLE
+                    is WooPosCartItemViewState.Product.Variation -> ItemsListProductType.VARIATION
+                },
+                error = if (item is WooPosCartItemViewState.Error) item.message else null
+            )
+
             init {
                 addProperties(
                     buildMap {
-                        put(ItemsListSource.SOURCE, source.toString())
+                        if (source != null) {
+                            put(ItemsListSource.SOURCE, source.toString())
+                        }
                         put(ItemsListSourceType.SOURCE_TYPE, sourceType.toString())
                         put(ItemsListItemType.ITEM_TYPE, itemType.toString())
                         if (productType != null) {
                             put(ItemsListProductType.PRODUCT_TYPE, productType.toString())
+                        }
+                        if (error != null) {
+                            put("error", error)
                         }
                     }
                 )
@@ -206,15 +232,15 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                 itemType = when (item) {
                     is WooPosCartItemViewState.Product -> ItemsListItemType.PRODUCT
                     is WooPosCartItemViewState.Coupon -> ItemsListItemType.COUPON
-                    is WooPosCartItemViewState.Error -> error("Error item is not a valid item type")
-                    is WooPosCartItemViewState.Loading -> error("Loading item is not a valid item type")
+                    is WooPosCartItemViewState.Error -> ItemsListItemType.ERROR
+                    is WooPosCartItemViewState.Loading -> ItemsListItemType.LOADING
                 },
                 productType = when (item) {
                     is WooPosCartItemViewState.Product.Simple -> ItemsListProductType.SIMPLE
                     is WooPosCartItemViewState.Product.Variation -> ItemsListProductType.VARIATION
-                    is WooPosCartItemViewState.Coupon -> null
-                    is WooPosCartItemViewState.Error -> error("Error item is not a valid item type")
-                    is WooPosCartItemViewState.Loading -> error("Loading item is not a valid item type")
+                    is WooPosCartItemViewState.Coupon,
+                    is WooPosCartItemViewState.Error,
+                    is WooPosCartItemViewState.Loading -> null
                 }
             )
 

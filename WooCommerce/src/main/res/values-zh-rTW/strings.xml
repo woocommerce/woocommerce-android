@@ -1,16 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-05-20 09:54:04+0000
+Translation-Revision-Date: 2025-06-03 13:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_search_items_error_description">請再試一次。</string>
+    <string name="woopos_search_coupons_error_title">無法載入優惠券</string>
+    <string name="woopos_search_items_error_title">無法載入商品</string>
+    <string name="woopos_search_empty_coupons_description">找不到任何相符的優惠券，請嘗試調整搜尋字詞。</string>
+    <string name="woopos_search_empty_description">找不到任何相符的商品，請嘗試調整搜尋字詞。</string>
+    <string name="woopos_search_coupons_empty_title">找不到優惠券</string>
+    <string name="woopos_search_coupons">搜尋優惠券</string>
+    <string name="woopos_coupons_pagination_error_description">請檢查你的網際網路連線並再試一次。</string>
+    <string name="woopos_variations_loading_error_message">請檢查你的網際網路連線並再試一次。</string>
+    <string name="woopos_items_pagination_error_description">請檢查你的網際網路連線並再試一次。</string>
+    <string name="woopos_coupons_loading_error_message">請檢查你的網際網路連線並再試一次。</string>
+    <string name="woopos_coupons_empty_list_message">可透過優惠券有效刺激業績表現。 是否要建立優惠券？</string>
+    <string name="woopos_coupons_loading_error_coupons_disabled_message">在 WooCommerce 設定中啟用優惠碼功能，著手為顧客建立優惠碼。</string>
+    <string name="woopos_products_loading_error_message">請再試一次。</string>
+    <string name="blaze_campaign_preview_product_image_content_description">用於廣告的商品圖片</string>
+    <string name="custom_amounts_save_changes">儲存變更</string>
     <string name="purchased_shipment_content_description">已購買</string>
-    <string name="woopos_totals_invalid_coupon_error">無法套用優惠券</string>
+    <string name="woopos_totals_invalid_coupon_error">無法使用優惠券</string>
     <string name="woopos_coupons_empty_list_create_coupon_label">建立優惠券</string>
-    <string name="woopos_coupons_loading_error_coupons_disabled_message">請在 WooCommerce 設定中啟用優惠券。</string>
-    <string name="woopos_coupons_loading_error_coupons_disabled_title">找不到優惠券</string>
+    <string name="woopos_coupons_loading_error_coupons_disabled_title">開始接受優惠券</string>
     <string name="woopos_totals_coupons_validation_failed_remove_coupons">移除優惠券</string>
     <string name="woopos_totals_coupons_validation_failed_edit_order">編輯訂單</string>
     <string name="woopos_cart_coupon_invalid_subtitle">未套用優惠券</string>
@@ -21,14 +36,11 @@ Language: zh_TW
     <string name="woo_shipping_split_shipment_merge_unfulfilled_menu">合併所有未完成的</string>
     <string name="woo_shipping_labels_package_creation_unstarred">移除此項目的星號</string>
     <string name="woo_shipping_labels_package_creation_starred">為此項目加上星號</string>
-    <string name="woopos_coupons_pagination_error_content_description">「無法載入更多優惠券， 請點兩下再試一次。」</string>
-    <string name="woopos_coupons_pagination_error_description">「載入優惠券時發生錯誤。」</string>
-    <string name="woopos_coupons_pagination_error_title">無法載入更多項目」</string>
-    <string name="woopos_coupons_pagination_try_again_label">再試一次</string>
+    <string name="woopos_coupons_pagination_error_content_description">無法載入更多優惠券。 請點兩下再試一次。</string>
+    <string name="woopos_coupons_pagination_error_title">無法載入更多優惠券</string>
+    <string name="woopos_coupons_pagination_try_again_label">重試</string>
     <string name="woopos_coupons_loading_error_retry_button">重試</string>
-    <string name="woopos_coupons_loading_error_message">要再試一次嗎？</string>
-    <string name="woopos_coupons_loading_error_title">載入優惠券時發生錯誤</string>
-    <string name="woopos_coupons_empty_list_message">傳送特別優惠與折扣給顧客，拉抬業績。</string>
+    <string name="woopos_coupons_loading_error_title">無法載入優惠券</string>
     <string name="woopos_coupons_empty_list_title">找不到優惠券</string>
     <string name="woopos_coupons_empty_list_image_description">無優惠券</string>
     <string name="woopos_coupons_screen_title">優惠券</string>
@@ -60,11 +72,8 @@ Language: zh_TW
     <string name="woo_shipping_labels_hazmat_info_full_description">有潛在危險的項目包括電池、乾冰、可燃性物體、氣溶膠、彈藥、煙火、指甲油、香水、油漆和溶劑等項目。 危險物品必須分開裝運。</string>
     <string name="woo_shipping_labels_hazmat_info_contains_hazmat">包含危險物品</string>
     <string name="woo_shipping_labels_hazmat_info_title">你要寄送的貨件，是否包含有害或危險物品？</string>
-    <string name="woopos_search_items_error_description">要再試一次嗎？</string>
-    <string name="woopos_search_items_error_title">無法載入你的品項</string>
     <string name="woopos_search_empty_image_content_description">找不到任何品項</string>
-    <string name="woopos_search_empty_description">我們找不到任何符合搜尋條件的品項。</string>
-    <string name="woopos_search_items_empty_title">找不到任何結果</string>
+    <string name="woopos_search_items_empty_title">找不到商品</string>
     <string name="woopos_payment_discount_label">折扣總計</string>
     <string name="woopos_cart_item_coupon_content_description">購物車中優惠券 %s</string>
     <string name="shipping_label_package_title">選取包裹</string>
@@ -221,9 +230,8 @@ Language: zh_TW
     <string name="woopos_complete_cash_order_button">將付款標示為完成</string>
     <string name="woopos_cash_payment_title">現金付款</string>
     <string name="woopos_items_pagination_error_content_description">「無法載入更多項目， 請點兩下再試一次。」</string>
-    <string name="woopos_items_pagination_error_description">「載入商品時發生錯誤。」</string>
-    <string name="woopos_items_pagination_error_title">「無法載入更多項目」</string>
-    <string name="woopos_items_pagination_try_again_label">再試一次</string>
+    <string name="woopos_items_pagination_error_title">無法載入更多商品</string>
+    <string name="woopos_items_pagination_try_again_label">重試</string>
     <string name="woo_pos_payment_failed_go_back_to_checkout">返回結帳</string>
     <string name="woo_pos_payment_failed_try_again">再次嘗試付款</string>
     <string name="woo_pos_payment_failed_try_another_payment_method">嘗試其他付款方式</string>
@@ -259,7 +267,7 @@ Language: zh_TW
     <string name="site_picker_edit_store_list_footer">未選取的商店不會顯示於應用程式網站的選擇器，也不會收到新訂單或商品評論的推播通知</string>
     <string name="site_picker_edit_store_list_title">可檢視的商店</string>
     <string name="site_picker_edit_store_list">編輯商店</string>
-    <string name="woopos_variations_loading_error_title">載入款式時發生錯誤</string>
+    <string name="woopos_variations_loading_error_title">無法載入款式</string>
     <string name="woopos_variations_back_content_description">返回</string>
     <string name="woopos_variation_item_content_description">款式 %s，價格 %s</string>
     <string name="woopos_variable_product_item_content_description">多款式商品 %s，價格 %s</string>
@@ -410,8 +418,7 @@ Language: zh_TW
     <string name="woopos_totals_order_creation_error">無法建立訂單</string>
     <string name="woopos_products_loading_error_retry_button">重試</string>
     <string name="woopos_error_icon_content_description">錯誤標示圖示</string>
-    <string name="woopos_products_loading_error_message">要再試一次嗎？</string>
-    <string name="woopos_products_loading_error_title">載入商品時發生錯誤</string>
+    <string name="woopos_products_loading_error_title">無法載入商品</string>
     <string name="woopos_products_empty_list_message_two">POS 目前僅支援簡單商品</string>
     <string name="woopos_variations_empty_list_message">POS 目前僅支援簡單、多款式與虛擬商品 – \n建立商品後便可開始作業。</string>
     <string name="woopos_products_empty_list_title">找不到支援的商品</string>
@@ -1572,8 +1579,6 @@ Language: zh_TW
     <string name="settings_confirm_logout_site_credentials">確定要登出帳號嗎？</string>
     <string name="domains_generic_error_title">無法載入網站網域</string>
     <string name="store_onboarding_completed_tasks_status">已完成 %1$d/%2$d</string>
-    <string name="store_onboarding_task_change_domain_description">使用自訂 URL 來託管你的商店。</string>
-    <string name="store_onboarding_task_change_domain_title">自訂你的網域</string>
     <string name="store_onboarding_task_launch_store_description">隨時都能將你的網站發佈到全世界！</string>
     <string name="store_onboarding_task_launch_store_title">推出你的商店</string>
     <string name="store_onboarding_task_add_product_description">為你的商店新增產品或服務，立即開始銷售。</string>

@@ -15,6 +15,8 @@ import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.customer.WCCustomerFromAnalytics
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 import kotlin.test.Test
@@ -27,34 +29,34 @@ class GetCustomerWithStatsTest : BaseUnitTest() {
     private val getLocations: GetLocations = mock()
     private val dateUtils: DateUtils = mock()
 
-    private val defaultCustomer = WCCustomerModel().apply {
-        avatarUrl = ""
-        dateCreated = "2024-01-01"
-        dateCreatedGmt = "2024-01-01"
-        dateModified = "2024-01-01"
-        dateModifiedGmt = "2024-01-01"
-        email = "customer@email.com"
-        firstName = "Test"
-        remoteCustomerId = 1L
-        isPayingCustomer = true
-        lastName = "Customer"
-        role = ""
-        username = "customer"
+    private val defaultCustomer = WCCustomerModel(
+        avatarUrl = "",
+        dateCreated = "2024-01-01",
+        dateCreatedGmt = "2024-01-01",
+        dateModified = "2024-01-01",
+        dateModifiedGmt = "2024-01-01",
+        email = "customer@email.com",
+        firstName = "Test",
+        remoteCustomerId = RemoteId(1L),
+        isPayingCustomer = true,
+        lastName = "Customer",
+        role = "",
+        username = "customer",
 
-        localSiteId = 1
+        localSiteId = LocalId(1),
 
-        billingAddress1 = "default address"
-        billingCity = "Customer City"
-        billingCountry = "Customer Country"
-        billingPostcode = "10000"
-        billingState = "Customer State"
+        billingAddress1 = "default address",
+        billingCity = "Customer City",
+        billingCountry = "Customer Country",
+        billingPostcode = "10000",
+        billingState = "Customer State",
 
-        shippingAddress1 = "default address"
-        shippingCity = "Customer City"
-        shippingCountry = "Customer Country"
-        shippingPostcode = "10000"
-        shippingState = "Customer State"
-    }
+        shippingAddress1 = "default address",
+        shippingCity = "Customer City",
+        shippingCountry = "Customer Country",
+        shippingPostcode = "10000",
+        shippingState = "Customer State",
+    )
 
     private val defaultCustomerFromAnalytics = WCCustomerFromAnalytics(
         avgOrderValue = 234.0,
@@ -106,7 +108,7 @@ class GetCustomerWithStatsTest : BaseUnitTest() {
         assertNotNull(customerWithAnalytics)
 
         // Assert customer is formed from both values
-        assertThat(customerWithAnalytics.remoteCustomerId).isEqualTo(defaultCustomer.remoteCustomerId)
+        assertThat(customerWithAnalytics.remoteCustomerId).isEqualTo(defaultCustomer.remoteCustomerId.value)
         assertThat(customerWithAnalytics.analyticsCustomerId).isEqualTo(defaultCustomerFromAnalytics.id)
         assertThat(customerWithAnalytics.lastActive).isNotEmpty()
     }
@@ -155,7 +157,7 @@ class GetCustomerWithStatsTest : BaseUnitTest() {
         assertNotNull(customerWithAnalytics)
 
         // Assert customer is formed from customer info
-        assertThat(customerWithAnalytics.remoteCustomerId).isEqualTo(defaultCustomer.remoteCustomerId)
+        assertThat(customerWithAnalytics.remoteCustomerId).isEqualTo(defaultCustomer.remoteCustomerId.value)
         assertThat(customerWithAnalytics.analyticsCustomerId).isEqualTo(null)
     }
 

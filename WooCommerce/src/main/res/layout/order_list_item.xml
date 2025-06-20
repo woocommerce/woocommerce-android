@@ -49,6 +49,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/minor_50"
+            android:lines="1"
+            android:ellipsize="end"
             app:layout_constraintStart_toEndOf="@id/start_barrier"
             app:layout_constraintTop_toBottomOf="@+id/orderDate"
             tools:text="#51"/>
@@ -64,6 +66,8 @@
             app:layout_constraintStart_toEndOf="@+id/orderNum"
             app:layout_constraintEnd_toStartOf="@+id/orderTotal"
             app:layout_constraintTop_toBottomOf="@+id/orderDate"
+            android:lines="1"
+            android:ellipsize="end"
             tools:text="John Doe"/>
 
         <com.google.android.material.textview.MaterialTextView

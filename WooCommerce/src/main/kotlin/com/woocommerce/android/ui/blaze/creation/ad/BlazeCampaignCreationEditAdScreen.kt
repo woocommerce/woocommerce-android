@@ -43,6 +43,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest.Builder
+import com.woocommerce.android.R
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.drawable
@@ -218,12 +219,14 @@ private fun AdDataSection(
                 SuggestionButton(
                     onClick = onPreviousSuggestionTapped,
                     isEnabled = viewState.isPreviousSuggestionButtonEnabled,
-                    icon = Icons.AutoMirrored.Filled.ArrowBackIos
+                    icon = Icons.AutoMirrored.Filled.ArrowBackIos,
+                    contentDescription = stringResource(id = R.string.blaze_campaign_edit_ad_arrow_forward_description),
                 )
                 SuggestionButton(
                     onClick = onNextSuggestionTapped,
                     isEnabled = viewState.isNextSuggestionButtonEnabled,
                     icon = Icons.AutoMirrored.Filled.ArrowForwardIos,
+                    contentDescription = stringResource(id = R.string.blaze_campaign_edit_ad_arrow_back_description),
                     modifier = Modifier.padding(start = dimensionResource(id = dimen.major_150))
                 )
             }
@@ -391,6 +394,7 @@ private fun SuggestionButton(
     onClick: () -> Unit,
     isEnabled: Boolean,
     icon: ImageVector,
+    contentDescription: String,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -405,7 +409,7 @@ private fun SuggestionButton(
     ) {
         Icon(
             imageVector = icon,
-            contentDescription = null,
+            contentDescription = contentDescription,
             tint = if (isEnabled) {
                 MaterialTheme.colors.primary
             } else {

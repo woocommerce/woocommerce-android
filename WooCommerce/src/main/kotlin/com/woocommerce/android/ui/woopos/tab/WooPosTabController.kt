@@ -15,9 +15,7 @@ import com.woocommerce.android.ui.woopos.WooPosIsEnabled
 import com.woocommerce.android.ui.woopos.root.WooPosActivity
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class WooPosTabController @Inject constructor(
@@ -76,9 +74,7 @@ class WooPosTabController @Inject constructor(
 
     private fun updateTabVisibilityFromRemoteAndPersist() {
         activity.lifecycleScope.launch {
-            val isWooPosEnabledValue = withContext(Dispatchers.Default) {
-                isWooPosEnabled()
-            }
+            val isWooPosEnabledValue = isWooPosEnabled()
             setPOSTabVisibility(isWooPosEnabledValue)
             appPrefs.setPOSTabVisibilityForSite(selectedSite.getSelectedSiteId(), isWooPosEnabledValue)
             analyticsTracker.track(WooPosAnalyticsEvent.Event.TabVisibilityChecked(isWooPosEnabledValue))

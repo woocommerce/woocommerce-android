@@ -19,7 +19,8 @@
     <color name="color_on_surface_high">@color/woo_white_alpha_087</color>
     <color name="color_on_surface_medium">@color/woo_white_alpha_060</color>
     <color name="color_on_surface_disabled">@color/woo_white_alpha_038</color>
-    <color name="woo_item_selected">@color/woo_black</color>
+    <color name="woo_item_selected">@color/woo_purple_100</color>
+    <color name="woo_item_selected_disabled">@color/woo_gray_90</color>
 
     <color name="color_on_primary">@color/woo_black</color>
     <color name="color_on_primary_high">@color/woo_black</color>
@@ -165,6 +166,7 @@
     <color name="light_colored_button_text">@color/color_primary</color>
     <color name="light_colored_button_background">@color/woo_black_80</color>
     <color name="light_colored_button_text_secondary">@color/white</color>
+    <color name="text_button_over_bottom_sheet">@color/woo_purple_20</color>
 
     <!--
     Analytics
@@ -250,5 +252,10 @@
     -->
     <color name="woo_message_surface">@color/woo_purple_20</color>
     <color name="woo_message_on_surface">@color/woo_black</color>
+
+    <!--
+        Order Creation
+    -->
+    <color name="order_update_overlay_background">@color/woo_black_90_alpha_060</color>
 
 </resources>
