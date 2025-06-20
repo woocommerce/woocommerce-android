@@ -104,7 +104,7 @@ class WooShippingEditPaymentViewModel @Inject constructor(
                 dialogState = dialogState,
                 canManagePaymentMethods = accountSettings.canManagePayments,
                 canEditSettings = accountSettings.canEditSettings,
-                emailTheReceipt = accountSettings.paymentMethodOptions.emailReceipts,
+                emailReceipts = accountSettings.paymentMethodOptions.emailReceipts,
                 storeOwnerName = accountSettings.storeOwnerName,
                 storeOwnerUsername = accountSettings.storeOwnerUsername,
                 selectedPaymentMethodId = selectedPaymentMethod
@@ -172,7 +172,7 @@ class WooShippingEditPaymentViewModel @Inject constructor(
             val dialogState: DialogState? = null,
             val canManagePaymentMethods: Boolean,
             val canEditSettings: Boolean,
-            val emailTheReceipt: Boolean,
+            val emailReceipts: Boolean,
             val selectedPaymentMethodId: Int?,
             val storeOwnerName: String,
             val storeOwnerUsername: String,

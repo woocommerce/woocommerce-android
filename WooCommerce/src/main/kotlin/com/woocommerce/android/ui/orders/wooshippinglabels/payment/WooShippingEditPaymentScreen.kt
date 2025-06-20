@@ -390,7 +390,7 @@ private fun PaymentMethodsList(
         Spacer(Modifier.height(16.dp))
         WCSwitch(
             text = stringResource(R.string.woo_shipping_payment_email_receipt_toggle),
-            checked = viewState.emailTheReceipt,
+            checked = viewState.emailReceipts,
             enabled = viewState.canEditSettings,
             onCheckedChange = { TODO() },
             modifier = Modifier.fillMaxWidth()
@@ -502,7 +502,7 @@ private fun ContentScreenEmptyPreview() {
             viewState = WooShippingEditPaymentViewModel.ViewState.Content(
                 canManagePaymentMethods = false,
                 canEditSettings = true,
-                emailTheReceipt = true,
+                emailReceipts = true,
                 storeOwnerName = "John Doe",
                 storeOwnerUsername = "johndoe",
                 selectedPaymentMethodId = null,
@@ -523,7 +523,7 @@ private fun ContentScreenWithPaymentMethodsPreview() {
             viewState = WooShippingEditPaymentViewModel.ViewState.Content(
                 canManagePaymentMethods = true,
                 canEditSettings = true,
-                emailTheReceipt = true,
+                emailReceipts = true,
                 storeOwnerName = "John Doe",
                 storeOwnerUsername = "johndoe",
                 selectedPaymentMethodId = 1,

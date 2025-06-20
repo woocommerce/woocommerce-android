@@ -111,7 +111,7 @@ class WooShippingEditPaymentViewModelTest : BaseUnitTest() {
         assertThat(contentState.paymentMethods).isEqualTo(defaultAccountSettings.paymentMethodOptions.paymentMethods)
         assertThat(contentState.canManagePaymentMethods).isEqualTo(defaultAccountSettings.canManagePayments)
         assertThat(contentState.canEditSettings).isEqualTo(defaultAccountSettings.canEditSettings)
-        assertThat(contentState.emailTheReceipt).isEqualTo(defaultAccountSettings.paymentMethodOptions.emailReceipts)
+        assertThat(contentState.emailReceipts).isEqualTo(defaultAccountSettings.paymentMethodOptions.emailReceipts)
         assertThat(contentState.storeOwnerName).isEqualTo(defaultAccountSettings.storeOwnerName)
         assertThat(contentState.storeOwnerUsername).isEqualTo(defaultAccountSettings.storeOwnerUsername)
     }
