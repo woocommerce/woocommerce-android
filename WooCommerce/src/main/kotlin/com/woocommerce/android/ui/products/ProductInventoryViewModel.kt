@@ -74,10 +74,10 @@ class ProductInventoryViewModel @Inject constructor(
         if (sku == viewState.inventoryData.sku) {
             return
         }
+        onDataChanged(sku = sku)
         // verify if the sku exists only if the text entered by the user does not match the sku stored locally
-        if (sku.length > 2) {
-            onDataChanged(sku = sku)
-
+        skuVerificationJob?.cancel()
+        if (sku.length > 0) {
             if (sku == originalSku) {
                 clearSkuError()
             } else {
@@ -87,10 +87,8 @@ class ProductInventoryViewModel @Inject constructor(
                     clearSkuError()
                 }
 
-                // cancel any existing verification search, then start a new one after a brief delay
-                // so we don't actually perform the fetch until the user stops typing
-                skuVerificationJob?.cancel()
                 skuVerificationJob = launch {
+                    // perform the fetch after the user stops typing
                     delay(AppConstants.SEARCH_TYPING_DELAY_MS)
 
                     // only after the SKU is available remotely, reset the error if it's available locally, as well
@@ -104,6 +102,8 @@ class ProductInventoryViewModel @Inject constructor(
                     }
                 }
             }
+        } else {
+            clearSkuError()
         }
     }
 
@@ -188,7 +188,7 @@ class ProductInventoryViewModel @Inject constructor(
         // Define the regex pattern to match only numbers and hyphens
         val pattern = "^[0-9-]+$"
         // Check if the input string matches the pattern
-        return input.matches(pattern.toRegex())
+        return input.isEmpty() || input.matches(pattern.toRegex())
     }
 
     override fun onCleared() {
