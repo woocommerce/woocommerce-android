@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -27,6 +28,8 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.SnackbarHost
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -65,11 +68,13 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.PaymentMethodM
 
 @Composable
 fun WooShippingEditPaymentScreen(
-    viewModel: WooShippingEditPaymentViewModel
+    viewModel: WooShippingEditPaymentViewModel,
+    snackbarHostState: SnackbarHostState,
 ) {
     viewModel.viewState.observeAsState().value?.let {
         WooShippingEditPaymentScreen(
-            viewState = it
+            viewState = it,
+            snackbarHostState = snackbarHostState,
         )
     }
 }
@@ -77,40 +82,50 @@ fun WooShippingEditPaymentScreen(
 @Composable
 private fun WooShippingEditPaymentScreen(
     viewState: WooShippingEditPaymentViewModel.ViewState,
+    snackbarHostState: SnackbarHostState = SnackbarHostState(),
 ) {
-    Surface(
-        shape = RoundedCornerShape(
-            topStart = dimensionResource(id = R.dimen.minor_100),
-            topEnd = dimensionResource(id = R.dimen.minor_100)
-        )
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
+    Box {
+        Surface(
+            shape = RoundedCornerShape(
+                topStart = dimensionResource(id = R.dimen.minor_100),
+                topEnd = dimensionResource(id = R.dimen.minor_100)
+            )
         ) {
-            when (viewState) {
-                is WooShippingEditPaymentViewModel.ViewState.Loading -> {
-                    LoadingScreen(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    )
-                }
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                when (viewState) {
+                    is WooShippingEditPaymentViewModel.ViewState.Loading -> {
+                        LoadingScreen(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                        )
+                    }
 
-                is WooShippingEditPaymentViewModel.ViewState.Content -> {
-                    WooShippingEditPaymentContent(
-                        viewState = viewState
-                    )
-                }
+                    is WooShippingEditPaymentViewModel.ViewState.Content -> {
+                        WooShippingEditPaymentContent(
+                            viewState = viewState
+                        )
+                    }
 
-                is WooShippingEditPaymentViewModel.ViewState.AddPaymentMethodWebView -> {
-                    WooShippingEditPaymentWebView(
-                        viewState = viewState,
-                        modifier = Modifier
-                            .fillMaxSize()
-                    )
+                    is WooShippingEditPaymentViewModel.ViewState.AddPaymentMethodWebView -> {
+                        WooShippingEditPaymentWebView(
+                            viewState = viewState,
+                            modifier = Modifier
+                                .fillMaxSize()
+                        )
+                    }
                 }
             }
         }
+
+        SnackbarHost(
+            snackbarHostState,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 24.dp)
+        )
     }
 }
 
