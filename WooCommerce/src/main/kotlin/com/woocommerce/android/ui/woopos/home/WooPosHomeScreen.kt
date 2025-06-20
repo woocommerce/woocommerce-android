@@ -32,6 +32,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.common.composeui.isPreviewMode
+import com.woocommerce.android.ui.woopos.common.composeui.modifier.listenForBarcodes
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.BarcodeInfoDialog
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ExitConfirmationDialog
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ProductsInfoDialog
@@ -142,6 +143,12 @@ private fun WooPosHomeScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.surface)
+            .listenForBarcodes(
+                onBarcodeScanned = { barcode ->
+                    onHomeUIEvent(WooPosHomeUIEvent.OnBarcodeScanned(barcode))
+                },
+                enabled = state.screenPositionState is WooPosHomeState.ScreenPositionState.Cart
+            )
     ) {
         Row(
             modifier = Modifier
