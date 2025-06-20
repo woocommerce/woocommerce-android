@@ -1,10 +1,17 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.networking
 
+import com.google.gson.JsonObject
+import com.woocommerce.android.extensions.filterNotNull
 import com.woocommerce.android.ui.orders.wooshippinglabels.purchased.printing.ShippingLabelPrintingResponse
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.DestinationAddressDTO
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.BaseRequest
+import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooNetwork
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.toWooError
 import org.wordpress.android.fluxc.utils.toWooPayload
 import javax.inject.Inject
 
@@ -41,6 +48,38 @@ class WooShippingLabelRestClient @Inject constructor(
         )
 
         return result.toWooPayload()
+    }
+
+    suspend fun updateAccountSettings(
+        site: SiteModel,
+        selectedPaymentMethodId: Long?,
+        emailReceipts: Boolean
+    ): WooPayload<Unit> {
+        val url = "/wcshipping/v1/account/settings/"
+
+        val result = wooNetwork.executePostGsonRequest(
+            site = site,
+            path = url,
+            clazz = JsonObject::class.java,
+            body = mapOf(
+                "selected_payment_method_id" to selectedPaymentMethodId,
+                "email_receipts" to emailReceipts
+            ).filterNotNull()
+        )
+
+        val success = (result as? WPAPIResponse.Success<JsonObject>)?.data?.get("success")?.asBoolean ?: false
+
+        return when {
+            result is WPAPIResponse.Error -> WooPayload(error = result.error.toWooError())
+            !success -> WooPayload(
+                error = WooError(
+                    type = WooErrorType.API_ERROR,
+                    original = BaseRequest.GenericErrorType.UNKNOWN,
+                    message = "Something went wrong"
+                )
+            )
+            else -> WooPayload(Unit)
+        }
     }
 
     suspend fun fetchConfig(site: SiteModel, orderId: Long): WooPayload<ConfigResponse> {
