@@ -3,7 +3,7 @@
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 22.7
 -----
-
+- [*] Improved filtering UI in the order's screen [https://github.com/woocommerce/woocommerce-android/pull/14212]
 
 22.6
 -----

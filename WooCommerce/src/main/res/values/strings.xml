@@ -67,6 +67,7 @@
     <string name="this_year">This Year</string>
     <string name="discard">Discard</string>
     <string name="products">Products</string>
+    <string name="point_of_sale">Point of Sale</string>
     <string name="custom_amounts">Custom Amounts</string>
     <string name="refunds">Refunds</string>
     <string name="domain">Domain</string>
@@ -4672,6 +4673,16 @@
     <string name="woo_shipping_refund_purchase_date"><![CDATA[<b>Purchase date:</b> %s]]></string>
     <string name="woo_shipping_refund_amount_eligible_for_refund"><![CDATA[<b>Amount eligible for refund:</b> %s]]></string>
     <string name="woo_shipping_refund_note">Please note that this refund request applies only to the unused shipping label and will not affect the order itself.</string>
+
+    <string name="woo_shipping_payment_screen_title">Payment method</string>
+    <string name="woo_shipping_payment_screen_description">Choose a payment method.</string>
+    <string name="woo_shipping_payment_edit_disabled_warning">Only the site owner can manage the shipping label payment methods. Please contact Store Owner %1$s (%2$s) to manage payment methods.</string>
+    <string name="woo_shipping_payment_no_payment_methods_title">Add a payment method</string>
+    <string name="woo_shipping_payment_no_payment_methods_description">Add a payment method to  purchase a shipping label</string>
+    <string name="woo_shipping_payment_add_new_button">New credit or debit card</string>
+    <string name="woo_shipping_payment_methods_info_footer"><![CDATA[Credit cards are retrieved from the following WordPress.com account: %1$s <%2$s>]]></string>
+    <string name="woo_shipping_payment_email_receipt_toggle">Email the receipt</string>
+    <string name="woo_shipping_payment_use_card_button">Use this card</string>
 
     <string name="media_library_title">WordPress Media Library</string>
     <string name="media_loading_failed">Media loading failed</string>

@@ -4,11 +4,11 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
+import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState.Coupon.CouponValidationState
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
-import com.woocommerce.android.util.WooLogWrapper
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -39,12 +39,12 @@ class WooPosCartItemsUpdaterTest {
     }
     private val productsCache: WooPosProductsCache = mock()
     private val crashLogger: CrashLogging = mock()
-    private val logger: WooLogWrapper = mock()
+    private val logger: WooPosLogWrapper = mock()
 
     private val updater = WooPosCartItemsUpdater(
         formatPrice = formatPrice,
         productsCache = productsCache,
-        wooLogWrapper = logger,
+        wooPosLogWrapper = logger,
         crashLogger = crashLogger
     )
 
