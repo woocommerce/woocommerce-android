@@ -42,11 +42,7 @@ class WooPosTabController @Inject constructor(
         this.navController = navController
 
         activity.lifecycle.addObserver(this)
-    }
-
-    override fun onCreate(owner: LifecycleOwner) {
-        super.onCreate(owner)
-        //setupPOSTab()
+        setPOSTabVisibility(false)
     }
 
     override fun onResume(owner: LifecycleOwner) {
@@ -59,13 +55,6 @@ class WooPosTabController @Inject constructor(
         owner.lifecycle.removeObserver(this)
     }
 
-    private fun setupPOSTab() {
-        setPOSTabVisibility(false)
-        if (isPosAsTabEnabled()) {
-            setupPOSTabNavigation()
-        }
-    }
-
     fun refreshPOSTabVisibility() {
         setPOSTabVisibility(false)
         if (isPosAsTabEnabled()) {
@@ -75,6 +64,10 @@ class WooPosTabController @Inject constructor(
             // Then update with the remote value
             updateTabVisibilityFromRemoteAndPersist()
         }
+    }
+
+    fun navigateToPOS() {
+        activity.startActivity(Intent(activity, WooPosActivity::class.java))
     }
 
     private fun updatePOSTabVisibilityFromPrefs() = setPOSTabVisibility(

@@ -750,7 +750,7 @@ class MainActivity :
         binding.bottomNav.setOrderBadgeCount(0)
     }
 
-    override fun onNavItemSelected(navPos: BottomNavigationPosition) {
+    override fun onNavItemSelected(navPos: BottomNavigationPosition):Boolean {
         val stat = when (navPos) {
             MY_STORE -> AnalyticsEvent.MAIN_TAB_DASHBOARD_SELECTED
             ORDERS -> AnalyticsEvent.MAIN_TAB_ORDERS_SELECTED
@@ -763,6 +763,15 @@ class MainActivity :
         if (navPos == ORDERS) {
             viewModel.removeOrderNotifications()
         }
+
+        if (navPos == POS) {
+            posTabController.navigateToPOS()
+
+            // Do not keep the tab selected for POS
+            return false
+        }
+
+        return true
     }
 
     override fun onNavItemReselected(navPos: BottomNavigationPosition) {
