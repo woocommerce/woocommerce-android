@@ -398,7 +398,13 @@ private fun PaymentMethodsList(
         Spacer(Modifier.height(16.dp))
         WCColoredButton(
             onClick = onSaveClicked,
-            text = stringResource(R.string.woo_shipping_payment_use_card_button),
+            text = stringResource(
+                if (viewState.canManagePaymentMethods) {
+                    R.string.woo_shipping_payment_use_card_button
+                } else {
+                    R.string.save
+                }
+            ),
             modifier = Modifier.fillMaxWidth()
         )
     }
