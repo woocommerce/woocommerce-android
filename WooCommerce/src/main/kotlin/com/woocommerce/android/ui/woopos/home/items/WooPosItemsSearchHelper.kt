@@ -61,6 +61,7 @@ class WooPosItemsSearchHelper @Inject constructor(
                     }
 
                     is ParentToChildrenEvent.BackFromCheckoutToCartClicked -> Unit
+                    is ParentToChildrenEvent.BarcodeScanned -> Unit
                     is ParentToChildrenEvent.ItemClickedInItemsList -> Unit
                     is ParentToChildrenEvent.CheckoutClicked -> Unit
                     is ParentToChildrenEvent.SearchEvent.ChangedQuery -> Unit

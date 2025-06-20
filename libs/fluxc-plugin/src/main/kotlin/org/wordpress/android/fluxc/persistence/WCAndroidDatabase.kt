@@ -15,6 +15,7 @@ import org.wordpress.android.fluxc.model.WCProductShippingClassModel
 import org.wordpress.android.fluxc.model.WCProductTagModel
 import org.wordpress.android.fluxc.model.WCProductVariationModel
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
+import org.wordpress.android.fluxc.model.data.WCLocationModel
 import org.wordpress.android.fluxc.model.taxes.TaxBasedOnSettingEntity
 import org.wordpress.android.fluxc.model.taxes.TaxRateEntity
 import org.wordpress.android.fluxc.persistence.converters.BigDecimalConverter
@@ -27,6 +28,7 @@ import org.wordpress.android.fluxc.persistence.dao.CouponsDao
 import org.wordpress.android.fluxc.persistence.dao.CustomerDao
 import org.wordpress.android.fluxc.persistence.dao.CustomerFromAnalyticsDao
 import org.wordpress.android.fluxc.persistence.dao.InboxNotesDao
+import org.wordpress.android.fluxc.persistence.dao.LocationsDao
 import org.wordpress.android.fluxc.persistence.dao.MetaDataDao
 import org.wordpress.android.fluxc.persistence.dao.OrderNotesDao
 import org.wordpress.android.fluxc.persistence.dao.OrdersDao
@@ -88,7 +90,7 @@ import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_7_8
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_8_9
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_9_10
 
-const val WC_DATABASE_VERSION = 46
+const val WC_DATABASE_VERSION = 47
 
 @Database(
     version = WC_DATABASE_VERSION,
@@ -121,6 +123,7 @@ const val WC_DATABASE_VERSION = 46
         WCProductReviewModel::class,
         WCProductSettingsModel::class,
         WCCustomerModel::class,
+        WCLocationModel::class,
     ],
     autoMigrations = [
         AutoMigration(from = 12, to = 13),
@@ -150,6 +153,7 @@ const val WC_DATABASE_VERSION = 46
         AutoMigration(from = 43, to = 44),
         AutoMigration(from = 44, to = 45),
         AutoMigration(from = 45, to = 46),
+        AutoMigration(from = 46, to = 47),
     ]
 )
 @TypeConverters(
@@ -175,6 +179,7 @@ abstract class WCAndroidDatabase : RoomDatabase(), TransactionExecutor {
     abstract val visitorSummaryStatsDao: VisitorSummaryStatsDao
     abstract val shippingMethodDao: ShippingMethodDao
     abstract val customerFromAnalyticsDao: CustomerFromAnalyticsDao
+    internal abstract val locationsDao: LocationsDao
     internal abstract val customerDao: CustomerDao
     internal abstract val productsDao: ProductsDao
     internal abstract val productVariationsDao: ProductVariationsDao

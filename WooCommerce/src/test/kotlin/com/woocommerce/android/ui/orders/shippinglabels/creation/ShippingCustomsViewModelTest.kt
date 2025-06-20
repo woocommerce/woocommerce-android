@@ -25,18 +25,9 @@ import kotlin.math.ceil
 @ExperimentalCoroutinesApi
 class ShippingCustomsViewModelTest : BaseUnitTest() {
     private val countries = listOf(
-        WCLocationModel().apply {
-            name = "USA"
-            code = "US"
-        },
-        WCLocationModel().apply {
-            name = "Canada"
-            code = "CA"
-        },
-        WCLocationModel().apply {
-            name = "Syria"
-            code = "SY"
-        }
+        WCLocationModel(name = "USA", code = "US"),
+        WCLocationModel(name = "Canada", code = "CA"),
+        WCLocationModel(name = "Syria", code = "SY"),
     )
 
     private lateinit var viewModel: ShippingCustomsViewModel

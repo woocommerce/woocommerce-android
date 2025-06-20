@@ -121,6 +121,10 @@ class WooPosHomeViewModel @Inject constructor(
                     analyticsTracker.track(WooPosAnalyticsEvent.Event.ExitConfirmed)
                 }
             }
+
+            is WooPosHomeUIEvent.OnBarcodeScanned -> {
+                sendEventToChildren(ParentToChildrenEvent.BarcodeScanned(event.barcode))
+            }
         }
     }
 
