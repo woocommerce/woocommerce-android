@@ -121,8 +121,10 @@ class WooShippingEditPaymentViewModelTest : BaseUnitTest() {
     fun `when add new payment method is clicked, then show add payment method web view`() = testBlocking {
         setup()
 
+        val initialState = viewModel.viewState.captureValues().last()
+            as WooShippingEditPaymentViewModel.ViewState.Content
         val states = viewModel.viewState.runAndCaptureValues {
-            viewModel.onAddNewPaymentMethod()
+            initialState.onAddNewPaymentMethod()
         }
 
         assertThat(states.last())
@@ -139,8 +141,9 @@ class WooShippingEditPaymentViewModelTest : BaseUnitTest() {
         setup()
 
         val newPaymentMethodId = 2
+        val initialState = viewModel.viewState.captureValues().last() as WooShippingEditPaymentViewModel.ViewState.Content
         val states = viewModel.viewState.runAndCaptureValues {
-            viewModel.onPaymentMethodSelected(newPaymentMethodId)
+            initialState.onPaymentMethodSelected(newPaymentMethodId)
         }
 
         val contentState = states.last() as WooShippingEditPaymentViewModel.ViewState.Content
@@ -167,8 +170,10 @@ class WooShippingEditPaymentViewModelTest : BaseUnitTest() {
         setup()
 
         // Simulate adding a payment method
+        val initialState = viewModel.viewState.captureValues().last()
+            as WooShippingEditPaymentViewModel.ViewState.Content
         val webViewState = viewModel.viewState.runAndCaptureValues {
-            viewModel.onAddNewPaymentMethod()
+            initialState.onAddNewPaymentMethod()
         }.last() as WooShippingEditPaymentViewModel.ViewState.AddPaymentMethodWebView
 
         // Simulate successful URL load with payment method success URL
@@ -194,8 +199,10 @@ class WooShippingEditPaymentViewModelTest : BaseUnitTest() {
         setup()
 
         // Simulate adding a payment method
+        val initialState = viewModel.viewState.captureValues().last()
+            as WooShippingEditPaymentViewModel.ViewState.Content
         val webViewState = viewModel.viewState.runAndCaptureValues {
-            viewModel.onAddNewPaymentMethod()
+            initialState.onAddNewPaymentMethod()
         }.last() as WooShippingEditPaymentViewModel.ViewState.AddPaymentMethodWebView
 
         // Simulate successful URL load with payment method success URL
@@ -236,8 +243,9 @@ class WooShippingEditPaymentViewModelTest : BaseUnitTest() {
 
         val initialState = viewModel.viewState.captureValues().last()
             as WooShippingEditPaymentViewModel.ViewState.Content
-        initialState.onEmailReceiptsChanged(!defaultAccountSettings.paymentMethodOptions.emailReceipts)
-        val newState = viewModel.viewState.getOrAwaitValue() as WooShippingEditPaymentViewModel.ViewState.Content
+        val newState = viewModel.viewState.runAndCaptureValues {
+            initialState.onEmailReceiptsChanged(!defaultAccountSettings.paymentMethodOptions.emailReceipts)
+        }.last() as WooShippingEditPaymentViewModel.ViewState.Content
 
         assertThat(newState.emailReceipts).isEqualTo(!defaultAccountSettings.paymentMethodOptions.emailReceipts)
     }

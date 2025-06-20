@@ -117,12 +117,15 @@ class WooShippingEditPaymentViewModel @Inject constructor(
                 canManagePaymentMethods = accountSettings.canManagePayments,
                 canEditSettings = accountSettings.canEditSettings,
                 emailReceipts = emailReceipts ?: accountSettings.paymentMethodOptions.emailReceipts,
-                storeOwnerName = accountSettings.storeOwnerName,
-                storeOwnerUsername = accountSettings.storeOwnerUsername,
                 selectedPaymentMethodId = selectedPaymentMethod
                     ?: accountSettings.paymentMethodOptions.selectedPaymentId,
+                storeOwnerName = accountSettings.storeOwnerName,
+                storeOwnerUsername = accountSettings.storeOwnerUsername,
                 currentPaymentOptions = accountSettings.paymentMethodOptions,
-                onEmailReceiptsChanged = ::onEmailReceiptsChanged
+                onAddNewPaymentMethod = ::onAddNewPaymentMethod,
+                onPaymentMethodSelected = ::onPaymentMethodSelected,
+                onEmailReceiptsChanged = ::onEmailReceiptsChanged,
+                onSaveClicked = ::onSaveClicked
             )
         }.let { emitAll(it) }
     }
@@ -131,11 +134,11 @@ class WooShippingEditPaymentViewModel @Inject constructor(
         isAddPaymentMethodWebViewVisible.value = true
     }
 
-    fun onPaymentMethodSelected(paymentMethodId: Int?) {
+    private fun onPaymentMethodSelected(paymentMethodId: Int?) {
         selectedPaymentMethod.value = paymentMethodId
     }
 
-    fun onSaveClicked() {
+    private fun onSaveClicked() {
         TODO()
     }
 
@@ -194,7 +197,10 @@ class WooShippingEditPaymentViewModel @Inject constructor(
             val storeOwnerName: String,
             val storeOwnerUsername: String,
             val currentPaymentOptions: PaymentMethodOptions,
+            val onAddNewPaymentMethod: () -> Unit,
+            val onPaymentMethodSelected: (Int) -> Unit,
             val onEmailReceiptsChanged: (Boolean) -> Unit,
+            val onSaveClicked: () -> Unit
         ) : ViewState {
             val paymentMethods get() = currentPaymentOptions.paymentMethods
         }
