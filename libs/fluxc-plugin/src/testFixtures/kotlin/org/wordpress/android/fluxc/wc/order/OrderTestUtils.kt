@@ -7,7 +7,8 @@ import com.google.gson.JsonParser
 import com.google.gson.reflect.TypeToken
 import org.wordpress.android.fluxc.TestSiteSqlUtils
 import org.wordpress.android.fluxc.UnitTestUtils
-import org.wordpress.android.fluxc.model.LocalOrRemoteId
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
@@ -23,7 +24,7 @@ import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.fluxc.persistence.entity.OrderNoteEntity
 import org.wordpress.android.fluxc.site.SiteUtils
 import org.wordpress.android.fluxc.utils.DateUtils
-import kotlin.collections.forEach
+import kotlin.collections.MutableMap.MutableEntry
 
 object OrderTestUtils {
     fun generateSampleOrder(
@@ -36,7 +37,7 @@ object OrderTestUtils {
     ): OrderEntity {
         return OrderEntity(
             orderId = orderId,
-            localSiteId = LocalOrRemoteId.LocalId(siteId),
+            localSiteId = LocalId(siteId),
             status = orderStatus,
             dateModified = modified,
             dateCreated = "1955-11-05T14:15:00Z",
@@ -63,10 +64,7 @@ object OrderTestUtils {
         val responseType = object : TypeToken<List<OrderNoteApiResponse>>() {}.type
         val converted = Gson().fromJson(json, responseType) as? List<OrderNoteApiResponse> ?: emptyList()
         return converted.map {
-            it.toDataModel(localSiteId = LocalOrRemoteId.LocalId(localSiteId), orderId = LocalOrRemoteId.RemoteId(
-                orderId
-            )
-            )
+            it.toDataModel(localSiteId = LocalId(localSiteId), orderId = RemoteId(orderId))
         }
     }
 
@@ -118,11 +116,11 @@ object OrderTestUtils {
     fun getOrderShipmentProvidersFromJson(json: String, siteId: Int): List<WCOrderShipmentProviderModel> {
         val providers = mutableListOf<WCOrderShipmentProviderModel>()
         val jsonElement = JsonParser().parse(json)
-        jsonElement.asJsonObject.entrySet().forEach { countryEntry: MutableMap.MutableEntry<String, JsonElement> ->
+        jsonElement.asJsonObject.entrySet().forEach { countryEntry: MutableEntry<String, JsonElement> ->
             countryEntry.value.asJsonObject.entrySet().map { carrierEntry ->
                 carrierEntry?.let { carrier ->
                     val provider = WCOrderShipmentProviderModel(
-                        localSiteId = LocalOrRemoteId.LocalId(siteId),
+                        localSiteId = LocalId(siteId),
                         country = countryEntry.key,
                         carrierName = carrier.key,
                         carrierLink = carrier.value.asString
@@ -136,7 +134,7 @@ object OrderTestUtils {
 
     fun generateOrderShipmentProvider(siteId: Int): WCOrderShipmentProviderModel {
         return WCOrderShipmentProviderModel(
-            localSiteId = LocalOrRemoteId.LocalId(siteId),
+            localSiteId = LocalId(siteId),
             country = "Australia",
             carrierName = "Amanda Test",
             carrierLink = "http://google.com"

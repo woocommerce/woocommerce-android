@@ -8,7 +8,7 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
     primaryKeys = ["localSiteId", "carrierName", "country"]
 )
 data class WCOrderShipmentProviderModel(
-    val localSiteId: LocalId = LocalId(0),
+    val localSiteId: LocalId,
     val country: String = "",
     val carrierName: String = "",
     val carrierLink: String = ""

@@ -16,7 +16,6 @@ import org.wordpress.android.fluxc.UnitTestUtils
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
 import org.wordpress.android.fluxc.wc.order.OrderTestUtils
-import kotlin.test.assertEquals
 
 @Config(manifest = Config.NONE)
 @RunWith(RobolectricTestRunner::class)
@@ -44,7 +43,7 @@ internal class OrderShipmentProvidersDaoTest {
 
         // When
         val providers = OrderTestUtils.getOrderShipmentProvidersFromJson(json, siteModel.id).apply {
-            assertEquals(54, size)
+            assertThat(size).isEqualTo(54)
         }
         sut.replaceAll(siteModel.localId(), providers)
 
