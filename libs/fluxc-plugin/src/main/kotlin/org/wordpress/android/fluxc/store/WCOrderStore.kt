@@ -522,12 +522,6 @@ class WCOrderStore @Inject internal constructor(
     fun getShipmentTrackingByTrackingNumber(site: SiteModel, orderId: Long, trackingNumber: String) =
         OrderSqlUtils.getShipmentTrackingByTrackingNumber(site, orderId, trackingNumber)
 
-    /**
-     * Returns the shipment providers as a list of [WCOrderShipmentProviderModel]
-     */
-    suspend fun getShipmentProvidersForSite(site: SiteModel): List<WCOrderShipmentProviderModel> =
-        orderShipmentProvidersDao.getOrderShipmentProvidersForSite(site.localId())
-
     @Suppress("ComplexMethod", "UseCheckOrError")
     @Subscribe(threadMode = ThreadMode.ASYNC)
     override fun onAction(action: Action<*>) {
@@ -909,9 +903,10 @@ class WCOrderStore @Inject internal constructor(
             return@withDefaultContext if (result.isError) {
                 OnOrderShipmentProvidersChanged(0).also { it.error = result.error }
             } else {
-                // Delete all providers from the db and add new ones
-                orderShipmentProvidersDao.deleteOrderShipmentProvidersForSite(payload.site.localId())
-                orderShipmentProvidersDao.upsertOrderShipmentProviders(result.providers)
+                orderShipmentProvidersDao.replaceAll(
+                    payload.site.localId(),
+                    result.providers
+                )
                 OnOrderShipmentProvidersChanged(shipmentProvidersFetchedCount = result.providers.size)
             }
         }

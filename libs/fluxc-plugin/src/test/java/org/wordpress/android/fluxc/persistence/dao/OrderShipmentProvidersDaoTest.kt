@@ -3,6 +3,7 @@ package org.wordpress.android.fluxc.persistence.dao
 import android.app.Application
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
@@ -40,20 +41,25 @@ internal class OrderShipmentProvidersDaoTest {
     fun testGetOrderShipmentProvidersForOrder() = runTest {
         val siteModel = SiteModel().apply { id = 1 }
         val json = UnitTestUtils.getStringFromResourceFile(this.javaClass, "wc/order-shipment-providers.json")
-        val providers = OrderTestUtils.getOrderShipmentProvidersFromJson(json, siteModel.id).toMutableList()
-        assertEquals(54, providers.size)
 
-        sut.upsertOrderShipmentProviders(providers)
+        // When
+        val providers = OrderTestUtils.getOrderShipmentProvidersFromJson(json, siteModel.id).apply {
+            assertEquals(54, size)
+        }
+        sut.replaceAll(siteModel.localId(), providers)
 
+        // Then
         assertThat(
-            sut.getOrderShipmentProvidersForSite(siteModel.localId())
+            sut.observeOrderShipmentProviders(siteModel.localId()).first()
         ).containsExactlyInAnyOrderElementsOf(providers)
 
+        // When
         val updatedProviders = providers.plus(OrderTestUtils.generateOrderShipmentProvider(siteModel.id))
-        sut.upsertOrderShipmentProviders(updatedProviders)
+        sut.replaceAll(siteModel.localId(), updatedProviders)
 
+        // Then
         assertThat(
-            sut.getOrderShipmentProvidersForSite(siteModel.localId())
+            sut.observeOrderShipmentProviders(siteModel.localId()).first()
         ).containsExactlyInAnyOrderElementsOf(updatedProviders)
     }
 }
