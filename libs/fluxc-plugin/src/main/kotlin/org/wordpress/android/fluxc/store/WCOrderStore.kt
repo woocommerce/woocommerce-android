@@ -917,6 +917,12 @@ class WCOrderStore @Inject internal constructor(
         }
     }
 
+    fun observeOrderShipmentProviders(
+        site: SiteModel
+    ): Flow<List<WCOrderShipmentProviderModel>> {
+        return orderShipmentProvidersDao.observeOrderShipmentProviders(site.localId())
+    }
+
     @Suppress("SpreadOperator")
     private fun handleFetchOrdersCompleted(payload: FetchOrdersResponsePayload) {
         coroutineEngine.launch(API, this, "handleFetchOrdersCompleted") {
