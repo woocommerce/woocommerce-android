@@ -63,7 +63,8 @@ class WooShippingLabelRestClient @Inject constructor(
             clazz = JsonObject::class.java,
             body = mapOf(
                 "selected_payment_method_id" to selectedPaymentMethodId,
-                "email_receipts" to emailReceipts
+                "email_receipts" to emailReceipts,
+                "enabled" to true // See WOOSHIP-1410
             ).filterNotNull()
         )
 
