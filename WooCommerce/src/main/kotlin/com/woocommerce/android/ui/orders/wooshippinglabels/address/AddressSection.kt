@@ -186,11 +186,12 @@ internal fun AddressSectionPortrait(
                         ),
                 )
             }
-            AddressStatusIndicator(
-                addressStatus = destinationStatus,
-                modifier = destinationStatusModifier
-            )
             if (isReadOnly.not()) {
+                AddressStatusIndicator(
+                    addressStatus = destinationStatus,
+                    modifier = destinationStatusModifier
+                )
+
                 IconButton(
                     onClick = { onEditDestinationAddress(shippingAddresses.shipTo) },
                     modifier = Modifier
@@ -283,10 +284,12 @@ internal fun AddressSectionLandscape(
                                 )
                         )
                     }
-                    AddressStatusIndicator(
-                        addressStatus = destinationStatus,
-                        modifier = destinationAddressStatusModifier
-                    )
+                    if (!isReadOnly) {
+                        AddressStatusIndicator(
+                            addressStatus = destinationStatus,
+                            modifier = destinationAddressStatusModifier
+                        )
+                    }
                 }
 
                 if (isReadOnly.not()) {
