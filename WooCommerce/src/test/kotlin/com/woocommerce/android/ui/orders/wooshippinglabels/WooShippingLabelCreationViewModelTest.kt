@@ -810,6 +810,31 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when current label is purchased, then do not display notices`() = testBlocking {
+        val order = OrderTestUtils.generateTestOrder(orderId = orderId)
+        val notice = NoticeBannerUiState(
+            message = R.string.woo_shipping_address_notification_destination_missing,
+            type = NoticeType.MISSING_DESTINATION_ADDRESS,
+            error = true,
+        )
+        whenever(orderDetailRepository.getOrderById(any())) doReturn order
+        whenever(getShipments(any())) doReturn listOf(
+            ShipmentUIModel(
+                localId = "0",
+                items = defaultShippableItems,
+                purchased = true
+            )
+        )
+
+        createViewModel()
+
+        advanceUntilIdle()
+
+        val dataState = sut.viewState.value as DataState
+        assertThat(dataState.uiState.noticeBannerUiState).isNull()
+    }
+
+    @Test
     fun `when the destination address is missing then verify endpoint should not be called`() = testBlocking {
         val order = OrderTestUtils.generateTestOrder(orderId = orderId)
 

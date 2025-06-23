@@ -63,6 +63,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -76,6 +77,8 @@ import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -91,6 +94,7 @@ import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @SuppressWarnings("LargeClass")
 @HiltViewModel
 class WooShippingLabelCreationViewModel @Inject constructor(
@@ -190,37 +194,57 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         }
     }
 
-    private suspend fun observeNotices() = observeShippingLabelNotice(
-        shippingAddresses,
-        customsStatesFlow.filter { it.isNotEmpty() },
-        uiState.map { it.selectedIndex }.distinctUntilChanged(),
-        viewModelScope
-    ).onStart { delay(NOTIFICATIONS_DELAY) }
-        .collectLatest { noticeBanner ->
-            uiState.update {
-                it.copy(
-                    noticeBannerUiState = noticeBanner?.copy(
-                        onTapped = {
-                            when (noticeBanner.type) {
-                                NoticeType.UNVERIFIED_ORIGIN_ADDRESS -> {
-                                    shippingAddresses.value?.shipFrom?.let { shipFrom -> onEditOriginAddress(shipFrom) }
-                                }
-
-                                NoticeType.MISSING_DESTINATION_ADDRESS, NoticeType.UNVERIFIED_DESTINATION_ADDRESS -> {
-                                    shippingAddresses.value?.shipTo?.let { shipTo -> onEditDestinationAddress(shipTo) }
-                                }
-
-                                NoticeType.MISSING_ITN -> {
-                                    onEditCustomsClick()
-                                }
-
-                                else -> {}
-                            }
-                        }
-                    )
+    private suspend fun observeNotices() =
+        combine(
+            shipments,
+            uiState.map { it.selectedIndex }.distinctUntilChanged()
+        ) { shipments, selectedShipmentIndex ->
+            shipments[selectedShipmentIndex]
+        }.flatMapLatest { shipment ->
+            if (shipment.purchased) {
+                flowOf(null)
+            } else {
+                observeShippingLabelNotice(
+                    shippingAddresses,
+                    customsStatesFlow.filter { it.isNotEmpty() },
+                    uiState.map { it.selectedIndex }.distinctUntilChanged(),
+                    viewModelScope
                 )
             }
-        }
+        }.onStart { delay(NOTIFICATIONS_DELAY) }
+            .collectLatest { noticeBanner ->
+                uiState.update {
+                    it.copy(
+                        noticeBannerUiState = noticeBanner?.copy(
+                            onTapped = {
+                                when (noticeBanner.type) {
+                                    NoticeType.UNVERIFIED_ORIGIN_ADDRESS -> {
+                                        shippingAddresses.value?.shipFrom?.let { shipFrom ->
+                                            onEditOriginAddress(
+                                                shipFrom
+                                            )
+                                        }
+                                    }
+
+                                    NoticeType.MISSING_DESTINATION_ADDRESS, NoticeType.UNVERIFIED_DESTINATION_ADDRESS -> {
+                                        shippingAddresses.value?.shipTo?.let { shipTo ->
+                                            onEditDestinationAddress(
+                                                shipTo
+                                            )
+                                        }
+                                    }
+
+                                    NoticeType.MISSING_ITN -> {
+                                        onEditCustomsClick()
+                                    }
+
+                                    else -> {}
+                                }
+                            }
+                        )
+                    )
+                }
+            }
 
     private fun observeShippingLabelPurchaseStatus(shipmentId: Int) {
         launch {
