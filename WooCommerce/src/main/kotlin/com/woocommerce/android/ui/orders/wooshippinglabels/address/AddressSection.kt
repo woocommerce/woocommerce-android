@@ -39,7 +39,6 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.appendWithIfNotEmpty
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.RoundedCornerBoxWithBorder
 import com.woocommerce.android.ui.orders.wooshippinglabels.ShippingLabelSampleData
@@ -112,7 +111,7 @@ internal fun AddressSectionPortrait(
 
             )
             Text(
-                text = shippingAddresses.shipFrom.toShippingFromString().uppercase(),
+                text = shippingAddresses.shipFrom.format(singleLine = !isReadOnly).uppercase(),
                 maxLines = if (isReadOnly) Int.MAX_VALUE else 1,
                 overflow = TextOverflow.Ellipsis,
                 color = if (isReadOnly) LocalContentColor.current else MaterialTheme.colors.primary,
@@ -343,7 +342,7 @@ private fun ShipFromSelection(
                 )
         )
         Text(
-            text = shipFrom.toShippingFromString().uppercase(),
+            text = shipFrom.format(singleLine = !isReadOnly).uppercase(),
             maxLines = if (isReadOnly) Int.MAX_VALUE else 1,
             overflow = TextOverflow.Ellipsis,
             color = if (isReadOnly) LocalContentColor.current else MaterialTheme.colors.primary,
@@ -414,7 +413,7 @@ fun OriginAddressSelectionItem(
                     modifier = Modifier
                 )
                 Text(
-                    text = address.toShippingFromString(),
+                    text = address.format(singleLine = true),
                     modifier = Modifier.padding(top = dimensionResource(id = R.dimen.minor_100))
                 )
             }
@@ -483,14 +482,6 @@ private fun OriginShippingAddress.getFormattedName(context: Context): String {
     }
 }
 
-private fun OriginShippingAddress.toShippingFromString() = StringBuilder()
-    .appendWithIfNotEmpty(this.address1)
-    .appendWithIfNotEmpty(this.address2)
-    .appendWithIfNotEmpty(this.city)
-    .appendWithIfNotEmpty(this.state)
-    .appendWithIfNotEmpty(this.postcode)
-    .toString()
-
 @Preview
 @Composable
 private fun AddressSectionPortraitPreview() {
@@ -505,7 +496,7 @@ private fun AddressSectionPortraitPreview() {
                 onEditDestinationAddress = {},
                 onEditOriginAddress = {},
                 onOriginAddressSelected = {},
-                isReadOnly = false,
+                isReadOnly = true,
                 destinationStatus = AddressStatus.VERIFIED
             )
         }
@@ -544,7 +535,7 @@ private fun AddressSectionLandscapePreview() {
                     shipTo = ShippingLabelSampleData.getShipTo(),
                     originAddresses = listOf(ShippingLabelSampleData.getShipFrom())
                 ),
-                isReadOnly = false,
+                isReadOnly = true,
                 onEditDestinationAddress = {},
                 onEditOriginAddress = {},
                 onOriginAddressSelected = {},
