@@ -8,7 +8,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.user.WCUserRestClient
-import org.wordpress.android.fluxc.persistence.WCUserSqlUtils
+import org.wordpress.android.fluxc.persistence.dao.UserDao
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.util.AppLog
 import javax.inject.Inject
@@ -18,7 +18,7 @@ import javax.inject.Singleton
 class WCUserStore @Inject constructor(
     private val restClient: WCUserRestClient,
     private val coroutineEngine: CoroutineEngine,
-    private val mapper: WCUserMapper
+    private val userDao: UserDao
 ) {
     suspend fun fetchUserRole(site: SiteModel): WooResult<WCUserModel> {
         return coroutineEngine.withDefaultContext(AppLog.T.API, this, "fetchUserInfo") {
@@ -26,8 +26,8 @@ class WCUserStore @Inject constructor(
             return@withDefaultContext when {
                 response.isError -> WooResult(response.error)
                 response.result != null -> {
-                    val user = mapper.map(response.result, site)
-                    WCUserSqlUtils.insertOrUpdateUser(user)
+                    val user = WCUserMapper.map(response.result, site)
+                    userDao.upsertUser(user)
                     WooResult(user)
                 }
                 else -> WooResult(WooError(GENERIC_ERROR, UNKNOWN))
@@ -35,5 +35,5 @@ class WCUserStore @Inject constructor(
         }
     }
 
-    fun getUserByEmail(site: SiteModel, email: String) = WCUserSqlUtils.getUserBySiteAndEmail(site.id, email)
+    suspend fun getUserByEmail(site: SiteModel, email: String) = userDao.getUserBySiteAndEmail(site.localId(), email)
 }
