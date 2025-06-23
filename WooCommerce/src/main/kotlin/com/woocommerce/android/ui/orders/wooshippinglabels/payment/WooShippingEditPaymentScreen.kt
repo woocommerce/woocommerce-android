@@ -8,9 +8,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
@@ -21,6 +23,7 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
@@ -28,6 +31,7 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -48,10 +52,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.Render
 import com.woocommerce.android.ui.compose.component.BottomSheetHandle
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCSwitch
+import com.woocommerce.android.ui.compose.component.web.WCWebView
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.ShippingLabelSampleData
@@ -85,29 +91,14 @@ private fun WooShippingEditPaymentScreen(
         )
     ) {
         Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
         ) {
-            BottomSheetHandle(modifier = Modifier.align(Alignment.CenterHorizontally))
-
-            Text(
-                text = stringResource(R.string.woo_shipping_payment_screen_title),
-                style = MaterialTheme.typography.h6
-            )
-            Text(
-                text = stringResource(R.string.woo_shipping_payment_screen_description),
-                style = MaterialTheme.typography.body1
-            )
-
             when (viewState) {
                 is WooShippingEditPaymentViewModel.ViewState.Loading -> {
-                    CircularProgressIndicator(
+                    LoadingScreen(
                         modifier = Modifier
-                            .align(Alignment.CenterHorizontally)
-                            .height(200.dp)
-                            .wrapContentSize(align = Alignment.Center)
+                            .fillMaxWidth()
                     )
                 }
 
@@ -116,12 +107,58 @@ private fun WooShippingEditPaymentScreen(
                         viewState = viewState,
                         onAddNewPaymentClicked = onAddNewPaymentMethod,
                         onSaveClicked = onSaveClicked,
-                        onPaymentMethodSelected = onPaymentMethodSelected,
+                        onPaymentMethodSelected = onPaymentMethodSelected
+                    )
+                }
+
+                is WooShippingEditPaymentViewModel.ViewState.AddPaymentMethodWebView -> {
+                    WooShippingEditPaymentWebView(
+                        viewState = viewState,
                         modifier = Modifier
+                            .fillMaxSize()
                     )
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun TitleSection(
+    modifier: Modifier = Modifier
+) {
+    Column(modifier) {
+        Text(
+            text = stringResource(R.string.woo_shipping_payment_screen_title),
+            style = MaterialTheme.typography.h6
+        )
+        Text(
+            text = stringResource(R.string.woo_shipping_payment_screen_description),
+            style = MaterialTheme.typography.body1
+        )
+    }
+}
+
+@Composable
+private fun LoadingScreen(
+    modifier: Modifier = Modifier
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = modifier.padding(16.dp)
+    ) {
+        BottomSheetHandle(modifier = Modifier.align(Alignment.CenterHorizontally))
+
+        Spacer(Modifier)
+
+        TitleSection()
+
+        CircularProgressIndicator(
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .height(200.dp)
+                .wrapContentSize(align = Alignment.Center)
+        )
     }
 }
 
@@ -135,9 +172,13 @@ private fun WooShippingEditPaymentContent(
 ) {
     Column(
         modifier
-            .padding(vertical = 16.dp)
+            .padding(16.dp)
             .verticalScroll(rememberScrollState())
     ) {
+        BottomSheetHandle(modifier = Modifier.align(Alignment.CenterHorizontally))
+
+        Spacer(modifier = Modifier.height(16.dp))
+
         if (!viewState.canManagePaymentMethods) {
             EditDisabledWarning(
                 storeOwnerName = viewState.storeOwnerName,
@@ -152,6 +193,8 @@ private fun WooShippingEditPaymentContent(
                     editEnabled = viewState.canManagePaymentMethods,
                     storeOwnerName = viewState.storeOwnerName,
                     storeOwnerUsername = viewState.storeOwnerUsername,
+                    loadingAddedPaymentMethod = viewState.loadingState ==
+                        WooShippingEditPaymentViewModel.LoadingState.LoadingAddedPaymentMethod,
                     onAddNewPaymentMethod = onAddNewPaymentClicked,
                 )
             }
@@ -166,6 +209,36 @@ private fun WooShippingEditPaymentContent(
             }
         }
     }
+
+    viewState.dialogState?.let {
+        it.Render()
+    }
+}
+
+@Composable
+private fun WooShippingEditPaymentWebView(
+    viewState: WooShippingEditPaymentViewModel.ViewState.AddPaymentMethodWebView,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier) {
+        IconButton(
+            onClick = viewState.onDismiss,
+            modifier = Modifier.align(Alignment.End)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Clear,
+                contentDescription = stringResource(R.string.dismiss),
+                tint = MaterialTheme.colors.onSurface
+            )
+        }
+
+        WCWebView(
+            url = viewState.url,
+            userAgent = viewState.userAgent,
+            onUrlLoaded = viewState.onUrlLoaded,
+            authenticator = viewState.authenticator
+        )
+    }
 }
 
 @Composable
@@ -173,6 +246,7 @@ fun EmptyPaymentMethodsView(
     editEnabled: Boolean,
     storeOwnerName: String,
     storeOwnerUsername: String,
+    loadingAddedPaymentMethod: Boolean,
     onAddNewPaymentMethod: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -222,6 +296,7 @@ fun EmptyPaymentMethodsView(
             WCColoredButton(
                 onClick = onAddNewPaymentMethod,
                 enabled = editEnabled,
+                loading = loadingAddedPaymentMethod,
                 text = stringResource(R.string.woo_shipping_payment_add_new_button),
                 leadingIcon = {
                     Icon(
@@ -274,23 +349,27 @@ private fun PaymentMethodsList(
             enabled = viewState.canManagePaymentMethods,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    tint = if (viewState.canManagePaymentMethods) {
-                        MaterialTheme.colors.primary
-                    } else {
-                        LocalContentColor.current.copy(LocalContentAlpha.current)
-                    },
-                    contentDescription = null
-                )
-                Text(
-                    text = stringResource(R.string.woo_shipping_payment_add_new_button)
-                )
+            if (viewState.loadingState == WooShippingEditPaymentViewModel.LoadingState.LoadingAddedPaymentMethod) {
+                CircularProgressIndicator(Modifier.size(24.dp))
+            } else {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        tint = if (viewState.canManagePaymentMethods) {
+                            MaterialTheme.colors.primary
+                        } else {
+                            LocalContentColor.current.copy(LocalContentAlpha.current)
+                        },
+                        contentDescription = null
+                    )
+                    Text(
+                        text = stringResource(R.string.woo_shipping_payment_add_new_button)
+                    )
+                }
             }
         }
         Spacer(Modifier.height(16.dp))
@@ -436,7 +515,7 @@ private fun ContentScreenWithPaymentMethodsPreview() {
     WooThemeWithBackground {
         WooShippingEditPaymentScreen(
             viewState = WooShippingEditPaymentViewModel.ViewState.Content(
-                canManagePaymentMethods = false,
+                canManagePaymentMethods = true,
                 canEditSettings = true,
                 emailTheReceipt = true,
                 storeOwnerName = "John Doe",
