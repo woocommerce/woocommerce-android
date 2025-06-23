@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -112,9 +113,9 @@ internal fun AddressSectionPortrait(
             )
             Text(
                 text = shippingAddresses.shipFrom.toShippingFromString().uppercase(),
-                maxLines = 1,
+                maxLines = if (isReadOnly) Int.MAX_VALUE else 1,
                 overflow = TextOverflow.Ellipsis,
-                color = MaterialTheme.colors.primary,
+                color = if (isReadOnly) LocalContentColor.current else MaterialTheme.colors.primary,
                 modifier = Modifier
                     .constrainAs(shipFromValue) {
                         top.linkTo(shipFromLabel.top)
@@ -151,7 +152,7 @@ internal fun AddressSectionPortrait(
             }
             Divider(
                 modifier = Modifier.constrainAs(divider) {
-                    top.linkTo(shipFromLabel.bottom)
+                    top.linkTo(shipFromValue.bottom)
                     start.linkTo(parent.start)
                 }
             )
@@ -343,9 +344,9 @@ private fun ShipFromSelection(
         )
         Text(
             text = shipFrom.toShippingFromString().uppercase(),
-            maxLines = 1,
+            maxLines = if (isReadOnly) Int.MAX_VALUE else 1,
             overflow = TextOverflow.Ellipsis,
-            color = MaterialTheme.colors.primary,
+            color = if (isReadOnly) LocalContentColor.current else MaterialTheme.colors.primary,
             modifier = Modifier
                 .padding(
                     top = dimensionResource(R.dimen.major_100),
