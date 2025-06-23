@@ -390,7 +390,7 @@ private fun LabelCreationScreenWithBottomSheet(
                 onOriginAddressSelected = onOriginAddressSelected,
                 destinationStatus = destinationStatus,
                 noticeBannerUiState = uiState.noticeBannerUiState,
-                isReadOnly = selectedShipment.purchased,
+                shipmentPurchased = selectedShipment.purchased,
                 onEditPaymentMethodClicked = onEditPaymentMethodClicked,
             )
         },

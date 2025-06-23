@@ -79,7 +79,7 @@ fun ShipmentDetails(
     onMarkOrderCompleteChange: (Boolean) -> Unit,
     onEditPaymentMethodClicked: () -> Unit,
     handlerModifier: Modifier = Modifier,
-    isReadOnly: Boolean = false
+    shipmentPurchased: Boolean
 ) {
     Column {
         Column(
@@ -134,7 +134,7 @@ fun ShipmentDetails(
                 shippingRateSummary = shippingRateSummary,
                 paymentsSectionUI = paymentsSectionUI,
                 modifier = modifier.padding(top = dimensionResource(R.dimen.major_100)),
-                isReadOnly = isReadOnly,
+                shipmentPurchased = shipmentPurchased,
                 onEditDestinationAddress = onEditDestinationAddress,
                 onEditOriginAddress = onEditOriginAddress,
                 onOriginAddressSelected = onOriginAddressSelected,
@@ -151,7 +151,7 @@ fun ShipmentDetails(
                 shippingRateSummary = shippingRateSummary,
                 paymentsSectionUI = paymentsSectionUI,
                 modifier = modifier.padding(top = dimensionResource(R.dimen.minor_100)),
-                isReadOnly = isReadOnly,
+                shipmentPurchased = shipmentPurchased,
                 onMarkOrderCompleteChange = onMarkOrderCompleteChange,
                 onEditDestinationAddress = onEditDestinationAddress,
                 onEditOriginAddress = onEditOriginAddress,
@@ -179,7 +179,7 @@ private fun ShipmentDetailsPortrait(
     onEditPaymentMethodClicked: () -> Unit,
     destinationStatus: AddressStatus,
     modifier: Modifier = Modifier,
-    isReadOnly: Boolean = false
+    shipmentPurchased: Boolean
 ) {
     Column(modifier) {
         Column(
@@ -193,25 +193,27 @@ private fun ShipmentDetailsPortrait(
                 totalItems = totalItems,
                 totalItemsCost = totalItemsCost,
                 shippingLines = shippingLines,
-                isReadOnly = isReadOnly,
+                isReadOnly = shipmentPurchased,
                 onEditDestinationAddress = onEditDestinationAddress,
                 onEditOriginAddress = onEditOriginAddress,
                 onOriginAddressSelected = onOriginAddressSelected,
                 destinationStatus = destinationStatus
             )
             Divider(modifier = Modifier.padding(horizontal = 16.dp))
-            PaymentSection(
-                paymentsSectionUI = paymentsSectionUI,
-                onEditPaymentMethodClicked = onEditPaymentMethodClicked,
-                modifier = Modifier.padding(16.dp)
-            )
+            if (!shipmentPurchased) {
+                PaymentSection(
+                    paymentsSectionUI = paymentsSectionUI,
+                    onEditPaymentMethodClicked = onEditPaymentMethodClicked,
+                    modifier = Modifier.padding(16.dp)
+                )
+            }
             Divider(modifier = Modifier.padding(horizontal = 16.dp))
             ShipmentCostSection(
                 shippingRateSummary = shippingRateSummary,
                 modifier = Modifier.padding(16.dp)
             )
         }
-        if (isReadOnly.not()) {
+        if (shipmentPurchased.not()) {
             Divider()
             MarkComplete(
                 markOrderComplete = markOrderComplete,
@@ -235,7 +237,7 @@ private fun ShipmentDetailsLandscape(
     onEditPaymentMethodClicked: () -> Unit,
     destinationStatus: AddressStatus,
     modifier: Modifier = Modifier,
-    isReadOnly: Boolean = false
+    shipmentPurchased: Boolean = false
 ) {
     Column(modifier) {
         Column(
@@ -247,7 +249,7 @@ private fun ShipmentDetailsLandscape(
             AddressSectionLandscape(
                 shippingAddresses = shippingAddresses,
                 modifier = Modifier.padding(horizontal = 16.dp),
-                isReadOnly = isReadOnly,
+                isReadOnly = shipmentPurchased,
                 onEditDestinationAddress = onEditDestinationAddress,
                 onEditOriginAddress = onEditOriginAddress,
                 onOriginAddressSelected = onOriginAddressSelected,
@@ -266,11 +268,13 @@ private fun ShipmentDetailsLandscape(
                 )
                 VerticalDivider(modifier = Modifier.padding(top = 16.dp))
                 Column(modifier = Modifier.weight(1f)) {
-                    PaymentSection(
-                        paymentsSectionUI = paymentsSectionUI,
-                        onEditPaymentMethodClicked = onEditPaymentMethodClicked,
-                        modifier = Modifier.padding(16.dp)
-                    )
+                    if (!shipmentPurchased) {
+                        PaymentSection(
+                            paymentsSectionUI = paymentsSectionUI,
+                            onEditPaymentMethodClicked = onEditPaymentMethodClicked,
+                            modifier = Modifier.padding(16.dp)
+                        )
+                    }
                     Divider()
                     ShipmentCostSection(
                         shippingRateSummary = shippingRateSummary,
@@ -609,7 +613,7 @@ fun ShipmentDetailsLandscapePreview() {
                 onMarkOrderCompleteChange = {},
                 onEditPaymentMethodClicked = {},
                 handlerModifier = Modifier,
-                isReadOnly = false
+                shipmentPurchased = false
             )
         }
     }
