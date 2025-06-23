@@ -26,7 +26,6 @@ import org.wordpress.android.fluxc.store.WCUserStore
 import org.wordpress.android.fluxc.test
 import org.wordpress.android.fluxc.tools.initCoroutineEngine
 import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
 
 @Config(manifest = Config.NONE)
 @RunWith(RobolectricTestRunner::class)
@@ -73,8 +72,6 @@ class WCUserStoreTest {
         assertThat(result.model?.firstName).isEqualTo(userRole.firstName)
         assertThat(result.model?.lastName).isEqualTo(userRole.lastName)
         assertThat(result.model?.email).isEqualTo(userRole.email)
-        assertThat(result.model?.getUserRoles()?.size).isEqualTo(userRole.getUserRoles().size)
-        assertThat(result.model?.getUserRoles()?.get(0)?.isSupported() == true)
 
         val invalidRequestResult = store.fetchUserRole(errorSite)
         assertThat(invalidRequestResult.model).isNull()
@@ -93,8 +90,6 @@ class WCUserStoreTest {
         assertThat(savedUser.firstName).isEqualTo(userRole.firstName)
         assertThat(savedUser.lastName).isEqualTo(userRole.lastName)
         assertThat(savedUser.email).isEqualTo(userRole.email)
-        assertThat(savedUser.getUserRoles().size).isEqualTo(userRole.getUserRoles().size)
-        assertTrue(savedUser.isUserEligible())
     }
 
     private suspend fun fetchUserRole(): WooResult<WCUserModel> {

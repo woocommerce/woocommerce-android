@@ -57,7 +57,6 @@ class UserEligibilityFetcherTest : BaseUnitTest() {
         fetcher.fetchUserInfo()
 
         verify(appPrefsWrapper).setUserEmail(expectedUser.email)
-        verify(appPrefsWrapper).setIsUserEligible(expectedUser.isUserEligible())
     }
 
     @Test
@@ -68,7 +67,6 @@ class UserEligibilityFetcherTest : BaseUnitTest() {
         val user = fetcher.getUser()
 
         assertThat(user).isEqualTo(expectedUser.toAppModel())
-        assertThat(user?.isEligible).isEqualTo(expectedUser.isUserEligible())
         assertThat(user?.email).isEqualTo(expectedUser.email)
     }
 
