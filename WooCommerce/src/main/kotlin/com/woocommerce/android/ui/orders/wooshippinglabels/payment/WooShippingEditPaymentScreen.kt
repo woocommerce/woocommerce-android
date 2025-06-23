@@ -69,10 +69,7 @@ fun WooShippingEditPaymentScreen(
 ) {
     viewModel.viewState.observeAsState().value?.let {
         WooShippingEditPaymentScreen(
-            viewState = it,
-            onAddNewPaymentMethod = viewModel::onAddNewPaymentMethod,
-            onPaymentMethodSelected = viewModel::onPaymentMethodSelected,
-            onSaveClicked = viewModel::onSaveClicked
+            viewState = it
         )
     }
 }
@@ -80,9 +77,6 @@ fun WooShippingEditPaymentScreen(
 @Composable
 private fun WooShippingEditPaymentScreen(
     viewState: WooShippingEditPaymentViewModel.ViewState,
-    onAddNewPaymentMethod: () -> Unit,
-    onPaymentMethodSelected: (Int) -> Unit,
-    onSaveClicked: () -> Unit,
 ) {
     Surface(
         shape = RoundedCornerShape(
@@ -104,10 +98,7 @@ private fun WooShippingEditPaymentScreen(
 
                 is WooShippingEditPaymentViewModel.ViewState.Content -> {
                     WooShippingEditPaymentContent(
-                        viewState = viewState,
-                        onAddNewPaymentClicked = onAddNewPaymentMethod,
-                        onSaveClicked = onSaveClicked,
-                        onPaymentMethodSelected = onPaymentMethodSelected
+                        viewState = viewState
                     )
                 }
 
@@ -165,9 +156,6 @@ private fun LoadingScreen(
 @Composable
 private fun WooShippingEditPaymentContent(
     viewState: WooShippingEditPaymentViewModel.ViewState.Content,
-    onAddNewPaymentClicked: () -> Unit,
-    onPaymentMethodSelected: (Int) -> Unit,
-    onSaveClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -195,17 +183,12 @@ private fun WooShippingEditPaymentContent(
                     storeOwnerUsername = viewState.storeOwnerUsername,
                     loadingAddedPaymentMethod = viewState.loadingState ==
                         WooShippingEditPaymentViewModel.LoadingState.LoadingAddedPaymentMethod,
-                    onAddNewPaymentMethod = onAddNewPaymentClicked,
+                    onAddNewPaymentMethod = viewState.onAddNewPaymentMethod,
                 )
             }
 
             else -> {
-                PaymentMethodsList(
-                    viewState = viewState,
-                    onAddNewPaymentClicked = onAddNewPaymentClicked,
-                    onPaymentMethodSelected = onPaymentMethodSelected,
-                    onSaveClicked = onSaveClicked
-                )
+                PaymentMethodsList(viewState = viewState)
             }
         }
     }
@@ -324,9 +307,6 @@ fun EmptyPaymentMethodsView(
 @Composable
 private fun PaymentMethodsList(
     viewState: WooShippingEditPaymentViewModel.ViewState.Content,
-    onAddNewPaymentClicked: () -> Unit,
-    onPaymentMethodSelected: (Int) -> Unit,
-    onSaveClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -338,13 +318,13 @@ private fun PaymentMethodsList(
                 paymentMethod = paymentMethod,
                 isSelected = paymentMethod.paymentMethodId == viewState.selectedPaymentMethodId,
                 enabled = viewState.canManagePaymentMethods,
-                onClick = { onPaymentMethodSelected(paymentMethod.paymentMethodId) },
+                onClick = { viewState.onPaymentMethodSelected(paymentMethod.paymentMethodId) },
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(Modifier.height(8.dp))
         }
         WCOutlinedButton(
-            onClick = onAddNewPaymentClicked,
+            onClick = viewState.onAddNewPaymentMethod,
             colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colors.onSurface),
             enabled = viewState.canManagePaymentMethods,
             modifier = Modifier.fillMaxWidth()
@@ -390,15 +370,21 @@ private fun PaymentMethodsList(
         Spacer(Modifier.height(16.dp))
         WCSwitch(
             text = stringResource(R.string.woo_shipping_payment_email_receipt_toggle),
-            checked = viewState.emailTheReceipt,
+            checked = viewState.emailReceipts,
             enabled = viewState.canEditSettings,
-            onCheckedChange = { TODO() },
+            onCheckedChange = viewState.onEmailReceiptsChanged,
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(Modifier.height(16.dp))
         WCColoredButton(
-            onClick = onSaveClicked,
-            text = stringResource(R.string.woo_shipping_payment_use_card_button),
+            onClick = viewState.onSaveClicked,
+            text = stringResource(
+                if (viewState.canManagePaymentMethods) {
+                    R.string.woo_shipping_payment_use_card_button
+                } else {
+                    R.string.save
+                }
+            ),
             modifier = Modifier.fillMaxWidth()
         )
     }
@@ -480,10 +466,7 @@ private fun EditDisabledWarning(
 private fun LoadingScreenPreview() {
     WooThemeWithBackground {
         WooShippingEditPaymentScreen(
-            viewState = WooShippingEditPaymentViewModel.ViewState.Loading,
-            onAddNewPaymentMethod = {},
-            onPaymentMethodSelected = {},
-            onSaveClicked = {}
+            viewState = WooShippingEditPaymentViewModel.ViewState.Loading
         )
     }
 }
@@ -496,15 +479,15 @@ private fun ContentScreenEmptyPreview() {
             viewState = WooShippingEditPaymentViewModel.ViewState.Content(
                 canManagePaymentMethods = false,
                 canEditSettings = true,
-                emailTheReceipt = true,
+                emailReceipts = true,
+                selectedPaymentMethodId = null,
                 storeOwnerName = "John Doe",
                 storeOwnerUsername = "johndoe",
-                selectedPaymentMethodId = null,
-                currentPaymentOptions = ShippingLabelSampleData.getPaymentOptions(countOfPaymentMethods = 0)
-            ),
-            onAddNewPaymentMethod = {},
-            onPaymentMethodSelected = {},
-            onSaveClicked = {}
+                currentPaymentOptions = ShippingLabelSampleData.getPaymentOptions(countOfPaymentMethods = 0),
+                onAddNewPaymentMethod = {},
+                onPaymentMethodSelected = {},
+                onEmailReceiptsChanged = {}
+            ) {}
         )
     }
 }
@@ -517,15 +500,15 @@ private fun ContentScreenWithPaymentMethodsPreview() {
             viewState = WooShippingEditPaymentViewModel.ViewState.Content(
                 canManagePaymentMethods = true,
                 canEditSettings = true,
-                emailTheReceipt = true,
+                emailReceipts = true,
+                selectedPaymentMethodId = 1,
                 storeOwnerName = "John Doe",
                 storeOwnerUsername = "johndoe",
-                selectedPaymentMethodId = 1,
-                currentPaymentOptions = ShippingLabelSampleData.getPaymentOptions()
-            ),
-            onAddNewPaymentMethod = {},
-            onPaymentMethodSelected = {},
-            onSaveClicked = {}
+                currentPaymentOptions = ShippingLabelSampleData.getPaymentOptions(),
+                onAddNewPaymentMethod = {},
+                onPaymentMethodSelected = {},
+                onEmailReceiptsChanged = {}
+            ) {}
         )
     }
 }

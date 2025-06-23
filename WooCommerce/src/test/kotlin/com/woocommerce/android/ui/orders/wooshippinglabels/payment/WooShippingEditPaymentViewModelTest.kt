@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.AccountSetting
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PaymentMethodModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PaymentMethodOptions
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.StoreOptionsModel
+import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -50,8 +51,13 @@ class WooShippingEditPaymentViewModelTest : BaseUnitTest() {
                     name = "Mastercard *5678"
                 )
             ),
-            addPaymentMethodUrl = "https://example.com/add-payment-method"
-        )
+            addPaymentMethodUrl = "https://example.com/add-payment-method",
+            emailReceipts = true
+        ),
+        canManagePayments = true,
+        canEditSettings = true,
+        storeOwnerName = "John Doe",
+        storeOwnerUsername = "johndoe"
     )
 
     private val observeAccountSettings: ObserveAccountSettings = mock {
@@ -104,14 +110,21 @@ class WooShippingEditPaymentViewModelTest : BaseUnitTest() {
         assertThat(contentState.selectedPaymentMethodId)
             .isEqualTo(defaultAccountSettings.paymentMethodOptions.selectedPaymentId)
         assertThat(contentState.paymentMethods).isEqualTo(defaultAccountSettings.paymentMethodOptions.paymentMethods)
+        assertThat(contentState.canManagePaymentMethods).isEqualTo(defaultAccountSettings.canManagePayments)
+        assertThat(contentState.canEditSettings).isEqualTo(defaultAccountSettings.canEditSettings)
+        assertThat(contentState.emailReceipts).isEqualTo(defaultAccountSettings.paymentMethodOptions.emailReceipts)
+        assertThat(contentState.storeOwnerName).isEqualTo(defaultAccountSettings.storeOwnerName)
+        assertThat(contentState.storeOwnerUsername).isEqualTo(defaultAccountSettings.storeOwnerUsername)
     }
 
     @Test
     fun `when add new payment method is clicked, then show add payment method web view`() = testBlocking {
         setup()
 
+        val initialState = viewModel.viewState.captureValues().last()
+            as WooShippingEditPaymentViewModel.ViewState.Content
         val states = viewModel.viewState.runAndCaptureValues {
-            viewModel.onAddNewPaymentMethod()
+            initialState.onAddNewPaymentMethod()
         }
 
         assertThat(states.last())
@@ -128,8 +141,10 @@ class WooShippingEditPaymentViewModelTest : BaseUnitTest() {
         setup()
 
         val newPaymentMethodId = 2
+        val initialState = viewModel.viewState.captureValues().last()
+            as WooShippingEditPaymentViewModel.ViewState.Content
         val states = viewModel.viewState.runAndCaptureValues {
-            viewModel.onPaymentMethodSelected(newPaymentMethodId)
+            initialState.onPaymentMethodSelected(newPaymentMethodId)
         }
 
         val contentState = states.last() as WooShippingEditPaymentViewModel.ViewState.Content
@@ -156,8 +171,10 @@ class WooShippingEditPaymentViewModelTest : BaseUnitTest() {
         setup()
 
         // Simulate adding a payment method
+        val initialState = viewModel.viewState.captureValues().last()
+            as WooShippingEditPaymentViewModel.ViewState.Content
         val webViewState = viewModel.viewState.runAndCaptureValues {
-            viewModel.onAddNewPaymentMethod()
+            initialState.onAddNewPaymentMethod()
         }.last() as WooShippingEditPaymentViewModel.ViewState.AddPaymentMethodWebView
 
         // Simulate successful URL load with payment method success URL
@@ -183,8 +200,10 @@ class WooShippingEditPaymentViewModelTest : BaseUnitTest() {
         setup()
 
         // Simulate adding a payment method
+        val initialState = viewModel.viewState.captureValues().last()
+            as WooShippingEditPaymentViewModel.ViewState.Content
         val webViewState = viewModel.viewState.runAndCaptureValues {
-            viewModel.onAddNewPaymentMethod()
+            initialState.onAddNewPaymentMethod()
         }.last() as WooShippingEditPaymentViewModel.ViewState.AddPaymentMethodWebView
 
         // Simulate successful URL load with payment method success URL
@@ -217,5 +236,18 @@ class WooShippingEditPaymentViewModelTest : BaseUnitTest() {
         }
 
         assertThat(states.last()).isInstanceOf(WooShippingEditPaymentViewModel.ViewState.Content::class.java)
+    }
+
+    @Test
+    fun `when email receipts is toggled, then update email receipts state`() = testBlocking {
+        setup()
+
+        val initialState = viewModel.viewState.captureValues().last()
+            as WooShippingEditPaymentViewModel.ViewState.Content
+        val newState = viewModel.viewState.runAndCaptureValues {
+            initialState.onEmailReceiptsChanged(!defaultAccountSettings.paymentMethodOptions.emailReceipts)
+        }.last() as WooShippingEditPaymentViewModel.ViewState.Content
+
+        assertThat(newState.emailReceipts).isEqualTo(!defaultAccountSettings.paymentMethodOptions.emailReceipts)
     }
 }
