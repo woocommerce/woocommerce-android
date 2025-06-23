@@ -39,6 +39,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.rememberBottomSheetScaffoldState
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
@@ -367,10 +368,14 @@ private fun LabelCreationScreenWithBottomSheet(
 
     BottomSheetScaffold(
         snackbarHost = {
-            SuccessSnackbarHost(
-                snackbarHostState,
-                modifier = Modifier.padding(bottom = snackbarPaddingBottom)
-            )
+            if (snackbarData?.isSuccessSnackbar == true) {
+                SuccessSnackbarHost(
+                    snackbarHostState,
+                    modifier = Modifier.padding(bottom = snackbarPaddingBottom)
+                )
+            } else {
+                SnackbarHost(snackbarHostState)
+            }
         },
         sheetContent = {
             ShipmentDetails(
