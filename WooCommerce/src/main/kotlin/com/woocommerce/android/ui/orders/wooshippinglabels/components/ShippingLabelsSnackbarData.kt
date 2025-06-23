@@ -8,6 +8,7 @@ data class ShippingLabelsSnackbarData(
     val messageParameters: List<Int> = emptyList(),
     val duration: SnackbarDuration = SnackbarDuration.Short,
     val actionLabel: Int,
+    val isSuccessSnackbar: Boolean = false,
     val dismissAction: () -> Unit = {},
     val action: () -> Unit
 )

@@ -31,6 +31,7 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
@@ -63,7 +64,6 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.ProductsSummary
 import com.woocommerce.android.ui.orders.wooshippinglabels.SelectableShippingProduct
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShipmentTabData
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShipmentsTabRow
-import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShippingLabelsSnackbarData
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.SuccessSnackbarHost
 import com.woocommerce.android.ui.orders.wooshippinglabels.split.WooShippingSplitShipmentViewModel.SplitShipmentViewState
 import kotlinx.coroutines.launch
@@ -87,7 +87,6 @@ fun WooShippingSplitShipmentScreen(
                 onUpdateSelectedShipment = viewModel::onUpdateSelectedShipment,
                 onRemoveShipmentMenuTapped = viewModel::onRemoveShipmentMenuTapped,
                 onDismissRemoveSheet = viewModel::onDismissRemoveSheet,
-                snackbarData = viewModel.snackbarData,
                 modifier = modifier
             )
         }
@@ -108,13 +107,18 @@ fun WooShippingSplitShipmentScreen(
     onRemoveShipmentMenuTapped: (shipmentKeys: List<Int>) -> Unit,
     onDismissRemoveSheet: () -> Unit,
     modifier: Modifier = Modifier,
-    snackbarData: ShippingLabelsSnackbarData? = null,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
     Scaffold(
         topBar = { TopBar(onBack, onDone) },
-        snackbarHost = { SuccessSnackbarHost(snackbarHostState) }
+        snackbarHost = {
+            if (viewState.splitMessage is SplitShipmentMessage.Success) {
+                SuccessSnackbarHost(snackbarHostState)
+            } else {
+                SnackbarHost(snackbarHostState)
+            }
+        }
     ) { padding ->
         Surface(
             modifier = modifier
@@ -190,40 +194,32 @@ fun WooShippingSplitShipmentScreen(
         }
     }
 
-    val actionSnackbarMessage = snackbarData?.let { stringResource(it.message) }
-    val actionSnackbarActionLabel = snackbarData?.let { stringResource(it.actionLabel) }
-    LaunchedEffect(snackbarData) {
-        snackbarData?.let {
-            val result = snackbarHostState.showSnackbar(
-                message = actionSnackbarMessage ?: "",
-                actionLabel = actionSnackbarActionLabel,
-                duration = snackbarData.duration,
-            )
-            when (result) {
-                SnackbarResult.ActionPerformed -> snackbarData.action()
-                SnackbarResult.Dismissed -> snackbarData.dismissAction()
-            }
-        } ?: snackbarHostState.currentSnackbarData?.dismiss()
-    }
-
     val context = LocalContext.current
     LaunchedEffect(viewState.splitMessage) {
-        if (viewState.splitMessage is SplitShipmentMessage.Success) {
-            val snackbarData = viewState.splitMessage.snackbarData
+        val snackbarData = if (viewState.splitMessage is SplitShipmentMessage.Success) {
+            viewState.splitMessage.snackbarData
+        } else if (viewState.splitMessage is SplitShipmentMessage.Error) {
+            viewState.splitMessage.snackbarData
+        } else {
+            return@LaunchedEffect
+        }
 
-            @Suppress("SpreadOperator")
-            val result = snackbarHostState.showSnackbar(
-                message = context.getString(
+        @Suppress("SpreadOperator")
+        val result = snackbarHostState.showSnackbar(
+            message = if (snackbarData.messageParameters.isEmpty()) {
+                context.getString(snackbarData.message)
+            } else {
+                context.getString(
                     snackbarData.message,
                     *snackbarData.messageParameters.toTypedArray()
-                ),
-                actionLabel = context.getString(R.string.undo),
-                duration = snackbarData.duration
-            )
-            when (result) {
-                SnackbarResult.ActionPerformed -> snackbarData.action()
-                SnackbarResult.Dismissed -> snackbarData.dismissAction()
-            }
+                )
+            },
+            actionLabel = context.getString(snackbarData.actionLabel),
+            duration = snackbarData.duration
+        )
+        when (result) {
+            SnackbarResult.ActionPerformed -> snackbarData.action()
+            SnackbarResult.Dismissed -> snackbarData.dismissAction()
         }
     }
 }
