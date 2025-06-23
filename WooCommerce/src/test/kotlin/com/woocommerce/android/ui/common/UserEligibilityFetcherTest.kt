@@ -5,6 +5,7 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -14,6 +15,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.user.WCUserModel
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.UNKNOWN
@@ -27,21 +29,23 @@ class UserEligibilityFetcherTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val userStore: WCUserStore = mock()
     private val appPrefsWrapper: AppPrefs = mock()
+    private val testSiteModel = SiteModel()
 
     private lateinit var fetcher: UserEligibilityFetcher
 
-    private val expectedUser = WCUserModel().apply {
-        remoteUserId = 1L
-        firstName = "Anitaa"
-        lastName = "Murthy"
-        username = "murthyanitaa"
-        roles = "[author, editor]"
-        email = "reallychumma1@gmail.com"
-    }
+    private val expectedUser = WCUserModel(
+        localSiteId = testSiteModel.localId(),
+        remoteUserId = RemoteId(1L),
+        firstName = "Anitaa",
+        lastName = "Murthy",
+        username = "murthyanitaa",
+        roles = "[author, editor]",
+        email = "reallychumma1@gmail.com",
+    )
 
     @Before
     fun setup() {
-        doReturn(SiteModel()).whenever(selectedSite).get()
+        doReturn(testSiteModel).whenever(selectedSite).get()
 
         fetcher = UserEligibilityFetcher(
             appPrefsWrapper,
@@ -51,7 +55,7 @@ class UserEligibilityFetcherTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Fetches user info correctly`() = testBlocking {
+    fun `Fetches user info correctly`() = runTest {
         whenever(userStore.fetchUserRole(any())).thenReturn(WooResult(expectedUser))
 
         fetcher.fetchUserInfo()
@@ -60,7 +64,7 @@ class UserEligibilityFetcherTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Get user info from db correctly`() {
+    fun `Get user info from db correctly`() = runTest {
         doReturn(expectedUser).whenever(userStore).getUserByEmail(any(), any())
         doReturn(expectedUser.email).whenever(appPrefsWrapper).getUserEmail()
 
@@ -71,7 +75,7 @@ class UserEligibilityFetcherTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Do not update prefs when request failed`() = testBlocking {
+    fun `Do not update prefs when request failed`() = runTest {
         whenever(userStore.fetchUserRole(any())).thenReturn(WooResult(WooError(GENERIC_ERROR, UNKNOWN, "")))
 
         fetcher.fetchUserInfo()
