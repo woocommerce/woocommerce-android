@@ -15,8 +15,8 @@ abstract class UserDao {
         AND email = :userEmail
         """
     )
-    abstract suspend fun getUserBySiteAndEmail(siteId: LocalId, userEmail: String): WCUserModel?
+    abstract suspend fun getUser(siteId: LocalId, userEmail: String): WCUserModel?
 
     @Upsert
-    abstract suspend fun upsertUser(user: WCUserModel): Long
+    abstract suspend fun upsertUser(user: WCUserModel)
 }
