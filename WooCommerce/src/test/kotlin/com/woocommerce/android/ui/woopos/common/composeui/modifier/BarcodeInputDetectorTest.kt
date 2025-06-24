@@ -7,7 +7,6 @@ import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -116,7 +115,7 @@ class BarcodeInputDetectorTest {
         detector.handleKeyInput('\n')
 
         // THEN
-        verify(onBarcodeScanned, never()).invoke(any())
+        verify(onBarcodeScanned).invoke("3")
     }
 
     @Test
