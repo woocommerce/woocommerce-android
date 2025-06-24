@@ -4,6 +4,9 @@
 22.7
 -----
 
+22.6.1
+-----
+- [*] Allow scanning barcodes in the POS of length shorter than 4 characters. [https://github.com/woocommerce/woocommerce-android/pull/14238]
 
 22.6
 -----
