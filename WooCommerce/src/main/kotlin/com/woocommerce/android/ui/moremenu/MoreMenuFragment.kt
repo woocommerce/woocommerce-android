@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.moremenu
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -37,7 +36,6 @@ import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewPayments
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewReviewsEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewStoreEvent
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
-import com.woocommerce.android.ui.woopos.root.WooPosActivity
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -120,10 +118,6 @@ class MoreMenuFragment : TopLevelFragment() {
             navigateToGoogleAdsCreationSuccess()
             viewModel.handleSuccessfulGoogleAdsCreation()
         }
-    }
-
-    private fun openWooPos() {
-        startActivity(Intent(requireContext(), WooPosActivity::class.java))
     }
 
     private fun openBlazeCampaignList() {
