@@ -16,6 +16,8 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCProductVariationModel
 import org.wordpress.android.fluxc.store.WCProductStore
+import org.wordpress.android.fluxc.store.WCProductStore.ProductError
+import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType
 
 class WooPosSearchByIdentifierVariationGetOrFetchTest {
 
@@ -24,10 +26,11 @@ class WooPosSearchByIdentifierVariationGetOrFetchTest {
     private val productStore: WCProductStore = mock()
     private val variationsCache: WooPosVariationsLRUCache = mock()
     private val site: SiteModel = mock()
+    private val errorMapper: WooPosSearchByIdentifierProductErrorMapper = WooPosSearchByIdentifierProductErrorMapper()
 
     @Before
     fun setup() {
-        sut = WooPosSearchByIdentifierVariationFetch(selectedSite, productStore, variationsCache)
+        sut = WooPosSearchByIdentifierVariationFetch(selectedSite, productStore, variationsCache, errorMapper)
         whenever(selectedSite.get()).thenReturn(site)
     }
 
@@ -61,12 +64,13 @@ class WooPosSearchByIdentifierVariationGetOrFetchTest {
     }
 
     @Test
-    fun `given variation not in cache and network error, when invoke called, then return network error`() = runTest {
+    fun `given variation not in cache and generic error, when invoke called, then return failure with unknown error`() = runTest {
         // GIVEN
         val variationId = 456L
         val parentId = 123L
-        val fetchResult: WCProductStore.OnVariationChanged = mock {
-            on { isError }.thenReturn(true)
+        val error = ProductError(ProductErrorType.GENERIC_ERROR, "Generic error occurred")
+        val fetchResult = WCProductStore.OnVariationChanged().apply {
+            this.error = error
         }
 
         whenever(variationsCache.get(variationId)).thenReturn(null)
@@ -76,11 +80,16 @@ class WooPosSearchByIdentifierVariationGetOrFetchTest {
         val result = sut(variationId, parentId)
 
         // THEN
-        assertEquals(WooPosSearchByIdentifierVariationFetch.VariationFetchResult.NetworkError, result)
+        assertEquals(
+            WooPosSearchByIdentifierVariationFetch.VariationFetchResult.Failure(
+                WooPosSearchByIdentifierResult.Error.UnknownError("Generic error occurred")
+            ),
+            result
+        )
     }
 
     @Test
-    fun `given variation not in cache and not found in store after fetch, when invoke called, then return not found`() = runTest {
+    fun `given variation not in cache and not found in store after fetch, when invoke called, then return failure with unknown error`() = runTest {
         // GIVEN
         val variationId = 456L
         val parentId = 123L
@@ -96,7 +105,12 @@ class WooPosSearchByIdentifierVariationGetOrFetchTest {
         val result = sut(variationId, parentId)
 
         // THEN
-        assertEquals(WooPosSearchByIdentifierVariationFetch.VariationFetchResult.NotFound, result)
+        assertEquals(
+            WooPosSearchByIdentifierVariationFetch.VariationFetchResult.Failure(
+                WooPosSearchByIdentifierResult.Error.UnknownError("Variation not found for ID: $variationId")
+            ),
+            result
+        )
     }
 
     @Test
@@ -129,5 +143,30 @@ class WooPosSearchByIdentifierVariationGetOrFetchTest {
             result
         )
         verify(variationsCache).add(parentId, variation)
+    }
+
+    @Test
+    fun `given fetch error, when invoke called, then return failure with mapped error`() = runTest {
+        // GIVEN
+        val variationId = 456L
+        val parentId = 123L
+        val error = ProductError(ProductErrorType.INVALID_PRODUCT_ID, "Invalid product ID")
+        val fetchResult = WCProductStore.OnVariationChanged().apply {
+            this.error = error
+        }
+
+        whenever(variationsCache.get(variationId)).thenReturn(null)
+        whenever(productStore.fetchSingleVariation(site, parentId, variationId)).thenReturn(fetchResult)
+
+        // WHEN
+        val result = sut(variationId, parentId)
+
+        // THEN
+        assertEquals(
+            WooPosSearchByIdentifierVariationFetch.VariationFetchResult.Failure(
+                WooPosSearchByIdentifierResult.Error.NotFound
+            ),
+            result
+        )
     }
 }

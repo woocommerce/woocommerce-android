@@ -26,6 +26,7 @@ class WooError(
 
 enum class WooErrorType {
     TIMEOUT,
+    NO_CONNECTION,
     API_ERROR,
     INVALID_ID,
     GENERIC_ERROR,
@@ -52,7 +53,7 @@ fun WPAPINetworkError.toWooError() = WooError(
 
 private fun GenericErrorType?.getWooErrorType(apiError: String?) = when (this) {
     TIMEOUT -> WooErrorType.TIMEOUT
-    NO_CONNECTION,
+    NO_CONNECTION -> WooErrorType.NO_CONNECTION
     SERVER_ERROR,
     INVALID_SSL_CERTIFICATE,
     NETWORK_ERROR -> WooErrorType.API_ERROR
