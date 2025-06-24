@@ -26,7 +26,8 @@ class WooShippingRatesRestClient @Inject constructor(
             "order_id" to orderId,
             "origin" to origin,
             "destination" to destination,
-            "packages" to packages
+            "packages" to packages,
+            "features_supported_by_client" to listOf(UPSDAP_FEATURE)
         )
 
         return wooNetwork.executePostGsonRequest(
@@ -43,5 +44,6 @@ class WooShippingRatesRestClient @Inject constructor(
 
     companion object {
         private const val URL = "/wcshipping/v1/label/rate"
+        private const val UPSDAP_FEATURE = "upsdap"
     }
 }
