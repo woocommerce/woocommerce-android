@@ -36,7 +36,7 @@ data class PackageData(
         val dimensionList = dimensions.split("x")
         length = dimensionList.getOrNull(0).orEmpty().trim()
         width = dimensionList.getOrNull(1).orEmpty().trim()
-        height = dimensionList.getOrNull(2)?.trim() ?: DEFAULT_HEIGHT
+        height = dimensionList.getOrNull(2).orEmpty().trim()
     }
 
     val descriptionResId: Int
