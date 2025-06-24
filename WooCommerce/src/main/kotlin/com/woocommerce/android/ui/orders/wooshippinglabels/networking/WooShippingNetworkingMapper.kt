@@ -228,8 +228,8 @@ class WooShippingNetworkingMapper @Inject constructor(
         weight: Float
     ): PackagePurchaseDTO {
         return PackagePurchaseDTO(
-            id = selectedPackage.id,
-            boxId = "default_package",
+            id = "default_package",
+            boxId = selectedPackage.id,
             length = selectedPackage.length.toFloat(),
             width = selectedPackage.width.toFloat(),
             height = selectedPackage.height.toFloatOrNull() ?: PackageData.DEFAULT_HEIGHT.toFloat(),
