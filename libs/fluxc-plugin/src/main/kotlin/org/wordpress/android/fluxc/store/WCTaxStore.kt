@@ -25,7 +25,6 @@ import javax.inject.Singleton
 class WCTaxStore @Inject internal constructor(
     private val restClient: WCTaxRestClient,
     private val coroutineEngine: CoroutineEngine,
-    private val mapper: WCTaxClassMapper,
     private val taxRateDao: TaxRateDao,
     private val taxClassDao: TaxClassDao,
 ) {
@@ -47,7 +46,7 @@ class WCTaxStore @Inject internal constructor(
 
                 response.result != null -> {
                     val taxClassModels = response.result.map {
-                        mapper.map(site.localId(), it)
+                        WCTaxClassMapper.map(site.localId(), it)
                     }
 
                     taxClassDao.replaceAll(site.localId(), taxClassModels)
