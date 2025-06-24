@@ -36,7 +36,7 @@ data class PackageData(
         val dimensionList = dimensions.split("x")
         length = dimensionList.getOrNull(0).orEmpty().trim()
         width = dimensionList.getOrNull(1).orEmpty().trim()
-        height = dimensionList.getOrNull(2).orEmpty().trim()
+        height = dimensionList.getOrNull(2)?.trim() ?: DEFAULT_HEIGHT
     }
 
     val descriptionResId: Int
@@ -61,6 +61,8 @@ data class PackageData(
             isLetter = false,
             groupName = null
         )
+
+        private const val DEFAULT_HEIGHT = "5"
 
         fun fromPackageDAO(
             dao: PackageDAO,
@@ -150,6 +152,12 @@ sealed class Carrier(
         id = CarrierType.DHL.id,
         name = "DHL",
         logoRes = R.drawable.dhl_logo
+    )
+
+    data object UPS : Carrier(
+        id = CarrierType.UPS.id,
+        name = "UPS",
+        logoRes = R.drawable.ups_logo
     )
 }
 

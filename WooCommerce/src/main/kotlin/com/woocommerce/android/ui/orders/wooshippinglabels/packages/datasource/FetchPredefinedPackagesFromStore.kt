@@ -37,6 +37,10 @@ class FetchPredefinedPackagesFromStore @Inject constructor(
             result[Carrier.DHL] = carrierData
         }
 
+        carrierPackages.parseCarrierData(CarrierType.UPS).takeIf { it.isNotEmpty() }?.let { carrierData ->
+            result[Carrier.UPS] = carrierData
+        }
+
         return result
     }
 
