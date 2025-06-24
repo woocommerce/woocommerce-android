@@ -76,6 +76,7 @@ class OrderDetailShippingLabelsAdapter(
 
     override fun getItemCount(): Int = shippingLabels.size
 
+    @Suppress("LongParameterList")
     class ShippingLabelsViewHolder(
         private var viewBinding: OrderDetailShippingLabelListItemBinding,
         private val viewPool: RecyclerView.RecycledViewPool,
@@ -84,9 +85,7 @@ class OrderDetailShippingLabelsAdapter(
         private val isRevampWooShippingEnabled: Boolean,
         private val listener: OnShippingLabelClickListener,
         private val productClickListener: OrderProductActionListener
-    ) : RecyclerView.ViewHolder(
-        viewBinding.root
-    ) {
+    ) : RecyclerView.ViewHolder(viewBinding.root) {
         fun bind(shippingLabel: ShippingLabel) {
             // display product list if product list is not empty
             if (shippingLabel.products.isNotEmpty()) {

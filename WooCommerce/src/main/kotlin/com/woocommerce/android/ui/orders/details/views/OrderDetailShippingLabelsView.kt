@@ -21,6 +21,7 @@ class OrderDetailShippingLabelsView @JvmOverloads constructor(
 ) : ConstraintLayout(ctx, attrs, defStyleAttr) {
     private val binding = OrderDetailShippingLabelListBinding.inflate(LayoutInflater.from(ctx), this, true)
 
+    @Suppress("LongParameterList")
     fun updateShippingLabels(
         shippingLabels: List<ShippingLabel>,
         productImageMap: ProductImageMap,
