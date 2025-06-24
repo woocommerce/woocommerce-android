@@ -4,6 +4,7 @@
 22.7
 -----
 - [*] Improved filtering UI in the order's screen [https://github.com/woocommerce/woocommerce-android/pull/14212]
+- [*] POS is now more easily accessible through a tab on the tab bar [https://github.com/woocommerce/woocommerce-android/pull/14236]
 
 22.6
 -----
