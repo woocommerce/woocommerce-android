@@ -276,7 +276,7 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
                     splitMovement.destinationShipmentKey + 1
                 ),
                 actionLabel = R.string.undo,
-                isSuccessSnackbar = true,
+                hasIcon = true,
                 dismissAction = { splitMessage.value = null },
                 action = undoAction
             )

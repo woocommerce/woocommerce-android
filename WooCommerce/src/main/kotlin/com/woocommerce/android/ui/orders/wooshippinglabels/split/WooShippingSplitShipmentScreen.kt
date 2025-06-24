@@ -31,7 +31,6 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
@@ -65,8 +64,8 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.ProductsSummary
 import com.woocommerce.android.ui.orders.wooshippinglabels.SelectableShippingProduct
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShipmentTabData
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShipmentsTabRow
+import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShippingLabelsSnackbar
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShippingLabelsSnackbarVisuals
-import com.woocommerce.android.ui.orders.wooshippinglabels.components.SuccessSnackbar
 import com.woocommerce.android.ui.orders.wooshippinglabels.split.WooShippingSplitShipmentViewModel.SplitShipmentViewState
 import kotlinx.coroutines.launch
 
@@ -117,15 +116,7 @@ fun WooShippingSplitShipmentScreen(
         snackbarHost = {
             SnackbarHost(snackbarHostState) { data ->
                 val visuals = data.visuals as ShippingLabelsSnackbarVisuals
-                if (visuals.isSuccessSnackbar) {
-                    SuccessSnackbar(
-                        content = visuals.message,
-                        actionLabel = visuals.actionLabel,
-                        action = { data.performAction() }
-                    )
-                } else {
-                    Snackbar(data)
-                }
+                ShippingLabelsSnackbar(visuals = visuals, action = { data.performAction() })
             }
         }
     ) { padding ->
@@ -226,7 +217,7 @@ fun WooShippingSplitShipmentScreen(
                 },
                 actionLabel = context.getString(snackbarData.actionLabel),
                 duration = snackbarData.duration,
-                isSuccessSnackbar = viewState.splitMessage is SplitShipmentMessage.Success
+                hasIcon = viewState.splitMessage is SplitShipmentMessage.Success
             )
         )
         when (result) {

@@ -815,7 +815,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         snackbarData = ShippingLabelsSnackbarData(
             message = snackbarMessage,
             actionLabel = R.string.undo,
-            isSuccessSnackbar = true,
+            hasIcon = true,
             dismissAction = { snackbarData = null }
         ) {
             hazmatStatesFlow.value = previousStates

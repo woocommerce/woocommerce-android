@@ -21,11 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 
 @Composable
-fun SuccessSnackbar(
-    content: String,
-    actionLabel: String?,
-    action: () -> Unit
-) {
+fun ShippingLabelsSnackbar(visuals: ShippingLabelsSnackbarVisuals, action: () -> Unit) {
     Surface(
         color = SnackbarDefaults.color,
         shape = SnackbarDefaults.shape,
@@ -36,14 +32,16 @@ fun SuccessSnackbar(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Icon(
-                imageVector = Icons.Filled.CheckCircle,
-                contentDescription = null,
-                tint = colorResource(R.color.woo_green_20),
-            )
+            if (visuals.hasIcon) {
+                Icon(
+                    imageVector = Icons.Filled.CheckCircle,
+                    contentDescription = null,
+                    tint = colorResource(R.color.woo_green_20),
+                )
+            }
 
             Text(
-                text = content,
+                text = visuals.message,
                 modifier = Modifier
                     .weight(1f)
                     .padding(vertical = 16.dp),
@@ -51,7 +49,7 @@ fun SuccessSnackbar(
                 color = SnackbarDefaults.contentColor
             )
 
-            actionLabel?.let { label ->
+            visuals.actionLabel?.let { label ->
                 TextButton(
                     onClick = action,
                     colors = ButtonDefaults.textButtonColors(contentColor = SnackbarDefaults.actionContentColor)
@@ -65,20 +63,21 @@ fun SuccessSnackbar(
 
 @Preview(name = "Standard snackbar")
 @Composable
-fun SuccessSnackbarHostPreview() {
-    SuccessSnackbar(
-        content = "Shipping label created successfully",
-        actionLabel = "View",
+fun ShippingLabelsSnackbarHostPreview() {
+    ShippingLabelsSnackbar(
+        visuals = ShippingLabelsSnackbarVisuals(message = "Shipping label created successfully"),
         action = {}
     )
 }
 
 @Preview(name = "Snackbar with long message")
 @Composable
-fun SuccessSnackbarHostWithLongMessagePreview() {
-    SuccessSnackbar(
-        content = "Shipping label created successfully in a long long long long long message",
-        actionLabel = "View",
+fun ShippingLabelsSnackbarHostWithLongMessagePreview() {
+    ShippingLabelsSnackbar(
+        visuals = ShippingLabelsSnackbarVisuals(
+            message = "Shipping label created successfully in a long long long long long message",
+            actionLabel = "View",
+        ),
         action = {}
     )
 }
