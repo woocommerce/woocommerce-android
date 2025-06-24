@@ -14,7 +14,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.GENERIC_ER
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.taxes.TaxRateDto
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.taxes.WCTaxRestClient
-import org.wordpress.android.fluxc.persistence.WCTaxSqlUtils
+import org.wordpress.android.fluxc.persistence.dao.TaxClassDao
 import org.wordpress.android.fluxc.persistence.dao.TaxRateDao
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.util.AppLog.T.API
@@ -22,22 +22,20 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class WCTaxStore @Inject constructor(
+class WCTaxStore @Inject internal constructor(
     private val restClient: WCTaxRestClient,
     private val coroutineEngine: CoroutineEngine,
     private val mapper: WCTaxClassMapper,
     private val taxRateDao: TaxRateDao,
+    private val taxClassDao: TaxClassDao,
 ) {
     companion object {
         const val DEFAULT_PAGE_SIZE = 100
         const val DEFAULT_PAGE = 1
     }
 
-    /**
-     * returns a list of tax classes for a specific site in the database
-     */
-    fun getTaxClassListForSite(site: SiteModel): List<WCTaxClassModel> =
-        WCTaxSqlUtils.getTaxClassesForSite(site.id)
+    suspend fun getTaxClassListForSite(site: SiteModel): List<WCTaxClassModel> =
+        taxClassDao.getTaxClasses(site.localId())
 
     suspend fun fetchTaxClassList(site: SiteModel): WooResult<List<WCTaxClassModel>> {
         return coroutineEngine.withDefaultContext(API, this, "fetchTaxClassList") {
@@ -49,12 +47,10 @@ class WCTaxStore @Inject constructor(
 
                 response.result != null -> {
                     val taxClassModels = response.result.map {
-                        mapper.map(it).apply { localSiteId = site.id }
+                        mapper.map(site.localId(), it)
                     }
 
-                    // delete existing tax classes for site before adding incoming entries
-                    WCTaxSqlUtils.deleteTaxClassesForSite(site)
-                    WCTaxSqlUtils.insertOrUpdateTaxClasses(taxClassModels)
+                    taxClassDao.replaceAll(site.localId(), taxClassModels)
                     WooResult(taxClassModels)
                 }
 
