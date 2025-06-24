@@ -20,7 +20,6 @@ import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.orders.OrderShipmentTrackingHelper
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.ShippingLabelsViewHolder
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import java.math.BigDecimal
@@ -29,7 +28,8 @@ class OrderDetailShippingLabelsAdapter(
     private val formatCurrencyForDisplay: (BigDecimal) -> String,
     private val productImageMap: ProductImageMap,
     private val listener: OnShippingLabelClickListener,
-    private val productClickListener: OrderProductActionListener
+    private val productClickListener: OrderProductActionListener,
+    private val isRevampWooShippingEnabled: Boolean
 ) : RecyclerView.Adapter<ShippingLabelsViewHolder>() {
     private val viewPool = RecyclerView.RecycledViewPool()
 
@@ -64,6 +64,7 @@ class OrderDetailShippingLabelsAdapter(
             viewPool,
             productImageMap,
             formatCurrencyForDisplay,
+            isRevampWooShippingEnabled,
             listener,
             productClickListener
         )
@@ -80,6 +81,7 @@ class OrderDetailShippingLabelsAdapter(
         private val viewPool: RecyclerView.RecycledViewPool,
         private val productImageMap: ProductImageMap,
         private val formatCurrencyForDisplay: (BigDecimal) -> String,
+        private val isRevampWooShippingEnabled: Boolean,
         private val listener: OnShippingLabelClickListener,
         private val productClickListener: OrderProductActionListener
     ) : RecyclerView.ViewHolder(
@@ -190,7 +192,7 @@ class OrderDetailShippingLabelsAdapter(
                 }
             }
 
-            if (FeatureFlag.REVAMP_WOO_SHIPPING.isEnabled() && shippingLabel.refund != null) {
+            if (isRevampWooShippingEnabled && shippingLabel.refund != null) {
                 viewBinding.shippingLabelItemViewMore.isVisible = false
             } else {
                 viewBinding.shippingLabelItemViewMore.isVisible = true
