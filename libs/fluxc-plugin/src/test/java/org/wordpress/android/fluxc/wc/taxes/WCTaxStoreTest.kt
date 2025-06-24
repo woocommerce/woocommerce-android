@@ -1,8 +1,10 @@
 package org.wordpress.android.fluxc.wc.taxes
 
+import androidx.room.Room
 import com.yarolegovich.wellsql.WellSql
 import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -22,6 +24,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.taxes.WCTaxRestClient
 import org.wordpress.android.fluxc.persistence.SiteSqlUtils
+import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.fluxc.persistence.dao.TaxRateDao
 import org.wordpress.android.fluxc.store.WCTaxStore
@@ -36,6 +39,7 @@ class WCTaxStoreTest {
     private val errorSite = SiteModel().apply { id = 123 }
     private val mapper = WCTaxClassMapper()
     private lateinit var store: WCTaxStore
+    private lateinit var roomDb: WCAndroidDatabase
     private val taxRateDao = mock<TaxRateDao>()
 
     private val sampleTaxClassList = TaxTestUtils.generateSampleTaxClassApiResponse()
@@ -45,22 +49,32 @@ class WCTaxStoreTest {
     fun setUp() {
         val appContext = RuntimeEnvironment.application.applicationContext
         val config = SingleStoreWellSqlConfigForTests(
-                appContext,
-                listOf(SiteModel::class.java, WCTaxClassModel::class.java),
-                WellSqlConfig.ADDON_WOOCOMMERCE
+            appContext,
+            listOf(SiteModel::class.java),
+            WellSqlConfig.ADDON_WOOCOMMERCE
         )
         WellSql.init(config)
         config.reset()
 
+        roomDb = Room.inMemoryDatabaseBuilder(appContext, WCAndroidDatabase::class.java)
+            .allowMainThreadQueries()
+            .build()
+
         store = WCTaxStore(
-                restClient,
-                initCoroutineEngine(),
-                mapper,
-                taxRateDao
+            restClient,
+            initCoroutineEngine(),
+            mapper,
+            taxRateDao,
+            roomDb.taxClassDao
         )
 
         // Insert the site into the db so it's available later when fetching tax classes
         SiteSqlUtils().insertOrUpdateSite(site)
+    }
+
+    @After
+    fun tearDown() {
+        roomDb.close()
     }
 
     @Test
@@ -68,8 +82,8 @@ class WCTaxStoreTest {
         val result = fetchTaxClassListForSite()
 
         assertThat(result.model?.size).isEqualTo(sampleTaxClassList.size)
-        assertThat(result.model?.first()?.name).isEqualTo(mapper.map(sampleTaxClassList.first()).name)
-        assertThat(result.model?.first()?.slug).isEqualTo(mapper.map(sampleTaxClassList.first()).slug)
+        assertThat(result.model?.first()?.name).isEqualTo(mapper.map(site.localId(), sampleTaxClassList.first()).name)
+        assertThat(result.model?.first()?.slug).isEqualTo(mapper.map(site.localId(), sampleTaxClassList.first()).slug)
 
         val invalidRequestResult = store.fetchTaxClassList(errorSite)
         assertThat(invalidRequestResult.model).isNull()
@@ -83,8 +97,8 @@ class WCTaxStoreTest {
         val storedTaxClassList = store.getTaxClassListForSite(site)
 
         assertThat(storedTaxClassList.size).isEqualTo(2)
-        assertThat(storedTaxClassList.first().name).isEqualTo(mapper.map(sampleTaxClassList.first()).name)
-        assertThat(storedTaxClassList.first().slug).isEqualTo(mapper.map(sampleTaxClassList.first()).slug)
+        assertThat(storedTaxClassList.first().name).isEqualTo(mapper.map(site.localId(), sampleTaxClassList.first()).name)
+        assertThat(storedTaxClassList.first().slug).isEqualTo(mapper.map(site.localId(), sampleTaxClassList.first()).slug)
 
         val invalidRequestResult = store.getTaxClassListForSite(errorSite)
         assertThat(invalidRequestResult.size).isEqualTo(0)
