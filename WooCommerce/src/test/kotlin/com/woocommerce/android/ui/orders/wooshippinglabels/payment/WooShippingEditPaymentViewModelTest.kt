@@ -19,8 +19,11 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.network.UserAgent
 import kotlin.test.Test
@@ -269,9 +272,9 @@ class WooShippingEditPaymentViewModelTest : BaseUnitTest() {
 
         // Verify that Exit event is triggered and updatePaymentOptions is not called
         assertThat(events).anyMatch { it is Exit }
-        org.mockito.kotlin.verify(updatePaymentOptions, org.mockito.kotlin.never()).invoke(
-            org.mockito.kotlin.any(),
-            org.mockito.kotlin.any()
+        verify(updatePaymentOptions, never()).invoke(
+            any(),
+            any()
         )
     }
 
@@ -279,7 +282,7 @@ class WooShippingEditPaymentViewModelTest : BaseUnitTest() {
     fun `when save is clicked with changes and save is successful, then call updatePaymentOptions and exit`() =
         testBlocking {
             // Setup with successful update
-            whenever(updatePaymentOptions.invoke(org.mockito.kotlin.any(), org.mockito.kotlin.any()))
+            whenever(updatePaymentOptions.invoke(any(), any()))
                 .thenReturn(Result.success(Unit))
 
             setup()
@@ -302,7 +305,7 @@ class WooShippingEditPaymentViewModelTest : BaseUnitTest() {
             }
 
             // Verify that updatePaymentOptions is called with the correct parameters
-            org.mockito.kotlin.verify(updatePaymentOptions).invoke(
+            verify(updatePaymentOptions).invoke(
                 selectedPaymentMethodId = newPaymentMethodId,
                 emailReceipts = !defaultAccountSettings.paymentMethodOptions.emailReceipts
             )
@@ -315,7 +318,7 @@ class WooShippingEditPaymentViewModelTest : BaseUnitTest() {
     fun `when save is clicked with changes and save fails, then call updatePaymentOptions and show error`() =
         testBlocking {
             // Setup with failed update
-            whenever(updatePaymentOptions.invoke(org.mockito.kotlin.any(), org.mockito.kotlin.any()))
+            whenever(updatePaymentOptions.invoke(any(), any()))
                 .thenReturn(Result.failure(Exception("Failed to update payment options")))
 
             setup()
@@ -335,7 +338,7 @@ class WooShippingEditPaymentViewModelTest : BaseUnitTest() {
             }
 
             // Verify that updatePaymentOptions is called with the correct parameters
-            org.mockito.kotlin.verify(updatePaymentOptions).invoke(
+            verify(updatePaymentOptions).invoke(
                 selectedPaymentMethodId = newPaymentMethodId,
                 emailReceipts = defaultAccountSettings.paymentMethodOptions.emailReceipts
             )
