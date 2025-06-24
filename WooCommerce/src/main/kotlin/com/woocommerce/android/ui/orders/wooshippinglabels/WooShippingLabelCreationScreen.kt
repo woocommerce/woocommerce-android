@@ -39,6 +39,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.rememberBottomSheetScaffoldState
+import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
@@ -80,7 +81,8 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.components.PrintShipp
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShipmentTabData
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShipmentsTabRow
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShippingLabelsSnackbarData
-import com.woocommerce.android.ui.orders.wooshippinglabels.components.SuccessSnackbarHost
+import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShippingLabelsSnackbarVisuals
+import com.woocommerce.android.ui.orders.wooshippinglabels.components.SuccessSnackbar
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.WooShippingLabelPaperSize
 import com.woocommerce.android.ui.orders.wooshippinglabels.hazmat.HazmatCard
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShippingAddress
@@ -368,13 +370,20 @@ private fun LabelCreationScreenWithBottomSheet(
 
     BottomSheetScaffold(
         snackbarHost = {
-            if (snackbarData?.isSuccessSnackbar == true) {
-                SuccessSnackbarHost(
-                    snackbarHostState,
-                    modifier = Modifier.padding(bottom = snackbarPaddingBottom)
-                )
-            } else {
-                SnackbarHost(snackbarHostState)
+            SnackbarHost(
+                snackbarHostState,
+                modifier = Modifier.padding(bottom = snackbarPaddingBottom)
+            ) { data ->
+                val visuals = data.visuals as ShippingLabelsSnackbarVisuals
+                if (visuals.isSuccessSnackbar) {
+                    SuccessSnackbar(
+                        content = visuals.message,
+                        actionLabel = visuals.actionLabel,
+                        action = { data.performAction() }
+                    )
+                } else {
+                    Snackbar(data)
+                }
             }
         },
         sheetContent = {
@@ -502,9 +511,12 @@ private fun LabelCreationScreenWithBottomSheet(
             LaunchedEffect(snackbarData) {
                 snackbarData?.let {
                     val result = snackbarHostState.showSnackbar(
-                        message = actionSnackbarMessage ?: "",
-                        actionLabel = actionSnackbarActionLabel,
-                        duration = snackbarData.duration,
+                        visuals = ShippingLabelsSnackbarVisuals(
+                            message = actionSnackbarMessage.orEmpty(),
+                            actionLabel = actionSnackbarActionLabel,
+                            duration = snackbarData.duration,
+                            isSuccessSnackbar = it.isSuccessSnackbar
+                        )
                     )
                     when (result) {
                         SnackbarResult.ActionPerformed -> snackbarData.action()

@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.components
 
 import androidx.annotation.StringRes
 import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarVisuals
 
 data class ShippingLabelsSnackbarData(
     @StringRes val message: Int,
@@ -12,3 +13,11 @@ data class ShippingLabelsSnackbarData(
     val dismissAction: () -> Unit = {},
     val action: () -> Unit
 )
+
+data class ShippingLabelsSnackbarVisuals(
+    override val message: String,
+    override val actionLabel: String?,
+    override val duration: SnackbarDuration = SnackbarDuration.Short,
+    override val withDismissAction: Boolean = false,
+    val isSuccessSnackbar: Boolean
+) : SnackbarVisuals

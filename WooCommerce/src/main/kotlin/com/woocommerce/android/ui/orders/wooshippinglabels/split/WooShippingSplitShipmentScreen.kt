@@ -31,6 +31,7 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
@@ -64,7 +65,8 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.ProductsSummary
 import com.woocommerce.android.ui.orders.wooshippinglabels.SelectableShippingProduct
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShipmentTabData
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShipmentsTabRow
-import com.woocommerce.android.ui.orders.wooshippinglabels.components.SuccessSnackbarHost
+import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShippingLabelsSnackbarVisuals
+import com.woocommerce.android.ui.orders.wooshippinglabels.components.SuccessSnackbar
 import com.woocommerce.android.ui.orders.wooshippinglabels.split.WooShippingSplitShipmentViewModel.SplitShipmentViewState
 import kotlinx.coroutines.launch
 
@@ -113,10 +115,17 @@ fun WooShippingSplitShipmentScreen(
     Scaffold(
         topBar = { TopBar(onBack, onDone) },
         snackbarHost = {
-            if (viewState.splitMessage is SplitShipmentMessage.Success) {
-                SuccessSnackbarHost(snackbarHostState)
-            } else {
-                SnackbarHost(snackbarHostState)
+            SnackbarHost(snackbarHostState) { data ->
+                val visuals = data.visuals as ShippingLabelsSnackbarVisuals
+                if (visuals.isSuccessSnackbar) {
+                    SuccessSnackbar(
+                        content = visuals.message,
+                        actionLabel = visuals.actionLabel,
+                        action = { data.performAction() }
+                    )
+                } else {
+                    Snackbar(data)
+                }
             }
         }
     ) { padding ->
@@ -206,16 +215,19 @@ fun WooShippingSplitShipmentScreen(
 
         @Suppress("SpreadOperator")
         val result = snackbarHostState.showSnackbar(
-            message = if (snackbarData.messageParameters.isEmpty()) {
-                context.getString(snackbarData.message)
-            } else {
-                context.getString(
-                    snackbarData.message,
-                    *snackbarData.messageParameters.toTypedArray()
-                )
-            },
-            actionLabel = context.getString(snackbarData.actionLabel),
-            duration = snackbarData.duration
+            visuals = ShippingLabelsSnackbarVisuals(
+                message = if (snackbarData.messageParameters.isEmpty()) {
+                    context.getString(snackbarData.message)
+                } else {
+                    context.getString(
+                        snackbarData.message,
+                        *snackbarData.messageParameters.toTypedArray()
+                    )
+                },
+                actionLabel = context.getString(snackbarData.actionLabel),
+                duration = snackbarData.duration,
+                isSuccessSnackbar = viewState.splitMessage is SplitShipmentMessage.Success
+            )
         )
         when (result) {
             SnackbarResult.ActionPerformed -> snackbarData.action()

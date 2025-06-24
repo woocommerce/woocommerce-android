@@ -9,8 +9,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDefaults
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -23,27 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 
 @Composable
-fun SuccessSnackbarHost(
-    hostState: SnackbarHostState,
-    modifier: Modifier = Modifier
-) {
-    SnackbarHost(
-        hostState = hostState,
-        modifier = modifier,
-        snackbar = { snackbarData ->
-            val actionLabel = snackbarData.visuals.actionLabel
-
-            SuccessSnackbar(
-                content = snackbarData.visuals.message,
-                actionLabel = actionLabel,
-                action = { snackbarData.performAction() }
-            )
-        }
-    )
-}
-
-@Composable
-private fun SuccessSnackbar(
+fun SuccessSnackbar(
     content: String,
     actionLabel: String?,
     action: () -> Unit
