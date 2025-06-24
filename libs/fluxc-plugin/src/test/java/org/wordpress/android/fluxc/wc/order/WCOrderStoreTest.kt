@@ -68,7 +68,7 @@ private const val CUSTOM_PAYMENT_METHOD_TITLE = "Pay in Person"
 @InternalCoroutinesApi
 @Config(manifest = Config.NONE)
 @RunWith(RobolectricTestRunner::class)
-class WCOrderStoreTest {
+internal class WCOrderStoreTest {
     private val orderFetcher: WCOrderFetcher = mock()
     private val orderRestClient: OrderRestClient = mock()
     lateinit var ordersDaoDecorator: OrdersDaoDecorator
@@ -98,7 +98,8 @@ class WCOrderStoreTest {
                 ordersDaoDecorator = ordersDaoDecorator,
                 orderNotesDao = orderNotesDao,
                 metaDataDao = metaDataDao,
-                insertOrder = insertOrder
+                insertOrder = insertOrder,
+                orderShipmentProvidersDao = database.orderShipmentProvidersDao
         )
 
         val config = SingleStoreWellSqlConfigForTests(

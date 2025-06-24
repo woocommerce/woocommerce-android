@@ -1,13 +1,11 @@
 package org.wordpress.android.fluxc.persistence
 
-import com.wellsql.generated.WCOrderShipmentProviderModelTable
 import com.wellsql.generated.WCOrderShipmentTrackingModelTable
 import com.wellsql.generated.WCOrderStatusModelTable
 import com.wellsql.generated.WCOrderSummaryModelTable
 import com.yarolegovich.wellsql.SelectQuery
 import com.yarolegovich.wellsql.WellSql
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.WCOrderSummaryModel
@@ -153,41 +151,4 @@ object OrderSqlUtils {
                     .equals(WCOrderShipmentTrackingModelTable.LOCAL_SITE_ID, site.id)
                     .endWhere()
                     .execute()
-
-    fun deleteOrderShipmentProvidersForSite(site: SiteModel): Int =
-            WellSql.delete(WCOrderShipmentProviderModel::class.java)
-                    .where()
-                    .equals(WCOrderShipmentProviderModelTable.LOCAL_SITE_ID, site.id)
-                    .endWhere()
-                    .execute()
-
-    fun insertOrIgnoreOrderShipmentProvider(provider: WCOrderShipmentProviderModel): Int {
-        val result = WellSql.select(WCOrderShipmentProviderModel::class.java)
-                .where().beginGroup()
-                .equals(WCOrderShipmentProviderModelTable.ID, provider.id)
-                .or()
-                .beginGroup()
-                .equals(WCOrderShipmentProviderModelTable.LOCAL_SITE_ID, provider.localSiteId)
-                .equals(WCOrderShipmentProviderModelTable.CARRIER_NAME, provider.carrierName)
-                .endGroup()
-                .endGroup().endWhere()
-                .asModel
-
-        return if (result.isEmpty()) {
-            // Insert
-            WellSql.insert(provider).asSingleTransaction(true).execute()
-            1
-        } else {
-            // Ignore
-            0
-        }
-    }
-
-    fun getOrderShipmentProvidersForSite(site: SiteModel): List<WCOrderShipmentProviderModel> =
-            WellSql.select(WCOrderShipmentProviderModel::class.java)
-                    .where()
-                    .equals(WCOrderShipmentProviderModelTable.LOCAL_SITE_ID, site.id)
-                    .endWhere()
-                    .orderBy(WCOrderShipmentProviderModelTable.COUNTRY, SelectQuery.ORDER_ASCENDING)
-                    .asModel
 }

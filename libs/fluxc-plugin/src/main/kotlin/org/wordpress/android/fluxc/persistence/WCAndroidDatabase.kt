@@ -7,6 +7,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.withTransaction
+import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
 import org.wordpress.android.fluxc.model.WCProductCategoryModel
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.WCProductReviewModel
@@ -31,6 +32,7 @@ import org.wordpress.android.fluxc.persistence.dao.InboxNotesDao
 import org.wordpress.android.fluxc.persistence.dao.LocationsDao
 import org.wordpress.android.fluxc.persistence.dao.MetaDataDao
 import org.wordpress.android.fluxc.persistence.dao.OrderNotesDao
+import org.wordpress.android.fluxc.persistence.dao.OrderShipmentProvidersDao
 import org.wordpress.android.fluxc.persistence.dao.OrdersDao
 import org.wordpress.android.fluxc.persistence.dao.ProductCategoriesDao
 import org.wordpress.android.fluxc.persistence.dao.ProductReviewsDao
@@ -90,7 +92,7 @@ import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_7_8
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_8_9
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_9_10
 
-const val WC_DATABASE_VERSION = 47
+const val WC_DATABASE_VERSION = 48
 
 @Database(
     version = WC_DATABASE_VERSION,
@@ -124,6 +126,7 @@ const val WC_DATABASE_VERSION = 47
         WCProductSettingsModel::class,
         WCCustomerModel::class,
         WCLocationModel::class,
+        WCOrderShipmentProviderModel::class,
     ],
     autoMigrations = [
         AutoMigration(from = 12, to = 13),
@@ -154,6 +157,7 @@ const val WC_DATABASE_VERSION = 47
         AutoMigration(from = 44, to = 45),
         AutoMigration(from = 45, to = 46),
         AutoMigration(from = 46, to = 47),
+        AutoMigration(from = 47, to = 48),
     ]
 )
 @TypeConverters(
@@ -180,6 +184,7 @@ abstract class WCAndroidDatabase : RoomDatabase(), TransactionExecutor {
     abstract val shippingMethodDao: ShippingMethodDao
     abstract val customerFromAnalyticsDao: CustomerFromAnalyticsDao
     internal abstract val locationsDao: LocationsDao
+    internal abstract val orderShipmentProvidersDao: OrderShipmentProvidersDao
     internal abstract val customerDao: CustomerDao
     internal abstract val productsDao: ProductsDao
     internal abstract val productVariationsDao: ProductVariationsDao
