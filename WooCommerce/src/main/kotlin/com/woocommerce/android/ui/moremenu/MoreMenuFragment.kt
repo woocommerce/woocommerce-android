@@ -25,7 +25,6 @@ import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.NavigateToSettingsEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.NavigateToSubscriptionsEvent
-import com.woocommerce.android.ui.moremenu.MoreMenuEvent.NavigateToWooPosEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.OpenBlazeCampaignCreationEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.OpenBlazeCampaignListEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.StartSitePickerEvent
@@ -112,7 +111,6 @@ class MoreMenuFragment : TopLevelFragment() {
                 is ViewPayments -> navigateToPayments()
                 is OpenBlazeCampaignCreationEvent -> openBlazeCreationFlow()
                 is OpenBlazeCampaignListEvent -> openBlazeCampaignList()
-                is NavigateToWooPosEvent -> openWooPos()
             }
         }
     }

@@ -21,7 +21,6 @@ class WooPosTabController @Inject constructor(
     private val appPrefs: AppPrefs,
     private val selectedSite: SelectedSite,
     private val isWooPosEnabled: WooPosIsEnabled,
-    private val isPosAsTabEnabled: WooPosIsPosAsTabEnabled,
     private val analyticsTracker: WooPosAnalyticsTracker
 ) : DefaultLifecycleObserver {
 
@@ -54,13 +53,11 @@ class WooPosTabController @Inject constructor(
 
     fun refreshPOSTabVisibility() {
         setPOSTabVisibility(false)
-        if (isPosAsTabEnabled()) {
-            // Load visibility from prefs for fast UI feedback
-            updatePOSTabVisibilityFromPrefs()
+        // Load visibility from prefs for fast UI feedback
+        updatePOSTabVisibilityFromPrefs()
 
-            // Then update with the remote value
-            updateTabVisibilityFromRemoteAndPersist()
-        }
+        // Then update with the remote value
+        updateTabVisibilityFromRemoteAndPersist()
     }
 
     fun navigateToPOS() {
