@@ -75,7 +75,7 @@ class BarcodeInputDetector(
         const val MAX_SCANNER_TOTAL_SCAN_TIMEOUT_MS = 1500L
         const val MAX_SCANNER_INTER_CHAR_DELAY_MS = 100L
         const val FIRST_PRINTABLE_CHAR_CODE = 32
-        const val MIN_BARCODE_LENGTH = 4
+        const val MIN_BARCODE_LENGTH = 1
     }
 
     private val barcodeBuffer = StringBuilder()
