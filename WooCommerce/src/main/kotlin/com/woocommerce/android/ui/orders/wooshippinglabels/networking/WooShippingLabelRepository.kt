@@ -49,6 +49,26 @@ class WooShippingLabelRepository @Inject constructor(
                 }
         }
 
+    suspend fun updateAccountSettings(
+        site: SiteModel,
+        selectedPaymentMethodId: Long?,
+        emailReceipts: Boolean,
+    ): WooResult<Unit> {
+        return restClient.updateAccountSettings(site, selectedPaymentMethodId, emailReceipts).asWooResult()
+            .also { result ->
+                if (!result.isError) {
+                    accountSettingsDataStore.updateAccountSettings {
+                        it.copy(
+                            paymentMethodOptions = it.paymentMethodOptions.copy(
+                                selectedPaymentId = selectedPaymentMethodId,
+                                emailReceipts = emailReceipts
+                            )
+                        )
+                    }
+                }
+            }
+    }
+
     suspend fun fetchConfig(site: SiteModel, orderId: Long): WooResult<ConfigResponse> =
         restClient.fetchConfig(site, orderId)
             .asWooResult()
@@ -82,6 +102,7 @@ class WooShippingLabelRepository @Inject constructor(
         orderId: Long,
         shippableItems: List<Long>,
         selectedPackage: PackageData,
+        shipmentId: String,
         shipTo: Address,
         shipFrom: OriginShippingAddress,
         selectedRate: WooShippingRateModel,
@@ -107,6 +128,7 @@ class WooShippingLabelRepository @Inject constructor(
             origin = origin,
             destination = destination,
             selectedPackage = packageDTO,
+            shipmentId = shipmentId,
             selectedRate = rateDTO,
             customs = customsDTO ?: emptyMap(),
             hazmat = hazmatDTO,

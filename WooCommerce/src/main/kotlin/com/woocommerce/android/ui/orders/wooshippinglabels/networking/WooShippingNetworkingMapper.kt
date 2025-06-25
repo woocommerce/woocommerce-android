@@ -80,7 +80,8 @@ class WooShippingNetworkingMapper @Inject constructor(
             mainReceiptId = shippingLabelDTO.mainReceiptId ?: 0,
             rate = shippingLabelDTO.rate ?: BigDecimal.ZERO,
             currency = shippingLabelDTO.currency.orEmpty(),
-            expiryDate = shippingLabelDTO.expiryDate ?: 0
+            expiryDate = shippingLabelDTO.expiryDate ?: 0,
+            usedDate = shippingLabelDTO.usedDate
         )
     }
 
