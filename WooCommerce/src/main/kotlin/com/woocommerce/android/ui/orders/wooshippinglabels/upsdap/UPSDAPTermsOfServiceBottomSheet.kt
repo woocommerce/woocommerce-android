@@ -150,7 +150,7 @@ private fun Conditions(
         CheckboxWithTitle(
             checked = conditionsState.isTermsOfServiceChecked,
             title = annotatedStringRes(
-                stringResId = R.string.wpp_shipping_ups_tos_condition_1,
+                stringResId = R.string.wpp_shipping_ups_tos_condition_terms,
                 onUrlClick = onUrlClicked
             ),
             onCheckedChange = conditionsState.onTermsOfServiceCheckedChanged
@@ -159,7 +159,7 @@ private fun Conditions(
         CheckboxWithTitle(
             checked = conditionsState.isProhibitedItemsChecked,
             title = annotatedStringRes(
-                stringResId = R.string.wpp_shipping_ups_tos_condition_2,
+                stringResId = R.string.wpp_shipping_ups_tos_condition_prohibited_items,
                 onUrlClick = onUrlClicked
             ),
             onCheckedChange = conditionsState.onProhibitedItemsCheckedChanged
@@ -168,7 +168,7 @@ private fun Conditions(
         CheckboxWithTitle(
             checked = conditionsState.isTechnologyAgreementChecked,
             title = annotatedStringRes(
-                stringResId = R.string.wpp_shipping_ups_tos_condition_3,
+                stringResId = R.string.wpp_shipping_ups_tos_condition_technology_agreement,
                 onUrlClick = onUrlClicked
             ),
             onCheckedChange = conditionsState.onTechnologyAgreementCheckedChanged
