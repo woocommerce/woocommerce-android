@@ -4686,6 +4686,14 @@
     <string name="woo_shipping_payment_method_added">Payment method added</string>
     <string name="woo_shipping_payment_fetching_cards_failed">Unable to refresh your payment methods</string>
 
+    <string name="wpp_shipping_ups_tos_title">UPS® Terms and Conditions</string>
+    <string name="wpp_shipping_ups_tos_shipping_from">Shipping from</string>
+    <string name="wpp_shipping_ups_tos_description">To start shipping from this address with UPS®, we need you to agree to the following terms and conditions:</string>
+    <string name="wpp_shipping_ups_tos_condition_1">I agree to the &lt;a href=\"ups-tos\"&gt;UPS® Terms of Service&lt;/a&gt;.</string>
+    <string name="wpp_shipping_ups_tos_condition_2">I will not ship any &lt;a href=\"ups-prohibited-items\"&gt;Prohibited Items&lt;/a&gt; that UPS® disallows, nor any regulated items without the necessary permissions.</string>
+    <string name="wpp_shipping_ups_tos_condition_3">I also agree to the &lt;a href=\"ups-technology-agreement\"&gt;UPS® Technology Agreement&lt;/a&gt;.</string>
+    <string name="wpp_shipping_ups_tos_accept">Confirm and continue</string>
+
     <string name="media_library_title">WordPress Media Library</string>
     <string name="media_loading_failed">Media loading failed</string>
     <string name="no_network_message">There is no network available</string>
