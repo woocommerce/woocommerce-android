@@ -7,7 +7,7 @@ import javax.inject.Inject
 class ShippingLabelMapper @Inject constructor(private val addressMapper: ShippingLabelAddressMapper) {
     fun toAppModel(databaseEntity: WCShippingLabelModel): ShippingLabel {
         return ShippingLabel(
-            id = databaseEntity.remoteShippingLabelId,
+            id = databaseEntity.remoteShippingLabelId.value,
             trackingNumber = databaseEntity.trackingNumber,
             carrierId = databaseEntity.carrierId,
             serviceName = databaseEntity.serviceName,

@@ -2,6 +2,7 @@ package org.wordpress.android.fluxc.store
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.shippinglabels.WCAddressVerificationResult
 import org.wordpress.android.fluxc.model.shippinglabels.WCAddressVerificationResult.InvalidAddress
@@ -60,14 +61,14 @@ class WCShippingLabelStore @Inject constructor(
         site: SiteModel,
         orderId: Long
     ): List<WCShippingLabelModel> =
-            runBlocking { shippingLabelDao.getShippingLabels(site.id, orderId) }
+            runBlocking { shippingLabelDao.getShippingLabels(site.localId(), RemoteId(orderId)) }
 
     fun getShippingLabelById(
         site: SiteModel,
         orderId: Long,
         remoteShippingLabelId: Long
     ): WCShippingLabelModel? =
-            runBlocking { shippingLabelDao.getShippingLabel(site.id, orderId, remoteShippingLabelId) }
+            runBlocking { shippingLabelDao.getShippingLabel(site.localId(), RemoteId(orderId), RemoteId(remoteShippingLabelId)) }
 
     suspend fun fetchShippingLabelsForOrder(
         site: SiteModel,
@@ -83,7 +84,7 @@ class WCShippingLabelStore @Inject constructor(
                     val shippingLabels = mapper.map(response.result, site)
 
                     // delete existing shipping labels for the order before adding incoming entries
-                    shippingLabelDao.deleteShippingLabels(orderId)
+                    shippingLabelDao.deleteShippingLabels(RemoteId(orderId))
                     shippingLabelDao.upsertShippingLabels(shippingLabels)
                     WooResult(shippingLabels)
                 }

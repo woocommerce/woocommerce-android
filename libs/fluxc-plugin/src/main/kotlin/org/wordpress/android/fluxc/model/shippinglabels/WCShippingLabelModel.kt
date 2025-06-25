@@ -4,6 +4,8 @@ import androidx.room.Entity
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import java.math.BigDecimal
 
 @Entity(
@@ -11,24 +13,24 @@ import java.math.BigDecimal
     primaryKeys = ["localSiteId", "remoteOrderId", "remoteShippingLabelId"],
 )
 data class WCShippingLabelModel(
-    val localSiteId: Int = 0,
-    val remoteOrderId: Long = 0L, // The remote identifier for the parent order object
-    val remoteShippingLabelId: Long = 0L, // The unique identifier for this note on the server
-    val trackingNumber: String = "",
-    val carrierId: String = "",
-    val dateCreated: Long? = null,
-    val expiryDate: Long? = null,
-    val serviceName: String = "",
-    val status: String = "",
-    val packageName: String = "",
-    val rate: Float = 0F,
-    val refundableAmount: Float = 0F,
-    val currency: String = "",
-    val productNames: String = "", // list of product names the shipping label was purchased for
-    val productIds: String = "", // list of product ids the shipping label was purchased for
-    val formData: String = "", // map containing package and product details related to that shipping label
-    val refund: String = "", // map containing refund information for a shipping label
-    val commercialInvoiceUrl: String? = null // URL pointing to the international commercial URL
+    val localSiteId: LocalId,
+    val remoteOrderId: RemoteId, // The remote identifier for the parent order object
+    val remoteShippingLabelId: RemoteId, // The unique identifier for this note on the server
+    val trackingNumber: String,
+    val carrierId: String,
+    val dateCreated: Long?,
+    val expiryDate: Long?,
+    val serviceName: String,
+    val status: String,
+    val packageName: String,
+    val rate: Float,
+    val refundableAmount: Float,
+    val currency: String,
+    val productNames: String, // list of product names the shipping label was purchased for
+    val productIds: String, // list of product ids the shipping label was purchased for
+    val formData: String, // map containing package and product details related to that shipping label
+    val refund: String, // map containing refund information for a shipping label
+    val commercialInvoiceUrl: String? // URL pointing to the international commercial URL
 ) {
 
     companion object {

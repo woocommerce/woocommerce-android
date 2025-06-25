@@ -3,6 +3,8 @@ package org.wordpress.android.fluxc.wc.shippinglabels
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import org.wordpress.android.fluxc.UnitTestUtils
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.shippinglabels.WCShippingLabelModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.shippinglabels.AccountSettingsApiResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.shippinglabels.ShippingLabelApiResponse
@@ -26,9 +28,9 @@ object WCShippingLabelTestUtils {
         productIds: String = "[60, 61, 62]"
     ): WCShippingLabelModel {
         return WCShippingLabelModel(
-            localSiteId = siteId,
-            remoteOrderId = orderId,
-            remoteShippingLabelId = remoteId,
+            localSiteId = LocalId(siteId),
+            remoteOrderId = RemoteId(orderId),
+            remoteShippingLabelId = RemoteId(remoteId),
             carrierId = carrierId,
             serviceName = serviceName,
             packageName = packageName,
@@ -38,7 +40,12 @@ object WCShippingLabelTestUtils {
             currency = currency,
             productNames = productNames,
             productIds = productIds,
-            refund = refund.orEmpty()
+            refund = refund.orEmpty(),
+            trackingNumber = "",
+            dateCreated = 0,
+            expiryDate = 0,
+            formData = "",
+            commercialInvoiceUrl = null
         )
     }
 
