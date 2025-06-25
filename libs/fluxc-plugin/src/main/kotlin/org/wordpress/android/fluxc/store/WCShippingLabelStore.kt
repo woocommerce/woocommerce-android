@@ -1,6 +1,7 @@
 package org.wordpress.android.fluxc.store
 
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.shippinglabels.WCAddressVerificationResult
 import org.wordpress.android.fluxc.model.shippinglabels.WCAddressVerificationResult.InvalidAddress
@@ -36,6 +37,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.shippinglabels.Shipping
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.shippinglabels.ShippingLabelStatusApiResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.shippinglabels.UpdateSettingsApiRequest
 import org.wordpress.android.fluxc.persistence.WCShippingLabelSqlUtils
+import org.wordpress.android.fluxc.persistence.dao.ShippingLabelDao
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.fluxc.utils.Poller
 import org.wordpress.android.util.AppLog
@@ -48,7 +50,8 @@ private const val PURCHASE_SHIPPING_LABELS_DELAY = 2000L
 class WCShippingLabelStore @Inject constructor(
     private val restClient: ShippingLabelRestClient,
     private val coroutineEngine: CoroutineEngine,
-    private val mapper: WCShippingLabelMapper
+    private val mapper: WCShippingLabelMapper,
+    private val shippingLabelDao: ShippingLabelDao
 ) {
     /**
      * returns a list of shipping labels for an order from the database
@@ -57,14 +60,14 @@ class WCShippingLabelStore @Inject constructor(
         site: SiteModel,
         orderId: Long
     ): List<WCShippingLabelModel> =
-            WCShippingLabelSqlUtils.getShippingClassesForOrder(site.id, orderId)
+            runBlocking { shippingLabelDao.getShippingLabels(site.id, orderId) }
 
     fun getShippingLabelById(
         site: SiteModel,
         orderId: Long,
         remoteShippingLabelId: Long
     ): WCShippingLabelModel? =
-            WCShippingLabelSqlUtils.getShippingLabelById(site.id, orderId, remoteShippingLabelId)
+            runBlocking { shippingLabelDao.getShippingLabel(site.id, orderId, remoteShippingLabelId) }
 
     suspend fun fetchShippingLabelsForOrder(
         site: SiteModel,
@@ -80,8 +83,8 @@ class WCShippingLabelStore @Inject constructor(
                     val shippingLabels = mapper.map(response.result, site)
 
                     // delete existing shipping labels for the order before adding incoming entries
-                    WCShippingLabelSqlUtils.deleteShippingLabelsForOrder(orderId)
-                    WCShippingLabelSqlUtils.insertOrUpdateShippingLabels(shippingLabels)
+                    shippingLabelDao.deleteShippingLabels(orderId)
+                    shippingLabelDao.upsertShippingLabels(shippingLabels)
                     WooResult(shippingLabels)
                 }
                 else -> WooResult(WooError(GENERIC_ERROR, UNKNOWN))
@@ -443,7 +446,7 @@ class WCShippingLabelStore @Inject constructor(
                                 destination,
                                 site
                         )
-                        WCShippingLabelSqlUtils.insertOrUpdateShippingLabels(shippingLabels)
+                        shippingLabelDao.upsertShippingLabels(shippingLabels)
                         WooResult(shippingLabels)
                     }
                 }
