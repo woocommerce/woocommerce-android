@@ -17,6 +17,14 @@ import javax.inject.Inject
 class UPSDAPTermsOfServiceViewModel @Inject constructor(
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
+    companion object {
+        private const val TERMS_URL = "https://www.ups.com/assets/resources/webcontent/" +
+                "en_US/ups_dap_supplemental_tc.pdf"
+        private const val PROHIBITED_ITEMS_URL = "https://www.ups.com/us/en/support/shipping-support/" +
+                "shipping-special-care-regulated-items/prohibited-items.page"
+        private const val TECHNOLOGY_AGREEMENT_URL = "https://www.ups.com/assets/resources/webcontent/en_US/UTA.pdf"
+    }
+
     private val args: UPSDAPTermsOfServiceBottomSheetFragmentArgs by savedState.navArgs()
 
     private var isTermsOfServiceAccepted = savedState.getStateFlow(
@@ -66,7 +74,13 @@ class UPSDAPTermsOfServiceViewModel @Inject constructor(
     }.asLiveData()
 
     private fun onUrlClicked(url: String) {
-        triggerEvent(MultiLiveEvent.Event.OpenUrl(url))
+        val finalUrl = when (url) {
+            "ups-tos" -> TERMS_URL
+            "ups-prohibited-items" -> PROHIBITED_ITEMS_URL
+            "ups-technology-agreement" -> TECHNOLOGY_AGREEMENT_URL
+            else -> error("Unknown URL: $url")
+        }
+        triggerEvent(MultiLiveEvent.Event.OpenUrl(finalUrl))
     }
 
     private fun onContinueClicked() {
@@ -91,7 +105,7 @@ class UPSDAPTermsOfServiceViewModel @Inject constructor(
     ) {
         val areAllConditionsAccepted: Boolean
             get() = conditionsState.isTermsOfServiceChecked &&
-                conditionsState.isProhibitedItemsChecked &&
-                conditionsState.isTechnologyAgreementChecked
+                    conditionsState.isProhibitedItemsChecked &&
+                    conditionsState.isTechnologyAgreementChecked
     }
 }
