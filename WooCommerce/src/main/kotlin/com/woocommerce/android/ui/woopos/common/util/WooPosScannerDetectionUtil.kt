@@ -32,6 +32,7 @@ class WooPosScannerDetectionUtil @Inject constructor(
     }
 
     @SuppressLint("MissingPermission")
+    @Suppress("TooGenericExceptionCaught")
     private fun detectBluetoothScanner(): ScannerInfo? {
         try {
             val bluetoothAdapter = (context.getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager)?.adapter
@@ -55,6 +56,8 @@ class WooPosScannerDetectionUtil @Inject constructor(
         )
     }
 
+    @SuppressLint("MissingPermission")
+    @Suppress("TooGenericExceptionCaught")
     private fun detectUsbHidScanner(context: Context): ScannerInfo? {
         try {
             val inputManager = context.getSystemService(Context.INPUT_SERVICE) as InputManager
