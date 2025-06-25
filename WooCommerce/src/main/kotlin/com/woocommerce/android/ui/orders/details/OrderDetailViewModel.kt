@@ -704,7 +704,7 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     fun onCreateShippingLabelButtonTapped() {
-        tracker.trackShippinhLabelTapped()
+        tracker.trackShippingLabelTapped()
         launch {
             if (isRevampWooShippingEnabled) {
                 triggerEvent(StartWooShippingLabelCreationFlow(awaitOrder().id))

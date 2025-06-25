@@ -1551,7 +1551,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             viewModel.onCreateShippingLabelButtonTapped()
 
             // Then
-            verify(orderDetailTracker).trackShippinhLabelTapped()
+            verify(orderDetailTracker).trackShippingLabelTapped()
         }
 
     @Test
