@@ -70,15 +70,6 @@ object WCShippingLabelSqlUtils {
                     .equals(WCShippingLabelModelTable.REMOTE_ORDER_ID, orderId)
                     .endWhere().execute()
 
-    fun deleteShippingLabelsForSite(localSiteId: Int): Int {
-        return WellSql.delete(WCShippingLabelModel::class.java)
-                .where()
-                .equals(WCShippingLabelModelTable.LOCAL_SITE_ID, localSiteId)
-                .or()
-                .equals(WCShippingLabelModelTable.LOCAL_SITE_ID, 0) // Should never happen, but sanity cleanup
-                .endWhere().execute()
-    }
-
     fun insertOrUpdateSLCreationEligibility(eligibility: WCShippingLabelCreationEligibility): Int {
         val result = WellSql.select(WCShippingLabelCreationEligibility::class.java)
                 .where().beginGroup()

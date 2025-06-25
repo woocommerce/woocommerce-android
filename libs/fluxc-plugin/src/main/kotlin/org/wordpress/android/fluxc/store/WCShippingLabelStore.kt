@@ -108,12 +108,6 @@ class WCShippingLabelStore @Inject constructor(
         }
     }
 
-    suspend fun printShippingLabel(
-        site: SiteModel,
-        paperSize: String,
-        shippingLabelId: Long
-    ): WooResult<String> = printShippingLabels(site, paperSize, listOf(shippingLabelId))
-
     suspend fun printShippingLabels(
         site: SiteModel,
         paperSize: String,
