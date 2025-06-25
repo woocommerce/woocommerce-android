@@ -79,59 +79,20 @@ class WooPosScannerDetectionUtil @Inject constructor(
     @Suppress("ReturnCount")
     @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
     private fun isPotentialBarcodeScanner(device: BluetoothDevice): Boolean {
-        val deviceName = device.name?.lowercase() ?: return false
-
-        if (isScannerByName(deviceName)) {
-            return true
-        }
-
         val deviceClass = device.bluetoothClass?.deviceClass
-        if (deviceClass != null && isScannerByDeviceClass(deviceClass)) {
-            return true
-        }
-
-        return isScannerByBluetoothProfile(device)
+        return deviceClass != null && isScannerByDeviceClass(deviceClass)
     }
 
     @Suppress("ComplexCondition")
     private fun isPotentialBarcodeScanner(inputDevice: InputDevice): Boolean {
-        val deviceName = inputDevice.name.lowercase()
-
-        if (isScannerByName(deviceName)) {
-            return true
-        }
-
         return inputDevice.sources and InputDevice.SOURCE_KEYBOARD != 0 &&
             inputDevice.keyboardType == InputDevice.KEYBOARD_TYPE_NON_ALPHABETIC
-    }
-
-    private fun isScannerByName(deviceName: String): Boolean {
-        return deviceName.contains("scanner", ignoreCase = true) ||
-            deviceName.contains("barcode", ignoreCase = true) ||
-            deviceName.contains("zebra", ignoreCase = true) ||
-            deviceName.contains("honeywell", ignoreCase = true) ||
-            deviceName.contains("symbol", ignoreCase = true) ||
-            deviceName.contains("datalogic", ignoreCase = true) ||
-            deviceName.contains("newland", ignoreCase = true) ||
-            deviceName.contains("inateck", ignoreCase = true) ||
-            deviceName.matches(Regex("^[a-z]{2,3}\\d{6,}$")) // e.g., "bsh209900679"
     }
 
     private fun isScannerByDeviceClass(deviceClass: Int): Boolean {
         return deviceClass == PERIPHERAL_CLASS ||
             deviceClass == KEYBOARD_CLASS ||
             deviceClass == HID_CLASS
-    }
-
-    @Suppress("TooGenericExceptionCaught")
-    @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
-    private fun isScannerByBluetoothProfile(device: BluetoothDevice): Boolean {
-        return try {
-            device.uuids?.any { it.uuid.toString().contains("1124", ignoreCase = true) } == true
-        } catch (e: Exception) {
-            wooPosLogWrapper.e("Error checking Bluetooth profiles for device ${device.name}: ${e.message}", e)
-            false
-        }
     }
 
     fun getScannerInfoString(scanner: ScannerInfo?): String {
