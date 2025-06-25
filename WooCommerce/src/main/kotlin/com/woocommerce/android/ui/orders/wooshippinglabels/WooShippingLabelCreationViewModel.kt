@@ -226,7 +226,8 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                                         }
                                     }
 
-                                    NoticeType.MISSING_DESTINATION_ADDRESS, NoticeType.UNVERIFIED_DESTINATION_ADDRESS -> {
+                                    NoticeType.MISSING_DESTINATION_ADDRESS,
+                                    NoticeType.UNVERIFIED_DESTINATION_ADDRESS -> {
                                         shippingAddresses.value?.shipTo?.let { shipTo ->
                                             onEditDestinationAddress(
                                                 shipTo
