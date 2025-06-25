@@ -119,7 +119,10 @@ data class ShippingLabelDTO(
     @SerializedName("refund") val refund: LabelRefund? = null
 )
 
-data class LabelRefund(@SerializedName("status") val status: String? = null)
+data class LabelRefund(
+    @SerializedName("status") val status: String? = null,
+    @SerializedName("request_date") val requestDate: Long? = null
+)
 
 data class PurchasedShippingLabelResponseDTO(
     val success: Boolean,

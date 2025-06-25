@@ -15,11 +15,12 @@ import com.woocommerce.android.databinding.OrderDetailShippingLabelListItemBindi
 import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.formatToMMMddYYYYhhmm
-import com.woocommerce.android.model.ShippingLabel
+import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.orders.OrderShipmentTrackingHelper
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.ShippingLabelsViewHolder
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import java.math.BigDecimal
@@ -34,12 +35,12 @@ class OrderDetailShippingLabelsAdapter(
     private val viewPool = RecyclerView.RecycledViewPool()
 
     interface OnShippingLabelClickListener {
-        fun onRefundRequested(shippingLabel: ShippingLabel)
-        fun onPrintShippingLabelClicked(shippingLabel: ShippingLabel)
-        fun onPrintCustomsFormClicked(shippingLabel: ShippingLabel)
+        fun onRefundRequested(shippingLabel: ShippingLabelModel)
+        fun onPrintShippingLabelClicked(shippingLabel: ShippingLabelModel)
+        fun onPrintCustomsFormClicked(shippingLabel: ShippingLabelModel)
     }
 
-    var shippingLabels: List<ShippingLabel> = ArrayList()
+    var shippingLabels: List<ShippingLabelModel> = ArrayList()
         set(value) {
             val diffResult = DiffUtil.calculateDiff(
                 ShippingLabelDiffCallback(
@@ -86,7 +87,7 @@ class OrderDetailShippingLabelsAdapter(
         private val listener: OnShippingLabelClickListener,
         private val productClickListener: OrderProductActionListener
     ) : RecyclerView.ViewHolder(viewBinding.root) {
-        fun bind(shippingLabel: ShippingLabel) {
+        fun bind(shippingLabel: ShippingLabelModel) {
             // display product list if product list is not empty
             if (shippingLabel.products.isNotEmpty()) {
                 with(viewBinding.shippingLabelListProducts) {
@@ -112,7 +113,7 @@ class OrderDetailShippingLabelsAdapter(
                 }
             }
 
-            if (shippingLabel.id == 0L) {
+            if (shippingLabel.labelId == 0L) {
                 viewBinding.shippingLabelItemTrackingNumber.isVisible = false
                 viewBinding.shippingLabelItemMorePanel.isVisible = false
                 with(viewBinding.shippingLabelListLblPackage) {
@@ -155,7 +156,7 @@ class OrderDetailShippingLabelsAdapter(
                         context.getString(
                             R.string.orderdetail_shipping_label_refund_subtitle,
                             formatCurrencyForDisplay(shippingLabel.rate),
-                            shippingLabel.refund.refundDate?.formatToMMMddYYYYhhmm() ?: ""
+                            shippingLabel.refund.requestDate?.formatToMMMddYYYYhhmm() ?: ""
                         )
                     )
                     showTrackingItemButton(false)
@@ -165,20 +166,20 @@ class OrderDetailShippingLabelsAdapter(
                             R.string.order_shipment_tracking_number_label
                         )
                     )
-                    setShippingLabelValue(shippingLabel.trackingNumber)
+                    setShippingLabelValue(shippingLabel.tracking)
                     viewBinding.shippingLabelListBtnMenu.setOnClickListener {
                         showRefundPopup(shippingLabel, listener)
                     }
 
                     // display tracking link if available
-                    if (shippingLabel.trackingNumber.isNotEmpty()) {
+                    if (shippingLabel.tracking.isNotEmpty()) {
                         showTrackingItemButton(true)
                         setTrackingItemClickListener {
                             OrderShipmentTrackingHelper.showTrackingOrDeleteOptionPopup(
                                 getTrackingItemButton(),
                                 context,
                                 shippingLabel.trackingLink,
-                                shippingLabel.trackingNumber
+                                shippingLabel.tracking
                             )
                         }
                     } else {
@@ -260,10 +261,7 @@ class OrderDetailShippingLabelsAdapter(
             }
         }
 
-        private fun showRefundPopup(
-            shippingLabel: ShippingLabel,
-            listener: OnShippingLabelClickListener
-        ) {
+        private fun showRefundPopup(shippingLabel: ShippingLabelModel, listener: OnShippingLabelClickListener) {
             val popup = PopupMenu(itemView.context, viewBinding.shippingLabelListBtnMenu)
             popup.menuInflater.inflate(R.menu.menu_shipping_label, popup.menu)
 
@@ -272,7 +270,7 @@ class OrderDetailShippingLabelsAdapter(
                 true
             }
             popup.menu.findItem(R.id.menu_print_customs_form).apply {
-                isVisible = shippingLabel.hasCommercialInvoice
+                isVisible = shippingLabel.commercialInvoiceUrl.isNotNullOrEmpty()
                 setOnMenuItemClickListener {
                     listener.onPrintCustomsFormClicked(shippingLabel)
                     true
@@ -284,11 +282,11 @@ class OrderDetailShippingLabelsAdapter(
     }
 
     class ShippingLabelDiffCallback(
-        private val oldList: List<ShippingLabel>,
-        private val newList: List<ShippingLabel>
+        private val oldList: List<ShippingLabelModel>,
+        private val newList: List<ShippingLabelModel>
     ) : Callback() {
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return oldList[oldItemPosition].id == newList[newItemPosition].id
+            return oldList[oldItemPosition].labelId == newList[newItemPosition].labelId
         }
 
         override fun getOldListSize(): Int = oldList.size

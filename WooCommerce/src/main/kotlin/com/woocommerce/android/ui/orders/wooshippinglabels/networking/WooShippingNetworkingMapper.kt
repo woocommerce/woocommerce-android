@@ -81,7 +81,10 @@ class WooShippingNetworkingMapper @Inject constructor(
             rate = shippingLabelDTO.rate ?: BigDecimal.ZERO,
             currency = shippingLabelDTO.currency.orEmpty(),
             expiryDate = shippingLabelDTO.expiryDate ?: 0,
-            usedDate = shippingLabelDTO.usedDate
+            usedDate = shippingLabelDTO.usedDate,
+            refund = shippingLabelDTO.refund?.let { refund ->
+                ShippingLabelModel.Refund(status = refund.status, requestDate = refund.requestDate?.let { Date(it) })
+            }
         )
     }
 
