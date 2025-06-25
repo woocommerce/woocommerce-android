@@ -75,7 +75,6 @@ class ProductInventoryViewModel @Inject constructor(
             return
         }
         onDataChanged(sku = sku)
-        // verify if the sku exists only if the text entered by the user does not match the sku stored locally
         skuVerificationJob?.cancel()
         if (sku.length > 0) {
             if (sku == originalSku) {
@@ -88,11 +87,8 @@ class ProductInventoryViewModel @Inject constructor(
                 }
 
                 skuVerificationJob = launch {
-                    // perform the fetch after the user stops typing
                     delay(AppConstants.SEARCH_TYPING_DELAY_MS)
 
-                    // only after the SKU is available remotely, reset the error if it's available locally, as well
-                    // to avoid showing/hiding error message
                     productRepository.isSkuAvailableRemotely(sku)?.let { isRemotelyAvailable ->
                         if (isRemotelyAvailable) {
                             clearSkuError()
