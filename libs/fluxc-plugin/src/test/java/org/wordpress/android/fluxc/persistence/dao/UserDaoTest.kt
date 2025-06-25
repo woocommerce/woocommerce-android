@@ -30,12 +30,10 @@ class UserDaoTest {
             id = 24
         }
 
-        const val SAMPLE_USER_MAIL = "user@example.com"
-
         val sampleUser = WCUserModel(
             localSiteId = LocalId(site.id),
             remoteUserId = RemoteId(1L),
-            email = SAMPLE_USER_MAIL,
+            email = "user@example.com",
             firstName = "John",
             lastName = "Doe",
             username = "johndoe",
@@ -59,21 +57,17 @@ class UserDaoTest {
 
     @Test
     fun `getUser returns user when it is stored`() = runTest {
-        // given
-        val userEmail = "user@example.com"
-
         // when
         sut.upsertUser(sampleUser)
 
         // then
-        val storedUser = sut.getUser(site.localId(), userEmail)
+        val storedUser = sut.getUser(site.localId(), sampleUser.email)
         assertThat(storedUser).isEqualTo(sampleUser)
     }
 
     @Test
     fun `getUser returns null when user with different site is stored`() = runTest {
         // given
-        val userEmail = "user@example.com"
         val differentSiteUser = sampleUser.copy(
             localSiteId = LocalId(999)
         )
@@ -82,28 +76,26 @@ class UserDaoTest {
         sut.upsertUser(differentSiteUser)
 
         // then
-        val storedUser = sut.getUser(site.localId(), userEmail)
+        val storedUser = sut.getUser(site.localId(), sampleUser.email)
         assertThat(storedUser).isNull()
     }
 
     @Test
     fun `getUser returns null when user with different email is stored`() = runTest {
         // given
-        val userEmail = sampleUser.email
         val differentEmailUser = sampleUser.copy(email = "different@example.com")
 
         // when
         sut.upsertUser(differentEmailUser)
 
         // then
-        val storedUser = sut.getUser(LocalId(site.id), userEmail)
+        val storedUser = sut.getUser(site.localId(), sampleUser.email)
         assertThat(storedUser).isNull()
     }
 
     @Test
     fun `upsertUser updates an existing user when it exists`() = runTest {
         // given
-        val userEmail = "user@example.com"
         sut.upsertUser(sampleUser)
         val updatedUser = sampleUser.copy(
             firstName = "Jane",
@@ -115,7 +107,7 @@ class UserDaoTest {
         sut.upsertUser(updatedUser)
 
         // then
-        val storedUser = sut.getUser(LocalId(site.id), userEmail)
+        val storedUser = sut.getUser(site.localId(), sampleUser.email)
         assertThat(storedUser).isEqualTo(updatedUser)
     }
 }
