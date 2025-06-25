@@ -57,6 +57,7 @@ import com.woocommerce.android.ui.orders.creation.shipping.GetShippingMethodsWit
 import com.woocommerce.android.ui.orders.creation.shipping.RefreshShippingMethods
 import com.woocommerce.android.ui.orders.creation.shipping.ShippingLineDetails
 import com.woocommerce.android.ui.orders.creation.shipping.ShippingMethodsRepository
+import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.fillProducts
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingLabelRepository
@@ -111,6 +112,7 @@ class OrderDetailViewModel @Inject constructor(
     private val tracker: OrderDetailTracker,
     private val shippingLabelOnboardingRepository: ShippingLabelOnboardingRepository,
     private val shippingLabelRepository: WooShippingLabelRepository,
+    private val configDataStore: WooShippingConfigDataStore,
     private val orderDetailsTransactionLauncher: OrderDetailsTransactionLauncher,
     private val getOrderSubscriptions: GetOrderSubscriptions,
     private val giftCardRepository: GiftCardRepository,
@@ -886,9 +888,12 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     private suspend fun loadOrderShippingLabels(): ListInfo<ShippingLabelModel> {
-        orderDetailRepository.getOrderShippingLabels(navArgs.orderId)
-            .map { it.toShippingLabelModel() }
-            .fillProducts(awaitOrder().items)
+        if (isRevampWooShippingEnabled) {
+            configDataStore.getShippingLabels(navArgs.orderId).first()
+        } else {
+            orderDetailRepository.getOrderShippingLabels(navArgs.orderId)
+                .map { it.toShippingLabelModel() }
+        }?.fillProducts(awaitOrder().items)
             .whenNotNullNorEmpty { return ListInfo(list = it) }
         return ListInfo(isVisible = false)
     }
