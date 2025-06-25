@@ -1,43 +1,38 @@
 package org.wordpress.android.fluxc.model.shippinglabels
 
+import androidx.room.Entity
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
-import com.yarolegovich.wellsql.core.Identifiable
-import com.yarolegovich.wellsql.core.annotation.Column
-import com.yarolegovich.wellsql.core.annotation.PrimaryKey
-import com.yarolegovich.wellsql.core.annotation.Table
-import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import java.math.BigDecimal
 
-@Table(addOn = WellSqlConfig.ADDON_WOOCOMMERCE)
-class WCShippingLabelModel(@PrimaryKey @Column private var id: Int = 0) : Identifiable {
-    @Column var localSiteId = 0
-    @Column var remoteOrderId = 0L // The remote identifier for the parent order object
-    @Column var remoteShippingLabelId = 0L // The unique identifier for this note on the server
-    @Column var trackingNumber = ""
-    @Column var carrierId = ""
-    @Column var dateCreated: Long? = null
-    @Column var expiryDate: Long? = null
-    @Column var serviceName = ""
-    @Column var status = ""
-    @Column var packageName = ""
-    @Column var rate = 0F
-    @Column var refundableAmount = 0F
-    @Column var currency = ""
-    @Column var productNames = "" // list of product names the shipping label was purchased for
-    @Column var productIds = "" // list of product ids the shipping label was purchased for
-    @Column var formData = "" // map containing package and product details related to that shipping label
-    @Column var refund = "" // map containing refund information for a shipping label
-    @Column var commercialInvoiceUrl: String? = null // URL pointing to the international commercial URL
-
-    override fun getId() = id
-
-    override fun setId(id: Int) {
-        this.id = id
-    }
+@Entity(
+    tableName = "ShippingLabelEntity",
+    primaryKeys = ["localSiteId", "remoteOrderId", "remoteShippingLabelId"],
+)
+data class WCShippingLabelModel(
+    val localSiteId: Int = 0,
+    val remoteOrderId: Long = 0L, // The remote identifier for the parent order object
+    val remoteShippingLabelId: Long = 0L, // The unique identifier for this note on the server
+    val trackingNumber: String = "",
+    val carrierId: String = "",
+    val dateCreated: Long? = null,
+    val expiryDate: Long? = null,
+    val serviceName: String = "",
+    val status: String = "",
+    val packageName: String = "",
+    val rate: Float = 0F,
+    val refundableAmount: Float = 0F,
+    val currency: String = "",
+    val productNames: String = "", // list of product names the shipping label was purchased for
+    val productIds: String = "", // list of product ids the shipping label was purchased for
+    val formData: String = "", // map containing package and product details related to that shipping label
+    val refund: String = "", // map containing refund information for a shipping label
+    val commercialInvoiceUrl: String? = null // URL pointing to the international commercial URL
+) {
 
     companion object {
+        @Deprecated("Database entity should not keep a reference to Gson")
         private val gson by lazy { Gson() }
     }
 

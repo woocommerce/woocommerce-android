@@ -22,6 +22,7 @@ import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.model.attribute.WCGlobalAttributeModel
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 import org.wordpress.android.fluxc.model.data.WCLocationModel
+import org.wordpress.android.fluxc.model.shippinglabels.WCShippingLabelModel
 import org.wordpress.android.fluxc.model.taxes.TaxBasedOnSettingEntity
 import org.wordpress.android.fluxc.model.taxes.TaxRateEntity
 import org.wordpress.android.fluxc.model.taxes.WCTaxClassModel
@@ -59,6 +60,7 @@ import org.wordpress.android.fluxc.persistence.dao.ProductsDao
 import org.wordpress.android.fluxc.persistence.dao.RefundDao
 import org.wordpress.android.fluxc.persistence.dao.RevenueStatsDao
 import org.wordpress.android.fluxc.persistence.dao.SettingsDao
+import org.wordpress.android.fluxc.persistence.dao.ShippingLabelDao
 import org.wordpress.android.fluxc.persistence.dao.ShippingMethodDao
 import org.wordpress.android.fluxc.persistence.dao.TaxBasedOnDao
 import org.wordpress.android.fluxc.persistence.dao.TaxClassDao
@@ -127,7 +129,7 @@ import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_7_8
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_8_9
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_9_10
 
-const val WC_DATABASE_VERSION = 72
+const val WC_DATABASE_VERSION = 73
 
 @Database(
     version = WC_DATABASE_VERSION,
@@ -179,6 +181,7 @@ const val WC_DATABASE_VERSION = 72
         BookingEntity::class,
         BookingResourceEntity::class,
         WCRevenueStatsModel::class,
+        WCShippingLabelModel::class,
     ],
     autoMigrations = [
         AutoMigration(from = 12, to = 13),
@@ -232,6 +235,7 @@ const val WC_DATABASE_VERSION = 72
         AutoMigration(from = 68, to = 69),
         AutoMigration(from = 69, to = 70),
         AutoMigration(from = 70, to = 71),
+        AutoMigration(from = 72, to = 73),
     ]
 )
 @TypeConverters(
@@ -283,6 +287,7 @@ abstract class WCAndroidDatabase : RoomDatabase(), TransactionExecutor {
     internal abstract val gatewaysDao: GatewaysDao
     internal abstract val newVisitorStatsDao: NewVisitorStatsDao
     internal abstract val revenueStatsDao: RevenueStatsDao
+    internal abstract val shippingLabelDao: ShippingLabelDao
 
     companion object {
         fun buildDb(
