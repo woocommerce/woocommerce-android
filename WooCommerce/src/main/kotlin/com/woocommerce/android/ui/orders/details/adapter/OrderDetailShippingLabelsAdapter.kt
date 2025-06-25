@@ -141,9 +141,9 @@ class OrderDetailShippingLabelsAdapter(
             }
 
             // display tracking number details if shipping label is not refunded
-            val isRefunded = shippingLabel.refund == null
-            viewBinding.shippingLabelListBtnMenu.isVisible = isRefunded
-            viewBinding.shippingLabelListPrintBtn.isVisible = isRefunded
+            val isNotRefunded = shippingLabel.refund == null
+            viewBinding.shippingLabelListBtnMenu.isVisible = isNotRefunded
+            viewBinding.shippingLabelListPrintBtn.isVisible = isNotRefunded
             with(viewBinding.shippingLabelItemTrackingNumber) {
                 if (shippingLabel.refund != null) {
                     setShippingLabelTitle(
@@ -192,7 +192,7 @@ class OrderDetailShippingLabelsAdapter(
                 }
             }
 
-            if (isRevampWooShippingEnabled && shippingLabel.refund != null) {
+            if (isRevampWooShippingEnabled && !isNotRefunded) {
                 viewBinding.shippingLabelItemViewMore.isVisible = false
             } else {
                 viewBinding.shippingLabelItemViewMore.isVisible = true
