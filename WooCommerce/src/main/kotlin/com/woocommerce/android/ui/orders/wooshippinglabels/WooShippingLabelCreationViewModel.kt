@@ -121,8 +121,8 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     var snackbarData by mutableStateOf<ShippingLabelsSnackbarData?>(null)
 
     private val emptyOrder = Order.getEmptyOrder(Date(), Date())
-    private val order = MutableStateFlow<Order>(emptyOrder)
-    private val destinationAddress = MutableStateFlow<DestinationShippingAddress>(DestinationShippingAddress.EMPTY)
+    private val order = MutableStateFlow(emptyOrder)
+    private val destinationAddress = MutableStateFlow(DestinationShippingAddress.EMPTY)
     private val shippingAddresses = MutableStateFlow<WooShippingAddresses?>(WooShippingAddresses.EMPTY)
     private val loadTrigger = MutableSharedFlow<Unit>()
 
@@ -142,7 +142,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     private val uiState = MutableStateFlow(
         UIControlsState(
             markOrderComplete = false,
-            selectedIndex = 0,
+            selectedIndex = navArgs.shipmentId,
             isShipmentDetailsExpanded = false,
             paperSizeOption = WooShippingLabelPaperSize.LABEL
         )
