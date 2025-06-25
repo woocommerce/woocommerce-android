@@ -52,11 +52,6 @@ class WCShippingLabelModel(@PrimaryKey @Column private var id: Int = 0) : Identi
     fun getOriginAddress() = getFormData()?.origin
 
     /**
-     * Returns the product details for the order wrapped in a list of [ProductItem]
-     */
-    fun getProductItems() = getFormData()?.selectedPackage?.defaultBox?.productItems ?: emptyList()
-
-    /**
      * Returns default data related to the order such as the origin address,
      * destination address and product items associated with the order.
      */
@@ -168,14 +163,7 @@ class WCShippingLabelModel(@PrimaryKey @Column private var id: Int = 0) : Identi
         @SerializedName("request_date") val requestDate: Long? = null
     }
     enum class HazmatCategory {
-        PRIMARY_CONTAINED,
-        PRIMARY_PACKED,
         PRIMARY,
-        SECONDARY_CONTAINED,
-        SECONDARY_PACKED,
-        SECONDARY,
-        ORMD,
-        LITHIUM,
         LIMITED_QUANTITY,
         AIR_ELIGIBLE_ETHANOL,
         CLASS_1,

@@ -276,7 +276,7 @@ class WCShippingLabelStoreTest {
         val result = printShippingLabelForOrder()
         assertThat(result.model).isEqualTo(samplePrintShippingLabelApiResponse?.b64Content)
 
-        val invalidRequestResult = store.printShippingLabel(errorSite, printPaperSize, refundShippingLabelId)
+        val invalidRequestResult = store.printShippingLabels(errorSite, printPaperSize, listOf(refundShippingLabelId))
         assertThat(invalidRequestResult.model).isNull()
         assertThat(invalidRequestResult.error).isEqualTo(error)
     }
@@ -744,7 +744,7 @@ class WCShippingLabelStoreTest {
                 errorSite, printPaperSize, listOf(refundShippingLabelId)
         )).thenReturn(WooPayload(error))
 
-        return store.printShippingLabel(site, printPaperSize, refundShippingLabelId)
+        return store.printShippingLabels(site, printPaperSize, listOf(refundShippingLabelId))
     }
 
     private suspend fun verifyAddress(type: ShippingLabelAddress.Type): WooResult<WCAddressVerificationResult> {
