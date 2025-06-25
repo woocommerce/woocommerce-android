@@ -64,7 +64,7 @@ data class PackageData(
 
         /**
          * Default height when missing from the package dimensions.
-         * TODO: confirm this value when WOOSHIP-1449 is done.
+         * TODO confirm this value when WOOSHIP-1449 is done.
          */
         const val DEFAULT_HEIGHT = 5.0
 
