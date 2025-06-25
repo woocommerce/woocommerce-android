@@ -16,8 +16,8 @@ import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetVariationById
 import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosSearchByIdentifier
 import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosSearchByIdentifierResult
-import com.woocommerce.android.ui.woopos.common.util.ScannerDetectionUtil
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.ui.woopos.common.util.WooPosScannerDetectionUtil
 import com.woocommerce.android.ui.woopos.common.util.WooPosSoundHelper
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.CouponsRemoved
@@ -69,7 +69,7 @@ class WooPosCartViewModel @Inject constructor(
     private val searchByIdentifier: WooPosSearchByIdentifier,
     private val wooPosLogWrapper: WooPosLogWrapper,
     private val soundHelper: WooPosSoundHelper,
-    private val scannerDetectionUtil: ScannerDetectionUtil,
+    private val scannerDetectionUtil: WooPosScannerDetectionUtil,
     @ApplicationContext private val context: Context,
     savedState: SavedStateHandle,
 ) : ViewModel() {
@@ -391,8 +391,8 @@ class WooPosCartViewModel @Inject constructor(
 
     private fun trackBarcodeScanned(barcode: String, metadata: BarcodeInputDetector.ScanMetadata) {
         viewModelScope.launch {
-            val connectedScanners = scannerDetectionUtil.detectConnectedScanners(context)
-            val scannerInfo = scannerDetectionUtil.getScannerInfoString(connectedScanners)
+            val connectedScanner = scannerDetectionUtil.detectConnectedScanner(context)
+            val scannerInfo = scannerDetectionUtil.getScannerInfoString(connectedScanner)
 
             val isNumericOnly = barcode.all { it.isDigit() }
 

@@ -12,36 +12,39 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class ScannerDetectionUtil @Inject constructor(
+class WooPosScannerDetectionUtil @Inject constructor(
     private val context: Context,
     private val wooPosLogWrapper: WooPosLogWrapper,
 ) {
+    companion object {
+        private const val PERIPHERAL_CLASS = 0x500
+        private const val KEYBOARD_CLASS = 0x540
+        private const val HID_CLASS = 0x580
+    }
 
-    fun detectConnectedScanners(context: Context): List<ScannerInfo> {
-        val scanners = mutableListOf<ScannerInfo>()
+    fun detectConnectedScanner(context: Context): ScannerInfo? {
+        val bluetoothScanner = detectBluetoothScanner()
+        if (bluetoothScanner != null) {
+            return bluetoothScanner
+        }
 
-        scanners.addAll(detectBluetoothScanners())
-        scanners.addAll(detectUsbHidScanners(context))
-
-        return scanners
+        return detectUsbHidScanner(context)
     }
 
     @SuppressLint("MissingPermission")
-    private fun detectBluetoothScanners(): List<ScannerInfo> {
-        val scanners = mutableListOf<ScannerInfo>()
-
+    private fun detectBluetoothScanner(): ScannerInfo? {
         try {
             val bluetoothAdapter = (context.getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager)?.adapter
             bluetoothAdapter?.takeIf { it.isEnabled }?.bondedDevices?.forEach { device ->
                 if (isPotentialBarcodeScanner(device)) {
-                    scanners.add(createBluetoothScannerInfo(device))
+                    return createBluetoothScannerInfo(device)
                 }
             }
         } catch (e: Exception) {
             wooPosLogWrapper.e("Bluetooth permission not granted. Cannot detect Bluetooth scanners.", e)
         }
 
-        return scanners
+        return null
     }
 
     @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
@@ -49,13 +52,10 @@ class ScannerDetectionUtil @Inject constructor(
         return ScannerInfo(
             name = device.name ?: "Unknown Bluetooth Scanner",
             type = ScannerType.BLUETOOTH,
-            deviceClass = device.bluetoothClass?.deviceClass,
         )
     }
 
-    private fun detectUsbHidScanners(context: Context): List<ScannerInfo> {
-        val scanners = mutableListOf<ScannerInfo>()
-
+    private fun detectUsbHidScanner(context: Context): ScannerInfo? {
         try {
             val inputManager = context.getSystemService(Context.INPUT_SERVICE) as InputManager
             val inputDeviceIds = inputManager.inputDeviceIds
@@ -63,26 +63,34 @@ class ScannerDetectionUtil @Inject constructor(
             inputDeviceIds.forEach { deviceId ->
                 val inputDevice = inputManager.getInputDevice(deviceId)
                 if (inputDevice != null && isPotentialBarcodeScanner(inputDevice)) {
-                    scanners.add(
-                        ScannerInfo(
-                            name = inputDevice.name,
-                            type = ScannerType.USB_HID,
-                            vendorId = inputDevice.vendorId,
-                        )
+                    return ScannerInfo(
+                        name = inputDevice.name,
+                        type = ScannerType.USB_HID,
                     )
                 }
             }
         } catch (e: Exception) {
-            // Handle any exceptions during device detection - this is expected
+            wooPosLogWrapper.e("Error detecting USB HID scanners: ${e.message}", e)
         }
 
-        return scanners
+        return null
     }
 
+    @Suppress("ReturnCount")
     @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
     private fun isPotentialBarcodeScanner(device: BluetoothDevice): Boolean {
         val deviceName = device.name?.lowercase() ?: return false
-        return isScannerByName(deviceName)
+
+        if (isScannerByName(deviceName)) {
+            return true
+        }
+
+        val deviceClass = device.bluetoothClass?.deviceClass
+        if (deviceClass != null && isScannerByDeviceClass(deviceClass)) {
+            return true
+        }
+
+        return isScannerByBluetoothProfile(device)
     }
 
     @Suppress("ComplexCondition")
@@ -99,18 +107,37 @@ class ScannerDetectionUtil @Inject constructor(
 
     private fun isScannerByName(deviceName: String): Boolean {
         return deviceName.contains("scanner", ignoreCase = true) ||
+            deviceName.contains("barcode", ignoreCase = true) ||
             deviceName.contains("zebra", ignoreCase = true) ||
             deviceName.contains("honeywell", ignoreCase = true) ||
             deviceName.contains("symbol", ignoreCase = true) ||
-            deviceName.contains("datalogic", ignoreCase = true)
+            deviceName.contains("datalogic", ignoreCase = true) ||
+            deviceName.contains("newland", ignoreCase = true) ||
+            deviceName.contains("inateck", ignoreCase = true) ||
+            deviceName.matches(Regex("^[a-z]{2,3}\\d{6,}$")) // e.g., "bsh209900679"
     }
 
-    fun getScannerInfoString(scanners: List<ScannerInfo>): String {
-        if (scanners.isEmpty()) return "no_scanner_detected"
+    private fun isScannerByDeviceClass(deviceClass: Int): Boolean {
+        return deviceClass == PERIPHERAL_CLASS ||
+            deviceClass == KEYBOARD_CLASS ||
+            deviceClass == HID_CLASS
+    }
 
-        return scanners.joinToString(separator = ";") { scanner ->
-            "${scanner.name}-(${scanner.type})-${scanner.deviceClass ?: "N/A"}-${scanner.vendorId ?: "N/A"}"
+    @Suppress("TooGenericExceptionCaught")
+    @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
+    private fun isScannerByBluetoothProfile(device: BluetoothDevice): Boolean {
+        return try {
+            device.uuids?.any { it.uuid.toString().contains("1124", ignoreCase = true) } == true
+        } catch (e: Exception) {
+            wooPosLogWrapper.e("Error checking Bluetooth profiles for device ${device.name}: ${e.message}", e)
+            false
         }
+    }
+
+    fun getScannerInfoString(scanner: ScannerInfo?): String {
+        if (scanner == null) return "no_scanner_detected"
+
+        return "${scanner.name}-(${scanner.type})"
     }
 }
 
@@ -118,7 +145,6 @@ data class ScannerInfo(
     val name: String,
     val type: ScannerType,
     val deviceClass: Int? = null,
-    val vendorId: Int? = null,
 )
 
 enum class ScannerType {
