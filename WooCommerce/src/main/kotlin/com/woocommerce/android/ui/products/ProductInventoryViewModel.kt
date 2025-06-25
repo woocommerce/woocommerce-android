@@ -181,9 +181,7 @@ class ProductInventoryViewModel @Inject constructor(
         viewState.globalUniqueIdErrorMessage != null
 
     private fun isOnlyNumbersAndHyphensOrEmpty(input: String): Boolean {
-        // Define the regex pattern to match only numbers and hyphens
         val pattern = "^[0-9-]+$"
-        // Check if the input string matches the pattern
         return input.isEmpty() || input.matches(pattern.toRegex())
     }
 
