@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.wooshippinglabels
 
 import android.os.Parcelable
 import androidx.annotation.StringRes
+import androidx.annotation.VisibleForTesting
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -9,6 +10,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.WooException
 import com.woocommerce.android.extensions.combine
 import com.woocommerce.android.extensions.sumByFloat
 import com.woocommerce.android.model.Address
@@ -676,7 +678,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         val customsData = customsFormDataFlow.value[selectedShipmentIndex]?.let { listOf(it) }
 
         launch {
-            val result = purchaseShippingLabel(
+            purchaseShippingLabel(
                 orderId,
                 shippableItemsIdList,
                 selectedPackage,
@@ -688,28 +690,32 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                 lastOrderComplete,
                 customsData,
                 hazmatSelection
+            ).fold(
+                onSuccess = {
+                    handlePurchaseSuccess(it, selectedShipmentIndex)
+                },
+                onFailure = { exception ->
+                    updateShipment(
+                        selectedShipmentIndex,
+                        shipments.value[selectedShipmentIndex].copy(purchaseState = fallbackPurchaseState)
+                    )
+                    if (exception is WooException && exception.error.apiErrorCode == UPSDAP_MISSING_TOS_ERROR_CODE) {
+                        TODO("Handle UPSDAP missing TOS error")
+                    } else {
+                        snackbarData = ShippingLabelsSnackbarData(
+                            message = R.string.woo_shipping_labels_purchase_error,
+                            actionLabel = R.string.retry,
+                        ) { onPurchaseShippingLabel() }
+                    }
+                }
             )
-
-            if (result.isSuccess) {
-                handlePurchaseSuccess(result, selectedShipmentIndex)
-            } else {
-                updateShipment(
-                    selectedShipmentIndex,
-                    shipments.value[selectedShipmentIndex].copy(purchaseState = fallbackPurchaseState)
-                )
-                snackbarData = ShippingLabelsSnackbarData(
-                    message = R.string.woo_shipping_labels_purchase_error,
-                    actionLabel = R.string.retry,
-                ) { onPurchaseShippingLabel() }
-            }
         }
     }
 
-    private fun handlePurchaseSuccess(result: Result<PurchasedLabelData>, shipmentId: Int) {
+    private fun handlePurchaseSuccess(result: PurchasedLabelData, shipmentId: Int) {
         updateShipment(shipmentId, shipments.value[shipmentId].copy(purchaseState = PurchaseState.Success))
-        result.getOrNull()
-            ?.labels
-            ?.firstOrNull()
+        result.labels
+            .firstOrNull()
             ?.let { purchasedLabel ->
                 updateShipment(shipmentId, shipments.value[shipmentId].copy(purchased = true, label = purchasedLabel))
                 observeShippingLabelPurchaseStatus(shipmentId)
@@ -1082,6 +1088,8 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         private const val NOTIFICATIONS_DELAY = 2_000L
         private const val TYPING_DELAY = 800L
         private const val MULTIPLE_CALLS_DELAY = 50L
+        @VisibleForTesting
+        const val UPSDAP_MISSING_TOS_ERROR_CODE = "missing_upsdap_terms_of_service_acceptance"
     }
 }
 
