@@ -630,7 +630,6 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
     @Suppress("ComplexCondition")
     fun onPurchaseShippingLabel() {
-        val selectedShipmentIndex = selectedShipmentIndex
         val selectedPackage = selectedPackagesFlow.value[selectedShipmentIndex]
         val addresses = shippingAddresses.value
         val shippingRate = selectedRatesFlow.value[selectedShipmentIndex]?.selectedOption?.rate
@@ -656,6 +655,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                 orderId,
                 shippableItemsIdList,
                 selectedPackage,
+                selectedShipmentIndex,
                 addresses.shipTo.address,
                 addresses.shipFrom,
                 shippingRate,
