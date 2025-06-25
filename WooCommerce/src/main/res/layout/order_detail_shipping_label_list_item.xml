@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/Woo.Card"
@@ -34,10 +33,10 @@
                 style="@style/Woo.ImageButton.More"
                 android:contentDescription="@string/orderdetail_shipping_label_item_menu"
                 android:scaleType="centerInside"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                android:visibility="gone"
                 tools:visibility="visible" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -51,6 +50,7 @@
             android:contentDescription="@string/orderdetail_shipping_label_item_show_shipping"
             android:focusable="true"
             android:orientation="horizontal">
+
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/shippingLabelList_countButtonTitle"
                 style="@style/Woo.Button.TextButton.Expander"
@@ -62,12 +62,13 @@
                 android:importantForAccessibility="no"
                 android:paddingStart="@dimen/major_100"
                 android:paddingEnd="@dimen/major_100"
-                tools:text="@string/shipping_label_items_count_placeholder"
                 android:textAlignment="textStart"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/shippingLabelList_countButtonImage"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="@string/shipping_label_items_count_placeholder" />
+
             <ImageView
                 android:id="@+id/shippingLabelList_countButtonImage"
                 android:layout_width="@dimen/min_tap_target"
@@ -78,10 +79,10 @@
                 android:importantForAccessibility="no"
                 android:padding="@dimen/minor_100"
                 android:src="@drawable/ic_arrow_down"
-                app:tint="@color/color_on_surface_disabled"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="@color/color_on_surface_disabled" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!-- Product List -->
@@ -90,9 +91,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:nestedScrollingEnabled="false"
+            android:visibility="gone"
             tools:itemCount="3"
             tools:listitem="@layout/order_detail_product_list_item"
-            android:visibility="gone"
             tools:visibility="visible" />
 
         <!-- Print shipping label -->
@@ -101,11 +102,11 @@
             style="@style/Woo.Button.Outlined"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/orderdetail_shipping_label_print"
-            android:layout_marginTop="@dimen/minor_100"
-            android:layout_marginBottom="@dimen/minor_100"
             android:layout_marginStart="@dimen/major_125"
+            android:layout_marginTop="@dimen/minor_100"
             android:layout_marginEnd="@dimen/major_125"
+            android:layout_marginBottom="@dimen/minor_100"
+            android:text="@string/orderdetail_shipping_label_print"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
