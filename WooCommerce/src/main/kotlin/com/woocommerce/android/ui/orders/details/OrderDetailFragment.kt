@@ -84,6 +84,7 @@ import com.woocommerce.android.ui.orders.notes.AddOrderNoteFragment
 import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelFragment
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRefundFragment
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragment
+import com.woocommerce.android.ui.orders.wooshippinglabels.refund.WooShippingLabelRefundFragment
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentDialogFragment
 import com.woocommerce.android.ui.payments.refunds.RefundSummaryFragment
 import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel
@@ -604,6 +605,9 @@ class OrderDetailFragment :
         }
         handleResult<OrderNote>(AddOrderNoteFragment.KEY_ADD_NOTE_RESULT) {
             viewModel.onNewOrderNoteAdded(it)
+        }
+        handleResult<Long>(WooShippingLabelRefundFragment.KEY_REFUND_SHIPPING_LABEL_RESULT) {
+            viewModel.onShippingLabelRefunded()
         }
         handleResult<Boolean>(ShippingLabelRefundFragment.KEY_REFUND_SHIPPING_LABEL_RESULT) {
             viewModel.onShippingLabelRefunded()
