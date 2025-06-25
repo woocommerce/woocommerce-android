@@ -12,7 +12,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.shippinglabels.Shipping
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.shippinglabels.ShippingLabelStatusApiResponse
 
 object WCShippingLabelTestUtils {
-    private fun generateSampleShippingLabel(
+    fun generateSampleShippingLabel(
         remoteId: Long,
         orderId: Long = 12,
         siteId: Int = 6,
