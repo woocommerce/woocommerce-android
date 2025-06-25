@@ -34,6 +34,10 @@ class ProductInventoryViewModel @Inject constructor(
     private val navArgs: ProductInventoryFragmentArgs by savedState.navArgs()
     private val isProduct = navArgs.requestCode == RequestCodes.PRODUCT_DETAIL_INVENTORY
 
+    private var _lastClickedBarcodeButton: Int? = null
+    val lastClickedBarcodeButton: Int?
+        get() = _lastClickedBarcodeButton
+
     /**
      * Saving more data than necessary into the SavedState has associated risks which were not known at the time this
      * field was implemented - after we ensure we don't save unnecessary data, we can replace @Suppress("OPT_IN_USAGE")
@@ -71,6 +75,9 @@ class ProductInventoryViewModel @Inject constructor(
      * in the local db. Only if it is not available, the API verification call is initiated.
      */
     fun onSkuChanged(sku: String) {
+        if (sku == viewState.inventoryData.sku) {
+            return
+        }
         // verify if the sku exists only if the text entered by the user does not match the sku stored locally
         if (sku.length > 2) {
             onDataChanged(sku = sku)
@@ -105,6 +112,9 @@ class ProductInventoryViewModel @Inject constructor(
     }
 
     fun onProductUniqueGlobalIdChanged(globalUniqueId: String) {
+        if (globalUniqueId == viewState.inventoryData.globalUniqueId) {
+            return
+        }
         onDataChanged(globalUniqueId = globalUniqueId)
 
         if (isOnlyNumbersAndHyphens(globalUniqueId)) {
@@ -147,6 +157,10 @@ class ProductInventoryViewModel @Inject constructor(
         } else {
             triggerEvent(Exit)
         }
+    }
+
+    fun updateLastClickedBarcodeButton(buttonId: Int?) {
+        _lastClickedBarcodeButton = buttonId
     }
 
     private fun trackGlobalUniqueIdChangeIfNecessary() {

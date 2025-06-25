@@ -723,6 +723,9 @@
         <action
             android:id="@+id/action_wooShippingLabelCreationFragment_to_wooShippingLabelRefundRequestFragment"
             app:destination="@id/wooShippingLabelRefundRequestFragment" />
+        <action
+            android:id="@+id/action_wooShippingLabelCreationFragment_to_wooShippingEditPaymentDialogFragment"
+            app:destination="@id/wooShippingEditPaymentDialogFragment" />
     </fragment>
     <fragment
         android:id="@+id/wooShippingLabelPackageCreationFragment"
@@ -802,4 +805,8 @@
             android:name="labelId"
             app:argType="long" />
     </fragment>
+    <dialog
+        android:id="@+id/wooShippingEditPaymentDialogFragment"
+        android:name="com.woocommerce.android.ui.orders.wooshippinglabels.payment.WooShippingEditPaymentDialogFragment"
+        android:label="WooShippingEditPaymentDialogFragment" />
 </navigation>

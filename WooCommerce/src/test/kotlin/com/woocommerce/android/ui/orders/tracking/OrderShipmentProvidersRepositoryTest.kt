@@ -1,104 +1,118 @@
 package com.woocommerce.android.ui.orders.tracking
 
-import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
+import com.woocommerce.android.ui.orders.tracking.OrderShipmentProvidersRepository.OrderNotFoundException
+import com.woocommerce.android.ui.orders.tracking.OrderShipmentProvidersRepository.OrderShipmentProvidersFetchException
+import com.woocommerce.android.ui.orders.tracking.OrderShipmentProvidersRepository.OrderShipmentProvidersFetchResult.CarriersFetched
+import com.woocommerce.android.ui.orders.tracking.OrderShipmentProvidersRepository.OrderShipmentProvidersFetchResult.NoCarriersFound
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderShipmentProvidersChanged
+import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
 
 @ExperimentalCoroutinesApi
 class OrderShipmentProvidersRepositoryTest : BaseUnitTest() {
-    companion object {
-        private const val ORDER_ID = 1L
+    private companion object Companion {
+        const val ORDER_ID = 1L
+
+        val testSite = SiteModel()
+        val testOrder = OrderTestUtils.generateOrder()
+        val testProviders = OrderTestUtils.generateOrderShipmentProviders()
     }
 
-    private val orderStore: WCOrderStore = mock()
-    private val selectedSite: SelectedSite = mock()
-    private val siteModel = SiteModel()
-    private val order = OrderTestUtils.generateOrder()
-    private val providers = OrderTestUtils.generateOrderShipmentProviders()
-
-    private lateinit var repository: OrderShipmentProvidersRepository
+    private lateinit var sut: OrderShipmentProvidersRepository
+    private lateinit var orderStore: WCOrderStore
+    private lateinit var selectedSite: SelectedSite
 
     @Before
-    fun setup() = testBlocking {
-        repository = OrderShipmentProvidersRepository(selectedSite, orderStore)
-        whenever(selectedSite.get()).thenReturn(siteModel)
-        whenever(orderStore.getOrderByIdAndSite(ORDER_ID, siteModel)).thenReturn(order)
+    fun setup() {
+        // Create mocks with minimal configuration
+        orderStore = mock()
+        selectedSite = mock { on { get() } doReturn testSite }
+
+        // Initialize repository with mocks
+        sut = OrderShipmentProvidersRepository(selectedSite, orderStore)
     }
 
     @Test
-    fun `Given data in local db, when fetch shipment providers invoked, then cached data returned`() = testBlocking {
-        // When there are shipment providers in local db
-        doReturn(providers).whenever(orderStore).getShipmentProvidersForSite(siteModel)
+    fun `fetching shipment providers returns OrderNotFoundException when order is not found`() = runTest {
+        // Given
+        doReturn(null)
+            .whenever(orderStore)
+            .getOrderByIdAndSite(ORDER_ID, testSite)
 
-        val result = repository.fetchOrderShipmentProviders(ORDER_ID)
+        // When
+        val result = sut.fetchOrderShipmentProviders(ORDER_ID)
 
-        // Then should return the local db shipment providers
-        assertThat(result).isNotEmpty
-        verify(orderStore, times(1)).getShipmentProvidersForSite(siteModel)
-        // And won't fetch shipment providers from the network
-        verify(orderStore, times(0)).fetchOrderShipmentProviders(any())
-        assertThat(providers.map { it.toAppModel() }).isEqualTo(result)
+        // Then
+        assertThat(result.exceptionOrNull())
+            .isInstanceOf(OrderNotFoundException::class.java)
     }
 
     @Test
-    fun `If NO data in local db, data is fetched from the network and loaded from the db`() = testBlocking {
-        // When there are NO shipment providers in local db
-        whenever(orderStore.getShipmentProvidersForSite(siteModel)).thenReturn(emptyList(), providers)
+    fun `fetching shipment providers returns CarriersFetched when providers found`() = runTest {
+        // Given
+        doReturn(testOrder)
+            .whenever(orderStore)
+            .getOrderByIdAndSite(ORDER_ID, testSite)
+        doReturn(OnOrderShipmentProvidersChanged(testProviders.size))
+            .whenever(orderStore)
+            .fetchOrderShipmentProviders(any())
 
-        // Then should fetch shipment providers from the network
-        val onChanged = WCOrderStore.OnOrderShipmentProvidersChanged(providers.size)
-        whenever(orderStore.fetchOrderShipmentProviders(any())).thenReturn(onChanged)
+        // When
+        val result = sut.fetchOrderShipmentProviders(ORDER_ID)
 
-        val result = repository.fetchOrderShipmentProviders(ORDER_ID)
-
-        // And return the updated shipment providers from the local db
-        verify(orderStore, times(1)).fetchOrderShipmentProviders(any())
-        verify(orderStore, times(2)).getShipmentProvidersForSite(siteModel)
-        assertThat(providers.map { it.toAppModel() }).isEqualTo(result)
+        // Then
+        assertThat(result.getOrNull()).isEqualTo(CarriersFetched)
     }
 
     @Test
-    fun `If there are NO rows affected, an empty list is returned`() = testBlocking {
-        // When there are NO rows affected
-        whenever(orderStore.getShipmentProvidersForSite(siteModel)).thenReturn(emptyList())
+    fun `fetching shipment providers returns NoCarriersFound when no providers found`() = runTest {
+        // Given
+        doReturn(testOrder)
+            .whenever(orderStore)
+            .getOrderByIdAndSite(ORDER_ID, testSite)
+        doReturn(OnOrderShipmentProvidersChanged(0))
+            .whenever(orderStore)
+            .fetchOrderShipmentProviders(any())
 
-        val onChanged = WCOrderStore.OnOrderShipmentProvidersChanged(0)
-        whenever(orderStore.fetchOrderShipmentProviders(any())).thenReturn(onChanged)
+        // When
+        val result = sut.fetchOrderShipmentProviders(ORDER_ID)
 
-        val result = repository.fetchOrderShipmentProviders(ORDER_ID)
-
-        // Then return an empty list
-        verify(orderStore, times(1)).fetchOrderShipmentProviders(any())
-        assertThat(result).isEmpty()
+        // Then
+        assertThat(result.getOrNull()).isEqualTo(NoCarriersFound)
     }
 
     @Test
-    fun `If an error occurs, a null result is returned`() = testBlocking {
-        // When something goes wrong
-        whenever(orderStore.getShipmentProvidersForSite(siteModel)).thenReturn(emptyList())
-
-        val onChanged = WCOrderStore.OnOrderShipmentProvidersChanged(0).also {
-            it.error = WCOrderStore.OrderError(message = "Something goes wrong")
+    fun `fetchOrderShipmentProviders returns exception when error occurs`() = testBlocking {
+        // Given
+        doReturn(testOrder)
+            .whenever(orderStore)
+            .getOrderByIdAndSite(ORDER_ID, testSite)
+        val errorEvent = OnOrderShipmentProvidersChanged(0).apply {
+            error = OrderError(message = "Network error")
         }
-        whenever(orderStore.fetchOrderShipmentProviders(any())).thenReturn(onChanged)
+        doReturn(errorEvent)
+            .whenever(orderStore)
+            .fetchOrderShipmentProviders(any())
 
-        val result = repository.fetchOrderShipmentProviders(ORDER_ID)
+        // When
+        val result = sut.fetchOrderShipmentProviders(ORDER_ID)
 
-        // Then return null
-        verify(orderStore, times(1)).fetchOrderShipmentProviders(any())
-        assertThat(result).isNull()
+        // Then
+        assertThat(result.exceptionOrNull())
+            .isInstanceOf(OrderShipmentProvidersFetchException::class.java)
+            .hasMessage("Error fetching order shipment providers: Network error")
     }
 }

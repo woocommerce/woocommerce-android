@@ -1246,12 +1246,12 @@ class OrderRestClient @Inject constructor(
             .forEach { countryEntry: MutableEntry<String, JsonElement> ->
                 countryEntry.value.asJsonObject.entrySet().map { carrierEntry ->
                     carrierEntry?.let { carrier ->
-                        val provider = WCOrderShipmentProviderModel().apply {
-                            localSiteId = site.id
-                            this.country = countryEntry.key
-                            this.carrierName = carrier.key
-                            this.carrierLink = carrier.value.asString
-                        }
+                        val provider = WCOrderShipmentProviderModel(
+                            localSiteId = site.localId(),
+                            country = countryEntry.key,
+                            carrierName = carrier.key,
+                            carrierLink = carrier.value.asString
+                        )
                         providers.add(provider)
                     }
                 }

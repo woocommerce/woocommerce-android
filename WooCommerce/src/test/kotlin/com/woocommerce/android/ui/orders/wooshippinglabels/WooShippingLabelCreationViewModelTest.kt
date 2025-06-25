@@ -140,8 +140,14 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         ),
         paymentMethodOptions = PaymentMethodOptions(
             selectedPaymentId = null,
-            paymentMethods = emptyList()
-        )
+            paymentMethods = emptyList(),
+            addPaymentMethodUrl = "https://example.com/add-payment-method",
+            emailReceipts = false
+        ),
+        canManagePayments = false,
+        canEditSettings = true,
+        storeOwnerName = "",
+        storeOwnerUsername = ""
     )
 
     private val defaultPackageData = PackageData(
@@ -212,7 +218,8 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         mainReceiptId = 0L,
         rate = BigDecimal.ZERO,
         currency = "",
-        expiryDate = 0L
+        expiryDate = 0L,
+        usedDate = 0L
     )
 
     private val defaultShippingRates = mapOf(
@@ -1104,7 +1111,9 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
                         cardDigits = "1234",
                         expiry = "12/25"
                     )
-                )
+                ),
+                addPaymentMethodUrl = "https://example.com/add-payment-method",
+                emailReceipts = false
             )
         )
         given(observeAccountSettings()).willReturn(flowOf(accountSettings))
@@ -1123,7 +1132,9 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         val accountSettings = defaultAccountSettings.copy(
             paymentMethodOptions = PaymentMethodOptions(
                 selectedPaymentId = null,
-                paymentMethods = emptyList()
+                paymentMethods = emptyList(),
+                addPaymentMethodUrl = "https://example.com/add-payment-method",
+                emailReceipts = false
             )
         )
         given(observeAccountSettings()).willReturn(flowOf(accountSettings))

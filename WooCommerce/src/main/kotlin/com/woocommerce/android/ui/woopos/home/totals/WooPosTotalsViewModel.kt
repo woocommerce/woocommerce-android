@@ -15,11 +15,12 @@ import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardRea
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState.CardReaderPaymentState
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
+import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToCashPayment
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToEmailReceipt
-import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NewTransactionClicked
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OnNewTransactionStarted
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OrderCreated.CouponInfo
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OrderSuccessfullyPaidByCard
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.ToastMessageDisplayed
@@ -34,8 +35,6 @@ import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState.Total
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.UiStringParser
-import com.woocommerce.android.util.WooLog.T.POS
-import com.woocommerce.android.util.WooLogWrapper
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -62,7 +61,7 @@ class WooPosTotalsViewModel @Inject constructor(
     private val cardReaderPaymentControllerFactory: WooPosCardReaderPaymentControllerFactory,
     private val uiStringParser: UiStringParser,
     private val totalsAnalyticsTracker: WooPosTotalsAnalyticsTracker,
-    private val wooLogWrapper: WooLogWrapper,
+    private val wooPosLogWrapper: WooPosLogWrapper,
     savedState: SavedStateHandle,
 ) : ViewModel() {
 
@@ -149,7 +148,7 @@ class WooPosTotalsViewModel @Inject constructor(
     fun onUIEvent(event: WooPosTotalsUIEvent) {
         when (event) {
             is WooPosTotalsUIEvent.OnNewTransactionClicked -> viewModelScope.launch {
-                childrenToParentEventSender.sendToParent(NewTransactionClicked)
+                childrenToParentEventSender.sendToParent(OnNewTransactionStarted)
                 totalsAnalyticsTracker.trackCreateNewOrderTapped()
             }
 
@@ -469,7 +468,7 @@ class WooPosTotalsViewModel @Inject constructor(
     }
 
     private suspend fun onCreateOrderDraftFails(exception: Throwable) {
-        wooLogWrapper.e(POS, "Order creation failed - $exception")
+        wooPosLogWrapper.e("Order creation failed - $exception")
         val wooError = (exception as? WooException)?.error
         if (wooError != null && wooError.type == WooErrorType.INVALID_COUPON) {
             uiState.value = WooPosTotalsViewState.InvalidCouponError(
@@ -547,14 +546,14 @@ class WooPosTotalsViewModel @Inject constructor(
                         discountAmount = BigDecimal(it.discount)
                     )
                 } catch (e: NumberFormatException) {
-                    wooLogWrapper.e(
-                        POS, "Parsing coupon failed, discount: ${it.discount}, code: ${it.code}, id: ${it.id}, $e"
+                    wooPosLogWrapper.e(
+                        "Parsing coupon failed, discount: ${it.discount}, code: ${it.code}, id: ${it.id}, $e"
                     )
                     null
                 }
             } ?: null.also {
-                wooLogWrapper.e(
-                    POS, "Coupon info is null or empty: ${coupon.code}, coupon id: ${coupon.id}"
+                wooPosLogWrapper.e(
+                    "Coupon info is null or empty: ${coupon.code}, coupon id: ${coupon.id}"
                 )
             }
         }

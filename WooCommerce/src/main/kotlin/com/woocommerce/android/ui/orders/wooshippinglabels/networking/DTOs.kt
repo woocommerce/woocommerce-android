@@ -16,7 +16,7 @@ import java.math.BigDecimal
 data class AccountSettingsDTO(
     val storeOptions: StoreOptionsDTO,
     val formData: FormDataDTO,
-    val formMeta: FormMetaDTO,
+    val formMeta: FormMetaDTO
 )
 
 data class StoreOptionsDTO(
@@ -28,10 +28,16 @@ data class StoreOptionsDTO(
 
 data class FormDataDTO(
     @SerializedName("selected_payment_method_id") val selectedPaymentId: Int?,
+    @SerializedName("email_receipts") val emailReceipts: Boolean = false
 )
 
 data class FormMetaDTO(
-    @SerializedName("payment_methods") val paymentMethods: List<PaymentMethodDTO>
+    @SerializedName("payment_methods") val paymentMethods: List<PaymentMethodDTO>,
+    @SerializedName("add_payment_method_url") val addPaymentMethodUrl: String,
+    @SerializedName("can_manage_payments") val canManagePayments: Boolean = false,
+    @SerializedName("can_edit_settings") val canEditSettings: Boolean = true,
+    @SerializedName("master_user_name") val masterUserName: String = "",
+    @SerializedName("master_user_wpcom_login") val masterUserWpcomLogin: String = ""
 )
 
 data class PaymentMethodDTO(
@@ -109,6 +115,7 @@ data class ShippingLabelDTO(
     @SerializedName("rate") val rate: BigDecimal? = null,
     @SerializedName("currency") val currency: String? = null,
     @SerializedName("expiry_date") val expiryDate: Long? = null,
+    @SerializedName("used_date") val usedDate: Long? = null,
     @SerializedName("refund") val refund: LabelRefund? = null
 )
 

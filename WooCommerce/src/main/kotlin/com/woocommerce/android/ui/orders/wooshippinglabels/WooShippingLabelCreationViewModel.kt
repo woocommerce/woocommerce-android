@@ -797,6 +797,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         snackbarData = ShippingLabelsSnackbarData(
             message = snackbarMessage,
             actionLabel = R.string.undo,
+            hasIcon = true,
             dismissAction = { snackbarData = null }
         ) {
             hazmatStatesFlow.value = previousStates
@@ -852,7 +853,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     }
 
     fun onEditPaymentMethodClicked() {
-        println("TODO: Implement payment method editing")
+        triggerEvent(NavigateToPaymentMethodEdit)
     }
 
     fun allowBackNavigation(): Boolean {
@@ -1031,6 +1032,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     data class OpenUrl(val url: String) : Event()
     data class ShowError(val errorResId: Int) : Event()
     data class NavigateToRefundRequest(val orderId: Long, val labelId: Long) : Event()
+    data object NavigateToPaymentMethodEdit : Event()
 
     object OpenLearnMoreScreen : Event()
 

@@ -46,7 +46,6 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.VerticalDivider
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingAddresses
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
-import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.shippingSelectedBackgroundColor
 
 @Composable
 @Suppress("DestructuringDeclarationWithTooManyEntries")
@@ -388,7 +387,7 @@ fun OriginAddressSelectionItem(
 
     val backgroundColor = if (isSelected) {
         animateColorAsState(
-            targetValue = MaterialTheme.colors.shippingSelectedBackgroundColor,
+            targetValue = colorResource(R.color.woo_item_selected),
             label = "colorAnimation"
         )
     } else {

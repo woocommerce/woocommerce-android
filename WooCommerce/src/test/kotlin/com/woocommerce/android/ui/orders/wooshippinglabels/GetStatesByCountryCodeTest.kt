@@ -30,14 +30,8 @@ class GetStatesByCountryCodeTest : BaseUnitTest() {
     @Test
     fun `when there are states then return the expected list`() = testBlocking {
         val states = listOf(
-            WCLocationModel(1).also {
-                it.code = "CA"
-                it.name = "California"
-            },
-            WCLocationModel(2).also {
-                it.code = "FL"
-                it.name = "Florida"
-            }
+            WCLocationModel(code = "CA", name = "California"),
+            WCLocationModel(code = "FL", name = "Florida"),
         )
         whenever(dataStore.getStates(any())).doReturn(states)
 

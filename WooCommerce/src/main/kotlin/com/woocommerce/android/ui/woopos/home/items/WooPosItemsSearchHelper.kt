@@ -61,6 +61,7 @@ class WooPosItemsSearchHelper @Inject constructor(
                     }
 
                     is ParentToChildrenEvent.BackFromCheckoutToCartClicked -> Unit
+                    is ParentToChildrenEvent.BarcodeScanned -> Unit
                     is ParentToChildrenEvent.ItemClickedInItemsList -> Unit
                     is ParentToChildrenEvent.CheckoutClicked -> Unit
                     is ParentToChildrenEvent.SearchEvent.ChangedQuery -> Unit
@@ -68,7 +69,6 @@ class WooPosItemsSearchHelper @Inject constructor(
                     is ParentToChildrenEvent.CouponsRemoved -> Unit
                     is ParentToChildrenEvent.RemoveCouponsClicked -> Unit
                     is ParentToChildrenEvent.CouponsValidationFailed -> Unit
-                    is ParentToChildrenEvent.BarcodeScanned -> Unit
                 }
             }
         }

@@ -36,8 +36,14 @@ class FetchAccountSettingsTests : BaseUnitTest() {
         ),
         paymentMethodOptions = PaymentMethodOptions(
             selectedPaymentId = null,
-            paymentMethods = emptyList()
-        )
+            paymentMethods = emptyList(),
+            addPaymentMethodUrl = "https://example.com/add-payment-method",
+            emailReceipts = false
+        ),
+        canManagePayments = false,
+        canEditSettings = true,
+        storeOwnerName = "",
+        storeOwnerUsername = ""
     )
 
     val sut = FetchAccountSettings(

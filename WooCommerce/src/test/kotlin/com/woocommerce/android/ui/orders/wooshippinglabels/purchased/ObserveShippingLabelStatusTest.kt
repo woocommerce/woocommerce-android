@@ -53,7 +53,8 @@ class ObserveShippingLabelStatusTest : BaseUnitTest() {
         mainReceiptId = 0L,
         rate = BigDecimal.ZERO,
         currency = "",
-        expiryDate = 0L
+        expiryDate = 0L,
+        usedDate = null
     )
 
     @Before
