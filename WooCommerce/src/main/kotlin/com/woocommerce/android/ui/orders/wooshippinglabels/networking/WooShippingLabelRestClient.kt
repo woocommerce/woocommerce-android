@@ -79,6 +79,7 @@ class WooShippingLabelRestClient @Inject constructor(
                     message = "Something went wrong"
                 )
             )
+
             else -> WooPayload(Unit)
         }
     }
@@ -275,5 +276,40 @@ class WooShippingLabelRestClient @Inject constructor(
             path = url,
             clazz = RefundLabelResponseDTO::class.java,
         ).toWooPayload()
+    }
+
+    suspend fun updateUPSDAPAgreement(
+        site: SiteModel,
+        originAddress: OriginAddressPurchaseDTO,
+        agreementAccepted: Boolean
+    ): WooPayload<Unit> {
+        val url = "/wcshipping/v1/carrier-strategy/upsdap"
+
+        val result = wooNetwork.executePostGsonRequest(
+            site = site,
+            path = url,
+            body = mapOf(
+                "origin" to mapOf(
+                    "address" to originAddress.address,
+                    "address_2" to originAddress.address2,
+                    "city" to originAddress.city,
+                    "company" to originAddress.company,
+                    "country" to originAddress.country,
+                    "name" to originAddress.name,
+                    "phone" to originAddress.phone,
+                    "postcode" to originAddress.postcode,
+                    "state" to originAddress.state,
+                    "email" to originAddress.email
+                ),
+                "confirmed" to agreementAccepted
+            ),
+            clazz = JsonObject::class.java,
+        )
+
+        return if (result is WPAPIResponse.Error) {
+            WooPayload(error = result.error.toWooError())
+        } else {
+            WooPayload(Unit)
+        }
     }
 }
