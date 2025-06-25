@@ -76,7 +76,7 @@ class ProductInventoryViewModel @Inject constructor(
         }
         onDataChanged(sku = sku)
         skuVerificationJob?.cancel()
-        if (sku.length > 0) {
+        if (sku.isNotEmpty()) {
             if (sku == originalSku) {
                 clearSkuError()
             } else {
@@ -109,7 +109,7 @@ class ProductInventoryViewModel @Inject constructor(
         }
         onDataChanged(globalUniqueId = globalUniqueId)
 
-        if (isOnlyNumbersAndHyphens(globalUniqueId)) {
+        if (isOnlyNumbersAndHyphensOrEmpty(globalUniqueId)) {
             clearGlobalUniqueIdError()
         } else {
             showGlobalUniqueIdError()
@@ -180,7 +180,7 @@ class ProductInventoryViewModel @Inject constructor(
     private fun hasGlobalUniqueIdError() = viewState.globalUniqueIdErrorMessage != 0 &&
         viewState.globalUniqueIdErrorMessage != null
 
-    private fun isOnlyNumbersAndHyphens(input: String): Boolean {
+    private fun isOnlyNumbersAndHyphensOrEmpty(input: String): Boolean {
         // Define the regex pattern to match only numbers and hyphens
         val pattern = "^[0-9-]+$"
         // Check if the input string matches the pattern
