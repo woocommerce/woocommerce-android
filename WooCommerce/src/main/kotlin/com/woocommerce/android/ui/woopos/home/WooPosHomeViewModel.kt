@@ -123,7 +123,7 @@ class WooPosHomeViewModel @Inject constructor(
             }
 
             is WooPosHomeUIEvent.OnBarcodeScanned -> {
-                sendEventToChildren(ParentToChildrenEvent.BarcodeScanned(event.barcode))
+                sendEventToChildren(ParentToChildrenEvent.BarcodeScanned(event.barcode, event.metadata))
             }
         }
     }

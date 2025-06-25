@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.home.cart
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -9,11 +10,13 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
+import com.woocommerce.android.ui.woopos.common.composeui.modifier.BarcodeInputDetector
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetCouponById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetVariationById
 import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosSearchByIdentifier
 import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosSearchByIdentifierResult
+import com.woocommerce.android.ui.woopos.common.util.ScannerDetectionUtil
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.common.util.WooPosSoundHelper
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
@@ -43,6 +46,7 @@ import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicInteger
@@ -65,6 +69,8 @@ class WooPosCartViewModel @Inject constructor(
     private val searchByIdentifier: WooPosSearchByIdentifier,
     private val wooPosLogWrapper: WooPosLogWrapper,
     private val soundHelper: WooPosSoundHelper,
+    private val scannerDetectionUtil: ScannerDetectionUtil,
+    @ApplicationContext private val context: Context,
     savedState: SavedStateHandle,
 ) : ViewModel() {
     private val _state = savedState.getStateFlow(
@@ -126,7 +132,7 @@ class WooPosCartViewModel @Inject constructor(
             }
 
             is WooPosCartUIEvent.OnBarcodeScanned -> {
-                onBarcodeScanned(event.barcode)
+                onBarcodeScanned(event.barcode, event.metadata)
             }
         }
     }
@@ -213,7 +219,7 @@ class WooPosCartViewModel @Inject constructor(
                     }
 
                     is ParentToChildrenEvent.BarcodeScanned -> {
-                        onBarcodeScanned(event.barcode)
+                        onBarcodeScanned(event.barcode, event.metadata)
                     }
                 }
             }
@@ -346,7 +352,9 @@ class WooPosCartViewModel @Inject constructor(
         _state.value = WooPosCartState()
     }
 
-    private fun onBarcodeScanned(barcode: String) {
+    private fun onBarcodeScanned(barcode: String, metadata: BarcodeInputDetector.ScanMetadata) {
+        trackBarcodeScanned(barcode, metadata)
+
         if (_state.value.cartStatus !in listOf(EDITABLE, EMPTY)) {
             return
         }
@@ -378,6 +386,24 @@ class WooPosCartViewModel @Inject constructor(
 
             analyticsTracker.track(WooPosAnalyticsEvent.Event.ItemAddedToCart(item = cartItem))
             updateCartItem(cartItem)
+        }
+    }
+
+    private fun trackBarcodeScanned(barcode: String, metadata: BarcodeInputDetector.ScanMetadata) {
+        viewModelScope.launch {
+            val connectedScanners = scannerDetectionUtil.detectConnectedScanners(context)
+            val scannerInfo = scannerDetectionUtil.getScannerInfoString(connectedScanners)
+
+            val isNumericOnly = barcode.all { it.isDigit() }
+
+            analyticsTracker.track(
+                WooPosAnalyticsEvent.Event.BarcodeScanned(
+                    scanDurationMs = metadata.scanDurationMs,
+                    isNumericOnly = isNumericOnly,
+                    barcodeLength = barcode.length,
+                    scannerInfo = scannerInfo,
+                )
+            )
         }
     }
 
