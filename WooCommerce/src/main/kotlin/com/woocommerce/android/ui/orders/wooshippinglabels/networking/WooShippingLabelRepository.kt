@@ -49,6 +49,26 @@ class WooShippingLabelRepository @Inject constructor(
                 }
         }
 
+    suspend fun updateAccountSettings(
+        site: SiteModel,
+        selectedPaymentMethodId: Long?,
+        emailReceipts: Boolean,
+    ): WooResult<Unit> {
+        return restClient.updateAccountSettings(site, selectedPaymentMethodId, emailReceipts).asWooResult()
+            .also { result ->
+                if (!result.isError) {
+                    accountSettingsDataStore.updateAccountSettings {
+                        it.copy(
+                            paymentMethodOptions = it.paymentMethodOptions.copy(
+                                selectedPaymentId = selectedPaymentMethodId,
+                                emailReceipts = emailReceipts
+                            )
+                        )
+                    }
+                }
+            }
+    }
+
     suspend fun fetchConfig(site: SiteModel, orderId: Long): WooResult<ConfigResponse> =
         restClient.fetchConfig(site, orderId)
             .asWooResult()

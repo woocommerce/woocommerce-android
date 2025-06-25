@@ -65,7 +65,6 @@ class WooPosSearchByIdentifierRemoteTest {
         val result = sut(identifier)
 
         // THEN
-        assertTrue(result.isFailure)
         assertEquals(failureResult, result)
     }
 
@@ -82,7 +81,6 @@ class WooPosSearchByIdentifierRemoteTest {
         val result = sut(identifier)
 
         // THEN
-        assertTrue(result.isFailure)
         assertEquals(networkError, result)
     }
 }

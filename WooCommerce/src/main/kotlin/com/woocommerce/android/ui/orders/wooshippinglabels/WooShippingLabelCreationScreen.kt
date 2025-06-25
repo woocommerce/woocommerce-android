@@ -39,6 +39,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.rememberBottomSheetScaffoldState
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
@@ -78,8 +79,9 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.address.AddressStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.PrintShippingLabelSection
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShipmentTabData
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShipmentsTabRow
+import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShippingLabelsSnackbar
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShippingLabelsSnackbarData
-import com.woocommerce.android.ui.orders.wooshippinglabels.components.SuccessSnackbarHost
+import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShippingLabelsSnackbarVisuals
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.WooShippingLabelPaperSize
 import com.woocommerce.android.ui.orders.wooshippinglabels.hazmat.HazmatCard
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShippingAddress
@@ -367,10 +369,13 @@ private fun LabelCreationScreenWithBottomSheet(
 
     BottomSheetScaffold(
         snackbarHost = {
-            SuccessSnackbarHost(
+            SnackbarHost(
                 snackbarHostState,
                 modifier = Modifier.padding(bottom = snackbarPaddingBottom)
-            )
+            ) { data ->
+                val visuals = data.visuals as ShippingLabelsSnackbarVisuals
+                ShippingLabelsSnackbar(visuals = visuals, action = { data.performAction() })
+            }
         },
         sheetContent = {
             ShipmentDetails(
@@ -497,9 +502,12 @@ private fun LabelCreationScreenWithBottomSheet(
             LaunchedEffect(snackbarData) {
                 snackbarData?.let {
                     val result = snackbarHostState.showSnackbar(
-                        message = actionSnackbarMessage ?: "",
-                        actionLabel = actionSnackbarActionLabel,
-                        duration = snackbarData.duration,
+                        visuals = ShippingLabelsSnackbarVisuals(
+                            message = actionSnackbarMessage.orEmpty(),
+                            actionLabel = actionSnackbarActionLabel,
+                            duration = snackbarData.duration,
+                            hasSuccessCheckmark = it.hasIcon
+                        )
                     )
                     when (result) {
                         SnackbarResult.ActionPerformed -> snackbarData.action()
@@ -536,6 +544,7 @@ private fun CreateShippingCards(
         if (shipmentUI.purchased) {
             PrintShippingLabelSection(
                 status = shipmentUI.status,
+                isRefundAvailable = shipmentUI.isRefundAvailable,
                 selectedLabelPaperSizeOption = uiState.paperSizeOption,
                 onLabelPaperSizeOptionSelected = onLabelPaperSizeOptionSelected,
                 onPrintShippingLabelClicked = onPrintShippingLabelClicked,

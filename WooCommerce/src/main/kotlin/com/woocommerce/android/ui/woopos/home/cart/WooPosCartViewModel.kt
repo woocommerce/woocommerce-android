@@ -608,6 +608,13 @@ class WooPosCartViewModel @Inject constructor(
                             this.error.productName
                         )
                     }
+
+                    is WooPosSearchByIdentifierResult.Error.ServerError -> {
+                        resourceProvider.getString(
+                            R.string.woopos_cart_barcode_scan_result_server_error,
+                            this.error.message
+                        )
+                    }
                 }
                 WooPosCartItemViewState.Error(
                     itemNumber = itemNumber,

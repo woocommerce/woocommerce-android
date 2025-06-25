@@ -224,12 +224,12 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
     private fun observeShippingLabelPurchaseStatus(shipmentId: Int) {
         launch {
-            val labelId = shipments.value[shipmentId].labelId ?: return@launch
+            val shipment = shipments.value[shipmentId]
+            val labelId = shipment.label?.labelId ?: return@launch
             observeShippingLabelStatus(orderId = navArgs.orderId, labelId = labelId).onEach { result ->
-                updateShipment(
-                    shipmentId,
-                    shipments.value[shipmentId].copy(status = result.status)
-                )
+                // If result has a label model update the label with it. Otherwise, just update the status.
+                val newLabel = result.shippingLabelModel ?: shipment.label.copy(status = result.status)
+                updateShipment(shipmentId, shipment.copy(label = newLabel))
             }.launchIn(this)
         }
     }
@@ -569,21 +569,11 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
     fun onShippingLabelRefunded(labelId: Long) {
         // Find the shipment with the given labelId
-        val shipmentIndex = shipments.value.indexOfFirst { it.labelId == labelId }
+        val shipmentIndex = shipments.value.indexOfFirst { it.label?.labelId == labelId }
 
         // If the shipment is found, reset its purchased state
         if (shipmentIndex != -1) {
-            updateShipment(
-                shipmentIndex,
-                shipments.value[shipmentIndex].copy(
-                    purchased = false,
-                    labelId = null,
-                    carrierId = null,
-                    trackingNumber = null,
-                    purchaseState = PurchaseState.NoStarted,
-                    status = ShippingLabelStatus.UNKNOWN
-                )
-            )
+            updateShipment(shipmentIndex, shipments.value[shipmentIndex].copy(purchased = false, label = null))
         }
     }
 
@@ -696,15 +686,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             ?.labels
             ?.firstOrNull()
             ?.let { purchasedLabel ->
-                updateShipment(
-                    shipmentId,
-                    shipments.value[shipmentId].copy(
-                        purchased = true,
-                        labelId = purchasedLabel.labelId,
-                        carrierId = purchasedLabel.carrierId,
-                        trackingNumber = purchasedLabel.tracking,
-                    )
-                )
+                updateShipment(shipmentId, shipments.value[shipmentId].copy(purchased = true, label = purchasedLabel))
                 observeShippingLabelPurchaseStatus(shipmentId)
             }
     }
@@ -815,6 +797,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         snackbarData = ShippingLabelsSnackbarData(
             message = snackbarMessage,
             actionLabel = R.string.undo,
+            hasIcon = true,
             dismissAction = { snackbarData = null }
         ) {
             hazmatStatesFlow.value = previousStates
@@ -829,7 +812,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         val fallbackViewState = viewState.value
         viewState.value = WooShippingViewState.Loading(R.string.shipping_label_print_screen_title)
         launch {
-            val labelId = shipments.value[selectedShipmentIndex].labelId ?: return@launch
+            val labelId = shipments.value[selectedShipmentIndex].label?.labelId ?: return@launch
             val paperSize = uiState.value.paperSizeOption
             val labelFile = fetchShippingLabelFile(
                 labelIds = listOf(labelId),
@@ -845,22 +828,22 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     }
 
     fun onTrackShipmentClicked() {
-        val carrierId = shipments.value[selectedShipmentIndex].carrierId ?: return
-        val trackingNumber = shipments.value[selectedShipmentIndex].trackingNumber ?: return
+        val carrierId = shipments.value[selectedShipmentIndex].label?.carrierId ?: return
+        val trackingNumber = shipments.value[selectedShipmentIndex].label?.tracking ?: return
         ShipmentTrackingUrls.fromCarrier(carrierId, trackingNumber)
             ?.let { triggerEvent(OpenUrl(it)) }
             ?: triggerEvent(ShowError(R.string.shipping_label_purchased_tracking_error))
     }
 
     fun onSchedulePickUpClicked() {
-        val carrierId = shipments.value[selectedShipmentIndex].carrierId ?: return
+        val carrierId = shipments.value[selectedShipmentIndex].label?.carrierId ?: return
         Carrier.fromCarrierId(carrierId)?.let {
             triggerEvent(OpenUrl(it.pickupUrl))
         } ?: triggerEvent(ShowError(R.string.shipping_label_purchased_pickup_error))
     }
 
     fun onRefundClicked() {
-        shipments.value[selectedShipmentIndex].labelId?.let { labelId ->
+        shipments.value[selectedShipmentIndex].label?.labelId?.let { labelId ->
             triggerEvent(NavigateToRefundRequest(navArgs.orderId, labelId))
         }
     }
@@ -1116,6 +1099,7 @@ data class ShipmentUI(
     val shippingRatesState: ShippingRatesState,
     val purchaseState: PurchaseState = PurchaseState.NoStarted,
     val status: ShippingLabelStatus = ShippingLabelStatus.UNKNOWN,
+    val isRefundAvailable: Boolean = false,
 ) : Parcelable {
     val totalItemQuantity
         get() = shippableItems.sumByFloat { it.quantity }.toInt()

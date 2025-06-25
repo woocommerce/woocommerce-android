@@ -34,11 +34,15 @@ class WooPosSearchByIdentifierProcessVariationResult @Inject constructor(
                 )
             }
 
-            else -> listOf(
-                variationResult,
+            variationResult is WooPosSearchByIdentifierVariationFetch.VariationFetchResult.Failure -> {
+                WooPosSearchByIdentifierResult.Failure(variationResult.error)
+            }
+
+            parentProductResult is WooPosSearchByIdentifierResult.Failure -> {
                 parentProductResult
-            ).filterIsInstance<WooPosSearchByIdentifierResult.Failure>()
-                .first()
+            }
+
+            else -> error("Unexpected result from variation fetch or product get/fetch")
         }
     }
 }

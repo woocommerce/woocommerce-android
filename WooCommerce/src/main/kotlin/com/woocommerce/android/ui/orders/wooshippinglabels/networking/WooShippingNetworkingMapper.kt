@@ -46,8 +46,14 @@ class WooShippingNetworkingMapper @Inject constructor(
                             cardDigits = paymentMethod.cardDigits,
                             expiry = paymentMethod.expiry
                         )
-                    }
-                )
+                    },
+                    addPaymentMethodUrl = formMeta.addPaymentMethodUrl,
+                    emailReceipts = formData.emailReceipts
+                ),
+                canManagePayments = formMeta.canManagePayments,
+                canEditSettings = formMeta.canEditSettings,
+                storeOwnerName = formMeta.masterUserName,
+                storeOwnerUsername = formMeta.masterUserWpcomLogin
             )
         }
     }
@@ -74,7 +80,8 @@ class WooShippingNetworkingMapper @Inject constructor(
             mainReceiptId = shippingLabelDTO.mainReceiptId ?: 0,
             rate = shippingLabelDTO.rate ?: BigDecimal.ZERO,
             currency = shippingLabelDTO.currency.orEmpty(),
-            expiryDate = shippingLabelDTO.expiryDate ?: 0
+            expiryDate = shippingLabelDTO.expiryDate ?: 0,
+            usedDate = shippingLabelDTO.usedDate
         )
     }
 

@@ -15,7 +15,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_M
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_INBOX
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_PAYMENTS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_PAYMENTS_BADGE_VISIBLE
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_POS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_REVIEWS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_UPGRADES
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_VIEW_STORE
@@ -34,8 +33,6 @@ import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.payments.taptopay.isAvailable
 import com.woocommerce.android.ui.plans.domain.SitePlan
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
-import com.woocommerce.android.ui.woopos.WooPosIsEnabled
-import com.woocommerce.android.ui.woopos.tab.WooPosIsPosAsTabEnabled
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -71,9 +68,7 @@ class MoreMenuViewModel @Inject constructor(
     private val isBlazeEnabled: IsBlazeEnabled,
     private val isGoogleForWooEnabled: IsGoogleForWooEnabled,
     private val hasGoogleAdsCampaigns: HasGoogleAdsCampaigns,
-    private val isWooPosEnabled: WooPosIsEnabled,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    private val isPOSAsATabEnabled: WooPosIsPosAsTabEnabled
 ) : ScopedViewModel(savedState) {
     private var storeHasGoogleAdsCampaigns = false
 
@@ -117,7 +112,6 @@ class MoreMenuViewModel @Inject constructor(
         count: Int,
         paymentsFeatureWasClicked: Boolean
     ) = listOf(
-        generatePOSSection(buttonsStates[MoreMenuItemButton.Type.WooPos]!!),
         generateSettingsMenuButtons(buttonsStates[MoreMenuItemButton.Type.Settings]!!),
         generateGeneralSection(
             unseenReviewsCount = count,
@@ -135,21 +129,6 @@ class MoreMenuViewModel @Inject constructor(
             trackGoogleAdsDisplayed()
         }
     }
-
-    private fun generatePOSSection(wooPosState: MoreMenuItemButton.State) =
-        MoreMenuItemSection(
-            title = null,
-            items = listOf(
-                MoreMenuItemButton(
-                    title = R.string.more_menu_button_woo_pos,
-                    description = R.string.more_menu_button_woo_pos_description,
-                    icon = R.drawable.ic_more_menu_pos,
-                    extraIcon = R.drawable.ic_more_menu_pos_extra,
-                    state = wooPosState,
-                    onClick = ::onWooPosButtonClick,
-                )
-            )
-        )
 
     @Suppress("LongMethod")
     private fun generateGeneralSection(
@@ -397,11 +376,6 @@ class MoreMenuViewModel @Inject constructor(
         }
     }
 
-    private fun onWooPosButtonClick() {
-        trackMoreMenuOptionSelected(VALUE_MORE_MENU_POS)
-        triggerEvent(MoreMenuEvent.NavigateToWooPosEvent)
-    }
-
     private fun onViewAdminButtonClick() {
         trackMoreMenuOptionSelected(VALUE_MORE_MENU_ADMIN_MENU)
         triggerEvent(MoreMenuEvent.ViewAdminEvent(selectedSite.get().adminUrlOrDefault))
@@ -470,8 +444,7 @@ class MoreMenuViewModel @Inject constructor(
             doCheckAvailability(MoreMenuItemButton.Type.Blaze) { isBlazeEnabled() },
             doCheckAvailability(MoreMenuItemButton.Type.GoogleForWoo) { isGoogleForWooEnabled() },
             doCheckAvailability(MoreMenuItemButton.Type.Inbox) { moreMenuRepository.isInboxEnabled() },
-            doCheckAvailability(MoreMenuItemButton.Type.Settings) { moreMenuRepository.isUpgradesEnabled() },
-            doCheckAvailability(MoreMenuItemButton.Type.WooPos) { isWooPosEnabled() && !isPOSAsATabEnabled() }
+            doCheckAvailability(MoreMenuItemButton.Type.Settings) { moreMenuRepository.isUpgradesEnabled() }
         ).merge()
             .map { update ->
                 initialState[update.first] = update.second

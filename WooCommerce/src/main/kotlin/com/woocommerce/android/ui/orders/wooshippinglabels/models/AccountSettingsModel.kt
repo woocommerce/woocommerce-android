@@ -6,7 +6,11 @@ import kotlinx.parcelize.Parcelize
 
 data class AccountSettingsModel(
     val storeOptions: StoreOptionsModel,
-    val paymentMethodOptions: PaymentMethodOptions
+    val paymentMethodOptions: PaymentMethodOptions,
+    val canManagePayments: Boolean,
+    val canEditSettings: Boolean,
+    val storeOwnerName: String,
+    val storeOwnerUsername: String
 )
 
 @Parcelize
@@ -27,15 +31,17 @@ data class StoreOptionsModel(
 }
 
 data class PaymentMethodOptions(
-    val selectedPaymentId: Int?,
-    val paymentMethods: List<PaymentMethodModel>
+    val selectedPaymentId: Long?,
+    val paymentMethods: List<PaymentMethodModel>,
+    val addPaymentMethodUrl: String,
+    val emailReceipts: Boolean
 ) {
     val selectedPaymentMethod: PaymentMethodModel?
         get() = paymentMethods.find { it.paymentMethodId == selectedPaymentId }
 }
 
 data class PaymentMethodModel(
-    val paymentMethodId: Int,
+    val paymentMethodId: Long,
     val name: String,
     val cardType: String,
     val cardDigits: String,

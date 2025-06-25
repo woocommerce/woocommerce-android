@@ -35,5 +35,5 @@ class WCUserStore @Inject constructor(
         }
     }
 
-    suspend fun getUserByEmail(site: SiteModel, email: String) = userDao.getUserBySiteAndEmail(site.localId(), email)
+    suspend fun getUserByEmail(site: SiteModel, email: String) = userDao.getUser(site.localId(), email)
 }
