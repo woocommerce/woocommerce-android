@@ -217,7 +217,7 @@ fun WooShippingSplitShipmentScreen(
                 },
                 actionLabel = context.getString(snackbarData.actionLabel),
                 duration = snackbarData.duration,
-                hasIcon = viewState.splitMessage is SplitShipmentMessage.Success
+                hasSuccessCheckmark = viewState.splitMessage is SplitShipmentMessage.Success
             )
         )
         when (result) {

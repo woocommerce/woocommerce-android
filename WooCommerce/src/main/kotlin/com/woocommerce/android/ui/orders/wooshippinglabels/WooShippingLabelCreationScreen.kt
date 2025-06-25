@@ -506,7 +506,7 @@ private fun LabelCreationScreenWithBottomSheet(
                             message = actionSnackbarMessage.orEmpty(),
                             actionLabel = actionSnackbarActionLabel,
                             duration = snackbarData.duration,
-                            hasIcon = it.hasIcon
+                            hasSuccessCheckmark = it.hasIcon
                         )
                     )
                     when (result) {

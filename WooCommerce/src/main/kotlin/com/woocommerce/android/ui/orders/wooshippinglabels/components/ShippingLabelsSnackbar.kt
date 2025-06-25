@@ -32,7 +32,7 @@ fun ShippingLabelsSnackbar(visuals: ShippingLabelsSnackbarVisuals, action: () ->
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            if (visuals.hasIcon) {
+            if (visuals.hasSuccessCheckmark) {
                 Icon(
                     imageVector = Icons.Filled.CheckCircle,
                     contentDescription = null,
