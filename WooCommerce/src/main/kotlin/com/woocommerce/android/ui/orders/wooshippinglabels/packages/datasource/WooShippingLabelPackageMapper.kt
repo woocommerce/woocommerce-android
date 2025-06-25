@@ -1,7 +1,5 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.packages.datasource
 
-import com.woocommerce.android.ui.orders.wooshippinglabels.packages.datasource.CarrierType.DHL
-import com.woocommerce.android.ui.orders.wooshippinglabels.packages.datasource.CarrierType.USPS
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.networking.CarrierPackageGroupDTO
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.networking.CarrierPredefinedPackagesDTO
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.networking.CustomPackageDTO
@@ -66,31 +64,46 @@ class WooShippingLabelPackageMapper @Inject constructor() {
         carrierPackagesResponse: CarrierPredefinedPackagesDTO?,
         savedCarrierPackageIds: Map<String, List<String>>?,
     ): Map<CarrierType, CarrierDAO> {
-        val uspsPackages = mutableListOf<CarrierPackageGroupDAO>().apply {
+        val uspsPackages = buildList {
             carrierPackagesResponse?.usps?.let { usps ->
-                usps.flatBoxes?.toCarrierGroup(storeOptions, savedCarrierPackageIds?.get(USPS.id))?.let { add(it) }
-                usps.boxes?.toCarrierGroup(storeOptions, savedCarrierPackageIds?.get(USPS.id))?.let { add(it) }
-                usps.expressBoxes?.toCarrierGroup(storeOptions, savedCarrierPackageIds?.get(USPS.id))?.let { add(it) }
-                usps.envelopes?.toCarrierGroup(storeOptions, savedCarrierPackageIds?.get(USPS.id))?.let { add(it) }
-            }
-        }.let { CarrierDAO(it) }
-
-        val dhlPackages = mutableListOf<CarrierPackageGroupDAO>().apply {
-            carrierPackagesResponse?.dhlExpress?.let { dhl ->
-                dhl.domesticAndInternationalPackages
-                    ?.toCarrierGroup(storeOptions, savedCarrierPackageIds?.get(DHL.id))
+                usps.flatBoxes?.toCarrierGroup(storeOptions, savedCarrierPackageIds?.get(CarrierType.USPS.id))
+                    ?.let { add(it) }
+                usps.boxes?.toCarrierGroup(storeOptions, savedCarrierPackageIds?.get(CarrierType.USPS.id))
+                    ?.let { add(it) }
+                usps.expressBoxes?.toCarrierGroup(storeOptions, savedCarrierPackageIds?.get(CarrierType.USPS.id))
+                    ?.let { add(it) }
+                usps.envelopes?.toCarrierGroup(storeOptions, savedCarrierPackageIds?.get(CarrierType.USPS.id))
                     ?.let { add(it) }
             }
-        }.let { CarrierDAO(it) }
+        }
 
-        val result = mutableMapOf<CarrierType, CarrierDAO>()
-        if (uspsPackages.packageGroup.isNotEmpty()) {
-            result[USPS] = uspsPackages
+        val dhlPackages = buildList {
+            carrierPackagesResponse?.dhlExpress?.let { dhl ->
+                dhl.domesticAndInternationalPackages
+                    ?.toCarrierGroup(storeOptions, savedCarrierPackageIds?.get(CarrierType.DHL.id))
+                    ?.let { add(it) }
+            }
         }
-        if (dhlPackages.packageGroup.isNotEmpty()) {
-            result[DHL] = dhlPackages
+
+        val upsPackages = buildList {
+            carrierPackagesResponse?.ups?.let { ups ->
+                ups.domesticAndInternationalPackages
+                    ?.toCarrierGroup(storeOptions, savedCarrierPackageIds?.get(CarrierType.UPS.id))
+                    ?.let { add(it) }
+            }
         }
-        return result
+
+        return buildMap {
+            if (uspsPackages.isNotEmpty()) {
+                this[CarrierType.USPS] = CarrierDAO(uspsPackages)
+            }
+            if (dhlPackages.isNotEmpty()) {
+                this[CarrierType.DHL] = CarrierDAO(dhlPackages)
+            }
+            if (upsPackages.isNotEmpty()) {
+                this[CarrierType.UPS] = CarrierDAO(upsPackages)
+            }
+        }
     }
 
     private fun CarrierPackageGroupDTO.toCarrierGroup(
