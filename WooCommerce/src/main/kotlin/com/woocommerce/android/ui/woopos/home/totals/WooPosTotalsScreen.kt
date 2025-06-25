@@ -179,20 +179,13 @@ private fun TotalsLoaded(
         ) {
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        horizontal = WooPosSpacing.XLarge.value.toAdaptivePadding(),
-                        vertical = WooPosSpacing.Medium.value.toAdaptivePadding(),
-                    ),
+                    .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
             ) {
                 when (val readerStatus = state.readerStatus) {
                     is WooPosTotalsViewState.ReaderStatus.Disconnected -> {
-                        ReaderDisconnected(
-                            status = readerStatus,
-                            onUIEvent = onUIEvent
-                        )
+                        ReaderDisconnected(status = readerStatus, onUIEvent = onUIEvent)
                         LocalContext.current.announceForAccessibility(readerStatus.title)
                     }
                     is WooPosTotalsViewState.ReaderStatus.Preparing -> {
@@ -230,7 +223,6 @@ private fun TotalsLoaded(
                                 vertical = WooPosSpacing.Medium.value.toAdaptivePadding(),
                             ),
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center,
                     ) {
                         TotalsGrid(totalsVisible)
                     }
@@ -240,13 +232,13 @@ private fun TotalsLoaded(
             Spacer(modifier = Modifier.height(WooPosSpacing.Large.value.toAdaptivePadding()))
         }
 
+        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
+
         WooPosOutlinedButton(
             text = stringResource(R.string.woopos_payment_take_cash_payment_label),
             onClick = { onUIEvent(WooPosTotalsUIEvent.OnCashPaymentClicked) },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(WooPosSpacing.Medium.value.toAdaptivePadding())
-                .height(64.dp)
         )
     }
 }
