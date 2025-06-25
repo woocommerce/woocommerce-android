@@ -702,6 +702,10 @@
             android:name="orderId"
             app:argType="long" />
 
+        <argument
+            android:name="shipmentId"
+            app:argType="integer" />
+
         <action
             android:id="@+id/action_wooShippingLabelCreationFragment_to_wooShippingLabelPackageCreationFragment"
             app:destination="@id/wooShippingLabelPackageCreationFragment" />
