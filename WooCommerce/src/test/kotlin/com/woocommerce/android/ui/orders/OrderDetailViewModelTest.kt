@@ -44,6 +44,8 @@ import com.woocommerce.android.ui.orders.details.OrderProduct
 import com.woocommerce.android.ui.orders.details.OrderProductMapper
 import com.woocommerce.android.ui.orders.details.ShippingLabelOnboardingRepository
 import com.woocommerce.android.ui.orders.details.ShippingLabelOnboardingRepository.ShippingLabelSupport
+import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigDataStore
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingLabelRepository
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
@@ -128,6 +130,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     }
     private val shippingLabelRepository: WooShippingLabelRepository = mock()
 
+    private val configDataStore: WooShippingConfigDataStore = mock()
+
     private val savedState = OrderDetailFragmentArgs(
         orderId = ORDER_ID,
         allOrderIds = arrayOf(ORDER_ID).toLongArray()
@@ -208,6 +212,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 orderDetailTracker,
                 shippingLabelOnboardingRepository,
                 shippingLabelRepository,
+                configDataStore,
                 orderDetailsTransactionLauncher,
                 getOrderSubscriptions,
                 giftCardRepository,
@@ -314,9 +319,9 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         }
 
         // shipping Labels
-        val shippingLabels = ArrayList<ShippingLabel>()
-        viewModel.shippingLabels.observeForever {
-            it?.let { shippingLabels.addAll(it) }
+        val shippingLabels = ArrayList<ShippingLabelModel>()
+        viewModel.shippingLabels.observeForever { shippingLabelModelList ->
+            shippingLabelModelList?.let { shippingLabels.addAll(it) }
         }
 
         viewModel.start()
@@ -611,9 +616,9 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(orderShippingLabels).whenever(orderDetailRepository).getOrderShippingLabels(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
-            val shippingLabels = ArrayList<ShippingLabel>()
-            viewModel.shippingLabels.observeForever {
-                it?.let { shippingLabels.addAll(it) }
+            val shippingLabels = ArrayList<ShippingLabelModel>()
+            viewModel.shippingLabels.observeForever { shippingLabelModelList ->
+                shippingLabelModelList?.let { shippingLabels.addAll(it) }
             }
 
             var areProductsVisible: Boolean? = null
@@ -639,8 +644,10 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             doReturn(true).whenever(orderDetailRepository).isOrderEligibleForSLCreation(order.id)
 
-            val shippingLabels = ArrayList<ShippingLabel>()
-            viewModel.shippingLabels.observeForever { it?.let { shippingLabels.addAll(it) } }
+            val shippingLabels = ArrayList<ShippingLabelModel>()
+            viewModel.shippingLabels.observeForever { shippingLabelModelList ->
+                shippingLabelModelList?.let { shippingLabels.addAll(it) }
+            }
 
             var isProductListMenuVisible: Boolean? = null
             viewModel.viewStateData.observeForever { _, new -> isProductListMenuVisible = new.isProductListMenuVisible }
@@ -660,8 +667,10 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
-            val shippingLabels = ArrayList<ShippingLabel>()
-            viewModel.shippingLabels.observeForever { it?.let { shippingLabels.addAll(it) } }
+            val shippingLabels = ArrayList<ShippingLabelModel>()
+            viewModel.shippingLabels.observeForever { shippingLabelModelList ->
+                shippingLabelModelList?.let { shippingLabels.addAll(it) }
+            }
 
             var isProductListMenuVisible: Boolean? = null
             viewModel.viewStateData.observeForever { _, new -> isProductListMenuVisible = new.isProductListMenuVisible }
@@ -693,9 +702,9 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             var orderData: OrderDetailViewState? = null
             viewModel.viewStateData.observeForever { _, new -> orderData = new }
 
-            val shippingLabels = ArrayList<ShippingLabel>()
-            viewModel.shippingLabels.observeForever {
-                it?.let { shippingLabels.addAll(it) }
+            val shippingLabels = ArrayList<ShippingLabelModel>()
+            viewModel.shippingLabels.observeForever { shippingLabelModelList ->
+                shippingLabelModelList?.let { shippingLabels.addAll(it) }
             }
 
             viewModel.start()
@@ -723,9 +732,9 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).getOrderShippingLabels(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
-            val shippingLabels = ArrayList<ShippingLabel>()
-            viewModel.shippingLabels.observeForever {
-                it?.let { shippingLabels.addAll(it) }
+            val shippingLabels = ArrayList<ShippingLabelModel>()
+            viewModel.shippingLabels.observeForever { shippingLabelModelList ->
+                shippingLabelModelList?.let { shippingLabels.addAll(it) }
             }
 
             var isCreateShippingLabelButtonVisible: Boolean? = null
@@ -2347,8 +2356,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `when woo shipping is installed, then navigate to the new shipping flow`() = testBlocking {
         doReturn(order).whenever(orderDetailRepository).getOrderById(any())
-        doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
-        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
         doReturn(ShippingLabelSupport.WC_SHIPPING_SUPPORTED)
             .whenever(shippingLabelOnboardingRepository).shippingPluginSupport
 

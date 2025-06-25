@@ -219,7 +219,8 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         rate = BigDecimal.ZERO,
         currency = "",
         expiryDate = 0L,
-        usedDate = 0L
+        usedDate = 0L,
+        refund = null,
     )
 
     private val defaultShippingRates = mapOf(
