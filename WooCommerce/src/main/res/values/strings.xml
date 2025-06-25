@@ -4669,7 +4669,7 @@
     <string name="purchased_shipment_content_description">Purchased</string>
 
     <string name="woo_shipping_refund_title">Request a shipping label refund</string>
-    <string name="woo_shipping_refund_description">Request a refund for your unused shipping label. The refund process for the shipping label will begin immediately and is typically completed within 14 business days.</string>
+    <string name="woo_shipping_refund_description">Request a refund for your unused shipping label. The refund process for the shipping label will begin immediately and is typically completed within %d business days.</string>
     <string name="woo_shipping_refund_purchase_date"><![CDATA[<b>Purchase date:</b> %s]]></string>
     <string name="woo_shipping_refund_amount_eligible_for_refund"><![CDATA[<b>Amount eligible for refund:</b> %s]]></string>
     <string name="woo_shipping_refund_note">Please note that this refund request applies only to the unused shipping label and will not affect the order itself.</string>

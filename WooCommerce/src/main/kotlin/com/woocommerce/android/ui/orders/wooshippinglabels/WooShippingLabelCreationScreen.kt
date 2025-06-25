@@ -544,6 +544,7 @@ private fun CreateShippingCards(
         if (shipmentUI.purchased) {
             PrintShippingLabelSection(
                 status = shipmentUI.status,
+                isRefundAvailable = shipmentUI.isRefundAvailable,
                 selectedLabelPaperSizeOption = uiState.paperSizeOption,
                 onLabelPaperSizeOptionSelected = onLabelPaperSizeOptionSelected,
                 onPrintShippingLabelClicked = onPrintShippingLabelClicked,

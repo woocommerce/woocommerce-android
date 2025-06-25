@@ -115,6 +115,7 @@ data class ShippingLabelDTO(
     @SerializedName("rate") val rate: BigDecimal? = null,
     @SerializedName("currency") val currency: String? = null,
     @SerializedName("expiry_date") val expiryDate: Long? = null,
+    @SerializedName("used_date") val usedDate: Long? = null,
     @SerializedName("refund") val refund: LabelRefund? = null
 )
 
