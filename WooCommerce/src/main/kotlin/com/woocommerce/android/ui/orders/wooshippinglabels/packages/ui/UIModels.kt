@@ -62,7 +62,11 @@ data class PackageData(
             groupName = null
         )
 
-        private const val DEFAULT_HEIGHT = "5"
+        /**
+         * Default height when missing from the package dimensions.
+         * TODO: confirm this value when WOOSHIP-1449 is done.
+         */
+        const val DEFAULT_HEIGHT = 5.0
 
         fun fromPackageDAO(
             dao: PackageDAO,
