@@ -14,6 +14,8 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCProductStore
+import org.wordpress.android.fluxc.store.WCProductStore.ProductError
+import org.wordpress.android.fluxc.store.WCProductStore.ProductErrorType
 
 class WooPosSearchByIdentifierProductGetOrFetchTest {
 
@@ -22,10 +24,11 @@ class WooPosSearchByIdentifierProductGetOrFetchTest {
     private val productStore: WCProductStore = mock()
     private val productsCache: WooPosProductsCache = mock()
     private val site: SiteModel = mock()
+    private val errorMapper: WooPosSearchByIdentifierProductErrorMapper = WooPosSearchByIdentifierProductErrorMapper()
 
     @Before
     fun setup() {
-        sut = WooPosSearchByIdentifierProductGetOrFetch(selectedSite, productStore, productsCache)
+        sut = WooPosSearchByIdentifierProductGetOrFetch(selectedSite, productStore, productsCache, errorMapper)
         whenever(selectedSite.get()).thenReturn(site)
     }
 
@@ -56,25 +59,19 @@ class WooPosSearchByIdentifierProductGetOrFetchTest {
     }
 
     @Test
-    fun `given network error during fetch, when invoke called, then return failure with network error`() = runTest {
+    fun `given product found in cache, when invoke called, then return cached product without fetching`() = runTest {
         // GIVEN
         val productId = 123L
-        val result: WCProductStore.OnProductChanged = mock {
-            on { isError }.thenReturn(true)
-        }
-
-        whenever(
-            productStore.fetchSingleProduct(any())
-        ).thenReturn(result)
+        val cachedProduct = ProductTestUtils.generateProduct(productId)
+        whenever(productsCache.getProductById(productId)).thenReturn(cachedProduct)
 
         // WHEN
         val actualResult = sut(productId)
 
         // THEN
-        assertEquals(
-            WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.NetworkError),
-            actualResult
-        )
+        assertTrue(actualResult is WooPosSearchByIdentifierResult.Success)
+        val successResult = actualResult as WooPosSearchByIdentifierResult.Success
+        assertEquals(cachedProduct.remoteId, successResult.product.remoteId)
     }
 
     @Test
@@ -98,6 +95,30 @@ class WooPosSearchByIdentifierProductGetOrFetchTest {
         assertEquals(
             WooPosSearchByIdentifierResult.Failure(
                 WooPosSearchByIdentifierResult.Error.UnknownError("Product not found for ID: $productId")
+            ),
+            actualResult
+        )
+    }
+
+    @Test
+    fun `given fetch error, when invoke called, then return failure with mapped error`() = runTest {
+        // GIVEN
+        val productId = 123L
+        val error = ProductError(ProductErrorType.GENERIC_ERROR, "Generic error occurred")
+        val result = WCProductStore.OnProductChanged().apply {
+            this.error = error
+        }
+
+        whenever(productsCache.getProductById(productId)).thenReturn(null)
+        whenever(productStore.fetchSingleProduct(any())).thenReturn(result)
+
+        // WHEN
+        val actualResult = sut(productId)
+
+        // THEN
+        assertEquals(
+            WooPosSearchByIdentifierResult.Failure(
+                WooPosSearchByIdentifierResult.Error.UnknownError("Generic error occurred")
             ),
             actualResult
         )

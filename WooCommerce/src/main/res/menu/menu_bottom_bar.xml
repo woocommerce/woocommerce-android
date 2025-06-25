@@ -17,7 +17,7 @@
 
     <item
         android:id="@+id/point_of_sale"
-        android:icon="@drawable/ic_gridicons_credit_card"
+        android:icon="@drawable/as_menu_pos"
         android:title="@string/point_of_sale" />
 
     <item

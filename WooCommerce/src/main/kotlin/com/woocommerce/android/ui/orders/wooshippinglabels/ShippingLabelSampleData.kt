@@ -19,7 +19,7 @@ object ShippingLabelSampleData {
         city = "City",
         postcode = "",
         email = "email",
-        country = "USA",
+        country = "US",
         state = "California",
         id = "id_1",
         isDefault = true,
@@ -56,11 +56,13 @@ object ShippingLabelSampleData {
 
     fun getPaymentOptions(countOfPaymentMethods: Int = 3) = PaymentMethodOptions(
         selectedPaymentId = if (countOfPaymentMethods > 0) 1 else null,
-        paymentMethods = List(countOfPaymentMethods) { getPaymentMethod(it) }
+        paymentMethods = List(countOfPaymentMethods) { getPaymentMethod(it) },
+        addPaymentMethodUrl = "https://example.com/add-payment-method",
+        emailReceipts = true
     )
 
     fun getPaymentMethod(index: Int = 0) = PaymentMethodModel(
-        paymentMethodId = index,
+        paymentMethodId = index.toLong(),
         name = "John Doe",
         cardType = "VISA",
         cardDigits = "${index}234",

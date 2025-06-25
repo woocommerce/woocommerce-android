@@ -18,7 +18,7 @@ class WooShippingRatesDatasourceMapper @Inject constructor() {
         private const val CARRIER_USPS_KEY = "usps"
         private const val CARRIER_UPS_KEY = "ups"
         private const val CARRIER_FEDEX_KEY = "fedex"
-        private const val CARRIER_DHL_EXPRESS_KEY = "dhlexpress"
+        const val CARRIER_DHL_EXPRESS_KEY = "dhlexpress"
         private const val CARRIER_DHL_ECOMMERCE_KEY = "dhlecommerce"
         private const val CARRIER_DHL_ECOMMERCE_ASIA_KEY = "dhlecommerceasia"
     }

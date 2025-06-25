@@ -106,7 +106,7 @@ class AddOrderTrackingProviderListFragment :
 
             new.showSkeleton.takeIfNotEqualTo(old?.showSkeleton) { show ->
                 if (show) {
-                    skeletonView.show(binding.providersView, R.layout.skeleton_tracking_provider_list, delayed = true)
+                    skeletonView.show(binding.skeletonView, R.layout.skeleton_tracking_provider_list, delayed = true)
                 } else {
                     skeletonView.hide()
                 }

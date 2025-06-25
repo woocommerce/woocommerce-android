@@ -79,7 +79,11 @@ class WooPosSearchByIdentifierProcessVariationResultTest {
         runBlocking {
             whenever(
                 variationFetch.invoke(variationId, parentId)
-            ).thenReturn(WooPosSearchByIdentifierVariationFetch.VariationFetchResult.NetworkError)
+            ).thenReturn(
+                WooPosSearchByIdentifierVariationFetch.VariationFetchResult.Failure(
+                    WooPosSearchByIdentifierResult.Error.NetworkError
+                )
+            )
             whenever(
                 productGetOrFetch.invoke(parentId)
             ).thenReturn(WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.NetworkError))
@@ -127,16 +131,18 @@ class WooPosSearchByIdentifierProcessVariationResultTest {
         val parentId = 123L
         val variationId = 456L
         val product: Product = mock {
-            on { parentId }.thenReturn(parentId)
+            on { this.parentId }.thenReturn(parentId)
             on { remoteId }.thenReturn(variationId)
         }
 
-        val variationResult = WooPosSearchByIdentifierVariationFetch.VariationFetchResult.NotFound
+        val variationResult = WooPosSearchByIdentifierVariationFetch.VariationFetchResult.Failure(
+            WooPosSearchByIdentifierResult.Error.UnknownError("Variation not found for ID: $variationId")
+        )
         val parentProductResult = WooPosSearchByIdentifierResult.Failure(
             WooPosSearchByIdentifierResult.Error.NetworkError
         )
         val expectedFailure = WooPosSearchByIdentifierResult.Failure(
-            WooPosSearchByIdentifierResult.Error.NotFound
+            WooPosSearchByIdentifierResult.Error.UnknownError("Variation not found for ID: $variationId")
         )
 
         runBlocking {

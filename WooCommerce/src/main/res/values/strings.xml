@@ -4294,6 +4294,7 @@
     <string name="woopos_cart_changes_in_the_cart">There are changes in the cart</string>
     <string name="woopos_cart_barcode_scan_result_product_not_found">Unknown scanned item</string>
     <string name="woopos_cart_barcode_scan_result_unsupported_product">Unsupported item – %s</string>
+    <string name="woopos_cart_barcode_scan_result_server_error">Server error - %s</string>
     <string name="woopos_cart_barcode_scan_result_network_error">No internet connection</string>
     <string name="woopos_clear_cart_button">Clear</string>
 
@@ -4668,7 +4669,7 @@
     <string name="purchased_shipment_content_description">Purchased</string>
 
     <string name="woo_shipping_refund_title">Request a shipping label refund</string>
-    <string name="woo_shipping_refund_description">Request a refund for your unused shipping label. The refund process for the shipping label will begin immediately and is typically completed within 14 business days.</string>
+    <string name="woo_shipping_refund_description">Request a refund for your unused shipping label. The refund process for the shipping label will begin immediately and is typically completed within %d business days.</string>
     <string name="woo_shipping_refund_purchase_date"><![CDATA[<b>Purchase date:</b> %s]]></string>
     <string name="woo_shipping_refund_amount_eligible_for_refund"><![CDATA[<b>Amount eligible for refund:</b> %s]]></string>
     <string name="woo_shipping_refund_note">Please note that this refund request applies only to the unused shipping label and will not affect the order itself.</string>
@@ -4682,6 +4683,8 @@
     <string name="woo_shipping_payment_methods_info_footer"><![CDATA[Credit cards are retrieved from the following WordPress.com account: %1$s <%2$s>]]></string>
     <string name="woo_shipping_payment_email_receipt_toggle">Email the receipt</string>
     <string name="woo_shipping_payment_use_card_button">Use this card</string>
+    <string name="woo_shipping_payment_method_added">Payment method added</string>
+    <string name="woo_shipping_payment_fetching_cards_failed">Unable to refresh your payment methods</string>
 
     <string name="media_library_title">WordPress Media Library</string>
     <string name="media_loading_failed">Media loading failed</string>

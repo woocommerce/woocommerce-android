@@ -329,12 +329,12 @@ public abstract class BaseRequest<T> extends Request<T> {
     @NonNull
     private BaseNetworkError getBaseNetworkError(VolleyError volleyError) {
         // No connection
-        if (volleyError.getCause() instanceof NoConnectionError) {
+        if (volleyError instanceof NoConnectionError || volleyError.getCause() instanceof NoConnectionError) {
             return new BaseNetworkError(GenericErrorType.NO_CONNECTION, volleyError);
         }
 
         // Network error
-        if (volleyError.getCause() instanceof NetworkError) {
+        if (volleyError instanceof NetworkError || volleyError.getCause() instanceof NetworkError) {
             return new BaseNetworkError(GenericErrorType.NETWORK_ERROR, volleyError);
         }
 

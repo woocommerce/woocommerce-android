@@ -99,6 +99,19 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                 )
             }
         }
+
+        data class TabVisibilityChecked(val isVisible: Boolean) : Event() {
+            override val name: String = "tab_visibility_checked"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "is_visible" to isVisible.toString()
+                    )
+                )
+            }
+        }
+
         data object ExitTapped : Event() {
             override val name: String = "exit_menu_item_tapped"
         }

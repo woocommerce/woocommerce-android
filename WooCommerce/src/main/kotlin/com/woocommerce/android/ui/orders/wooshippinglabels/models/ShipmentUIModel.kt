@@ -9,11 +9,8 @@ data class ShipmentUIModel(
     val remoteId: String? = null,
     val items: List<ShippableItemModel>,
     val purchased: Boolean = false,
-    val labelId: Long? = null,
-    val carrierId: String? = null,
-    val trackingNumber: String? = null,
     val purchaseState: PurchaseState = PurchaseState.NoStarted,
-    val status: ShippingLabelStatus = ShippingLabelStatus.UNKNOWN,
+    val label: ShippingLabelModel? = null,
 ) : Parcelable
 
 @Parcelize

@@ -209,7 +209,7 @@ class OrderDetailViewModel @Inject constructor(
 
     private var pluginsInformation: Map<String, WooPlugin> = HashMap()
 
-    private val isRevampWooShippingEnabled: Boolean
+    val isRevampWooShippingEnabled: Boolean
         get() = FeatureFlag.REVAMP_WOO_SHIPPING.isEnabled() &&
             shippingLabelOnboardingRepository.shippingPluginSupport.isWooShippingSupported()
 
@@ -494,7 +494,13 @@ class OrderDetailViewModel @Inject constructor(
 
     fun onRefundShippingLabelClick(shippingLabelId: Long) {
         launch {
-            triggerEvent(RefundShippingLabel(remoteOrderId = awaitOrder().id, shippingLabelId = shippingLabelId))
+            triggerEvent(
+                RefundShippingLabel(
+                    remoteOrderId = awaitOrder().id,
+                    shippingLabelId = shippingLabelId,
+                    isRevampWooShippingEnabled = isRevampWooShippingEnabled
+                )
+            )
         }
     }
 

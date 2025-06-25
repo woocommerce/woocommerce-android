@@ -10,12 +10,12 @@ import javax.inject.Inject
 class WooPosSearchByIdentifierVariationFetch @Inject constructor(
     private val selectedSite: SelectedSite,
     private val productStore: WCProductStore,
-    private val variationsCache: WooPosVariationsLRUCache
+    private val variationsCache: WooPosVariationsLRUCache,
+    private val errorMapper: WooPosSearchByIdentifierProductErrorMapper
 ) {
     sealed class VariationFetchResult {
         data class Success(val variation: ProductVariation) : VariationFetchResult()
-        data object NetworkError : VariationFetchResult()
-        data object NotFound : VariationFetchResult()
+        data class Failure(val error: WooPosSearchByIdentifierResult.Error) : VariationFetchResult()
     }
 
     @Suppress("ReturnCount")
@@ -27,7 +27,7 @@ class WooPosSearchByIdentifierVariationFetch @Inject constructor(
         )
 
         if (variationResult.isError) {
-            return VariationFetchResult.NetworkError
+            return VariationFetchResult.Failure(errorMapper(variationResult.error))
         }
 
         val variation = productStore.getVariationByRemoteId(
@@ -40,7 +40,11 @@ class WooPosSearchByIdentifierVariationFetch @Inject constructor(
             variationsCache.add(parentId, variation)
             VariationFetchResult.Success(variation)
         } else {
-            VariationFetchResult.NotFound
+            VariationFetchResult.Failure(
+                WooPosSearchByIdentifierResult.Error.UnknownError(
+                    "Variation not found for ID: $variationId"
+                )
+            )
         }
     }
 }

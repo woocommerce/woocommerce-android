@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -38,7 +39,6 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.appendWithIfNotEmpty
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.RoundedCornerBoxWithBorder
 import com.woocommerce.android.ui.orders.wooshippinglabels.ShippingLabelSampleData
@@ -111,10 +111,10 @@ internal fun AddressSectionPortrait(
 
             )
             Text(
-                text = shippingAddresses.shipFrom.toShippingFromString().uppercase(),
-                maxLines = 1,
+                text = shippingAddresses.shipFrom.format(singleLine = !isReadOnly).uppercase(),
+                maxLines = if (isReadOnly) Int.MAX_VALUE else 1,
                 overflow = TextOverflow.Ellipsis,
-                color = MaterialTheme.colors.primary,
+                color = if (isReadOnly) LocalContentColor.current else MaterialTheme.colors.primary,
                 modifier = Modifier
                     .constrainAs(shipFromValue) {
                         top.linkTo(shipFromLabel.top)
@@ -151,7 +151,7 @@ internal fun AddressSectionPortrait(
             }
             Divider(
                 modifier = Modifier.constrainAs(divider) {
-                    top.linkTo(shipFromLabel.bottom)
+                    top.linkTo(shipFromValue.bottom)
                     start.linkTo(parent.start)
                 }
             )
@@ -186,11 +186,12 @@ internal fun AddressSectionPortrait(
                         ),
                 )
             }
-            AddressStatusIndicator(
-                addressStatus = destinationStatus,
-                modifier = destinationStatusModifier
-            )
             if (isReadOnly.not()) {
+                AddressStatusIndicator(
+                    addressStatus = destinationStatus,
+                    modifier = destinationStatusModifier
+                )
+
                 IconButton(
                     onClick = { onEditDestinationAddress(shippingAddresses.shipTo) },
                     modifier = Modifier
@@ -283,10 +284,12 @@ internal fun AddressSectionLandscape(
                                 )
                         )
                     }
-                    AddressStatusIndicator(
-                        addressStatus = destinationStatus,
-                        modifier = destinationAddressStatusModifier
-                    )
+                    if (!isReadOnly) {
+                        AddressStatusIndicator(
+                            addressStatus = destinationStatus,
+                            modifier = destinationAddressStatusModifier
+                        )
+                    }
                 }
 
                 if (isReadOnly.not()) {
@@ -339,10 +342,10 @@ private fun ShipFromSelection(
                 )
         )
         Text(
-            text = shipFrom.toShippingFromString().uppercase(),
-            maxLines = 1,
+            text = shipFrom.format(singleLine = !isReadOnly).uppercase(),
+            maxLines = if (isReadOnly) Int.MAX_VALUE else 1,
             overflow = TextOverflow.Ellipsis,
-            color = MaterialTheme.colors.primary,
+            color = if (isReadOnly) LocalContentColor.current else MaterialTheme.colors.primary,
             modifier = Modifier
                 .padding(
                     top = dimensionResource(R.dimen.major_100),
@@ -410,7 +413,7 @@ fun OriginAddressSelectionItem(
                     modifier = Modifier
                 )
                 Text(
-                    text = address.toShippingFromString(),
+                    text = address.format(singleLine = true),
                     modifier = Modifier.padding(top = dimensionResource(id = R.dimen.minor_100))
                 )
             }
@@ -479,14 +482,6 @@ private fun OriginShippingAddress.getFormattedName(context: Context): String {
     }
 }
 
-private fun OriginShippingAddress.toShippingFromString() = StringBuilder()
-    .appendWithIfNotEmpty(this.address1)
-    .appendWithIfNotEmpty(this.address2)
-    .appendWithIfNotEmpty(this.city)
-    .appendWithIfNotEmpty(this.state)
-    .appendWithIfNotEmpty(this.postcode)
-    .toString()
-
 @Preview
 @Composable
 private fun AddressSectionPortraitPreview() {
@@ -501,7 +496,7 @@ private fun AddressSectionPortraitPreview() {
                 onEditDestinationAddress = {},
                 onEditOriginAddress = {},
                 onOriginAddressSelected = {},
-                isReadOnly = false,
+                isReadOnly = true,
                 destinationStatus = AddressStatus.VERIFIED
             )
         }
@@ -540,7 +535,7 @@ private fun AddressSectionLandscapePreview() {
                     shipTo = ShippingLabelSampleData.getShipTo(),
                     originAddresses = listOf(ShippingLabelSampleData.getShipFrom())
                 ),
-                isReadOnly = false,
+                isReadOnly = true,
                 onEditDestinationAddress = {},
                 onEditOriginAddress = {},
                 onOriginAddressSelected = {},
