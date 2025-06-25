@@ -86,8 +86,7 @@ fun UPSDAPTermsOfServiceBottomSheet(
                 textAlign = TextAlign.Start,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 8.dp),
-                color = MaterialTheme.colors.onSurface
+                    .padding(horizontal = 8.dp)
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -122,7 +121,6 @@ private fun OriginAddressSection(address: OriginShippingAddress) {
         Text(
             text = stringResource(id = R.string.wpp_shipping_ups_tos_shipping_from),
             style = MaterialTheme.typography.subtitle1,
-            color = MaterialTheme.colors.onSurface,
             fontWeight = FontWeight.SemiBold
         )
 
@@ -130,8 +128,7 @@ private fun OriginAddressSection(address: OriginShippingAddress) {
 
         Text(
             text = address.format(singleLine = false),
-            style = MaterialTheme.typography.body2,
-            color = MaterialTheme.colors.onSurface
+            style = MaterialTheme.typography.body2
         )
     }
 }
