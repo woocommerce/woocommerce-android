@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.upsdap
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -12,11 +14,14 @@ import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material3.Checkbox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -31,12 +36,17 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShipping
 
 @Composable
 fun UPSDAPTermsOfServiceBottomSheet(
-    originAddress: OriginShippingAddress,
-    onAcceptClicked: () -> Unit,
-    onUrlClicked: (String) -> Unit
+    viewModel: UPSDAPTermsOfServiceViewModel
 ) {
-    val scrollState = rememberScrollState()
+    viewModel.viewState.observeAsState().value?.let {
+        UPSDAPTermsOfServiceBottomSheet(it)
+    }
+}
 
+@Composable
+fun UPSDAPTermsOfServiceBottomSheet(
+    viewState: UPSDAPTermsOfServiceViewModel.ViewState
+) {
     Surface(
         shape = RoundedCornerShape(
             topStart = dimensionResource(id = R.dimen.minor_100),
@@ -47,7 +57,7 @@ fun UPSDAPTermsOfServiceBottomSheet(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
-                .verticalScroll(scrollState),
+                .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(modifier = Modifier.height(8.dp))
@@ -60,21 +70,16 @@ fun UPSDAPTermsOfServiceBottomSheet(
                 textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-            OriginAddressSection(address = originAddress)
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Divider
-            Divider(
-                modifier = Modifier.fillMaxWidth(),
-                color = MaterialTheme.colors.onSurface.copy(alpha = 0.12f)
-            )
+            OriginAddressSection(address = viewState.originShippingAddress)
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Description
+            Divider()
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             Text(
                 text = stringResource(id = R.string.wpp_shipping_ups_tos_description),
                 style = MaterialTheme.typography.body1,
@@ -87,13 +92,16 @@ fun UPSDAPTermsOfServiceBottomSheet(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Conditions(onUrlClicked)
+            Conditions(
+                conditionsState = viewState.conditionsState,
+                onUrlClicked = viewState.onUrlClicked
+            )
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Accept Button
             WCColoredButton(
-                onClick = onAcceptClicked,
+                onClick = viewState.onContinueClicked,
+                enabled = viewState.areAllConditionsAccepted,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(text = stringResource(id = R.string.wpp_shipping_ups_tos_accept))
@@ -129,41 +137,61 @@ private fun OriginAddressSection(address: OriginShippingAddress) {
 }
 
 @Composable
-private fun Conditions(onUrlClicked: (String) -> Unit) {
+private fun Conditions(
+    conditionsState: UPSDAPTermsOfServiceViewModel.ConditionsState,
+    onUrlClicked: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
     Column(
-        modifier = Modifier
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 8.dp)
     ) {
-        Text(
-            text = annotatedStringRes(
+        CheckboxWithTitle(
+            checked = conditionsState.isTermsOfServiceChecked,
+            title = annotatedStringRes(
                 stringResId = R.string.wpp_shipping_ups_tos_condition_1,
                 onUrlClick = onUrlClicked
             ),
-            style = MaterialTheme.typography.body2,
-            color = MaterialTheme.colors.onSurface
+            onCheckedChange = conditionsState.onTermsOfServiceCheckedChanged
         )
 
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Text(
-            text = annotatedStringRes(
+        CheckboxWithTitle(
+            checked = conditionsState.isProhibitedItemsChecked,
+            title = annotatedStringRes(
                 stringResId = R.string.wpp_shipping_ups_tos_condition_2,
                 onUrlClick = onUrlClicked
             ),
-            style = MaterialTheme.typography.body2,
-            color = MaterialTheme.colors.onSurface
+            onCheckedChange = conditionsState.onProhibitedItemsCheckedChanged
         )
 
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Text(
-            text = annotatedStringRes(
+        CheckboxWithTitle(
+            checked = conditionsState.isTechnologyAgreementChecked,
+            title = annotatedStringRes(
                 stringResId = R.string.wpp_shipping_ups_tos_condition_3,
                 onUrlClick = onUrlClicked
             ),
-            style = MaterialTheme.typography.body2,
-            color = MaterialTheme.colors.onSurface
+            onCheckedChange = conditionsState.onTechnologyAgreementCheckedChanged
+        )
+    }
+}
+
+@Composable
+private fun CheckboxWithTitle(
+    checked: Boolean,
+    title: AnnotatedString,
+    onCheckedChange: (Boolean) -> Unit
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Checkbox(
+            checked = checked,
+            onCheckedChange = onCheckedChange
+        )
+        Text(
+            text = title,
+            style = MaterialTheme.typography.body2
         )
     }
 }
@@ -173,9 +201,19 @@ private fun Conditions(onUrlClicked: (String) -> Unit) {
 fun UPSDAPTermsOfServiceBottomSheetPreview() {
     WooThemeWithBackground {
         UPSDAPTermsOfServiceBottomSheet(
-            originAddress = ShippingLabelSampleData.getShipFrom(),
-            onAcceptClicked = {},
-            onUrlClicked = {}
+            UPSDAPTermsOfServiceViewModel.ViewState(
+                originShippingAddress = ShippingLabelSampleData.getShipFrom(),
+                conditionsState = UPSDAPTermsOfServiceViewModel.ConditionsState(
+                    isTermsOfServiceChecked = true,
+                    isProhibitedItemsChecked = true,
+                    isTechnologyAgreementChecked = true,
+                    onTermsOfServiceCheckedChanged = {},
+                    onProhibitedItemsCheckedChanged = {},
+                    onTechnologyAgreementCheckedChanged = {}
+                ),
+                onUrlClicked = {},
+                onContinueClicked = {}
+            )
         )
     }
 }
