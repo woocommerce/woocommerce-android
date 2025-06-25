@@ -19,9 +19,9 @@ class UPSDAPTermsOfServiceViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val TERMS_URL = "https://www.ups.com/assets/resources/webcontent/" +
-                "en_US/ups_dap_supplemental_tc.pdf"
+            "en_US/ups_dap_supplemental_tc.pdf"
         private const val PROHIBITED_ITEMS_URL = "https://www.ups.com/us/en/support/shipping-support/" +
-                "shipping-special-care-regulated-items/prohibited-items.page"
+            "shipping-special-care-regulated-items/prohibited-items.page"
         private const val TECHNOLOGY_AGREEMENT_URL = "https://www.ups.com/assets/resources/webcontent/en_US/UTA.pdf"
     }
 
@@ -105,7 +105,7 @@ class UPSDAPTermsOfServiceViewModel @Inject constructor(
     ) {
         val areAllConditionsAccepted: Boolean
             get() = conditionsState.isTermsOfServiceChecked &&
-                    conditionsState.isProhibitedItemsChecked &&
-                    conditionsState.isTechnologyAgreementChecked
+                conditionsState.isProhibitedItemsChecked &&
+                conditionsState.isTechnologyAgreementChecked
     }
 }

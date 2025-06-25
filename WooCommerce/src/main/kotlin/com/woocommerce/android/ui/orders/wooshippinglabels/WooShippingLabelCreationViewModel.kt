@@ -124,7 +124,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
     private val emptyOrder = Order.getEmptyOrder(Date(), Date())
     private val order = MutableStateFlow<Order>(emptyOrder)
-    private val destinationAddress = MutableStateFlow<DestinationShippingAddress>(DestinationShippingAddress.EMPTY)
+    private val destinationAddress = MutableStateFlow(DestinationShippingAddress.EMPTY)
     private val shippingAddresses = MutableStateFlow<WooShippingAddresses?>(WooShippingAddresses.EMPTY)
     private val loadTrigger = MutableSharedFlow<Unit>()
 
@@ -1091,6 +1091,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         private const val NOTIFICATIONS_DELAY = 2_000L
         private const val TYPING_DELAY = 800L
         private const val MULTIPLE_CALLS_DELAY = 50L
+
         @VisibleForTesting
         const val UPSDAP_MISSING_TOS_ERROR_CODE = "missing_upsdap_terms_of_service_acceptance"
     }
