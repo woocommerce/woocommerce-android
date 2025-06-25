@@ -519,6 +519,21 @@ class OrderDetailViewModel @Inject constructor(
         }
     }
 
+    fun onViewShippingLabelClicked(shippingLabel: ShippingLabelModel) {
+        launch {
+            if (isRevampWooShippingEnabled) {
+                triggerEvent(
+                    StartWooShippingLabelCreationFlow(
+                        orderId = awaitOrder().id,
+                        shipmentId = shippingLabel.shipmentId?.toIntOrNull()
+                    )
+                )
+            } else {
+                triggerEvent(StartShippingLabelCreationFlow(orderId = awaitOrder().id))
+            }
+        }
+    }
+
     fun onAddShipmentTrackingClicked() {
         launch {
             triggerEvent(
