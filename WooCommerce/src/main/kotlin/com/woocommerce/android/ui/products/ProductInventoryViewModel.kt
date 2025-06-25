@@ -78,10 +78,9 @@ class ProductInventoryViewModel @Inject constructor(
         if (sku == viewState.inventoryData.sku) {
             return
         }
-        // verify if the sku exists only if the text entered by the user does not match the sku stored locally
-        if (sku.length > 2) {
-            onDataChanged(sku = sku)
-
+        onDataChanged(sku = sku)
+        skuVerificationJob?.cancel()
+        if (sku.isNotEmpty()) {
             if (sku == originalSku) {
                 clearSkuError()
             } else {
@@ -91,14 +90,9 @@ class ProductInventoryViewModel @Inject constructor(
                     clearSkuError()
                 }
 
-                // cancel any existing verification search, then start a new one after a brief delay
-                // so we don't actually perform the fetch until the user stops typing
-                skuVerificationJob?.cancel()
                 skuVerificationJob = launch {
                     delay(AppConstants.SEARCH_TYPING_DELAY_MS)
 
-                    // only after the SKU is available remotely, reset the error if it's available locally, as well
-                    // to avoid showing/hiding error message
                     productRepository.isSkuAvailableRemotely(sku)?.let { isRemotelyAvailable ->
                         if (isRemotelyAvailable) {
                             clearSkuError()
@@ -108,6 +102,8 @@ class ProductInventoryViewModel @Inject constructor(
                     }
                 }
             }
+        } else {
+            clearSkuError()
         }
     }
 
@@ -117,7 +113,7 @@ class ProductInventoryViewModel @Inject constructor(
         }
         onDataChanged(globalUniqueId = globalUniqueId)
 
-        if (isOnlyNumbersAndHyphens(globalUniqueId)) {
+        if (isOnlyNumbersAndHyphensOrEmpty(globalUniqueId)) {
             clearGlobalUniqueIdError()
         } else {
             showGlobalUniqueIdError()
@@ -192,11 +188,9 @@ class ProductInventoryViewModel @Inject constructor(
     private fun hasGlobalUniqueIdError() = viewState.globalUniqueIdErrorMessage != 0 &&
         viewState.globalUniqueIdErrorMessage != null
 
-    private fun isOnlyNumbersAndHyphens(input: String): Boolean {
-        // Define the regex pattern to match only numbers and hyphens
+    private fun isOnlyNumbersAndHyphensOrEmpty(input: String): Boolean {
         val pattern = "^[0-9-]+$"
-        // Check if the input string matches the pattern
-        return input.matches(pattern.toRegex())
+        return input.isEmpty() || input.matches(pattern.toRegex())
     }
 
     override fun onCleared() {
