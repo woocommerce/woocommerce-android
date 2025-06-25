@@ -381,7 +381,15 @@
             android:name="productType"
             android:defaultValue="SIMPLE"
             app:argType="com.woocommerce.android.ui.products.ProductType" />
+        <action
+            android:id="@+id/action_productInventoryFragment_to_barcodeScanningFragment"
+            app:destination="@id/barcodeScanningFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/barcodeScanningFragment"
+        android:name="com.woocommerce.android.ui.barcodescanner.BarcodeScanningFragment"
+        android:label="BarcodeScanningFragment"
+        tools:layout="@layout/fragment_barcode_scanning" />
     <fragment
         android:id="@+id/editVariationAttributesFragment"
         android:name="com.woocommerce.android.ui.products.variations.attributes.edit.EditVariationAttributesFragment"
