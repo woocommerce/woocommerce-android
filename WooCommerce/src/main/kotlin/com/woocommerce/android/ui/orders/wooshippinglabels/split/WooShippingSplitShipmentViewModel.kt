@@ -1,8 +1,5 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.split
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
@@ -35,7 +32,6 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
     private val splitShipment: SplitShipment,
 ) : ScopedViewModel(savedState) {
     private val navArgs: WooShippingSplitShipmentFragmentArgs by savedState.navArgs()
-    var snackbarData by mutableStateOf<ShippingLabelsSnackbarData?>(null)
     private val storeOptions = navArgs.shipmentArgs.storeOptions
 
     private val currentShipments = MutableStateFlow(
@@ -126,10 +122,12 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
                     triggerEvent(MultiLiveEvent.Event.ExitWithResult(result.getOrThrow()))
                 } else {
                     isLoading.value = false
-                    snackbarData = ShippingLabelsSnackbarData(
-                        message = R.string.woo_shipping_split_shipment_error,
-                        actionLabel = R.string.retry,
-                    ) { onDoneTapped() }
+                    splitMessage.value = SplitShipmentMessage.Error(
+                        ShippingLabelsSnackbarData(
+                            message = R.string.woo_shipping_split_shipment_error,
+                            actionLabel = R.string.retry,
+                        ) { onDoneTapped() }
+                    )
                 }
             }
         } else {
@@ -278,6 +276,7 @@ class WooShippingSplitShipmentViewModel @Inject constructor(
                     splitMovement.destinationShipmentKey + 1
                 ),
                 actionLabel = R.string.undo,
+                hasIcon = true,
                 dismissAction = { splitMessage.value = null },
                 action = undoAction
             )
@@ -333,6 +332,7 @@ sealed interface SelectableShippableItemUI {
 sealed class SplitShipmentMessage {
     data object Instructions : SplitShipmentMessage()
     data class Success(val snackbarData: ShippingLabelsSnackbarData) : SplitShipmentMessage()
+    data class Error(val snackbarData: ShippingLabelsSnackbarData) : SplitShipmentMessage()
 }
 
 data class RemoveShipmentSheet(

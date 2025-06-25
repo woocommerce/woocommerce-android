@@ -5,6 +5,7 @@ import com.woocommerce.android.WooException
 import com.woocommerce.android.model.User
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
+import kotlinx.coroutines.runBlocking
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCUserStore
 import javax.inject.Inject
@@ -30,7 +31,9 @@ class UserEligibilityFetcher @Inject constructor(
         }
     }
 
-    fun getUser() = userStore.getUserByEmail(selectedSite.get(), appPrefs.getUserEmail())?.toAppModel()
+    fun getUser() = runBlocking {
+        userStore.getUserByEmail(selectedSite.get(), appPrefs.getUserEmail())?.toAppModel()
+    }
 
     private fun updateUserInfo(user: User) {
         appPrefs.setIsUserEligible(user.isEligible)

@@ -8,7 +8,7 @@ import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.model.toAppModel
-import org.wordpress.android.fluxc.model.LocalOrRemoteId
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
@@ -39,7 +39,7 @@ object OrderTestUtils {
             number = "55",
             status = "pending, Custom 1,Custom 2,Custom 3",
             total = "106.00",
-            localSiteId = LocalOrRemoteId.LocalId(1),
+            localSiteId = LocalId(1),
             metaData = metadata,
             paymentMethod = paymentMethod,
             datePaid = datePaid,
@@ -50,12 +50,12 @@ object OrderTestUtils {
     fun generateOrderShipmentProviders(): List<WCOrderShipmentProviderModel> {
         val result = ArrayList<WCOrderShipmentProviderModel>()
         result.add(
-            WCOrderShipmentProviderModel().apply {
-                localSiteId = 1
-                country = "Australia"
-                carrierName = "Anitaa Test"
+            WCOrderShipmentProviderModel(
+                localSiteId = LocalId(1),
+                country = "Australia",
+                carrierName = "Anitaa Test",
                 carrierLink = "http://google.com"
-            }
+            )
         )
         return result
     }
@@ -224,7 +224,7 @@ object OrderTestUtils {
             billingLastName = "King",
             currency = "USD",
             dateCreated = "2018-02-02T16:11:13Z",
-            localSiteId = LocalOrRemoteId.LocalId(1),
+            localSiteId = LocalId(1),
             orderId = 1,
             number = "55",
             status = "pending",
@@ -269,7 +269,7 @@ object OrderTestUtils {
             billingLastName = "King",
             currency = "USD",
             dateCreated = "2018-02-02T16:11:13Z",
-            localSiteId = LocalOrRemoteId.LocalId(1),
+            localSiteId = LocalId(1),
             orderId = 1,
             number = "55",
             status = "complete",
@@ -288,7 +288,7 @@ object OrderTestUtils {
             billingLastName = "King",
             currency = "USD",
             dateCreated = "2018-02-02T16:11:13Z",
-            localSiteId = LocalOrRemoteId.LocalId(1),
+            localSiteId = LocalId(1),
             orderId = 1,
             number = "55",
             status = "pending",
