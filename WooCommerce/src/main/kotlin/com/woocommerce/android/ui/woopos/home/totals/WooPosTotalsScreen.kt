@@ -167,83 +167,87 @@ private fun TotalsLoaded(
 ) {
     Column(
         modifier = Modifier
-            .background(MaterialTheme.colorScheme.surface)
             .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
+            .background(MaterialTheme.colorScheme.surface),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
     ) {
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .weight(1.1f),
+                .weight(1f)
+                .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
         ) {
-            when (val readerStatus = state.readerStatus) {
-                is WooPosTotalsViewState.ReaderStatus.Disconnected -> {
-                    ReaderDisconnected(modifier = Modifier, status = readerStatus, onUIEvent = onUIEvent)
-                    LocalContext.current.announceForAccessibility(readerStatus.title)
-                }
-
-                is WooPosTotalsViewState.ReaderStatus.Preparing -> {
-                    PreparingReader(
-                        title = readerStatus.title,
-                        subtitle = readerStatus.subtitle
-                    )
-                    LocalContext.current.announceForAccessibility(readerStatus.title)
-                }
-                is WooPosTotalsViewState.ReaderStatus.CheckingOrder -> {
-                    PreparingReader(
-                        title = readerStatus.title,
-                        subtitle = readerStatus.subtitle
-                    )
-                    LocalContext.current.announceForAccessibility(readerStatus.title)
-                }
-
-                is WooPosTotalsViewState.ReaderStatus.ReadyForPayment -> {
-                    ReaderReadyForPayment(readerStatus)
-                    LocalContext.current.announceForAccessibility(readerStatus.title)
-                }
-
-                is WooPosTotalsViewState.ReaderStatus.Unavailable -> {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        horizontal = WooPosSpacing.XLarge.value.toAdaptivePadding(),
+                        vertical = WooPosSpacing.Medium.value.toAdaptivePadding(),
+                    ),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+            ) {
+                when (val readerStatus = state.readerStatus) {
+                    is WooPosTotalsViewState.ReaderStatus.Disconnected -> {
+                        ReaderDisconnected(
+                            status = readerStatus,
+                            onUIEvent = onUIEvent
+                        )
+                        LocalContext.current.announceForAccessibility(readerStatus.title)
+                    }
+                    is WooPosTotalsViewState.ReaderStatus.Preparing -> {
+                        PreparingReader(
+                            title = readerStatus.title,
+                            subtitle = readerStatus.subtitle
+                        )
+                        LocalContext.current.announceForAccessibility(readerStatus.title)
+                    }
+                    is WooPosTotalsViewState.ReaderStatus.CheckingOrder -> {
+                        PreparingReader(
+                            title = readerStatus.title,
+                            subtitle = readerStatus.subtitle
+                        )
+                        LocalContext.current.announceForAccessibility(readerStatus.title)
+                    }
+                    is WooPosTotalsViewState.ReaderStatus.ReadyForPayment -> {
+                        ReaderReadyForPayment(readerStatus)
+                        LocalContext.current.announceForAccessibility(readerStatus.title)
+                    }
+                    WooPosTotalsViewState.ReaderStatus.Unavailable -> Unit
                 }
             }
-        }
 
-        AnimatedContent(
-            targetState = state.totals,
-            label = "totals_grid_animation",
-        ) { state ->
-            when (state) {
-                is Totals.Hidden -> Unit
-                is Totals.Visible -> {
+            AnimatedContent(
+                targetState = state.totals,
+                label = "totals_grid_animation"
+            ) { totalsVisible ->
+                if (totalsVisible is Totals.Visible) {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(
                                 horizontal = WooPosSpacing.XLarge.value.toAdaptivePadding(),
-                                vertical = WooPosSpacing.Medium.value.toAdaptivePadding()
-                            )
-                            .weight(.9f),
+                                vertical = WooPosSpacing.Medium.value.toAdaptivePadding(),
+                            ),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center,
                     ) {
-                        TotalsGrid(totals = state)
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
-                            WooPosOutlinedButton(
-                                text = stringResource(R.string.woopos_payment_take_cash_payment_label),
-                                onClick = { onUIEvent(WooPosTotalsUIEvent.OnCashPaymentClicked) },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                            )
-                            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
-                        }
+                        TotalsGrid(totalsVisible)
                     }
                 }
             }
+
+            Spacer(modifier = Modifier.height(WooPosSpacing.Large.value.toAdaptivePadding()))
         }
+
+        WooPosOutlinedButton(
+            text = stringResource(R.string.woopos_payment_take_cash_payment_label),
+            onClick = { onUIEvent(WooPosTotalsUIEvent.OnCashPaymentClicked) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(WooPosSpacing.Medium.value.toAdaptivePadding())
+                .height(64.dp)
+        )
     }
 }
 
