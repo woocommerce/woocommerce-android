@@ -41,8 +41,6 @@ class ProductInventoryFragment :
     private var _binding: FragmentProductInventoryBinding? = null
     private val binding get() = _binding!!
 
-    private var lastClickedBarcodeButton: Int? = null
-
     override fun onPause() {
         super.onPause()
         productBackOrderSelectorDialog?.dismiss()
@@ -236,7 +234,7 @@ class ProductInventoryFragment :
 
         with(binding.productSkuBarcodeScan) {
             setOnClickListener {
-                lastClickedBarcodeButton = R.id.product_sku_barcode_scan
+                viewModel.updateLastClickedBarcodeButton(R.id.product_sku_barcode_scan)
                 navigateToBarcodeScanningFragment()
             }
         }
@@ -250,7 +248,7 @@ class ProductInventoryFragment :
         }
         with(binding.productGtinBarcodeScan) {
             setOnClickListener {
-                lastClickedBarcodeButton = R.id.product_gtin_barcode_scan
+                viewModel.updateLastClickedBarcodeButton(R.id.product_gtin_barcode_scan)
                 navigateToBarcodeScanningFragment()
             }
         }
@@ -292,7 +290,7 @@ class ProductInventoryFragment :
     }
 
     private fun populateFieldWithScannedCode(code: String) {
-        when (lastClickedBarcodeButton) {
+        when (viewModel.lastClickedBarcodeButton) {
             R.id.product_sku_barcode_scan -> {
                 binding.productSku.text = code
             }
@@ -301,7 +299,7 @@ class ProductInventoryFragment :
             }
             else -> {}
         }
-        lastClickedBarcodeButton = null
+        viewModel.updateLastClickedBarcodeButton(null)
     }
 
     override fun onProductItemSelected(resultCode: Int, selectedItem: String?) {
