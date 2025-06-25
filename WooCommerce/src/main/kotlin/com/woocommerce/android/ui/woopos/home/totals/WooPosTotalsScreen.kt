@@ -239,6 +239,7 @@ private fun TotalsLoaded(
             onClick = { onUIEvent(WooPosTotalsUIEvent.OnCashPaymentClicked) },
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(WooPosSpacing.Medium.value.toAdaptivePadding())
         )
     }
 }
