@@ -700,7 +700,9 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                         shipments.value[selectedShipmentIndex].copy(purchaseState = fallbackPurchaseState)
                     )
                     if (exception is WooException && exception.error.apiErrorCode == UPSDAP_MISSING_TOS_ERROR_CODE) {
-                        TODO("Handle UPSDAP missing TOS error")
+                        shippingAddresses.value?.shipFrom?.let { shipFrom ->
+                            triggerEvent(NavigateToUPSDAPTermsOfService(shipFrom))
+                        }
                     } else {
                         snackbarData = ShippingLabelsSnackbarData(
                             message = R.string.woo_shipping_labels_purchase_error,
@@ -1064,6 +1066,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     data class ShowError(val errorResId: Int) : Event()
     data class NavigateToRefundRequest(val orderId: Long, val labelId: Long) : Event()
     data object NavigateToPaymentMethodEdit : Event()
+    data class NavigateToUPSDAPTermsOfService(val originAddress: OriginShippingAddress) : Event()
 
     object OpenLearnMoreScreen : Event()
 
