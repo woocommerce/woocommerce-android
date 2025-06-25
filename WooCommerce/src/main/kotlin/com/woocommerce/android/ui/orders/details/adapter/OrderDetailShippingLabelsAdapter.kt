@@ -38,6 +38,7 @@ class OrderDetailShippingLabelsAdapter(
         fun onRefundRequested(shippingLabel: ShippingLabelModel)
         fun onPrintShippingLabelClicked(shippingLabel: ShippingLabelModel)
         fun onPrintCustomsFormClicked(shippingLabel: ShippingLabelModel)
+        fun onViewShippingLabelClicked(shippingLabel: ShippingLabelModel)
     }
 
     var shippingLabels: List<ShippingLabelModel> = ArrayList()
