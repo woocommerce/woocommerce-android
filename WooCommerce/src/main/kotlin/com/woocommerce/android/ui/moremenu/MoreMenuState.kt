@@ -31,7 +31,6 @@ sealed class MoreMenuEvent : MultiLiveEvent.Event() {
     data object ViewCouponsEvent : MoreMenuEvent()
 
     data object ViewCustomersEvent : MoreMenuEvent()
-    data object NavigateToWooPosEvent : MoreMenuEvent()
 }
 
 data class MoreMenuItemSection(
@@ -54,7 +53,7 @@ data class MoreMenuItemButton(
     }
 
     enum class Type {
-        Blaze, GoogleForWoo, WooPos, Inbox, Settings,
+        Blaze, GoogleForWoo, Inbox, Settings,
     }
 }
 
