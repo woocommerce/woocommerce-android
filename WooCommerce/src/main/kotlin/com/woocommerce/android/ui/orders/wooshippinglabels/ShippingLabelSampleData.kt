@@ -19,7 +19,7 @@ object ShippingLabelSampleData {
         city = "City",
         postcode = "",
         email = "email",
-        country = "USA",
+        country = "US",
         state = "California",
         id = "id_1",
         isDefault = true,
