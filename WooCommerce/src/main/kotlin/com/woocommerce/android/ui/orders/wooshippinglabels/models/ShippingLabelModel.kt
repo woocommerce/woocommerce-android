@@ -45,6 +45,7 @@ data class ShippingLabelModel(
     val trackingLink: String
         get() = ShipmentTrackingUrls.fromCarrier(carrierId, tracking) ?: ""
 
+    @IgnoredOnParcel
     val refundDuration: Int
         get() = if (carrierId == CARRIER_DHL_EXPRESS_KEY) {
             REFUND_DURATION_DHL_EXPRESS
@@ -52,6 +53,7 @@ data class ShippingLabelModel(
             REFUND_DURATION_DEFAULT
         }
 
+    @IgnoredOnParcel
     val isRefundAvailable: Boolean
         get() {
             val createdDate = createdDate?.time ?: return true
@@ -63,6 +65,7 @@ data class ShippingLabelModel(
                 tracking.isNotEmpty()
         }
 
+    @IgnoredOnParcel
     private val hasLabelExpired: Boolean
         get() = status == ShippingLabelStatus.ANONYMIZED || usedDate != null || expiryDate < System.currentTimeMillis()
 
