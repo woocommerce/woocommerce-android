@@ -190,3 +190,4 @@ gradle.ext {
 
 apply from: './config/gradle/include_builds.gradle'
 apply from: './config/gradle/gradle_build_scan.gradle'
+include ':baselineprofile'

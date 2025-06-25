@@ -13,6 +13,7 @@ plugins {
     alias(libs.plugins.google.protobuf)
     alias(libs.plugins.fladle)
     alias(libs.plugins.dependency.analysis)
+    alias(libs.plugins.baselineprofile)
 }
 
 fladle {
@@ -276,6 +277,8 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.fragment)
     implementation(libs.androidx.hilt.common)
     implementation(libs.androidx.hilt.work)
+    implementation libs.androidx.profileinstaller
+    baselineProfile project(':baselineprofile')
 
     ksp(libs.androidx.hilt.compiler)
     ksp(libs.google.dagger.hilt.compiler)
