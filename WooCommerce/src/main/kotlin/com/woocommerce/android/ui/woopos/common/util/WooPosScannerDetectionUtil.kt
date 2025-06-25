@@ -16,12 +16,6 @@ class WooPosScannerDetectionUtil @Inject constructor(
     private val context: Context,
     private val wooPosLogWrapper: WooPosLogWrapper,
 ) {
-    companion object {
-        private const val PERIPHERAL_CLASS = 0x500
-        private const val KEYBOARD_CLASS = 0x540
-        private const val HID_CLASS = 0x580
-    }
-
     fun detectConnectedScanner(context: Context): ScannerInfo? {
         val bluetoothScanner = detectBluetoothScanner()
         if (bluetoothScanner != null) {
@@ -37,7 +31,7 @@ class WooPosScannerDetectionUtil @Inject constructor(
         try {
             val bluetoothAdapter = (context.getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager)?.adapter
             bluetoothAdapter?.takeIf { it.isEnabled }?.bondedDevices?.forEach { device ->
-                if (isPotentialBarcodeScanner(device)) {
+                if (device.isPotentialBarcodeScanner()) {
                     return createBluetoothScannerInfo(device)
                 }
             }
@@ -65,7 +59,7 @@ class WooPosScannerDetectionUtil @Inject constructor(
 
             inputDeviceIds.forEach { deviceId ->
                 val inputDevice = inputManager.getInputDevice(deviceId)
-                if (inputDevice != null && isPotentialBarcodeScanner(inputDevice)) {
+                if (inputDevice != null && inputDevice.isPotentialBarcodeScanner()) {
                     return ScannerInfo(
                         name = inputDevice.name,
                         type = ScannerType.USB_HID,
@@ -81,15 +75,37 @@ class WooPosScannerDetectionUtil @Inject constructor(
 
     @Suppress("ReturnCount")
     @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
-    private fun isPotentialBarcodeScanner(device: BluetoothDevice): Boolean {
-        val deviceClass = device.bluetoothClass?.deviceClass
+    private fun BluetoothDevice.isPotentialBarcodeScanner(): Boolean {
+        val deviceClass = bluetoothClass?.deviceClass
         return deviceClass != null && isScannerByDeviceClass(deviceClass)
     }
 
     @Suppress("ComplexCondition")
-    private fun isPotentialBarcodeScanner(inputDevice: InputDevice): Boolean {
-        return inputDevice.sources and InputDevice.SOURCE_KEYBOARD != 0 &&
-            inputDevice.keyboardType == InputDevice.KEYBOARD_TYPE_NON_ALPHABETIC
+    private fun InputDevice.isPotentialBarcodeScanner(): Boolean {
+        if (!isExternalUsbDevice()) return false
+
+        return sources and InputDevice.SOURCE_KEYBOARD != 0 &&
+            keyboardType == InputDevice.KEYBOARD_TYPE_NON_ALPHABETIC
+    }
+
+    private fun InputDevice.isExternalUsbDevice(): Boolean {
+        val deviceName = name.lowercase()
+
+        if (deviceName.contains("virtual") ||
+            deviceName.contains("built-in") ||
+            deviceName.contains("internal") ||
+            deviceName.contains("qwerty") ||
+            deviceName.contains("touchscreen") ||
+            deviceName.contains("touch") ||
+            deviceName.contains("trackpad") ||
+            deviceName.contains("mouse") ||
+            deviceName.contains("synaptics") ||
+            deviceName.contains("elan") ||
+            deviceName.contains("alps")) {
+            return false
+        }
+
+        return vendorId > MIN_EXTERNAL_USB_VENDOR_ID
     }
 
     private fun isScannerByDeviceClass(deviceClass: Int): Boolean {
@@ -102,6 +118,13 @@ class WooPosScannerDetectionUtil @Inject constructor(
         if (scanner == null) return "no_scanner_detected"
 
         return "${scanner.name}-(${scanner.type})"
+    }
+
+    private companion object {
+        private const val PERIPHERAL_CLASS = 0x500
+        private const val KEYBOARD_CLASS = 0x540
+        private const val HID_CLASS = 0x580
+        private const val MIN_EXTERNAL_USB_VENDOR_ID = 0x1000
     }
 }
 
