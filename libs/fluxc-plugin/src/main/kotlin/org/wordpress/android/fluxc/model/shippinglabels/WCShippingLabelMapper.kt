@@ -1,6 +1,7 @@
 package org.wordpress.android.fluxc.model.shippinglabels
 
 import com.google.gson.Gson
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.shippinglabels.WCShippingLabelModel.FormData
 import org.wordpress.android.fluxc.model.shippinglabels.WCShippingLabelModel.ShippingLabelAddress
@@ -13,7 +14,7 @@ class WCShippingLabelMapper
     fun map(response: ShippingLabelApiResponse, site: SiteModel): List<WCShippingLabelModel> {
         return response.labelsData?.map { labelItem ->
             WCShippingLabelModel(
-                remoteShippingLabelId = labelItem.labelId ?: 0L,
+                remoteShippingLabelId = RemoteId(labelItem.labelId ?: 0L),
                 trackingNumber = labelItem.trackingNumber ?: "",
                 carrierId = labelItem.carrierId ?: "",
                 serviceName = labelItem.serviceName ?: "",
@@ -28,9 +29,9 @@ class WCShippingLabelMapper
                 commercialInvoiceUrl = labelItem.commercialInvoiceUrl,
                 dateCreated = labelItem.dateCreated,
                 expiryDate = labelItem.expiryDate,
-                remoteOrderId = response.orderId ?: 0L,
+                remoteOrderId = RemoteId(response.orderId ?: 0L),
                 formData = response.formData.toString(),
-                localSiteId = site.id,
+                localSiteId = site.localId(),
             )
         } ?: emptyList()
     }
@@ -45,7 +46,7 @@ class WCShippingLabelMapper
         val gson = Gson()
         return response.labels?.map { labelItem ->
             WCShippingLabelModel(
-                remoteShippingLabelId = labelItem.labelId ?: 0L,
+                remoteShippingLabelId = RemoteId(labelItem.labelId ?: 0L),
                 trackingNumber = labelItem.trackingNumber ?: "",
                 carrierId = labelItem.carrierId ?: "",
                 serviceName = labelItem.serviceName ?: "",
@@ -60,9 +61,9 @@ class WCShippingLabelMapper
                 commercialInvoiceUrl = labelItem.commercialInvoiceUrl,
                 dateCreated = labelItem.dateCreated,
                 expiryDate = labelItem.expiryDate,
-                remoteOrderId = orderId,
+                remoteOrderId = RemoteId(orderId),
                 formData = gson.toJson(FormData(origin = origin, destination = destination)),
-                localSiteId = site.id,
+                localSiteId = site.localId(),
             )
         } ?: emptyList()
     }
