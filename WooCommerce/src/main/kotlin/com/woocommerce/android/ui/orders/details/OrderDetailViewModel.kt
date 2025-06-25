@@ -494,7 +494,13 @@ class OrderDetailViewModel @Inject constructor(
 
     fun onRefundShippingLabelClick(shippingLabelId: Long) {
         launch {
-            triggerEvent(RefundShippingLabel(remoteOrderId = awaitOrder().id, shippingLabelId = shippingLabelId))
+            triggerEvent(
+                RefundShippingLabel(
+                    remoteOrderId = awaitOrder().id,
+                    shippingLabelId = shippingLabelId,
+                    isRevampWooShippingEnabled = isRevampWooShippingEnabled
+                )
+            )
         }
     }
 

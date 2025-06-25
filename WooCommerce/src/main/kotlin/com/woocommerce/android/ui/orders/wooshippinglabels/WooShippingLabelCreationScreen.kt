@@ -395,7 +395,7 @@ private fun LabelCreationScreenWithBottomSheet(
                 onOriginAddressSelected = onOriginAddressSelected,
                 destinationStatus = destinationStatus,
                 noticeBannerUiState = uiState.noticeBannerUiState,
-                isReadOnly = selectedShipment.purchased,
+                shipmentPurchased = selectedShipment.purchased,
                 onEditPaymentMethodClicked = onEditPaymentMethodClicked,
             )
         },
@@ -544,6 +544,7 @@ private fun CreateShippingCards(
         if (shipmentUI.purchased) {
             PrintShippingLabelSection(
                 status = shipmentUI.status,
+                isRefundAvailable = shipmentUI.isRefundAvailable,
                 selectedLabelPaperSizeOption = uiState.paperSizeOption,
                 onLabelPaperSizeOptionSelected = onLabelPaperSizeOptionSelected,
                 onPrintShippingLabelClicked = onPrintShippingLabelClicked,

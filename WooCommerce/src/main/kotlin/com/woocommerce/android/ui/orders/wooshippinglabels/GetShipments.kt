@@ -7,6 +7,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippin
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ShippingLabelDTO
+import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingNetworkingMapper
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
@@ -15,6 +16,7 @@ class GetShipments @Inject constructor(
     private val orderDetailRepository: OrderDetailRepository,
     private val productDetailRepository: ProductDetailRepository,
     private val configDataStore: WooShippingConfigDataStore,
+    private val mapper: WooShippingNetworkingMapper,
 ) {
     suspend operator fun invoke(order: Order): List<ShipmentUIModel> {
         val refunds = orderDetailRepository.getOrderRefunds(order.id)
@@ -75,13 +77,7 @@ class GetShipments @Inject constructor(
         if (noRefundedLabelForShipment == null) {
             shipmentUIModel
         } else {
-            shipmentUIModel.copy(
-                purchased = true,
-                labelId = noRefundedLabelForShipment.labelId,
-                carrierId = noRefundedLabelForShipment.carrierId,
-                trackingNumber = noRefundedLabelForShipment.tracking,
-                status = noRefundedLabelForShipment.status,
-            )
+            shipmentUIModel.copy(purchased = true, label = mapper.invoke(noRefundedLabelForShipment))
         }
     }
 }
