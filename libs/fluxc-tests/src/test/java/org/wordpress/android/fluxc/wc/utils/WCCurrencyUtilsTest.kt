@@ -1,44 +1,41 @@
 package org.wordpress.android.fluxc.wc.utils
 
 import org.junit.Test
-import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
-import org.wordpress.android.fluxc.model.settings.CurrencyPosition
-import org.wordpress.android.fluxc.persistence.entity.WCSettingsModel
+import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.settings.CurrencyPosition.LEFT
+import org.wordpress.android.fluxc.model.settings.CurrencyPosition.RIGHT_SPACE
 import org.wordpress.android.fluxc.utils.WCCurrencyUtils.formatCurrencyForDisplay
+import org.wordpress.android.fluxc.wc.settings.WCSettingsTestUtils.generateSettingsModel
 import kotlin.test.assertEquals
 
 class WCCurrencyUtilsTest {
     @Test
     @Suppress("LongMethod")
     fun testDecimalFormat() {
-        val cadSettings = WCSettingsModel(
-                localSiteId = LocalId(6),
-                currencyCode = "CAD",
-                currencyPosition = CurrencyPosition.LEFT,
-                currencyThousandSeparator = ",",
-                currencyDecimalSeparator = ".",
-                currencyDecimalNumber = 2,
-                couponsEnabled = true
+        val siteModel = SiteModel().apply { id = 6 }
+        val cadSettings = generateSettingsModel(siteModel.localId()).copy(
+            currencyCode = "CAD",
+            currencyPosition = LEFT,
+            currencyThousandSeparator = ",",
+            currencyDecimalSeparator = ".",
+            currencyDecimalNumber = 2,
+            couponsEnabled = true
         )
 
-        val eurSettings = WCSettingsModel(
-                localSiteId = LocalId(6),
-                currencyCode = "EUR",
-                currencyPosition = CurrencyPosition.RIGHT_SPACE,
-                currencyThousandSeparator = ".",
-                currencyDecimalSeparator = ",",
-                currencyDecimalNumber = 2,
-                couponsEnabled = true
+        val eurSettings = generateSettingsModel(siteModel.localId()).copy(
+            currencyCode = "EUR",
+            currencyPosition = RIGHT_SPACE,
+            currencyThousandSeparator = ".",
+            currencyDecimalSeparator = ",",
+            currencyDecimalNumber = 2,
         )
 
-        val jpySettings = WCSettingsModel(
-                localSiteId = LocalId(6),
-                currencyCode = "JPY",
-                currencyPosition = CurrencyPosition.LEFT,
-                currencyThousandSeparator = "",
-                currencyDecimalSeparator = "",
-                currencyDecimalNumber = 0,
-                couponsEnabled = true
+        val jpySettings = generateSettingsModel(siteModel.localId()).copy(
+            currencyCode = "JPY",
+            currencyPosition = LEFT,
+            currencyThousandSeparator = "",
+            currencyDecimalSeparator = "",
+            currencyDecimalNumber = 0,
         )
 
         with(3.22) {

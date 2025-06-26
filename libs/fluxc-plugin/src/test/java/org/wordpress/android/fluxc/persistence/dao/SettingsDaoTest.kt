@@ -12,9 +12,8 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
-import org.wordpress.android.fluxc.model.settings.CurrencyPosition
 import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
-import org.wordpress.android.fluxc.persistence.entity.WCSettingsModel
+import org.wordpress.android.fluxc.wc.settings.WCSettingsTestUtils.generateSettingsModel
 
 @ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
@@ -84,23 +83,5 @@ class SettingsDaoTest {
 
         // then
         assertThat(updatedResult?.couponsEnabled).isFalse()
-    }
-
-    companion object {
-        fun generateSettingsModel(siteId: LocalId) = WCSettingsModel(
-            localSiteId = siteId,
-            currencyCode = "USD",
-            currencyPosition = CurrencyPosition.LEFT,
-            currencyThousandSeparator = ",",
-            currencyDecimalSeparator = ".",
-            currencyDecimalNumber = 2,
-            countryCode = "US",
-            stateCode = "CA",
-            address = "123 Main St",
-            address2 = "Apt 4",
-            city = "San Francisco",
-            postalCode = "94105",
-            couponsEnabled = false
-        )
     }
 }

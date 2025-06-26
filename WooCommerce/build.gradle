@@ -427,6 +427,8 @@ dependencies {
     implementation(libs.google.protobuf.javalite)
 
     lintChecks(libs.android.security.lint)
+
+    testImplementation(testFixtures(project(":libs:fluxc-plugin")))
 }
 
 protobuf {

@@ -12,17 +12,17 @@ import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.gateways.WCGatewayModel
-import org.wordpress.android.fluxc.model.settings.CurrencyPosition
 import org.wordpress.android.fluxc.persistence.entity.OrderEntity
-import org.wordpress.android.fluxc.persistence.entity.WCSettingsModel
 import org.wordpress.android.fluxc.store.WCGatewayStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.fluxc.wc.settings.WCSettingsTestUtils.generateSettingsModel
 
 class WooPosCashPaymentRepositoryTest {
 
@@ -177,13 +177,7 @@ class WooPosCashPaymentRepositoryTest {
     @Test
     fun `given no cached site parameters, when getCurrencySymbol, then load and return currency symbol`() = runTest {
         val site: SiteModel = SiteModel().apply { id = 1 }
-        val siteSettings = WCSettingsModel(
-            localSiteId = site.localId(),
-            currencyCode = "USD",
-            currencyThousandSeparator = ",",
-            currencyDecimalSeparator = ".",
-            currencyPosition = CurrencyPosition.LEFT
-        )
+        val siteSettings = generateSettingsModel(LocalId(1))
         val currencySymbol = "$"
 
         whenever(selectedSite.get()).thenReturn(site)

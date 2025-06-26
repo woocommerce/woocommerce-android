@@ -34,12 +34,11 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.settings.CurrencyPosition.LEFT
 import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
-import org.wordpress.android.fluxc.persistence.entity.WCSettingsModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.fluxc.wc.settings.WCSettingsTestUtils.generateSettingsModel
 import java.math.BigDecimal
 
 @ExperimentalCoroutinesApi
@@ -57,15 +56,7 @@ class CouponDetailsViewModelTest : BaseUnitTest() {
             Result.success(Unit)
     }
     private val wooCommerceStore: WooCommerceStore = mock {
-        on { getSiteSettings(any()) } doReturn WCSettingsModel(
-            LocalId(0),
-            "USD",
-            LEFT,
-            "",
-            "",
-            2,
-            couponsEnabled = false
-        )
+        on { getSiteSettings(any()) } doReturn generateSettingsModel(LocalId(0))
     }
     private val currencyFormatter: CurrencyFormatter = mock {
         on { formatCurrency(any<BigDecimal>(), any(), any()) } doAnswer { it.arguments[0].toString() }

@@ -10,16 +10,16 @@ import org.wordpress.android.fluxc.model.settings.CurrencyPosition
 )
 data class WCSettingsModel(
     val localSiteId: LocalId,
-    val currencyCode: String = "",
+    val currencyCode: String,
     val currencyPosition: CurrencyPosition,
-    val currencyThousandSeparator: String = "",
-    val currencyDecimalSeparator: String = "",
-    val currencyDecimalNumber: Int = 2,
-    val countryCode: String = "",
-    val stateCode: String = "",
-    val address: String = "",
-    val address2: String = "",
-    val city: String = "",
-    val postalCode: String = "",
-    val couponsEnabled: Boolean = false
+    val currencyThousandSeparator: String,
+    val currencyDecimalSeparator: String,
+    val currencyDecimalNumber: Int,
+    val countryCode: String,
+    val stateCode: String,
+    val address: String,
+    val address2: String,
+    val city: String,
+    val postalCode: String,
+    val couponsEnabled: Boolean
 )
