@@ -5,10 +5,10 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.settings.CurrencyPosition
 
 @Entity(
-    tableName = "WCSettingsEntity",
+    tableName = "SettingsEntity",
     primaryKeys = ["localSiteId"]
 )
-data class WCSettingsEntity(
+data class WCSettingsModel(
     val localSiteId: LocalId,
     val currencyCode: String = "",
     val currencyPosition: CurrencyPosition,

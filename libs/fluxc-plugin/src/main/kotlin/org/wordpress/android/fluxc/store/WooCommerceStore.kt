@@ -36,7 +36,7 @@ import org.wordpress.android.fluxc.persistence.SiteSqlUtils
 import org.wordpress.android.fluxc.persistence.dao.ProductSettingsDao
 import org.wordpress.android.fluxc.persistence.dao.SettingsDao
 import org.wordpress.android.fluxc.persistence.dao.TaxBasedOnDao
-import org.wordpress.android.fluxc.persistence.entity.WCSettingsEntity
+import org.wordpress.android.fluxc.persistence.entity.WCSettingsModel
 import org.wordpress.android.fluxc.store.SiteStore.FetchSitesPayload
 import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
 import org.wordpress.android.fluxc.tools.CoroutineEngine
@@ -202,13 +202,13 @@ open class WooCommerceStore @Inject constructor(
     /**
      * Given a [SiteModel], returns its WooCommerce site settings, or null if no settings are stored for this site.
      */
-    fun getSiteSettings(site: SiteModel): WCSettingsEntity? =
+    fun getSiteSettings(site: SiteModel): WCSettingsModel? =
         runBlocking { settingsDao.getSettingsForSite(site.localId()) }
 
     /**
      * Given a [SiteModel], returns its WooCommerce site settings, or null if no settings are stored for this site.
      */
-    suspend fun getSiteSettingsAsync(site: SiteModel): WCSettingsEntity? =
+    suspend fun getSiteSettingsAsync(site: SiteModel): WCSettingsModel? =
         coroutineEngine.withDefaultContext(T.DB, this, "getSiteSettingsAsync") {
             settingsDao.getSettingsForSite(site.localId())
         }
@@ -450,7 +450,7 @@ open class WooCommerceStore @Inject constructor(
         }
     }
 
-    suspend fun fetchSiteGeneralSettings(site: SiteModel): WooResult<WCSettingsEntity> {
+    suspend fun fetchSiteGeneralSettings(site: SiteModel): WooResult<WCSettingsModel> {
         return coroutineEngine.withDefaultContext(T.API, this, "fetchSiteGeneralSettings") {
             val response = wcCoreRestClient.fetchSiteSettingsGeneral(site)
             return@withDefaultContext when {

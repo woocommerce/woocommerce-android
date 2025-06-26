@@ -6,14 +6,14 @@ import org.wordpress.android.fluxc.model.WCProductSettingsModel
 import org.wordpress.android.fluxc.model.taxes.TaxBasedOnSettingEntity
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.SiteSettingOptionResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.SiteSettingsResponse
-import org.wordpress.android.fluxc.persistence.entity.WCSettingsEntity
+import org.wordpress.android.fluxc.persistence.entity.WCSettingsModel
 import javax.inject.Inject
 
 class WCSettingsMapper
 @Inject constructor() {
 
     @Suppress("CyclomaticComplexMethod")
-    fun mapSiteSettings(response: List<SiteSettingsResponse>, site: SiteModel): WCSettingsEntity {
+    fun mapSiteSettings(response: List<SiteSettingsResponse>, site: SiteModel): WCSettingsModel {
         val currencyCode = getValueForSettingsField(response, "woocommerce_currency")
         val currencyPosition = getValueForSettingsField(response, "woocommerce_currency_pos")
         val currencyThousandSep = getValueForSettingsField(response, "woocommerce_price_thousand_sep")
@@ -29,7 +29,7 @@ class WCSettingsMapper
         val state = countryAndState?.getOrNull(1)
         val couponsEnabled = getValueForSettingsField(response, "woocommerce_enable_coupons")
 
-        return WCSettingsEntity(
+        return WCSettingsModel(
             localSiteId = site.localId(),
             currencyCode = currencyCode ?: "",
             currencyPosition = currencyPosition.toCurrencyPositionOrDefault(),
