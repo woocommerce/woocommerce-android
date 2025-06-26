@@ -3,9 +3,9 @@ package org.wordpress.android.fluxc.wc.settings
 import org.junit.Test
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCProductSettingsModel
-import org.wordpress.android.fluxc.model.WCSettingsModel
-import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition
+import org.wordpress.android.fluxc.model.settings.CurrencyPosition
 import org.wordpress.android.fluxc.model.settings.WCSettingsMapper
+import org.wordpress.android.fluxc.persistence.entity.WCSettingsModel
 import kotlin.test.assertEquals
 
 class WCSettingsMapperTest {
@@ -20,7 +20,7 @@ class WCSettingsMapperTest {
     fun `mapper maps to correct settings model`() {
         // given
         val expectedModel = WCSettingsModel(
-            localSiteId = site.id,
+            localSiteId = site.localId(),
             currencyCode = "USD",
             currencyPosition = CurrencyPosition.LEFT,
             currencyThousandSeparator = ",",

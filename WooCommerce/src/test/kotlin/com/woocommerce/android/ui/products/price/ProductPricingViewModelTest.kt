@@ -29,8 +29,8 @@ import org.mockito.kotlin.spy
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.WCSettingsModel
-import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition.LEFT
+import org.wordpress.android.fluxc.model.settings.CurrencyPosition.LEFT
+import org.wordpress.android.fluxc.persistence.entity.WCSettingsModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.util.Calendar

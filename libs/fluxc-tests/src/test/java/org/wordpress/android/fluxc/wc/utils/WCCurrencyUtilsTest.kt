@@ -1,8 +1,9 @@
 package org.wordpress.android.fluxc.wc.utils
 
 import org.junit.Test
-import org.wordpress.android.fluxc.model.WCSettingsModel
-import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
+import org.wordpress.android.fluxc.model.settings.CurrencyPosition
+import org.wordpress.android.fluxc.persistence.entity.WCSettingsModel
 import org.wordpress.android.fluxc.utils.WCCurrencyUtils.formatCurrencyForDisplay
 import kotlin.test.assertEquals
 
@@ -11,7 +12,7 @@ class WCCurrencyUtilsTest {
     @Suppress("LongMethod")
     fun testDecimalFormat() {
         val cadSettings = WCSettingsModel(
-                localSiteId = 6,
+                localSiteId = LocalId(6),
                 currencyCode = "CAD",
                 currencyPosition = CurrencyPosition.LEFT,
                 currencyThousandSeparator = ",",
@@ -21,7 +22,7 @@ class WCCurrencyUtilsTest {
         )
 
         val eurSettings = WCSettingsModel(
-                localSiteId = 6,
+                localSiteId = LocalId(6),
                 currencyCode = "EUR",
                 currencyPosition = CurrencyPosition.RIGHT_SPACE,
                 currencyThousandSeparator = ".",
@@ -31,7 +32,7 @@ class WCCurrencyUtilsTest {
         )
 
         val jpySettings = WCSettingsModel(
-                localSiteId = 6,
+                localSiteId = LocalId(6),
                 currencyCode = "JPY",
                 currencyPosition = CurrencyPosition.LEFT,
                 currencyThousandSeparator = "",

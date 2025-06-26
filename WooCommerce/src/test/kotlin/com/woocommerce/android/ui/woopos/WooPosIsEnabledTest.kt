@@ -12,8 +12,8 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.WCSettingsModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import org.wordpress.android.fluxc.persistence.entity.WCSettingsModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import kotlin.test.Test
 import kotlin.test.assertFalse

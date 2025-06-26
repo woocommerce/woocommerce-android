@@ -24,7 +24,6 @@ import org.wordpress.android.fluxc.TestSiteSqlUtils
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCProductSettingsModel
 import org.wordpress.android.fluxc.model.WCSSRModel
-import org.wordpress.android.fluxc.model.WCSettingsModel
 import org.wordpress.android.fluxc.model.plugin.SitePluginModel
 import org.wordpress.android.fluxc.model.settings.WCSettingsMapper
 import org.wordpress.android.fluxc.model.taxes.TaxBasedOnSettingEntity
@@ -44,9 +43,9 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WooSystemRestCli
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.toDomainModel
 import org.wordpress.android.fluxc.persistence.PluginSqlUtilsWrapper
 import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
-import org.wordpress.android.fluxc.persistence.WCSettingsBuilder
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.fluxc.persistence.dao.TaxBasedOnDao
+import org.wordpress.android.fluxc.persistence.entity.WCSettingsModel
 import org.wordpress.android.fluxc.site.SiteUtils
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.SiteStore
@@ -90,7 +89,8 @@ class WooCommerceStoreTest {
             accountStore = accountStore,
             taxBasedOnDao = taxBasedOnDao,
             pluginSqlUtils = PluginSqlUtilsWrapper(),
-            productSettingsDao = db.productSettingsDao
+            productSettingsDao = db.productSettingsDao,
+            settingsDao = db.settingsDao
         )
     }
     private val error = WooError(INVALID_RESPONSE, NETWORK_ERROR, "Invalid site ID")
@@ -130,7 +130,6 @@ class WooCommerceStoreTest {
             listOf(
                 SitePluginModel::class.java,
                 SiteModel::class.java,
-                WCSettingsBuilder::class.java,
             ),
             WellSqlConfig.ADDON_WOOCOMMERCE
         )

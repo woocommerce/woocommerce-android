@@ -11,7 +11,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.model.WCSettingsModel
+import org.wordpress.android.fluxc.persistence.entity.WCSettingsModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
 @ExperimentalCoroutinesApi

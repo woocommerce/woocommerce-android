@@ -8,7 +8,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.model.WCSettingsModel
+import org.wordpress.android.fluxc.persistence.entity.WCSettingsModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import kotlin.test.assertFalse
 

@@ -15,12 +15,14 @@ import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.WCSettingsModel
+import org.wordpress.android.fluxc.model.settings.CurrencyPosition
 import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import org.wordpress.android.fluxc.persistence.entity.WCSettingsModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.util.Locale
 
@@ -82,9 +84,9 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
             emit(secondSite)
         }
         val firstSettings = WCSettingsModel(
-            localSiteId = 1,
+            localSiteId = LocalId(1),
             currencyCode = "ARS",
-            currencyPosition = WCSettingsModel.CurrencyPosition.RIGHT_SPACE,
+            currencyPosition = CurrencyPosition.RIGHT_SPACE,
             currencyThousandSeparator = ",",
             currencyDecimalSeparator = ".",
             currencyDecimalNumber = 2,
@@ -108,9 +110,9 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
         val site = SiteModel().also { it.id = 1 }
         val sitesFlow = flow { emit(site) }
         val siteSettings = WCSettingsModel(
-            localSiteId = 1,
+            localSiteId = LocalId(1),
             currencyCode = "ARS",
-            currencyPosition = WCSettingsModel.CurrencyPosition.RIGHT_SPACE,
+            currencyPosition = CurrencyPosition.RIGHT_SPACE,
             currencyThousandSeparator = ",",
             currencyDecimalSeparator = ".",
             currencyDecimalNumber = 2,
