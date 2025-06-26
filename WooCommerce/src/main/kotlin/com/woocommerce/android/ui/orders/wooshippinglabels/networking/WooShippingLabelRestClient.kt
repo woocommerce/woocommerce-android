@@ -296,7 +296,8 @@ class WooShippingLabelRestClient @Inject constructor(
                     "city" to originAddress.city,
                     "company" to originAddress.company,
                     "country" to originAddress.country,
-                    "name" to originAddress.name,
+                    // The `name` field is required by the API, but it can't be blank
+                    "name" to originAddress.name.orEmpty().ifBlank { "" },
                     "phone" to originAddress.phone,
                     "postcode" to originAddress.postcode,
                     "state" to originAddress.state,
