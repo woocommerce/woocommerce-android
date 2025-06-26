@@ -4,7 +4,6 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingCar
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ShippingRatePurchaseDTO
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ShippingRatePurchaseResponseDTO
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel.Option
-import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.ShippingRateDTO
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.WooShippingRatesDTO
 import java.math.BigDecimal
 import javax.inject.Inject
@@ -25,37 +24,10 @@ class WooShippingRatesDatasourceMapper @Inject constructor() {
 
     operator fun invoke(
         packageId: String,
-        shippingRateDTO: ShippingRateDTO,
-        rateOptionId: String
-    ): WooShippingRateModel {
-        return WooShippingRateModel(
-            packageId = packageId,
-            shipmentId = shippingRateDTO.shipmentId.orEmpty(),
-            rateId = shippingRateDTO.rateId,
-            serviceId = shippingRateDTO.serviceId,
-            carrierId = shippingRateDTO.carrierId.orEmpty(),
-            serviceName = shippingRateDTO.title,
-            deliveryDays = shippingRateDTO.deliveryDays,
-            price = shippingRateDTO.rate,
-            discount = shippingRateDTO.retailRate?.minus(shippingRateDTO.rate) ?: BigDecimal.ZERO,
-            option = getOption(rateOptionId),
-            carrier = getCarrier(shippingRateDTO.carrierId.orEmpty()),
-            isTrackingEnabled = shippingRateDTO.tracking,
-            hasFreePickup = shippingRateDTO.freePickup,
-            insurance = shippingRateDTO.insurance?.toBigDecimalOrNull(),
-            deliveryDate = shippingRateDTO.deliveryDate,
-            isDeliveryDateGuaranteed = shippingRateDTO.deliveryDateGuaranteed,
-            isSelected = shippingRateDTO.isSelected,
-            listRate = shippingRateDTO.listRate ?: BigDecimal.ZERO,
-            retailRate = shippingRateDTO.retailRate ?: BigDecimal.ZERO
-        )
-    }
-
-    operator fun invoke(
-        packageId: String,
         shippingRateDTO: ShippingRatePurchaseResponseDTO,
         rateOptionId: String
-    ): WooShippingRateModel {
+    ): WooShippingRateModel? {
+        val rateOption = getOption(rateOptionId) ?: return null
         return WooShippingRateModel(
             packageId = packageId,
             shipmentId = shippingRateDTO.shipmentId.orEmpty(),
@@ -66,7 +38,7 @@ class WooShippingRatesDatasourceMapper @Inject constructor() {
             deliveryDays = shippingRateDTO.deliveryDays,
             price = shippingRateDTO.rate,
             discount = shippingRateDTO.retailRate?.minus(shippingRateDTO.rate) ?: BigDecimal.ZERO,
-            option = getOption(rateOptionId),
+            option = rateOption,
             carrier = getCarrier(shippingRateDTO.carrierId.orEmpty()),
             isTrackingEnabled = shippingRateDTO.tracking,
             hasFreePickup = shippingRateDTO.freePickup,
@@ -82,14 +54,15 @@ class WooShippingRatesDatasourceMapper @Inject constructor() {
     operator fun invoke(
         packageId: String,
         shippingRateDTO: ShippingRatePurchaseDTO
-    ): WooShippingRateModel {
+    ): WooShippingRateModel? {
         return invoke(packageId, shippingRateDTO.rate, DEFAULT_RATE_OPTION)
     }
 
     operator fun invoke(response: Map<String, Map<String, WooShippingRatesDTO>>?): List<WooShippingRateOptionsModel> {
         val optionsMap = mutableMapOf<String, MutableList<WooShippingRateModel>>()
         response?.forEach { (packageId, ratesMap) ->
-            ratesMap.forEach { (rateOptionId, wooShippingRates) ->
+            ratesMap.forEach nestedForEach@ { (rateOptionId, wooShippingRates) ->
+                val rateOption = getOption(rateOptionId) ?: return@nestedForEach
                 wooShippingRates.rates.forEach { rate ->
                     val option = WooShippingRateModel(
                         packageId = packageId,
@@ -101,7 +74,7 @@ class WooShippingRatesDatasourceMapper @Inject constructor() {
                         deliveryDays = rate.deliveryDays,
                         price = rate.rate,
                         discount = rate.retailRate?.minus(rate.rate) ?: BigDecimal.ZERO,
-                        option = getOption(rateOptionId),
+                        option = rateOption,
                         carrier = getCarrier(rate.carrierId.orEmpty()),
                         isTrackingEnabled = rate.tracking,
                         hasFreePickup = rate.freePickup,
@@ -126,12 +99,12 @@ class WooShippingRatesDatasourceMapper @Inject constructor() {
         }
     }
 
-    private fun getOption(rateOptionId: String): Option {
+    private fun getOption(rateOptionId: String): Option? {
         return when (rateOptionId) {
             DEFAULT_RATE_OPTION -> Option.DEFAULT
             SIGNATURE_RATE_OPTION -> Option.SIGNATURE
             ADULT_SIGNATURE_RATE_OPTION -> Option.ADULT_SIGNATURE
-            else -> Option.DEFAULT
+            else -> null
         }
     }
 

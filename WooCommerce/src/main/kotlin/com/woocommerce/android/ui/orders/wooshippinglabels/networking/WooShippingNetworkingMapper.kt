@@ -129,7 +129,9 @@ class WooShippingNetworkingMapper @Inject constructor(
         labels = purchasedShippingLabelResponseDTO.labels.map { invoke(it) },
         destination = purchasedShippingLabelResponseDTO.selectedDestination.mapValues { invoke(it.value) },
         origin = purchasedShippingLabelResponseDTO.selectedOrigin.mapValues { invoke(it.value) },
-        rates = purchasedShippingLabelResponseDTO.selectedRates.mapValues { ratesMapper(it.key, it.value) }
+        rates = purchasedShippingLabelResponseDTO.selectedRates.mapValues {
+            requireNotNull(ratesMapper(it.key, it.value))
+        }
     )
 
     operator fun invoke(addressListDTO: Array<AddressDTO>): List<OriginShippingAddress> {
