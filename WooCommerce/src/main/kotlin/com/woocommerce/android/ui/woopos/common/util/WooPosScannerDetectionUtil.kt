@@ -16,35 +16,39 @@ class WooPosScannerDetectionUtil @Inject constructor(
     private val context: Context,
     private val wooPosLogWrapper: WooPosLogWrapper,
 ) {
-    fun detectConnectedScanner(context: Context): ScannerInfo? {
+    fun detectConnectedScanner(context: Context): ScannerInfo {
         val bluetoothScanner = detectBluetoothScanner()
-        if (bluetoothScanner != null) {
+        if (bluetoothScanner !is ScannerInfo.NoScannerDetected) {
             return bluetoothScanner
         }
 
-        return detectUsbHidScanner(context)
+        val usbScanner = detectUsbHidScanner(context)
+        return usbScanner ?: ScannerInfo.NoScannerDetected
     }
 
     @SuppressLint("MissingPermission")
     @Suppress("TooGenericExceptionCaught")
-    private fun detectBluetoothScanner(): ScannerInfo? {
-        try {
+    private fun detectBluetoothScanner(): ScannerInfo {
+        return try {
             val bluetoothAdapter = (context.getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager)?.adapter
             bluetoothAdapter?.takeIf { it.isEnabled }?.bondedDevices?.forEach { device ->
                 if (device.isPotentialBarcodeScanner()) {
                     return createBluetoothScannerInfo(device)
                 }
             }
-        } catch (e: Exception) {
+            ScannerInfo.NoScannerDetected
+        } catch (e: SecurityException) {
             wooPosLogWrapper.e("Bluetooth permission not granted. Cannot detect Bluetooth scanners.", e)
+            ScannerInfo.BluetoothPermissionNotGranted
+        } catch (e: Exception) {
+            wooPosLogWrapper.e("Error detecting Bluetooth scanners: ${e.message}", e)
+            ScannerInfo.NoScannerDetected
         }
-
-        return null
     }
 
     @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
     private fun createBluetoothScannerInfo(device: BluetoothDevice): ScannerInfo {
-        return ScannerInfo(
+        return ScannerInfo.Connected(
             name = device.name ?: "Unknown Bluetooth Scanner",
             type = ScannerType.BLUETOOTH,
         )
@@ -52,7 +56,7 @@ class WooPosScannerDetectionUtil @Inject constructor(
 
     @SuppressLint("MissingPermission")
     @Suppress("TooGenericExceptionCaught")
-    private fun detectUsbHidScanner(context: Context): ScannerInfo? {
+    private fun detectUsbHidScanner(context: Context): ScannerInfo.Connected? {
         try {
             val inputManager = context.getSystemService(Context.INPUT_SERVICE) as InputManager
             val inputDeviceIds = inputManager.inputDeviceIds
@@ -60,7 +64,7 @@ class WooPosScannerDetectionUtil @Inject constructor(
             inputDeviceIds.forEach { deviceId ->
                 val inputDevice = inputManager.getInputDevice(deviceId)
                 if (inputDevice != null && inputDevice.isPotentialBarcodeScanner()) {
-                    return ScannerInfo(
+                    return ScannerInfo.Connected(
                         name = inputDevice.name,
                         type = ScannerType.USB_HID,
                     )
@@ -112,10 +116,12 @@ class WooPosScannerDetectionUtil @Inject constructor(
             deviceClass == HID_CLASS
     }
 
-    fun getScannerInfoString(scanner: ScannerInfo?): String {
-        if (scanner == null) return "no_scanner_detected"
-
-        return "${scanner.name}-(${scanner.type})"
+    fun getScannerInfoString(scanner: ScannerInfo): String {
+        return when (scanner) {
+            is ScannerInfo.Connected -> "${scanner.name}-(${scanner.type})"
+            is ScannerInfo.NoScannerDetected -> "no_scanner_detected"
+            is ScannerInfo.BluetoothPermissionNotGranted -> "bluetooth_permission_not_granted"
+        }
     }
 
     private companion object {
@@ -126,14 +132,19 @@ class WooPosScannerDetectionUtil @Inject constructor(
     }
 }
 
-data class ScannerInfo(
-    val name: String,
-    val type: ScannerType,
-    val deviceClass: Int? = null,
-)
+sealed class ScannerInfo {
+    data class Connected(
+        val name: String,
+        val type: ScannerType,
+        val deviceClass: Int? = null,
+    ) : ScannerInfo()
+
+    data object NoScannerDetected : ScannerInfo()
+
+    data object BluetoothPermissionNotGranted : ScannerInfo()
+}
 
 enum class ScannerType {
     BLUETOOTH,
     USB_HID,
-    UNKNOWN
 }
