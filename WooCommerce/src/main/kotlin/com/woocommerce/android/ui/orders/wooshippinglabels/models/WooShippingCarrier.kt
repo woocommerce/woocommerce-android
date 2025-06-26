@@ -1,9 +1,15 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.models
 
-enum class WooShippingCarrier {
-    FEDEX,
-    USPS,
-    UPS,
-    DHL,
-    UNKNOWN
+enum class WooShippingCarrier(val carrierIds: List<String>) {
+    FEDEX(listOf("fedex")),
+    USPS(listOf("usps")),
+    UPS(listOf("upsdap")),
+    DHL(listOf("dhlexpress", "dhlecommerce", "dhlecommerceasia")),
+    UNKNOWN(emptyList());
+
+    companion object {
+        fun fromCarrierId(carrierId: String): WooShippingCarrier {
+            return values().firstOrNull { it.carrierIds.contains(carrierId) } ?: UNKNOWN
+        }
+    }
 }

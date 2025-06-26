@@ -14,12 +14,7 @@ class WooShippingRatesDatasourceMapper @Inject constructor() {
         private const val SIGNATURE_RATE_OPTION = "signature_required"
         private const val ADULT_SIGNATURE_RATE_OPTION = "adult_signature_required"
 
-        private const val CARRIER_USPS_KEY = "usps"
-        private const val CARRIER_UPS_KEY = "upsdap"
-        private const val CARRIER_FEDEX_KEY = "fedex"
         const val CARRIER_DHL_EXPRESS_KEY = "dhlexpress"
-        private const val CARRIER_DHL_ECOMMERCE_KEY = "dhlecommerce"
-        private const val CARRIER_DHL_ECOMMERCE_ASIA_KEY = "dhlecommerceasia"
     }
 
     operator fun invoke(
@@ -39,7 +34,7 @@ class WooShippingRatesDatasourceMapper @Inject constructor() {
             price = shippingRateDTO.rate,
             discount = shippingRateDTO.retailRate?.minus(shippingRateDTO.rate) ?: BigDecimal.ZERO,
             option = rateOption,
-            carrier = getCarrier(shippingRateDTO.carrierId.orEmpty()),
+            carrier = WooShippingCarrier.fromCarrierId(shippingRateDTO.carrierId.orEmpty()),
             isTrackingEnabled = shippingRateDTO.tracking,
             hasFreePickup = shippingRateDTO.freePickup,
             insurance = shippingRateDTO.insurance?.toBigDecimalOrNull(),
@@ -75,7 +70,7 @@ class WooShippingRatesDatasourceMapper @Inject constructor() {
                         price = rate.rate,
                         discount = rate.retailRate?.minus(rate.rate) ?: BigDecimal.ZERO,
                         option = rateOption,
-                        carrier = getCarrier(rate.carrierId.orEmpty()),
+                        carrier = WooShippingCarrier.fromCarrierId(rate.carrierId.orEmpty()),
                         isTrackingEnabled = rate.tracking,
                         hasFreePickup = rate.freePickup,
                         insurance = rate.insurance?.toBigDecimalOrNull(),
@@ -107,13 +102,4 @@ class WooShippingRatesDatasourceMapper @Inject constructor() {
             else -> null
         }
     }
-
-    private fun getCarrier(carrierId: String) =
-        when (carrierId) {
-            CARRIER_USPS_KEY -> WooShippingCarrier.USPS
-            CARRIER_FEDEX_KEY -> WooShippingCarrier.FEDEX
-            CARRIER_UPS_KEY -> WooShippingCarrier.UPS
-            CARRIER_DHL_EXPRESS_KEY, CARRIER_DHL_ECOMMERCE_KEY, CARRIER_DHL_ECOMMERCE_ASIA_KEY -> WooShippingCarrier.DHL
-            else -> WooShippingCarrier.UNKNOWN
-        }
 }
