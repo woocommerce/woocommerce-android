@@ -7,13 +7,13 @@ plugins {
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.google.dagger.hilt)
     alias(libs.plugins.sentry)
+    alias(libs.plugins.androidx.baselineprofile)
     alias(libs.plugins.androidx.navigation.safeargs)
     alias(libs.plugins.google.services)
     alias(libs.plugins.ksp)
     alias(libs.plugins.google.protobuf)
     alias(libs.plugins.fladle)
     alias(libs.plugins.dependency.analysis)
-    alias(libs.plugins.baselineprofile)
 }
 
 fladle {

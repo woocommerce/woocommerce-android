@@ -25,10 +25,10 @@ androidx-recyclerview-main = '1.3.2'
 androidx-recyclerview-selection = '1.1.0'
 androidx-room = "2.6.1"
 androidx-security-crypto = "1.0.0"
-androidx-test-espresso = '3.4.0'
-androidx-test-ext = '1.1.5'
+androidx-test-espresso = '3.6.1'
+androidx-test-ext = '1.2.1'
 androidx-test-main = '1.4.0'
-androidx-test-uiautomator = '2.2.0'
+androidx-test-uiautomator = '2.3.0'
 androidx-transition = '1.5.1'
 androidx-wear-compose = '1.4.0'
 androidx-wear-tiles = '1.3.0'
@@ -41,6 +41,7 @@ automattic-about = '1.7.0'
 automattic-measure-builds = '3.2.1'
 automattic-tracks = '6.0.3'
 assertj = '3.27.3'
+benchmark = "1.4.0-rc01"
 bumptech-glide = '4.16.0'
 cashapp-turbine = '1.0.0'
 coil = '2.1.0'
@@ -87,6 +88,7 @@ ksp = '2.1.10-1.0.29'
 mockito-kotlin = '5.4.0'
 mpandroidchart = 'v3.1.0'
 photoview = '2.3.0'
+profileinstaller = "1.4.1"
 robolectric = "4.14"
 sentry = '4.10.0'
 squareup-javapoet = "1.7.0"
@@ -104,9 +106,6 @@ wordpress-lint = "2.1.0"
 wordpress-mediapicker = '0.3.4'
 wordpress-utils = '3.15.0'
 zendesk = '5.0.8'
-benchmarkMacroJunit4 = "1.3.4"
-baselineprofile = "1.2.4"
-profileinstaller = "1.4.1"
 
 [libraries]
 android-desugar = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "android-desugar" }
@@ -114,6 +113,7 @@ android-security-lint = { group = "com.android.security.lint", name = "lint", ve
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
 androidx-arch-core-testing = { group = "androidx.arch.core", name = "core-testing", version.ref = "androidx-arch-core" }
+androidx-benchmark-macro-junit4 = { group = "androidx.benchmark", name = "benchmark-macro-junit4", version.ref = "benchmark" }
 androidx-browser = { group = "androidx.browser", name = "browser", version.ref = "androidx-browser" }
 androidx-camera-camera2 = { group = "androidx.camera", name = "camera-camera2", version.ref = "androidx-camera" }
 androidx-camera-lifecycle = { group = "androidx.camera", name = "camera-lifecycle", version.ref = "androidx-camera" }
@@ -159,6 +159,7 @@ androidx-navigation-ui = { group = "androidx.navigation", name = "navigation-ui"
 androidx-paging-runtime = { module = "androidx.paging:paging-runtime", version.ref = "androidx-paging-runtime" }
 androidx-preference-main = { group = "androidx.preference", name = "preference", version.ref = "androidx-preference" }
 androidx-preference-ktx = { group = "androidx.preference", name = "preference-ktx", version.ref = "androidx-preference" }
+androidx-profileinstaller = { group = "androidx.profileinstaller", name = "profileinstaller", version.ref = "profileinstaller" }
 androidx-recyclerview-main = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "androidx-recyclerview-main" }
 androidx-recyclerview-selection = { group = "androidx.recyclerview", name = "recyclerview-selection", version.ref = "androidx-recyclerview-selection" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "androidx-room" }
@@ -272,13 +273,12 @@ wordpress-aztec-main = { group = "org.wordpress", name = "aztec", version.ref = 
 wordpress-aztec-glide-loader = { group = "org.wordpress.aztec", name = "glide-loader", version.ref = "wordpress-aztec" }
 wordpress-utils = { group = "org.wordpress", name = "utils", version.ref = "wordpress-utils" }
 zendesk-support = { group = "com.zendesk", name = "support", version.ref = "zendesk" }
-androidx-benchmark-macro-junit4 = { group = "androidx.benchmark", name = "benchmark-macro-junit4", version.ref = "benchmarkMacroJunit4" }
-androidx-profileinstaller = { group = "androidx.profileinstaller", name = "profileinstaller", version.ref = "profileinstaller" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 android-test = { id = "com.android.test", version.ref = "agp" }
+androidx-baselineprofile = { id = "androidx.baselineprofile", version.ref = "benchmark" }
 androidx-navigation-safeargs = { id = "androidx.navigation.safeargs.kotlin", version.ref = "androidx-navigation" }
 automattic-measure-builds = { id = "com.automattic.android.measure-builds", version.ref = "automattic-measure-builds" }
 dependency-analysis = { id = "com.autonomousapps.dependency-analysis", version.ref = "dependency-analysis" }
@@ -294,4 +294,3 @@ kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 sentry = { id = "io.sentry.android.gradle", version.ref = "sentry" }
 room = { id = "androidx.room", version.ref = "androidx-room" }
-baselineprofile = { id = "androidx.baselineprofile", version.ref = "baselineprofile" }

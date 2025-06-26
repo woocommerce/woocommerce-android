@@ -3,7 +3,6 @@ package com.woocommerce.android.baselineprofile
 import androidx.benchmark.macro.junit4.BaselineProfileRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
-import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -18,7 +17,7 @@ import org.junit.runner.RunWith
  * You can run the generator with the "Generate Baseline Profile" run configuration in Android Studio or
  * the equivalent `generateBaselineProfile` gradle task:
  * ```
- * ./gradlew :WooCommerce:generateReleaseBaselineProfile
+ * ./gradlew :WooCommerce:generateVanillaReleaseBaselineProfile
  * ```
  * The run configuration runs the Gradle task and applies filtering to run only the generators.
  *
@@ -42,8 +41,7 @@ class BaselineProfileGenerator {
     fun generate() {
         // The application id for the running build variant is read from the instrumentation arguments.
         rule.collect(
-            packageName = InstrumentationRegistry.getArguments().getString("targetAppId")
-                ?: throw Exception("targetAppId not passed as instrumentation runner arg"),
+            packageName = PACKAGE_NAME,
 
             // See: https://d.android.com/topic/performance/baselineprofiles/dex-layout-optimizations
             includeInStartupProfile = true

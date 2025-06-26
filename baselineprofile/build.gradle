@@ -3,25 +3,21 @@ import com.android.build.api.dsl.ManagedVirtualDevice
 plugins {
     alias(libs.plugins.android.test)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.baselineprofile)
+    alias(libs.plugins.androidx.baselineprofile)
 }
 
 android {
     namespace 'com.woocommerce.android.baselineprofile'
-    compileSdk 36
+    compileSdk gradle.ext.compileSdkVersion
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-
-    kotlinOptions {
-        jvmTarget = "11"
+        sourceCompatibility = libs.versions.java.get()
+        targetCompatibility = libs.versions.java.get()
     }
 
     defaultConfig {
-        minSdk 28
-        targetSdk 36
+        minSdk 28 // Cant use current "gradle.ext.minSdkVersion", which points to 26, because various calls requires API level 28.
+        targetSdk gradle.ext.targetSdkVersion
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -31,13 +27,11 @@ android {
     flavorDimensions += ["buildType"]
     productFlavors {
         vanilla { dimension = "buildType" }
-        wasabi { dimension = "buildType" }
-        jalapeno { dimension = "buildType" }
     }
 
     // This code creates the gradle managed device used to generate baseline profiles.
     // To use GMD please invoke generation through the command line:
-    // ./gradlew :WooCommerce:generateBaselineProfile
+    // ./gradlew :WooCommerce:generateVanillaReleaseBaselineProfile
     testOptions.managedDevices.devices {
         pixel6Api34(ManagedVirtualDevice) {
             device = "Pixel 6"
