@@ -655,6 +655,61 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         triggerEvent(NavigatePackageSelection)
     }
 
+    fun onUPSTermsAccepted() {
+        @Suppress("ReturnCount")
+        fun selectMatchingRate(
+            newRates: Map<CarrierUI, List<ShippingRateUI>>,
+            previouslySelectedRate: ShippingRateUI,
+            onSelected: () -> Unit
+        ) {
+            val carrier = newRates.keys.find {
+                it.carrier.carrierIds.contains(previouslySelectedRate.defaultRate.rate.carrierId)
+            } ?: return
+
+            val newRate = newRates[carrier]?.find {
+                it.defaultRate.rate.serviceId == previouslySelectedRate.defaultRate.rate.serviceId
+            }?.let {
+                val selectedOption = it.options[previouslySelectedRate.selectedOption.option]
+                if (selectedOption != null) {
+                    it.copy(selectedOption = selectedOption)
+                } else {
+                    null
+                }
+            } ?: return
+
+            selectedRatesFlow.update { currentRates ->
+                currentRates.toMutableList().apply {
+                    set(selectedShipmentIndex, newRate)
+                }
+            }
+            onSelected()
+        }
+
+        val selectedRate = selectedRatesFlow.value[selectedShipmentIndex] ?: return
+
+        // Observe the shipping rates state and use the new rates after the refresh
+        launch {
+            val newRatesState = shippingRatesStatesFlow.drop(1)
+                .filter { it[selectedShipmentIndex] !is ShippingRatesState.Loading }
+                .first()
+            if (newRatesState[selectedShipmentIndex] !is ShippingRatesState.DataState) {
+                WooLog.w(WooLog.T.SHIPPING_LABELS, "Refreshing shipping rates failed")
+                return@launch
+            }
+            val newRates = (newRatesState[selectedShipmentIndex] as ShippingRatesState.DataState).shippingRates
+            selectMatchingRate(
+                newRates = newRates,
+                previouslySelectedRate = selectedRate,
+                onSelected = {
+                    onPurchaseShippingLabel()
+                }
+            )
+        }
+
+        // Trigger a refresh of the shipping rates
+        launch { refreshShippingRates.emit(Unit) }
+    }
+
     @Suppress("ComplexCondition")
     fun onPurchaseShippingLabel() {
         val selectedPackage = selectedPackagesFlow.value[selectedShipmentIndex]
