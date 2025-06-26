@@ -168,11 +168,7 @@ private fun TotalsLoaded(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface)
-            .padding(
-                top = WooPosSpacing.XLarge.value.toAdaptivePadding(),
-                bottom = WooPosSpacing.Small.value.toAdaptivePadding()
-            ),
+            .background(MaterialTheme.colorScheme.surface),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Column(
@@ -180,6 +176,7 @@ private fun TotalsLoaded(
                 .weight(1f)
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
         ) {
             Column(
                 modifier = Modifier
@@ -243,7 +240,8 @@ private fun TotalsLoaded(
             onClick = { onUIEvent(WooPosTotalsUIEvent.OnCashPaymentClicked) },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(WooPosSpacing.Medium.value.toAdaptivePadding())
+                .padding(horizontal = WooPosSpacing.XLarge.value.toAdaptivePadding())
+                .padding(bottom = WooPosSpacing.XLarge.value.toAdaptivePadding())
         )
     }
 }
