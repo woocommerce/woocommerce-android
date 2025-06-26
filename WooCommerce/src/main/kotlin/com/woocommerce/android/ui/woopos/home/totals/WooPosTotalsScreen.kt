@@ -168,7 +168,11 @@ private fun TotalsLoaded(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface),
+            .background(MaterialTheme.colorScheme.surface)
+            .padding(
+                top = WooPosSpacing.XLarge.value.toAdaptivePadding(),
+                bottom = WooPosSpacing.Small.value.toAdaptivePadding()
+            ),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Column(
