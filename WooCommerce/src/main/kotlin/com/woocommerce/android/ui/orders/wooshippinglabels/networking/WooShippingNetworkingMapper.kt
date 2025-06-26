@@ -263,7 +263,7 @@ class WooShippingNetworkingMapper @Inject constructor(
             isSelected = selectedRate.isSelected,
             tracking = selectedRate.isTrackingEnabled,
             listRate = selectedRate.listRate,
-            retailRate = selectedRate.discount
+            retailRate = selectedRate.retailRate
         )
     }
 
