@@ -32,17 +32,15 @@ class WCTaxStoreTest {
     private lateinit var store: WCTaxStore
     private lateinit var roomDb: WCAndroidDatabase
 
-    companion object {
-        private val restClient = mock<WCTaxRestClient>()
-        private val site = SiteModel().apply { id = 321 }
+    private val restClient = mock<WCTaxRestClient>()
+    private val site = SiteModel().apply { id = 321 }
 
-        private val sampleTaxClassResponse: List<TaxClassApiResponse> = TaxTestUtils.generateSampleTaxClassApiResponse()
-        private val sampleTaxClassList: List<WCTaxClassModel> =
-            sampleTaxClassResponse.map { WCTaxClassMapper.map(site.localId(), it) }
+    private val sampleTaxClassResponse: List<TaxClassApiResponse> = TaxTestUtils.generateSampleTaxClassApiResponse()
+    private val sampleTaxClassList: List<WCTaxClassModel> =
+        sampleTaxClassResponse.map { WCTaxClassMapper.map(site.localId(), it) }
 
-        private val errorSite = SiteModel().apply { id = 123 }
-        private val error = WooError(INVALID_RESPONSE, NETWORK_ERROR, "Invalid site ID")
-    }
+    private val errorSite = SiteModel().apply { id = 123 }
+    private val error = WooError(INVALID_RESPONSE, NETWORK_ERROR, "Invalid site ID")
 
     @Before
     fun setUp() {

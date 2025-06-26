@@ -101,9 +101,7 @@ class TaxClassDaoTest {
 
         // then
         val result = sut.getTaxClasses(site.localId())
-        assertThat(result)
-            .containsExactlyInAnyOrderElementsOf(newTaxClasses)
-            .doesNotContain(sampleTaxClass1)
+        assertThat(result).containsExactlyInAnyOrderElementsOf(newTaxClasses)
     }
 
     @Test
