@@ -3,6 +3,7 @@
 package com.woocommerce.android.ui.main
 
 import NotificationsPermissionCard
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
@@ -32,11 +33,15 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentManager.FragmentLifecycleCallbacks
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.NavHostFragment
+import androidx.profileinstaller.ProfileVerifier
+import androidx.profileinstaller.ProfileVerifier.CompilationStatus
+import androidx.work.await
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.google.android.material.appbar.AppBarLayout
 import com.woocommerce.android.AppPrefs
@@ -109,11 +114,15 @@ import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.util.WooAnimUtils.animateBottomBar
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.AppRatingDialog
 import com.woocommerce.android.widgets.DisabledAppBarLayoutBehavior
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
 import org.wordpress.android.util.NetworkUtils
@@ -389,6 +398,7 @@ class MainActivity :
 
     override fun onResume() {
         super.onResume()
+        lifecycleScope.launch { logCompilationStatus() }
         AnalyticsTracker.trackViewShown(this)
 
         // Track if App was opened from a widget
@@ -402,6 +412,49 @@ class MainActivity :
 
         checkConnection()
         viewModel.showFeatureAnnouncementIfNeeded()
+    }
+
+    /**
+     * This method is used for debugging baseline profile purpose based on profile verifier compilation status.
+     *
+     * @see <a href="https://developer.android.com/topic/performance/baselineprofiles/debug-baseline-profiles#installation_issues</a> for more details.
+     */
+    @Suppress("MaxLineLength")
+    @SuppressLint("RestrictedApi")
+    private suspend fun logCompilationStatus() {
+        withContext(Dispatchers.IO) {
+            val status = ProfileVerifier.getCompilationStatusAsync().await()
+            when (status.profileInstallResultCode) {
+                CompilationStatus.RESULT_CODE_NO_PROFILE_INSTALLED ->
+                    WooLog.d(WooLog.T.BASELINE_PROFILES, "ProfileInstaller: Baseline Profile not found")
+
+                CompilationStatus.RESULT_CODE_COMPILED_WITH_PROFILE ->
+                    WooLog.d(WooLog.T.BASELINE_PROFILES, "ProfileInstaller: Compiled with profile")
+
+                CompilationStatus.RESULT_CODE_PROFILE_ENQUEUED_FOR_COMPILATION ->
+                    WooLog.d(WooLog.T.BASELINE_PROFILES, "ProfileInstaller: Enqueued for compilation")
+
+                CompilationStatus.RESULT_CODE_COMPILED_WITH_PROFILE_NON_MATCHING ->
+                    WooLog.d(WooLog.T.BASELINE_PROFILES, "ProfileInstaller: App was installed through Play store")
+
+                CompilationStatus.RESULT_CODE_ERROR_PACKAGE_NAME_DOES_NOT_EXIST ->
+                    WooLog.d(WooLog.T.BASELINE_PROFILES, "ProfileInstaller: PackageName not found")
+
+                CompilationStatus.RESULT_CODE_ERROR_CACHE_FILE_EXISTS_BUT_CANNOT_BE_READ ->
+                    WooLog.d(WooLog.T.BASELINE_PROFILES, "ProfileInstaller: Cache file exists but cannot be read")
+
+                CompilationStatus.RESULT_CODE_ERROR_CANT_WRITE_PROFILE_VERIFICATION_RESULT_CACHE_FILE ->
+                    WooLog.d(WooLog.T.BASELINE_PROFILES, "ProfileInstaller: Can't write cache file")
+
+                CompilationStatus.RESULT_CODE_ERROR_UNSUPPORTED_API_VERSION ->
+                    WooLog.d(WooLog.T.BASELINE_PROFILES, "ProfileInstaller: Enqueued for compilation")
+
+                else -> WooLog.d(
+                    WooLog.T.BASELINE_PROFILES,
+                    "ProfileInstaller: Profile not compiled or enqueued [Result Code: ${status.profileInstallResultCode}]"
+                )
+            }
+        }
     }
 
     override fun onPause() {
