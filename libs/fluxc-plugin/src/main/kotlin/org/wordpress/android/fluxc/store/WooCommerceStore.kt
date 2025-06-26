@@ -6,6 +6,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -33,8 +34,8 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WooSystemRestCli
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.toDomainModel
 import org.wordpress.android.fluxc.persistence.PluginSqlUtilsWrapper
 import org.wordpress.android.fluxc.persistence.SiteSqlUtils
-import org.wordpress.android.fluxc.persistence.WCSettingsSqlUtils
 import org.wordpress.android.fluxc.persistence.dao.ProductSettingsDao
+import org.wordpress.android.fluxc.persistence.dao.SettingsDao
 import org.wordpress.android.fluxc.persistence.dao.TaxBasedOnDao
 import org.wordpress.android.fluxc.store.SiteStore.FetchSitesPayload
 import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
@@ -61,7 +62,8 @@ open class WooCommerceStore @Inject constructor(
     private val accountStore: AccountStore,
     private val taxBasedOnDao: TaxBasedOnDao,
     private val pluginSqlUtils: PluginSqlUtilsWrapper,
-    private val productSettingsDao: ProductSettingsDao
+    private val productSettingsDao: ProductSettingsDao,
+    private val settingsDao: SettingsDao,
 ) : Store(dispatcher) {
     enum class WooPlugin(val pluginName: String) {
         WOO_CORE("woocommerce/woocommerce"),
@@ -201,14 +203,14 @@ open class WooCommerceStore @Inject constructor(
      * Given a [SiteModel], returns its WooCommerce site settings, or null if no settings are stored for this site.
      */
     fun getSiteSettings(site: SiteModel): WCSettingsModel? =
-        WCSettingsSqlUtils.getSettingsForSite(site)
+        runBlocking { settingsDao.getSettingsForSite(site.localId())?.let { settingsMapper.toWCSettingsModel(it) } }
 
     /**
      * Given a [SiteModel], returns its WooCommerce site settings, or null if no settings are stored for this site.
      */
     suspend fun getSiteSettingsAsync(site: SiteModel): WCSettingsModel? =
         coroutineEngine.withDefaultContext(T.DB, this, "getSiteSettingsAsync") {
-            WCSettingsSqlUtils.getSettingsForSite(site)
+            settingsDao.getSettingsForSite(site.localId())?.let { settingsMapper.toWCSettingsModel(it) }
         }
 
     /**
@@ -225,7 +227,7 @@ open class WooCommerceStore @Inject constructor(
      * or null if no settings are stored for this site OR if country is empty/blank
      */
     fun getStoreCountryCode(site: SiteModel): String? {
-        val siteSettings = WCSettingsSqlUtils.getSettingsForSite(site)
+        val siteSettings = runBlocking { settingsDao.getSettingsForSite(site.localId()) }
         return siteSettings?.countryCode
     }
 
@@ -440,7 +442,7 @@ open class WooCommerceStore @Inject constructor(
 
                 else -> {
                     response.result?.let {
-                        WCSettingsSqlUtils.setCouponsEnabled(site, it)
+                        settingsDao.setCouponsEnabled(site.localId(), it)
                         it
                     } ?: false
                 }
@@ -461,10 +463,10 @@ open class WooCommerceStore @Inject constructor(
                 }
 
                 response.result != null -> {
-                    val settings = settingsMapper.mapSiteSettings(response.result, site)
-                    WCSettingsSqlUtils.insertOrUpdateSettings(settings)
+                    val settingsModel = settingsMapper.mapSiteSettings(response.result, site)
+                    settingsDao.insertOrUpdateSettings(settingsModel.let { settingsMapper.toWCSettingsEntity(it) })
 
-                    WooResult(settings)
+                    WooResult(settingsModel)
                 }
 
                 else -> {

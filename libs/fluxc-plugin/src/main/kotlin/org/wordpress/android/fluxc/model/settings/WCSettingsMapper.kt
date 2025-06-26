@@ -8,6 +8,7 @@ import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition
 import org.wordpress.android.fluxc.model.taxes.TaxBasedOnSettingEntity
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.SiteSettingOptionResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.SiteSettingsResponse
+import org.wordpress.android.fluxc.persistence.entity.WCSettingsEntity
 import javax.inject.Inject
 
 class WCSettingsMapper
@@ -68,5 +69,41 @@ class WCSettingsMapper
 
     private fun getValueForSettingsField(settingsResponse: List<SiteSettingsResponse>, field: String): String? {
         return settingsResponse.find { it.id != null && it.id == field }?.value?.asString
+    }
+
+    fun toWCSettingsModel(entity: WCSettingsEntity): WCSettingsModel {
+        return WCSettingsModel(
+            localSiteId = entity.localSiteId.value,
+            currencyCode = entity.currencyCode,
+            currencyPosition = CurrencyPosition.fromString(entity.currencyPosition),
+            currencyThousandSeparator = entity.currencyThousandSeparator,
+            currencyDecimalSeparator = entity.currencyDecimalSeparator,
+            currencyDecimalNumber = entity.currencyDecimalNumber,
+            countryCode = entity.countryCode,
+            stateCode = entity.stateCode,
+            address = entity.address,
+            address2 = entity.address2,
+            city = entity.city,
+            postalCode = entity.postalCode,
+            couponsEnabled = entity.couponsEnabled
+        )
+    }
+
+    fun toWCSettingsEntity(model: WCSettingsModel): WCSettingsEntity {
+        return WCSettingsEntity(
+            localSiteId = LocalId(model.localSiteId),
+            currencyCode = model.currencyCode,
+            currencyPosition = model.currencyPosition.name.lowercase(),
+            currencyThousandSeparator = model.currencyThousandSeparator,
+            currencyDecimalSeparator = model.currencyDecimalSeparator,
+            currencyDecimalNumber = model.currencyDecimalNumber,
+            countryCode = model.countryCode,
+            stateCode = model.stateCode,
+            address = model.address,
+            address2 = model.address2,
+            city = model.city,
+            postalCode = model.postalCode,
+            couponsEnabled = model.couponsEnabled
+        )
     }
 }
