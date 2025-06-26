@@ -159,7 +159,8 @@ class WooShippingLabelRestClient @Inject constructor(
                 "selected_rate_options" to "",
                 "hazmat" to mapOf(selectedPackage.boxId to hazmat),
                 "customs" to customs,
-                "user_meta" to mapOf("last_order_completed" to markOrderComplete)
+                "user_meta" to mapOf("last_order_completed" to markOrderComplete),
+                "features_supported_by_client" to listOf("upsdap"),
             ),
             clazz = PurchasedShippingLabelResponseDTO::class.java,
         ).toWooPayload()
