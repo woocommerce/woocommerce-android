@@ -1,4 +1,6 @@
-package org.wordpress.android.fluxc.model
+package com.woocommerce.android.model
+
+import org.wordpress.android.fluxc.model.settings.CurrencyPosition
 
 data class WCSettingsModel(
     val localSiteId: Int,
@@ -14,8 +16,4 @@ data class WCSettingsModel(
     val postalCode: String = "",
     val stateCode: String = "", // The state code for the site in 2-letter format i.e. NY
     val couponsEnabled: Boolean = false
-) {
-    enum class CurrencyPosition {
-        LEFT, RIGHT, LEFT_SPACE, RIGHT_SPACE
-    }
-}
+)

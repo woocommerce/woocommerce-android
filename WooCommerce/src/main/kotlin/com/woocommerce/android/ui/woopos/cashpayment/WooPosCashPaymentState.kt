@@ -2,7 +2,7 @@ package com.woocommerce.android.ui.woopos.cashpayment
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.model.WCSettingsModel
+import org.wordpress.android.fluxc.model.settings.CurrencyPosition
 import java.math.BigDecimal
 
 @Parcelize
@@ -15,7 +15,7 @@ sealed class WooPosCashPaymentState : Parcelable {
         val total: BigDecimal,
         val totalText: String,
         val currencySymbol: String,
-        val currencyPosition: WCSettingsModel.CurrencyPosition,
+        val currencyPosition: CurrencyPosition,
         val decimalSeparator: String,
         val numberOfDecimals: Int,
         val button: Button

@@ -1,6 +1,6 @@
 package org.wordpress.android.fluxc.utils
 
-import org.wordpress.android.fluxc.model.WCSettingsModel
+import org.wordpress.android.fluxc.persistence.entity.WCSettingsEntity
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.AppLog.T
 import java.text.DecimalFormat
@@ -14,7 +14,7 @@ object WCCurrencyUtils {
      *
      * Currency symbol and placement are not handled.
      */
-    fun formatCurrencyForDisplay(rawValue: Double, siteSettings: WCSettingsModel, locale: Locale? = null): String {
+    fun formatCurrencyForDisplay(rawValue: Double, siteSettings: WCSettingsEntity, locale: Locale? = null): String {
         return formatCurrencyForDisplay(
             rawValue = rawValue,
             currencyDecimalNumber = siteSettings.currencyDecimalNumber,

@@ -2,7 +2,7 @@ package org.wordpress.android.fluxc.persistence.entity
 
 import androidx.room.Entity
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
-import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition
+import org.wordpress.android.fluxc.model.settings.CurrencyPosition
 
 @Entity(
     tableName = "WCSettingsEntity",

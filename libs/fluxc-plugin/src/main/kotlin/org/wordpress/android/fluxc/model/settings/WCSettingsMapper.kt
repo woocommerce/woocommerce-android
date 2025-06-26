@@ -3,8 +3,6 @@ package org.wordpress.android.fluxc.model.settings
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCProductSettingsModel
-import org.wordpress.android.fluxc.model.WCSettingsModel
-import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition
 import org.wordpress.android.fluxc.model.taxes.TaxBasedOnSettingEntity
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.SiteSettingOptionResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.SiteSettingsResponse
@@ -15,7 +13,7 @@ class WCSettingsMapper
 @Inject constructor() {
 
     @Suppress("CyclomaticComplexMethod")
-    fun mapSiteSettings(response: List<SiteSettingsResponse>, site: SiteModel): WCSettingsModel {
+    fun mapSiteSettings(response: List<SiteSettingsResponse>, site: SiteModel): WCSettingsEntity {
         val currencyCode = getValueForSettingsField(response, "woocommerce_currency")
         val currencyPosition = getValueForSettingsField(response, "woocommerce_currency_pos")
         val currencyThousandSep = getValueForSettingsField(response, "woocommerce_price_thousand_sep")
@@ -31,8 +29,8 @@ class WCSettingsMapper
         val state = countryAndState?.getOrNull(1)
         val couponsEnabled = getValueForSettingsField(response, "woocommerce_enable_coupons")
 
-        return WCSettingsModel(
-            localSiteId = site.id,
+        return WCSettingsEntity(
+            localSiteId = site.localId(),
             currencyCode = currencyCode ?: "",
             currencyPosition = currencyPosition.toCurrencyPositionOrDefault(),
             currencyThousandSeparator = currencyThousandSep ?: "",
@@ -75,41 +73,5 @@ class WCSettingsMapper
 
     private fun getValueForSettingsField(settingsResponse: List<SiteSettingsResponse>, field: String): String? {
         return settingsResponse.find { it.id != null && it.id == field }?.value?.asString
-    }
-
-    fun toWCSettingsModel(entity: WCSettingsEntity): WCSettingsModel {
-        return WCSettingsModel(
-            localSiteId = entity.localSiteId.value,
-            currencyCode = entity.currencyCode,
-            currencyPosition = entity.currencyPosition,
-            currencyThousandSeparator = entity.currencyThousandSeparator,
-            currencyDecimalSeparator = entity.currencyDecimalSeparator,
-            currencyDecimalNumber = entity.currencyDecimalNumber,
-            countryCode = entity.countryCode,
-            stateCode = entity.stateCode,
-            address = entity.address,
-            address2 = entity.address2,
-            city = entity.city,
-            postalCode = entity.postalCode,
-            couponsEnabled = entity.couponsEnabled
-        )
-    }
-
-    fun toWCSettingsEntity(model: WCSettingsModel): WCSettingsEntity {
-        return WCSettingsEntity(
-            localSiteId = LocalId(model.localSiteId),
-            currencyCode = model.currencyCode,
-            currencyPosition = model.currencyPosition,
-            currencyThousandSeparator = model.currencyThousandSeparator,
-            currencyDecimalSeparator = model.currencyDecimalSeparator,
-            currencyDecimalNumber = model.currencyDecimalNumber,
-            countryCode = model.countryCode,
-            stateCode = model.stateCode,
-            address = model.address,
-            address2 = model.address2,
-            city = model.city,
-            postalCode = model.postalCode,
-            couponsEnabled = model.couponsEnabled
-        )
     }
 }

@@ -1,7 +1,7 @@
 package org.wordpress.android.fluxc.persistence.converters
 
 import androidx.room.TypeConverter
-import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition
+import org.wordpress.android.fluxc.model.settings.CurrencyPosition
 
 class CurrencyPositionConverter {
 

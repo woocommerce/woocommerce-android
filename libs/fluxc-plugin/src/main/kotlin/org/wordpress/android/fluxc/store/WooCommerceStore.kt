@@ -15,12 +15,11 @@ import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCProductSettingsModel
 import org.wordpress.android.fluxc.model.WCSSRModel
-import org.wordpress.android.fluxc.model.WCSettingsModel
-import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition.LEFT
-import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition.LEFT_SPACE
-import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition.RIGHT
-import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition.RIGHT_SPACE
 import org.wordpress.android.fluxc.model.plugin.SitePluginModel
+import org.wordpress.android.fluxc.model.settings.CurrencyPosition.LEFT
+import org.wordpress.android.fluxc.model.settings.CurrencyPosition.LEFT_SPACE
+import org.wordpress.android.fluxc.model.settings.CurrencyPosition.RIGHT
+import org.wordpress.android.fluxc.model.settings.CurrencyPosition.RIGHT_SPACE
 import org.wordpress.android.fluxc.model.settings.WCSettingsMapper
 import org.wordpress.android.fluxc.model.taxes.TaxBasedOnSettingEntity
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.UNKNOWN
@@ -37,6 +36,7 @@ import org.wordpress.android.fluxc.persistence.SiteSqlUtils
 import org.wordpress.android.fluxc.persistence.dao.ProductSettingsDao
 import org.wordpress.android.fluxc.persistence.dao.SettingsDao
 import org.wordpress.android.fluxc.persistence.dao.TaxBasedOnDao
+import org.wordpress.android.fluxc.persistence.entity.WCSettingsEntity
 import org.wordpress.android.fluxc.store.SiteStore.FetchSitesPayload
 import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
 import org.wordpress.android.fluxc.tools.CoroutineEngine
@@ -202,15 +202,15 @@ open class WooCommerceStore @Inject constructor(
     /**
      * Given a [SiteModel], returns its WooCommerce site settings, or null if no settings are stored for this site.
      */
-    fun getSiteSettings(site: SiteModel): WCSettingsModel? =
-        runBlocking { settingsDao.getSettingsForSite(site.localId())?.let { settingsMapper.toWCSettingsModel(it) } }
+    fun getSiteSettings(site: SiteModel): WCSettingsEntity? =
+        runBlocking { settingsDao.getSettingsForSite(site.localId()) }
 
     /**
      * Given a [SiteModel], returns its WooCommerce site settings, or null if no settings are stored for this site.
      */
-    suspend fun getSiteSettingsAsync(site: SiteModel): WCSettingsModel? =
+    suspend fun getSiteSettingsAsync(site: SiteModel): WCSettingsEntity? =
         coroutineEngine.withDefaultContext(T.DB, this, "getSiteSettingsAsync") {
-            settingsDao.getSettingsForSite(site.localId())?.let { settingsMapper.toWCSettingsModel(it) }
+            settingsDao.getSettingsForSite(site.localId())
         }
 
     /**
@@ -450,7 +450,7 @@ open class WooCommerceStore @Inject constructor(
         }
     }
 
-    suspend fun fetchSiteGeneralSettings(site: SiteModel): WooResult<WCSettingsModel> {
+    suspend fun fetchSiteGeneralSettings(site: SiteModel): WooResult<WCSettingsEntity> {
         return coroutineEngine.withDefaultContext(T.API, this, "fetchSiteGeneralSettings") {
             val response = wcCoreRestClient.fetchSiteSettingsGeneral(site)
             return@withDefaultContext when {
@@ -464,7 +464,7 @@ open class WooCommerceStore @Inject constructor(
 
                 response.result != null -> {
                     val settingsModel = settingsMapper.mapSiteSettings(response.result, site)
-                    settingsDao.insertOrUpdateSettings(settingsModel.let { settingsMapper.toWCSettingsEntity(it) })
+                    settingsDao.insertOrUpdateSettings(settingsModel)
 
                     WooResult(settingsModel)
                 }
