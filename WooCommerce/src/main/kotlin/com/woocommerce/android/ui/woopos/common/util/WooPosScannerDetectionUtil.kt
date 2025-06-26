@@ -73,14 +73,12 @@ class WooPosScannerDetectionUtil @Inject constructor(
         return null
     }
 
-    @Suppress("ReturnCount")
     @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
     private fun BluetoothDevice.isPotentialBarcodeScanner(): Boolean {
         val deviceClass = bluetoothClass?.deviceClass
         return deviceClass != null && isScannerByDeviceClass(deviceClass)
     }
 
-    @Suppress("ComplexCondition")
     private fun InputDevice.isPotentialBarcodeScanner(): Boolean {
         if (!isExternalUsbDevice()) return false
 
@@ -91,21 +89,21 @@ class WooPosScannerDetectionUtil @Inject constructor(
     private fun InputDevice.isExternalUsbDevice(): Boolean {
         val deviceName = name.lowercase()
 
-        if (deviceName.contains("virtual") ||
-            deviceName.contains("built-in") ||
-            deviceName.contains("internal") ||
-            deviceName.contains("qwerty") ||
-            deviceName.contains("touchscreen") ||
-            deviceName.contains("touch") ||
-            deviceName.contains("trackpad") ||
-            deviceName.contains("mouse") ||
-            deviceName.contains("synaptics") ||
-            deviceName.contains("elan") ||
-            deviceName.contains("alps")) {
-            return false
-        }
+        val internalDeviceKeywords = listOf(
+            "virtual",
+            "built-in",
+            "internal",
+            "qwerty",
+            "touchscreen",
+            "touch",
+            "trackpad",
+            "mouse",
+            "synaptics",
+            "elan",
+            "alps"
+        )
 
-        return vendorId > MIN_EXTERNAL_USB_VENDOR_ID
+        return deviceName !in internalDeviceKeywords && vendorId > MIN_EXTERNAL_USB_VENDOR_ID
     }
 
     private fun isScannerByDeviceClass(deviceClass: Int): Boolean {
