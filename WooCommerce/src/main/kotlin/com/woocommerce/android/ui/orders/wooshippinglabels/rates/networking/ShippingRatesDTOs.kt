@@ -50,7 +50,7 @@ data class DestinationAddressDTO(
 )
 
 data class OriginAddressDTO(
-    @SerializedName("address_1") val address: String? = null,
+    @SerializedName("address") val address: String? = null,
     @SerializedName("address_2") val address2: String? = null,
     val city: String? = null,
     val company: String? = null,
