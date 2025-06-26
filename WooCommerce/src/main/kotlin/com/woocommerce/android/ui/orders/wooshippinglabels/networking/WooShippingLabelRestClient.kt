@@ -18,6 +18,16 @@ import javax.inject.Inject
 class WooShippingLabelRestClient @Inject constructor(
     private val wooNetwork: WooNetwork
 ) {
+    suspend fun fetchShippingEligibility(site: SiteModel, orderId: Long): WooPayload<EligibilityResponse> {
+        val url = "/wcshipping/v1/eligibility/$orderId"
+
+        return wooNetwork.executeGetGsonRequest(
+            site = site,
+            path = url,
+            clazz = EligibilityResponse::class.java,
+        ).toWooPayload()
+    }
+
     suspend fun fetchShippingLabelPrinting(
         site: SiteModel,
         labelIds: List<Long>,
