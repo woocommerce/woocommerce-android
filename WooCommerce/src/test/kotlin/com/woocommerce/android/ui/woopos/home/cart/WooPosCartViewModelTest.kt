@@ -7,12 +7,14 @@ import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.ProductTestUtils
+import com.woocommerce.android.ui.woopos.common.composeui.modifier.BarcodeInputDetector
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetCouponById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetVariationById
 import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosSearchByIdentifier
 import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosSearchByIdentifierResult
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.ui.woopos.common.util.WooPosScannerDetectionUtil
 import com.woocommerce.android.ui.woopos.common.util.WooPosSoundHelper
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
@@ -110,6 +112,8 @@ class WooPosCartViewModelTest {
     private val cartItemsUpdater: WooPosCartItemsUpdater = mock()
     private val searchByIdentifier: WooPosSearchByIdentifier = mock()
     private val wooPosLogWrapper: WooPosLogWrapper = mock()
+    private val scannerDetectionUtil: WooPosScannerDetectionUtil = mock()
+    private val context: android.content.Context = mock()
 
     @Test
     fun `given empty cart, when product clicked in product selector, then should add product to cart`() = runTest {
@@ -1021,7 +1025,7 @@ class WooPosCartViewModelTest {
         val states = sut.state.captureValues()
 
         // WHEN
-        sut.onUIEvent(WooPosCartUIEvent.OnBarcodeScanned("123456789"))
+        sut.onUIEvent(WooPosCartUIEvent.OnBarcodeScanned("123456789", createTestMetadata()))
 
         // THEN
         val itemsInCart = (states[1].body as WooPosCartState.Body.WithItems).itemsInCart
@@ -1046,7 +1050,7 @@ class WooPosCartViewModelTest {
         val sut = createSut()
 
         // WHEN
-        sut.onUIEvent(WooPosCartUIEvent.OnBarcodeScanned("123456789"))
+        sut.onUIEvent(WooPosCartUIEvent.OnBarcodeScanned("123456789", createTestMetadata()))
 
         // THEN
         verify(analyticsTracker).track(
@@ -1076,7 +1080,7 @@ class WooPosCartViewModelTest {
             val states = sut.state.captureValues()
 
             // WHEN
-            sut.onUIEvent(WooPosCartUIEvent.OnBarcodeScanned("123456789"))
+            sut.onUIEvent(WooPosCartUIEvent.OnBarcodeScanned("123456789", createTestMetadata()))
             advanceUntilIdle()
 
             // THEN
@@ -1105,7 +1109,7 @@ class WooPosCartViewModelTest {
             val sut = createSut()
 
             // WHEN
-            sut.onUIEvent(WooPosCartUIEvent.OnBarcodeScanned("123456789"))
+            sut.onUIEvent(WooPosCartUIEvent.OnBarcodeScanned("123456789", createTestMetadata()))
             advanceUntilIdle()
 
             // THEN
@@ -1141,7 +1145,7 @@ class WooPosCartViewModelTest {
             val states = sut.state.captureValues()
 
             // WHEN
-            sut.onUIEvent(WooPosCartUIEvent.OnBarcodeScanned("123456789"))
+            sut.onUIEvent(WooPosCartUIEvent.OnBarcodeScanned("123456789", createTestMetadata()))
             advanceUntilIdle()
 
             // THEN
@@ -1168,7 +1172,7 @@ class WooPosCartViewModelTest {
             val sut = createSut()
 
             // WHEN
-            sut.onUIEvent(WooPosCartUIEvent.OnBarcodeScanned("123456789"))
+            sut.onUIEvent(WooPosCartUIEvent.OnBarcodeScanned("123456789", createTestMetadata()))
             advanceUntilIdle()
 
             // THEN
@@ -1207,7 +1211,7 @@ class WooPosCartViewModelTest {
             )
 
             // WHEN
-            sut.onUIEvent(WooPosCartUIEvent.OnBarcodeScanned("123456789"))
+            sut.onUIEvent(WooPosCartUIEvent.OnBarcodeScanned("123456789", createTestMetadata()))
             advanceUntilIdle()
 
             // THEN
@@ -1236,7 +1240,7 @@ class WooPosCartViewModelTest {
         val states = sut.state.captureValues()
 
         // WHEN
-        sut.onUIEvent(WooPosCartUIEvent.OnBarcodeScanned("123456789"))
+        sut.onUIEvent(WooPosCartUIEvent.OnBarcodeScanned("123456789", createTestMetadata()))
         advanceUntilIdle()
 
         // THEN
@@ -1260,7 +1264,7 @@ class WooPosCartViewModelTest {
         val sut = createSut()
 
         // WHEN
-        sut.onUIEvent(WooPosCartUIEvent.OnBarcodeScanned("123456789"))
+        sut.onUIEvent(WooPosCartUIEvent.OnBarcodeScanned("123456789", createTestMetadata()))
         advanceUntilIdle()
 
         // THEN
@@ -1308,7 +1312,7 @@ class WooPosCartViewModelTest {
         val states = sut.state.captureValues()
 
         // WHEN
-        sut.onUIEvent(WooPosCartUIEvent.OnBarcodeScanned("VAR123456"))
+        sut.onUIEvent(WooPosCartUIEvent.OnBarcodeScanned("VAR123456", createTestMetadata()))
         advanceUntilIdle()
 
         // THEN
@@ -1369,6 +1373,8 @@ class WooPosCartViewModelTest {
         )
     }
 
+    private fun createTestMetadata() = BarcodeInputDetector.ScanMetadata(scanDurationMs = 100L)
+
     private fun createSut(): WooPosCartViewModel {
         return WooPosCartViewModel(
             childrenToParentEventSender,
@@ -1386,6 +1392,8 @@ class WooPosCartViewModelTest {
             searchByIdentifier,
             wooPosLogWrapper,
             soundHelper,
+            scannerDetectionUtil,
+            context,
             savedState,
         )
     }
