@@ -129,7 +129,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             val scanDurationMs: Long,
             val isNumericOnly: Boolean,
             val barcodeLength: Int,
-            val scannerInfo: String? = null,
+            val scannerInfo: String?,
         ) : Event() {
             override val name: String = "barcode_scanned"
 
