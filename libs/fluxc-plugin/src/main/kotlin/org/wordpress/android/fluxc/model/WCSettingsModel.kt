@@ -1,7 +1,5 @@
 package org.wordpress.android.fluxc.model
 
-import java.util.Locale
-
 data class WCSettingsModel(
     val localSiteId: Int,
     val currencyCode: String, // The currency code for the site in 3-letter ISO 4217 format
@@ -18,11 +16,6 @@ data class WCSettingsModel(
     val couponsEnabled: Boolean = false
 ) {
     enum class CurrencyPosition {
-        LEFT, RIGHT, LEFT_SPACE, RIGHT_SPACE;
-
-        companion object {
-            private val reverseMap = values().associateBy(CurrencyPosition::name)
-            fun fromString(type: String?) = reverseMap[type?.uppercase(Locale.US)] ?: LEFT
-        }
+        LEFT, RIGHT, LEFT_SPACE, RIGHT_SPACE
     }
 }

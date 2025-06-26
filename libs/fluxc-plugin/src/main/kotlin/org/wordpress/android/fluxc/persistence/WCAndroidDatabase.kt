@@ -22,6 +22,7 @@ import org.wordpress.android.fluxc.model.taxes.TaxRateEntity
 import org.wordpress.android.fluxc.model.taxes.WCTaxClassModel
 import org.wordpress.android.fluxc.model.user.WCUserModel
 import org.wordpress.android.fluxc.persistence.converters.BigDecimalConverter
+import org.wordpress.android.fluxc.persistence.converters.CurrencyPositionConverter
 import org.wordpress.android.fluxc.persistence.converters.LocalIdConverter
 import org.wordpress.android.fluxc.persistence.converters.LongListConverter
 import org.wordpress.android.fluxc.persistence.converters.RemoteIdConverter
@@ -178,7 +179,8 @@ const val WC_DATABASE_VERSION = 51
         LongListConverter::class,
         StringListConverter::class,
         RemoteIdConverter::class,
-        BigDecimalConverter::class
+        BigDecimalConverter::class,
+        CurrencyPositionConverter::class,
     ]
 )
 abstract class WCAndroidDatabase : RoomDatabase(), TransactionExecutor {

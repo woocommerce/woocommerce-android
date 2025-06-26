@@ -13,6 +13,8 @@ import javax.inject.Inject
 
 class WCSettingsMapper
 @Inject constructor() {
+
+    @Suppress("CyclomaticComplexMethod")
     fun mapSiteSettings(response: List<SiteSettingsResponse>, site: SiteModel): WCSettingsModel {
         val currencyCode = getValueForSettingsField(response, "woocommerce_currency")
         val currencyPosition = getValueForSettingsField(response, "woocommerce_currency_pos")
@@ -32,7 +34,7 @@ class WCSettingsMapper
         return WCSettingsModel(
             localSiteId = site.id,
             currencyCode = currencyCode ?: "",
-            currencyPosition = CurrencyPosition.fromString(currencyPosition),
+            currencyPosition = currencyPosition.toCurrencyPositionOrDefault(),
             currencyThousandSeparator = currencyThousandSep ?: "",
             currencyDecimalSeparator = currencyDecimalSep ?: "",
             currencyDecimalNumber = currencyNumDecimals?.toIntOrNull() ?: 2,
@@ -45,6 +47,10 @@ class WCSettingsMapper
             couponsEnabled = couponsEnabled?.let { it == "yes" } ?: false
         )
     }
+
+    private fun String?.toCurrencyPositionOrDefault(): CurrencyPosition = this?.let {
+        CurrencyPosition.valueOf(it.uppercase())
+    } ?: CurrencyPosition.LEFT
 
     fun mapProductSettings(response: List<SiteSettingsResponse>, site: SiteModel): WCProductSettingsModel {
         val weightUnit = getValueForSettingsField(response, "woocommerce_weight_unit")
@@ -75,7 +81,7 @@ class WCSettingsMapper
         return WCSettingsModel(
             localSiteId = entity.localSiteId.value,
             currencyCode = entity.currencyCode,
-            currencyPosition = CurrencyPosition.fromString(entity.currencyPosition),
+            currencyPosition = entity.currencyPosition,
             currencyThousandSeparator = entity.currencyThousandSeparator,
             currencyDecimalSeparator = entity.currencyDecimalSeparator,
             currencyDecimalNumber = entity.currencyDecimalNumber,
@@ -93,7 +99,7 @@ class WCSettingsMapper
         return WCSettingsEntity(
             localSiteId = LocalId(model.localSiteId),
             currencyCode = model.currencyCode,
-            currencyPosition = model.currencyPosition.name.lowercase(),
+            currencyPosition = model.currencyPosition,
             currencyThousandSeparator = model.currencyThousandSeparator,
             currencyDecimalSeparator = model.currencyDecimalSeparator,
             currencyDecimalNumber = model.currencyDecimalNumber,

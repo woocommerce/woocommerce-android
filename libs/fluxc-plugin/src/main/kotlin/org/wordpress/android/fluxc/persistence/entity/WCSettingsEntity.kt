@@ -2,6 +2,7 @@ package org.wordpress.android.fluxc.persistence.entity
 
 import androidx.room.Entity
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
+import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition
 
 @Entity(
     tableName = "WCSettingsEntity",
@@ -10,7 +11,7 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 data class WCSettingsEntity(
     val localSiteId: LocalId,
     val currencyCode: String = "",
-    val currencyPosition: String = "",
+    val currencyPosition: CurrencyPosition,
     val currencyThousandSeparator: String = "",
     val currencyDecimalSeparator: String = "",
     val currencyDecimalNumber: Int = 2,
