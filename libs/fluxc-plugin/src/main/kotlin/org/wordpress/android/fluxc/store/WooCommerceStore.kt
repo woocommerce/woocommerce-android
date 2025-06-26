@@ -203,14 +203,14 @@ open class WooCommerceStore @Inject constructor(
      * Given a [SiteModel], returns its WooCommerce site settings, or null if no settings are stored for this site.
      */
     fun getSiteSettings(site: SiteModel): WCSettingsModel? =
-        runBlocking { settingsDao.getSettingsForSite(site.localId()) }
+        runBlocking { settingsDao.getSettings(site.localId()) }
 
     /**
      * Given a [SiteModel], returns its WooCommerce site settings, or null if no settings are stored for this site.
      */
     suspend fun getSiteSettingsAsync(site: SiteModel): WCSettingsModel? =
         coroutineEngine.withDefaultContext(T.DB, this, "getSiteSettingsAsync") {
-            settingsDao.getSettingsForSite(site.localId())
+            settingsDao.getSettings(site.localId())
         }
 
     /**
@@ -227,7 +227,7 @@ open class WooCommerceStore @Inject constructor(
      * or null if no settings are stored for this site OR if country is empty/blank
      */
     fun getStoreCountryCode(site: SiteModel): String? {
-        val siteSettings = runBlocking { settingsDao.getSettingsForSite(site.localId()) }
+        val siteSettings = runBlocking { settingsDao.getSettings(site.localId()) }
         return siteSettings?.countryCode
     }
 
@@ -464,7 +464,7 @@ open class WooCommerceStore @Inject constructor(
 
                 response.result != null -> {
                     val settingsModel = settingsMapper.mapSiteSettings(response.result, site)
-                    settingsDao.insertOrUpdateSettings(settingsModel)
+                    settingsDao.upsertSettings(settingsModel)
 
                     WooResult(settingsModel)
                 }

@@ -12,14 +12,13 @@ interface SettingsDao {
         """
         SELECT * FROM SettingsEntity
         WHERE localSiteId = :siteId
-        LIMIT 1
     """
     )
-    suspend fun getSettingsForSite(siteId: LocalId): WCSettingsModel?
+    suspend fun getSettings(siteId: LocalId): WCSettingsModel?
 
     @Upsert
-    suspend fun insertOrUpdateSettings(settings: WCSettingsModel)
+    suspend fun upsertSettings(settings: WCSettingsModel)
 
     @Query("UPDATE SettingsEntity SET couponsEnabled = :couponsEnabled WHERE localSiteId = :siteId")
-    suspend fun setCouponsEnabled(siteId: LocalId, couponsEnabled: Boolean): Int
+    suspend fun setCouponsEnabled(siteId: LocalId, couponsEnabled: Boolean)
 }
