@@ -44,7 +44,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WooSystemRestCli
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.toDomainModel
 import org.wordpress.android.fluxc.persistence.PluginSqlUtilsWrapper
 import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
-import org.wordpress.android.fluxc.persistence.WCSettingsSqlUtils.WCSettingsBuilder
+import org.wordpress.android.fluxc.persistence.WCSettingsBuilder
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.fluxc.persistence.dao.TaxBasedOnDao
 import org.wordpress.android.fluxc.site.SiteUtils

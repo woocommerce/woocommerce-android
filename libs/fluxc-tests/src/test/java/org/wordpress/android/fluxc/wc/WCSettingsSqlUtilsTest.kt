@@ -11,7 +11,7 @@ import org.wordpress.android.fluxc.SingleStoreWellSqlConfigForTests
 import org.wordpress.android.fluxc.model.WCSettingsModel
 import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition
 import org.wordpress.android.fluxc.persistence.WCSettingsSqlUtils
-import org.wordpress.android.fluxc.persistence.WCSettingsSqlUtils.WCSettingsBuilder
+import org.wordpress.android.fluxc.persistence.WCSettingsBuilder
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import kotlin.test.assertEquals
 
