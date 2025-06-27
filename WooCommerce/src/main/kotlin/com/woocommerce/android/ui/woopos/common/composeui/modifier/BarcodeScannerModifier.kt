@@ -139,7 +139,6 @@ class BarcodeInputDetector(
         scanStartTime = -1
     }
 
-
     sealed class BarcodeResult {
         abstract val scanDurationMs: Long
         abstract val barcode: String

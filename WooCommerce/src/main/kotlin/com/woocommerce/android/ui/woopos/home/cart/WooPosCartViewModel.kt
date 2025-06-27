@@ -384,8 +384,6 @@ class WooPosCartViewModel @Inject constructor(
         }
     }
 
-
-
     private fun onBarcodeEvent(result: BarcodeInputDetector.BarcodeResult) {
         viewModelScope.launch { barcodeEventTracker.trackBarcodeEvent(result) }
         if (result is BarcodeInputDetector.BarcodeResult.Success) {

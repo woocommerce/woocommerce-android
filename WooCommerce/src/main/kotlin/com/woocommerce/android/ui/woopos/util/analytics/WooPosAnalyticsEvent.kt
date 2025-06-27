@@ -130,21 +130,40 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             val isNumericOnly: Boolean,
             val barcodeLength: Int,
             val scannerInfo: String?,
-            val failReason: String? = null,
         ) : Event() {
-            override val name: String = if (failReason == null) "barcode_scanned" else "barcode_scanning_failed"
+            override val name: String = "barcode_scanned"
 
             init {
-                val properties = mutableMapOf(
-                    "barcode_length" to barcodeLength.toString(),
-                    "scan_duration_ms" to scanDurationMs.toString(),
-                    "is_numeric_only" to isNumericOnly.toString(),
-                    "scanner_info" to (scannerInfo ?: "unknown")
+                addProperties(
+                    mapOf(
+                        "barcode_length" to barcodeLength.toString(),
+                        "scan_duration_ms" to scanDurationMs.toString(),
+                        "is_numeric_only" to isNumericOnly.toString(),
+                        "scanner_info" to (scannerInfo ?: "unknown")
+                    )
                 )
-                if (failReason != null) {
-                    properties["fail_reason"] = failReason
-                }
-                addProperties(properties)
+            }
+        }
+
+        data class BarcodeScanningFailed(
+            val scanDurationMs: Long,
+            val isNumericOnly: Boolean,
+            val barcodeLength: Int,
+            val scannerInfo: String?,
+            val failReason: String,
+        ) : Event() {
+            override val name: String = "barcode_scanning_failed"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "barcode_length" to barcodeLength.toString(),
+                        "scan_duration_ms" to scanDurationMs.toString(),
+                        "is_numeric_only" to isNumericOnly.toString(),
+                        "scanner_info" to (scannerInfo ?: "unknown"),
+                        "fail_reason" to failReason
+                    )
+                )
             }
         }
 
