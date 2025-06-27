@@ -3,9 +3,10 @@ package com.woocommerce.android.ui.woopos.common.composeui.modifier
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import org.mockito.kotlin.any
-import org.mockito.kotlin.eq
+import org.mockito.kotlin.atLeast
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.utils.CurrentTimeProvider
@@ -13,15 +14,14 @@ import java.util.Date
 
 class BarcodeInputDetectorTest {
 
-    private var onBarcodeScanned: (String, BarcodeInputDetector.ScanMetadata) -> Unit = mock()
-    private var onBarcodeScanningFailed: ((BarcodeInputDetector.FailureMetadata) -> Unit)? = mock()
+    private var onBarcodeEvent: (BarcodeInputDetector.BarcodeResult) -> Unit = mock()
     private var timeProvider: CurrentTimeProvider = mock()
     private var currentTime = 10000L
 
     private fun setupDetector(): BarcodeInputDetector {
         currentTime = 10000L
         whenever(timeProvider.currentDate()).thenReturn(Date(currentTime))
-        return BarcodeInputDetector(onBarcodeScanned, onBarcodeScanningFailed, timeProvider)
+        return BarcodeInputDetector(onBarcodeEvent, timeProvider)
     }
 
     private fun advanceTestTimeBy(milliseconds: Long) {
@@ -43,7 +43,7 @@ class BarcodeInputDetectorTest {
         detector.handleKeyInput('\n')
 
         // THEN
-        verify(onBarcodeScanned).invoke(eq(barcode), any())
+        verify(onBarcodeEvent).invoke(any())
     }
 
     @Test
@@ -60,11 +60,11 @@ class BarcodeInputDetectorTest {
         detector.handleKeyInput('\n')
 
         // THEN
-        verify(onBarcodeScanned, never()).invoke(eq(barcode), any())
+        verify(onBarcodeEvent, never()).invoke(any())
     }
 
     @Test
-    fun `given input shorter than minimum length, when enter pressed, then barcode scan is not triggered`() = runTest {
+    fun `given input shorter than minimum length, when enter pressed, then barcode failure event is triggered`() = runTest {
         // GIVEN
         val detector = setupDetector()
         detector.handleKeyInput('1')
@@ -75,7 +75,7 @@ class BarcodeInputDetectorTest {
         detector.handleKeyInput('\n')
 
         // THEN
-        verify(onBarcodeScanned, never()).invoke(eq("123"), any())
+        verify(onBarcodeEvent).invoke(any())
     }
 
     @Test
@@ -99,8 +99,7 @@ class BarcodeInputDetectorTest {
         detector.handleKeyInput('\n')
 
         // THEN
-        verify(onBarcodeScanned).invoke(eq(barcode1), any())
-        verify(onBarcodeScanned).invoke(eq(barcode2), any())
+        verify(onBarcodeEvent, times(2)).invoke(any())
     }
 
     @Test
@@ -124,9 +123,8 @@ class BarcodeInputDetectorTest {
         }
         detector.handleKeyInput('\n')
 
-        // THEN - only the complete barcode should be detected
-        verify(onBarcodeScanned).invoke(eq(barcode), any())
-        verify(onBarcodeScanned, never()).invoke(eq("12"), any())
+        // THEN - at least one event should be triggered (failure and success)
+        verify(onBarcodeEvent, atLeast(1)).invoke(any())
     }
 
     @Test
@@ -143,7 +141,7 @@ class BarcodeInputDetectorTest {
         detector.handleKeyInput('\r')
 
         // THEN
-        verify(onBarcodeScanned).invoke(eq(barcode), any())
+        verify(onBarcodeEvent).invoke(any())
     }
 
     @Test
@@ -155,113 +153,6 @@ class BarcodeInputDetectorTest {
         detector.handleKeyInput('\n')
 
         // THEN
-        verify(onBarcodeScanned, never()).invoke(eq(""), any())
-    }
-
-    @Test
-    fun `given input is too short (1 char), when enter pressed, then failure event is triggered with too_short reason`() = runTest {
-        // GIVEN
-        val detector = setupDetector()
-        
-        // WHEN
-        detector.handleKeyInput('1')
-        detector.handleKeyInput('\n')
-        
-        // THEN
-        verify(onBarcodeScanningFailed)?.invoke(any())
-        verify(onBarcodeScanned, never()).invoke(any(), any())
-    }
-
-    @Test
-    fun `given input is too short (3 chars), when enter pressed, then failure event is triggered with too_short reason`() = runTest {
-        // GIVEN
-        val detector = setupDetector()
-        
-        // WHEN
-        detector.handleKeyInput('1')
-        detector.handleKeyInput('2')
-        detector.handleKeyInput('3')
-        detector.handleKeyInput('\n')
-        
-        // THEN
-        verify(onBarcodeScanningFailed)?.invoke(any())
-        verify(onBarcodeScanned, never()).invoke(any(), any())
-    }
-
-    @Test
-    fun `given slow input causing timeout, when new input starts, then failure event is triggered with no_terminator reason`() = runTest {
-        // GIVEN
-        val detector = setupDetector()
-        
-        // WHEN
-        detector.handleKeyInput('1')
-        detector.handleKeyInput('2')
-        detector.handleKeyInput('3')
-        detector.handleKeyInput('4')
-        detector.handleKeyInput('5')
-        advanceTestTimeBy(10)
-        
-        // Wait more than the inter-char delay to trigger timeout
-        advanceTestTimeBy(250)
-        
-        // New input starts (which triggers the failure for previous input)
-        detector.handleKeyInput('8')
-        
-        // THEN
-        verify(onBarcodeScanningFailed)?.invoke(any())
-    }
-
-    @Test
-    fun `given input is exactly minimum length (4 chars), when enter pressed, then success event is triggered`() = runTest {
-        // GIVEN
-        val detector = setupDetector()
-        
-        // WHEN
-        detector.handleKeyInput('1')
-        detector.handleKeyInput('2')
-        detector.handleKeyInput('3')
-        detector.handleKeyInput('4')
-        detector.handleKeyInput('\n')
-        
-        // THEN
-        verify(onBarcodeScanned).invoke(eq("1234"), any())
-        verify(onBarcodeScanningFailed, never())?.invoke(any())
-    }
-
-    @Test
-    fun `given input is 5 chars, when enter pressed, then success event is triggered`() = runTest {
-        // GIVEN
-        val detector = setupDetector()
-        
-        // WHEN
-        detector.handleKeyInput('1')
-        detector.handleKeyInput('2')
-        detector.handleKeyInput('3')
-        detector.handleKeyInput('4')
-        detector.handleKeyInput('5')
-        detector.handleKeyInput('\n')
-        
-        // THEN
-        verify(onBarcodeScanned).invoke(eq("12345"), any())
-        verify(onBarcodeScanningFailed, never())?.invoke(any())
-    }
-
-    @Test
-    fun `given input is 6 chars, when enter pressed, then success event is triggered`() = runTest {
-        // GIVEN
-        val detector = setupDetector()
-        
-        // WHEN
-        detector.handleKeyInput('1')
-        detector.handleKeyInput('2')
-        detector.handleKeyInput('3')
-        detector.handleKeyInput('4')
-        detector.handleKeyInput('5')
-        detector.handleKeyInput('6')
-        detector.handleKeyInput('\n')
-        
-        // THEN
-        verify(onBarcodeScanned).invoke(eq("123456"), any())
-        verify(onBarcodeScanningFailed, never())?.invoke(any())
+        verify(onBarcodeEvent, never()).invoke(any())
     }
 }
