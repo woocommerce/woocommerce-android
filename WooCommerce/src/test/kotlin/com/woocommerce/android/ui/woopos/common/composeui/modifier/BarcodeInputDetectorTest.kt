@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.woopos.common.composeui.modifier
 
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -11,7 +13,7 @@ import java.util.Date
 
 class BarcodeInputDetectorTest {
 
-    private var onBarcodeScanned: (String) -> Unit = mock()
+    private var onBarcodeScanned: (String, BarcodeInputDetector.ScanMetadata) -> Unit = mock()
     private var timeProvider: CurrentTimeProvider = mock()
     private var currentTime = 10000L
 
@@ -40,7 +42,7 @@ class BarcodeInputDetectorTest {
         detector.handleKeyInput('\n')
 
         // THEN
-        verify(onBarcodeScanned).invoke(barcode)
+        verify(onBarcodeScanned).invoke(eq(barcode), any())
     }
 
     @Test
@@ -57,7 +59,7 @@ class BarcodeInputDetectorTest {
         detector.handleKeyInput('\n')
 
         // THEN
-        verify(onBarcodeScanned, never()).invoke(barcode)
+        verify(onBarcodeScanned, never()).invoke(eq(barcode), any())
     }
 
     @Test
@@ -72,7 +74,7 @@ class BarcodeInputDetectorTest {
         detector.handleKeyInput('\n')
 
         // THEN
-        verify(onBarcodeScanned, never()).invoke("123")
+        verify(onBarcodeScanned, never()).invoke(eq("123"), any())
     }
 
     @Test
@@ -96,8 +98,8 @@ class BarcodeInputDetectorTest {
         detector.handleKeyInput('\n')
 
         // THEN
-        verify(onBarcodeScanned).invoke(barcode1)
-        verify(onBarcodeScanned).invoke(barcode2)
+        verify(onBarcodeScanned).invoke(eq(barcode1), any())
+        verify(onBarcodeScanned).invoke(eq(barcode2), any())
     }
 
     @Test
@@ -122,8 +124,8 @@ class BarcodeInputDetectorTest {
         detector.handleKeyInput('\n')
 
         // THEN - only the complete barcode should be detected
-        verify(onBarcodeScanned).invoke(barcode)
-        verify(onBarcodeScanned, never()).invoke("12")
+        verify(onBarcodeScanned).invoke(eq(barcode), any())
+        verify(onBarcodeScanned, never()).invoke(eq("12"), any())
     }
 
     @Test
@@ -140,7 +142,7 @@ class BarcodeInputDetectorTest {
         detector.handleKeyInput('\r')
 
         // THEN
-        verify(onBarcodeScanned).invoke(barcode)
+        verify(onBarcodeScanned).invoke(eq(barcode), any())
     }
 
     @Test
@@ -152,6 +154,6 @@ class BarcodeInputDetectorTest {
         detector.handleKeyInput('\n')
 
         // THEN
-        verify(onBarcodeScanned, never()).invoke("")
+        verify(onBarcodeScanned, never()).invoke(eq(""), any())
     }
 }

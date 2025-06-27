@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.common.composeui.modifier
 
-import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.focusable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -19,7 +18,7 @@ import org.wordpress.android.fluxc.utils.CurrentTimeProvider
 private const val FIRST_PRINTABLE_CHAR_CODE = 32
 
 fun Modifier.listenForBarcodes(
-    onBarcodeScanned: (String) -> Unit,
+    onBarcodeScanned: (String, BarcodeInputDetector.ScanMetadata) -> Unit,
     enabled: Boolean = true
 ): Modifier = composed {
     val focusRequester = remember { FocusRequester() }
@@ -60,9 +59,8 @@ fun Modifier.listenForBarcodes(
         }
 }
 
-@VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
 class BarcodeInputDetector(
-    private val onBarcodeScanned: (String) -> Unit,
+    private val onBarcodeScanned: (String, ScanMetadata) -> Unit,
     private val currentTimeProvider: CurrentTimeProvider,
 ) {
     private companion object {
@@ -72,6 +70,7 @@ class BarcodeInputDetector(
 
     private val barcodeBuffer = StringBuilder()
     private var lastCharTime: Long = -1L
+    private var scanStartTime: Long = -1L
 
     fun handleKeyInput(char: Char): Boolean {
         val currentTime = currentTimeProvider.currentDate().time
@@ -86,6 +85,9 @@ class BarcodeInputDetector(
             }
 
             else -> {
+                if (scanStartTime == -1L) {
+                    scanStartTime = currentTime
+                }
                 lastCharTime = currentTime
                 barcodeBuffer.append(char)
             }
@@ -95,10 +97,13 @@ class BarcodeInputDetector(
 
     private fun processBarcodeBuffer() {
         val scannedBarcode = barcodeBuffer.toString()
+        val currentTime = currentTimeProvider.currentDate().time
 
         if (scannedBarcode.length >= MIN_BARCODE_LENGTH) {
-            onBarcodeScanned(scannedBarcode)
-            WooPosLogWrapper.d("Barcode scanned: $scannedBarcode")
+            val scanDuration = if (scanStartTime != -1L) currentTime - scanStartTime else 0L
+            val metadata = ScanMetadata(scanDurationMs = scanDuration)
+            onBarcodeScanned(scannedBarcode, metadata)
+            WooPosLogWrapper.d("Barcode scanned: $scannedBarcode (duration: ${scanDuration}ms)")
         }
 
         clear()
@@ -107,5 +112,10 @@ class BarcodeInputDetector(
     fun clear() {
         barcodeBuffer.clear()
         lastCharTime = -1
+        scanStartTime = -1
     }
+
+    data class ScanMetadata(
+        val scanDurationMs: Long,
+    )
 }
