@@ -662,11 +662,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             previouslySelectedRate: ShippingRateUI,
             onSelected: () -> Unit
         ) {
-            val carrier = newRates.keys.find {
-                it.carrier.carrierIds.contains(previouslySelectedRate.defaultRate.rate.carrierId)
-            } ?: return
-
-            val newRate = newRates[carrier]?.find {
+            val newRate = newRates.values.flatten().find {
                 it.defaultRate.rate.serviceId == previouslySelectedRate.defaultRate.rate.serviceId
             }?.let {
                 val selectedOption = it.options[previouslySelectedRate.selectedOption.option]
