@@ -19,6 +19,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -56,57 +58,63 @@ fun UPSDAPTermsOfServiceBottomSheet(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .verticalScroll(rememberScrollState()),
+                .padding(horizontal = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(modifier = Modifier.height(8.dp))
             BottomSheetHandle(Modifier.align(Alignment.CenterHorizontally))
-            Spacer(modifier = Modifier.height(24.dp))
 
-            Text(
-                text = stringResource(id = R.string.wpp_shipping_ups_tos_title),
-                style = MaterialTheme.typography.h6,
-                textAlign = TextAlign.Center
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            OriginAddressSection(address = viewState.originShippingAddress)
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Divider()
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                text = stringResource(id = R.string.wpp_shipping_ups_tos_description),
-                style = MaterialTheme.typography.body1,
-                textAlign = TextAlign.Start,
-                modifier = Modifier
+            Column(
+                Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 8.dp)
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Conditions(
-                conditionsState = viewState.conditionsState,
-                onUrlClicked = viewState.onUrlClicked
-            )
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            WCColoredButton(
-                onClick = viewState.onContinueClicked,
-                enabled = viewState.areAllConditionsAccepted,
-                modifier = Modifier.fillMaxWidth()
+                    .nestedScroll(rememberNestedScrollInteropConnection())
+                    .verticalScroll(rememberScrollState()),
             ) {
-                Text(text = stringResource(id = R.string.wpp_shipping_ups_tos_accept))
-            }
+                Spacer(modifier = Modifier.height(24.dp))
+                Text(
+                    text = stringResource(id = R.string.wpp_shipping_ups_tos_title),
+                    style = MaterialTheme.typography.h6,
+                    textAlign = TextAlign.Center
+                )
 
-            Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(24.dp))
+
+                OriginAddressSection(address = viewState.originShippingAddress)
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Divider()
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = stringResource(id = R.string.wpp_shipping_ups_tos_description),
+                    style = MaterialTheme.typography.body1,
+                    textAlign = TextAlign.Start,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp)
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Conditions(
+                    conditionsState = viewState.conditionsState,
+                    onUrlClicked = viewState.onUrlClicked
+                )
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                WCColoredButton(
+                    onClick = viewState.onContinueClicked,
+                    enabled = viewState.areAllConditionsAccepted,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(text = stringResource(id = R.string.wpp_shipping_ups_tos_accept))
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+            }
         }
     }
 }
