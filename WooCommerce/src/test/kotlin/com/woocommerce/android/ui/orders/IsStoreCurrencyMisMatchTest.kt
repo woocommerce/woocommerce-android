@@ -8,17 +8,16 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.persistence.entity.WCSettingsModel
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.fluxc.wc.settings.WCSettingsTestUtils
 import kotlin.test.assertFalse
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class IsStoreCurrencyMisMatchTest : BaseUnitTest() {
     private val wooCommerceStore: WooCommerceStore = mock()
     private val selectedSite: SelectedSite = mock()
-    val wcSettingsModel = mock<WCSettingsModel> {
-        on { currencyCode }.thenReturn("USD")
-    }
+    val wcSettingsModel = WCSettingsTestUtils.generateSettings(LocalId(1))
     private val isStoreCurrencyMatch: IsStoreCurrencyMatch = IsStoreCurrencyMatch(wooCommerceStore, selectedSite)
 
     @Test

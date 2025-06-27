@@ -10,9 +10,9 @@ import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.persistence.entity.WCSettingsModel
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.fluxc.wc.settings.WCSettingsTestUtils
 
 @ExperimentalCoroutinesApi
 class WooPosGetCachedStoreCurrencyTest {
@@ -20,7 +20,7 @@ class WooPosGetCachedStoreCurrencyTest {
     @JvmField
     val coroutinesTestRule = WooPosCoroutineTestRule()
 
-    private val siteSettings: WCSettingsModel = mock()
+    private val siteSettings = WCSettingsTestUtils.generateSettings(LocalId(1))
     private val wooCommerceStore: WooCommerceStore = mock {
         on { getSiteSettings(any()) }.thenReturn(siteSettings)
     }
@@ -32,9 +32,6 @@ class WooPosGetCachedStoreCurrencyTest {
 
     @Test
     fun `given USD site, when invoked, then returns USD`() = runTest {
-        // Given
-        whenever(siteSettings.currencyCode).thenReturn("USD")
-
         // When
         val result = getCachedStoreCurrency()
 
@@ -45,7 +42,6 @@ class WooPosGetCachedStoreCurrencyTest {
     @Test
     fun `given store currency cached, when invoked, then do not hit database`() = runTest {
         // Given
-        whenever(siteSettings.currencyCode).thenReturn("USD")
         getCachedStoreCurrency()
         clearInvocations(wooCommerceStore)
 

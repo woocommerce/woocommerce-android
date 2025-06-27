@@ -20,6 +20,7 @@ import org.wordpress.android.fluxc.model.settings.CurrencyPosition.LEFT
 import org.wordpress.android.fluxc.model.settings.CurrencyPosition.LEFT_SPACE
 import org.wordpress.android.fluxc.model.settings.CurrencyPosition.RIGHT
 import org.wordpress.android.fluxc.model.settings.CurrencyPosition.RIGHT_SPACE
+import org.wordpress.android.fluxc.model.settings.Settings
 import org.wordpress.android.fluxc.model.settings.WCSettingsMapper
 import org.wordpress.android.fluxc.model.taxes.TaxBasedOnSettingEntity
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.UNKNOWN
@@ -50,7 +51,7 @@ import javax.inject.Singleton
 import kotlin.math.absoluteValue
 
 @Singleton
-open class WooCommerceStore @Inject constructor(
+open class WooCommerceStore @Inject internal constructor(
     private val appContext: Context,
     dispatcher: Dispatcher,
     private val coroutineEngine: CoroutineEngine,
@@ -202,15 +203,15 @@ open class WooCommerceStore @Inject constructor(
     /**
      * Given a [SiteModel], returns its WooCommerce site settings, or null if no settings are stored for this site.
      */
-    fun getSiteSettings(site: SiteModel): WCSettingsModel? =
-        runBlocking { settingsDao.getSettings(site.localId()) }
+    fun getSiteSettings(site: SiteModel): Settings? =
+        runBlocking { settingsDao.getSettings(site.localId())?.let { WCSettingsMapper.mapToDomain(it) } }
 
     /**
      * Given a [SiteModel], returns its WooCommerce site settings, or null if no settings are stored for this site.
      */
-    suspend fun getSiteSettingsAsync(site: SiteModel): WCSettingsModel? =
+    suspend fun getSiteSettingsAsync(site: SiteModel): Settings? =
         coroutineEngine.withDefaultContext(T.DB, this, "getSiteSettingsAsync") {
-            settingsDao.getSettings(site.localId())
+            settingsDao.getSettings(site.localId())?.let { WCSettingsMapper.mapToDomain(it) }
         }
 
     /**
@@ -450,7 +451,7 @@ open class WooCommerceStore @Inject constructor(
         }
     }
 
-    suspend fun fetchSiteGeneralSettings(site: SiteModel): WooResult<WCSettingsModel> {
+    suspend fun fetchSiteGeneralSettings(site: SiteModel): WooResult<Settings> {
         return coroutineEngine.withDefaultContext(T.API, this, "fetchSiteGeneralSettings") {
             val response = wcCoreRestClient.fetchSiteSettingsGeneral(site)
             return@withDefaultContext when {
@@ -466,7 +467,7 @@ open class WooCommerceStore @Inject constructor(
                     val settingsModel = settingsMapper.mapSiteSettings(response.result, site)
                     settingsDao.upsertSettings(settingsModel)
 
-                    WooResult(settingsModel)
+                    WooResult(settingsModel.let { WCSettingsMapper.mapToDomain(it) })
                 }
 
                 else -> {

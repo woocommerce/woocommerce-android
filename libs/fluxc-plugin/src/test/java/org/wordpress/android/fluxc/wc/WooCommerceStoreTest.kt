@@ -25,6 +25,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCProductSettingsModel
 import org.wordpress.android.fluxc.model.WCSSRModel
 import org.wordpress.android.fluxc.model.plugin.SitePluginModel
+import org.wordpress.android.fluxc.model.settings.Settings
 import org.wordpress.android.fluxc.model.settings.WCSettingsMapper
 import org.wordpress.android.fluxc.model.taxes.TaxBasedOnSettingEntity
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.NETWORK_ERROR
@@ -45,7 +46,6 @@ import org.wordpress.android.fluxc.persistence.PluginSqlUtilsWrapper
 import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.fluxc.persistence.dao.TaxBasedOnDao
-import org.wordpress.android.fluxc.persistence.entity.WCSettingsModel
 import org.wordpress.android.fluxc.site.SiteUtils
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.SiteStore
@@ -219,19 +219,19 @@ class WooCommerceStoreTest {
 
     @Test
     fun `when fetch site settings succeeds, then success returned`() = test {
-        val result: WooResult<WCSettingsModel> = fetchSiteSettings()
+        val result: WooResult<Settings> = fetchSiteSettings()
 
         assertThat(result.isError).isFalse
         assertThat(result.model).isNotNull
         assertThat(result.model).isEqualTo(
-            settingsMapper.mapSiteSettings(siteSettingsResponse!!, site)
+            settingsMapper.mapSiteSettings(siteSettingsResponse!!, site).let { WCSettingsMapper.mapToDomain(it) }
         )
     }
 
     @Test
     fun `when fetch site settings fails, then error returned`() {
         runBlocking {
-            val result: WooResult<WCSettingsModel> = fetchSiteSettings(isError = true)
+            val result: WooResult<Settings> = fetchSiteSettings(isError = true)
             assertThat(result.error).isEqualTo(error)
             assertThat(result.model).isNull()
         }
@@ -526,7 +526,7 @@ class WooCommerceStoreTest {
         return wooCommerceStore.fetchSupportedApiVersion(site)
     }
 
-    private suspend fun fetchSiteSettings(isError: Boolean = false): WooResult<WCSettingsModel> {
+    private suspend fun fetchSiteSettings(isError: Boolean = false): WooResult<Settings> {
         val payload = WooPayload(siteSettingsResponse)
         if (isError) {
             whenever(wcrestClient.fetchSiteSettingsGeneral(site)).thenReturn(WooPayload(error))

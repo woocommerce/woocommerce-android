@@ -8,7 +8,7 @@ import org.wordpress.android.fluxc.model.settings.WCSettingsMapper
 import org.wordpress.android.fluxc.persistence.entity.WCSettingsModel
 import kotlin.test.assertEquals
 
-class WCSettingsMapperTest {
+internal class WCSettingsMapperTest {
     private val site = SiteModel().apply {
         id = 1
         siteId = 1337L

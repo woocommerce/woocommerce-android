@@ -47,9 +47,9 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.persistence.entity.OrderEntity
-import org.wordpress.android.fluxc.persistence.entity.WCSettingsModel
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.fluxc.wc.settings.WCSettingsTestUtils
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -96,15 +96,14 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
     private val productSelectorTracker: ProductSelectorTracker = ProductSelectorTracker(tracker)
     private val orderStore: WCOrderStore = mock()
     private val productsMapper: ProductsMapper = mock()
-    private val siteSettings: WCSettingsModel = mock()
     private val productRestriction: OrderCreationProductRestrictions = mock()
 
     @Before
     fun setup() {
-        val site: SiteModel = mock()
+        val site: SiteModel = SiteModel().apply { id = 1 }
         whenever(selectedSite.get()).thenReturn(site)
-        whenever(siteSettings.currencyCode).thenReturn("USD")
-        whenever(wooCommerceStore.getSiteSettings(any())).thenReturn(siteSettings)
+        val settings = WCSettingsTestUtils.generateSettings(site.localId())
+        whenever(wooCommerceStore.getSiteSettings(any())).thenReturn(settings)
     }
 
     @Test

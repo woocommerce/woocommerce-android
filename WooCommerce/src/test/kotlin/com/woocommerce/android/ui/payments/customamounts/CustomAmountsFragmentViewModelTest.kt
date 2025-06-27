@@ -18,8 +18,8 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.persistence.entity.WCSettingsModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.fluxc.wc.settings.WCSettingsTestUtils
 import java.math.BigDecimal
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -31,7 +31,6 @@ class CustomAmountsFragmentViewModelTest : BaseUnitTest() {
     private val currencySymbolFinder: CurrencySymbolFinder = mock()
     private val store: WooCommerceStore = mock()
     private val selectedSite: SelectedSite = mock()
-    private val siteSettings: WCSettingsModel = mock()
     private lateinit var viewModel: CustomAmountsViewModel
 
     @Before
@@ -305,10 +304,10 @@ class CustomAmountsFragmentViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when currency code is null, then return site currency symbol`() {
-        val site: SiteModel = mock()
+        val site: SiteModel = SiteModel().apply { id = 1 }
+        val settings = WCSettingsTestUtils.generateSettings(site.localId()).copy(currencyCode = "INR")
         whenever(selectedSite.get()).thenReturn(site)
-        whenever(store.getSiteSettings(site)).thenReturn(siteSettings)
-        whenever(siteSettings.currencyCode).thenReturn("INR")
+        whenever(store.getSiteSettings(site)).thenReturn(settings)
         whenever(currencySymbolFinder.findCurrencySymbol("INR")).thenReturn("₹")
 
         viewModel = CustomAmountsViewModel(

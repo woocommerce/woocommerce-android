@@ -3,6 +3,7 @@ package org.wordpress.android.fluxc.wc.settings
 import org.wordpress.android.fluxc.JsonLoaderUtils.jsonFileAs
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.settings.CurrencyPosition
+import org.wordpress.android.fluxc.model.settings.WCSettingsMapper
 import org.wordpress.android.fluxc.network.discovery.RootWPAPIRestResponse
 import org.wordpress.android.fluxc.network.discovery.RootWPAPIRestResponse.Authentication
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.SiteSettingOptionResponse
@@ -12,7 +13,7 @@ import org.wordpress.android.fluxc.persistence.entity.WCSettingsModel
 
 object WCSettingsTestUtils {
 
-    fun generateSettingsModel(siteId: LocalId) = WCSettingsModel(
+    internal fun generateSettingsModel(siteId: LocalId) = WCSettingsModel(
         localSiteId = siteId,
         currencyCode = "USD",
         currencyPosition = CurrencyPosition.LEFT,
@@ -27,6 +28,10 @@ object WCSettingsTestUtils {
         postalCode = "94105",
         couponsEnabled = false
     )
+
+    fun generateSettings(siteId: LocalId) = generateSettingsModel(siteId).let {
+        WCSettingsMapper.mapToDomain(it)
+    }
 
     fun getSiteSettingsResponse() =
         "wc/site-settings-general-response.json"

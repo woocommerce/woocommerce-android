@@ -1,15 +1,6 @@
-package org.wordpress.android.fluxc.persistence.entity
+package org.wordpress.android.fluxc.model.settings
 
-import androidx.room.Entity
-import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
-import org.wordpress.android.fluxc.model.settings.CurrencyPosition
-
-@Entity(
-    tableName = "SettingsEntity",
-    primaryKeys = ["localSiteId"]
-)
-internal data class WCSettingsModel(
-    val localSiteId: LocalId,
+data class Settings(
     val currencyCode: String,
     val currencyPosition: CurrencyPosition,
     val currencyThousandSeparator: String,

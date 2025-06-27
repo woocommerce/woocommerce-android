@@ -13,7 +13,7 @@ class WCSettingsMapper
 @Inject constructor() {
 
     @Suppress("CyclomaticComplexMethod")
-    fun mapSiteSettings(response: List<SiteSettingsResponse>, site: SiteModel): WCSettingsModel {
+    internal fun mapSiteSettings(response: List<SiteSettingsResponse>, site: SiteModel): WCSettingsModel {
         val currencyCode = getValueForSettingsField(response, "woocommerce_currency")
         val currencyPosition = getValueForSettingsField(response, "woocommerce_currency_pos")
         val currencyThousandSep = getValueForSettingsField(response, "woocommerce_price_thousand_sep")
@@ -73,5 +73,24 @@ class WCSettingsMapper
 
     private fun getValueForSettingsField(settingsResponse: List<SiteSettingsResponse>, field: String): String? {
         return settingsResponse.find { it.id != null && it.id == field }?.value?.asString
+    }
+
+    companion object {
+        internal fun mapToDomain(entity: WCSettingsModel): Settings {
+            return Settings(
+                currencyCode = entity.currencyCode,
+                currencyPosition = entity.currencyPosition,
+                currencyThousandSeparator = entity.currencyThousandSeparator,
+                currencyDecimalSeparator = entity.currencyDecimalSeparator,
+                currencyDecimalNumber = entity.currencyDecimalNumber,
+                countryCode = entity.countryCode,
+                stateCode = entity.stateCode,
+                address = entity.address,
+                address2 = entity.address2,
+                city = entity.city,
+                postalCode = entity.postalCode,
+                couponsEnabled = entity.couponsEnabled
+            )
+        }
     }
 }

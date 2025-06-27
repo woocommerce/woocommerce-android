@@ -22,7 +22,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import org.wordpress.android.fluxc.wc.settings.WCSettingsTestUtils.generateSettingsModel
+import org.wordpress.android.fluxc.wc.settings.WCSettingsTestUtils.generateSettings
 
 class WooPosCashPaymentRepositoryTest {
 
@@ -177,7 +177,7 @@ class WooPosCashPaymentRepositoryTest {
     @Test
     fun `given no cached site parameters, when getCurrencySymbol, then load and return currency symbol`() = runTest {
         val site: SiteModel = SiteModel().apply { id = 1 }
-        val siteSettings = generateSettingsModel(LocalId(1))
+        val siteSettings = generateSettings(LocalId(1))
         val currencySymbol = "$"
 
         whenever(selectedSite.get()).thenReturn(site)

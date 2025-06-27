@@ -7,7 +7,7 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.persistence.entity.WCSettingsModel
 
 @Dao
-interface SettingsDao {
+internal interface SettingsDao {
     @Query(
         """
         SELECT * FROM SettingsEntity
