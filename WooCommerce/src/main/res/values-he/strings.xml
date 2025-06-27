@@ -1,11 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-06-03 15:54:04+0000
+Translation-Revision-Date: 2025-06-17 16:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="no_network_message">אין רשת זמינה</string>
+    <string name="media_loading_failed">העלאת מדיה נכשלה</string>
+    <string name="media_library_title">ספריית המדיה של WordPress</string>
+    <string name="woo_shipping_refund_note">לתשומת ליבך, בקשה זו להחזר כספי חלה רק על תווית משלוח שלא נעשה בה שימוש ולא תשפיע על ההזמנה עצמה.</string>
+    <string name="woo_shipping_refund_amount_eligible_for_refund">&lt;b&gt;ניתן לקבל החזר כספי עבור הסכום:&lt;/b&gt; %s</string>
+    <string name="woo_shipping_refund_purchase_date">&lt;b&gt;תאריך הרכישה:&lt;/b&gt; %s</string>
+    <string name="woo_shipping_refund_description">לבקש החזר כספי עבור תווית המשלוח שלך שלא נעשה בה שימוש. תהליך ההחזר הכספי עבור תווית המשלוח יתחיל באופן מיידי. התהליך מסתיים בדרך כלל תוך 14 ימי עסקים.</string>
+    <string name="woo_shipping_refund_title">לבקש החזר כספי לתווית משלוח</string>
+    <string name="woo_shipping_split_shipment_error">לא הצלחנו לחלק את המשלוחים. יש לנסות שוב.</string>
+    <string name="woopos_cart_searching_for_item">מחפש</string>
+    <string name="woopos_cart_adding_item_to_cart_failed">נכשלה ההוספה של הפריט לעגלת הקניות, %s.</string>
+    <string name="woopos_cart_coupon_added_to_cart_accessibility">הקופון ⁦%1$s⁩ נוסף לעגלת הקניות</string>
+    <string name="woopos_cart_product_added_to_cart_accessibility">המוצר ⁦%1$s⁩ נוסף לעגלת הקניות , מחיר ⁦%2$s⁩</string>
+    <string name="woopos_barcode_scanning_title">סריקת ברקוד</string>
+    <string name="woopos_dialog_barcode_info_background_content_description">רקע מעומעם. יש להקיש כדי לצאת מתיבת הדו-שיח.</string>
+    <string name="woopos_dialog_barcode_info_content_description">תיבת הדו-שיח של פרטי הסריקה של הברקוד</string>
+    <string name="woopos_dialog_barcode_info_button_label">אישור</string>
+    <string name="woopos_dialog_barcode_info_quinary_message">הסורק מדמה מקלדת, לכן לעיתים הוא מונע הצגה של מקלדת התוכנה, למשל בחיפוש. יש להקיש על סמל המקלדת כדי להציג שוב את מקלדת התוכנה.</string>
+    <string name="woopos_dialog_barcode_info_quaternary_message">• יש לסרוק את הברקוד כאשר נמצאים ברשימת הפריטים כדי להוסיף מוצרים לעגלת הקניות.</string>
+    <string name="woopos_dialog_barcode_info_tertiary_message">• יש לחבר את סורק הברקוד בהגדרות של Bluetooth במערכת.</string>
+    <string name="woopos_dialog_barcode_info_secondary_message">• יש לעיין בהוראות של סורק הברקודים של Bluetooth כדי להגדיר את מצב HID.</string>
+    <string name="woopos_dialog_barcode_info_more_details_link">פרטים נוספים</string>
+    <string name="woopos_dialog_barcode_info_primary_message">• יש להגדיר ברקודים בשדה \"GTIN, UPC, EAN, ISBN\" שבמקטע \'מוצרים\' &gt; \'פרטי המוצר\' &gt; \'מלאי\'. </string>
+    <string name="woopos_dialog_barcode_info_intro_message">אפשר לסרוק ברקוד באמצעות סורק חיצוני כדי לבנות עגלת קניות במהירות.</string>
+    <string name="woopos_dialog_barcode_info_heading">סריקת ברקוד</string>
+    <string name="woopos_cart_barcode_scan_result_request_cancelled">הבקשה בוטלה</string>
+    <string name="woopos_cart_barcode_scan_result_network_error">אין חיבור אינטרנט</string>
+    <string name="woopos_cart_barcode_scan_result_unsupported_product">פריט לא נתמך – %s</string>
+    <string name="woopos_cart_barcode_scan_result_product_not_found">הפריט שנסרק לא מוכר</string>
+    <string name="woopos_add_coupon_to_cart_accessibility_label">הוספת קופון לעגלת הקניות</string>
+    <string name="woopos_add_variable_product_to_cart_accessibility_label">לפתוח את רשימת הסוגים</string>
+    <string name="woopos_add_product_to_cart_accessibility_label">להוסיף את המוצר לעגלת הקניות</string>
+    <string name="woopos_cart_item_error_content_description">שגיאה בטעינת הפריט %s</string>
+    <string name="woopos_cart_item_loading_content_description">טוען את הפריט %s</string>
+    <string name="blaze_campaign_edit_ad_arrow_back_description">ההמלצה הקודמת</string>
+    <string name="blaze_campaign_edit_ad_arrow_forward_description">ההמלצה הבאה</string>
+    <string name="blaze_campaign_preview_tos_checkbox_evergreen_campaigns">אני רוצה להסכים לתשלום שבועי חוזר בחיוב של עד ⁦%1$s⁩ החל מתאריך ⁦%2$s⁩. חיובים עשויים לחול במועדים שונים במהלך הקמפיין. &lt;a href=\'cancelInstructions\'&gt;&lt;u&gt;הבנתי שאפשר לבטל בכל עת&lt;/u&gt;&lt;/a&gt; ושאני אשלם רק עבור מודעות שנשלחו עד לביטול.</string>
+    <string name="blaze_campaign_preview_tos_checkbox_over_7_days_campaign">אני רוצה להסכים לתשלום חוזר של עד ⁦%1$s⁩ בשבוע, החל מתאריך ⁦%2$s⁩. חיובים עשויים לחול במועדים שונים במהלך הקמפיין. &lt;a href=\'cancelInstructions\'&gt;&lt;u&gt;הבנתי שאפשר לבטל בכל עת&lt;/u&gt;&lt;/a&gt; ושאני אשלם רק עבור מודעות שנשלחו עד לביטול.</string>
+    <string name="blaze_campaign_preview_tos_checkbox_less_than_7_days_campaign">אני רוצה להסכים לתשלום של עד ⁦%1$s⁩ החל מתאריך ⁦%2$s⁩. ייתכן שיחולו חיובים בתשלום אחד או יותר כל עוד הקמפיין פעיל. &lt;a href=\'cancelInstructions\'&gt;&lt;u&gt;הבנתי שאפשר לבטל בכל עת&lt;/u&gt;&lt;/a&gt; ושאני אשלם רק עבור מודעות שנשלחו עד לביטול.</string>
+    <string name="customer_detail_guest_customer">אורח</string>
     <string name="woopos_search_items_error_description">יש לנסות שוב.</string>
     <string name="woopos_search_coupons_error_title">אין אפשרות להעלות את הקופונים</string>
     <string name="woopos_search_items_error_title">אין אפשרות לטעון את המוצרים</string>
@@ -45,7 +85,7 @@ Language: he_IL
     <string name="woopos_coupons_empty_list_image_description">אין קופונים</string>
     <string name="woopos_coupons_screen_title">קופונים</string>
     <string name="woopos_product_limitations_title">היכן המוצרים שלי?</string>
-    <string name="woopos_coupon_item_content_description">קופון %s</string>
+    <string name="woopos_coupon_item_content_description_v2">קופון %s, %s</string>
     <string name="woo_shipping_split_shipment_bottom_sheet_remove_button">להסיר משלוח</string>
     <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_plural">יש לבחור לאן להעביר את הפריטים של %d במשלוח הזה.</string>
     <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_one">יש לבחור לאן להעביר את הפריט של %d במשלוח הזה.</string>
@@ -270,7 +310,7 @@ Language: he_IL
     <string name="woopos_variations_loading_error_title">אין אפשרות לטעון את הסוגים</string>
     <string name="woopos_variations_back_content_description">חזרה</string>
     <string name="woopos_variation_item_content_description">סוג %s, מחיר %s</string>
-    <string name="woopos_variable_product_item_content_description">מוצר עם סוגים %s, מחיר %s</string>
+    <string name="woopos_variable_product_item_content_description_v2">מוצר עם סוגים %s</string>
     <string name="blaze_campaign_edit_ad_change_description_empty_error">התיאור לא יכול להיות ריק</string>
     <string name="blaze_campaign_edit_ad_change_cta_text_title">קריאות לפעולה</string>
     <string name="blaze_campaign_edit_ad_change_tagline_empty_error">תיאור האתר לא יכול להיות ריק</string>

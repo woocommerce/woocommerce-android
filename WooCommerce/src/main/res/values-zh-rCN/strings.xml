@@ -1,11 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-06-03 09:54:04+0000
+Translation-Revision-Date: 2025-06-17 14:54:09+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="no_network_message">没用可用的网络</string>
+    <string name="media_loading_failed">媒体加载失败</string>
+    <string name="media_library_title">WordPress 媒体库</string>
+    <string name="woo_shipping_refund_note">请注意，此退款请求仅适用于未使用的运输标签，并且不会影响订单本身。</string>
+    <string name="woo_shipping_refund_amount_eligible_for_refund">&lt;b&gt;符合退款条件的金额：&lt;/b&gt;%s</string>
+    <string name="woo_shipping_refund_purchase_date">&lt;b&gt;购买日期：&lt;/b&gt;%s</string>
+    <string name="woo_shipping_refund_description">为您未使用的运输标签请求退款。 该运输标签的退款流程将立即开始，通常会在 14 个工作日内完成。</string>
+    <string name="woo_shipping_refund_title">请求运输标签退款</string>
+    <string name="woo_shipping_split_shipment_error">我们无法分批发货。 请重试。</string>
+    <string name="woopos_cart_searching_for_item">正在搜索</string>
+    <string name="woopos_cart_adding_item_to_cart_failed">将商品添加到购物车失败，%s。</string>
+    <string name="woopos_cart_coupon_added_to_cart_accessibility">优惠券 %1$s 已添加到购物车</string>
+    <string name="woopos_cart_product_added_to_cart_accessibility">产品 %1$s 已添加到购物车，价格为 %2$s</string>
+    <string name="woopos_barcode_scanning_title">条形码扫描</string>
+    <string name="woopos_dialog_barcode_info_background_content_description">背景变暗。 轻点即可关闭对话框。</string>
+    <string name="woopos_dialog_barcode_info_content_description">条形码扫描信息对话框</string>
+    <string name="woopos_dialog_barcode_info_button_label">确定</string>
+    <string name="woopos_dialog_barcode_info_quinary_message">扫描程序使用模拟键盘，因此有时会导致软件键盘无法显示，如在搜索时。 轻点键盘图标，重新调用软件键盘。</string>
+    <string name="woopos_dialog_barcode_info_quaternary_message">• 在商品列表上扫描条形码，将产品添加到购物车。</string>
+    <string name="woopos_dialog_barcode_info_tertiary_message">• 在系统蓝牙设置中连接条形码扫描程序。</string>
+    <string name="woopos_dialog_barcode_info_secondary_message">• 参阅蓝牙条形码扫描程序的说明，以设置 HID 模式。</string>
+    <string name="woopos_dialog_barcode_info_more_details_link">更多详情</string>
+    <string name="woopos_dialog_barcode_info_primary_message">• 在“产品 &gt; 产品详细信息 &gt; 库存”中的“GTIN、UPC、EAN、ISBN”字段中设置条形码。 </string>
+    <string name="woopos_dialog_barcode_info_intro_message">您可以使用外部扫描程序扫描条形码，快速创建购物车。</string>
+    <string name="woopos_dialog_barcode_info_heading">条形码扫描</string>
+    <string name="woopos_cart_barcode_scan_result_request_cancelled">请求已取消</string>
+    <string name="woopos_cart_barcode_scan_result_network_error">未连接互联网</string>
+    <string name="woopos_cart_barcode_scan_result_unsupported_product">不受支持的商品 — %s</string>
+    <string name="woopos_cart_barcode_scan_result_product_not_found">未知扫描商品</string>
+    <string name="woopos_add_coupon_to_cart_accessibility_label">将优惠券添加到购物车</string>
+    <string name="woopos_add_variable_product_to_cart_accessibility_label">打开变体列表</string>
+    <string name="woopos_add_product_to_cart_accessibility_label">将产品添加到购物车</string>
+    <string name="woopos_cart_item_error_content_description">加载商品 %s 时出错</string>
+    <string name="woopos_cart_item_loading_content_description">正在加载商品 %s</string>
+    <string name="blaze_campaign_edit_ad_arrow_back_description">上一条建议</string>
+    <string name="blaze_campaign_edit_ad_arrow_forward_description">下一条建议</string>
+    <string name="blaze_campaign_preview_tos_checkbox_evergreen_campaigns">我同意从 %2$s 起每周支付最多 %1$s 的周期性费用。 费用可能在广告活动期间分次收取。 &lt;a href=\'cancelInstructions\'&gt;&lt;u&gt;我可以随时取消&lt;/u&gt;&lt;/a&gt;；我将仅为取消前已投放的广告付款。</string>
+    <string name="blaze_campaign_preview_tos_checkbox_over_7_days_campaign">我同意从 %2$s 起每周支付最多 %1$s 的周期性费用。 费用可能在广告活动期间分次收取。 &lt;a href=\'cancelInstructions\'&gt;&lt;u&gt;我可以随时取消&lt;/u&gt;&lt;/a&gt;；我将仅为取消前已投放的广告付款。</string>
+    <string name="blaze_campaign_preview_tos_checkbox_less_than_7_days_campaign">我同意从 %2$s 起支付最多 %1$s 的费用。 费用可能一次性收取，也可能在广告活动期间分次收取。 &lt;a href=\'cancelInstructions\'&gt;&lt;u&gt;我可以随时取消&lt;/u&gt;&lt;/a&gt;；我将仅为取消前已投放的广告付款。</string>
+    <string name="customer_detail_guest_customer">访客</string>
     <string name="woopos_search_items_error_description">请重试。</string>
     <string name="woopos_search_coupons_error_title">无法加载优惠券</string>
     <string name="woopos_search_items_error_title">无法加载产品</string>
@@ -45,7 +85,7 @@ Language: zh_CN
     <string name="woopos_coupons_empty_list_image_description">没有优惠券</string>
     <string name="woopos_coupons_screen_title">优惠券</string>
     <string name="woopos_product_limitations_title">我的产品在哪里？</string>
-    <string name="woopos_coupon_item_content_description">优惠券 %s</string>
+    <string name="woopos_coupon_item_content_description_v2">优惠券 %s，%s</string>
     <string name="woo_shipping_split_shipment_bottom_sheet_remove_button">移除包裹</string>
     <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_plural">选择要将此包裹中的 %d 件商品移至何处。</string>
     <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_one">选择要将此包裹中的 %d 件商品移至何处。</string>
@@ -269,7 +309,7 @@ Language: zh_CN
     <string name="woopos_variations_loading_error_title">无法加载变体</string>
     <string name="woopos_variations_back_content_description">返回</string>
     <string name="woopos_variation_item_content_description">变体 %s，价格 %s</string>
-    <string name="woopos_variable_product_item_content_description">可变产品 %s，价格 %s</string>
+    <string name="woopos_variable_product_item_content_description_v2">可变产品 %s</string>
     <string name="blaze_campaign_edit_ad_change_description_empty_error">描述不能为空</string>
     <string name="blaze_campaign_edit_ad_change_cta_text_title">号召性用语</string>
     <string name="blaze_campaign_edit_ad_change_tagline_empty_error">标语不能为空</string>
