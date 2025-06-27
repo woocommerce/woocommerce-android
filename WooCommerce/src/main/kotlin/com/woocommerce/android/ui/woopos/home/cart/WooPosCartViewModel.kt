@@ -131,8 +131,8 @@ class WooPosCartViewModel @Inject constructor(
                 )
             }
 
-            is WooPosCartUIEvent.OnBarcodeScanned -> {
-                onBarcodeScanned(event.barcode, event.metadata)
+            is WooPosCartUIEvent.OnBarcodeEvent -> {
+                onBarcodeEvent(event.result)
             }
         }
     }
@@ -218,8 +218,8 @@ class WooPosCartViewModel @Inject constructor(
                         removeCouponsFromCart()
                     }
 
-                    is ParentToChildrenEvent.BarcodeScanned -> {
-                        onBarcodeScanned(event.barcode, event.metadata)
+                    is ParentToChildrenEvent.BarcodeEvent -> {
+                        onBarcodeEvent(event.result)
                     }
                 }
             }
@@ -352,8 +352,8 @@ class WooPosCartViewModel @Inject constructor(
         _state.value = WooPosCartState()
     }
 
-    private fun onBarcodeScanned(barcode: String, metadata: BarcodeInputDetector.ScanMetadata) {
-        trackBarcodeScanned(barcode, metadata)
+    private fun onBarcodeScanned(barcode: String, result: BarcodeInputDetector.BarcodeResult.Success) {
+        trackBarcodeEvent(result)
 
         if (_state.value.cartStatus !in listOf(EDITABLE, EMPTY)) {
             return
@@ -389,21 +389,47 @@ class WooPosCartViewModel @Inject constructor(
         }
     }
 
-    private fun trackBarcodeScanned(barcode: String, metadata: BarcodeInputDetector.ScanMetadata) {
+
+    private fun trackBarcodeEvent(result: BarcodeInputDetector.BarcodeResult) {
         viewModelScope.launch {
             val connectedScanner = scannerDetectionUtil.detectConnectedScanner(context)
             val scannerInfo = scannerDetectionUtil.getScannerInfoString(connectedScanner)
+
+            val (barcode, isSuccess, failReason, barcodeLength) = when (result) {
+                is BarcodeInputDetector.BarcodeResult.Success -> {
+                    Tuple4(result.barcode, true, null, result.barcode.length)
+                }
+                is BarcodeInputDetector.BarcodeResult.Error -> {
+                    Tuple4("", false, result.failureReason.value, result.barcodeLength)
+                }
+            }
 
             val isNumericOnly = barcode.all { it.isDigit() }
 
             analyticsTracker.track(
                 WooPosAnalyticsEvent.Event.BarcodeScanned(
-                    scanDurationMs = metadata.scanDurationMs,
+                    scanDurationMs = result.scanDurationMs,
                     isNumericOnly = isNumericOnly,
-                    barcodeLength = barcode.length,
+                    barcodeLength = barcodeLength,
                     scannerInfo = scannerInfo,
+                    isSuccess = isSuccess,
+                    failReason = failReason,
                 )
             )
+        }
+    }
+
+    private data class Tuple4<A, B, C, D>(val first: A, val second: B, val third: C, val fourth: D)
+
+    private fun onBarcodeEvent(result: BarcodeInputDetector.BarcodeResult) {
+        when (result) {
+            is BarcodeInputDetector.BarcodeResult.Success -> {
+                onBarcodeScanned(result.barcode, result)
+                trackBarcodeEvent(result)
+            }
+            is BarcodeInputDetector.BarcodeResult.Error -> {
+                trackBarcodeEvent(result)
+            }
         }
     }
 

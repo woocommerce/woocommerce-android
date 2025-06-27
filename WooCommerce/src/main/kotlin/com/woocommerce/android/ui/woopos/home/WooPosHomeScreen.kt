@@ -144,8 +144,8 @@ private fun WooPosHomeScreen(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.surface)
             .listenForBarcodes(
-                onBarcodeScanned = { barcode, metadata ->
-                    onHomeUIEvent(WooPosHomeUIEvent.OnBarcodeScanned(barcode, metadata))
+                onBarcodeEvent = { result ->
+                    onHomeUIEvent(WooPosHomeUIEvent.OnBarcodeEvent(result))
                 },
                 enabled = state.screenPositionState is WooPosHomeState.ScreenPositionState.Cart
             )

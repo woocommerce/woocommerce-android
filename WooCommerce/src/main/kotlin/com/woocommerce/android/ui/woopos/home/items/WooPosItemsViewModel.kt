@@ -89,7 +89,7 @@ class WooPosItemsViewModel @Inject constructor(
                     ParentToChildrenEvent.SearchEvent.Finished,
                     is ParentToChildrenEvent.SearchEvent.RecentSearchSelected,
                     ParentToChildrenEvent.SearchEvent.Started,
-                    is ParentToChildrenEvent.BarcodeScanned -> Unit
+                    is ParentToChildrenEvent.BarcodeEvent -> Unit
 
                     is ParentToChildrenEvent.OrderSuccessfullyPaid -> _viewState.value = initialState()
 
