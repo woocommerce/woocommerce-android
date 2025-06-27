@@ -56,7 +56,7 @@ class WooShippingRatesDatasourceMapper @Inject constructor() {
     operator fun invoke(response: Map<String, Map<String, WooShippingRatesDTO>>?): List<WooShippingRateOptionsModel> {
         val optionsMap = mutableMapOf<String, MutableList<WooShippingRateModel>>()
         response?.forEach { (packageId, ratesMap) ->
-            ratesMap.forEach nestedForEach@ { (rateOptionId, wooShippingRates) ->
+            ratesMap.forEach nestedForEach@{ (rateOptionId, wooShippingRates) ->
                 val rateOption = getOption(rateOptionId) ?: return@nestedForEach
                 wooShippingRates.rates.forEach { rate ->
                     val option = WooShippingRateModel(
