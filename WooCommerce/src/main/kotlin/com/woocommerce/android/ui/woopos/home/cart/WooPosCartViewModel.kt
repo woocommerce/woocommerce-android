@@ -356,6 +356,25 @@ class WooPosCartViewModel @Inject constructor(
         }
     }
 
+    private fun onBarcodeEvent(result: BarcodeInputDetector.BarcodeResult) {
+        if (_state.value.cartStatus !in listOf(EDITABLE, EMPTY)) {
+            return
+        }
+
+        viewModelScope.launch {
+            barcodeEventTracker.trackBarcodeEvent(result)
+
+            when (result) {
+                is BarcodeInputDetector.BarcodeResult.Success -> {
+                    processBarcodeSuccess(result.barcode)
+                }
+                is BarcodeInputDetector.BarcodeResult.Error -> {
+                    processBarcodeError(result)
+                }
+            }
+        }
+    }
+
     private suspend fun processBarcodeSuccess(barcode: String) {
         handleNewTransactionIfNeeded()
         val itemNumber = getItemNumber()
@@ -379,25 +398,6 @@ class WooPosCartViewModel @Inject constructor(
 
         analyticsTracker.track(WooPosAnalyticsEvent.Event.ItemAddedToCart(item = cartItem))
         updateCartItem(cartItem)
-    }
-
-    private fun onBarcodeEvent(result: BarcodeInputDetector.BarcodeResult) {
-        if (_state.value.cartStatus !in listOf(EDITABLE, EMPTY)) {
-            return
-        }
-
-        viewModelScope.launch {
-            barcodeEventTracker.trackBarcodeEvent(result)
-
-            when (result) {
-                is BarcodeInputDetector.BarcodeResult.Success -> {
-                    processBarcodeSuccess(result.barcode)
-                }
-                is BarcodeInputDetector.BarcodeResult.Error -> {
-                    processBarcodeError(result)
-                }
-            }
-        }
     }
 
     private suspend fun processBarcodeError(result: BarcodeInputDetector.BarcodeResult.Error) {
