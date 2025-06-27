@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels
 
+import com.woocommerce.android.WooException
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
@@ -29,27 +30,29 @@ class PurchaseShippingLabel @Inject constructor(
         customsData: List<CustomsData>? = null,
         hazmatSelection: ShippingLabelHazmatCategory? = null
     ): Result<PurchasedLabelData> {
-        return selectedSite.getOrNull()?.let {
-            val response = wooShippingLabelRepository.purchaseShippingLabel(
-                orderId = orderId,
-                shippableItems = shippableItems,
-                selectedPackage = selectedPackage,
-                shipmentId = shipmentId.toString(),
-                shipTo = shipTo,
-                shipFrom = shipFrom,
-                selectedRate = shippingRate,
-                weight = weight,
-                lastOrderComplete = lastOrderComplete,
-                customsData = customsData,
-                hazmatSelection = hazmatSelection,
-                site = it
-            )
-            val result = response.model
-            if (response.isError || result == null) {
-                Result.failure(Exception("Purchase failed"))
-            } else {
-                Result.success(result)
-            }
-        } ?: Result.failure(Exception("No site selected"))
+        val response = wooShippingLabelRepository.purchaseShippingLabel(
+            orderId = orderId,
+            shippableItems = shippableItems,
+            selectedPackage = selectedPackage,
+            shipmentId = shipmentId.toString(),
+            shipTo = shipTo,
+            shipFrom = shipFrom,
+            selectedRate = shippingRate,
+            weight = weight,
+            lastOrderComplete = lastOrderComplete,
+            customsData = customsData,
+            hazmatSelection = hazmatSelection,
+            site = selectedSite.get()
+        )
+
+        val result = response.model
+
+        return if (response.isError) {
+            Result.failure(WooException(response.error))
+        } else if (result == null) {
+            Result.failure(Exception("Unknown error occurred while purchasing shipping label"))
+        } else {
+            Result.success(result)
+        }
     }
 }
