@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 22.7
+This update makes managing your store even smoother! We’ve refreshed the order filtering UI, made the POS easier to access via the tab bar, and added barcode support to set SKU and Unique ID fields—plus fixed a bug so you can now clear those fields when needed.
+
 ## 22.6
 This release brings smoother order creation, better UI on tablets, and enhanced accessibility. POS now supports HID barcode scanners, sends detailed receipts, and checks feature availability for WooCommerce 10.0+. We've also improved refunds, payments UI, and large screen support.
 

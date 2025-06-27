@@ -1,4 +1,1 @@
-- [*] Improved filtering UI in the order's screen [https://github.com/woocommerce/woocommerce-android/pull/14212]
-- [**] Allow setting SKU and Global Unique Identifier fields on Products by scanning a barcode. [https://github.com/woocommerce/woocommerce-android/pull/14228]
-- [*] Fixed issue which prevented users from clearing SKU and Global Unique Identifier fields on Products. [https://github.com/woocommerce/woocommerce-android/pull/14229]
-- [*] POS is now more easily accessible through a tab on the tab bar [https://github.com/woocommerce/woocommerce-android/pull/14236]
+This update makes managing your store even smoother! We’ve refreshed the order filtering UI, made the POS easier to access via the tab bar, and added barcode support to set SKU and Unique ID fields—plus fixed a bug so you can now clear those fields when needed.
