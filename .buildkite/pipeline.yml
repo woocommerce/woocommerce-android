@@ -1,108 +1,20 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/buildkite/pipeline-schema/main/schema.json
 ---
 
-# Nodes with values to reuse in the pipeline.
-common_params:
-  # Common plugin settings to use with the `plugins` key.
-  - &test_collector_common_params
-      files: "WooCommerce/build/buildkite-test-analytics/*.xml"
-      format: "junit"
-
 agents:
   queue: "android"
 
 steps:
-  - label: Gradle Wrapper Validation
-    command: validate_gradle_wrapper
-    agents:
-      queue: linter
+  - label: "Generate Baseline Profile"
+    command: |
+      echo "--- :rubygems: Setting up Gems"
+      install_gems
 
-  # Wait for Gradle Wrapper to be validated before running any other jobs
-  - wait
+      echo "--- :closed_lock_with_key: Installing Secrets"
+      bundle exec fastlane run configure_apply
 
-  ########################################
-  - group: "🕵️ Linters"
-    steps:
-
-      - label: "☢️ Danger - PR Check"
-        command: danger
-        key: danger
-        if: "build.pull_request.id != null"
-        retry:
-          manual:
-            permit_on_passed: true
-        agents:
-          queue: "linter"
-
-      - label: "detekt"
-        command: |
-          if .buildkite/commands/should-skip-job.sh --job-type validation; then
-            exit 0
-          fi
-          ./gradlew detektAll
-        plugins: [$CI_TOOLKIT]
-        artifact_paths:
-          - "**/build/reports/detekt/detekt.html"
-
-      - label: "lint"
-        command: .buildkite/commands/lint.sh
-        plugins: [$CI_TOOLKIT]
-        artifact_paths:
-          - "**/build/reports/lint-results*.*"
-
-      - label: "Dependency Tree Diff"
-        command: comment_with_dependency_diff 'woocommerce' 'vanillaReleaseRuntimeClasspath'
-        if: build.pull_request.id != null
-        plugins: [$CI_TOOLKIT]
-        artifact_paths:
-          - "**/build/reports/diff/*"
-
-      - label: "Merged Manifest Diff"
-        command: ".buildkite/commands/diff-merged-manifest.sh vanillaRelease"
-        if: build.pull_request.id != null
-        plugins: [$CI_TOOLKIT]
-        artifact_paths:
-          - "**/build/reports/diff_manifest/**/**/*"
-
-  ########################################
-  - group: "🛠 Prototype Builds"
-    steps:
-
-      - label: "🛠 Prototype Build: Mobile App"
-        command: ".buildkite/commands/prototype-build.sh WooCommerce"
-        if: build.pull_request.id != null
-        plugins: [$CI_TOOLKIT]
-
-      - label: "🛠 Prototype Build: Wear App"
-        command: ".buildkite/commands/prototype-build.sh WooCommerce-Wear"
-        if: build.pull_request.id != null
-        plugins: [$CI_TOOLKIT]
-
-  ########################################
-  - group: "🔬 Tests"
-    steps:
-
-      - label: "Unit tests"
-        command: .buildkite/commands/run-unit-tests.sh
-        plugins:
-          - $CI_TOOLKIT
-          - $TEST_COLLECTOR :
-              <<: *test_collector_common_params
-              api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_UNIT_TESTS"
-        artifact_paths:
-          - "**/build/test-results/merged-test-results.xml"
-
-      - label: "Instrumented tests"
-        command: .buildkite/commands/run-instrumented-tests.sh
-        plugins:
-          - $CI_TOOLKIT
-          - $TEST_COLLECTOR :
-              <<: *test_collector_common_params
-              api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_INSTRUMENTED_TESTS"
-        artifact_paths:
-          - "**/build/instrumented-tests/**/*"
-
-
-  - label: "🐘 Populate Gradle build cache"
-    command: .buildkite/commands/gradle-cache-build.sh
-    plugins: [$CI_TOOLKIT]
+      echo "--- :hammer_and_wrench: Building"
+      ./gradlew :WooCommerce:generateVanillaReleaseBaselineProfile
+    plugins: [ $CI_TOOLKIT ]
+    artifact_paths:
+      - "**/src/vanillaRelease/generated/baselineProfiles/*"
