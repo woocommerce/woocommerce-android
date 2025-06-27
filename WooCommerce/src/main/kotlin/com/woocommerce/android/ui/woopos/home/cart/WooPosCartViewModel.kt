@@ -349,80 +349,78 @@ class WooPosCartViewModel @Inject constructor(
         _state.value = WooPosCartState()
     }
 
-    private fun onBarcodeScanned(barcode: String) {
-        viewModelScope.launch {
-            if (_state.value.body == WooPosCartState.Body.Empty) {
-                childrenToParentEventSender.sendToParent(OnNewTransactionStarted)
-
-                analyticsTracker.track(InteractionWithCustomerStarted)
-            }
-            val itemNumber = getItemNumber()
-
-            WooPosCartItemViewState.Loading(itemNumber = itemNumber, name = barcode).let { loadingItem ->
-                analyticsTracker.track(WooPosAnalyticsEvent.Event.ItemAddedToCart(item = loadingItem))
-                updateCartItem(loadingItem)
-            }
-
-            val searchResult = searchByIdentifier(barcode)
-
-            if (!isItemStillInCart(itemNumber)) {
-                wooPosLogWrapper.w("Item no longer in the cart. Ignoring barcode scan result.")
-                return@launch
-            }
-
-            val cartItem = searchResult.mapToCartItem(identifier = barcode, itemNumber = itemNumber)
-            if (cartItem is WooPosCartItemViewState.Error) {
-                soundHelper.playBarcodeScanFailure()
-            }
-
-            analyticsTracker.track(WooPosAnalyticsEvent.Event.ItemAddedToCart(item = cartItem))
-            updateCartItem(cartItem)
+    private suspend fun handleNewTransactionIfNeeded() {
+        if (_state.value.body == WooPosCartState.Body.Empty) {
+            childrenToParentEventSender.sendToParent(OnNewTransactionStarted)
+            analyticsTracker.track(InteractionWithCustomerStarted)
         }
     }
 
+    private suspend fun processBarcodeSuccess(barcode: String) {
+        handleNewTransactionIfNeeded()
+        val itemNumber = getItemNumber()
+
+        WooPosCartItemViewState.Loading(itemNumber = itemNumber, name = barcode).let { loadingItem ->
+            analyticsTracker.track(WooPosAnalyticsEvent.Event.ItemAddedToCart(item = loadingItem))
+            updateCartItem(loadingItem)
+        }
+
+        val searchResult = searchByIdentifier(barcode)
+
+        if (!isItemStillInCart(itemNumber)) {
+            wooPosLogWrapper.w("Item no longer in the cart. Ignoring barcode scan result.")
+            return
+        }
+
+        val cartItem = searchResult.mapToCartItem(identifier = barcode, itemNumber = itemNumber)
+        if (cartItem is WooPosCartItemViewState.Error) {
+            soundHelper.playBarcodeScanFailure()
+        }
+
+        analyticsTracker.track(WooPosAnalyticsEvent.Event.ItemAddedToCart(item = cartItem))
+        updateCartItem(cartItem)
+    }
+
     private fun onBarcodeEvent(result: BarcodeInputDetector.BarcodeResult) {
-        viewModelScope.launch { barcodeEventTracker.trackBarcodeEvent(result) }
         if (_state.value.cartStatus !in listOf(EDITABLE, EMPTY)) {
             return
         }
 
-        when (result) {
-            is BarcodeInputDetector.BarcodeResult.Success -> {
-                onBarcodeScanned(result.barcode)
-            }
-            is BarcodeInputDetector.BarcodeResult.Error -> {
-                onBarcodeScanError(result)
+        viewModelScope.launch {
+            barcodeEventTracker.trackBarcodeEvent(result)
+
+            when (result) {
+                is BarcodeInputDetector.BarcodeResult.Success -> {
+                    processBarcodeSuccess(result.barcode)
+                }
+                is BarcodeInputDetector.BarcodeResult.Error -> {
+                    processBarcodeError(result)
+                }
             }
         }
     }
 
-    private fun onBarcodeScanError(result: BarcodeInputDetector.BarcodeResult.Error) {
-        viewModelScope.launch {
-            if (_state.value.body == WooPosCartState.Body.Empty) {
-                childrenToParentEventSender.sendToParent(OnNewTransactionStarted)
-                analyticsTracker.track(InteractionWithCustomerStarted)
+    private suspend fun processBarcodeError(result: BarcodeInputDetector.BarcodeResult.Error) {
+        handleNewTransactionIfNeeded()
+        val itemNumber = getItemNumber()
+        val errorMessage = when (result.failureReason) {
+            BarcodeInputDetector.FailureReason.TOO_SHORT -> {
+                resourceProvider.getString(R.string.woopos_cart_barcode_scan_result_too_short)
             }
-
-            val itemNumber = getItemNumber()
-            val errorMessage = when (result.failureReason) {
-                BarcodeInputDetector.FailureReason.TOO_SHORT -> {
-                    resourceProvider.getString(R.string.woopos_cart_barcode_scan_result_too_short)
-                }
-                BarcodeInputDetector.FailureReason.NO_TERMINATOR -> {
-                    resourceProvider.getString(R.string.woopos_cart_barcode_scan_result_no_terminator)
-                }
+            BarcodeInputDetector.FailureReason.NO_TERMINATOR -> {
+                resourceProvider.getString(R.string.woopos_cart_barcode_scan_result_no_terminator)
             }
-
-            val errorItem = WooPosCartItemViewState.Error(
-                itemNumber = itemNumber,
-                name = result.barcode,
-                message = errorMessage
-            )
-
-            soundHelper.playBarcodeScanFailure()
-            analyticsTracker.track(WooPosAnalyticsEvent.Event.ItemAddedToCart(item = errorItem))
-            updateCartItem(errorItem)
         }
+
+        val errorItem = WooPosCartItemViewState.Error(
+            itemNumber = itemNumber,
+            name = result.barcode,
+            message = errorMessage
+        )
+
+        soundHelper.playBarcodeScanFailure()
+        analyticsTracker.track(WooPosAnalyticsEvent.Event.ItemAddedToCart(item = errorItem))
+        updateCartItem(errorItem)
     }
 
     private fun isItemStillInCart(itemNumber: Int): Boolean {
