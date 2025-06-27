@@ -1024,12 +1024,14 @@ class WooPosCartViewModelTest {
         val states = sut.state.captureValues()
 
         // WHEN
-        sut.onUIEvent(WooPosCartUIEvent.OnBarcodeEvent(
-            BarcodeInputDetector.BarcodeResult.Success(
-                barcode = "123456789",
-                scanDurationMs = 100L
+        sut.onUIEvent(
+            WooPosCartUIEvent.OnBarcodeEvent(
+                BarcodeInputDetector.BarcodeResult.Success(
+                    barcode = "123456789",
+                    scanDurationMs = 100L
+                )
             )
-        ))
+        )
 
         // THEN
         val itemsInCart = (states[1].body as WooPosCartState.Body.WithItems).itemsInCart
@@ -1054,12 +1056,14 @@ class WooPosCartViewModelTest {
         val sut = createSut()
 
         // WHEN
-        sut.onUIEvent(WooPosCartUIEvent.OnBarcodeEvent(
-            BarcodeInputDetector.BarcodeResult.Success(
-                barcode = "123456789",
-                scanDurationMs = 100L
+        sut.onUIEvent(
+            WooPosCartUIEvent.OnBarcodeEvent(
+                BarcodeInputDetector.BarcodeResult.Success(
+                    barcode = "123456789",
+                    scanDurationMs = 100L
+                )
             )
-        ))
+        )
 
         // THEN
         verify(analyticsTracker).track(
@@ -1089,12 +1093,14 @@ class WooPosCartViewModelTest {
             val states = sut.state.captureValues()
 
             // WHEN
-            sut.onUIEvent(WooPosCartUIEvent.OnBarcodeEvent(
-            BarcodeInputDetector.BarcodeResult.Success(
-                barcode = "123456789",
-                scanDurationMs = 100L
+            sut.onUIEvent(
+                WooPosCartUIEvent.OnBarcodeEvent(
+                    BarcodeInputDetector.BarcodeResult.Success(
+                        barcode = "123456789",
+                        scanDurationMs = 100L
+                    )
+                )
             )
-        ))
             advanceUntilIdle()
 
             // THEN
@@ -1123,12 +1129,14 @@ class WooPosCartViewModelTest {
             val sut = createSut()
 
             // WHEN
-            sut.onUIEvent(WooPosCartUIEvent.OnBarcodeEvent(
-            BarcodeInputDetector.BarcodeResult.Success(
-                barcode = "123456789",
-                scanDurationMs = 100L
+            sut.onUIEvent(
+                WooPosCartUIEvent.OnBarcodeEvent(
+                    BarcodeInputDetector.BarcodeResult.Success(
+                        barcode = "123456789",
+                        scanDurationMs = 100L
+                    )
+                )
             )
-        ))
             advanceUntilIdle()
 
             // THEN
@@ -1164,12 +1172,14 @@ class WooPosCartViewModelTest {
             val states = sut.state.captureValues()
 
             // WHEN
-            sut.onUIEvent(WooPosCartUIEvent.OnBarcodeEvent(
-            BarcodeInputDetector.BarcodeResult.Success(
-                barcode = "123456789",
-                scanDurationMs = 100L
+            sut.onUIEvent(
+                WooPosCartUIEvent.OnBarcodeEvent(
+                    BarcodeInputDetector.BarcodeResult.Success(
+                        barcode = "123456789",
+                        scanDurationMs = 100L
+                    )
+                )
             )
-        ))
             advanceUntilIdle()
 
             // THEN
@@ -1196,12 +1206,14 @@ class WooPosCartViewModelTest {
             val sut = createSut()
 
             // WHEN
-            sut.onUIEvent(WooPosCartUIEvent.OnBarcodeEvent(
-            BarcodeInputDetector.BarcodeResult.Success(
-                barcode = "123456789",
-                scanDurationMs = 100L
+            sut.onUIEvent(
+                WooPosCartUIEvent.OnBarcodeEvent(
+                    BarcodeInputDetector.BarcodeResult.Success(
+                        barcode = "123456789",
+                        scanDurationMs = 100L
+                    )
+                )
             )
-        ))
             advanceUntilIdle()
 
             // THEN
@@ -1240,12 +1252,14 @@ class WooPosCartViewModelTest {
             )
 
             // WHEN
-            sut.onUIEvent(WooPosCartUIEvent.OnBarcodeEvent(
-            BarcodeInputDetector.BarcodeResult.Success(
-                barcode = "123456789",
-                scanDurationMs = 100L
+            sut.onUIEvent(
+                WooPosCartUIEvent.OnBarcodeEvent(
+                    BarcodeInputDetector.BarcodeResult.Success(
+                        barcode = "123456789",
+                        scanDurationMs = 100L
+                    )
+                )
             )
-        ))
             advanceUntilIdle()
 
             // THEN
@@ -1274,12 +1288,14 @@ class WooPosCartViewModelTest {
         val states = sut.state.captureValues()
 
         // WHEN
-        sut.onUIEvent(WooPosCartUIEvent.OnBarcodeEvent(
-            BarcodeInputDetector.BarcodeResult.Success(
-                barcode = "123456789",
-                scanDurationMs = 100L
+        sut.onUIEvent(
+            WooPosCartUIEvent.OnBarcodeEvent(
+                BarcodeInputDetector.BarcodeResult.Success(
+                    barcode = "123456789",
+                    scanDurationMs = 100L
+                )
             )
-        ))
+        )
         advanceUntilIdle()
 
         // THEN
@@ -1303,12 +1319,14 @@ class WooPosCartViewModelTest {
         val sut = createSut()
 
         // WHEN
-        sut.onUIEvent(WooPosCartUIEvent.OnBarcodeEvent(
-            BarcodeInputDetector.BarcodeResult.Success(
-                barcode = "123456789",
-                scanDurationMs = 100L
+        sut.onUIEvent(
+            WooPosCartUIEvent.OnBarcodeEvent(
+                BarcodeInputDetector.BarcodeResult.Success(
+                    barcode = "123456789",
+                    scanDurationMs = 100L
+                )
             )
-        ))
+        )
         advanceUntilIdle()
 
         // THEN
@@ -1356,12 +1374,14 @@ class WooPosCartViewModelTest {
         val states = sut.state.captureValues()
 
         // WHEN
-        sut.onUIEvent(WooPosCartUIEvent.OnBarcodeEvent(
-            BarcodeInputDetector.BarcodeResult.Success(
-                barcode = "VAR123456",
-                scanDurationMs = 100L
+        sut.onUIEvent(
+            WooPosCartUIEvent.OnBarcodeEvent(
+                BarcodeInputDetector.BarcodeResult.Success(
+                    barcode = "VAR123456",
+                    scanDurationMs = 100L
+                )
             )
-        ))
+        )
         advanceUntilIdle()
 
         // THEN
@@ -1421,7 +1441,6 @@ class WooPosCartViewModelTest {
             )
         )
     }
-
 
     private fun createSut(): WooPosCartViewModel {
         return WooPosCartViewModel(
