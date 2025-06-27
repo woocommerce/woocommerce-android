@@ -1,0 +1,2 @@
+22.6:
+In diesem Release haben wir die Auftragserstellung noch reibungsloser gestaltet, die Benutzeroberfläche auf Tablets optimiert und die Barrierefreiheit verbessert. POS unterstützt jetzt HID-Barcode-Scanner, sendet detaillierte Belege und prüft die Verfügbarkeit von Funktionen für WooCommerce 10.0 oder höher. Außerdem haben wir Rückerstattungen, die Benutzeroberfläche für Zahlungen sowie die Unterstützung für große Bildschirme verbessert.

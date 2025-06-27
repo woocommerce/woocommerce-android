@@ -1,0 +1,2 @@
+22.6:
+Esta versión ofrece una creación de pedidos más sencilla, una mejor interfaz de usuario en tablets y una accesibilidad mejorada. POS ahora admite escáneres de códigos de barras HID, envía recibos detallados y comprueba la disponibilidad de las funciones para WooCommerce 10.0 y versiones posteriores. También hemos mejorado los reembolsos, la interfaz de pagos y la compatibilidad con pantallas grandes.
