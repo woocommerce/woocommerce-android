@@ -352,9 +352,7 @@ class WooPosCartViewModel @Inject constructor(
         _state.value = WooPosCartState()
     }
 
-    private fun onBarcodeScanned(barcode: String, result: BarcodeInputDetector.BarcodeResult.Success) {
-        trackBarcodeEvent(result)
-
+    private fun onBarcodeScanned(barcode: String) {
         if (_state.value.cartStatus !in listOf(EDITABLE, EMPTY)) {
             return
         }
@@ -422,14 +420,9 @@ class WooPosCartViewModel @Inject constructor(
     private data class Tuple4<A, B, C, D>(val first: A, val second: B, val third: C, val fourth: D)
 
     private fun onBarcodeEvent(result: BarcodeInputDetector.BarcodeResult) {
-        when (result) {
-            is BarcodeInputDetector.BarcodeResult.Success -> {
-                onBarcodeScanned(result.barcode, result)
-                trackBarcodeEvent(result)
-            }
-            is BarcodeInputDetector.BarcodeResult.Error -> {
-                trackBarcodeEvent(result)
-            }
+        trackBarcodeEvent(result)
+        if (result is BarcodeInputDetector.BarcodeResult.Success) {
+            onBarcodeScanned(result.barcode)
         }
     }
 
