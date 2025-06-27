@@ -130,10 +130,9 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             val isNumericOnly: Boolean,
             val barcodeLength: Int,
             val scannerInfo: String?,
-            val isSuccess: Boolean,
             val failReason: String? = null,
         ) : Event() {
-            override val name: String = if (isSuccess) "barcode_scanned" else "barcode_scanning_failed"
+            override val name: String = if (failReason == null) "barcode_scanned" else "barcode_scanning_failed"
 
             init {
                 val properties = mutableMapOf(
@@ -142,7 +141,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                     "is_numeric_only" to isNumericOnly.toString(),
                     "scanner_info" to (scannerInfo ?: "unknown")
                 )
-                if (!isSuccess && failReason != null) {
+                if (failReason != null) {
                     properties["fail_reason"] = failReason
                 }
                 addProperties(properties)

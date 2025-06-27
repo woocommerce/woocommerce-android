@@ -79,9 +79,9 @@ class BarcodeInputDetector(
             if (barcodeBuffer.isNotEmpty()) {
                 val scanDuration = if (scanStartTime != -1L) currentTime - scanStartTime else 0L
                 val event = BarcodeResult.Error(
+                    barcode = barcodeBuffer.toString(),
                     scanDurationMs = scanDuration,
                     failureReason = FailureReason.NO_TERMINATOR,
-                    barcodeLength = barcodeBuffer.length
                 )
                 onBarcodeEvent(event)
                 WooPosLogWrapper.d("Barcode scanning failed: $event")
@@ -117,9 +117,9 @@ class BarcodeInputDetector(
             )
         } else if (scannedBarcode.isNotEmpty()) {
             BarcodeResult.Error(
+                barcode = scannedBarcode,
                 scanDurationMs = scanDuration,
                 failureReason = FailureReason.TOO_SHORT,
-                barcodeLength = scannedBarcode.length
             )
         } else {
             null
@@ -142,16 +142,17 @@ class BarcodeInputDetector(
 
     sealed class BarcodeResult {
         abstract val scanDurationMs: Long
+        abstract val barcode: String
 
         data class Success(
-            val barcode: String,
+            override val barcode: String,
             override val scanDurationMs: Long,
         ) : BarcodeResult()
 
         data class Error(
+            override val barcode: String,
             override val scanDurationMs: Long,
             val failureReason: FailureReason,
-            val barcodeLength: Int,
         ) : BarcodeResult()
     }
 

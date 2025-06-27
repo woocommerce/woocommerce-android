@@ -23,7 +23,6 @@ class WooPosBarcodeEventTracker @Inject constructor(
                         isNumericOnly = result.barcode.all { it.isDigit() },
                         barcodeLength = result.barcode.length,
                         scannerInfo = scannerInfo,
-                        isSuccess = true,
                     )
                 )
             }
@@ -32,10 +31,9 @@ class WooPosBarcodeEventTracker @Inject constructor(
                 analyticsTracker.track(
                     WooPosAnalyticsEvent.Event.BarcodeScanned(
                         scanDurationMs = result.scanDurationMs,
-                        isNumericOnly = false,
-                        barcodeLength = 0,
+                        isNumericOnly = result.barcode.all { it.isDigit() },
+                        barcodeLength = result.barcode.length,
                         scannerInfo = scannerInfo,
-                        isSuccess = false,
                         failReason = result.failureReason.value,
                     )
                 )
