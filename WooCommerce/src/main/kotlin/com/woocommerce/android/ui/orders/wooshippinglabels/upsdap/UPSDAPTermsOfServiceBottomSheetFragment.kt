@@ -8,6 +8,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.extensions.navigateBackWithNotice
+import com.woocommerce.android.ui.compose.theme.WooTheme
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
@@ -26,7 +27,9 @@ class UPSDAPTermsOfServiceBottomSheetFragment : WCBottomSheetDialogFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
             setContent {
-                UPSDAPTermsOfServiceBottomSheet(viewModel)
+                WooTheme {
+                    UPSDAPTermsOfServiceBottomSheet(viewModel)
+                }
             }
         }
     }
