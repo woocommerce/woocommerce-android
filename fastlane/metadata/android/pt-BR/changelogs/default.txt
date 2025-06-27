@@ -1,0 +1,2 @@
+22.6:
+Esta versão oferece uma criação de pedidos mais tranquila, melhor interface do usuário em tablets e acessibilidade aprimorada. Agora o ponto de venda aceita scanners de código de barras HID, envia recibos detalhados e verifica a disponibilidade de funcionalidades para o WooCommerce 10.0+. Também melhoramos os reembolsos, a interface de pagamentos e a compatibilidade com telas grandes.

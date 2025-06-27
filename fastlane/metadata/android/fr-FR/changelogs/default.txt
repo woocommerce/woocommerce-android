@@ -1,0 +1,2 @@
+22.6 :
+Cette version facilite la création des commandes, améliore l’interface utilisateur sur tablettes et l’accessibilité. Le PDV prend désormais en charge les scanners de codes-barres HID, envoie des reçus détaillés et vérifie la disponibilité des fonctionnalités pour WooCommerce 10.0+. Nous avons également amélioré les remboursements, l’interface utilisateur des paiements et la prise en charge des écrans larges.

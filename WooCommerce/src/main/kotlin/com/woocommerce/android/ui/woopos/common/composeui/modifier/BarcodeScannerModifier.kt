@@ -63,9 +63,10 @@ class BarcodeInputDetector(
     private val onBarcodeScanned: (String, ScanMetadata) -> Unit,
     private val currentTimeProvider: CurrentTimeProvider,
 ) {
+
     private companion object {
         const val MAX_SCANNER_INTER_CHAR_DELAY_MS = 200L
-        const val MIN_BARCODE_LENGTH = 4
+        const val MIN_BARCODE_LENGTH = 1
     }
 
     private val barcodeBuffer = StringBuilder()

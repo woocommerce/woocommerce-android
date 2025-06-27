@@ -66,9 +66,6 @@ class BarcodeInputDetectorTest {
     fun `given input shorter than minimum length, when enter pressed, then barcode scan is not triggered`() = runTest {
         // GIVEN
         val detector = setupDetector()
-        detector.handleKeyInput('1')
-        detector.handleKeyInput('2')
-        detector.handleKeyInput('3')
 
         // WHEN
         detector.handleKeyInput('\n')
