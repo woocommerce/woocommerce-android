@@ -1,7 +1,6 @@
 package org.wordpress.android.fluxc.persistence.dao
 
 import android.app.Application
-import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -14,6 +13,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
+import org.wordpress.android.fluxc.persistence.TestDatabase
 import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
 import org.wordpress.android.fluxc.persistence.entity.CouponEmailEntity
 import org.wordpress.android.fluxc.persistence.entity.CouponEntity
@@ -38,9 +38,7 @@ class CouponsDaoTest {
     @Before
     fun createDb() {
         val context = ApplicationProvider.getApplicationContext<Application>()
-        db = Room.inMemoryDatabaseBuilder(context, WCAndroidDatabase::class.java)
-            .allowMainThreadQueries()
-            .build()
+        db = TestDatabase.provideTestDatabase(context).build()
         couponsDao = db.couponsDao
     }
 

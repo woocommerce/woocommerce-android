@@ -1,6 +1,5 @@
 package org.wordpress.android.fluxc.wc.taxes
 
-import androidx.room.Room
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
@@ -22,6 +21,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.taxes.WCTaxRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.taxes.WCTaxRestClient.TaxClassApiResponse
+import org.wordpress.android.fluxc.persistence.TestDatabase
 import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
 import org.wordpress.android.fluxc.store.WCTaxStore
 import org.wordpress.android.fluxc.tools.initCoroutineEngine
@@ -47,9 +47,7 @@ class WCTaxStoreTest {
     @Before
     fun setUp() {
         val appContext = RuntimeEnvironment.application.applicationContext
-        roomDb = Room.inMemoryDatabaseBuilder(appContext, WCAndroidDatabase::class.java)
-            .allowMainThreadQueries()
-            .build()
+        roomDb = TestDatabase.provideTestDatabase(appContext).build()
 
         store = WCTaxStore(
             restClient,

@@ -1,6 +1,5 @@
 package org.wordpress.android.fluxc.store
 
-import androidx.room.Room
 import com.google.gson.JsonObject
 import com.yarolegovich.wellsql.WellSql
 import junit.framework.TestCase.assertFalse
@@ -45,6 +44,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStoc
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductVariationApiResponse
 import org.wordpress.android.fluxc.persistence.ProductStorageHelper
+import org.wordpress.android.fluxc.persistence.TestDatabase
 import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.fluxc.persistence.dao.ProductVariationsDao
@@ -92,9 +92,7 @@ class WCProductStoreTest {
         WellSql.init(config)
         config.reset()
 
-        roomDb = Room.inMemoryDatabaseBuilder(appContext, WCAndroidDatabase::class.java)
-            .allowMainThreadQueries()
-            .build()
+        roomDb = TestDatabase.provideTestDatabase(appContext).build()
 
         productsDao = roomDb.productsDao
         productsVariationsDao = roomDb.productVariationsDao

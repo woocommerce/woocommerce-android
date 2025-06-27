@@ -1,7 +1,6 @@
 package org.wordpress.android.fluxc.persistence.dao
 
 import android.app.Application
-import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -14,6 +13,7 @@ import org.robolectric.annotation.Config
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.taxes.WCTaxClassModel
+import org.wordpress.android.fluxc.persistence.TestDatabase
 import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
 
 @Config(manifest = Config.NONE)
@@ -45,9 +45,7 @@ class TaxClassDaoTest {
     @Before
     fun setUp() {
         val context = ApplicationProvider.getApplicationContext<Application>()
-        database = Room.inMemoryDatabaseBuilder(context, WCAndroidDatabase::class.java)
-            .allowMainThreadQueries()
-            .build()
+        database = TestDatabase.provideTestDatabase(context).build()
         sut = database.taxClassDao
     }
 

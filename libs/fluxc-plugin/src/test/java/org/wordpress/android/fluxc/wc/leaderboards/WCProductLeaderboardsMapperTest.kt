@@ -1,6 +1,5 @@
 package org.wordpress.android.fluxc.wc.leaderboards
 
-import androidx.room.Room
 import com.yarolegovich.wellsql.WellSql
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
@@ -17,6 +16,7 @@ import org.wordpress.android.fluxc.SingleStoreWellSqlConfigForTests
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.leaderboards.WCProductLeaderboardsMapper
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.leaderboards.LeaderboardsApiResponse.Type.PRODUCTS
+import org.wordpress.android.fluxc.persistence.TestDatabase
 import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.fluxc.store.WCProductStore
@@ -54,8 +54,7 @@ class WCProductLeaderboardsMapperTest {
             it.reset()
         }
 
-        database = Room.inMemoryDatabaseBuilder(RuntimeEnvironment.application.applicationContext, WCAndroidDatabase::class.java)
-            .allowMainThreadQueries()
+        database = TestDatabase.provideTestDatabase(RuntimeEnvironment.application.applicationContext)
             .build()
 
         mapperUnderTest = WCProductLeaderboardsMapper()

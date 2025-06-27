@@ -1,7 +1,6 @@
 package org.wordpress.android.fluxc.persistence.dao
 
 import android.app.Application
-import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -17,6 +16,7 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCProductReviewModel
 import org.wordpress.android.fluxc.persistence.SiteSqlUtils
+import org.wordpress.android.fluxc.persistence.TestDatabase
 import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
 import org.wordpress.android.fluxc.wc.product.ProductTestUtils
 import java.io.IOException
@@ -38,9 +38,7 @@ class ProductReviewsDaoTest {
     @Before
     fun setUp() {
         val context = ApplicationProvider.getApplicationContext<Application>()
-        database = Room.inMemoryDatabaseBuilder(context, WCAndroidDatabase::class.java)
-            .allowMainThreadQueries()
-            .build()
+        database = TestDatabase.provideTestDatabase(context).build()
         sut = database.productReviewsDao
     }
 

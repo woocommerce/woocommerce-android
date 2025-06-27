@@ -1,6 +1,5 @@
 package org.wordpress.android.fluxc.wc.stats
 
-import androidx.room.Room
 import com.yarolegovich.wellsql.WellSql
 import junit.framework.TestCase.assertFalse
 import kotlinx.coroutines.runBlocking
@@ -36,7 +35,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.bundlestats.BundleStats
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bundlestats.BundleStatsTotals
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.orderstats.OrderStatsRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.orderstats.VisitorStatsSummaryApiResponse
-import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
+import org.wordpress.android.fluxc.persistence.TestDatabase
 import org.wordpress.android.fluxc.persistence.WCVisitorStatsSqlUtils
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.fluxc.store.WCStatsStore
@@ -75,9 +74,7 @@ class WCStatsStoreTest {
         WellSql.init(config)
         config.reset()
 
-        val database = Room.inMemoryDatabaseBuilder(appContext, WCAndroidDatabase::class.java)
-            .allowMainThreadQueries()
-            .build()
+        val database = TestDatabase.provideTestDatabase(appContext).build()
 
         wcStatsStore = WCStatsStore(
             dispatcher = Dispatcher(),

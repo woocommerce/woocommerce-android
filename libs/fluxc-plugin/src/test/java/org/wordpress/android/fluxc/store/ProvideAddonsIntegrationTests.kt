@@ -1,7 +1,6 @@
 package org.wordpress.android.fluxc.store
 
 import android.app.Application
-import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.flow.first
@@ -47,6 +46,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.addons.AddOnsRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.addons.dto.AddOnGroupDto
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.addons.mappers.RemoteGlobalAddonGroupMapper
+import org.wordpress.android.fluxc.persistence.TestDatabase
 import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
 import org.wordpress.android.fluxc.persistence.dao.AddonsDao
 import org.wordpress.android.fluxc.persistence.mappers.FromDatabaseAddonGroupMapper
@@ -69,9 +69,7 @@ class ProvideAddonsIntegrationTests {
         val context = ApplicationProvider.getApplicationContext<Application>()
 
         logger = mock()
-        database = Room.inMemoryDatabaseBuilder(context, WCAndroidDatabase::class.java)
-                .allowMainThreadQueries()
-                .build()
+        database = TestDatabase.provideTestDatabase(context).build()
         dao = database.addonsDao
         restClient = mock()
         coroutineEngine = CoroutineEngine(

@@ -1,6 +1,5 @@
 package org.wordpress.android.fluxc.wc.user
 
-import androidx.room.Room
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
@@ -20,6 +19,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.INVALID_RE
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.user.WCUserRestClient
+import org.wordpress.android.fluxc.persistence.TestDatabase
 import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
 import org.wordpress.android.fluxc.store.WCUserStore
 import org.wordpress.android.fluxc.test
@@ -41,9 +41,7 @@ class WCUserStoreTest {
     @Before
     fun setUp() {
         val appContext = RuntimeEnvironment.application.applicationContext
-        database = Room.inMemoryDatabaseBuilder(appContext, WCAndroidDatabase::class.java)
-            .allowMainThreadQueries()
-            .build()
+        database = TestDatabase.provideTestDatabase(appContext).build()
 
         store = WCUserStore(
             restClient,

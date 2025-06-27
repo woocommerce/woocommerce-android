@@ -1,7 +1,6 @@
 package org.wordpress.android.fluxc.store
 
 import android.content.Context
-import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -26,6 +25,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.INVALID_RE
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.customer.CustomerRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.customer.dto.CustomerDTO
+import org.wordpress.android.fluxc.persistence.TestDatabase
 import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
 import org.wordpress.android.fluxc.persistence.dao.CustomerDao
 import org.wordpress.android.fluxc.test
@@ -44,9 +44,7 @@ class WCCustomerStoreTest {
     @Before
     fun setUp() {
         val appContext = ApplicationProvider.getApplicationContext<Context>()
-        roomDb = Room.inMemoryDatabaseBuilder(appContext, WCAndroidDatabase::class.java)
-            .allowMainThreadQueries()
-            .build()
+        roomDb = TestDatabase.provideTestDatabase(appContext).build()
         customerDao = roomDb.customerDao
 
         sut = WCCustomerStore(

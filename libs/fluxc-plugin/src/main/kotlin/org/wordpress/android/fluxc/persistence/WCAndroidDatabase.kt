@@ -212,11 +212,15 @@ abstract class WCAndroidDatabase : RoomDatabase(), TransactionExecutor {
     internal abstract val settingsDao: SettingsDao
 
     companion object {
-        fun buildDb(applicationContext: Context) = Room.databaseBuilder(
+        fun buildDb(
+            applicationContext: Context,
+            currencyPositionConverter: CurrencyPositionConverter
+        ) = Room.databaseBuilder(
             applicationContext,
             WCAndroidDatabase::class.java,
             "wc-android-database"
         ).allowMainThreadQueries()
+            .addTypeConverter(currencyPositionConverter)
             .fallbackToDestructiveMigrationOnDowngrade()
             .fallbackToDestructiveMigrationFrom(1, 2)
             .addMigrations(MIGRATION_3_4)

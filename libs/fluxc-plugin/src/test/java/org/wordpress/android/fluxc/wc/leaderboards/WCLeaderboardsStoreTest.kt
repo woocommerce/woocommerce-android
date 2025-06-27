@@ -1,6 +1,5 @@
 package org.wordpress.android.fluxc.wc.leaderboards
 
-import androidx.room.Room
 import com.yarolegovich.wellsql.WellSql
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
@@ -30,6 +29,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.leaderboards.Leaderboar
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.leaderboards.LeaderboardsRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.reports.ReportsProductApiResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.reports.ReportsRestClient
+import org.wordpress.android.fluxc.persistence.TestDatabase
 import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.fluxc.persistence.dao.TopPerformerProductsDao
@@ -58,8 +58,7 @@ class WCLeaderboardsStoreTest {
     private lateinit var storeUnderTest: WCLeaderboardsStore
 
     fun setup(prepareMocks: () -> Unit = {}) {
-        database = Room.inMemoryDatabaseBuilder(RuntimeEnvironment.application.applicationContext, WCAndroidDatabase::class.java)
-            .allowMainThreadQueries()
+        database = TestDatabase.provideTestDatabase(RuntimeEnvironment.application.applicationContext)
             .build()
         productStore = Mockito.spy(
             WCProductStore(

@@ -1,6 +1,5 @@
 package org.wordpress.android.fluxc.store
 
-import androidx.room.Room
 import com.yarolegovich.wellsql.WellSql
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -18,6 +17,7 @@ import org.wordpress.android.fluxc.model.data.WCLocationModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.data.WCDataRestClient
+import org.wordpress.android.fluxc.persistence.TestDatabase
 import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.fluxc.persistence.dao.LocationsDao
@@ -46,9 +46,7 @@ class WCDataStoreTest {
         WellSql.init(config)
         config.reset()
 
-        roomDb = Room.inMemoryDatabaseBuilder(appContext, WCAndroidDatabase::class.java)
-            .allowMainThreadQueries()
-            .build()
+        roomDb = TestDatabase.provideTestDatabase(appContext).build()
         locationsDao = roomDb.locationsDao
 
         store = WCDataStore(restClient, initCoroutineEngine(), locationsDao)

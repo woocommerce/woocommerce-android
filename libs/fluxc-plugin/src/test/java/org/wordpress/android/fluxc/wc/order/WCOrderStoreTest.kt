@@ -2,7 +2,6 @@
 package org.wordpress.android.fluxc.wc.order
 
 import android.app.Application
-import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.yarolegovich.wellsql.WellSql
 import kotlinx.coroutines.InternalCoroutinesApi
@@ -40,7 +39,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus.C
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderDto
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient
 import org.wordpress.android.fluxc.persistence.OrderSqlUtils
-import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
+import org.wordpress.android.fluxc.persistence.TestDatabase
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.fluxc.persistence.dao.MetaDataDao
 import org.wordpress.android.fluxc.persistence.dao.OrderNotesDao
@@ -81,9 +80,7 @@ internal class WCOrderStoreTest {
     fun setUp() {
         val appContext = ApplicationProvider.getApplicationContext<Application>()
 
-        val database = Room.inMemoryDatabaseBuilder(appContext, WCAndroidDatabase::class.java)
-                .allowMainThreadQueries()
-                .build()
+        val database = TestDatabase.provideTestDatabase(appContext).build()
 
         val dispatcher = Dispatcher()
         ordersDaoDecorator = OrdersDaoDecorator(dispatcher, database.ordersDao)

@@ -1,7 +1,6 @@
 package org.wordpress.android.fluxc.wc
 
 import android.app.Application
-import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.yarolegovich.wellsql.WellSql
 import kotlinx.coroutines.runBlocking
@@ -43,6 +42,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WooSystemRestCli
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WooSystemRestClient.WPSiteSettingsResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.toDomainModel
 import org.wordpress.android.fluxc.persistence.PluginSqlUtilsWrapper
+import org.wordpress.android.fluxc.persistence.TestDatabase
 import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.fluxc.persistence.dao.TaxBasedOnDao
@@ -135,7 +135,7 @@ class WooCommerceStoreTest {
         )
         WellSql.init(config)
         config.reset()
-        db = Room.inMemoryDatabaseBuilder(appContext, WCAndroidDatabase::class.java).build()
+        db = TestDatabase.provideTestDatabase(appContext).build()
         taxBasedOnDao = db.taxBasedOnSettingDao
     }
 

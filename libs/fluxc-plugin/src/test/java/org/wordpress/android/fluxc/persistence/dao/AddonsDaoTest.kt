@@ -1,7 +1,6 @@
 package org.wordpress.android.fluxc.persistence.dao
 
 import android.app.Application
-import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -15,6 +14,7 @@ import org.wordpress.android.fluxc.domain.Addon
 import org.wordpress.android.fluxc.domain.Addon.HasAdjustablePrice.Price.Adjusted.PriceType
 import org.wordpress.android.fluxc.domain.GlobalAddonGroup
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
+import org.wordpress.android.fluxc.persistence.TestDatabase
 import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
 import org.wordpress.android.fluxc.persistence.entity.AddonEntity
 import org.wordpress.android.fluxc.persistence.entity.AddonEntity.LocalPriceType
@@ -33,8 +33,7 @@ internal class AddonsDaoTest {
     @Before
     fun setUp() {
         val context = ApplicationProvider.getApplicationContext<Application>()
-        database = Room.inMemoryDatabaseBuilder(context, WCAndroidDatabase::class.java)
-                .allowMainThreadQueries()
+        database = TestDatabase.provideTestDatabase(context)
                 .build()
         sut = database.addonsDao
     }
