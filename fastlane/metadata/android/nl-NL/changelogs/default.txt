@@ -1,2 +1,0 @@
-22.6:
-Deze release laat bestellingen soepeler verlopen en zorgt voor een betere gebruikersinterface op tablets en verbeterde toegankelijkheid. POS ondersteunt nu HID-streepjescodescanners, verzendt gedetailleerde kwitanties en controleert de beschikbaarheid van functies voor WooCommerce 10.0+. We hebben ook terugbetalingen, betalingen, gebruikersinterface en ondersteuning op groot scherm verbeterd.

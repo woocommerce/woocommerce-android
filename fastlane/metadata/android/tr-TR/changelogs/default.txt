@@ -1,2 +1,0 @@
-22.6:
-Bu sürüm; daha sorunsuz sipariş oluşturma, tabletlerde daha iyi kullanıcı arayüzü ve gelişmiş erişilebilirlik sağlar. POS artık HID barkod tarayıcılarını destekliyor, ayrıntılı makbuzlar gönderiyor ve WooCommerce 10.0 ve üzeri özelliklerin uygunluğunu kontrol ediyor. Ayrıca geri ödemeleri, ödemeler kullanıcı arayüzünü ve büyük ekran desteğini iyileştirdik.
