@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.android.test)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.androidx.baselineprofile)
+    alias(libs.plugins.firebase.testlab)
 }
 
 android {
@@ -41,10 +42,28 @@ android {
     }
 }
 
+def directory = "/storage/emulated/0/Android/media/${android.namespace}"
+firebaseTestLab {
+    serviceAccountCredentials = rootProject.file(".configure-files/firebase.secrets.json")
+    managedDevices {
+        "ftlDeviceTokay35" {
+            device = "tokay"
+            apiLevel = 35
+        }
+    }
+    testOptions {
+        results {
+            directoriesToPull.addAll(directory.toString())
+            recordVideo = true
+            performanceMetrics = true
+        }
+    }
+}
+
 // This is the configuration block for the Baseline Profile plugin.
 // You can specify to run the generators on a managed devices or connected devices.
 baselineProfile {
-    managedDevices += "pixel6Api34"
+    managedDevices += "ftlDeviceTokay35"
     useConnectedDevices = false
 }
 

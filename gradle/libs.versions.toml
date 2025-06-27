@@ -53,6 +53,7 @@ facebook-flipper = '0.176.1'
 facebook-shimmer = '0.5.0'
 facebook-soloader = '0.10.4'
 fastlane-screengrab = '2.1.1'
+firebase-testlab = '0.0.1-alpha10'
 fladle = '0.17.5'
 glassfish-javax-annotation = "10.0-b28"
 google-autoService = "1.0-rc4"
@@ -283,6 +284,7 @@ androidx-navigation-safeargs = { id = "androidx.navigation.safeargs.kotlin", ver
 automattic-measure-builds = { id = "com.automattic.android.measure-builds", version.ref = "automattic-measure-builds" }
 dependency-analysis = { id = "com.autonomousapps.dependency-analysis", version.ref = "dependency-analysis" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+firebase-testlab = { id = "com.google.firebase.testlab", version.ref = "firebase-testlab" }
 fladle = { id = "com.osacky.fladle", version.ref = "fladle" }
 google-dagger-hilt = { id = "com.google.dagger.hilt.android", version.ref = "google-dagger" }
 google-protobuf = { id = "com.google.protobuf", version.ref = "google-protobuf-plugin" }
