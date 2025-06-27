@@ -1,2 +1,0 @@
-22.6:
-Rilis ini menghadirkan pembuatan pesanan yang lebih lancar, UI lebih jelas di tablet, dan peningkatan aksesibilitas. POS kini mendukung pemindai barcode HID, mengirimkan tanda terima terperinci, dan memeriksa ketersediaan fitur WooCommerce 10.0+. Kami juga telah mengoptimalkan pengembalian dana, UI pembayaran, dan dukungan layar besar.

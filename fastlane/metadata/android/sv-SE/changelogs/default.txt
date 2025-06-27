@@ -1,2 +1,0 @@
-22.6:
-Den här versionen ger smidigare beställningsskapande, bättre gränssnitt på surfplattor och förbättrad tillgänglighet. POS stöder nu HID-streckkodsskannrar, skickar detaljerade kvitton och kontrollerar funktionstillgängligheten för WooCommerce 10.0+. Vi har även förbättrat återbetalningar, betalningsgränssnitt och stöd för stor skärm.
