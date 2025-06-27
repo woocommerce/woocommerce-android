@@ -109,6 +109,8 @@ import kotlinx.coroutines.launch
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 
+private const val ANIMATION_DURATION = 200L
+
 @Suppress("LargeClass")
 @AndroidEntryPoint
 class OrderCreateEditFormFragment :
@@ -560,6 +562,23 @@ class OrderCreateEditFormFragment :
             new.taxRateSelectorButtonState.takeIfNotEqualTo(old?.taxRateSelectorButtonState) {
                 binding.taxRateSelectorSection.isVisible = it.isShown
                 binding.setTaxRateButton.text = it.label
+            }
+            new.isUpdatingOrderDraft.takeIfNotEqualTo(old?.isUpdatingOrderDraft) { isUpdatingOrderDraft ->
+                if (isUpdatingOrderDraft) {
+                    binding.orderUpdateOverlay.isVisible = true
+                    binding.orderUpdateOverlay.animate()
+                        .alpha(1f)
+                        .setDuration(ANIMATION_DURATION)
+                        .start()
+                } else {
+                    binding.orderUpdateOverlay.animate()
+                        .alpha(0f)
+                        .setDuration(ANIMATION_DURATION)
+                        .withEndAction {
+                            binding.orderUpdateOverlay.isVisible = false
+                        }
+                        .start()
+                }
             }
         }
     }

@@ -80,7 +80,13 @@ internal class ApplicationPasswordsManager @Inject constructor(
         return if (site.origin == SiteModel.ORIGIN_WPCOM_REST) {
             jetpackApplicationPasswordsRestClient.fetchWPAdminUsername(site)
         } else {
-            UsernameFetchPayload(site.username)
+            site.username?.let { UsernameFetchPayload(it) }
+                ?: UsernameFetchPayload(
+                    BaseNetworkError(
+                        GenericErrorType.UNKNOWN,
+                        "Username is missing for the site"
+                    )
+                )
         }
     }
 

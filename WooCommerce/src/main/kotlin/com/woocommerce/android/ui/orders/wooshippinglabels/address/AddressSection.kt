@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -38,17 +39,13 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.woocommerce.android.R
-import com.woocommerce.android.model.Address
-import com.woocommerce.android.model.AmbiguousLocation
-import com.woocommerce.android.model.Location
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.RoundedCornerBoxWithBorder
+import com.woocommerce.android.ui.orders.wooshippinglabels.ShippingLabelSampleData
 import com.woocommerce.android.ui.orders.wooshippinglabels.VerticalDivider
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingAddresses
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
-import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.shippingSelectedBackgroundColor
-import com.woocommerce.android.ui.orders.wooshippinglabels.toShippingFromString
 
 @Composable
 @Suppress("DestructuringDeclarationWithTooManyEntries")
@@ -114,10 +111,10 @@ internal fun AddressSectionPortrait(
 
             )
             Text(
-                text = shippingAddresses.shipFrom.toShippingFromString().uppercase(),
-                maxLines = 1,
+                text = shippingAddresses.shipFrom.format(singleLine = !isReadOnly).uppercase(),
+                maxLines = if (isReadOnly) Int.MAX_VALUE else 1,
                 overflow = TextOverflow.Ellipsis,
-                color = MaterialTheme.colors.primary,
+                color = if (isReadOnly) LocalContentColor.current else MaterialTheme.colors.primary,
                 modifier = Modifier
                     .constrainAs(shipFromValue) {
                         top.linkTo(shipFromLabel.top)
@@ -154,7 +151,7 @@ internal fun AddressSectionPortrait(
             }
             Divider(
                 modifier = Modifier.constrainAs(divider) {
-                    top.linkTo(shipFromLabel.bottom)
+                    top.linkTo(shipFromValue.bottom)
                     start.linkTo(parent.start)
                 }
             )
@@ -189,11 +186,12 @@ internal fun AddressSectionPortrait(
                         ),
                 )
             }
-            AddressStatusIndicator(
-                addressStatus = destinationStatus,
-                modifier = destinationStatusModifier
-            )
             if (isReadOnly.not()) {
+                AddressStatusIndicator(
+                    addressStatus = destinationStatus,
+                    modifier = destinationStatusModifier
+                )
+
                 IconButton(
                     onClick = { onEditDestinationAddress(shippingAddresses.shipTo) },
                     modifier = Modifier
@@ -286,10 +284,12 @@ internal fun AddressSectionLandscape(
                                 )
                         )
                     }
-                    AddressStatusIndicator(
-                        addressStatus = destinationStatus,
-                        modifier = destinationAddressStatusModifier
-                    )
+                    if (!isReadOnly) {
+                        AddressStatusIndicator(
+                            addressStatus = destinationStatus,
+                            modifier = destinationAddressStatusModifier
+                        )
+                    }
                 }
 
                 if (isReadOnly.not()) {
@@ -342,10 +342,10 @@ private fun ShipFromSelection(
                 )
         )
         Text(
-            text = shipFrom.toShippingFromString().uppercase(),
-            maxLines = 1,
+            text = shipFrom.format(singleLine = !isReadOnly).uppercase(),
+            maxLines = if (isReadOnly) Int.MAX_VALUE else 1,
             overflow = TextOverflow.Ellipsis,
-            color = MaterialTheme.colors.primary,
+            color = if (isReadOnly) LocalContentColor.current else MaterialTheme.colors.primary,
             modifier = Modifier
                 .padding(
                     top = dimensionResource(R.dimen.major_100),
@@ -390,7 +390,7 @@ fun OriginAddressSelectionItem(
 
     val backgroundColor = if (isSelected) {
         animateColorAsState(
-            targetValue = MaterialTheme.colors.shippingSelectedBackgroundColor,
+            targetValue = colorResource(R.color.woo_item_selected),
             label = "colorAnimation"
         )
     } else {
@@ -413,7 +413,7 @@ fun OriginAddressSelectionItem(
                     modifier = Modifier
                 )
                 Text(
-                    text = address.toShippingFromString(),
+                    text = address.format(singleLine = true),
                     modifier = Modifier.padding(top = dimensionResource(id = R.dimen.minor_100))
                 )
             }
@@ -467,41 +467,7 @@ fun AddressStatusIndicator(
     }
 }
 
-internal fun getShipFrom() = OriginShippingAddress(
-    firstName = "first name",
-    lastName = "last name",
-    company = "Company",
-    phone = "",
-    address1 = "A huge address that should be truncated",
-    address2 = "",
-    city = "City",
-    postcode = "",
-    email = "email",
-    country = "USA",
-    state = "California",
-    id = "id_1",
-    isDefault = true,
-    isVerified = true
-)
-
-internal fun getShipTo() = DestinationShippingAddress(
-    address = Address(
-        firstName = "first name",
-        lastName = "last name",
-        company = "Company",
-        phone = "",
-        address1 = "Another Address",
-        address2 = "",
-        city = "City",
-        postcode = "",
-        email = "email",
-        country = Location("US", "USA"),
-        state = AmbiguousLocation.Defined(Location("CA", "California", "USA")),
-    ),
-    isVerified = true
-)
-
-fun OriginShippingAddress.getFormattedName(context: Context): String {
+private fun OriginShippingAddress.getFormattedName(context: Context): String {
     val name = when {
         !firstName.isNullOrEmpty() && !lastName.isNullOrEmpty() -> "$firstName $lastName"
         !firstName.isNullOrEmpty() -> firstName
@@ -523,14 +489,14 @@ private fun AddressSectionPortraitPreview() {
         Box(modifier = Modifier.padding(dimensionResource(R.dimen.major_100))) {
             AddressSectionPortrait(
                 shippingAddresses = WooShippingAddresses(
-                    shipFrom = getShipFrom(),
-                    shipTo = getShipTo(),
-                    originAddresses = listOf(getShipFrom())
+                    shipFrom = ShippingLabelSampleData.getShipFrom(),
+                    shipTo = ShippingLabelSampleData.getShipTo(),
+                    originAddresses = listOf(ShippingLabelSampleData.getShipFrom())
                 ),
                 onEditDestinationAddress = {},
                 onEditOriginAddress = {},
                 onOriginAddressSelected = {},
-                isReadOnly = false,
+                isReadOnly = true,
                 destinationStatus = AddressStatus.VERIFIED
             )
         }
@@ -544,9 +510,9 @@ private fun AddressSectionPortraitMissingAddressPreview() {
         Box(modifier = Modifier.padding(dimensionResource(R.dimen.major_100))) {
             AddressSectionPortrait(
                 shippingAddresses = WooShippingAddresses(
-                    shipFrom = getShipFrom(),
+                    shipFrom = ShippingLabelSampleData.getShipFrom(),
                     shipTo = DestinationShippingAddress.EMPTY,
-                    originAddresses = listOf(getShipFrom())
+                    originAddresses = listOf(ShippingLabelSampleData.getShipFrom())
                 ),
                 onEditDestinationAddress = {},
                 onEditOriginAddress = {},
@@ -565,11 +531,11 @@ private fun AddressSectionLandscapePreview() {
         Box(modifier = Modifier.padding(dimensionResource(R.dimen.major_100))) {
             AddressSectionLandscape(
                 shippingAddresses = WooShippingAddresses(
-                    shipFrom = getShipFrom(),
-                    shipTo = getShipTo(),
-                    originAddresses = listOf(getShipFrom())
+                    shipFrom = ShippingLabelSampleData.getShipFrom(),
+                    shipTo = ShippingLabelSampleData.getShipTo(),
+                    originAddresses = listOf(ShippingLabelSampleData.getShipFrom())
                 ),
-                isReadOnly = false,
+                isReadOnly = true,
                 onEditDestinationAddress = {},
                 onEditOriginAddress = {},
                 onOriginAddressSelected = {},
@@ -586,9 +552,9 @@ private fun AddressSectionLandscapeMissingAddressPreview() {
         Box(modifier = Modifier.padding(dimensionResource(R.dimen.major_100))) {
             AddressSectionLandscape(
                 shippingAddresses = WooShippingAddresses(
-                    shipFrom = getShipFrom(),
+                    shipFrom = ShippingLabelSampleData.getShipFrom(),
                     shipTo = DestinationShippingAddress.EMPTY,
-                    originAddresses = listOf(getShipFrom())
+                    originAddresses = listOf(ShippingLabelSampleData.getShipFrom())
                 ),
                 isReadOnly = false,
                 onEditDestinationAddress = {},

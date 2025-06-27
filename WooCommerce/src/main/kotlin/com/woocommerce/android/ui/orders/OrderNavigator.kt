@@ -75,11 +75,19 @@ class OrderNavigator @Inject constructor() {
                 fragment.findNavController().navigateSafely(action)
             }
             is RefundShippingLabel -> {
-                val action = OrderDetailFragmentDirections
-                    .actionOrderDetailFragmentToOrderShippingLabelRefundFragment(
-                        orderId = target.remoteOrderId,
-                        shippingLabelId = target.shippingLabelId
-                    )
+                val action = if (target.isRevampWooShippingEnabled) {
+                    OrderDetailFragmentDirections
+                        .actionOrderDetailFragmentToWooShippingLabelRefundRequestFragment(
+                            orderId = target.remoteOrderId,
+                            labelId = target.shippingLabelId
+                        )
+                } else {
+                    OrderDetailFragmentDirections
+                        .actionOrderDetailFragmentToOrderShippingLabelRefundFragment(
+                            orderId = target.remoteOrderId,
+                            shippingLabelId = target.shippingLabelId
+                        )
+                }
                 fragment.findNavController().navigateSafely(action)
             }
             is AddOrderShipmentTracking -> {

@@ -99,6 +99,19 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                 )
             }
         }
+
+        data class TabVisibilityChecked(val isVisible: Boolean) : Event() {
+            override val name: String = "tab_visibility_checked"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "is_visible" to isVisible.toString()
+                    )
+                )
+            }
+        }
+
         data object ExitTapped : Event() {
             override val name: String = "exit_menu_item_tapped"
         }
@@ -110,6 +123,26 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
         }
         data object InteractionWithCustomerStarted : Event() {
             override val name: String = "interaction_with_customer_started"
+        }
+
+        data class BarcodeScanned(
+            val scanDurationMs: Long,
+            val isNumericOnly: Boolean,
+            val barcodeLength: Int,
+            val scannerInfo: String?,
+        ) : Event() {
+            override val name: String = "barcode_scanned"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "barcode_length" to barcodeLength.toString(),
+                        "scan_duration_ms" to scanDurationMs.toString(),
+                        "is_numeric_only" to isNumericOnly.toString(),
+                        "scanner_info" to (scannerInfo ?: "unknown")
+                    )
+                )
+            }
         }
 
         data object CouponsCreateTapped : Event() {

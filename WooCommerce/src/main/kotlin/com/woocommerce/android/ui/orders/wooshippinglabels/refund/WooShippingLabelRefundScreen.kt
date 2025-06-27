@@ -39,6 +39,7 @@ fun WooShippingLabelRefundScreen(viewModel: WooShippingLabelRefundViewModel) {
             is WooShippingLabelRefundViewModel.ViewState.DataState -> WooShippingLabelRefundScreen(
                 purchaseDate = it.purchaseDate,
                 refundableAmount = it.refundableAmount,
+                refundDuration = it.refundDuration,
                 onRefundLabelClick = viewModel::onRefundShippingLabelButtonClicked,
             )
         }
@@ -49,6 +50,7 @@ fun WooShippingLabelRefundScreen(viewModel: WooShippingLabelRefundViewModel) {
 fun WooShippingLabelRefundScreen(
     purchaseDate: String?,
     refundableAmount: String?,
+    refundDuration: Int,
     onRefundLabelClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -68,7 +70,7 @@ fun WooShippingLabelRefundScreen(
             )
 
             Text(
-                text = stringResource(R.string.woo_shipping_refund_description),
+                text = stringResource(R.string.woo_shipping_refund_description, refundDuration),
                 style = MaterialTheme.typography.bodyMedium,
                 color = colorResource(id = R.color.color_on_surface),
                 modifier = Modifier.padding(top = 16.dp)
@@ -142,6 +144,7 @@ fun WooShippingLabelRefundScreenPreview() {
         WooShippingLabelRefundScreen(
             purchaseDate = "Feb 19, 2025",
             refundableAmount = "$11.33",
+            refundDuration = 14,
             onRefundLabelClick = {},
         )
     }

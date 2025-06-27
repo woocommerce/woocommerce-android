@@ -33,7 +33,6 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -96,11 +95,7 @@ fun ProductSelectorScreen(
                 Toolbar(
                     title = state.screenTitleOverride
                         ?: stringResource(id = string.coupon_conditions_products_select_products_title),
-                    navigationIcon = if (state.searchState.isActive) {
-                        Icons.AutoMirrored.Filled.ArrowBack
-                    } else {
-                        Icons.Filled.Close
-                    },
+                    navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
                     onNavigationButtonClick = viewModel::onNavigateBack,
                     windowInsets = if (handleInsets) AppBarDefaults.topAppBarWindowInsets else WindowInsets(0),
                 )

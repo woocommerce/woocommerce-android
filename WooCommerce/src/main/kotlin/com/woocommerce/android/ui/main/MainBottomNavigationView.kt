@@ -31,7 +31,7 @@ class MainBottomNavigationView @JvmOverloads constructor(
     private lateinit var moreMenuBadge: BadgeDrawable
 
     interface MainNavigationListener {
-        fun onNavItemSelected(navPos: BottomNavigationPosition)
+        fun onNavItemSelected(navPos: BottomNavigationPosition): Boolean
         fun onNavItemReselected(navPos: BottomNavigationPosition)
     }
 
@@ -135,11 +135,8 @@ class MainBottomNavigationView @JvmOverloads constructor(
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         navController?.let { navController ->
-            val navSuccess = NavigationUI.onNavDestinationSelected(item, navController)
-            if (navSuccess) {
-                listener.onNavItemSelected(findNavigationPositionById(item.itemId))
-                return true
-            }
+            NavigationUI.onNavDestinationSelected(item, navController)
+            return listener.onNavItemSelected(findNavigationPositionById(item.itemId))
         }
         return false
     }

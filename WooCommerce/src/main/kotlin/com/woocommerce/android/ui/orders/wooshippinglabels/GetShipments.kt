@@ -7,16 +7,16 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippin
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ShippingLabelDTO
+import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingNetworkingMapper
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import kotlinx.coroutines.flow.first
-import java.math.BigDecimal
-import java.util.Date
 import javax.inject.Inject
 
 class GetShipments @Inject constructor(
     private val orderDetailRepository: OrderDetailRepository,
     private val productDetailRepository: ProductDetailRepository,
     private val configDataStore: WooShippingConfigDataStore,
+    private val mapper: WooShippingNetworkingMapper,
 ) {
     suspend operator fun invoke(order: Order): List<ShipmentUIModel> {
         val refunds = orderDetailRepository.getOrderRefunds(order.id)
@@ -71,19 +71,13 @@ class GetShipments @Inject constructor(
         shipmentUIModelList: List<ShipmentUIModel>,
         currentOrderLabels: List<ShippingLabelDTO>
     ) = shipmentUIModelList.map { shipmentUIModel ->
-        val labelForShipment = currentOrderLabels.find { it.shipmentId.toString() == shipmentUIModel.remoteId }
-        if (labelForShipment == null) {
+        val noRefundedLabelForShipment = currentOrderLabels.find {
+            it.shipmentId == shipmentUIModel.remoteId && it.refund == null
+        }
+        if (noRefundedLabelForShipment == null) {
             shipmentUIModel
         } else {
-            shipmentUIModel.copy(
-                purchased = true,
-                labelId = labelForShipment.labelId,
-                carrierId = labelForShipment.carrierId,
-                trackingNumber = labelForShipment.tracking,
-                status = labelForShipment.status,
-                refundableAmount = labelForShipment.refundableAmount ?: BigDecimal.ZERO,
-                purchaseDate = labelForShipment.createdDate?.let { Date(it) },
-            )
+            shipmentUIModel.copy(purchased = true, label = mapper.invoke(noRefundedLabelForShipment))
         }
     }
 }

@@ -1794,13 +1794,14 @@ class WCProductStore @Inject internal constructor(
 
     suspend fun searchProducts(
         site: SiteModel,
-        searchString: String,
+        searchString: String?,
         skuSearchOptions: SkuSearchOptions = Disabled,
         offset: Int = 0,
         pageSize: Int = DEFAULT_PRODUCT_PAGE_SIZE,
         filterOptions: Map<ProductFilterOption, String> = emptyMap(),
         includeTypes: List<IncludeType> = emptyList(),
         orderCurrency: String? = null,
+        globalUniqueIdSearchQuery: String? = null,
     ): WooResult<ProductSearchResult> {
         return coroutineEngine.withDefaultContext(API, this, "searchProducts") {
             val response = wcProductRestClient.fetchProductsWithSyncRequest(
@@ -1809,6 +1810,7 @@ class WCProductStore @Inject internal constructor(
                 pageSize = pageSize,
                 searchQuery = searchString,
                 skuSearchOptions = skuSearchOptions,
+                globalUniqueIdSearchQuery = globalUniqueIdSearchQuery,
                 filterOptions = filterOptions,
                 includeTypes = includeTypes,
                 orderCurrency = orderCurrency

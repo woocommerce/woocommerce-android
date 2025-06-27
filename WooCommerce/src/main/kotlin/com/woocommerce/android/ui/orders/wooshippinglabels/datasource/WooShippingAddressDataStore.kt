@@ -11,16 +11,17 @@ import com.woocommerce.android.datastore.DataStoreType
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class WooShippingAddressDataStore @Inject constructor(
-    @DataStoreQualifier(DataStoreType.SHIPPING_LABEL_ADDRESS) private val dataStore: DataStore<Preferences>,
+    @DataStoreQualifier(DataStoreType.SHIPPING_LABELS_DATA) private val dataStore: DataStore<Preferences>,
     private val gson: Gson,
     private val selectedSite: SelectedSite
 ) {
-    private fun getOriginAddressesKey() = "${selectedSite.getOrNull()?.siteId ?: ""}OriginAddresses"
+    private fun getOriginAddressesKey() = "${selectedSite.get().id}OriginAddresses"
 
     fun observeOriginAddresses(): Flow<List<OriginShippingAddress>?> {
         val typeToken = object : TypeToken<List<OriginShippingAddress>>() {}.type
@@ -29,7 +30,7 @@ class WooShippingAddressDataStore @Inject constructor(
             runCatching {
                 gson.fromJson<List<OriginShippingAddress>>(storeOptions, typeToken)
             }.getOrNull()
-        }
+        }.distinctUntilChanged()
     }
 
     suspend fun saveOriginAddresses(addresses: List<OriginShippingAddress>) {

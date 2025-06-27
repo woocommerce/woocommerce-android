@@ -9,9 +9,11 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCSettingsModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import kotlin.test.Test
 import kotlin.test.assertFalse
@@ -62,6 +64,20 @@ class WooPosIsEnabledTest : BaseUnitTest() {
     fun `given feature flag disabled, when invoked, then return false`() = testBlocking {
         whenever(isRemoteFeatureFlagEnabled.invoke(WOO_POS)).thenReturn(false)
         assertFalse(sut())
+    }
+
+    @Test
+    fun `given null local site settings, when invoked, then fetch remote settings`() = testBlocking {
+        // GIVEN
+        whenever(wooCommerceStore.getSiteSettings(any())).thenReturn(null)
+        val fetchedSettings = buildSiteSettings(countryCode = "US", currencyCode = "USD")
+        whenever(wooCommerceStore.fetchSiteGeneralSettings(any())).thenReturn(WooResult(fetchedSettings))
+
+        // WHEN
+        val result = sut()
+
+        // THEN
+        verify(wooCommerceStore).fetchSiteGeneralSettings(any())
     }
 
     @Test

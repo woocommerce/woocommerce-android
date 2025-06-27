@@ -71,9 +71,6 @@ class WooPosItemsViewModel @Inject constructor(
             }
 
             is WooPosItemsUIEvent.AddCouponIconClicked -> createAndAddCoupon()
-            is WooPosItemsUIEvent.BarcodeScanned -> {
-                handleBarcodeScannedEvent(event)
-            }
         }
     }
 
@@ -91,8 +88,8 @@ class WooPosItemsViewModel @Inject constructor(
                     is ParentToChildrenEvent.SearchEvent.ChangedQuery,
                     ParentToChildrenEvent.SearchEvent.Finished,
                     is ParentToChildrenEvent.SearchEvent.RecentSearchSelected,
-                    is ParentToChildrenEvent.BarcodeScanned,
-                    ParentToChildrenEvent.SearchEvent.Started -> Unit
+                    ParentToChildrenEvent.SearchEvent.Started,
+                    is ParentToChildrenEvent.BarcodeScanned -> Unit
 
                     is ParentToChildrenEvent.OrderSuccessfullyPaid -> _viewState.value = initialState()
 
@@ -214,12 +211,6 @@ class WooPosItemsViewModel @Inject constructor(
                     )
                 )
             }
-        }
-    }
-
-    private fun handleBarcodeScannedEvent(event: WooPosItemsUIEvent.BarcodeScanned) {
-        viewModelScope.launch {
-            fromChildToParentEventSender.sendToParent(ChildToParentEvent.BarcodeScanned(event.barcode))
         }
     }
 

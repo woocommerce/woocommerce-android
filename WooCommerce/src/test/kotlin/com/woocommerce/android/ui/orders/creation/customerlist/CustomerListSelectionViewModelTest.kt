@@ -21,6 +21,7 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 import org.wordpress.android.fluxc.model.order.OrderAddress
 import org.wordpress.android.fluxc.network.BaseRequest
@@ -816,11 +817,11 @@ class CustomerListSelectionViewModelTest : BaseUnitTest() {
             // GIVEN
             val viewModel = initViewModel()
             val wcCustomer = mock<WCCustomerModel> {
-                on { remoteCustomerId }.thenReturn(1L)
+                on { remoteCustomerId }.thenReturn(RemoteId(1L))
             }
 
             val returnedWcCustomer = mock<WCCustomerModel> {
-                on { remoteCustomerId }.thenReturn(2L)
+                on { remoteCustomerId }.thenReturn(RemoteId(2L))
             }
             whenever(customerListRepository.fetchCustomerByRemoteId(any()))
                 .thenReturn(WooResult(returnedWcCustomer))
@@ -875,11 +876,11 @@ class CustomerListSelectionViewModelTest : BaseUnitTest() {
             // GIVEN
             val viewModel = initViewModel()
             val wcCustomer = mock<WCCustomerModel> {
-                on { remoteCustomerId }.thenReturn(1L)
+                on { remoteCustomerId }.thenReturn(RemoteId(1L))
             }
 
             val returnedWcCustomer = mock<WCCustomerModel> {
-                on { remoteCustomerId }.thenReturn(2L)
+                on { remoteCustomerId }.thenReturn(RemoteId(2L))
             }
             whenever(customerListRepository.fetchCustomerByRemoteId(any()))
                 .thenReturn(WooResult(returnedWcCustomer))
@@ -928,7 +929,7 @@ class CustomerListSelectionViewModelTest : BaseUnitTest() {
             // GIVEN
             val viewModel = initViewModel()
             val wcCustomer = mock<WCCustomerModel> {
-                on { remoteCustomerId }.thenReturn(1L)
+                on { remoteCustomerId }.thenReturn(RemoteId(1L))
             }
 
             whenever(customerListRepository.fetchCustomerByRemoteId(any()))
@@ -984,7 +985,7 @@ class CustomerListSelectionViewModelTest : BaseUnitTest() {
             // GIVEN
             val viewModel = initViewModel()
             val wcCustomer = mock<WCCustomerModel> {
-                on { remoteCustomerId }.thenReturn(1L)
+                on { remoteCustomerId }.thenReturn(RemoteId(1L))
             }
 
             whenever(customerListRepository.fetchCustomerByRemoteId(any()))
@@ -1047,7 +1048,7 @@ class CustomerListSelectionViewModelTest : BaseUnitTest() {
             // GIVEN
             val viewModel = initViewModel()
             val wcCustomer = mock<WCCustomerModel> {
-                on { remoteCustomerId }.thenReturn(0L)
+                on { remoteCustomerId }.thenReturn(RemoteId(0L))
             }
 
             val billingAddress: OrderAddress.Billing = mock {

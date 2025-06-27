@@ -44,10 +44,6 @@ import com.woocommerce.android.ui.orders.details.OrderProduct
 import com.woocommerce.android.ui.orders.details.OrderProductMapper
 import com.woocommerce.android.ui.orders.details.ShippingLabelOnboardingRepository
 import com.woocommerce.android.ui.orders.details.ShippingLabelOnboardingRepository.ShippingLabelSupport
-import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigDataStore
-import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ConfigDTO
-import com.woocommerce.android.ui.orders.wooshippinglabels.networking.Item
-import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ShippingLabelDataDTO
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingLabelRepository
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
@@ -118,9 +114,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val pluginsInfo = HashMap<String, WooPlugin>()
     private val orderDetailRepository: OrderDetailRepository = mock {
         onBlocking { getOrderDetailsPluginsInfo() } doReturn pluginsInfo
-    }
-    private val configDataStore: WooShippingConfigDataStore = mock {
-        doReturn(flowOf(null)).whenever(it).observeConfig(any())
     }
     private val addonsRepository: AddonRepository = mock()
     private val paymentsFlowTracker: PaymentsFlowTracker = mock()
@@ -207,7 +200,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 networkStatus,
                 resources,
                 orderDetailRepository,
-                configDataStore,
                 addonsRepository,
                 selectedSite,
                 productImageMap,
@@ -633,72 +625,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             assertThat(shippingLabels).isNotEmpty
             assertThat(areProductsVisible).isTrue()
-        }
-
-    @Test
-    fun `Show Create shipping label button when there are unfulfilled shipments`() =
-        testBlocking {
-            doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
-
-            doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
-
-            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
-
-            doReturn(true).whenever(orderDetailRepository).isOrderEligibleForSLCreation(order.id)
-            doReturn(flowOf(ConfigDTO(emptyMap(), ShippingLabelDataDTO(emptyList())))).whenever(configDataStore)
-                .observeConfig(order.id)
-
-            var isCreateShippingLabelButtonVisible: Boolean? = null
-            viewModel.viewStateData.observeForever { _, new ->
-                isCreateShippingLabelButtonVisible = new.isCreateShippingLabelButtonVisible
-            }
-
-            viewModel.start()
-
-            assertThat(isCreateShippingLabelButtonVisible).isTrue
-        }
-
-    @Test
-    fun `Hide Create shipping label button when all shipments fulfilled`() =
-        testBlocking {
-            doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
-
-            doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
-
-            doReturn(RequestResult.SUCCESS).whenever(orderDetailRepository).fetchOrderShipmentTrackingList(any())
-            doReturn(testOrderShipmentTrackings).whenever(orderDetailRepository).getOrderShipmentTrackings(any())
-
-            doReturn(orderShippingLabels).whenever(orderDetailRepository).getOrderShippingLabels(any())
-            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
-
-            doReturn(true).whenever(orderDetailRepository).isOrderEligibleForSLCreation(order.id)
-            doReturn(ShippingLabelSupport.WCS_SUPPORTED)
-                .whenever(shippingLabelOnboardingRepository).shippingPluginSupport
-
-            doReturn(
-                flowOf(
-                    ConfigDTO(
-                        // Creating 5 items map since orderShippingLabels has 5 labels
-                        mapOf(
-                            "0" to emptyList<Item>(),
-                            "1" to emptyList<Item>(),
-                            "2" to emptyList<Item>(),
-                            "3" to emptyList<Item>(),
-                            "4" to emptyList<Item>()
-                        ),
-                        ShippingLabelDataDTO(emptyList())
-                    )
-                )
-            ).whenever(configDataStore).observeConfig(order.id)
-
-            var isCreateShippingLabelButtonVisible: Boolean? = null
-            viewModel.viewStateData.observeForever { _, new ->
-                isCreateShippingLabelButtonVisible = new.isCreateShippingLabelButtonVisible
-            }
-
-            viewModel.start()
-
-            assertThat(isCreateShippingLabelButtonVisible).isFalse
         }
 
     @Test

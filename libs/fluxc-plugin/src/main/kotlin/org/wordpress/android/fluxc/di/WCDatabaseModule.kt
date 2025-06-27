@@ -75,6 +75,8 @@ interface WCDatabaseModule {
             return database.customerFromAnalyticsDao
         }
 
+        @Provides internal fun provideCustomerDao(database: WCAndroidDatabase) = database.customerDao
+
         @Provides internal fun provideProductsDao(database: WCAndroidDatabase) = database.productsDao
 
         @Provides internal fun provideProductVariationsDao(database: WCAndroidDatabase) = database.productVariationsDao
@@ -89,6 +91,14 @@ interface WCDatabaseModule {
         @Provides internal fun provideProductReviewsDao(database: WCAndroidDatabase) = database.productReviewsDao
 
         @Provides internal fun provideProductSettingsDao(database: WCAndroidDatabase) = database.productSettingsDao
+
+        @Provides internal fun provideUserDao(database: WCAndroidDatabase) = database.userDao
+
+        @Provides internal fun provideLocationsDao(database: WCAndroidDatabase) = database.locationsDao
+
+        @Provides internal fun provideOrderShipmentProvidersDao(database: WCAndroidDatabase) = database.orderShipmentProvidersDao
+
+        @Provides internal fun provideTaxClassDao(database: WCAndroidDatabase) = database.taxClassDao
     }
     @Binds fun bindTransactionExecutor(database: WCAndroidDatabase): TransactionExecutor
 }

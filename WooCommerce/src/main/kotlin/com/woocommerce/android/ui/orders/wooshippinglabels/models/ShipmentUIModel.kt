@@ -2,8 +2,6 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.models
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
-import java.math.BigDecimal
-import java.util.Date
 
 @Parcelize
 data class ShipmentUIModel(
@@ -11,13 +9,8 @@ data class ShipmentUIModel(
     val remoteId: String? = null,
     val items: List<ShippableItemModel>,
     val purchased: Boolean = false,
-    val labelId: Long? = null,
-    val carrierId: String? = null,
-    val trackingNumber: String? = null,
     val purchaseState: PurchaseState = PurchaseState.NoStarted,
-    val status: ShippingLabelStatus = ShippingLabelStatus.UNKNOWN,
-    val refundableAmount: BigDecimal = BigDecimal.ZERO,
-    val purchaseDate: Date? = null,
+    val label: ShippingLabelModel? = null,
 ) : Parcelable
 
 @Parcelize

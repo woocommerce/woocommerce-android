@@ -35,5 +35,10 @@
             android:layout_height="wrap_content"
             tools:listitem="@layout/dialog_order_tracking_provider_list_item"
             tools:itemCount="3"/>
+
+        <FrameLayout
+            android:id="@+id/skeletonView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
     </LinearLayout>
 </LinearLayout>

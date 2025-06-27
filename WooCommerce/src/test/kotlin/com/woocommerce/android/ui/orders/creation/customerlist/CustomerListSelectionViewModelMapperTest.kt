@@ -7,6 +7,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 import org.wordpress.android.fluxc.model.order.OrderAddress
 
@@ -18,7 +19,7 @@ class CustomerListSelectionViewModelMapperTest {
     fun `when mapFromWCCustomer, then return view model customer model`() {
         // GIVEN
         val wcCustomerModel: WCCustomerModel = mock {
-            on { remoteCustomerId }.thenReturn(1)
+            on { remoteCustomerId }.thenReturn(RemoteId(1))
             on { firstName }.thenReturn("firstName")
             on { lastName }.thenReturn("lastName")
             on { username }.thenReturn("username")

@@ -3,9 +3,9 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.networking
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
+import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingAccountSettingsDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingAddressDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigDataStore
-import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingStoreOptionsDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.AddressNormalizationModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
@@ -23,7 +23,7 @@ class WooShippingLabelRepository @Inject constructor(
     private val restClient: WooShippingLabelRestClient,
     private val mapper: WooShippingNetworkingMapper,
     private val configDataStore: WooShippingConfigDataStore,
-    private val configurationDataStore: WooShippingStoreOptionsDataStore,
+    private val accountSettingsDataStore: WooShippingAccountSettingsDataStore,
     private val addressDataStore: WooShippingAddressDataStore
 ) {
     suspend fun fetchShippingLabelPrinting(
@@ -40,14 +40,34 @@ class WooShippingLabelRepository @Inject constructor(
         site: SiteModel,
     ) = restClient.fetchAccountSettings(
         site = site,
-    ).asWooResult { mapper(it.storeOptions) }
+    ).asWooResult { mapper(it) }
         .also { response ->
             response.model
                 ?.takeIf { response.isError.not() }
                 ?.let {
-                    configurationDataStore.saveStoreOptions(it)
+                    accountSettingsDataStore.saveAccountSettings(it)
                 }
         }
+
+    suspend fun updateAccountSettings(
+        site: SiteModel,
+        selectedPaymentMethodId: Long?,
+        emailReceipts: Boolean,
+    ): WooResult<Unit> {
+        return restClient.updateAccountSettings(site, selectedPaymentMethodId, emailReceipts).asWooResult()
+            .also { result ->
+                if (!result.isError) {
+                    accountSettingsDataStore.updateAccountSettings {
+                        it.copy(
+                            paymentMethodOptions = it.paymentMethodOptions.copy(
+                                selectedPaymentId = selectedPaymentMethodId,
+                                emailReceipts = emailReceipts
+                            )
+                        )
+                    }
+                }
+            }
+    }
 
     suspend fun fetchConfig(site: SiteModel, orderId: Long): WooResult<ConfigResponse> =
         restClient.fetchConfig(site, orderId)
@@ -82,6 +102,7 @@ class WooShippingLabelRepository @Inject constructor(
         orderId: Long,
         shippableItems: List<Long>,
         selectedPackage: PackageData,
+        shipmentId: String,
         shipTo: Address,
         shipFrom: OriginShippingAddress,
         selectedRate: WooShippingRateModel,
@@ -107,6 +128,7 @@ class WooShippingLabelRepository @Inject constructor(
             origin = origin,
             destination = destination,
             selectedPackage = packageDTO,
+            shipmentId = shipmentId,
             selectedRate = rateDTO,
             customs = customsDTO ?: emptyMap(),
             hazmat = hazmatDTO,
@@ -245,4 +267,10 @@ class WooShippingLabelRepository @Inject constructor(
         shipments = shipments,
         shipmentIdsToUpdate = shipmentIdsToUpdate
     ).asWooResult()
+
+    suspend fun refundLabel(
+        site: SiteModel,
+        orderId: Long,
+        labelId: Long
+    ): WooResult<RefundLabelResponseDTO> = restClient.refundShippingLabel(orderId, labelId, site).asWooResult()
 }

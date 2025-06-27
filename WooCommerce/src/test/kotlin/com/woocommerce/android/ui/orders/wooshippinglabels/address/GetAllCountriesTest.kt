@@ -27,22 +27,10 @@ class GetAllCountriesTest : BaseUnitTest() {
     private val sut = GetAllCountries(dataStore, selectedSite, coroutinesTestRule.testDispatchers)
 
     private val countries = listOf(
-        WCLocationModel(1).also {
-            it.code = "US"
-            it.name = "United States"
-        },
-        WCLocationModel(2).also {
-            it.code = "UK"
-            it.name = "United Kingdom"
-        },
-        WCLocationModel(3).also {
-            it.code = "AR"
-            it.name = "Argentina"
-        },
-        WCLocationModel(4).also {
-            it.code = "BR"
-            it.name = "Brazil"
-        }
+        WCLocationModel(code = "US", name = "United States"),
+        WCLocationModel(code = "UK", name = "United Kingdom"),
+        WCLocationModel(code = "AR", name = "Argentina"),
+        WCLocationModel(code = "BR", name = "Brazil"),
     )
 
     @Test

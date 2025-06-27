@@ -49,7 +49,7 @@ fun AutoTaxRateSettingBottomSheetScreen(
                     .border(
                         BorderStroke(
                             dimensionResource(id = R.dimen.minor_10),
-                            colorResource(id = R.color.woo_gray_80_alpha_012)
+                            colorResource(id = R.color.woo_gray_80).copy(alpha = 0.12f)
                         ),
                         RoundedCornerShape(dimensionResource(id = R.dimen.corner_radius_large))
                     )

@@ -84,6 +84,7 @@ import com.woocommerce.android.ui.orders.notes.AddOrderNoteFragment
 import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelFragment
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRefundFragment
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragment
+import com.woocommerce.android.ui.orders.wooshippinglabels.refund.WooShippingLabelRefundFragment
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentDialogFragment
 import com.woocommerce.android.ui.payments.refunds.RefundSummaryFragment
 import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel
@@ -446,7 +447,7 @@ class OrderDetailFragment :
         }
         viewModel.shippingLabels.observe(viewLifecycleOwner) {
             lifecycleScope.launch {
-                showShippingLabels(it, viewModel.awaitOrder().currency)
+                showShippingLabels(it, viewModel.awaitOrder().currency, viewModel.isRevampWooShippingEnabled)
             }
         }
         viewModel.subscriptions.observe(viewLifecycleOwner) {
@@ -604,6 +605,9 @@ class OrderDetailFragment :
         }
         handleResult<OrderNote>(AddOrderNoteFragment.KEY_ADD_NOTE_RESULT) {
             viewModel.onNewOrderNoteAdded(it)
+        }
+        handleResult<Long>(WooShippingLabelRefundFragment.KEY_REFUND_SHIPPING_LABEL_RESULT) {
+            viewModel.onShippingLabelRefunded()
         }
         handleResult<Boolean>(ShippingLabelRefundFragment.KEY_REFUND_SHIPPING_LABEL_RESULT) {
             viewModel.onShippingLabelRefunded()
@@ -799,7 +803,11 @@ class OrderDetailFragment :
         )
     }
 
-    private fun showShippingLabels(shippingLabels: List<ShippingLabel>, currency: String) {
+    private fun showShippingLabels(
+        shippingLabels: List<ShippingLabel>,
+        currency: String,
+        isRevampWooShippingEnabled: Boolean
+    ) {
         shippingLabels.whenNotNullNorEmpty {
             with(binding.orderDetailShippingLabelList) {
                 show()
@@ -807,6 +815,7 @@ class OrderDetailFragment :
                     shippingLabels = shippingLabels,
                     productImageMap = productImageMap,
                     formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(currency),
+                    isRevampWooShippingEnabled = isRevampWooShippingEnabled,
                     productClickListener = this@OrderDetailFragment,
                     shippingLabelClickListener = object : OnShippingLabelClickListener {
                         override fun onRefundRequested(shippingLabel: ShippingLabel) {

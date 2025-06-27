@@ -30,37 +30,65 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <!-- Product SKU -->
+                <!-- Product SKU with barcode scanner -->
                 <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
                     android:id="@+id/product_sku"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/major_100"
                     android:layout_marginTop="@dimen/major_75"
-                    android:layout_marginEnd="@dimen/major_100"
+                    android:layout_marginEnd="@dimen/minor_100"
                     android:hint="@string/product_sku"
                     android:inputType="text"
                     android:paddingBottom="@dimen/major_75"
                     app:helperText="@string/product_sku_summary"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/product_sku_barcode_scan"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <!-- Product Global Unique Id -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/product_sku_barcode_scan"
+                    style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+                    android:layout_width="@dimen/major_300"
+                    android:layout_height="@dimen/major_300"
+                    android:layout_marginEnd="@dimen/major_100"
+                    android:layout_marginTop="@dimen/major_125"
+                    android:contentDescription="@string/scan_barcode"
+                    app:icon="@drawable/ic_barcode_scanner"
+                    app:iconGravity="textStart"
+                    app:iconPadding="0dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <!-- Product Global Unique Id with barcode scanner -->
                 <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
                     android:id="@+id/product_global_unique_id"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/major_100"
                     android:layout_marginTop="@dimen/major_75"
-                    android:layout_marginEnd="@dimen/major_100"
+                    android:layout_marginEnd="@dimen/minor_100"
                     android:hint="@string/product_global_unique_id"
                     android:inputType="text"
                     android:paddingBottom="@dimen/major_75"
                     app:helperText="@string/product_global_unique_id_summary"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/product_gtin_barcode_scan"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/product_sku" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/product_gtin_barcode_scan"
+                    style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+                    android:layout_width="@dimen/major_300"
+                    android:layout_height="@dimen/major_300"
+                    android:layout_marginEnd="@dimen/major_100"
+                    android:layout_marginTop="@dimen/major_125"
+                    android:contentDescription="@string/scan_barcode"
+                    app:icon="@drawable/ic_barcode_scanner"
+                    app:iconGravity="textStart"
+                    app:iconPadding="0dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/product_sku" />
 
                 <!-- Managing Product Stock -->
                 <com.google.android.material.switchmaterial.SwitchMaterial
