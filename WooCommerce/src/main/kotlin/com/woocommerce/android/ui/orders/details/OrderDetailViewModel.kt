@@ -951,9 +951,8 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     private suspend fun isOrderEligibleForSLCreation(orderEligibleForInPersonPayments: Boolean) =
-        if (FeatureFlag.REVAMP_WOO_SHIPPING.isEnabled()) {
-            shippingLabelOnboardingRepository.shippingPluginSupport.isWooShippingSupported() &&
-                eligibilityDataStore.observeEligibility(awaitOrder().id).first() == true
+        if (isRevampWooShippingEnabled) {
+            eligibilityDataStore.observeEligibility(awaitOrder().id).first() == true
         } else {
             shippingLabelOnboardingRepository.shippingPluginSupport.isSupported() &&
                 orderDetailRepository.isOrderEligibleForSLCreation(awaitOrder().id)
