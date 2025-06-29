@@ -24,6 +24,11 @@ class WooShippingLabelRestClient @Inject constructor(
         return wooNetwork.executeGetGsonRequest(
             site = site,
             path = url,
+            params = mapOf(
+                "can_create_customs_form" to true.toString(),
+                "can_create_package" to true.toString(),
+                "can_create_payment_method" to true.toString()
+            ),
             clazz = EligibilityResponse::class.java,
         ).toWooPayload()
     }
@@ -89,6 +94,7 @@ class WooShippingLabelRestClient @Inject constructor(
                     message = "Something went wrong"
                 )
             )
+
             else -> WooPayload(Unit)
         }
     }
