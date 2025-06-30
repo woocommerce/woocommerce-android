@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.wooshippinglabels
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
+import com.woocommerce.android.WooException
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.Location
@@ -14,6 +15,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreat
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.HazmatState
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigateToHazmatFormEdit
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigateToRefundRequest
+import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigateToUPSDAPTermsOfService
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.OpenLearnMoreScreen
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.OpenShippingLabelFile
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.OpenUrl
@@ -68,6 +70,9 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import java.io.File
 import java.math.BigDecimal
 import kotlin.test.assertEquals
@@ -1170,5 +1175,38 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
         val viewState = sut.viewState.value as DataState
         assertThat(viewState.paymentsSectionUI.selectedPaymentMethod).isNull()
+    }
+
+    @Test
+    fun `when purchase shipping label fails with UPSDAP_MISSING_TOS_ERROR_CODE, then navigate to UPS DAP terms of service`() = testBlocking {
+        val order = OrderTestUtils.generateTestOrder(orderId = orderId)
+        val wooError = WooError(
+            type = WooErrorType.API_ERROR,
+            original = GenericErrorType.UNKNOWN,
+            apiErrorCode = WooShippingLabelCreationViewModel.UPSDAP_MISSING_TOS_ERROR_CODE,
+            message = "Missing UPS DAP terms of service acceptance"
+        )
+        val wooException = WooException(wooError)
+
+        whenever(orderDetailRepository.getOrderById(any())) doReturn order
+        whenever(
+            purchaseShippingLabel(any(), any(), any(), any(), any(), any(), any(), any(), any(), isNull(), isNull())
+        ) doReturn Result.failure(wooException)
+
+        createViewModel()
+
+        val selectedRate = defaultShippingRates.values.first().first()
+        sut.onPackageSelected(defaultPackageData)
+        sut.onSelectedSippingRateChanged(selectedRate)
+
+        advanceUntilIdle()
+
+        var event: NavigateToUPSDAPTermsOfService? = null
+        sut.event.observeForever { if (it is NavigateToUPSDAPTermsOfService) event = it }
+
+        sut.onPurchaseShippingLabel()
+
+        assertThat(event).isNotNull
+        assertThat(event?.originAddress).isEqualTo(defaultOriginAddresses.first())
     }
 }

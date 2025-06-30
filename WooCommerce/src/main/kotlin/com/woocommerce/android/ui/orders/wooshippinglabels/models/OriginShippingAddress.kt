@@ -46,7 +46,7 @@ data class OriginShippingAddress(
         return buildString {
             appendWithIfNotEmpty(address1, separator)
             appendWithIfNotEmpty(address2, separator)
-            appendWithIfNotEmpty(city, separator = " ")
+            appendWithIfNotEmpty(city, separator = separator)
             appendWithIfNotEmpty(state, separator = " ")
             appendWithIfNotEmpty(postcode, separator = " ")
             appendWithIfNotEmpty(country, separator = separator)

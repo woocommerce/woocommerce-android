@@ -1,11 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-06-04 09:54:04+0000
+Translation-Revision-Date: 2025-06-17 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="no_network_message">사용 가능한 네트워크가 없습니다. 네트워크에 연결하고 다시 시도하십시오 .</string>
+    <string name="media_loading_failed">미디어 로딩을 실패했습니다</string>
+    <string name="media_library_title">워드프레스 미디어 라이브러리</string>
+    <string name="woo_shipping_refund_note">이 환불 요청은 미사용 배송 레이블에만 적용되며 주문 자체에는 영향을 미치지 않습니다.</string>
+    <string name="woo_shipping_refund_amount_eligible_for_refund">&lt;b&gt;환불 가능 금액:&lt;/b&gt; %s</string>
+    <string name="woo_shipping_refund_purchase_date">&lt;b&gt;구매 날짜:&lt;/b&gt; %s</string>
+    <string name="woo_shipping_refund_description">미사용 배송 레이블에 대한 환불을 요청합니다. 배송 레이블 환불 절차는 즉시 시작되며 일반적으로 영업일 기준 14일 이내에 완료됩니다.</string>
+    <string name="woo_shipping_refund_title">배송 레이블 환불 요청</string>
+    <string name="woo_shipping_split_shipment_error">배송을 따로 진행할 수 없었습니다. 다시 시도해 주세요.</string>
+    <string name="woopos_cart_searching_for_item">검색 중</string>
+    <string name="woopos_cart_adding_item_to_cart_failed">장바구니에 아이템을 추가하지 못했습니다(%s).</string>
+    <string name="woopos_cart_coupon_added_to_cart_accessibility">장바구니에 추가된 쿠폰 %1$s</string>
+    <string name="woopos_cart_product_added_to_cart_accessibility">장바구니에 추가된 상품 %1$s(가격 %2$s)</string>
+    <string name="woopos_barcode_scanning_title">바코드 스캔 중</string>
+    <string name="woopos_dialog_barcode_info_background_content_description">어두운 배경 눌러서 대화 상자 무시하기</string>
+    <string name="woopos_dialog_barcode_info_content_description">바코드 스캔 중 정보 대화 상자</string>
+    <string name="woopos_dialog_barcode_info_button_label">확인</string>
+    <string name="woopos_dialog_barcode_info_quinary_message">스캐너에서는 키보드를 에뮬레이트하므로 소프트웨어 키보드가 표시되지 않을 때(예: 검색 중)도 있습니다. 소프트웨어 키보드를 다시 표시하려면 키보드 아이콘을 누르세요.</string>
+    <string name="woopos_dialog_barcode_info_quaternary_message">• 아이템 목록에 있는 동안 바코드를 스캔하여 장바구니에 상품을 추가합니다.</string>
+    <string name="woopos_dialog_barcode_info_tertiary_message">• 시스템 블루투스 설정에서 바코드 스캐너를 연결합니다.</string>
+    <string name="woopos_dialog_barcode_info_secondary_message">• 블루투스 바코드 스캐너의 지침을 참조하여 HID 모드를 설정합니다.</string>
+    <string name="woopos_dialog_barcode_info_more_details_link">추가 상세 정보</string>
+    <string name="woopos_dialog_barcode_info_primary_message">• 상품 &gt; 상품 상세 정보 &gt; 재고의 \"GTIN, UPC, EAN, ISBN\" 필드에서 바코드를 설정합니다. </string>
+    <string name="woopos_dialog_barcode_info_intro_message">외부 스캐너로 바코드를 스캔하여 빠르게 장바구니를 만들 수 있습니다.</string>
+    <string name="woopos_dialog_barcode_info_heading">바코드 스캔 중</string>
+    <string name="woopos_cart_barcode_scan_result_request_cancelled">요청 취소됨</string>
+    <string name="woopos_cart_barcode_scan_result_network_error">인터넷에 연결되지 않음</string>
+    <string name="woopos_cart_barcode_scan_result_unsupported_product">지원되지 않는 아이템 - %s</string>
+    <string name="woopos_cart_barcode_scan_result_product_not_found">스캔된 알 수 없는 아이템</string>
+    <string name="woopos_add_coupon_to_cart_accessibility_label">장바구니에 쿠폰 추가</string>
+    <string name="woopos_add_variable_product_to_cart_accessibility_label">변형 목록 열기</string>
+    <string name="woopos_add_product_to_cart_accessibility_label">장바구니에 상품 추가</string>
+    <string name="woopos_cart_item_error_content_description">아이템 로드 오류 %s</string>
+    <string name="woopos_cart_item_loading_content_description">아이템 로드 중 %s</string>
+    <string name="blaze_campaign_edit_ad_arrow_back_description">이전 제안</string>
+    <string name="blaze_campaign_edit_ad_arrow_forward_description">다음 제안</string>
+    <string name="blaze_campaign_preview_tos_checkbox_evergreen_campaigns">%2$s부터 반복되는 최대 %1$s 주간 요금 청구에 동의합니다. 캠페인 동안 청구 시간은 달라질 수 있습니다. &lt;a href=\'cancelInstructions\'&gt;&lt;u&gt;본인이 언제든지 취소할 수 있습니다&lt;/u&gt;&lt;/a&gt;. 본인은 취소 시점까지 전달된 광고만 결제하겠습니다.</string>
+    <string name="blaze_campaign_preview_tos_checkbox_over_7_days_campaign">%2$s부터 반복되는 최대 %1$s 주간 요금 청구에 동의합니다. 캠페인 동안 청구 시간은 달라질 수 있습니다. &lt;a href=\'cancelInstructions\'&gt;&lt;u&gt;본인이 언제든지 취소할 수 있습니다&lt;/u&gt;&lt;/a&gt;. 본인은 취소 시점까지 전달된 광고만 결제하겠습니다.</string>
+    <string name="blaze_campaign_preview_tos_checkbox_less_than_7_days_campaign">%2$s부터 최대 %1$s 요금 청구에 동의합니다. 캠페인이 활성 상태인 동안 하나 이상의 결제에서 요금 청구가 발생할 수 있습니다. &lt;a href=\'cancelInstructions\'&gt;&lt;u&gt;본인이 언제든지 취소할 수 있습니다&lt;/u&gt;&lt;/a&gt;. 본인은 취소 시점까지 전달된 광고만 결제하겠습니다.</string>
+    <string name="customer_detail_guest_customer">비회원</string>
     <string name="woopos_search_items_error_description">다시 시도해 주세요.</string>
     <string name="woopos_search_coupons_error_title">쿠폰을 로드할 수 없음</string>
     <string name="woopos_search_items_error_title">상품을 로드할 수 없음</string>
@@ -45,7 +85,7 @@ Language: ko_KR
     <string name="woopos_coupons_empty_list_image_description">쿠폰 없음</string>
     <string name="woopos_coupons_screen_title">쿠폰</string>
     <string name="woopos_product_limitations_title">내 상품은 어디에 있나요?</string>
-    <string name="woopos_coupon_item_content_description">쿠폰 %s</string>
+    <string name="woopos_coupon_item_content_description_v2">쿠폰 %s, %s</string>
     <string name="woo_shipping_split_shipment_bottom_sheet_remove_button">배송 제거</string>
     <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_plural">이 배송 중 %d개를 이동할 위치를 선택하세요.</string>
     <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_one">이 배송 중 %d개를 이동할 위치를 선택하세요.</string>
@@ -270,7 +310,7 @@ Language: ko_KR
     <string name="woopos_variations_loading_error_title">변형을 로드할 수 없음</string>
     <string name="woopos_variations_back_content_description">뒤로</string>
     <string name="woopos_variation_item_content_description">상품 옵션 %s, 가격 %s</string>
-    <string name="woopos_variable_product_item_content_description">변형 상품 %s, 가격 %s</string>
+    <string name="woopos_variable_product_item_content_description_v2">변형 상품 %s</string>
     <string name="blaze_campaign_edit_ad_change_description_empty_error">설명은 비워 둘 수 없음</string>
     <string name="blaze_campaign_edit_ad_change_cta_text_title">행동 유도</string>
     <string name="blaze_campaign_edit_ad_change_tagline_empty_error">태그라인은 비워 둘 수 없음</string>

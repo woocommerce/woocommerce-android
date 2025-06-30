@@ -1,9 +1,11 @@
 package org.wordpress.android.fluxc.wc.leaderboards
 
-import androidx.room.Room
+import android.app.Application
+import androidx.test.core.app.ApplicationProvider
 import com.yarolegovich.wellsql.WellSql
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito
@@ -30,7 +32,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.leaderboards.Leaderboar
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.leaderboards.LeaderboardsRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.reports.ReportsProductApiResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.reports.ReportsRestClient
-import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
+import org.wordpress.android.fluxc.persistence.DatabaseTestRule
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.fluxc.persistence.dao.TopPerformerProductsDao
 import org.wordpress.android.fluxc.persistence.entity.TopPerformerProductEntity
@@ -49,18 +51,18 @@ import java.io.IOException
 class WCLeaderboardsStoreTest {
     private val leaderboardsRestClient: LeaderboardsRestClient = mock()
     private val reportsRestClient: ReportsRestClient = mock()
-    private lateinit var database: WCAndroidDatabase
     private lateinit var productStore: WCProductStore
     private var mapper: WCProductLeaderboardsMapper = spy()
     private val topPerformersDao: TopPerformerProductsDao = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
 
+    @Rule
+    @JvmField
+    val databaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext<Application>())
+
     private lateinit var storeUnderTest: WCLeaderboardsStore
 
     fun setup(prepareMocks: () -> Unit = {}) {
-        database = Room.inMemoryDatabaseBuilder(RuntimeEnvironment.application.applicationContext, WCAndroidDatabase::class.java)
-            .allowMainThreadQueries()
-            .build()
         productStore = Mockito.spy(
             WCProductStore(
                 mock(),
@@ -69,12 +71,12 @@ class WCLeaderboardsStoreTest {
                 mock(),
                 mock(),
                 mock(),
-                productsDao = database.productsDao,
-                productVariationsDao = database.productVariationsDao,
-                productCategoriesDao = database.productCategoriesDao,
-                productTagsDao = database.productTagsDao,
-                productShippingClassesDao = database.productShippingClassesDao,
-                productReviewsDao = database.productReviewsDao,
+                productsDao = databaseRule.db.productsDao,
+                productVariationsDao = databaseRule.db.productVariationsDao,
+                productCategoriesDao = databaseRule.db.productCategoriesDao,
+                productTagsDao = databaseRule.db.productTagsDao,
+                productShippingClassesDao = databaseRule.db.productShippingClassesDao,
+                productReviewsDao = databaseRule.db.productReviewsDao,
             )
         )
         prepareMocks()
@@ -252,7 +254,6 @@ class WCLeaderboardsStoreTest {
     @After
     @Throws(IOException::class)
     fun closeDb() {
-        database.close()
         WellSql.closeDb()
     }
 

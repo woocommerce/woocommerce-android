@@ -36,5 +36,6 @@ data class StoreOptionsDAO(
 
 enum class CarrierType(val id: String) {
     USPS(id = "usps"),
-    DHL(id = "dhlexpress")
+    DHL(id = "dhlexpress"),
+    UPS(id = "upsdap")
 }

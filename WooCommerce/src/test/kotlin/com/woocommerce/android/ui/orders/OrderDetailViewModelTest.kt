@@ -45,6 +45,7 @@ import com.woocommerce.android.ui.orders.details.OrderProductMapper
 import com.woocommerce.android.ui.orders.details.ShippingLabelOnboardingRepository
 import com.woocommerce.android.ui.orders.details.ShippingLabelOnboardingRepository.ShippingLabelSupport
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigDataStore
+import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingEligibilityDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingLabelRepository
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
@@ -129,6 +130,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         doReturn(ShippingLabelSupport.WCS_SUPPORTED).whenever(it).shippingPluginSupport
     }
     private val shippingLabelRepository: WooShippingLabelRepository = mock()
+    private val shippingEligibilityDataStore: WooShippingEligibilityDataStore = mock()
 
     private val configDataStore: WooShippingConfigDataStore = mock()
 
@@ -212,6 +214,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 orderDetailTracker,
                 shippingLabelOnboardingRepository,
                 shippingLabelRepository,
+                shippingEligibilityDataStore,
                 configDataStore,
                 orderDetailsTransactionLauncher,
                 getOrderSubscriptions,
@@ -635,6 +638,12 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `Show Products area menu when shipping labels are available`() =
         testBlocking {
+            doReturn(ShippingLabelSupport.WC_SHIPPING_SUPPORTED)
+                .whenever(shippingLabelOnboardingRepository).shippingPluginSupport
+            doReturn(flowOf(true))
+                .whenever(shippingEligibilityDataStore).observeEligibility(any())
+            doReturn(flowOf(OrderTestUtils.generateShippingLabelModels(2)))
+                .whenever(configDataStore).getShippingLabels(any())
             doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
 
             doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
@@ -937,11 +946,12 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `show shipping label creation if the order is eligible`() = testBlocking {
+        doReturn(ShippingLabelSupport.WC_SHIPPING_SUPPORTED)
+            .whenever(shippingLabelOnboardingRepository).shippingPluginSupport
+        doReturn(flowOf(true))
+            .whenever(shippingEligibilityDataStore).observeEligibility(any())
         doReturn(order).whenever(orderDetailRepository).getOrderById(any())
         doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
-
-        doReturn(Unit).whenever(orderDetailRepository).fetchSLCreationEligibility(order.id)
-        doReturn(true).whenever(orderDetailRepository).isOrderEligibleForSLCreation(order.id)
 
         doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
         doReturn(RequestResult.SUCCESS).whenever(orderDetailRepository).fetchOrderShipmentTrackingList(any())
@@ -949,8 +959,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         doReturn(emptyList<Refund>()).whenever(orderDetailRepository).fetchOrderRefunds(any())
         doReturn(emptyList<Product>()).whenever(orderDetailRepository).fetchProductsByRemoteIds(any())
         doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
-        doReturn(ShippingLabelSupport.WCS_SUPPORTED)
-            .whenever(shippingLabelOnboardingRepository).shippingPluginSupport
 
         var isCreateShippingLabelButtonVisible: Boolean? = null
         viewModel.viewStateData.observeForever { _, new ->
@@ -1747,7 +1755,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when there is no info about the plugins, then optimistically fetch plugin data`() = testBlocking {
-        doReturn(ShippingLabelSupport.WCS_SUPPORTED).whenever(shippingLabelOnboardingRepository).shippingPluginSupport
+        doReturn(ShippingLabelSupport.WCS_SUPPORTED)
+            .whenever(shippingLabelOnboardingRepository).shippingPluginSupport
         doReturn(order).whenever(orderDetailRepository).getOrderById(any())
         doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
         doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
@@ -2356,6 +2365,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `when woo shipping is installed, then navigate to the new shipping flow`() = testBlocking {
         doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
         doReturn(ShippingLabelSupport.WC_SHIPPING_SUPPORTED)
             .whenever(shippingLabelOnboardingRepository).shippingPluginSupport
 

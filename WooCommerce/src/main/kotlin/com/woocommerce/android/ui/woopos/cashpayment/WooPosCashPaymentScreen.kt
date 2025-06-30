@@ -41,7 +41,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
-import org.wordpress.android.fluxc.model.WCSettingsModel
+import org.wordpress.android.fluxc.model.settings.CurrencyPosition.LEFT
 import java.math.BigDecimal
 
 @Composable
@@ -205,7 +205,7 @@ fun WooPosTotalsPaymentCashScreenPreview() {
                 total = BigDecimal(10),
                 totalText = "10$",
                 currencySymbol = "$",
-                currencyPosition = WCSettingsModel.CurrencyPosition.LEFT,
+                currencyPosition = LEFT,
                 decimalSeparator = ".",
                 numberOfDecimals = 2,
                 button = WooPosCashPaymentState.Collecting.Button(
@@ -234,7 +234,7 @@ fun WooPosTotalsPaymentCashWithLabelScreenPreview() {
                 total = BigDecimal(10),
                 totalText = "Total: 10$",
                 currencySymbol = "$",
-                currencyPosition = WCSettingsModel.CurrencyPosition.LEFT,
+                currencyPosition = LEFT,
                 decimalSeparator = ".",
                 numberOfDecimals = 2,
                 button = WooPosCashPaymentState.Collecting.Button(
@@ -263,7 +263,7 @@ fun WooPosTotalsPaymentCashWithErrorScreenPreview() {
                 total = BigDecimal(10),
                 totalText = "Total: 10$",
                 currencySymbol = "$",
-                currencyPosition = WCSettingsModel.CurrencyPosition.LEFT,
+                currencyPosition = LEFT,
                 decimalSeparator = ".",
                 numberOfDecimals = 2,
                 button = WooPosCashPaymentState.Collecting.Button(
