@@ -107,11 +107,10 @@ class WooShippingRatesDomainMapper @Inject constructor(
             }
         }
 
-        val selectedOption = options[Option.DEFAULT] ?: options.values.first()
-
         return ShippingRateUI(
             options = options,
-            selectedOption = selectedOption
+            selectedOption = Option.DEFAULT,
+            additionalSelectedOptions = emptyList()
         )
     }
 
