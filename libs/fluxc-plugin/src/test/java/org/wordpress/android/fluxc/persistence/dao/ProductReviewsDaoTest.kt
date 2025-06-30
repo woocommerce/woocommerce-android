@@ -4,9 +4,9 @@ import android.app.Application
 import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.After
 import org.junit.Before
 import org.junit.Ignore
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -15,19 +15,20 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCProductReviewModel
+import org.wordpress.android.fluxc.persistence.DatabaseTestRule
 import org.wordpress.android.fluxc.persistence.SiteSqlUtils
-import org.wordpress.android.fluxc.persistence.TestDatabase
-import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
 import org.wordpress.android.fluxc.wc.product.ProductTestUtils
-import java.io.IOException
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 class ProductReviewsDaoTest {
 
+    @Rule
+    @JvmField
+    val databaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext<Application>())
+
     private lateinit var sut: ProductReviewsDao
-    private lateinit var database: WCAndroidDatabase
 
     val site = SiteModel().apply {
         email = "test@example.org"
@@ -37,9 +38,7 @@ class ProductReviewsDaoTest {
 
     @Before
     fun setUp() {
-        val context = ApplicationProvider.getApplicationContext<Application>()
-        database = TestDatabase.provideTestDatabase(context).build()
-        sut = database.productReviewsDao
+        sut = databaseRule.db.productReviewsDao
     }
 
     @Test
@@ -146,11 +145,5 @@ class ProductReviewsDaoTest {
     private fun getProductReviews(localSiteId: Int): List<WCProductReviewModel> {
         val reviewJson = UnitTestUtils.getStringFromResourceFile(this.javaClass, "wc/product-reviews.json")
         return ProductTestUtils.getProductReviewsFromJsonString(reviewJson, localSiteId)
-    }
-
-    @After
-    @Throws(IOException::class)
-    fun closeDb() {
-        database.close()
     }
 }

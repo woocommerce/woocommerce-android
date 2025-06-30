@@ -5,16 +5,15 @@ import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.wordpress.android.fluxc.UnitTestUtils
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.persistence.TestDatabase
-import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
+import org.wordpress.android.fluxc.persistence.DatabaseTestRule
 import org.wordpress.android.fluxc.wc.order.OrderTestUtils
 
 @Config(manifest = Config.NONE)
@@ -22,18 +21,14 @@ import org.wordpress.android.fluxc.wc.order.OrderTestUtils
 internal class OrderShipmentProvidersDaoTest {
 
     private lateinit var sut: OrderShipmentProvidersDao
-    private lateinit var database: WCAndroidDatabase
+
+    @Rule
+    @JvmField
+    val databaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext<Application>())
 
     @Before
     fun setUp() {
-        val context = ApplicationProvider.getApplicationContext<Application>()
-        database = TestDatabase.provideTestDatabase(context).build()
-        sut = database.orderShipmentProvidersDao
-    }
-
-    @After
-    fun closeDb() {
-        database.close()
+        sut = databaseRule.db.orderShipmentProvidersDao
     }
 
     @Test

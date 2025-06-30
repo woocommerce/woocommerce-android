@@ -1,15 +1,16 @@
 package org.wordpress.android.fluxc.wc.taxes
 
+import android.app.Application
+import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.taxes.WCTaxClassMapper
@@ -21,16 +22,19 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.taxes.WCTaxRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.taxes.WCTaxRestClient.TaxClassApiResponse
-import org.wordpress.android.fluxc.persistence.TestDatabase
-import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
+import org.wordpress.android.fluxc.persistence.DatabaseTestRule
 import org.wordpress.android.fluxc.store.WCTaxStore
 import org.wordpress.android.fluxc.tools.initCoroutineEngine
 
 @Config(manifest = Config.NONE)
 @RunWith(RobolectricTestRunner::class)
 class WCTaxStoreTest {
+
+    @Rule
+    @JvmField
+    val databaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext<Application>())
+
     private lateinit var store: WCTaxStore
-    private lateinit var roomDb: WCAndroidDatabase
 
     companion object {
         private val restClient = mock<WCTaxRestClient>()
@@ -46,20 +50,12 @@ class WCTaxStoreTest {
 
     @Before
     fun setUp() {
-        val appContext = RuntimeEnvironment.application.applicationContext
-        roomDb = TestDatabase.provideTestDatabase(appContext).build()
-
         store = WCTaxStore(
             restClient,
             initCoroutineEngine(),
-            roomDb.taxRateDao,
-            roomDb.taxClassDao
+            databaseRule.db.taxRateDao,
+            databaseRule.db.taxClassDao
         )
-    }
-
-    @After
-    fun tearDown() {
-        roomDb.close()
     }
 
     @Test

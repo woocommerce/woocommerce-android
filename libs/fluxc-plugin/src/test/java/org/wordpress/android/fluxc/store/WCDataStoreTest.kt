@@ -1,14 +1,16 @@
 package org.wordpress.android.fluxc.store
 
+import android.app.Application
+import androidx.test.core.app.ApplicationProvider
 import com.yarolegovich.wellsql.WellSql
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import org.wordpress.android.fluxc.SingleStoreWellSqlConfigForTests
 import org.wordpress.android.fluxc.TestSiteSqlUtils
@@ -17,8 +19,7 @@ import org.wordpress.android.fluxc.model.data.WCLocationModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.data.WCDataRestClient
-import org.wordpress.android.fluxc.persistence.TestDatabase
-import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
+import org.wordpress.android.fluxc.persistence.DatabaseTestRule
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.fluxc.persistence.dao.LocationsDao
 import org.wordpress.android.fluxc.test
@@ -28,9 +29,15 @@ import org.wordpress.android.fluxc.utils.CountryTestUtils
 @Config(manifest = Config.NONE)
 @RunWith(RobolectricTestRunner::class)
 class WCDataStoreTest {
+
+    private val context = ApplicationProvider.getApplicationContext<Application>()
+
+    @Rule
+    @JvmField
+    val databaseRule = DatabaseTestRule(context)
+
     private val restClient = mock<WCDataRestClient>()
     private val site = SiteModel().apply { id = 321 }
-    private lateinit var roomDb: WCAndroidDatabase
     private lateinit var locationsDao: LocationsDao
     private lateinit var store: WCDataStore
 
@@ -39,15 +46,13 @@ class WCDataStoreTest {
 
     @Before
     fun setUp() {
-        val appContext = RuntimeEnvironment.application.applicationContext
         val config = SingleStoreWellSqlConfigForTests(
-            appContext, listOf(SiteModel::class.java), WellSqlConfig.Companion.ADDON_WOOCOMMERCE
+            context, listOf(SiteModel::class.java), WellSqlConfig.Companion.ADDON_WOOCOMMERCE
         )
         WellSql.init(config)
         config.reset()
 
-        roomDb = TestDatabase.provideTestDatabase(appContext).build()
-        locationsDao = roomDb.locationsDao
+        locationsDao = databaseRule.db.locationsDao
 
         store = WCDataStore(restClient, initCoroutineEngine(), locationsDao)
 

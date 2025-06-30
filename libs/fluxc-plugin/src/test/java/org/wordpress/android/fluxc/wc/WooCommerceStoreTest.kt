@@ -5,8 +5,8 @@ import androidx.test.core.app.ApplicationProvider
 import com.yarolegovich.wellsql.WellSql
 import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.any
@@ -41,9 +41,8 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WCSystemPluginRe
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WooSystemRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WooSystemRestClient.WPSiteSettingsResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.toDomainModel
+import org.wordpress.android.fluxc.persistence.DatabaseTestRule
 import org.wordpress.android.fluxc.persistence.PluginSqlUtilsWrapper
-import org.wordpress.android.fluxc.persistence.TestDatabase
-import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.fluxc.persistence.dao.TaxBasedOnDao
 import org.wordpress.android.fluxc.site.SiteUtils
@@ -54,12 +53,16 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.test
 import org.wordpress.android.fluxc.tools.initCoroutineEngine
 import org.wordpress.android.fluxc.wc.settings.WCSettingsTestUtils
-import java.io.IOException
 import kotlin.test.assertEquals
 
 @Config(manifest = Config.NONE)
 @RunWith(RobolectricTestRunner::class)
 class WooCommerceStoreTest {
+
+    @Rule
+    @JvmField
+    val databaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext<Application>())
+
     private companion object {
         const val TEST_SITE_REMOTE_ID = 1337L
         const val SUPPORTED_API_VERSION = "wc/v3"
@@ -73,7 +76,6 @@ class WooCommerceStoreTest {
     private val settingsMapper = WCSettingsMapper()
     private val dispatcher: Dispatcher = mock()
 
-    private lateinit var db: WCAndroidDatabase
     private lateinit var taxBasedOnDao: TaxBasedOnDao
 
     private val wooCommerceStore by lazy {
@@ -89,8 +91,8 @@ class WooCommerceStoreTest {
             accountStore = accountStore,
             taxBasedOnDao = taxBasedOnDao,
             pluginSqlUtils = PluginSqlUtilsWrapper(),
-            productSettingsDao = db.productSettingsDao,
-            settingsDao = db.settingsDao
+            productSettingsDao = databaseRule.db.productSettingsDao,
+            settingsDao = databaseRule.db.settingsDao
         )
     }
     private val error = WooError(INVALID_RESPONSE, NETWORK_ERROR, "Invalid site ID")
@@ -135,14 +137,7 @@ class WooCommerceStoreTest {
         )
         WellSql.init(config)
         config.reset()
-        db = TestDatabase.provideTestDatabase(appContext).build()
-        taxBasedOnDao = db.taxBasedOnSettingDao
-    }
-
-    @After
-    @Throws(IOException::class)
-    fun tearDown() {
-        db.close()
+        taxBasedOnDao = databaseRule.db.taxBasedOnSettingDao
     }
 
     @Test

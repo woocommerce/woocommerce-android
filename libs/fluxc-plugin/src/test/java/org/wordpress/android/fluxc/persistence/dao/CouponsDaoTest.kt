@@ -6,27 +6,24 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
-import org.wordpress.android.fluxc.persistence.TestDatabase
-import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
+import org.wordpress.android.fluxc.persistence.DatabaseTestRule
 import org.wordpress.android.fluxc.persistence.entity.CouponEmailEntity
 import org.wordpress.android.fluxc.persistence.entity.CouponEntity
 import org.wordpress.android.fluxc.persistence.entity.CouponEntity.DiscountType.Percent
 import org.wordpress.android.fluxc.persistence.entity.CouponWithEmails
-import java.io.IOException
 import java.math.BigDecimal
 
 @ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
 class CouponsDaoTest {
     private lateinit var couponsDao: CouponsDao
-    private lateinit var db: WCAndroidDatabase
 
     private val coupon = generateCouponEntity()
     private val email = CouponEmailEntity(
@@ -35,17 +32,13 @@ class CouponsDaoTest {
         email = "test@test.com"
     )
 
-    @Before
-    fun createDb() {
-        val context = ApplicationProvider.getApplicationContext<Application>()
-        db = TestDatabase.provideTestDatabase(context).build()
-        couponsDao = db.couponsDao
-    }
+    @Rule
+    @JvmField
+    val databaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext<Application>())
 
-    @After
-    @Throws(IOException::class)
-    fun closeDb() {
-        db.close()
+    @Before
+    fun setup() {
+        couponsDao = databaseRule.db.couponsDao
     }
 
     @Test

@@ -10,6 +10,7 @@ import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.any
@@ -43,9 +44,8 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.BatchProductVar
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStockStatus
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductVariationApiResponse
+import org.wordpress.android.fluxc.persistence.DatabaseTestRule
 import org.wordpress.android.fluxc.persistence.ProductStorageHelper
-import org.wordpress.android.fluxc.persistence.TestDatabase
-import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.fluxc.persistence.dao.ProductVariationsDao
 import org.wordpress.android.fluxc.persistence.dao.ProductsDao
@@ -74,9 +74,12 @@ import kotlin.test.assertEquals
 class WCProductStoreTest {
     private val productRestClient: ProductRestClient = mock()
     private lateinit var productStore: WCProductStore
-    private lateinit var roomDb: WCAndroidDatabase
     private lateinit var productsDao: ProductsDao
     private lateinit var productsVariationsDao: ProductVariationsDao
+
+    @Rule
+    @JvmField
+    val databaseRule = DatabaseTestRule(RuntimeEnvironment.application.applicationContext)
 
     @Before
     fun setUp() {
@@ -92,14 +95,12 @@ class WCProductStoreTest {
         WellSql.init(config)
         config.reset()
 
-        roomDb = TestDatabase.provideTestDatabase(appContext).build()
-
-        productsDao = roomDb.productsDao
-        productsVariationsDao = roomDb.productVariationsDao
+        productsDao = databaseRule.db.productsDao
+        productsVariationsDao = databaseRule.db.productVariationsDao
 
         val productStorageHelper = ProductStorageHelper(
             productsDao = productsDao,
-            metaDataDao = roomDb.metaDataDao
+            metaDataDao = databaseRule.db.metaDataDao
         )
         productStore = WCProductStore(
             Dispatcher(),
@@ -110,10 +111,10 @@ class WCProductStoreTest {
             coroutineEngine = initCoroutineEngine(),
             productsDao = productsDao,
             productVariationsDao = productsVariationsDao,
-            productCategoriesDao = roomDb.productCategoriesDao,
-            productTagsDao = roomDb.productTagsDao,
-            productShippingClassesDao = roomDb.productShippingClassesDao,
-            productReviewsDao = roomDb.productReviewsDao,
+            productCategoriesDao = databaseRule.db.productCategoriesDao,
+            productTagsDao = databaseRule.db.productTagsDao,
+            productShippingClassesDao = databaseRule.db.productShippingClassesDao,
+            productReviewsDao = databaseRule.db.productReviewsDao,
         )
     }
 
@@ -884,6 +885,6 @@ class WCProductStoreTest {
 
     @After
     fun tearDown() {
-        roomDb.close()
+        // DatabaseTestRule handles closing the database
     }
 }

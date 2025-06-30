@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.any
@@ -46,8 +47,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.addons.AddOnsRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.addons.dto.AddOnGroupDto
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.addons.mappers.RemoteGlobalAddonGroupMapper
-import org.wordpress.android.fluxc.persistence.TestDatabase
-import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
+import org.wordpress.android.fluxc.persistence.DatabaseTestRule
 import org.wordpress.android.fluxc.persistence.dao.AddonsDao
 import org.wordpress.android.fluxc.persistence.mappers.FromDatabaseAddonGroupMapper
 import org.wordpress.android.fluxc.tools.CoroutineEngine
@@ -56,9 +56,13 @@ import org.wordpress.android.util.AppLog.T.API
 
 @RunWith(RobolectricTestRunner::class)
 class ProvideAddonsIntegrationTests {
+
+    @Rule
+    @JvmField
+    val databaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext<Application>())
+
     private lateinit var sut: WCAddonsStore
 
-    private lateinit var database: WCAndroidDatabase
     private lateinit var dao: AddonsDao
     private lateinit var restClient: AddOnsRestClient
     private lateinit var coroutineEngine: CoroutineEngine
@@ -69,8 +73,7 @@ class ProvideAddonsIntegrationTests {
         val context = ApplicationProvider.getApplicationContext<Application>()
 
         logger = mock()
-        database = TestDatabase.provideTestDatabase(context).build()
-        dao = database.addonsDao
+        dao = databaseRule.db.addonsDao
         restClient = mock()
         coroutineEngine = CoroutineEngine(
                 context = Default,

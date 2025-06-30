@@ -3,18 +3,16 @@ package org.wordpress.android.fluxc.persistence.dao
 import android.app.Application
 import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.test.runTest
-import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.persistence.TestDatabase
-import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
+import org.wordpress.android.fluxc.persistence.DatabaseTestRule
 import org.wordpress.android.fluxc.store.WCProductStore.ProductCategorySorting.NAME_ASC
 import org.wordpress.android.fluxc.wc.product.ProductTestUtils
-import java.io.IOException
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
@@ -22,7 +20,6 @@ import kotlin.test.assertTrue
 @RunWith(RobolectricTestRunner::class)
 class ProductCategoriesDaoTest {
     private lateinit var sut: ProductCategoriesDao
-    private lateinit var database: WCAndroidDatabase
 
     val site = SiteModel().apply {
         email = "test@example.org"
@@ -30,11 +27,13 @@ class ProductCategoriesDaoTest {
         siteId = 24
     }
 
+    @Rule
+    @JvmField
+    val databaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext<Application>())
+
     @Before
     fun setUp() {
-        val context = ApplicationProvider.getApplicationContext<Application>()
-        database = TestDatabase.provideTestDatabase(context).build()
-        sut = database.productCategoriesDao
+        sut = databaseRule.db.productCategoriesDao
     }
 
     @Test
@@ -128,11 +127,5 @@ class ProductCategoriesDaoTest {
         sut.deleteProductCategoriesForSite(localSiteId)
         savedCategories = sut.getProductCategories(localSiteId, NAME_ASC)
         assertEquals(0, savedCategories.size)
-    }
-
-    @After
-    @Throws(IOException::class)
-    fun closeDb() {
-        database.close()
     }
 }

@@ -6,36 +6,30 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions
-import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
-import org.wordpress.android.fluxc.persistence.TestDatabase
-import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
+import org.wordpress.android.fluxc.persistence.DatabaseTestRule
 import org.wordpress.android.fluxc.persistence.entity.ShippingMethodEntity
-import java.io.IOException
 
 @ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
 class ShippingMethodDaoTest {
+
+    @Rule
+    @JvmField
+    val databaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext<Application>())
+
     private lateinit var shippingMethodDao: ShippingMethodDao
-    private lateinit var db: WCAndroidDatabase
 
     private val defaultSiteId = LocalId(1)
 
     @Before
-    fun createDb() {
-        val context = ApplicationProvider.getApplicationContext<Application>()
-        db = TestDatabase.provideTestDatabase(context).build()
-        shippingMethodDao = db.shippingMethodDao
-    }
-
-    @After
-    @Throws(IOException::class)
-    fun closeDb() {
-        db.close()
+    fun setUp() {
+        shippingMethodDao = databaseRule.db.shippingMethodDao
     }
 
     @Test

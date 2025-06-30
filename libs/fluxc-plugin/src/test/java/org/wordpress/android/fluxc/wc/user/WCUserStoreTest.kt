@@ -1,14 +1,15 @@
 package org.wordpress.android.fluxc.wc.user
 
+import android.app.Application
+import androidx.test.core.app.ApplicationProvider
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.user.WCUserMapper
@@ -19,8 +20,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.INVALID_RE
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.user.WCUserRestClient
-import org.wordpress.android.fluxc.persistence.TestDatabase
-import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
+import org.wordpress.android.fluxc.persistence.DatabaseTestRule
 import org.wordpress.android.fluxc.store.WCUserStore
 import org.wordpress.android.fluxc.test
 import org.wordpress.android.fluxc.tools.initCoroutineEngine
@@ -28,6 +28,11 @@ import org.wordpress.android.fluxc.tools.initCoroutineEngine
 @Config(manifest = Config.NONE)
 @RunWith(RobolectricTestRunner::class)
 class WCUserStoreTest {
+
+    @Rule
+    @JvmField
+    val databaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext<Application>())
+
     private val restClient = mock<WCUserRestClient>()
     private val site = SiteModel().apply { id = 321 }
     private val errorSite = SiteModel().apply { id = 123 }
@@ -36,23 +41,13 @@ class WCUserStoreTest {
     private val sampleUserApiResponse = WCUserTestUtils.generateSampleUApiResponse()
     private val error = WooError(INVALID_RESPONSE, NETWORK_ERROR, "Invalid site ID")
 
-    private lateinit var database: WCAndroidDatabase
-
     @Before
     fun setUp() {
-        val appContext = RuntimeEnvironment.application.applicationContext
-        database = TestDatabase.provideTestDatabase(appContext).build()
-
         store = WCUserStore(
             restClient,
             initCoroutineEngine(),
-            database.userDao
+            databaseRule.db.userDao
         )
-    }
-
-    @After
-    fun tearDown() {
-        database.close()
     }
 
     @Test
