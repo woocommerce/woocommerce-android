@@ -516,28 +516,31 @@ private fun ShipmentCostSection(
     shipmentCostUI: ShipmentCostUI?,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier) {
+    Column(verticalArrangement = Arrangement.spacedBy(16.dp), modifier = modifier) {
         ShipmentDetailsSectionTitle(
             title = stringResource(R.string.shipping_label_shipment_details_shipment_cost)
         )
+
+        val serviceName = if (shipmentCostUI?.optionsWithFees?.isNotEmpty() == true) {
+            stringResource(R.string.shipping_label_shipment_details_shipment_cost_base_fee, shipmentCostUI.serviceName)
+        } else {
+            shipmentCostUI?.serviceName
+        }
         ShipmentCostRow(
-            title = shipmentCostUI?.serviceName ?: stringResource(R.string.subtotal),
-            total = shipmentCostUI?.formattedBasePrice,
-            modifier = Modifier.padding(top = dimensionResource(R.dimen.major_100))
+            title = serviceName ?: stringResource(R.string.subtotal),
+            total = shipmentCostUI?.formattedBasePrice
         )
-        // TODO
-//        if (shippingRateSummary?.optionName.isNullOrEmpty().not()) {
-//            ShipmentCostRow(
-//                title = shippingRateSummary?.optionName.orEmpty(),
-//                total = shippingRateSummary?.optionFee,
-//                modifier = Modifier.padding(top = dimensionResource(R.dimen.major_100))
-//            )
-//        }
+
+        shipmentCostUI?.optionsWithFees?.forEach { (optionName, optionFee) ->
+            ShipmentCostRow(
+                title = optionName,
+                total = optionFee
+            )
+        }
 
         ShipmentCostRow(
             title = stringResource(R.string.total),
             total = shipmentCostUI?.formattedTotalPrice,
-            modifier = Modifier.padding(top = dimensionResource(R.dimen.major_100)),
             titleFontWeight = FontWeight.Bold
         )
     }
