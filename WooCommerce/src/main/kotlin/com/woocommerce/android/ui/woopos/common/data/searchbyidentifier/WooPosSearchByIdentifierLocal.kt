@@ -23,7 +23,8 @@ class WooPosSearchByIdentifierLocal @Inject constructor(
             product.globalUniqueId.equals(identifier, ignoreCase = true)
         }
 
-    private suspend fun findVariationWithParentByIdentifier(identifier: String): WooPosSearchByIdentifierResult.VariationSuccess? {
+    private suspend fun findVariationWithParentByIdentifier(identifier: String):
+        WooPosSearchByIdentifierResult.VariationSuccess? {
         val variation = variationsCache.getAll().firstOrNull { variation ->
             variation.globalUniqueId.equals(identifier, ignoreCase = true)
         } ?: return null
