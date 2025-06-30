@@ -20,6 +20,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreat
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.OpenShippingLabelFile
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.OpenUrl
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.PackageSelectionState
+import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.ShippingRatesState
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.WooShippingViewState
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.WooShippingViewState.DataState
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.AddressValidationHelper
@@ -50,6 +51,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooS
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel.Option
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.domain.GetShippingRates
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.CarrierUI
+import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRateOption
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRateOptionUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRateUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingSortOption
@@ -197,15 +199,12 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     )
 
     private val defaultShippableItemUI = ShippingRateOptionUI(
-        title = defaultShippableItems[0].title,
-        formatedPrice = "$ ${defaultShippableItems[0].price}",
+        option = ShippingRateOption.DEFAULT,
+        optionName = "",
+        fee = BigDecimal.ZERO,
         formattedFee = "",
-        formattedEstimatedDays = "1 day",
-        shippingRateOptions = emptyList(),
-        option = Option.DEFAULT,
         rate = defaultShippingRate,
-        feeDescription = "fee description",
-        formattedOptionName = Option.DEFAULT.name
+        feeDescription = "fee description"
     )
 
     private val shippingLabelModel = ShippingLabelModel(
@@ -235,8 +234,13 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     private val defaultShippingRates = mapOf(
         defaultCarrier to defaultShippableItems.map {
             ShippingRateUI(
-                options = mapOf(Option.DEFAULT to defaultShippableItemUI),
-                selectedOption = defaultShippableItemUI
+                title = defaultCarrier.name,
+                formattedBasePrice = "10",
+                shippingRateIncludedOptions = emptyList(),
+                formattedEstimatedDays = "1 day",
+                options = mapOf(ShippingRateOption.DEFAULT to defaultShippableItemUI),
+                selectedOption = ShippingRateOption.DEFAULT,
+                additionalSelectedOptions = emptyList()
             )
         }
     )
@@ -273,7 +277,20 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     private val observeOriginAddresses: ObserveOriginAddresses = mock {
         on { invoke() } doReturn flowOf(defaultOriginAddresses)
     }
-    private val getShippingRates: GetShippingRates = mock()
+    private val getShippingRates: GetShippingRates = mock {
+        onBlocking {
+            invoke(
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+                anyOrNull(),
+                anyOrNull()
+            )
+        } doReturn Result.success(defaultShippingRates)
+    }
     private val purchaseShippingLabel: PurchaseShippingLabel = mock()
     private val observeAccountSettings: ObserveAccountSettings = mock {
         on { invoke() } doReturn flowOf(defaultAccountSettings)
@@ -403,7 +420,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         val currentViewState = sut.viewState.value
         assert(currentViewState is DataState)
         val dataState = currentViewState as DataState
-        assertIs<WooShippingLabelCreationViewModel.ShippingRatesState.DataState>(
+        assertIs<ShippingRatesState.DataState>(
             dataState.shipmentUIList[0].shippingRatesState
         )
     }
@@ -422,7 +439,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         val currentViewState = sut.viewState.value
         assert(currentViewState is DataState)
         val dataState = currentViewState as DataState
-        assertIs<WooShippingLabelCreationViewModel.ShippingRatesState.MissingInfo>(
+        assertIs<ShippingRatesState.MissingInfo>(
             dataState.shipmentUIList[0].shippingRatesState
         )
     }
@@ -443,7 +460,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         val currentViewState = sut.viewState.value
         assert(currentViewState is DataState)
         val dataState = currentViewState as DataState
-        assertIs<WooShippingLabelCreationViewModel.ShippingRatesState.MissingInfo>(
+        assertIs<ShippingRatesState.MissingInfo>(
             dataState.shipmentUIList[0].shippingRatesState
         )
     }
@@ -463,7 +480,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         val currentViewState = sut.viewState.value
         assert(currentViewState is DataState)
         val dataState = currentViewState as DataState
-        assertIs<WooShippingLabelCreationViewModel.ShippingRatesState.Error>(
+        assertIs<ShippingRatesState.Error>(
             dataState.shipmentUIList[0].shippingRatesState
         )
     }
@@ -686,8 +703,12 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
         val selectedRate = defaultShippingRates.values.first().first()
 
-        sut.onPackageSelected(defaultPackageData)
-        sut.onSelectedSippingRateChanged(selectedRate)
+        val ratesState = (sut.viewState.runAndCaptureValues {
+            sut.onPackageSelected(defaultPackageData)
+            advanceUntilIdle()
+        }.last() as DataState).shipmentUIList.first().shippingRatesState as ShippingRatesState.DataState
+
+        ratesState.onSelectedShippingRateChanged(selectedRate)
 
         advanceUntilIdle()
 
@@ -1109,8 +1130,13 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
             createViewModel()
 
             val selectedRate = defaultShippingRates.values.first().first()
-            sut.onPackageSelected(defaultPackageData)
-            sut.onSelectedSippingRateChanged(selectedRate)
+
+            val ratesState = (sut.viewState.runAndCaptureValues {
+                sut.onPackageSelected(defaultPackageData)
+                advanceUntilIdle()
+            }.last() as DataState).shipmentUIList.first().shippingRatesState as ShippingRatesState.DataState
+
+            ratesState.onSelectedShippingRateChanged(selectedRate)
 
             advanceUntilIdle()
 
@@ -1129,10 +1155,10 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
             rate = defaultShippingRate.copy(rateId = "2")
         )
         val secondRatesFetchResult = mapOf(
-            defaultCarrier to defaultShippableItems.map {
-                ShippingRateUI(
-                    options = mapOf(Option.DEFAULT to rateToBeSelected),
-                    selectedOption = rateToBeSelected
+            defaultCarrier to defaultShippingRates[defaultCarrier]!!.map {
+                it.copy(
+                    options = mapOf(ShippingRateOption.DEFAULT to rateToBeSelected),
+                    selectedOption = ShippingRateOption.DEFAULT
                 )
             }
         )
@@ -1143,14 +1169,16 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         createViewModel()
         advanceUntilIdle()
 
-        val viewState = sut.viewState.runAndCaptureValues {
+        val shippingRateState = (sut.viewState.runAndCaptureValues {
             // Select a package
             sut.onPackageSelected(defaultPackageData)
             advanceUntilIdle()
+        }.last() as DataState).shipmentUIList.first().shippingRatesState as ShippingRatesState.DataState
 
+        val viewState = sut.viewState.runAndCaptureValues {
             // Select a shipping rate
             val selectedRate = defaultShippingRates.values.first().first()
-            sut.onSelectedSippingRateChanged(selectedRate)
+            shippingRateState.onSelectedShippingRateChanged(selectedRate)
             advanceUntilIdle()
 
             // Simulate UPS terms acceptance
@@ -1162,9 +1190,9 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         verify(getShippingRates, times(2)).invoke(any(), any(), any(), any(), any(), any(), anyOrNull(), anyOrNull())
         val shipment = viewState.shipmentUIList[0]
         assertThat(shipment.shippingRatesState)
-            .isInstanceOf(WooShippingLabelCreationViewModel.ShippingRatesState.DataState::class.java)
-        val ratesState = shipment.shippingRatesState as WooShippingLabelCreationViewModel.ShippingRatesState.DataState
-        assertThat(ratesState.selectedRate!!.selectedOption).isEqualTo(rateToBeSelected)
+            .isInstanceOf(ShippingRatesState.DataState::class.java)
+        val ratesState = shipment.shippingRatesState as ShippingRatesState.DataState
+        assertThat(ratesState.selectedRate!!.selectedRateOption).isEqualTo(rateToBeSelected)
     }
 
     @Test
@@ -1186,12 +1214,15 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         createViewModel()
         advanceUntilIdle()
 
-        val viewState = sut.viewState.runAndCaptureValues {
+        val shippingRateState = (sut.viewState.runAndCaptureValues {
+            // Select a package
             sut.onPackageSelected(defaultPackageData)
             advanceUntilIdle()
+        }.last() as DataState).shipmentUIList.first().shippingRatesState as ShippingRatesState.DataState
 
+        val viewState = sut.viewState.runAndCaptureValues {
             val selectedRate = defaultShippingRates.values.first().first()
-            sut.onSelectedSippingRateChanged(selectedRate)
+            shippingRateState.onSelectedShippingRateChanged(selectedRate)
             advanceUntilIdle()
 
             sut.onUPSTermsAccepted()
