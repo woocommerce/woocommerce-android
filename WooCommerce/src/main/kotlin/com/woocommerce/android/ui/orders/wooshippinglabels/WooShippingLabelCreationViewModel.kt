@@ -1207,6 +1207,7 @@ data class ShipmentUI(
     val customsState: CustomsState,
     val hazmatState: HazmatState,
     val shippingRatesState: ShippingRatesState,
+    val shipmentCostUI: ShipmentCostUI?,
     val purchaseState: PurchaseState = PurchaseState.NoStarted,
     val status: ShippingLabelStatus = ShippingLabelStatus.UNKNOWN,
     val isRefundAvailable: Boolean = false,
@@ -1222,11 +1223,11 @@ data class ShippingLineSummaryUI(
 ) : Parcelable
 
 @Parcelize
-data class ShippingRateSummaryUI(
+data class ShipmentCostUI(
     val serviceName: String,
-    val total: String,
-    val optionName: String? = null,
-    val optionFee: String? = null
+    val formattedBasePrice: String,
+    val formattedTotalPrice: String,
+    val optionsWithFees: Map<String, String>,
 ) : Parcelable
 
 data class PaymentsSectionUI(

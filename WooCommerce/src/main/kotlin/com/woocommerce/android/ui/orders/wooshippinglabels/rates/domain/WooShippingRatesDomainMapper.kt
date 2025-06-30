@@ -71,13 +71,10 @@ class WooShippingRatesDomainMapper @Inject constructor(
             when (rateOption.value.option) {
                 Option.DEFAULT -> {
                     ShippingRateOptionUI(
-                        title = rateOption.value.serviceName,
-                        formatedPrice = formatCurrency(rateOption.value.price, currencyCode),
+                        optionName = "",
+                        fee = null,
                         formattedFee = "",
                         feeDescription = "",
-                        formattedOptionName = "",
-                        formattedEstimatedDays = getEstimatedDays(rateOption.value, resourceProvider),
-                        shippingRateOptions = getShippingRateOptionsList(rateOption.value, resourceProvider, currencyCode),
                         option = rateOption.value.option,
                         rate = rateOption.value
                     )
@@ -89,25 +86,26 @@ class WooShippingRatesDomainMapper @Inject constructor(
                     }
                     val formattedFee = formatFee(fee, currencyCode)
                     ShippingRateOptionUI(
-                        title = rateOption.value.serviceName,
-                        formatedPrice = formatCurrency(rateOption.value.price, currencyCode),
+                        optionName = rateOption.value.option.getTitle(),
+                        fee = fee,
                         formattedFee = formattedFee,
                         feeDescription = resourceProvider.getString(
                             R.string.woo_shipping_rate_surcharge_description_template,
                             rateOption.value.option.getTitle(),
                             formattedFee
                         ),
-                        formattedEstimatedDays = getEstimatedDays(rateOption.value, resourceProvider),
-                        shippingRateOptions = getShippingRateOptionsList(rateOption.value, resourceProvider, currencyCode),
                         option = rateOption.value.option,
                         rate = rateOption.value,
-                        formattedOptionName = rateOption.value.option.getTitle()
                     )
                 }
             }
         }
 
         return ShippingRateUI(
+            title = rate.defaultRate.serviceName,
+            formattedBasePrice = formatCurrency(rate.defaultRate.price, currencyCode),
+            shippingRateIncludedOptions = getShippingRateOptionsList(rate.defaultRate, resourceProvider, currencyCode),
+            formattedEstimatedDays = getEstimatedDays(rate.defaultRate, resourceProvider),
             options = options,
             selectedOption = Option.DEFAULT,
             additionalSelectedOptions = emptyList()

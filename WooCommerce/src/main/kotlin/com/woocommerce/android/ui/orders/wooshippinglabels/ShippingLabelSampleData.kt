@@ -85,7 +85,7 @@ object ShippingLabelSampleData {
             shippingRates = emptyMap(),
             selectedRate = null,
             onSelectedShippingRateChanged = {},
-            onSelectedRateOptionChanged = {_,_ -> }
+            onSelectedRateOptionChanged = { _, _ -> }
         )
     }
 
@@ -150,27 +150,39 @@ object ShippingLabelSampleData {
                 retailRate = BigDecimal.TEN
             )
             val option = ShippingRateOptionUI(
-                title = rate.serviceName,
-                formatedPrice = rate.price.toString(),
-                formattedFee = rate.price.toString(),
                 option = rate.option,
+                optionName = "",
+                fee = null,
+                formattedFee = "",
                 rate = rate,
-                shippingRateOptions = listOf(
-                    "Tracking",
-                    "Insurance",
-                    "Free Pickup"
-                ),
-                formattedEstimatedDays = "$it business days",
-                formattedOptionName = "Default",
                 feeDescription = "Default"
             )
             val options = mapOf(WooShippingRateModel.Option.DEFAULT to option)
 
             ShippingRateUI(
+                title = rate.serviceName,
+                formattedBasePrice = rate.price.toString(),
                 options = options,
+                shippingRateIncludedOptions = listOf(
+                    "Tracking",
+                    "Insurance",
+                    "Free Pickup"
+                ),
+                formattedEstimatedDays = "$it business days",
                 selectedOption = WooShippingRateModel.Option.DEFAULT,
                 additionalSelectedOptions = emptyList()
             )
         }
+    }
+
+    fun getShippingRateSummaryUI(): ShipmentCostUI {
+        return ShipmentCostUI(
+            serviceName = "DHL Express",
+            formattedBasePrice = "10.00",
+            formattedTotalPrice = "12.00",
+            optionsWithFees = mapOf(
+                "Signature required" to "2.00"
+            )
+        )
     }
 }

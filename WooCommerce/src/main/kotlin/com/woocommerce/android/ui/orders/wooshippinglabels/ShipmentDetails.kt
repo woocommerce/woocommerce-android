@@ -65,7 +65,7 @@ fun ShipmentDetails(
     totalItemsCost: String,
     shippingLines: List<ShippingLineSummaryUI>,
     shippingAddresses: WooShippingAddresses,
-    shippingRateSummary: ShippingRateSummaryUI?,
+    shipmentCostUI: ShipmentCostUI?,
     paymentsSectionUI: PaymentsSectionUI,
     modifier: Modifier = Modifier,
     noticeBannerUiState: NoticeBannerUiState? = null,
@@ -131,7 +131,7 @@ fun ShipmentDetails(
                 totalItemsCost = totalItemsCost,
                 shippingLines = shippingLines,
                 shippingAddresses = shippingAddresses,
-                shippingRateSummary = shippingRateSummary,
+                shipmentCostUI = shipmentCostUI,
                 paymentsSectionUI = paymentsSectionUI,
                 modifier = modifier.padding(top = dimensionResource(R.dimen.major_100)),
                 shipmentPurchased = shipmentPurchased,
@@ -148,7 +148,7 @@ fun ShipmentDetails(
                 shippingLines = shippingLines,
                 markOrderComplete = markOrderComplete,
                 shippingAddresses = shippingAddresses,
-                shippingRateSummary = shippingRateSummary,
+                shipmentCostUI = shipmentCostUI,
                 paymentsSectionUI = paymentsSectionUI,
                 modifier = modifier.padding(top = dimensionResource(R.dimen.minor_100)),
                 shipmentPurchased = shipmentPurchased,
@@ -170,7 +170,7 @@ private fun ShipmentDetailsPortrait(
     shippingLines: List<ShippingLineSummaryUI>,
     shippingAddresses: WooShippingAddresses,
     markOrderComplete: Boolean,
-    shippingRateSummary: ShippingRateSummaryUI?,
+    shipmentCostUI: ShipmentCostUI?,
     paymentsSectionUI: PaymentsSectionUI,
     onMarkOrderCompleteChange: (Boolean) -> Unit,
     onEditDestinationAddress: (DestinationShippingAddress) -> Unit,
@@ -209,7 +209,7 @@ private fun ShipmentDetailsPortrait(
             }
             Divider(modifier = Modifier.padding(horizontal = 16.dp))
             ShipmentCostSection(
-                shippingRateSummary = shippingRateSummary,
+                shipmentCostUI = shipmentCostUI,
                 modifier = Modifier.padding(16.dp)
             )
         }
@@ -229,7 +229,7 @@ private fun ShipmentDetailsLandscape(
     totalItemsCost: String,
     shippingLines: List<ShippingLineSummaryUI>,
     shippingAddresses: WooShippingAddresses,
-    shippingRateSummary: ShippingRateSummaryUI?,
+    shipmentCostUI: ShipmentCostUI?,
     paymentsSectionUI: PaymentsSectionUI,
     onEditDestinationAddress: (DestinationShippingAddress) -> Unit,
     onEditOriginAddress: (OriginShippingAddress) -> Unit,
@@ -277,7 +277,7 @@ private fun ShipmentDetailsLandscape(
                     }
                     Divider()
                     ShipmentCostSection(
-                        shippingRateSummary = shippingRateSummary,
+                        shipmentCostUI = shipmentCostUI,
                         modifier = Modifier
                             .padding(16.dp)
                     )
@@ -513,7 +513,7 @@ private fun PaymentSection(
 
 @Composable
 private fun ShipmentCostSection(
-    shippingRateSummary: ShippingRateSummaryUI?,
+    shipmentCostUI: ShipmentCostUI?,
     modifier: Modifier = Modifier
 ) {
     Column(modifier) {
@@ -521,21 +521,22 @@ private fun ShipmentCostSection(
             title = stringResource(R.string.shipping_label_shipment_details_shipment_cost)
         )
         ShipmentCostRow(
-            title = shippingRateSummary?.serviceName ?: stringResource(R.string.subtotal),
-            total = shippingRateSummary?.total,
+            title = shipmentCostUI?.serviceName ?: stringResource(R.string.subtotal),
+            total = shipmentCostUI?.formattedBasePrice,
             modifier = Modifier.padding(top = dimensionResource(R.dimen.major_100))
         )
-        if (shippingRateSummary?.optionName.isNullOrEmpty().not()) {
-            ShipmentCostRow(
-                title = shippingRateSummary?.optionName.orEmpty(),
-                total = shippingRateSummary?.optionFee,
-                modifier = Modifier.padding(top = dimensionResource(R.dimen.major_100))
-            )
-        }
+        // TODO
+//        if (shippingRateSummary?.optionName.isNullOrEmpty().not()) {
+//            ShipmentCostRow(
+//                title = shippingRateSummary?.optionName.orEmpty(),
+//                total = shippingRateSummary?.optionFee,
+//                modifier = Modifier.padding(top = dimensionResource(R.dimen.major_100))
+//            )
+//        }
 
         ShipmentCostRow(
             title = stringResource(R.string.total),
-            total = shippingRateSummary?.total,
+            total = shipmentCostUI?.formattedTotalPrice,
             modifier = Modifier.padding(top = dimensionResource(R.dimen.major_100)),
             titleFontWeight = FontWeight.Bold
         )
@@ -599,7 +600,7 @@ fun ShipmentDetailsLandscapePreview() {
                     shipTo = ShippingLabelSampleData.getShipTo(),
                     originAddresses = listOf(ShippingLabelSampleData.getShipFrom())
                 ),
-                shippingRateSummary = null,
+                shipmentCostUI = null,
                 paymentsSectionUI = ShippingLabelSampleData.getPaymentsSection(),
                 modifier = Modifier,
                 noticeBannerUiState = null,

@@ -262,14 +262,14 @@ fun WooShippingLabelCreationScreen(
                 Surface(elevation = elevation) {
                     if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) {
                         PurchasesSectionLandscape(
-                            total = selectedShippingRatesState.selectedRate?.selectedRateOption?.formatedPrice,
+                            total = selectedShipment.shipmentCostUI?.formattedTotalPrice,
                             markOrderComplete = uiState.markOrderComplete,
                             onMarkOrderCompleteChange = onMarkOrderCompleteChange,
                             onPurchaseShippingLabel = onPurchaseShippingLabel
                         )
                     } else {
                         PurchaseButton(
-                            total = selectedShippingRatesState.selectedRate?.selectedRateOption?.formatedPrice,
+                            total = selectedShipment.shipmentCostUI?.formattedTotalPrice,
                             onPurchaseShippingLabel = onPurchaseShippingLabel
                         )
                     }
@@ -354,7 +354,6 @@ private fun LabelCreationScreenWithBottomSheet(
     } else {
         0.dp
     }
-    val shippingRateSummary = (shippingRatesState as? ShippingRatesState.DataState)?.selectedRate?.summary
 
     val screenTitle = if (shipmentUIList[uiState.selectedIndex].purchased) {
         R.string.shipping_label_print_screen_title
@@ -380,7 +379,7 @@ private fun LabelCreationScreenWithBottomSheet(
                 shippingLines = shippingLines,
                 onMarkOrderCompleteChange = onMarkOrderCompleteChange,
                 shippingAddresses = shippingAddresses,
-                shippingRateSummary = shippingRateSummary,
+                shipmentCostUI = selectedShipment.shipmentCostUI,
                 paymentsSectionUI = paymentsSectionUI,
                 isShipmentDetailsExpanded = uiState.isShipmentDetailsExpanded,
                 markOrderComplete = uiState.markOrderComplete,
@@ -919,6 +918,7 @@ private fun WooShippingLabelCreationScreenPreview() {
                     customsState = Unavailable,
                     hazmatState = Declared(ShippingLabelHazmatCategory.CLASS_1),
                     shippingRatesState = ShippingLabelSampleData.getShippingRatesSection(),
+                    shipmentCostUI = ShippingLabelSampleData.getShippingRateSummaryUI(),
                 )
             ),
             shouldShowSplitShipmentButton = true,

@@ -64,12 +64,12 @@ import com.woocommerce.android.ui.compose.modifiers.dashedBorder
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.RoundedCornerBoxWithBorder
 import com.woocommerce.android.ui.orders.wooshippinglabels.ShippingLabelSampleData
-import com.woocommerce.android.ui.orders.wooshippinglabels.ShippingRateSummaryUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingCarrier
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import java.math.BigDecimal
 
 @Composable
 internal fun ShippingRatesCard(
@@ -398,14 +398,14 @@ private fun ShippingRateItem(
             Column(modifier = Modifier.animateContentSize()) {
                 Row {
                     Text(
-                        text = shippingRate.defaultRate.title,
+                        text = shippingRate.title,
                         style = MaterialTheme.typography.body1,
                         modifier = Modifier
                             .weight(1f)
                             .padding(horizontal = 12.dp)
                     )
                     Text(
-                        text = shippingRate.defaultRate.formatedPrice,
+                        text = shippingRate.formattedBasePrice,
                         style = MaterialTheme.typography.body1,
                         fontWeight = FontWeight.Bold
                     )
@@ -434,9 +434,9 @@ private fun getShippingRateFormattedDescription(
 ): AnnotatedString {
     return buildAnnotatedString {
         withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-            append(shippingRate.defaultRate.formattedEstimatedDays)
+            append(shippingRate.formattedEstimatedDays)
         }
-        val options = shippingRate.defaultRate.shippingRateOptions
+        val options = shippingRate.shippingRateIncludedOptions
         if (options.isNotEmpty()) {
             append(" • ")
             val include = context.getString(
@@ -454,10 +454,10 @@ private fun ShippingRateItemExpandedDescription(
     onSelectedRateOptionChanged: (ShippingRateOption, Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val options = shippingRate.defaultRate.shippingRateOptions
+    val options = shippingRate.shippingRateIncludedOptions
     Column(modifier = modifier) {
         Text(
-            text = shippingRate.defaultRate.formattedEstimatedDays,
+            text = shippingRate.formattedEstimatedDays,
             style = MaterialTheme.typography.body2,
             modifier = Modifier.padding(top = 8.dp, end = 16.dp, bottom = 8.dp),
             fontWeight = FontWeight.Bold
@@ -539,6 +539,10 @@ data class CarrierUI(
 
 @Parcelize
 data class ShippingRateUI(
+    val title: String,
+    val formattedBasePrice: String,
+    val shippingRateIncludedOptions: List<String>,
+    val formattedEstimatedDays: String,
     val options: Map<ShippingRateOption, ShippingRateOptionUI>,
     val selectedOption: ShippingRateOption,
     val additionalSelectedOptions: List<ShippingRateOption>,
@@ -546,29 +550,17 @@ data class ShippingRateUI(
     val id: String
         get() = defaultRate.rate.rateId
     val defaultRate: ShippingRateOptionUI
-        get() = options[ShippingRateOption.DEFAULT] ?: options.values.first()
+        get() = options.getValue(ShippingRateOption.DEFAULT)
     val selectedRateOption: ShippingRateOptionUI
         get() = options.getValue(selectedOption)
-
-    // TODO update this to use the selectedOption and additionalSelectedOptions
-    val summary: ShippingRateSummaryUI
-        get() = ShippingRateSummaryUI(
-            serviceName = options.getValue(selectedOption).title,
-            total = options.getValue(selectedOption).formatedPrice,
-            optionName = options.getValue(selectedOption).formattedOptionName,
-            optionFee = options.getValue(selectedOption).formattedFee
-        )
 }
 
 @Parcelize
 data class ShippingRateOptionUI(
-    val title: String,
-    val formatedPrice: String,
-    val formattedFee: String,
-    val formattedOptionName: String,
-    val feeDescription: String,
-    val formattedEstimatedDays: String,
     val option: ShippingRateOption,
-    val shippingRateOptions: List<String>,
+    val optionName: String,
+    val fee: BigDecimal?,
+    val formattedFee: String,
+    val feeDescription: String,
     val rate: WooShippingRateModel
 ) : Parcelable
