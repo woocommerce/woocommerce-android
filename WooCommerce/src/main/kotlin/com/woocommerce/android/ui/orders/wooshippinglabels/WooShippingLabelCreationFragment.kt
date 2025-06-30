@@ -10,6 +10,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.handleDialogNotice
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
@@ -28,11 +29,13 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormFragment.Companion.CUSTOMS_DATA_RESULT
 import com.woocommerce.android.ui.orders.wooshippinglabels.hazmat.WooShippingLabelHazmatFormViewModel.Companion.HAZMAT_CATEGORY_RESULT
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShippingAddress
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationFragment.Companion.PACKAGE_SELECTION_RESULT
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
 import com.woocommerce.android.ui.orders.wooshippinglabels.refund.WooShippingLabelRefundFragment
 import com.woocommerce.android.ui.orders.wooshippinglabels.split.WooShippingSplitShipmentFragment
+import com.woocommerce.android.ui.orders.wooshippinglabels.upsdap.UPSDAPTermsOfServiceBottomSheetFragment
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -131,10 +134,14 @@ class WooShippingLabelCreationFragment : BaseFragment(), BackPressListener {
                     event.orderId,
                     event.labelId
                 )
+
                 is WooShippingLabelCreationViewModel.NavigateToPaymentMethodEdit -> navigateToPaymentMethodEdit()
 
                 is WooShippingLabelCreationViewModel.OpenUrl -> openUrl(event.url)
                 is WooShippingLabelCreationViewModel.ShowError -> showErrorDialog(event.errorResId)
+                is WooShippingLabelCreationViewModel.NavigateToUPSDAPTermsOfService -> navigateToUPSDAPTermsOfService(
+                    event.originAddress
+                )
             }
         }
     }
@@ -161,6 +168,13 @@ class WooShippingLabelCreationFragment : BaseFragment(), BackPressListener {
 
         handleResult<Long>(WooShippingLabelRefundFragment.KEY_REFUND_SHIPPING_LABEL_RESULT) {
             viewModel.onShippingLabelRefunded(it)
+        }
+
+        handleDialogNotice(
+            UPSDAPTermsOfServiceBottomSheetFragment.TOS_ACCEPTED_NOTICE_KEY,
+            entryId = R.id.wooShippingLabelCreationFragment
+        ) {
+            viewModel.onPurchaseShippingLabel()
         }
     }
 
@@ -201,6 +215,13 @@ class WooShippingLabelCreationFragment : BaseFragment(), BackPressListener {
             titleId = R.string.error_generic,
             messageId = messageResId,
             positiveButtonId = R.string.dialog_ok
+        )
+    }
+
+    private fun navigateToUPSDAPTermsOfService(originAddress: OriginShippingAddress) {
+        findNavController().navigate(
+            WooShippingLabelCreationFragmentDirections
+                .actionWooShippingLabelCreationFragmentToUpsDapTermsOfServiceBottomSheetFragment(originAddress)
         )
     }
 }

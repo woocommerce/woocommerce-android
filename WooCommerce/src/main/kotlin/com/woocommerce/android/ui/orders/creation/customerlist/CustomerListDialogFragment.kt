@@ -13,33 +13,23 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.edgeToEdgeForInLandscape
-import com.woocommerce.android.extensions.isTwoPanesShouldBeUsed
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
-import org.wordpress.android.util.DisplayUtils
 
 @AndroidEntryPoint
 class CustomerListDialogFragment : DialogFragment() {
     companion object {
         const val KEY_CUSTOMER_RESULT = "customer_model"
-        private const val TABLET_LANDSCAPE_WIDTH_RATIO = 0.55f
-        private const val TABLET_LANDSCAPE_HEIGHT_RATIO = 0.6f
     }
 
     private val viewModel by viewModels<CustomerListSelectionViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        if (requireContext().isTwoPanesShouldBeUsed) {
-            setStyle(STYLE_NO_TITLE, R.style.Theme_Woo_Dialog_RoundedCorners_NoMinWidth)
-        } else {
-            /* This draws the dialog as full screen */
-            setStyle(STYLE_NO_TITLE, R.style.Theme_Woo)
-        }
+        setStyle(STYLE_NO_TITLE, R.style.Theme_Woo)
     }
 
     override fun onCreateView(
@@ -89,12 +79,6 @@ class CustomerListDialogFragment : DialogFragment() {
 
     override fun onStart() {
         super.onStart()
-        if (requireContext().isTwoPanesShouldBeUsed) {
-            dialog?.window?.setLayout(
-                (DisplayUtils.getWindowPixelWidth(requireContext()) * TABLET_LANDSCAPE_WIDTH_RATIO).toInt(),
-                (DisplayUtils.getWindowPixelHeight(requireContext()) * TABLET_LANDSCAPE_HEIGHT_RATIO).toInt()
-            )
-        }
         dialog?.window?.let {
             WindowCompat.setDecorFitsSystemWindows(it, false)
         }

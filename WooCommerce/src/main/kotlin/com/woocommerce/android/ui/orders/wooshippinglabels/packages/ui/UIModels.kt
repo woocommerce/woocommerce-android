@@ -62,6 +62,12 @@ data class PackageData(
             groupName = null
         )
 
+        /**
+         * Default height when missing from the package dimensions.
+         * TODO confirm this value when WOOSHIP-1449 is done.
+         */
+        const val DEFAULT_HEIGHT = 5.0
+
         fun fromPackageDAO(
             dao: PackageDAO,
             isSelected: Boolean = false,
@@ -150,6 +156,12 @@ sealed class Carrier(
         id = CarrierType.DHL.id,
         name = "DHL",
         logoRes = R.drawable.dhl_logo
+    )
+
+    data object UPS : Carrier(
+        id = CarrierType.UPS.id,
+        name = "UPS",
+        logoRes = R.drawable.ups_logo
     )
 }
 

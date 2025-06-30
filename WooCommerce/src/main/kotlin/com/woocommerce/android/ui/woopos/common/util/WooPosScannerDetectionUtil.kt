@@ -9,9 +9,7 @@ import android.hardware.input.InputManager
 import android.view.InputDevice
 import androidx.annotation.RequiresPermission
 import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
 class WooPosScannerDetectionUtil @Inject constructor(
     private val context: Context,
     private val wooPosLogWrapper: WooPosLogWrapper,

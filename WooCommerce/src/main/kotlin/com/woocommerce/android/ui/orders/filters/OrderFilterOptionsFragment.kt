@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderFilterListBinding
 import com.woocommerce.android.extensions.edgeToEdgeHandlingForNavigationAndStatusBar
-import com.woocommerce.android.extensions.isTwoPanesShouldBeUsed
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.showDateRangePicker
@@ -24,7 +23,6 @@ import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.ShowCust
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterOptionUiModel
 import com.woocommerce.android.ui.orders.list.OrderListFragment
 import dagger.hilt.android.AndroidEntryPoint
-import org.wordpress.android.util.DisplayUtils
 
 @AndroidEntryPoint
 class OrderFilterOptionsFragment :
@@ -33,23 +31,13 @@ class OrderFilterOptionsFragment :
 
     private var _binding: FragmentOrderFilterListBinding? = null
     private val binding get() = _binding!!
-    private companion object {
-        const val TABLET_LANDSCAPE_WIDTH_RATIO = 0.55f
-        const val TABLET_LANDSCAPE_HEIGHT_RATIO = 0.6f
-    }
 
     private val viewModel: OrderFilterOptionsViewModel by viewModels()
     lateinit var orderFilterOptionAdapter: OrderFilterOptionAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        if (requireContext().isTwoPanesShouldBeUsed) {
-            setStyle(STYLE_NO_TITLE, R.style.Theme_Woo_Dialog_RoundedCorners_NoMinWidth)
-        } else {
-            /* This draws the dialog as full screen */
-            setStyle(STYLE_NO_TITLE, R.style.Theme_Woo)
-        }
+        setStyle(STYLE_NO_TITLE, R.style.Theme_Woo)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -67,12 +55,6 @@ class OrderFilterOptionsFragment :
 
     override fun onStart() {
         super.onStart()
-        if (requireContext().isTwoPanesShouldBeUsed) {
-            dialog?.window?.setLayout(
-                (DisplayUtils.getWindowPixelWidth(requireContext()) * TABLET_LANDSCAPE_WIDTH_RATIO).toInt(),
-                (DisplayUtils.getWindowPixelHeight(requireContext()) * TABLET_LANDSCAPE_HEIGHT_RATIO).toInt()
-            )
-        }
         dialog?.window?.let {
             WindowCompat.setDecorFitsSystemWindows(it, false)
         }
