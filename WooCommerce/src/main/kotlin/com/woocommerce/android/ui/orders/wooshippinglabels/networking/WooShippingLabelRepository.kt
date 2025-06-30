@@ -6,6 +6,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingAccountSettingsDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingAddressDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigDataStore
+import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingEligibilityDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.AddressNormalizationModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
@@ -22,10 +23,20 @@ import javax.inject.Inject
 class WooShippingLabelRepository @Inject constructor(
     private val restClient: WooShippingLabelRestClient,
     private val mapper: WooShippingNetworkingMapper,
+    private val eligibilityDataStore: WooShippingEligibilityDataStore,
     private val configDataStore: WooShippingConfigDataStore,
     private val accountSettingsDataStore: WooShippingAccountSettingsDataStore,
     private val addressDataStore: WooShippingAddressDataStore
 ) {
+    suspend fun fetchShippingEligibility(
+        site: SiteModel,
+        orderId: Long,
+    ) = restClient.fetchShippingEligibility(site = site, orderId = orderId).asWooResult().also { response ->
+        response.model
+            ?.takeIf { response.isError.not() }
+            ?.let { eligibilityDataStore.saveEligibility(orderId, it.isEligible) }
+    }
+
     suspend fun fetchShippingLabelPrinting(
         site: SiteModel,
         labelIds: List<Long>,
