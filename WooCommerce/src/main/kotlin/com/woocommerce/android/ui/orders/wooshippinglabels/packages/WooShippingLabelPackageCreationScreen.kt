@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.packages
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -22,12 +21,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PageTab
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PageType
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PageType.CARRIER
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PageType.CUSTOM
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PageType.SAVED
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.Carrier
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.CarrierPackageGroup
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.WooShippingCarrierPackageContent
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.WooShippingCarrierPackageScreen
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.WooShippingCustomPackageCreationScreen
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.WooShippingSavedPackageContent
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.WooShippingSavedPackageScreen
 
 @Composable
@@ -38,30 +42,29 @@ fun WooShippingLabelPackageCreationScreen(
     WooShippingLabelPackageCreationScreen(
         tabs = viewState.value?.pageTabs.orEmpty(),
         createCustomPackageScreen = { WooShippingCustomPackageCreationScreen(viewModel) },
-        createCarrierPackageScreen = { WooShippingCarrierPackageScreen(viewModel) },
-        createSavedPackageScreen = { WooShippingSavedPackageScreen(viewModel) }
+        createCarrierPackageScreen = { onTabChange -> WooShippingCarrierPackageScreen(viewModel, onTabChange) },
+        createSavedPackageScreen = { onTabChange -> WooShippingSavedPackageScreen(viewModel, onTabChange) }
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun WooShippingLabelPackageCreationScreen(
     modifier: Modifier = Modifier,
     tabs: List<PageTab>,
     createCustomPackageScreen: @Composable () -> Unit,
-    createCarrierPackageScreen: @Composable () -> Unit,
-    createSavedPackageScreen: @Composable () -> Unit
+    createCarrierPackageScreen: @Composable (onTabChange: (PageType) -> Unit) -> Unit,
+    createSavedPackageScreen: @Composable (onTabChange: (PageType) -> Unit) -> Unit,
 ) {
     var tabIndex by remember { mutableIntStateOf(0) }
     val pagerState = rememberPagerState { tabs.size }
-    LaunchedEffect(key1 = tabIndex) {
+    LaunchedEffect(tabIndex) {
         pagerState.animateScrollToPage(tabIndex)
     }
-    LaunchedEffect(key1 = pagerState.currentPage, pagerState.isScrollInProgress) {
-        if (!pagerState.isScrollInProgress) {
-            tabIndex = pagerState.currentPage
-        }
+    LaunchedEffect(pagerState.targetPage) {
+        tabIndex = pagerState.targetPage
     }
+
+    fun findIndex(type: PageType) = tabs.indexOfFirst { it.type == type }
 
     Scaffold(
         topBar = {
@@ -89,8 +92,8 @@ fun WooShippingLabelPackageCreationScreen(
             ) { currentPageIndex ->
                 when (tabs[currentPageIndex].type) {
                     CUSTOM -> createCustomPackageScreen()
-                    CARRIER -> createCarrierPackageScreen()
-                    SAVED -> createSavedPackageScreen()
+                    CARRIER -> createCarrierPackageScreen { newPage -> tabIndex = findIndex(newPage) }
+                    SAVED -> createSavedPackageScreen { newPage -> tabIndex = findIndex(newPage) }
                 }
             }
         }
@@ -114,6 +117,7 @@ fun WooShippingLabelsPackageCreationScreenPreview() {
                     packageLength = "10",
                     packageWidth = "10",
                     packageHeight = "10",
+                    packageWeight = "10",
                     isAddPackageEnabled = true,
                     isSaveAsTemplateChecked = true,
                     onAddPackageClick = {},
@@ -121,38 +125,117 @@ fun WooShippingLabelsPackageCreationScreenPreview() {
                     onLengthChange = {},
                     onWidthChange = {},
                     onHeightChange = {},
+                    onWeightChange = {},
                     onPackageNameChange = {},
-                    onSavePackageChanged = { }
+                    onSavePackageChanged = {}
                 )
             },
             createSavedPackageScreen = {
-                WooShippingSavedPackageScreen(
+                WooShippingSavedPackageContent(
                     savedPackages = listOf(
                         PackageData(
                             name = "Small Flat Rate Box",
-                            dimensions = "10 x 10 x 10 cm",
+                            dimensions = "10 x 10 x 10",
+                            weight = "10",
                             isSelected = true,
-                            isLetter = true
+                            isLetter = true,
+                            id = "1",
                         ),
                         PackageData(
                             name = "Small Flat Rate Box",
-                            dimensions = "20 x 20 x 20 cm",
+                            dimensions = "20 x 20 x 20",
+                            weight = "10",
                             isSelected = false,
-                            isLetter = false
+                            isLetter = false,
+                            id = "1",
                         ),
                         PackageData(
                             name = "Small Flat Rate Box",
-                            dimensions = "30 x 30 x 30 cm",
+                            dimensions = "30 x 30 x 30",
+                            weight = "10",
                             isSelected = false,
-                            isLetter = false
+                            isLetter = false,
+                            id = "1",
                         )
                     ),
-                    isAddPackageEnabled = true,
-                    onAddPackageClick = { },
                     onSavedPackageSelected = { _, _ -> }
                 )
             },
-            createCarrierPackageScreen = { }
+            createCarrierPackageScreen = {
+                WooShippingCarrierPackageContent(
+                    carrierPackages = mapOf(
+                        Carrier.DHL to listOf(
+                            CarrierPackageGroup(
+                                groupName = "Group 1",
+                                packages = listOf(
+                                    PackageData(
+                                        name = "Package 1 - Carrier 1",
+                                        dimensions = "10 x 10 x 10",
+                                        weight = "10",
+                                        isSelected = false,
+                                        isLetter = false,
+                                        id = "1",
+                                    ),
+                                    PackageData(
+                                        name = "Package 2 - Carrier 1",
+                                        dimensions = "20 x 20 x 20",
+                                        weight = "20",
+                                        isSelected = false,
+                                        isLetter = false,
+                                        id = "1",
+                                    )
+                                )
+                            ),
+                            CarrierPackageGroup(
+                                groupName = "Group 2",
+                                packages = listOf(
+                                    PackageData(
+                                        name = "Package 3 - Carrier 1",
+                                        dimensions = "30 x 30 x 30",
+                                        weight = "30",
+                                        isSelected = false,
+                                        isLetter = false,
+                                        id = "1",
+                                    ),
+                                    PackageData(
+                                        name = "Package 4 - Carrier 1",
+                                        dimensions = "40 x 40 x 40",
+                                        weight = "40",
+                                        isSelected = false,
+                                        isLetter = false,
+                                        id = "1",
+                                    )
+                                )
+                            )
+                        ),
+                        Carrier.USPS to listOf(
+                            CarrierPackageGroup(
+                                groupName = "Group 2",
+                                packages = listOf(
+                                    PackageData(
+                                        name = "Package 1 - Carrier 2",
+                                        dimensions = "10 x 10 x 10",
+                                        weight = "10",
+                                        isSelected = false,
+                                        isLetter = false,
+                                        id = "1",
+                                    ),
+                                    PackageData(
+                                        name = "Package 2 Carrier - 2",
+                                        dimensions = "20 x 20 x 20",
+                                        weight = "20",
+                                        isSelected = false,
+                                        isLetter = false,
+                                        id = "1",
+                                    )
+                                )
+                            )
+                        )
+                    ),
+                    onPackageSelected = { _, _ -> },
+                    onPackageStarred = { _, _ -> },
+                )
+            }
         )
     }
 }

@@ -85,6 +85,9 @@ data class Order(
     @IgnoredOnParcel
     val shippingAddress = customer?.shippingAddress ?: Address.EMPTY
 
+    val maxRefund: BigDecimal
+        get() = total - refundTotal
+
     @Parcelize
     data class ShippingMethod(
         val id: String,
@@ -108,6 +111,7 @@ data class Order(
         val sku: String,
         val quantity: Float,
         val subtotal: BigDecimal,
+        val subtotalTax: BigDecimal,
         val totalTax: BigDecimal,
         val total: BigDecimal,
         val variationId: Long,
@@ -115,7 +119,8 @@ data class Order(
         val parent: Long? = null,
         val configuration: ProductConfiguration? = null,
         val configurationKey: Long? = null,
-        val containsMetadata: Boolean = false
+        val containsMetadata: Boolean = false,
+        val taxes: List<LineTaxEntry> = emptyList(),
     ) : Parcelable {
         @IgnoredOnParcel
         val uniqueId: Long = ProductHelper.productOrVariationId(productId, variationId)
@@ -157,6 +162,7 @@ data class Order(
                     sku = "",
                     quantity = 0f,
                     subtotal = BigDecimal(0),
+                    subtotalTax = BigDecimal(0),
                     totalTax = BigDecimal(0),
                     total = BigDecimal(0),
                     variationId = 0,
@@ -183,7 +189,7 @@ data class Order(
                 .firstOrNull()?.groupValues
                 ?.takeIf { it.size == addonAttributeGroupSize }
                 ?.toMutableList()
-                ?.apply { removeFirst() }
+                ?.apply { removeAt(0) }
 
             @IgnoredOnParcel
             val addonName = keyAsAddonRegexGroup
@@ -203,10 +209,11 @@ data class Order(
         val methodId: String?,
         val methodTitle: String,
         val totalTax: BigDecimal,
-        val total: BigDecimal
+        val total: BigDecimal,
+        val taxes: List<LineTaxEntry>
     ) : Parcelable {
         constructor(methodId: String, methodTitle: String, total: BigDecimal) :
-            this(0L, methodId, methodTitle, BigDecimal.ZERO, total)
+            this(0L, methodId, methodTitle, BigDecimal.ZERO, total, emptyList())
     }
 
     @Parcelize
@@ -226,6 +233,7 @@ data class Order(
         val total: BigDecimal,
         val totalTax: BigDecimal,
         var taxStatus: FeeLineTaxStatus,
+        val taxes: List<LineTaxEntry>
     ) : Parcelable {
         fun getTotalValue(): BigDecimal = total + totalTax
 
@@ -236,6 +244,7 @@ data class Order(
                 total = BigDecimal.ZERO,
                 totalTax = BigDecimal.ZERO,
                 taxStatus = FeeLineTaxStatus.UNKNOWN,
+                taxes = emptyList()
             )
         }
 
@@ -272,6 +281,12 @@ data class Order(
             )
         }
     }
+
+    @Parcelize
+    data class LineTaxEntry(
+        val rateId: Long,
+        val taxAmount: BigDecimal
+    ) : Parcelable
 
     fun getBillingName(defaultValue: String): String {
         return when {

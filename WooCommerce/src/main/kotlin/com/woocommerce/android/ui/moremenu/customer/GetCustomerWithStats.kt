@@ -69,7 +69,7 @@ class GetCustomerWithStats @Inject constructor(
             customer.shippingState.ifEmpty { analyticsCustomer.state }
         )
         return CustomerWithAnalytics(
-            remoteCustomerId = customer.remoteCustomerId,
+            remoteCustomerId = customer.remoteCustomerId.value,
             firstName = customer.firstName,
             lastName = customer.lastName,
             username = customer.username,
@@ -116,7 +116,7 @@ class GetCustomerWithStats @Inject constructor(
         val (billingCountry, billingState) = getLocations(customer.billingCountry, customer.billingState)
         val (shippingCountry, shippingState) = getLocations(customer.shippingCountry, customer.shippingState)
         return CustomerWithAnalytics(
-            remoteCustomerId = customer.remoteCustomerId,
+            remoteCustomerId = customer.remoteCustomerId.value,
             firstName = customer.firstName,
             lastName = customer.lastName,
             username = customer.username,

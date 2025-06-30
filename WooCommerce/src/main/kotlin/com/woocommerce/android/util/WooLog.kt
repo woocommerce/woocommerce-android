@@ -43,7 +43,8 @@ object WooLog {
         BLAZE,
         GOOGLE_ADS,
         POS,
-        CUSTOM_FIELDS
+        CUSTOM_FIELDS,
+        SHIPPING_LABELS
     }
 
     // Breaking convention to be consistent with org.wordpress.android.util.AppLog
@@ -51,7 +52,7 @@ object WooLog {
     enum class LogLevel { v, d, i, w, e }
 
     const val TAG = "WooCommerce"
-    private const val MAX_ENTRIES = 99
+    private const val MAX_ENTRIES = 999
     val logEntries = RollingLogEntries(MAX_ENTRIES)
 
     init {

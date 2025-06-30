@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.woopos.home.toolbar
 
-import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.ui.graphics.vector.ImageVector
 import com.woocommerce.android.R
 
 data class WooPosToolbarState(
@@ -19,7 +19,7 @@ data class WooPosToolbarState(
 
         data class MenuItem(
             @StringRes val title: Int,
-            @DrawableRes val icon: Int,
+            val icon: ImageVector,
         )
     }
 }

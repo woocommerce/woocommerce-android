@@ -100,6 +100,22 @@ class AdjustProductQuantityTest : BaseUnitTest() {
     }
 
     @Test
+    fun `delete bundle product`() {
+        // To delete a bundle product we use the same quantity as the bundle item, the updated quantity should be 0
+        val quantityToDecrease = (bundleProduct.item.quantity * -1).toInt()
+        val updatedOrder = adjustProductQuantity(order, bundleProduct, quantityToDecrease)
+
+        val items = updatedOrder.items.associateBy { it.itemId }
+
+        // Assert that we remove (quantity == 0) the bundle item and its children
+        assertThat(items.getValue(bundleItemID).quantity).isEqualTo(0f)
+        assertThat(items.getValue(bundleChildItemID).quantity).isEqualTo(0f)
+
+        // Assert that NO new item is created
+        assertThat(items[notSyncedItemID]).isNull()
+    }
+
+    @Test
     fun `increase quantity for not synced product using item id`() {
         val itemId = notSyncedItemID
         val quantityToAdd = 2
@@ -166,6 +182,7 @@ class AdjustProductQuantityTest : BaseUnitTest() {
         sku = "",
         quantity = 4f,
         subtotal = BigDecimal("10"),
+        subtotalTax = BigDecimal.ZERO,
         totalTax = BigDecimal.ZERO,
         total = BigDecimal("10"),
         variationId = 0,
@@ -181,6 +198,7 @@ class AdjustProductQuantityTest : BaseUnitTest() {
         sku = "",
         quantity = 4f,
         subtotal = BigDecimal("10"),
+        subtotalTax = BigDecimal.ZERO,
         totalTax = BigDecimal.ZERO,
         total = BigDecimal("10"),
         variationId = 0,
@@ -199,6 +217,7 @@ class AdjustProductQuantityTest : BaseUnitTest() {
         sku = "",
         quantity = 4f,
         subtotal = BigDecimal("10"),
+        subtotalTax = BigDecimal.ZERO,
         totalTax = BigDecimal.ZERO,
         total = BigDecimal("10"),
         variationId = 0,
@@ -227,6 +246,7 @@ class AdjustProductQuantityTest : BaseUnitTest() {
             sku = "",
             quantity = 4f,
             subtotal = BigDecimal("10"),
+            subtotalTax = BigDecimal.ZERO,
             totalTax = BigDecimal.ZERO,
             total = BigDecimal("10"),
             variationId = 0,

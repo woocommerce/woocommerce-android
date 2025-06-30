@@ -5,6 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.cardreader.CardReaderManager
+import com.woocommerce.android.di.PointOfSaleMode
+import com.woocommerce.android.di.StoreManagementMode
 import com.woocommerce.android.extensions.formatToMMMMdd
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.SelectedSite
@@ -70,8 +72,9 @@ private const val UNIX_TO_JAVA_TIMESTAMP_OFFSET = 1000L
 @HiltViewModel
 class CardReaderOnboardingViewModel @Inject constructor(
     savedState: SavedStateHandle,
+    @StoreManagementMode storeManagementPaymentsFlowTracker: PaymentsFlowTracker,
+    @PointOfSaleMode pointOfSalePaymentsFlowTracker: PaymentsFlowTracker,
     private val cardReaderChecker: CardReaderOnboardingChecker,
-    private val paymentsFlowTracker: PaymentsFlowTracker,
     private val learnMoreUrlProvider: LearnMoreUrlProvider,
     private val selectedSite: SelectedSite,
     private val appPrefsWrapper: AppPrefsWrapper,
@@ -80,6 +83,10 @@ class CardReaderOnboardingViewModel @Inject constructor(
     private val errorClickHandler: CardReaderOnboardingErrorCtaClickHandler,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderOnboardingFragmentArgs by savedState.navArgs()
+    private val paymentsFlowTracker: PaymentsFlowTracker = when {
+        isPos -> pointOfSalePaymentsFlowTracker
+        else -> storeManagementPaymentsFlowTracker
+    }
 
     override val _event = SingleLiveEvent<Event>()
     override val event: LiveData<Event> = _event

@@ -5,7 +5,7 @@ import com.woocommerce.android.AppUrls
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
+import com.woocommerce.android.ui.common.webview.WebViewAuthenticator
 import com.woocommerce.android.ui.google.CanUseAutoLoginWebview
 import com.woocommerce.android.ui.google.webview.GoogleAdsWebViewViewModel.UrlComparisonMode.EQUALITY
 import com.woocommerce.android.ui.google.webview.GoogleAdsWebViewViewModel.UrlComparisonMode.PARTIAL
@@ -21,7 +21,7 @@ import javax.inject.Inject
 @HiltViewModel
 class GoogleAdsWebViewViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    val wpComWebViewAuthenticator: WPComWebViewAuthenticator,
+    val webViewAuthenticator: WebViewAuthenticator,
     val canUseAutoLoginWebview: CanUseAutoLoginWebview,
     val userAgent: UserAgent,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper

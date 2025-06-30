@@ -27,7 +27,6 @@ import com.woocommerce.android.ui.orders.CustomAmountUIModel
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
 import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel.CustomAmountType.PERCENTAGE_CUSTOM_AMOUNT
-import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel.PopulatePercentage
 import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel.TaxStatus
 import com.woocommerce.android.ui.payments.customamounts.views.TaxToggle
 import com.woocommerce.android.util.CurrencyFormatter
@@ -36,7 +35,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
 import org.wordpress.android.util.DisplayUtils
 import java.math.BigDecimal
-import java.math.RoundingMode
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -60,7 +58,6 @@ class CustomAmountsFragment : BaseFragment(R.layout.dialog_custom_amounts) {
         setupClickListeners(binding)
         showKeyboard(isLandscape, binding)
         setupObservers(binding)
-        setupEventObservers(binding)
     }
 
     private fun showKeyboard(
@@ -104,6 +101,7 @@ class CustomAmountsFragment : BaseFragment(R.layout.dialog_custom_amounts) {
             binding.buttonDelete.hide()
         } else {
             binding.buttonDelete.show()
+            binding.buttonDone.text = getString(R.string.custom_amounts_save_changes)
         }
     }
 
@@ -146,18 +144,6 @@ class CustomAmountsFragment : BaseFragment(R.layout.dialog_custom_amounts) {
                 )
             )
             findNavController().navigateUp()
-        }
-    }
-
-    private fun setupEventObservers(binding: DialogCustomAmountsBinding) {
-        viewModel.event.observe(viewLifecycleOwner) { event ->
-            when (event) {
-                is PopulatePercentage -> {
-                    binding.editPercentage.setText(
-                        viewModel.currentPercentage.setScale(2, RoundingMode.HALF_UP).toString()
-                    )
-                }
-            }
         }
     }
 
@@ -216,7 +202,15 @@ class CustomAmountsFragment : BaseFragment(R.layout.dialog_custom_amounts) {
 
             new.isProgressShowing.takeIfNotEqualTo(old?.isProgressShowing) { show ->
                 binding.progressBar.isVisible = show
-                binding.buttonDone.text = if (show) "" else getString(R.string.custom_amounts_add_custom_amount)
+                binding.buttonDone.text = if (show) {
+                    ""
+                } else {
+                    if (viewModel.isInCreateMode()) {
+                        getString(R.string.custom_amounts_add_custom_amount)
+                    } else {
+                        getString(R.string.custom_amounts_save_changes)
+                    }
+                }
             }
             new.customAmountUIModel.takeIfNotEqualTo(old?.customAmountUIModel) {
                 if (binding.customAmountNameText.text.toString() != it.name) {
@@ -234,6 +228,11 @@ class CustomAmountsFragment : BaseFragment(R.layout.dialog_custom_amounts) {
                     PERCENTAGE_CUSTOM_AMOUNT -> {
                         binding.updatedAmount.text = viewModel.currentPrice.toString()
                     }
+                }
+            }
+            if (arguments.customAmountUIModel.type == FIXED_CUSTOM_AMOUNT) {
+                new.currencySymbol?.let { symbol ->
+                    binding.editPrice.orderCurrency = symbol.value
                 }
             }
         }

@@ -3,6 +3,9 @@ package com.woocommerce.android.ui.sitepicker
 import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.annotation.VisibleForTesting
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -23,10 +26,12 @@ import com.woocommerce.android.ui.login.UnifiedLoginTracker
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToAccountMismatchScreen
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToAddStoreEvent
-import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToWPComWebView
+import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToAuthenticatedWebView
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.Header
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.NonWooSiteUiModel
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.WooSiteUiModel
+import com.woocommerce.android.ui.sitepicker.sitevisibility.GetWooVisibleSites
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -63,7 +68,8 @@ class SitePickerViewModel @Inject constructor(
     private val unifiedLoginTracker: UnifiedLoginTracker,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val userEligibilityFetcher: UserEligibilityFetcher,
-    private val experimentTracker: ExperimentTracker
+    private val experimentTracker: ExperimentTracker,
+    private val getWooVisibleSites: GetWooVisibleSites
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val WOOCOMMERCE_INSTALLATION_URL = "https://wordpress.com/plugins/woocommerce/"
@@ -87,6 +93,9 @@ class SitePickerViewModel @Inject constructor(
     val sites: LiveData<List<SitesListItem>> = _sites
 
     private val selectedSiteId: MutableLiveData<Int> = savedState.getLiveData("selected-site-id")
+
+    private val _isWooUpgradeDialogVisible: MutableState<Boolean> by lazy { mutableStateOf(false) }
+    val isWooUpgradeDialogVisible: State<Boolean> = _isWooUpgradeDialogVisible
 
     private var loginSiteAddress: String?
         get() = savedState["key"] ?: appPrefsWrapper.getLoginSiteAddress()
@@ -197,7 +206,7 @@ class SitePickerViewModel @Inject constructor(
         )
     }
 
-    private fun onSitesLoaded(sites: List<SiteModel>) {
+    private suspend fun onSitesLoaded(sites: List<SiteModel>) {
         if (sites.isEmpty()) {
             when {
                 loginSiteAddress != null -> showAccountMismatchScreen(loginSiteAddress!!)
@@ -221,28 +230,23 @@ class SitePickerViewModel @Inject constructor(
             )
         }
         val selectedSiteId = selectedSiteId.value ?: wooSites.getOrNull(0)?.id
-        _sites.value = buildList {
-            if (wooSites.isNotEmpty()) {
-                add(Header(R.string.login_pick_store))
-                addAll(
-                    wooSites.map {
-                        WooSiteUiModel(
-                            site = it,
-                            isSelected = selectedSiteId == it.id
-                        )
-                    }
-                )
-            }
-            if (navArgs.openedFromLogin && nonWooSites.isNotEmpty()) {
-                add(Header(R.string.login_non_woo_stores_label))
-                addAll(nonWooSites.map { NonWooSiteUiModel(it) })
-            }
+        val isSelectedSiteVisible = getWooVisibleSites().any { it.id == selectedSiteId }
+        _sites.value = buildSitesList(wooSites, selectedSiteId, nonWooSites)
+
+        val isEditListEnabled = FeatureFlag.HIDE_SITES_FROM_SITE_PICKER.isEnabled() &&
+            !navArgs.openedFromLogin &&
+            wooSites.size > 1
+        if (isEditListEnabled && sitePickerViewState.editStoreListEnabled.not()) {
+            analyticsTrackerWrapper.track(stat = AnalyticsEvent.SITE_PICKER_EDIT_BUTTON_SHOWN)
         }
+
         sitePickerViewState = sitePickerViewState.copy(
             hasConnectedStores = sites.isNotEmpty(),
             isPrimaryBtnVisible = wooSites.isNotEmpty(),
+            isPrimaryBtnEnabled = isSelectedSiteVisible,
             isNoStoresViewVisible = false,
-            currentSitePickerState = SitePickerState.StoreListState
+            currentSitePickerState = SitePickerState.StoreListState,
+            editStoreListEnabled = isEditListEnabled
         )
         loginSiteAddress?.let {
             processLoginSiteAddress(it)
@@ -251,6 +255,34 @@ class SitePickerViewModel @Inject constructor(
         if (navArgs.openedFromLogin && wooSites.size == 1) {
             onSiteSelected(wooSites.first())
             onContinueButtonClick(isAutoLogin = true)
+        }
+    }
+
+    private suspend fun buildSitesList(
+        wooSites: List<SiteModel>,
+        selectedSiteId: Int?,
+        nonWooSites: List<SiteModel>
+    ): List<SitesListItem> = buildList {
+        if (wooSites.isNotEmpty()) {
+            val wooVisibleSites = getWooVisibleSites()
+            val numberOfHiddenSites = wooSites.size - wooVisibleSites.size
+            val string = when (numberOfHiddenSites) {
+                0 -> string.login_pick_store
+                else -> string.site_picker_select_store_list_header_with_hidden_sites
+            }
+            add(Header(string, numberOfHiddenSites))
+            addAll(
+                wooVisibleSites.map {
+                    WooSiteUiModel(
+                        site = it,
+                        isSelected = selectedSiteId == it.id
+                    )
+                }
+            )
+        }
+        if (navArgs.openedFromLogin && nonWooSites.isNotEmpty()) {
+            add(Header(string.login_non_woo_stores_label))
+            addAll(nonWooSites.map { NonWooSiteUiModel(it) })
         }
     }
 
@@ -388,6 +420,7 @@ class SitePickerViewModel @Inject constructor(
             }
         }
         updatedSites?.let { _sites.value = it }
+        sitePickerViewState = sitePickerViewState.copy(isPrimaryBtnEnabled = true)
     }
 
     fun onNonWooSiteSelected(siteModel: SiteModel) {
@@ -506,7 +539,7 @@ class SitePickerViewModel @Inject constructor(
 
                         else -> {
                             sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = false)
-                            triggerEvent(SitePickerEvent.ShowWooUpgradeDialogEvent)
+                            _isWooUpgradeDialogVisible.value = true
                         }
                     }
                 }
@@ -552,7 +585,7 @@ class SitePickerViewModel @Inject constructor(
     fun onInstallWooClicked() {
         loginSiteAddress?.let {
             triggerEvent(
-                NavigateToWPComWebView(
+                NavigateToAuthenticatedWebView(
                     url = "$WOOCOMMERCE_INSTALLATION_URL${UrlUtils.removeScheme(it)}",
                     validationUrl = WOOCOMMERCE_INSTALLATION_DONE_URL,
                     title = resourceProvider.getString(string.login_install_woo)
@@ -648,6 +681,16 @@ class SitePickerViewModel @Inject constructor(
         }
     }
 
+    fun onWooSitesVisibilityUpdated() {
+        launch {
+            onSitesLoaded(repository.getSites())
+        }
+    }
+
+    fun onWooUpgradeDialogDismissed() {
+        _isWooUpgradeDialogVisible.value = false
+    }
+
     @Parcelize
     data class SitePickerViewState(
         val userInfo: UserInfo? = null,
@@ -663,10 +706,12 @@ class SitePickerViewModel @Inject constructor(
         val isSkeletonViewVisible: Boolean = false,
         val isProgressDiaLogVisible: Boolean = false,
         val isPrimaryBtnVisible: Boolean = false,
+        val isPrimaryBtnEnabled: Boolean = true,
         val isSecondaryBtnVisible: Boolean = false,
         val isNoStoresBtnVisible: Boolean = false,
         val showCloseAccountMenuItem: Boolean = false,
-        val currentSitePickerState: SitePickerState = SitePickerState.StoreListState
+        val currentSitePickerState: SitePickerState = SitePickerState.StoreListState,
+        val editStoreListEnabled: Boolean = false
     ) : Parcelable
 
     @Parcelize
@@ -674,7 +719,7 @@ class SitePickerViewModel @Inject constructor(
 
     sealed interface SitesListItem : Parcelable {
         @Parcelize
-        data class Header(@StringRes val label: Int) : SitesListItem
+        data class Header(@StringRes val label: Int, val numberHiddenSites: Int = 0) : SitesListItem
 
         @Parcelize
         data class WooSiteUiModel(
@@ -704,13 +749,12 @@ class SitePickerViewModel @Inject constructor(
     }
 
     sealed class SitePickerEvent : MultiLiveEvent.Event() {
-        object ShowWooUpgradeDialogEvent : SitePickerEvent()
         object NavigateToMainActivityEvent : SitePickerEvent()
         object NavigateToEmailHelpDialogEvent : SitePickerEvent()
         object NavigateToNewToWooEvent : SitePickerEvent()
         object NavigateToAddStoreEvent : SitePickerEvent()
         data class NavigateToHelpFragmentEvent(val origin: HelpOrigin) : SitePickerEvent()
-        data class NavigateToWPComWebView(
+        data class NavigateToAuthenticatedWebView(
             val url: String,
             val validationUrl: String,
             val title: String? = null

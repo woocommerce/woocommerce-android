@@ -4,7 +4,7 @@ import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
 import com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry
 import com.woocommerce.android.cardreader.connection.ReaderType
-import com.woocommerce.android.cardreader.connection.ReaderType.BuildInReader.CotsDevice
+import com.woocommerce.android.cardreader.connection.ReaderType.BuildInReader.TapToPayDevice
 import com.woocommerce.android.cardreader.connection.ReaderType.ExternalReader.Chipper2X
 import com.woocommerce.android.cardreader.connection.ReaderType.ExternalReader.StripeM2
 import com.woocommerce.android.cardreader.connection.ReaderType.ExternalReader.WisePade3
@@ -34,7 +34,7 @@ class CardReaderManualsSupportedReadersMapper @Inject constructor() {
                     label = string.card_reader_wisepad_3_manual_card_reader,
                     onManualClicked = clickListeners[it]!!
                 )
-                CotsDevice -> null // This is built-in reader, we don't need to show it in the list
+                TapToPayDevice -> null // This is built-in reader, we don't need to show it in the list
                 else -> error("$it doesn't have a manual")
             }
         }

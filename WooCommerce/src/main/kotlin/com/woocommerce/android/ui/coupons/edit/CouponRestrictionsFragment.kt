@@ -8,7 +8,6 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.woocommerce.android.R
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
@@ -17,7 +16,6 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.coupons.edit.CouponRestrictionsViewModel.OpenAllowedEmailsEditor
 import com.woocommerce.android.ui.main.AppBarStatus
-import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.categories.selector.ProductCategorySelectorFragment
 import com.woocommerce.android.ui.products.selector.ProductSelectorFragment
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
@@ -26,7 +24,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class CouponRestrictionsFragment : BaseFragment(), BackPressListener {
+class CouponRestrictionsFragment : BaseFragment() {
     companion object {
         const val RESTRICTIONS_RESULT = "restrictions-result"
     }
@@ -34,9 +32,7 @@ class CouponRestrictionsFragment : BaseFragment(), BackPressListener {
     private val viewModel: CouponRestrictionsViewModel by viewModels()
 
     override val activityAppBarStatus: AppBarStatus
-        get() = AppBarStatus.Visible(
-            navigationIcon = R.drawable.ic_gridicons_cross_24dp
-        )
+        get() = AppBarStatus.Hidden
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return ComposeView(requireContext()).apply {
@@ -85,12 +81,5 @@ class CouponRestrictionsFragment : BaseFragment(), BackPressListener {
         handleResult<Set<Long>>(ProductCategorySelectorFragment.PRODUCT_CATEGORY_SELECTOR_RESULT) {
             viewModel.onExcludedProductCategoriesChanged(it)
         }
-    }
-
-    override fun getFragmentTitle() = getString(R.string.coupon_edit_usage_restrictions)
-
-    override fun onRequestAllowBackPress(): Boolean {
-        viewModel.onBackPressed()
-        return false
     }
 }

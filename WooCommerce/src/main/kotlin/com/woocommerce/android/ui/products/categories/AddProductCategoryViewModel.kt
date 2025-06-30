@@ -220,7 +220,7 @@ class AddProductCategoryViewModel @Inject constructor(
 
     fun getSelectedParentId() = addProductCategoryViewState.selectedParentId ?: 0L
 
-    fun getSelectedParentCategoryName(): String? =
+    suspend fun getSelectedParentCategoryName(): String? =
         productCategoriesRepository.getProductCategoryByRemoteId(getSelectedParentId())?.name
 
     /**

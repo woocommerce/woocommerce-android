@@ -1,6 +1,50 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 22.7
+This update makes managing your store even smoother! We’ve refreshed the order filtering UI, made the POS easier to access via the tab bar, and added barcode support to set SKU and Unique ID fields—plus fixed a bug so you can now clear those fields when needed.
+
+## 22.6
+This release brings smoother order creation, better UI on tablets, and enhanced accessibility. POS now supports HID barcode scanners, sends detailed receipts, and checks feature availability for WooCommerce 10.0+. We've also improved refunds, payments UI, and large screen support.
+
+## 22.5
+We've enhanced your WooCommerce experience with this update! Enjoy smoother order creation with our improved custom amount editing form, better tablet navigation with the added toolbar for Variation Attributes, faster product searches with our enhanced POS algorithms, and a new Coupons search feature to help you find discounts quickly. Happy selling!
+
+## 22.4
+This update brings product search and coupon support to Woo POS, making in-person selling smoother than ever. We've also polished the coupon creation flow and improved the "Custom amount" UI. Plus, a pesky crash caused by malformed tax data is now fixed for a more stable experience.
+
+## 22.3
+We've streamlined the WooCommerce mobile app! Product types are now seamlessly integrated into the POS menu. This updated design makes managing product information during checkout simple and intuitive.
+
+## 22.2
+We've made important improvements in this update! Crashes related to currency formatting, the "Add custom amount" screen, and the Jetpack Installation screen have all been resolved for a smoother and more reliable experience. Enjoy the enhanced stability in your WooCommerce mobile app!
+
+## 22.1
+This update brings several improvements to the WooCommerce app, including the removal of the "Collect Payment" flow, replaced by a custom order creation process. We've enhanced the display of disabled products in completed orders, fixed crashes in POS and custom amount dialogs, and improved the visibility of order count badges. The Woo upgrade dialog has been redesigned, and currency codes now appear in the Custom Amounts screen.
+
+## 22.0
+We've streamlined your experience with improved Jetpack integration for easier setup. Payment processing now includes low battery alerts and better handling of minimum transaction amounts. We've enhanced order management by fixing redundant network requests and improving printing instructions visibility. Dark mode icon colors on notification banners are fixed, and payment status accessibility in POS is boosted. Tablet users will enjoy smoother animations during payment collection.
+
+## 21.9
+We’ve squashed a pesky bug that could cause a crash when adding a new payment card in the Blaze campaign form. This update ensures a smoother and more reliable experience—enjoy hassle-free payments with WooCommerce! 🚀
+
+## 21.8
+Our latest update brings a smoother WooCommerce experience! The Dashboard now adapts beautifully to tablets, and accessibility in in-person payments has been improved. We've also fixed currency mismatches in order editing and made product selection more flexible. Plus, enjoy better stability, refined UI elements, and a seamless experience when accessing Analytics reports. Update now! 🚀
+
+## 21.7
+We've improved WooCommerce app! This time we've fixed several bugs and focused on improving user interface. Keep your feedback falling in; it helps us figure how to improve Woo for you. Happy selling!
+
+## 21.6
+Experience a smoother WooCommerce app with enhanced tablet and landscape support, a fresh new look aligned with our branding, and faster image loading. UK users can now enjoy POS access, retry failed image uploads effortlessly, and tag product cover photos with ease. Update now for these improvements!
+
+## 21.5
+Get ready for a smoother experience! We’ve optimized receipt scaling, added Puerto Rico for in-person payments, and improved Blaze Campaigns display. Enjoy faster product gallery loading, better bulk order updates, and real-time image upload indicators. Plus, WooPayments onboarding is now easier than ever!
+
+## 21.4
+This update brings several improvements to the WooCommerce mobile app. Dashboard menus now adapt better to larger fonts, and we've resolved layout issues in Settings. You'll also experience fewer crashes, with fixes for order details, plugin activation, and refunds. Merchants can now bulk update order statuses, barcode scanning is more reliable, and accessing plugin updates is quicker than ever. Additionally, sites can now be hidden from the site picker.
+
+## 21.3
+In this update, we've improved the WooCommerce app with several fixes and enhancements. The "One-time shipping" label now correctly matches its availability in Product Subscriptions, and issues with product conversion have been resolved. We've also streamlined the card reader payment flow for faster transactions, fixed a barcode scanner crash, and improved login error handling. Plus, if your site has no products, the Blaze Campaign screen now offers an easy way to create one.
 
 ## 21.2
 Seamless updates are here! Smoother Jetpack activation with new account creation. Say goodbye to bugs: order refresh, shipping edits, and receipt fetch issues are fixed. We've renamed Deposits to Payouts and improved media uploads for Jetpack sites. Update now for a better WooCommerce experience!

@@ -17,6 +17,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -80,7 +81,6 @@ fun JetpackActivationMainScreen(viewModel: JetpackActivationMainViewModel) {
     }
 }
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun JetpackActivationMainScreen(
     viewState: JetpackActivationMainViewModel.ViewState,
@@ -101,6 +101,7 @@ fun JetpackActivationMainScreen(
                 .padding(paddingValues)
                 .padding(dimensionResource(id = R.dimen.major_100))
                 .verticalScroll(rememberScrollState())
+                .height(IntrinsicSize.Max)
         ) {
             JetpackToWooHeader(isError = viewState is JetpackActivationMainViewModel.ViewState.ErrorViewState)
 

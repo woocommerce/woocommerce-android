@@ -115,6 +115,12 @@ open class MultiLiveEvent<T : Event> : MutableLiveData<T>() {
         }
 
         data class ShowActionSnackbar(
+            @StringRes val message: Int,
+            @StringRes val actionText: Int,
+            val action: View.OnClickListener
+        ) : Event()
+
+        data class ShowActionStringSnackbar(
             val message: String,
             val actionText: String,
             val action: View.OnClickListener
@@ -128,6 +134,8 @@ open class MultiLiveEvent<T : Event> : MutableLiveData<T>() {
         data class NavigateToHelpScreen(val origin: HelpOrigin) : Event()
 
         data class ExitWithResult<out T>(val data: T, val key: String? = null) : Event()
+
+        data class LaunchUrlInAuthenticatedWebView(val url: String) : Event()
 
         data class LaunchUrlInChromeTab(val url: String) : Event()
 

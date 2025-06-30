@@ -4,34 +4,89 @@ import android.os.Parcelable
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PackageType
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.datasource.CarrierType
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.datasource.PackageDAO
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class PackageData(
+    val id: String,
     val name: String,
     val dimensions: String,
+    val weight: String,
     val isSelected: Boolean,
-    val isLetter: Boolean
+    val isLetter: Boolean,
+    val isStarred: Boolean = false,
+    val isPredefined: Boolean = false,
+    val dimensionUnit: String = "cm",
+    val weightUnit: String = "kg",
+    val groupName: String? = null
 ) : Parcelable {
+    @IgnoredOnParcel
+    val length: String
+
+    @IgnoredOnParcel
+    val width: String
+
+    @IgnoredOnParcel
+    val height: String
+
+    init {
+        val dimensionList = dimensions.split("x")
+        length = dimensionList.getOrNull(0).orEmpty().trim()
+        width = dimensionList.getOrNull(1).orEmpty().trim()
+        height = dimensionList.getOrNull(2).orEmpty().trim()
+    }
+
     val descriptionResId: Int
         get() = when (isLetter) {
             true -> R.string.woo_shipping_labels_package_creation_envelope_type
             false -> R.string.woo_shipping_labels_package_creation_box_type
         }
-}
 
-@Parcelize
-data class PredefinedPackage(
-    val boxWeight: Double,
-    val isFlatRate: Boolean,
-    val id: String,
-    val name: String,
-    val dimensions: String,
-    val maxWeight: Double,
-    val isLetter: Boolean,
-    val groupId: String,
-    val canShipInternational: Boolean
-) : Parcelable
+    val dimensionForDisplay
+        get() = "$dimensions $dimensionUnit"
+
+    val weightForDisplay
+        get() = "$weight $weightUnit"
+
+    companion object {
+        val EMPTY = PackageData(
+            id = "",
+            name = "",
+            dimensions = "",
+            weight = "",
+            isSelected = false,
+            isLetter = false,
+            groupName = null
+        )
+
+        /**
+         * Default height when missing from the package dimensions.
+         * TODO confirm this value when WOOSHIP-1449 is done.
+         */
+        const val DEFAULT_HEIGHT = 5.0
+
+        fun fromPackageDAO(
+            dao: PackageDAO,
+            isSelected: Boolean = false,
+            isPredefined: Boolean = true
+        ): PackageData = PackageData(
+            id = dao.id,
+            name = dao.name,
+            dimensions = dao.dimensions,
+            weight = dao.weight,
+            isSelected = isSelected,
+            isPredefined = isPredefined,
+            isLetter = dao.isLetter,
+            dimensionUnit = dao.dimensionUnit,
+            weightUnit = dao.weightUnit,
+            groupName = dao.groupName,
+            isStarred = dao.saved
+        )
+    }
+}
 
 @Parcelize
 data class CustomPackageCreationData(
@@ -40,6 +95,7 @@ data class CustomPackageCreationData(
     val width: String,
     val height: String,
     val saveAsTemplate: Boolean,
+    val weight: String? = null,
     val name: String? = null
 ) : Parcelable {
     val isValid: Boolean
@@ -52,14 +108,18 @@ data class CustomPackageCreationData(
         get() {
             if (saveAsTemplate.not()) return true
 
-            return name.isNotNullOrEmpty()
+            return name.isNotNullOrEmpty() && weight.isNotNullOrEmpty()
         }
 
-    fun toPackageData(dimensionUnit: String = "cm") = PackageData(
-        name = "",
-        dimensions = "$length x $width x $height $dimensionUnit",
+    fun toPackageData(dimensionUnit: String) = PackageData(
+        id = "custom_package",
+        name = name.orEmpty(),
+        dimensions = "$length x $width x $height",
+        weight = weight.orEmpty(),
         isSelected = true,
-        isLetter = type == PackageType.ENVELOPE
+        isLetter = type == PackageType.ENVELOPE,
+        dimensionUnit = dimensionUnit,
+        isPredefined = saveAsTemplate
     )
 
     companion object {
@@ -68,6 +128,7 @@ data class CustomPackageCreationData(
             length = "",
             width = "",
             height = "",
+            weight = "",
             saveAsTemplate = false
         )
     }
@@ -86,38 +147,43 @@ sealed class Carrier(
     val logoRes: Int? = null,
 ) : Parcelable {
     data object USPS : Carrier(
-        id = "usps",
+        id = CarrierType.USPS.id,
         name = "USPS",
         logoRes = R.drawable.usps_logo
     )
 
     data object DHL : Carrier(
-        id = "dhl",
+        id = CarrierType.DHL.id,
         name = "DHL",
         logoRes = R.drawable.dhl_logo
+    )
+
+    data object UPS : Carrier(
+        id = CarrierType.UPS.id,
+        name = "UPS",
+        logoRes = R.drawable.ups_logo
     )
 }
 
 @Parcelize
 data class StorePredefinedPackages(
-    val carrierPackageSelection: CarrierPackageSelection,
-    val savedPackageSelection: SavedPackageSelection
+    val carrierPackages: Map<Carrier, List<CarrierPackageGroup>>,
+    val savedPackages: List<PackageData>
 ) : Parcelable
 
 @Parcelize
-data class CarrierPackageSelection(
-    val carrierPackages: Map<Carrier, List<CarrierPackageGroup>>
+data class StoreOptionsForPackages(
+    val currencySymbol: String,
+    val dimensionUnit: String,
+    val weightUnit: String,
+    val originCountry: String
 ) : Parcelable {
-    val hasSelection: Boolean
-        get() = carrierPackages.values.flatten().find { group ->
-            group.packages.find { it.isSelected } != null
-        } != null
-}
-
-@Parcelize
-data class SavedPackageSelection(
-    val packages: List<PackageData>
-) : Parcelable {
-    val hasSelection: Boolean
-        get() = packages.find { it.isSelected } != null
+    companion object {
+        val DEFAULT = StoreOptionsForPackages(
+            currencySymbol = "USD",
+            dimensionUnit = "cm",
+            weightUnit = "kg",
+            originCountry = "US"
+        )
+    }
 }

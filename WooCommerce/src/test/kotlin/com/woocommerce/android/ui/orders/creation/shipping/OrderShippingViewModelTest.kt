@@ -21,7 +21,7 @@ class OrderShippingViewModelTest : BaseUnitTest() {
     lateinit var viewModel: OrderShippingViewModel
 
     private val creationArgs
-        get() = OrderShippingFragmentArgs(null)
+        get() = OrderShippingFragmentArgs(null, orderCurrency = "USD")
 
     private val editArgs
         get() = OrderShippingFragmentArgs(
@@ -29,7 +29,8 @@ class OrderShippingViewModelTest : BaseUnitTest() {
                 methodId = "other",
                 total = BigDecimal.TEN,
                 methodTitle = "Shipping"
-            )
+            ),
+            orderCurrency = "USD"
         )
 
     private val getShippingMethodById: GetShippingMethodById = mock()
@@ -55,6 +56,33 @@ class OrderShippingViewModelTest : BaseUnitTest() {
         assertThat(viewState.method).isNull()
         assertThat(viewState.amount).isEqualByComparingTo(BigDecimal.ZERO)
         assertThat(viewModel.isEditFlow).isFalse
+    }
+
+    @Test
+    fun `given this is creation flow, when the screen loads, make sure order currency is populated`() = testBlocking {
+        setup(creationArgs)
+
+        val viewState = viewModel.viewState.first()
+
+        assertThat(viewState).isNotNull
+        assertThat(viewState).isInstanceOf(OrderShippingViewModel.ViewState.ShippingState::class.java)
+        assertThat((viewState as OrderShippingViewModel.ViewState.ShippingState).name).isNull()
+        assertThat(viewState.orderCurrency).isEqualTo("USD")
+    }
+
+    @Test
+    fun `given this is edit flow, when the screen loads, make sure order currency is populated`() = testBlocking {
+        setup(editArgs)
+
+        advanceTimeBy(1001)
+        // When the screen load and
+        val viewState = viewModel.viewState.value
+
+        assertThat(viewState).isNotNull
+        assertThat(viewState).isInstanceOf(OrderShippingViewModel.ViewState.ShippingState::class.java)
+        assertThat((viewState as OrderShippingViewModel.ViewState.ShippingState).name)
+            .isEqualTo(editArgs.currentShippingLine?.methodTitle)
+        assertThat(viewState.orderCurrency).isEqualTo("USD")
     }
 
     @Test

@@ -104,8 +104,7 @@ fun AdDestinationScreen(
 @Composable
 fun AdDestinationProperty(title: String, value: String, onPropertyTapped: () -> Unit) {
     Column(
-        modifier =
-        Modifier
+        modifier = Modifier
             .clickable { onPropertyTapped() }
             .padding(dimensionResource(id = R.dimen.major_100))
             .fillMaxWidth(1f)

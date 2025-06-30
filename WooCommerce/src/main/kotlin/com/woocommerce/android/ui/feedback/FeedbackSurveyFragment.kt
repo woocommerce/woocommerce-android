@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.appbar.MaterialToolbar
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent.SURVEY_SCREEN
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -24,21 +25,28 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FEEDBA
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FEEDBACK_STORE_SETUP_CONTEXT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_ORDER_SHIPPING_LINES_FEEDBACK
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRODUCT_ADDONS_FEEDBACK
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SHIPPING_LABELS_M4_FEEDBACK
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SIMPLE_PAYMENTS_FEEDBACK
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_TAP_TO_PAY_FEEDBACK
 import com.woocommerce.android.databinding.FragmentFeedbackSurveyBinding
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.widgets.CustomProgressDialog
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class FeedbackSurveyFragment : BaseFragment(R.layout.fragment_feedback_survey) {
     companion object {
         const val TAG = "feedback_survey"
         private const val QUERY_PARAMETER_MESSAGE = "msg"
         private const val SURVEY_DONE_QUERY_MESSAGE = "done"
     }
+
+    @Inject
+    lateinit var selectedSite: SelectedSite
+
+    @Inject
+    lateinit var appPrefsWrapper: AppPrefsWrapper
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
@@ -52,11 +60,8 @@ class FeedbackSurveyFragment : BaseFragment(R.layout.fragment_feedback_survey) {
             SurveyType.MAIN -> VALUE_FEEDBACK_GENERAL_CONTEXT
             SurveyType.PRODUCT -> VALUE_FEEDBACK_PRODUCT_M3_CONTEXT
             SurveyType.STORE_ONBOARDING -> VALUE_FEEDBACK_STORE_SETUP_CONTEXT
-            SurveyType.ORDER_CREATION -> VALUE_SIMPLE_PAYMENTS_FEEDBACK
-            SurveyType.SHIPPING_LABELS -> VALUE_SHIPPING_LABELS_M4_FEEDBACK
             SurveyType.ADDONS -> VALUE_PRODUCT_ADDONS_FEEDBACK
             SurveyType.ANALYTICS_HUB -> VALUE_ANALYTICS_HUB_FEEDBACK
-            SurveyType.PAYMENTS_HUB_TAP_TO_PAY -> VALUE_TAP_TO_PAY_FEEDBACK
             SurveyType.ORDER_SHIPPING_LINES -> VALUE_ORDER_SHIPPING_LINES_FEEDBACK
         }
     }
@@ -72,7 +77,7 @@ class FeedbackSurveyFragment : BaseFragment(R.layout.fragment_feedback_survey) {
         configureWebView()
         savedInstanceState?.let {
             binding.webView.restoreState(it)
-        } ?: binding.webView.loadUrl(getSurveyUrlFromArguments())
+        } ?: binding.webView.loadUrl(addCrowdSignalTagsTo(getSurveyUrlFromArguments()))
     }
 
     private fun setupToolbar(toolbar: MaterialToolbar) {
@@ -87,6 +92,19 @@ class FeedbackSurveyFragment : BaseFragment(R.layout.fragment_feedback_survey) {
     }
 
     private fun getSurveyUrlFromArguments(): String = arguments.customUrl ?: arguments.surveyType.url
+
+    private fun addCrowdSignalTagsTo(url: String): String {
+        val siteId = selectedSite.getOrNull()?.siteId
+        val storeId = appPrefsWrapper.getWCStoreID(siteId ?: 0L)
+        val storeUrl = selectedSite.getOrNull()?.url
+
+        return buildString {
+            append(url)
+            if (siteId != null) append("&site-id=$siteId")
+            if (!storeId.isNullOrBlank()) append("&store-id=$storeId")
+            if (!storeUrl.isNullOrBlank()) append("&store-url=$storeUrl")
+        }
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()

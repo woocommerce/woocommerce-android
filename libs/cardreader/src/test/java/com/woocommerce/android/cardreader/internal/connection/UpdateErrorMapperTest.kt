@@ -1,6 +1,6 @@
 package com.woocommerce.android.cardreader.internal.connection
 
-import com.stripe.stripeterminal.external.models.TerminalException
+import com.stripe.stripeterminal.external.models.TerminalErrorCode
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatusErrorType
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -14,7 +14,7 @@ class UpdateErrorMapperTest {
     @Test
     fun `given bluetooth error, when mapping, then failed returns`() {
         // GIVEN
-        val error = TerminalException.TerminalErrorCode.BLUETOOTH_ERROR
+        val error = TerminalErrorCode.BLUETOOTH_ERROR
 
         // WHEN
         val result = mapper.map(error)
@@ -26,7 +26,7 @@ class UpdateErrorMapperTest {
     @Test
     fun `given reader error, when mapping, then reader error returns`() {
         // GIVEN
-        val error = TerminalException.TerminalErrorCode.READER_SOFTWARE_UPDATE_FAILED_READER_ERROR
+        val error = TerminalErrorCode.READER_SOFTWARE_UPDATE_FAILED_READER_ERROR
 
         // WHEN
         val result = mapper.map(error)
@@ -38,7 +38,7 @@ class UpdateErrorMapperTest {
     @Test
     fun `given server error, when mapping, then server error returns`() {
         // GIVEN
-        val error = TerminalException.TerminalErrorCode.READER_SOFTWARE_UPDATE_FAILED_SERVER_ERROR
+        val error = TerminalErrorCode.READER_SOFTWARE_UPDATE_FAILED_SERVER_ERROR
 
         // WHEN
         val result = mapper.map(error)
@@ -52,7 +52,7 @@ class UpdateErrorMapperTest {
         // GIVEN
         val batteryLevel = 0.3f
         whenever(batteryLevelProvider.invoke()).thenReturn(batteryLevel)
-        val error = TerminalException.TerminalErrorCode.READER_SOFTWARE_UPDATE_FAILED_BATTERY_LOW
+        val error = TerminalErrorCode.READER_SOFTWARE_UPDATE_FAILED_BATTERY_LOW
 
         // WHEN
         val result = mapper.map(error)
@@ -64,7 +64,7 @@ class UpdateErrorMapperTest {
     @Test
     fun `given interrupted error, when mapping, then interrupted error returns`() {
         // GIVEN
-        val error = TerminalException.TerminalErrorCode.READER_SOFTWARE_UPDATE_FAILED_INTERRUPTED
+        val error = TerminalErrorCode.READER_SOFTWARE_UPDATE_FAILED_INTERRUPTED
 
         // WHEN
         val result = mapper.map(error)

@@ -14,6 +14,7 @@ import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreatePackageViewModel.PackageType
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingPackageSelectorFragment.Companion.SELECTED_PACKAGE_RESULT
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -40,6 +41,7 @@ class ShippingLabelCreatePackageFragment : BaseFragment(R.layout.fragment_shippi
         viewPager.adapter = adapter
 
         initializeTabs(tabLayout, viewPager)
+        initializePageChangeCallback(viewPager)
         setupObservers(viewModel)
     }
 
@@ -52,6 +54,16 @@ class ShippingLabelCreatePackageFragment : BaseFragment(R.layout.fragment_shippi
         binding.toolbar.setNavigationOnClickListener {
             findNavController().navigateUp()
         }
+        binding.toolbar.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.menu_done -> {
+                    viewModel.onDoneButtonClicked()
+                    true
+                }
+                else -> false
+            }
+        }
+        binding.toolbar.inflateMenu(R.menu.menu_done)
     }
 
     private fun initializeTabs(tabLayout: TabLayout, viewPager: ViewPager2) {
@@ -59,6 +71,14 @@ class ShippingLabelCreatePackageFragment : BaseFragment(R.layout.fragment_shippi
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
             tab.text = tabArray[position]
         }.attach()
+    }
+
+    private fun initializePageChangeCallback(viewPager: ViewPager2) {
+        viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                viewModel.onSelectedPageChanged(PackageType.fromOrdinal(position))
+            }
+        })
     }
 
     private fun setupObservers(viewModel: ShippingLabelCreatePackageViewModel) {

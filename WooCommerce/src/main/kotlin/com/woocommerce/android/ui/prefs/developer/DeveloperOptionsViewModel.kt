@@ -16,6 +16,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -77,11 +78,24 @@ class DeveloperOptionsViewModel @Inject constructor(
             )
         }
 
+    private val apiFakerFlow = flowOf(
+        NonToggleableListItem(
+            icon = R.drawable.ic_globe,
+            iconTint = R.color.color_primary,
+            label = UiString.UiStringText("API Faker"),
+            isEnabled = true,
+            onClick = {
+                triggerEvent(DeveloperOptionsEvents.OpenApiFaker)
+            }
+        )
+    )
+
     val viewState = combine(
         simulatedCardReaderFlow,
         readerUpdateFrequencyFlow,
         interacPaymentEnabledFlow,
-        savedPrivacySettingsOnDialogFlow
+        savedPrivacySettingsOnDialogFlow,
+        apiFakerFlow
     ) { items ->
         DeveloperOptionsViewState(
             rows = items.filterNotNull()
@@ -123,6 +137,8 @@ class DeveloperOptionsViewModel @Inject constructor(
             val options: List<UpdateFrequencyUiModel>,
             var selectedValue: UpdateFrequencyUiModel,
         ) : DeveloperOptionsEvents()
+
+        data object OpenApiFaker : DeveloperOptionsEvents()
     }
 
     data class DeveloperOptionsViewState(

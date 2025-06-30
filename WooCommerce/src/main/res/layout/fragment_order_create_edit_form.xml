@@ -33,8 +33,9 @@
         android:orientation="vertical"
         tools:layout_constraintGuide_percent="0.5"/>
 
-    <androidx.appcompat.widget.Toolbar
+    <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/main_toolbar"
+        style="@style/Widget.Woo.Toolbar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:elevation="@dimen/appbar_elevation"
@@ -180,5 +181,19 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/product_selector_nav_container"
         app:layout_constraintTop_toBottomOf="@id/two_pane_mode_toolbar" />
+
+    <View
+        android:id="@+id/order_update_overlay"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        android:background="@color/order_update_overlay_background"
+        android:clickable="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        app:layout_constraintBottom_toTopOf="@+id/feedback_section"
+        app:layout_constraintEnd_toEndOf="@+id/scrollView"
+        app:layout_constraintStart_toStartOf="@+id/scrollView"
+        app:layout_constraintTop_toBottomOf="@+id/loadingProgress" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

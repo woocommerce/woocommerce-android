@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.model.JetpackStatus
 import com.woocommerce.android.support.help.HelpOrigin.JETPACK_INSTALLATION
 import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainViewModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -41,14 +42,14 @@ class JetpackActivationStartViewModel @Inject constructor(
         JetpackActivationState(
             url = UrlUtils.removeScheme(navArgs.siteUrl),
             faviconUrl = "${navArgs.siteUrl.trimEnd('/')}/favicon.ico",
-            isJetpackInstalled = navArgs.isJetpackInstalled,
+            isJetpackInstalled = navArgs.jetpackStatus.isJetpackInstalled,
             isConnectionDismissed = isConnectionDismissed
         )
     }.asLiveData()
 
     init {
         analyticsTrackerWrapper.track(
-            stat = if (navArgs.isJetpackInstalled) {
+            stat = if (navArgs.jetpackStatus.isJetpackInstalled) {
                 AnalyticsEvent.LOGIN_JETPACK_CONNECTION_ERROR_SHOWN
             } else {
                 AnalyticsEvent.LOGIN_JETPACK_REQUIRED_SCREEN_VIEWED
@@ -88,12 +89,13 @@ class JetpackActivationStartViewModel @Inject constructor(
             isConnectionDismissed.value = false
             triggerEvent(
                 ContinueJetpackConnection(
-                    siteUrl = navArgs.siteUrl
+                    siteUrl = navArgs.siteUrl,
+                    jetpackStatus = navArgs.jetpackStatus
                 )
             )
         } else {
             analyticsTrackerWrapper.track(
-                stat = if (navArgs.isJetpackInstalled) {
+                stat = if (navArgs.jetpackStatus.isJetpackInstalled) {
                     AnalyticsEvent.LOGIN_JETPACK_CONNECT_BUTTON_TAPPED
                 } else {
                     AnalyticsEvent.LOGIN_JETPACK_SETUP_BUTTON_TAPPED
@@ -102,7 +104,7 @@ class JetpackActivationStartViewModel @Inject constructor(
             triggerEvent(
                 NavigateToSiteCredentialsScreen(
                     siteUrl = navArgs.siteUrl,
-                    isJetpackInstalled = navArgs.isJetpackInstalled
+                    jetpackStatus = navArgs.jetpackStatus
                 )
             )
         }
@@ -117,8 +119,11 @@ class JetpackActivationStartViewModel @Inject constructor(
 
     data class NavigateToSiteCredentialsScreen(
         val siteUrl: String,
-        val isJetpackInstalled: Boolean
+        val jetpackStatus: JetpackStatus
     ) : MultiLiveEvent.Event()
 
-    data class ContinueJetpackConnection(val siteUrl: String) : MultiLiveEvent.Event()
+    data class ContinueJetpackConnection(
+        val siteUrl: String,
+        val jetpackStatus: JetpackStatus
+    ) : MultiLiveEvent.Event()
 }

@@ -27,6 +27,7 @@ import com.woocommerce.android.util.WooLog.T.PRODUCTS
 import com.woocommerce.android.util.suspendCoroutineWithTimeout
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
@@ -328,18 +329,18 @@ class ProductDetailRepository @Inject constructor(
         return ProductAggregate(product, subscriptionDetails)
     }
 
-    fun isSkuAvailableLocally(sku: String) = !productStore.geProductExistsBySku(selectedSite.get(), sku)
+    fun isSkuAvailableLocally(sku: String) = runBlocking { !productStore.isProductExists(selectedSite.get(), sku) }
 
-    fun getCachedVariationCount(remoteProductId: Long) =
+    suspend fun getCachedVariationCount(remoteProductId: Long) =
         productStore.getVariationsForProduct(selectedSite.get(), remoteProductId).size
 
     fun getTaxClassesForSite(): List<TaxClass> =
-        taxStore.getTaxClassListForSite(selectedSite.get()).map { it.toAppModel() }
+        runBlocking { taxStore.getTaxClassListForSite(selectedSite.get()).map { it.toAppModel() } }
 
     /**
      * Returns the cached (SQLite) shipping class for the given [remoteShippingClassId]
      */
-    fun getProductShippingClassByRemoteId(remoteShippingClassId: Long) =
+    suspend fun getProductShippingClassByRemoteId(remoteShippingClassId: Long) =
         productStore.getShippingClassByRemoteId(selectedSite.get(), remoteShippingClassId)?.toAppModel()
 
     fun getQuantityRules(remoteProductId: Long): QuantityRules? {

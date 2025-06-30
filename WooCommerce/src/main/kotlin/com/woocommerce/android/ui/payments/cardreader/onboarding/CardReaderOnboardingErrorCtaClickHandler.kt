@@ -53,7 +53,7 @@ class CardReaderOnboardingErrorCtaClickHandler @Inject constructor(
 
             CardReaderOnboardingCTAErrorType.STRIPE_ACCOUNT_OVERDUE_REQUIREMENTS -> {
                 paymentsFlowTracker.trackOnboardingCtaTapped(OnboardingCtaReasonTapped.STRIPE_ACCOUNT_SETUP_TAPPED)
-                buildReactionToOpenWcPaySetup()
+                buildReactionToOpenStripeExtensionSetup()
             }
         }
 
@@ -90,6 +90,11 @@ class CardReaderOnboardingErrorCtaClickHandler @Inject constructor(
         return Reaction.OpenBrowser(url)
     }
 
+    private fun buildReactionToOpenStripeExtensionSetup(): Reaction {
+        val url = selectedSite.get().adminUrlOrDefault.slashJoin(STRIPE_EXTENSION_PAYMENTS_TAP_URL)
+        return Reaction.OpenBrowser(url)
+    }
+
     sealed class Reaction {
         data object Refresh : Reaction()
         data class ShowErrorAndRefresh(val message: String) : Reaction()
@@ -105,7 +110,10 @@ class CardReaderOnboardingErrorCtaClickHandler @Inject constructor(
     companion object {
         private const val WC_PAY_SLUG = "woocommerce-payments"
 
-        private const val PAYMENTS_TAP_URL = "/admin.php?page=wc-admin&path=%2Fpayments%2Foverview"
+        private const val PAYMENTS_TAP_URL = "/admin.php?page=wc-admin&path=%2Fpayments%2Fconnect"
+
+        private const val STRIPE_EXTENSION_PAYMENTS_TAP_URL = "/admin.php?page=wc-settings&tab=checkout&" +
+            "section=stripe&panel=settings"
     }
 }
 

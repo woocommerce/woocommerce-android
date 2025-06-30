@@ -1,6 +1,6 @@
 
 
-<h1 align="center"><img src="docs/images/logo-woocommerce.svg" width="300"><br>for Android</h1>
+<h1 align="center"><img src="https://github.com/user-attachments/assets/00bcaf7b-570b-41cd-9faa-187ed15beb40" width="300"><br>for Android</h1>
 
 <p align="center">A Jetpack-powered mobile app for WooCommerce.</p>
 
@@ -104,6 +104,7 @@ General usage and development questions:
 
 - [Mobile blog](https://mobile.blog)
 - [WooCommerce API Documentation (currently v3)](https://woocommerce.github.io/woocommerce-rest-api-docs/#introduction)
+- [FluxC](https://github.com/wordpress-mobile/WordPress-FluxC-Android) Although the FluxC repository is now archived and its functionality has been merged into this project, it still contains valuable documentation on how to work with the underlying architecture and patterns.
 
 ## 📜 License
 

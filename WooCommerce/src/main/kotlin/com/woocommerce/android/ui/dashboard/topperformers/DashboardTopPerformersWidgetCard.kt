@@ -347,11 +347,11 @@ private fun TopPerformersEmptyView(modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Image(
-            painter = painterResource(id = R.drawable.img_top_performers_empty),
+            painter = painterResource(id = R.drawable.ic_not_found),
             contentDescription = "",
         )
         Text(
-            modifier = Modifier.padding(top = 16.dp),
+            modifier = Modifier.padding(top = 24.dp),
             text = stringResource(id = R.string.dashboard_top_performers_empty),
             style = MaterialTheme.typography.body2,
         )

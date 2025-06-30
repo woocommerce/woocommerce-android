@@ -129,6 +129,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
@@ -598,7 +599,7 @@ class CreateShippingLabelViewModel @Inject constructor(
                     )
                 }
 
-                val weightDimension = wooStore.getProductSettings(site.get())?.weightUnit ?: ""
+                val weightDimension = runBlocking { wooStore.getProductSettings(site.get())?.weightUnit ?: "" }
                 val stringResource = if (data.size == 1) {
                     string.shipping_label_single_package_total_weight
                 } else {

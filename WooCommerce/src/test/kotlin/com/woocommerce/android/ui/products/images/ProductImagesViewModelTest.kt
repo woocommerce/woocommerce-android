@@ -19,6 +19,13 @@ import org.mockito.kotlin.verify
 
 @ExperimentalCoroutinesApi
 class ProductImagesViewModelTest : BaseUnitTest() {
+    companion object {
+        private val DEFAULT_PRODUCT_IMAGES = ProductTestUtils.generateProductImagesList()
+            .mapIndexed { index, image ->
+                image.copy(isCoverImage = index == 0)
+            }
+    }
+
     lateinit var viewModel: ProductImagesViewModel
 
     private val networkStatus: NetworkStatus = mock()
@@ -34,7 +41,7 @@ class ProductImagesViewModelTest : BaseUnitTest() {
         requestCode = 123
     ).toSavedStateHandle()
 
-    private fun initialize(productImages: List<Product.Image> = ProductTestUtils.generateProductImagesList()) {
+    private fun initialize(productImages: List<Product.Image> = DEFAULT_PRODUCT_IMAGES) {
         viewModel = ProductImagesViewModel(
             networkStatus,
             mediaFileUploadHandler,
@@ -73,7 +80,7 @@ class ProductImagesViewModelTest : BaseUnitTest() {
     fun `Trigger exitWithResult event on back button clicked when in browsing state`() {
         initialize()
 
-        val images = ProductTestUtils.generateProductImagesList()
+        val images = DEFAULT_PRODUCT_IMAGES
         viewModel.onDeleteImageConfirmed(images[0])
         viewModel.onNavigateBackButtonClicked()
 
@@ -158,6 +165,17 @@ class ProductImagesViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `When switching to drag mode, clear product image cover`() {
+        initialize()
+
+        viewModel.onGalleryImageDragStarted()
+
+        observeState { state ->
+            assertThat(state.images?.none { it.isCoverImage }).isTrue()
+        }
+    }
+
+    @Test
     fun `Validate drag and drop process on validation button clicked`() {
         val images = ProductTestUtils.generateProductImagesList()
         val imageToRemove = images[3]
@@ -175,6 +193,7 @@ class ProductImagesViewModelTest : BaseUnitTest() {
         observeState { state ->
             assertThat(state.images).doesNotContain(imageToRemove)
             assertThat(state.images).contains(imageToReorder, Index.atIndex(2))
+            assertThat(state.images?.first()?.isCoverImage).isTrue()
         }
     }
 

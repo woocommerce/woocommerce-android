@@ -49,7 +49,7 @@
                     android:layout_width="@dimen/image_minor_100"
                     android:layout_height="@dimen/image_minor_100"
                     android:importantForAccessibility="no"
-                    android:src="@drawable/ic_woo_bubble"
+                    android:src="@drawable/ic_woo"
                     android:layout_marginStart="@dimen/minor_100"/>
 
             </LinearLayout>

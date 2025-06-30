@@ -126,7 +126,8 @@ class LoginSiteCredentialsViewModel @Inject constructor(
 
     fun onContinueClick() = launch {
         loginAnalyticsListener.trackSubmitClicked()
-        if (fetchedSiteId.value != -1) {
+        val site = fetchedSiteId.value.takeIf { it != -1 }?.let { wpApiSiteRepository.getSiteByLocalId(it) }
+        if (site?.username != null) {
             // The login already succeeded, proceed to fetching user info
             fetchUserInfo()
         } else {
@@ -140,6 +141,13 @@ class LoginSiteCredentialsViewModel @Inject constructor(
 
     fun onResetPasswordClick() {
         triggerEvent(ShowResetPasswordScreen(siteAddress))
+    }
+
+    fun onStartWebAuthorizationClick() {
+        launch {
+            errorDialogMessage.value = null
+            fetchSiteForTutorial()
+        }
     }
 
     fun onPasswordTutorialAborted() {
@@ -210,11 +218,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                 when (authenticationError?.errorType) {
                     INVALID_CREDENTIALS -> errorDialogMessage.value = authenticationError.errorMessage
                     else -> {
-                        fetchSiteForTutorial(
-                            username = state.username,
-                            password = state.password,
-                            detectedErrorMessage = authenticationError?.errorMessage
-                        )
+                        fetchSiteForTutorial(detectedErrorMessage = authenticationError?.errorMessage)
                         analyticsTracker.track(AnalyticsEvent.LOGIN_SITE_CREDENTIALS_INVALID_LOGIN_PAGE_DETECTED)
                     }
                 }
@@ -231,17 +235,9 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         loadingMessage.value = 0
     }
 
-    private suspend fun fetchSiteForTutorial(
-        username: String,
-        password: String,
-        detectedErrorMessage: UiString? = null
-    ) {
+    private suspend fun fetchSiteForTutorial(detectedErrorMessage: UiString? = null) {
         loadingMessage.value = R.string.login_site_credentials_fetching_site
-        wpApiSiteRepository.fetchSite(
-            url = siteAddress,
-            username = username,
-            password = password
-        ).fold(
+        wpApiSiteRepository.fetchSite(url = siteAddress).fold(
             onSuccess = { site ->
                 if (site.hasWooCommerce) {
                     fetchedSiteId.value = site.id
@@ -257,7 +253,12 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                             )
                         )
                     } else {
-                        analyticsTracker.track(AnalyticsEvent.APPLICATION_PASSWORDS_AUTHORIZATION_URL_NOT_AVAILABLE)
+                        analyticsTracker.track(
+                            AnalyticsEvent.APPLICATION_PASSWORDS_AUTHORIZATION_URL_NOT_AVAILABLE,
+                            properties = mapOf(
+                                AnalyticsTracker.KEY_SITE_URL to siteAddress
+                            )
+                        )
                         triggerEvent(ShowApplicationPasswordsUnavailableScreen(siteAddress, site.isJetpackConnected))
                     }
                 } else {

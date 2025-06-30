@@ -44,7 +44,8 @@ object OrderCreateEditNavigator {
                 }
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToProductSelectorFragment(
                     selectedItems = target.selectedItems.toTypedArray(),
-                    productSelectorFlow = flow
+                    productSelectorFlow = flow,
+                    orderCurrency = target.orderCurrency
                 )
             }
 
@@ -62,7 +63,8 @@ object OrderCreateEditNavigator {
             is EditShipping -> {
                 OrderCreateEditFormFragmentDirections
                     .actionOrderCreationFragmentToOrderCreateEditUpdateShippingFragment(
-                        target.currentShippingLine
+                        target.currentShippingLine,
+                        target.orderCurrency
                     )
             }
 
@@ -99,11 +101,6 @@ object OrderCreateEditNavigator {
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToAutoTaxRateDetailsFragment(
                     target.state
                 )
-            }
-
-            is OrderCreateEditNavigationTarget.SimplePaymentsMigrationBottomSheet -> {
-                OrderCreateEditFormFragmentDirections
-                    .actionOrderCreationFragmentToSimplePaymentsMigrationBottomSheetFragment()
             }
 
             is OrderCreateEditNavigationTarget.EditDiscount -> {

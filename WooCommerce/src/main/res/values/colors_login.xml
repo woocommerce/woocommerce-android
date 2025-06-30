@@ -3,6 +3,7 @@
     Override colors in the WordPressLoginFlow library in this file.
 -->
 <resources>
-<!--    <color name="login_input_label_static_text_color">@color/color_on_surface_disabled</color>-->
     <color name="login_secondary_button_icon_tint_color">@color/color_on_surface_disabled</color>
+    <color name="login_notification_accent_color">@color/color_primary</color>
+    <color name="login_dialog_neutral_text_button_color">@color/light_colored_button_text_secondary</color>
 </resources>

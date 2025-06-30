@@ -23,11 +23,6 @@ data class NavigateToCardReaderPaymentFlow(
     val cardReaderType: CardReaderType
 ) : MultiLiveEvent.Event()
 
-data class SkipScreenInPosAndNavigateToCardReaderPaymentFlow(
-    val cardReaderFlowParam: CardReaderFlowParam.PaymentOrRefund.Payment,
-    val cardReaderType: CardReaderType
-) : MultiLiveEvent.Event()
-
 data class NavigateToCardReaderRefundFlow(
     val cardReaderFlowParam: CardReaderFlowParam.PaymentOrRefund.Refund,
     val cardReaderType: CardReaderType
@@ -40,11 +35,6 @@ data class NavigateBackToHub(
 data class NavigateToOrderDetails(
     val orderId: Long
 ) : MultiLiveEvent.Event()
-
-sealed class ReturnResultToWooPos : MultiLiveEvent.Event() {
-    data object Success : ReturnResultToWooPos()
-    data object Failure : ReturnResultToWooPos()
-}
 
 data class NavigateToTapToPaySummary(
     val order: Order

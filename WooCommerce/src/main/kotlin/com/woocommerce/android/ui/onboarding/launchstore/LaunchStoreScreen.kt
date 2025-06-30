@@ -29,11 +29,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
-import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
+import com.woocommerce.android.ui.common.webview.WebViewAuthenticator
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.web.WCWebView
+import com.woocommerce.android.ui.compose.component.web.WCWebViewSettings
 import com.woocommerce.android.ui.compose.component.web.WebViewProgressIndicator.Circular
 import com.woocommerce.android.ui.compose.drawShadow
 import com.woocommerce.android.ui.onboarding.launchstore.LaunchStoreViewModel.LaunchStoreState
@@ -55,7 +56,7 @@ fun LaunchStoreScreen(viewModel: LaunchStoreViewModel) {
             LaunchStoreScreen(
                 state = state,
                 userAgent = viewModel.userAgent,
-                authenticator = viewModel.wpComWebViewAuthenticator,
+                authenticator = viewModel.webViewAuthenticator,
                 onLaunchStoreClicked = viewModel::launchStore,
                 onShareStoreUrl = viewModel::shareStoreUrl,
                 onBackToStoreClicked = viewModel::onBackPressed,
@@ -69,10 +70,10 @@ fun LaunchStoreScreen(viewModel: LaunchStoreViewModel) {
 }
 
 @Composable
-fun LaunchStoreScreen(
+private fun LaunchStoreScreen(
     state: LaunchStoreState,
     userAgent: UserAgent,
-    authenticator: WPComWebViewAuthenticator,
+    authenticator: WebViewAuthenticator,
     onLaunchStoreClicked: () -> Unit,
     onShareStoreUrl: () -> Unit,
     onBackToStoreClicked: () -> Unit,
@@ -136,16 +137,18 @@ fun LaunchStoreScreen(
 private fun WebView(
     url: String,
     userAgent: UserAgent,
-    authenticator: WPComWebViewAuthenticator,
+    authenticator: WebViewAuthenticator,
     isReadOnly: Boolean
 ) {
     WCWebView(
         url = url,
         userAgent = userAgent,
-        wpComAuthenticator = authenticator,
+        authenticator = authenticator,
         captureBackPresses = false,
-        loadWithOverviewMode = true,
-        isReadOnly = isReadOnly,
+        settings = WCWebViewSettings(
+            loadWithOverviewMode = true,
+            isReadOnly = isReadOnly
+        ),
         progressIndicator = Circular(
             stringResource(id = string.store_onboarding_launch_store_rendering_preview_label)
         ),
@@ -213,10 +216,10 @@ private fun ActionsFooter(
 
 @Composable
 @SuppressLint("SetJavaScriptEnabled", "ClickableViewAccessibility")
-fun SitePreview(
+private fun SitePreview(
     url: String,
     userAgent: UserAgent,
-    authenticator: WPComWebViewAuthenticator,
+    authenticator: WebViewAuthenticator,
     modifier: Modifier = Modifier
 ) {
     Box(

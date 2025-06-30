@@ -1,10 +1,13 @@
 package com.woocommerce.android.ui.woopos.home
 
+import com.woocommerce.android.ui.woopos.common.composeui.modifier.BarcodeInputDetector
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import dagger.hilt.android.scopes.ActivityRetainedScoped
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import java.math.BigDecimal
 import javax.inject.Inject
 
 @ActivityRetainedScoped
@@ -20,13 +23,73 @@ class WooPosParentToChildrenCommunication @Inject constructor() :
 
 sealed class ParentToChildrenEvent {
     data object BackFromCheckoutToCartClicked : ParentToChildrenEvent()
-    data class ItemClickedInProductSelector(
-        val itemData: WooPosItemsViewModel.ItemClickedData
+    data object CouponsValidationFailed : ParentToChildrenEvent()
+    data object RemoveCouponsClicked : ParentToChildrenEvent()
+    data object RefreshProductList : ParentToChildrenEvent()
+    data class CouponsRemoved(
+        val cartDataList: List<WooPosItemsViewModel.ItemClickedData>
     ) : ParentToChildrenEvent()
+    data class ItemClickedInItemsList(
+        val itemData: WooPosItemsViewModel.ItemClickedData,
+        val eventForTracking: WooPosAnalyticsEvent.Event.ItemAddedToCart?
+    ) : ParentToChildrenEvent()
+    data class BarcodeEvent(
+        val result: BarcodeInputDetector.BarcodeResult
+    ) : ParentToChildrenEvent()
+
     data class CheckoutClicked(
         val itemClickedDataList: List<WooPosItemsViewModel.ItemClickedData>
     ) : ParentToChildrenEvent()
-    data object OrderSuccessfullyPaid : ParentToChildrenEvent()
+
+    data class OrderSuccessfullyPaid(val paymentMethod: PaymentMethod) : ParentToChildrenEvent() {
+        enum class PaymentMethod {
+            CARD,
+            CASH
+        }
+    }
+
+    sealed class SearchEvent : ParentToChildrenEvent() {
+        data class ChangedQuery(val query: String) : SearchEvent()
+        data class RecentSearchSelected(val query: String) : SearchEvent()
+        object Finished : SearchEvent()
+        object Started : SearchEvent()
+    }
+
+    data class OrderCreated(
+        val updatedProducts: List<ProductInfo>,
+        val updatedCoupons: List<CouponInfo>,
+    ) : ParentToChildrenEvent() {
+        sealed class ProductInfo(
+            open val id: Long,
+            open val name: String,
+            open val finalPrice: BigDecimal,
+            open val basePrice: BigDecimal,
+            open val quantity: Float,
+        ) {
+            data class Simple(
+                override val id: Long,
+                override val name: String,
+                override val finalPrice: BigDecimal,
+                override val basePrice: BigDecimal,
+                override val quantity: Float,
+            ) : ProductInfo(id, name, finalPrice, basePrice, quantity)
+
+            data class Variation(
+                override val id: Long,
+                override val name: String,
+                override val finalPrice: BigDecimal,
+                override val basePrice: BigDecimal,
+                override val quantity: Float,
+                val variationId: Long,
+            ) : ProductInfo(id, name, finalPrice, basePrice, quantity)
+        }
+
+        data class CouponInfo(
+            val id: Long,
+            val code: String,
+            val discountAmount: BigDecimal,
+        )
+    }
 }
 
 interface WooPosParentToChildrenEventReceiver {

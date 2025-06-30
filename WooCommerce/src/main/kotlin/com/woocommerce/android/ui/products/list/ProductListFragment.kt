@@ -14,6 +14,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
@@ -38,6 +39,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
+import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.products.AddProductNavigator
 import com.woocommerce.android.ui.products.DefaultProductListItemLookup
 import com.woocommerce.android.ui.products.MutableMultipleSelectionPredicate
@@ -102,6 +104,9 @@ class ProductListFragment :
 
     @Inject
     lateinit var productListToolbar: ProductListToolbarHelper
+
+    @Inject
+    lateinit var mediaFileUploadHandler: MediaFileUploadHandler
 
     private val productsCommunicationViewModel: ProductsCommunicationViewModel by activityViewModels()
 
@@ -174,6 +179,8 @@ class ProductListFragment :
         _productAdapter = ProductListAdapter(
             loadMoreListener = this,
             currencyFormatter = currencyFormatter,
+            mediaFileUploadHandler = mediaFileUploadHandler,
+            coroutineScope = lifecycleScope,
             clickListener = { id, sharedView -> productListViewModel.onOpenProduct(id, sharedView) },
             isProductHighlighted = { productListViewModel.isProductHighlighted(it) }
         )

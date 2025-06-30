@@ -1,9 +1,9 @@
 package com.woocommerce.android.cardreader.internal.payments
 
 import com.stripe.stripeterminal.external.models.PaymentIntent
+import com.stripe.stripeterminal.external.models.TerminalErrorCode
+import com.stripe.stripeterminal.external.models.TerminalErrorCode.DECLINED_BY_READER
 import com.stripe.stripeterminal.external.models.TerminalException
-import com.stripe.stripeterminal.external.models.TerminalException.TerminalErrorCode
-import com.stripe.stripeterminal.external.models.TerminalException.TerminalErrorCode.DECLINED_BY_READER
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
 import com.woocommerce.android.cardreader.internal.CardReaderBaseUnitTest
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.BuiltInReader
@@ -97,7 +97,7 @@ class PaymentErrorMapperTest : CardReaderBaseUnitTest() {
         val result = mapper.mapCapturePaymentError(mock(), CapturePaymentResponse.Error.NetworkError("error message"))
 
         assertThat(result.type).isEqualTo(NoNetwork)
-        assertThat(result.errorMessage).isEqualTo("Capturing payment failed: NetworkError(errorMsg=error message)")
+        assertThat(result.errorMessage).isEqualTo("Capturing payment failed: NetworkError(message=error message)")
     }
 
     @Test
@@ -105,7 +105,7 @@ class PaymentErrorMapperTest : CardReaderBaseUnitTest() {
         val result = mapper.mapCapturePaymentError(mock(), CapturePaymentResponse.Error.GenericError("error message"))
 
         assertThat(result.type).isEqualTo(Generic)
-        assertThat(result.errorMessage).isEqualTo("Capturing payment failed: GenericError(errorMsg=error message)")
+        assertThat(result.errorMessage).isEqualTo("Capturing payment failed: GenericError(message=error message)")
     }
 
     @Test
@@ -113,15 +113,18 @@ class PaymentErrorMapperTest : CardReaderBaseUnitTest() {
         val result = mapper.mapCapturePaymentError(mock(), CapturePaymentResponse.Error.MissingOrder("error message"))
 
         assertThat(result.type).isEqualTo(Generic)
-        assertThat(result.errorMessage).isEqualTo("Capturing payment failed: MissingOrder(errorMsg=error message)")
+        assertThat(result.errorMessage).isEqualTo("Capturing payment failed: MissingOrder(message=error message)")
     }
 
     @Test
     fun `when CAPTURE_ERROR capture payment exception thrown, then NO_NETWORK type returned`() {
-        val result = mapper.mapCapturePaymentError(mock(), CapturePaymentResponse.Error.CaptureError("error message"))
+        val result = mapper.mapCapturePaymentError(
+            mock(),
+            CapturePaymentResponse.Error.CaptureError.Generic("error message")
+        )
 
         assertThat(result.type).isEqualTo(Generic)
-        assertThat(result.errorMessage).isEqualTo("Capturing payment failed: CaptureError(errorMsg=error message)")
+        assertThat(result.errorMessage).isEqualTo("Capturing payment failed: Generic(message=error message)")
     }
 
     @Test
@@ -134,7 +137,7 @@ class PaymentErrorMapperTest : CardReaderBaseUnitTest() {
         )
 
         assertThat(result.type).isEqualTo(Server("error message"))
-        assertThat(result.errorMessage).isEqualTo("Capturing payment failed: ServerError(errorMsg=error message)")
+        assertThat(result.errorMessage).isEqualTo("Capturing payment failed: ServerError(message=error message)")
     }
 
     @Test
@@ -145,7 +148,7 @@ class PaymentErrorMapperTest : CardReaderBaseUnitTest() {
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(DeclinedByBackendError.AmountTooSmall)
+        assertThat(result.type).isInstanceOf(DeclinedByBackendError.AmountTooSmallStripe::class.java)
     }
 
     @Test
@@ -559,7 +562,7 @@ class PaymentErrorMapperTest : CardReaderBaseUnitTest() {
 
     @Test
     fun `given local_mobile_nfc_disabled, when terminal exception thrown, then nfc disabled type returned`() {
-        whenever(terminalException.errorCode).thenReturn(TerminalErrorCode.LOCAL_MOBILE_NFC_DISABLED)
+        whenever(terminalException.errorCode).thenReturn(TerminalErrorCode.TAP_TO_PAY_NFC_DISABLED)
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
@@ -568,7 +571,7 @@ class PaymentErrorMapperTest : CardReaderBaseUnitTest() {
 
     @Test
     fun `given local_mobile_library_not_included, when terminal exception thrown, then invalid app setup returned`() {
-        whenever(terminalException.errorCode).thenReturn(TerminalErrorCode.LOCAL_MOBILE_LIBRARY_NOT_INCLUDED)
+        whenever(terminalException.errorCode).thenReturn(TerminalErrorCode.TAP_TO_PAY_LIBRARY_NOT_INCLUDED)
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
@@ -577,7 +580,7 @@ class PaymentErrorMapperTest : CardReaderBaseUnitTest() {
 
     @Test
     fun `given local_mobile_unsupported_device, when terminal exception thrown, then device unsupported returned`() {
-        whenever(terminalException.errorCode).thenReturn(TerminalErrorCode.LOCAL_MOBILE_UNSUPPORTED_DEVICE)
+        whenever(terminalException.errorCode).thenReturn(TerminalErrorCode.TAP_TO_PAY_UNSUPPORTED_DEVICE)
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
@@ -586,7 +589,7 @@ class PaymentErrorMapperTest : CardReaderBaseUnitTest() {
 
     @Test
     fun `given local_mobile_unsupported_android_version, when terminal exception thrown, then device unsupported`() {
-        whenever(terminalException.errorCode).thenReturn(TerminalErrorCode.LOCAL_MOBILE_UNSUPPORTED_ANDROID_VERSION)
+        whenever(terminalException.errorCode).thenReturn(TerminalErrorCode.TAP_TO_PAY_UNSUPPORTED_ANDROID_VERSION)
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
@@ -595,7 +598,7 @@ class PaymentErrorMapperTest : CardReaderBaseUnitTest() {
 
     @Test
     fun `given local_mobile_device_tampered, when terminal exception thrown, then device unsupported returned`() {
-        whenever(terminalException.errorCode).thenReturn(TerminalErrorCode.LOCAL_MOBILE_DEVICE_TAMPERED)
+        whenever(terminalException.errorCode).thenReturn(TerminalErrorCode.TAP_TO_PAY_DEVICE_TAMPERED)
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
@@ -609,6 +612,42 @@ class PaymentErrorMapperTest : CardReaderBaseUnitTest() {
         val result = mapper.mapTerminalError(mock(), terminalException)
 
         assertThat(result.type).isEqualTo(Canceled)
+    }
+
+    @Test
+    fun `when DECLINED_BY_STRIPE_API with amount_too_small code, then AmountTooSmallStripe type returned`() {
+        whenever(terminalException.errorCode).thenReturn(TerminalErrorCode.DECLINED_BY_STRIPE_API)
+        whenever(terminalException.apiError).thenReturn(mock())
+        whenever(terminalException.apiError?.code).thenReturn("amount_too_small")
+        whenever(terminalException.errorMessage).thenReturn("Amount too small")
+
+        val result = mapper.mapTerminalError(mock(), terminalException)
+
+        assertThat(result.type).isInstanceOf(DeclinedByBackendError.AmountTooSmallStripe::class.java)
+        val amountTooSmallType = result.type as DeclinedByBackendError.AmountTooSmallStripe
+        assertThat(amountTooSmallType.message).isEqualTo("Amount too small")
+    }
+
+    @Test
+    fun `given api error with amount_too_small but different errorCode, then Unknown type returned`() {
+        whenever(terminalException.errorCode).thenReturn(DECLINED_BY_READER)
+
+        val result = mapper.mapTerminalError(mock(), terminalException)
+
+        assertThat(result.type).isEqualTo(Generic)
+    }
+
+    @Test
+    fun `when DECLINED_BY_STRIPE_API with both amount_too_small code and decline code, code takes precedence`() {
+        whenever(terminalException.errorCode).thenReturn(TerminalErrorCode.DECLINED_BY_STRIPE_API)
+        whenever(terminalException.apiError).thenReturn(mock())
+        whenever(terminalException.apiError?.code).thenReturn("amount_too_small")
+        whenever(terminalException.apiError?.declineCode).thenReturn("something_else")
+        whenever(terminalException.errorMessage).thenReturn("Error message")
+
+        val result = mapper.mapTerminalError(mock(), terminalException)
+
+        assertThat(result.type).isInstanceOf(DeclinedByBackendError.AmountTooSmallStripe::class.java)
     }
 
     private fun setupStripeApiCardDeclined(declineCode: String?) {

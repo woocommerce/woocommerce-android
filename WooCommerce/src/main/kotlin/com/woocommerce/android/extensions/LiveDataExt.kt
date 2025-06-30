@@ -70,3 +70,15 @@ fun <T> LiveData<T>.filter(predicate: (T) -> Boolean): LiveData<T> {
     }
     return mediator
 }
+
+fun <T> LiveData<T>.withOldValue(): LiveData<Pair<T?, T>> {
+    val mediator = MediatorLiveData<Pair<T?, T>>()
+    var oldValue: T? = null
+    mediator.addSource(this) { newValue ->
+        if (newValue != null) {
+            mediator.value = Pair(oldValue, newValue)
+            oldValue = newValue
+        }
+    }
+    return mediator
+}

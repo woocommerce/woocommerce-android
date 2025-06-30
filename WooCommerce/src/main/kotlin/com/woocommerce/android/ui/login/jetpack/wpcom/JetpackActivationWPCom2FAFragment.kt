@@ -64,7 +64,7 @@ class JetpackActivationWPCom2FAFragment : BaseFragment() {
         findNavController().navigateSafely(
             JetpackActivationWPCom2FAFragmentDirections
                 .actionJetpackActivationWPCom2FAFragmentToJetpackActivationMainFragment(
-                    isJetpackInstalled = event.isJetpackInstalled,
+                    jetpackStatus = event.jetpackStatus,
                     siteUrl = event.siteUrl
                 )
         )

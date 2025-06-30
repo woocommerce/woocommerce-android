@@ -14,7 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
+import com.woocommerce.android.ui.common.webview.WebViewAuthenticator
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.web.WCWebView
 import com.woocommerce.android.ui.onboarding.aboutyourstore.AboutYourStoreViewModel.ViewState.LoadingState
@@ -25,7 +25,7 @@ import org.wordpress.android.fluxc.network.UserAgent
 fun AboutYourStoreScreen(
     viewModel: AboutYourStoreViewModel,
     userAgent: UserAgent,
-    authenticator: WPComWebViewAuthenticator
+    authenticator: WebViewAuthenticator
 ) {
     viewModel.viewState.observeAsState(LoadingState).value.let { state ->
         Scaffold(topBar = {
@@ -76,13 +76,13 @@ private fun ProgressIndicator(modifier: Modifier) {
 private fun WpAdmin(
     viewState: WebViewState,
     userAgent: UserAgent,
-    authenticator: WPComWebViewAuthenticator?,
+    authenticator: WebViewAuthenticator?,
     modifier: Modifier
 ) {
     WCWebView(
         url = viewState.url,
         userAgent = userAgent,
-        wpComAuthenticator = authenticator,
+        authenticator = authenticator,
         modifier = modifier
     )
 }

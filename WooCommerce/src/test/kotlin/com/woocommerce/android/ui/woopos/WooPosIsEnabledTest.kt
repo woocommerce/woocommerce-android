@@ -9,9 +9,11 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCSettingsModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import kotlin.test.Test
 import kotlin.test.assertFalse
@@ -24,8 +26,9 @@ class WooPosIsEnabledTest : BaseUnitTest() {
     private val isScreenSizeAllowed: WooPosIsScreenSizeAllowed = mock()
     private val isRemoteFeatureFlagEnabled: IsRemoteFeatureFlagEnabled = mock()
     private val getWooCoreVersion: GetWooCorePluginCachedVersion = mock {
-        on { invoke() }.thenReturn("6.6.0")
+        on { invoke() }.thenReturn("9.6.0")
     }
+    private val isRemotelyEnabled: WooPOSIsRemotelyEnabled = mock()
 
     private lateinit var sut: WooPosIsEnabled
 
@@ -44,6 +47,7 @@ class WooPosIsEnabledTest : BaseUnitTest() {
             isScreenSizeAllowed = isScreenSizeAllowed,
             isRemoteFeatureFlagEnabled = isRemoteFeatureFlagEnabled,
             getWooCoreVersion = getWooCoreVersion,
+            isRemotelyEnabled = isRemotelyEnabled
         )
     }
 
@@ -63,6 +67,20 @@ class WooPosIsEnabledTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given null local site settings, when invoked, then fetch remote settings`() = testBlocking {
+        // GIVEN
+        whenever(wooCommerceStore.getSiteSettings(any())).thenReturn(null)
+        val fetchedSettings = buildSiteSettings(countryCode = "US", currencyCode = "USD")
+        whenever(wooCommerceStore.fetchSiteGeneralSettings(any())).thenReturn(WooResult(fetchedSettings))
+
+        // WHEN
+        val result = sut()
+
+        // THEN
+        verify(wooCommerceStore).fetchSiteGeneralSettings(any())
+    }
+
+    @Test
     fun `given unsupported country, when invoked, then return false`() = testBlocking {
         val result = buildSiteSettings(countryCode = "CA", currencyCode = "USD")
         whenever(wooCommerceStore.getSiteSettings(any())).thenReturn(result)
@@ -77,27 +95,114 @@ class WooPosIsEnabledTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given woo version 6_5_0, when invoked, then return false`() = testBlocking {
-        whenever(getWooCoreVersion.invoke()).thenReturn("6.5.0")
-        assertFalse(sut())
-    }
-
-    @Test
-    fun `given woo version 6_6_0, when invoked, then return true`() = testBlocking {
-        whenever(getWooCoreVersion.invoke()).thenReturn("6.6.0")
+    fun `given uk country and pounds, when invoked, then return true`() = testBlocking {
+        val result = buildSiteSettings(countryCode = "GB", currencyCode = "GBP")
+        whenever(wooCommerceStore.getSiteSettings(any())).thenReturn(result)
         assertTrue(sut())
     }
 
     @Test
-    fun `given woo version 6_6_0_1, when invoked, then return true`() = testBlocking {
-        whenever(getWooCoreVersion.invoke()).thenReturn("6.6.0.1")
+    fun `given uk country and usd, when invoked, then return false`() = testBlocking {
+        val result = buildSiteSettings(countryCode = "GB", currencyCode = "USD")
+        whenever(wooCommerceStore.getSiteSettings(any())).thenReturn(result)
+        assertFalse(sut())
+    }
+
+    @Test
+    fun `given us country and pounds, when invoked, then return false`() = testBlocking {
+        val result = buildSiteSettings(countryCode = "US", currencyCode = "GBP")
+        whenever(wooCommerceStore.getSiteSettings(any())).thenReturn(result)
+        assertFalse(sut())
+    }
+
+    @Test
+    fun `given woo version 9_5_0, when invoked, then return false`() = testBlocking {
+        whenever(getWooCoreVersion.invoke()).thenReturn("9.5.0")
+        assertFalse(sut())
+    }
+
+    @Test
+    fun `given woo version 9_6_0, when invoked, then return true`() = testBlocking {
+        whenever(getWooCoreVersion.invoke()).thenReturn("9.6.0")
+        assertTrue(sut())
+    }
+
+    @Test
+    fun `given woo version 9_6_0_1, when invoked, then return true`() = testBlocking {
+        whenever(getWooCoreVersion.invoke()).thenReturn("9.6.0.1")
         assertTrue(sut())
     }
 
     @Test
     fun `given woo version 10_0_1, when invoked, then return true`() = testBlocking {
+        // GIVEN
+        setupPassingConditionsForHigherVersionsCheck()
+        setupPassingConditionsForFeatureSwitchCheck()
+
         whenever(getWooCoreVersion.invoke()).thenReturn("10.0.1")
+
+        // WHEN THEN
         assertTrue(sut())
+    }
+
+    @Test
+    fun `given woo version 10_0_0 and pos switch disabled, when invoked, then return false`() = testBlocking {
+        // GIVEN
+        whenever(getWooCoreVersion.invoke()).thenReturn("10.0.0")
+
+        whenever(
+            isRemotelyEnabled.invoke()
+        ).thenReturn(false)
+
+        setupPassingConditionsForFeatureSwitchCheck()
+
+        // WHEN THEN
+        assertFalse(sut())
+    }
+
+    @Test
+    fun `given woo version 10_0_0 and pos switch enabled, when invoked, then continue to next check`() = testBlocking {
+        // GIVEN
+        whenever(getWooCoreVersion.invoke()).thenReturn("10.0.0")
+
+        whenever(
+            isRemotelyEnabled.invoke()
+        ).thenReturn(true)
+
+        setupPassingConditionsForFeatureSwitchCheck()
+
+        // WHEN THEN
+        assertTrue(sut())
+    }
+
+    @Test
+    fun `given woo version 9_9_0, when invoked, then skip feature switch check`() = testBlocking {
+        // GIVEN
+        whenever(getWooCoreVersion.invoke()).thenReturn("9.9.0")
+        setupPassingConditionsForFeatureSwitchCheck()
+
+        // WHEN THEN
+        assertTrue(sut())
+    }
+
+    private suspend fun setupPassingConditionsForHigherVersionsCheck() {
+        whenever(
+            isRemotelyEnabled.invoke()
+        ).thenReturn(true)
+    }
+
+    private suspend fun setupPassingConditionsForFeatureSwitchCheck() {
+        val mockSite = mock<SiteModel>()
+        whenever(selectedSite.getOrNull()).thenReturn(mockSite)
+
+        whenever(isRemoteFeatureFlagEnabled.invoke(WOO_POS)).thenReturn(true)
+
+        whenever(isScreenSizeAllowed()).thenReturn(true)
+
+        val mockSiteSettings = mock<WCSettingsModel>()
+        whenever(mockSiteSettings.countryCode).thenReturn("US")
+        whenever(mockSiteSettings.currencyCode).thenReturn("USD")
+        whenever(wooCommerceStore.getSiteSettings(any())).thenReturn(mockSiteSettings)
     }
 
     private fun buildSiteSettings(

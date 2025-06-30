@@ -90,7 +90,7 @@ class VariationDetailRepository @Inject constructor(
             }
         }
 
-    private fun getCachedWCVariation(remoteProductId: Long, remoteVariationId: Long): WCProductVariationModel? =
+    private suspend fun getCachedWCVariation(remoteProductId: Long, remoteVariationId: Long): WCProductVariationModel? =
         productStore.getVariationByRemoteId(selectedSite.get(), remoteProductId, remoteVariationId)
 
     suspend fun getQuantityRules(remoteProductId: Long, remoteVariationId: Long): QuantityRules? {

@@ -11,7 +11,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.analytics.IsScreenLargerThanCompactValue
+import com.woocommerce.android.analytics.IsScreenInTwoPaneLayout
 import com.woocommerce.android.analytics.deviceTypeToAnalyticsString
 import com.woocommerce.android.extensions.EXPAND_COLLAPSE_ANIMATION_DURATION_MILLIS
 import com.woocommerce.android.model.Product
@@ -47,6 +47,7 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 @HiltViewModel
+@Suppress("LargeClass")
 class ProductListViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val productRepository: ProductListRepository,
@@ -213,7 +214,7 @@ class ProductListViewModel @Inject constructor(
             analyticsTracker.track(
                 AnalyticsEvent.PRODUCT_LIST_ADD_PRODUCT_BUTTON_TAPPED,
                 mapOf(
-                    AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to IsScreenLargerThanCompactValue(
+                    AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to IsScreenInTwoPaneLayout(
                         isWindowClassLargeThanCompact()
                     ).deviceTypeToAnalyticsString
                 )
@@ -223,12 +224,12 @@ class ProductListViewModel @Inject constructor(
     }
 
     fun onSearchOpened() {
-        _productList.value = emptyList()
         viewState = viewState.copy(
             isSearchActive = true,
             displaySortAndFilterCard = false,
             isAddProductButtonVisible = false
         )
+        _productList.value = emptyList()
     }
 
     fun onSearchClosed() {
@@ -275,21 +276,23 @@ class ProductListViewModel @Inject constructor(
     }
 
     fun reloadProductsFromDb(excludeProductId: Long? = null) {
-        val excludedProductIds: List<Long>? = excludeProductId?.let { id ->
-            ArrayList<Long>().also { it.add(id) }
+        launch {
+            val excludedProductIds: List<Long>? = excludeProductId?.let { id ->
+                ArrayList<Long>().also { it.add(id) }
+            }
+            val products = productRepository.getProductList(productFilterOptions, excludedProductIds.orEmpty())
+
+            resetOpenProductIfNotInList(products)
+
+            _productList.value = products
+
+            viewState = viewState.copy(
+                isEmptyViewVisible = products.isEmpty() && viewState.isSkeletonShown != true,
+                /* if there are no products, hide Add Product button and use the empty view's button instead. */
+                isAddProductButtonVisible = products.isNotEmpty() && !isSelecting(),
+                displaySortAndFilterCard = products.isNotEmpty() || productFilterOptions.isNotEmpty()
+            )
         }
-        val products = productRepository.getProductList(productFilterOptions, excludedProductIds)
-
-        resetOpenProductIfNotInList(products)
-
-        _productList.value = products
-
-        viewState = viewState.copy(
-            isEmptyViewVisible = products.isEmpty() && viewState.isSkeletonShown != true,
-            /* if there are no products, hide Add Product button and use the empty view's button instead. */
-            isAddProductButtonVisible = products.isNotEmpty() && !isSelecting(),
-            displaySortAndFilterCard = products.isNotEmpty() || productFilterOptions.isNotEmpty()
-        )
     }
 
     private fun resetOpenProductIfNotInList(products: List<Product>) {
@@ -449,7 +452,10 @@ class ProductListViewModel @Inject constructor(
                     onOpenProduct(selectedProductIdOnBigScreen!!, null)
                 }
             } else {
-                triggerEvent(ProductListEvent.OpenEmptyProduct)
+                // Opening an empty product causes the search input to lose focus
+                if (!isSearching()) {
+                    triggerEvent(ProductListEvent.OpenEmptyProduct)
+                }
             }
         }
     }
@@ -468,7 +474,7 @@ class ProductListViewModel @Inject constructor(
         analyticsTracker.track(
             AnalyticsEvent.PRODUCT_LIST_PRODUCT_TAPPED,
             mapOf(
-                AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to IsScreenLargerThanCompactValue(
+                AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to IsScreenInTwoPaneLayout(
                     isWindowClassLargeThanCompact()
                 ).deviceTypeToAnalyticsString
             )
@@ -575,6 +581,8 @@ class ProductListViewModel @Inject constructor(
             WCProductStore.ProductSorting.DATE_DESC -> R.string.product_list_sorting_newest_to_oldest_short
             WCProductStore.ProductSorting.TITLE_DESC -> R.string.product_list_sorting_z_to_a_short
             WCProductStore.ProductSorting.TITLE_ASC -> R.string.product_list_sorting_a_to_z_short
+            WCProductStore.ProductSorting.POPULARITY_ASC, WCProductStore.ProductSorting.POPULARITY_DESC ->
+                error("Invalid sorting choice ${productRepository.productSortingChoice}")
         }
     }
 

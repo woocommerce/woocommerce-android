@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,57 +19,109 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel
-import com.woocommerce.android.ui.orders.wooshippinglabels.packages.components.WooSavedPackageListItem
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PageType
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PredefinedPackagesState
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.components.ErrorMessageWithButton
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.components.WooShippingPackageListItem
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.components.WooShippingPackageListItemSkeleton
 
 @Composable
-fun WooShippingSavedPackageScreen(viewModel: WooShippingLabelPackageCreationViewModel) {
+fun WooShippingSavedPackageScreen(
+    viewModel: WooShippingLabelPackageCreationViewModel,
+    onTabChange: (PageType) -> Unit
+) {
     val viewState = viewModel.viewState.observeAsState()
     WooShippingSavedPackageScreen(
-        savedPackages = viewState.value?.savedPackageSelection?.packages.orEmpty(),
-        isAddPackageEnabled = viewState.value?.savedPackageSelection?.hasSelection ?: false,
+        packageState = viewState.value?.predefinedPackagesState ?: PredefinedPackagesState.Waiting,
+        isAddPackageEnabled = viewState.value?.predefinedPackagesData?.hasSavedSelection == true,
         onAddPackageClick = viewModel::onAddSavedPackageClick,
-        onSavedPackageSelected = viewModel::onSavedPackageSelected
-
+        onSavedPackageSelected = viewModel::onSavedPackageSelected,
+        onRetryClick = viewModel::onRetryClick,
+        onTabChange = onTabChange
     )
 }
 
 @Composable
 fun WooShippingSavedPackageScreen(
     modifier: Modifier = Modifier,
-    savedPackages: List<PackageData>,
+    packageState: PredefinedPackagesState,
     isAddPackageEnabled: Boolean,
     onAddPackageClick: () -> Unit,
+    onSavedPackageSelected: (PackageData, Boolean) -> Unit,
+    onRetryClick: () -> Unit,
+    onTabChange: (PageType) -> Unit
+) {
+    Column(modifier = modifier) {
+        Box(modifier = modifier.weight(1f)) {
+            when {
+                packageState is PredefinedPackagesState.Data && packageState.savedPackages.isEmpty() -> EmptyPackages(
+                    modifier = modifier,
+                    R.drawable.ic_boxes,
+                    R.string.woo_shipping_labels_package_creation_empty_saved_message
+                ) { onTabChange(PageType.CUSTOM) }
+
+                packageState is PredefinedPackagesState.Data -> {
+                    WooShippingSavedPackageContent(
+                        modifier = modifier,
+                        savedPackages = packageState.savedPackages,
+                        onSavedPackageSelected = onSavedPackageSelected
+                    )
+                }
+
+                packageState is PredefinedPackagesState.Error -> {
+                    ErrorMessageWithButton(
+                        modifier = modifier,
+                        message = R.string.woo_shipping_labels_package_creation_saved_loading_error,
+                        onRetryClick = onRetryClick
+                    )
+                }
+
+                packageState is PredefinedPackagesState.Waiting -> {
+                    Column(
+                        modifier = modifier
+                            .fillMaxSize()
+                            .padding(16.dp)
+                            .verticalScroll(rememberScrollState())
+                    ) {
+                        WooShippingPackageListItemSkeleton()
+                        WooShippingPackageListItemSkeleton()
+                        WooShippingPackageListItemSkeleton()
+                    }
+                }
+            }
+        }
+        Divider()
+        Button(
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            enabled = isAddPackageEnabled,
+            onClick = onAddPackageClick
+        ) {
+            Text(stringResource(id = R.string.woo_shipping_labels_package_creation_add_package))
+        }
+    }
+}
+
+@Composable
+fun WooShippingSavedPackageContent(
+    modifier: Modifier = Modifier,
+    savedPackages: List<PackageData>,
     onSavedPackageSelected: (PackageData, Boolean) -> Unit
 ) {
     Column(
         modifier = modifier
             .fillMaxSize()
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState())
     ) {
-        Column(
-            modifier = modifier
-                .weight(1f)
-                .padding(16.dp)
-                .verticalScroll(rememberScrollState())
-        ) {
-            savedPackages.forEach { packageData ->
-                WooSavedPackageListItem(
-                    modifier,
-                    packageData,
-                    onSavedPackageSelected
-                )
-            }
-        }
-        Column {
-            Divider()
-            Button(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                enabled = isAddPackageEnabled,
-                onClick = onAddPackageClick
-            ) {
-                Text(stringResource(id = R.string.woo_shipping_labels_package_creation_add_package))
-            }
+        savedPackages.forEach { packageData ->
+            WooShippingPackageListItem(
+                modifier,
+                packageData,
+                onSavedPackageSelected,
+                packageItemSupportsStarring = false
+            )
         }
     }
 }
@@ -78,29 +131,71 @@ fun WooShippingSavedPackageScreen(
 fun WooShippingSavedPackageScreenPreview() {
     WooThemeWithBackground {
         WooShippingSavedPackageScreen(
-            savedPackages = listOf(
-                PackageData(
-                    name = "Small Flat Rate Box",
-                    dimensions = "10 x 10 x 10 cm",
-                    isSelected = true,
-                    isLetter = true
+            packageState = PredefinedPackagesState.Data(
+                storeOptions = StoreOptionsForPackages.DEFAULT,
+                savedPackages = listOf(
+                    PackageData(
+                        name = "Small Flat Rate Box",
+                        dimensions = "10 x 10 x 10 cm",
+                        weight = "10",
+                        isSelected = true,
+                        isLetter = true,
+                        id = "1",
+                    ),
+                    PackageData(
+                        name = "Small Flat Rate Box",
+                        dimensions = "20 x 20 x 20 cm",
+                        weight = "20",
+                        isSelected = false,
+                        isLetter = false,
+                        id = "1",
+                    ),
+                    PackageData(
+                        name = "Small Flat Rate Box",
+                        dimensions = "30 x 30 x 30 cm",
+                        weight = "30",
+                        isSelected = false,
+                        isLetter = false,
+                        id = "1",
+                    )
                 ),
-                PackageData(
-                    name = "Small Flat Rate Box",
-                    dimensions = "20 x 20 x 20 cm",
-                    isSelected = false,
-                    isLetter = false
-                ),
-                PackageData(
-                    name = "Small Flat Rate Box",
-                    dimensions = "30 x 30 x 30 cm",
-                    isSelected = false,
-                    isLetter = false
-                )
+                carrierPackages = emptyMap()
             ),
             isAddPackageEnabled = true,
             onAddPackageClick = {},
-            onSavedPackageSelected = { _, _ -> }
+            onSavedPackageSelected = { _, _ -> },
+            onRetryClick = {},
+            onTabChange = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+fun WooShippingSavedPackageScreenLoadingPreview() {
+    WooThemeWithBackground {
+        WooShippingSavedPackageScreen(
+            packageState = PredefinedPackagesState.Waiting,
+            isAddPackageEnabled = false,
+            onAddPackageClick = {},
+            onSavedPackageSelected = { _, _ -> },
+            onRetryClick = {},
+            onTabChange = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+fun WooShippingSavedPackageScreenErrorPreview() {
+    WooThemeWithBackground {
+        WooShippingSavedPackageScreen(
+            packageState = PredefinedPackagesState.Error,
+            isAddPackageEnabled = false,
+            onAddPackageClick = {},
+            onSavedPackageSelected = { _, _ -> },
+            onRetryClick = {},
+            onTabChange = {}
         )
     }
 }

@@ -93,8 +93,8 @@ class AnalyticsHubFragment : BaseFragment(R.layout.fragment_analytics) {
 
             is AnalyticsViewEvent.OpenUrl -> ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
 
-            is AnalyticsViewEvent.OpenWPComWebView -> findNavController()
-                .navigate(NavGraphMainDirections.actionGlobalWPComWebViewFragment(urlToLoad = event.url))
+            is AnalyticsViewEvent.OpenAuthenticatedWebView -> findNavController()
+                .navigate(NavGraphMainDirections.actionGlobalAuthenticatedWebViewFragment(urlToLoad = event.url))
 
             is AnalyticsViewEvent.OpenDatePicker -> showDateRangePicker(
                 event.fromMillis,

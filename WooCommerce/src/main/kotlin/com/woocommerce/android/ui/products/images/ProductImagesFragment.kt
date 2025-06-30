@@ -24,6 +24,7 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.mediapicker.MediaPickerHelper
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.products.BaseProductEditorFragment
 import com.woocommerce.android.ui.products.ConfirmRemoveProductImageDialog
 import com.woocommerce.android.ui.products.ProductNavigationTarget
@@ -36,14 +37,15 @@ import com.woocommerce.android.ui.products.images.ProductImagesViewModel.ShowIma
 import com.woocommerce.android.ui.products.images.ProductImagesViewModel.ShowStorageChooser
 import com.woocommerce.android.ui.products.images.ProductImagesViewModel.ShowWPMediaPicker
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.UiHelpers.getTextOfUiString
 import com.woocommerce.android.util.setHomeIcon
 import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUiStringSnackbar
 import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import com.woocommerce.android.widgets.WCProductImageGalleryView
 import dagger.hilt.android.AndroidEntryPoint
@@ -154,6 +156,10 @@ class ProductImagesFragment :
             }
         }
 
+        binding.openUploadScreenButton.setOnClickListener {
+            viewModel.openUploadScreen()
+        }
+
         setupTabletSecondPaneToolbar(
             title = getString(R.string.product_images_title),
             onMenuItemSelected = ::onMenuItemSelected,
@@ -194,6 +200,9 @@ class ProductImagesFragment :
                     }
                 }
             }
+            new.hasUploadErrors?.takeIfNotEqualTo(old?.hasUploadErrors) { hasErrors ->
+                binding.openUploadScreenButton.visibility = if (hasErrors) View.VISIBLE else View.GONE
+            }
             new.isDragDropDescriptionVisible?.takeIfNotEqualTo(old?.isDragDropDescriptionVisible) { isVisible ->
                 binding.dragAndDropDescription.isVisible = isVisible
             }
@@ -203,11 +212,7 @@ class ProductImagesFragment :
             when (event) {
                 is Exit -> findNavController().navigateUp()
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is ShowActionSnackbar -> displayProductImageUploadErrorSnackBar(
-                    event.message,
-                    event.actionText,
-                    event.action
-                )
+                is ShowUiStringSnackbar -> displayProductImageUploadErrorSnackBar(event.message)
                 is ProductNavigationTarget -> navigator.navigate(this, event)
                 is ExitWithResult<*> -> navigateBackWithResult(KEY_IMAGES_DIALOG_RESULT, event.data)
                 is ShowDialog -> event.showDialog()
@@ -230,19 +235,11 @@ class ProductImagesFragment :
         ).show()
     }
 
-    private fun displayProductImageUploadErrorSnackBar(
-        message: String,
-        actionText: String,
-        actionListener: View.OnClickListener
-    ) {
+    private fun displayProductImageUploadErrorSnackBar(uiString: UiString) {
         if (imageUploadErrorsSnackbar == null) {
-            imageUploadErrorsSnackbar = uiMessageResolver.getIndefiniteActionSnack(
-                message = message,
-                actionText = actionText,
-                actionListener = actionListener
-            )
+            imageUploadErrorsSnackbar = uiMessageResolver.getUiStringSnack(message = uiString)
         } else {
-            imageUploadErrorsSnackbar?.setText(message)
+            imageUploadErrorsSnackbar?.setText(getTextOfUiString(requireContext(), uiString))
         }
         imageUploadErrorsSnackbar?.show()
     }

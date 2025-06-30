@@ -107,7 +107,7 @@ class NotificationSettingsViewModelTest : BaseUnitTest() {
         }.last()
 
         assertThat(event).matches {
-            it is Event.ShowActionSnackbar &&
+            it is Event.ShowActionStringSnackbar &&
                 it.message == resourceProvider.getString(R.string.cha_ching_sound_succcess_snackbar) &&
                 it.actionText == resourceProvider.getString(R.string.cha_ching_sound_succcess_snackbar_action)
         }
@@ -120,7 +120,7 @@ class NotificationSettingsViewModelTest : BaseUnitTest() {
         val event = viewModel.event.runAndCaptureValues {
             viewModel.onEnableChaChingSoundClicked()
         }.last()
-        (event as Event.ShowActionSnackbar).action.onClick(null)
+        (event as Event.ShowActionStringSnackbar).action.onClick(null)
 
         verify(showTestNotification).invoke(
             title = resourceProvider.getString(R.string.cha_ching_sound_test_notification_title),

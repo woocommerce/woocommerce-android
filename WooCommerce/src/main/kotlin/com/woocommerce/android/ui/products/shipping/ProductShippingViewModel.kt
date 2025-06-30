@@ -99,7 +99,7 @@ class ProductShippingViewModel @Inject constructor(
         }
     }
 
-    fun getShippingClassByRemoteShippingClassId(remoteShippingClassId: Long) =
+    suspend fun getShippingClassByRemoteShippingClassId(remoteShippingClassId: Long) =
         productRepository.getProductShippingClassByRemoteId(remoteShippingClassId)?.name
             ?: shippingData.shippingClassSlug ?: ""
 

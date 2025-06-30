@@ -35,7 +35,7 @@ class OrderCustomerListFragment : BaseFragment() {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
             WooThemeWithBackground {
-                OrderCustomerListScreen(viewModel)
+                OrderCustomerListScreen(viewModel = viewModel, handleInsets = false)
             }
         }
     }

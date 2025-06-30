@@ -30,11 +30,9 @@ import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderStatusOptionsChange
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ObserveProcessingOrdersCountTest : BaseUnitTest() {
-    private val dispatcher = FakeDispatcher { action ->
-        if (action.type == WCOrderAction.FETCH_ORDER_STATUS_OPTIONS) {
-            emitChange(
-                OnOrderStatusOptionsChanged(0)
-            )
+    private val dispatcher = FakeDispatcher().apply {
+        registerActionHandler(WCOrderAction.FETCH_ORDER_STATUS_OPTIONS) {
+            emitChange(OnOrderStatusOptionsChanged(0))
         }
     }
     private val site = SiteModel()

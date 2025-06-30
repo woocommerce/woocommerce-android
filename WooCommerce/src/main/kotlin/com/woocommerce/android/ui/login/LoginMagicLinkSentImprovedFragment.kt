@@ -9,12 +9,15 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.MenuProvider
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentLoginMagicLinkSentImprovedBinding
+import com.woocommerce.android.extensions.serializable
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginListener
+import org.wordpress.android.login.MagicLinkFallbackButton
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -22,21 +25,21 @@ class LoginMagicLinkSentImprovedFragment : Fragment(R.layout.fragment_login_magi
     companion object {
         const val TAG = "login_magic_link_sent_fragment_tag"
         private const val ARG_EMAIL_ADDRESS = "ARG_EMAIL_ADDRESS"
-        private const val ARG_ALLOW_PASSWORD = "ARG_ALLOW_PASSWORD"
+        private const val ARG_FALLBACK_BUTTON: String = "ARG_FALLBACK_BUTTON"
 
-        fun newInstance(email: String?, allowPassword: Boolean = true): LoginMagicLinkSentImprovedFragment {
+        fun newInstance(email: String?, fallbackButton: MagicLinkFallbackButton): LoginMagicLinkSentImprovedFragment {
             val fragment = LoginMagicLinkSentImprovedFragment()
             val args = Bundle()
             args.putString(ARG_EMAIL_ADDRESS, email)
-            args.putBoolean(ARG_ALLOW_PASSWORD, allowPassword)
+            args.putSerializable(ARG_FALLBACK_BUTTON, fallbackButton)
             fragment.arguments = args
             return fragment
         }
     }
 
-    private var mLoginListener: LoginListener? = null
-    private var mEmail: String? = null
-    private var mAllowPassword = false
+    private var loginListener: LoginListener? = null
+    private var email: String? = null
+    private var fallbackButton: MagicLinkFallbackButton = MagicLinkFallbackButton.None
 
     @Inject lateinit var mAnalyticsListener: LoginAnalyticsListener
 
@@ -44,8 +47,8 @@ class LoginMagicLinkSentImprovedFragment : Fragment(R.layout.fragment_login_magi
         super.onCreate(savedInstanceState)
         val args = arguments
         if (args != null) {
-            mEmail = args.getString(ARG_EMAIL_ADDRESS)
-            mAllowPassword = args.getBoolean(ARG_ALLOW_PASSWORD)
+            email = args.getString(ARG_EMAIL_ADDRESS)
+            fallbackButton = args.serializable(ARG_FALLBACK_BUTTON) ?: MagicLinkFallbackButton.None
         }
         savedInstanceState?.let {
             mAnalyticsListener.trackLoginMagicLinkOpenEmailClientViewed()
@@ -55,7 +58,7 @@ class LoginMagicLinkSentImprovedFragment : Fragment(R.layout.fragment_login_magi
     override fun onAttach(context: Context) {
         super.onAttach(context)
         if (activity is LoginListener) {
-            mLoginListener = activity as LoginListener
+            loginListener = activity as LoginListener
         }
     }
 
@@ -68,15 +71,29 @@ class LoginMagicLinkSentImprovedFragment : Fragment(R.layout.fragment_login_magi
 
         requireActivity().addMenuProvider(this, viewLifecycleOwner)
 
-        binding.loginOpenEmailClient.setOnClickListener { mLoginListener?.openEmailClient(true) }
-        with(binding.loginEnterPassword) {
-            visibility = if (mAllowPassword) View.VISIBLE else View.GONE
+        binding.loginOpenEmailClient.setOnClickListener { loginListener?.openEmailClient(true) }
+        with(binding.loginMagicLinkFallbackButton) {
+            text = if (fallbackButton == MagicLinkFallbackButton.Password) {
+                getString(R.string.or_use_password_below_qr_code_scan_option)
+            } else {
+                getString(R.string.login_use_wpcom_username_instead)
+            }
+            isVisible = fallbackButton != MagicLinkFallbackButton.None
             setOnClickListener {
-                mAnalyticsListener.trackLoginWithPasswordClick()
-                mLoginListener?.usePasswordInstead(mEmail)
+                when (fallbackButton) {
+                    MagicLinkFallbackButton.Password -> {
+                        mAnalyticsListener.trackLoginWithPasswordClick()
+                        loginListener?.usePasswordInstead(email)
+                    }
+                    MagicLinkFallbackButton.UsernameAndPassword -> {
+                        mAnalyticsListener.trackLoginWithWpComUsernamePasswordClick()
+                        loginListener?.loginViaWpcomUsernameInstead()
+                    }
+                    MagicLinkFallbackButton.None -> error("This button should not be visible")
+                }
             }
         }
-        binding.email.text = mEmail
+        binding.email.text = email
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -88,7 +105,7 @@ class LoginMagicLinkSentImprovedFragment : Fragment(R.layout.fragment_login_magi
         return when (menuItem.itemId) {
             org.wordpress.android.login.R.id.help -> {
                 mAnalyticsListener.trackShowHelpClick()
-                mLoginListener?.helpMagicLinkSent(mEmail)
+                loginListener?.helpMagicLinkSent(email)
                 true
             }
 
@@ -103,6 +120,6 @@ class LoginMagicLinkSentImprovedFragment : Fragment(R.layout.fragment_login_magi
 
     override fun onDetach() {
         super.onDetach()
-        mLoginListener = null
+        loginListener = null
     }
 }

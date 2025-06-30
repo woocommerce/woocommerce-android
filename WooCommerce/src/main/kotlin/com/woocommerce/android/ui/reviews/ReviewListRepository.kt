@@ -28,6 +28,7 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCTS
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.WCProductReviewModel
 import org.wordpress.android.fluxc.model.notification.NotificationModel.Subkind.STORE_REVIEW
 import org.wordpress.android.fluxc.store.NotificationStore
@@ -97,7 +98,7 @@ class ReviewListRepository @Inject constructor(
                         if (wasFetchReviewsSuccess) {
                             getProductReviewsFromDB().map { it.remoteProductId }
                                 .distinct()
-                                .takeIf { it.isNotEmpty() }?.let { fetchProductsByRemoteId(it) }
+                                .takeIf { it.isNotEmpty() }?.let { fetchProductsByRemoteId(it.map(RemoteId::value)) }
                         }
                         send(FetchReviewsResult.ReviewsFetched(if (wasFetchReviewsSuccess) SUCCESS else ERROR))
                     }
@@ -382,7 +383,7 @@ class ReviewListRepository @Inject constructor(
     private suspend fun getProductReviewsFromDB(productId: Long? = null): List<WCProductReviewModel> {
         return withContext(Dispatchers.IO) {
             productId?.let { productId ->
-                productStore.getProductReviewsForProductAndSiteId(selectedSite.get().id, productId)
+                productStore.getProductReviewsForProductAndSiteId(selectedSite.get(), productId)
             } ?: productStore.getProductReviewsForSite(selectedSite.get())
         }
     }

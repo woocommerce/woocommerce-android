@@ -113,7 +113,6 @@ object AppPrefs {
         UPDATE_SIMULATED_READER_OPTION,
         ENABLE_SIMULATED_INTERAC,
         CUSTOM_DOMAINS_SOURCE,
-        JETPACK_INSTALLATION_FROM_BANNER,
         NOTIFICATIONS_PERMISSION_BAR,
         IS_EU_SHIPPING_NOTICE_DISMISSED,
         HAS_SAVED_PRIVACY_SETTINGS,
@@ -191,9 +190,6 @@ object AppPrefs {
         // Was the IPP feedback survey banner dismissed forever
         IPP_FEEDBACK_SURVEY_BANNER_DISMISSED_FOREVER,
 
-        // Was the Tap To Pay used at least once
-        TTP_WAS_USED_AT_LEAST_ONCE,
-
         // Whether onboarding tasks have been completed or not for a given site
         STORE_ONBOARDING_TASKS_COMPLETED,
 
@@ -211,6 +207,8 @@ object AppPrefs {
         USER_CLICKED_ON_PAYMENTS_MORE_SCREEN,
 
         APPLICATION_STORE_SNAPSHOT_TRACKED_FOR_SITE,
+
+        POS_TAB_VISIBILITY,
     }
 
     fun init(context: Context) {
@@ -907,12 +905,6 @@ object AppPrefs {
 
     fun getCustomDomainsSource() = getString(DeletablePrefKey.CUSTOM_DOMAINS_SOURCE, DomainFlowSource.SETTINGS.name)
 
-    fun setJetpackInstallationIsFromBanner(isFromBanner: Boolean) {
-        setBoolean(DeletablePrefKey.JETPACK_INSTALLATION_FROM_BANNER, isFromBanner)
-    }
-
-    fun getJetpackInstallationIsFromBanner() = getBoolean(DeletablePrefKey.JETPACK_INSTALLATION_FROM_BANNER, false)
-
     fun setWasNotificationsPermissionBarDismissed(source: Boolean) {
         setBoolean(DeletablePrefKey.NOTIFICATIONS_PERMISSION_BAR, source)
     }
@@ -939,13 +931,6 @@ object AppPrefs {
 
     fun setIPPFeedbackBannerDismissedForever(dismissedForever: Boolean) {
         setBoolean(UndeletablePrefKey.IPP_FEEDBACK_SURVEY_BANNER_DISMISSED_FOREVER, dismissedForever)
-    }
-
-    fun isTTPWasUsedAtLeastOnce() =
-        getBoolean(UndeletablePrefKey.TTP_WAS_USED_AT_LEAST_ONCE, false)
-
-    fun setTTPWasUsedAtLeastOnce() {
-        setBoolean(UndeletablePrefKey.TTP_WAS_USED_AT_LEAST_ONCE, true)
     }
 
     fun updateOnboardingCompletedStatus(siteId: Int, completed: Boolean) {
@@ -1191,6 +1176,20 @@ object AppPrefs {
 
     fun getNotificationChannelTypeSuffix(channel: NotificationChannelType): Int? {
         return getInt(PrefKeyString(channel.name), 0).takeIf { it != 0 }
+    }
+
+    fun setPOSTabVisibilityForSite(siteId: Int, visible: Boolean) {
+        setBoolean(
+            key = PrefKeyString("${UndeletablePrefKey.POS_TAB_VISIBILITY}:$siteId"),
+            value = visible
+        )
+    }
+
+    fun isPOSTabVisibleForSite(siteId: Int): Boolean {
+        return getBoolean(
+            key = PrefKeyString("${UndeletablePrefKey.POS_TAB_VISIBILITY}:$siteId"),
+            default = false
+        )
     }
 
     /**

@@ -22,6 +22,11 @@
         <argument
             android:name="screenMode"
             app:argType="com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel$ScreenMode" />
+        <argument
+            android:name="orderCurrency"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
     </dialog>
 
     <fragment
@@ -54,6 +59,11 @@
         <argument
             android:name="productSelectorFlow"
             app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$ProductSelectorFlow" />
+        <argument
+            android:name="orderCurrency"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
         <action
             android:id="@+id/action_productSelectorFragment_to_variationSelectorFragment"
             app:destination="@id/variationSelectorFragment" />

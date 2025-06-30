@@ -10,7 +10,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isFreeTrial
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
+import com.woocommerce.android.ui.common.webview.WebViewAuthenticator
 import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository
 import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.Error
 import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.LaunchStoreError.ALREADY_LAUNCHED
@@ -33,7 +33,7 @@ class LaunchStoreViewModel @Inject constructor(
     private val launchStoreOnboardingRepository: StoreOnboardingRepository,
     private val selectedSite: SelectedSite,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    val wpComWebViewAuthenticator: WPComWebViewAuthenticator,
+    val webViewAuthenticator: WebViewAuthenticator,
     val userAgent: UserAgent
 ) : ScopedViewModel(savedStateHandle), DefaultLifecycleObserver {
 

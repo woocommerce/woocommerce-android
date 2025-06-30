@@ -34,12 +34,10 @@ class JetpackBenefitsDialog : DialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Use fullscreen style for all cases except tablet in landscape mode
         setStyle(STYLE_NO_TITLE, if (isTabletLandscape()) style.Theme_Woo_Dialog else style.Theme_Woo)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        // Specify transition animations
         dialog?.window?.attributes?.windowAnimations = style.Woo_Animations_Dialog
 
         return ComposeView(requireContext()).apply {

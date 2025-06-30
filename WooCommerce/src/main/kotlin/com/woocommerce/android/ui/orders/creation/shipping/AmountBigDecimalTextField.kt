@@ -13,6 +13,7 @@ import java.math.BigDecimal
 @Composable
 fun AmountBigDecimalTextField(
     value: BigDecimal,
+    currency: String? = null,
     onValueChange: (BigDecimal) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -22,6 +23,7 @@ fun AmountBigDecimalTextField(
         factory = { context ->
             // Creates view
             WCMaterialOutlinedCurrencyEditTextView(context).apply {
+                orderCurrency = currency
                 // Sets up listeners for View -> Compose communication
                 supportsEmptyState = false
                 supportsNegativeValues = false

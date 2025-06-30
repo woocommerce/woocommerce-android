@@ -1,1 +1,4 @@
 /WooCommerce/src/androidTest/ @woocommerce/mobile-ui-testing-squad
+
+# Dependabot
+/gradle/libs.versions.toml @woocommerce/android-developers

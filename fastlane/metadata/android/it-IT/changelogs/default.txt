@@ -1,2 +1,0 @@
-21.2:
-Sono arrivati gli aggiornamenti senza soluzione di continuità! Attivazione di Jetpack più fluida con la creazione di un nuovo account. Dimenticati dei bug: i problemi relativi all'aggiornamento ordini, alle modifiche di spedizione e al recupero delle ricevute sono stati risolti. Gli Acconti sono stati rinominati Versamenti e abbiamo migliorato i caricamenti di elementi multimediali per i siti Jetpack. Aggiorna ora per una migliore esperienza WooCommerce.

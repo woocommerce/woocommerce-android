@@ -46,7 +46,8 @@ class OrderNavigator @Inject constructor() {
                 val action = OrderDetailFragmentDirections
                     .actionOrderDetailFragmentToOrderStatusSelectorDialog(
                         currentStatus = target.currentStatus,
-                        orderStatusList = target.orderStatusList
+                        orderStatusList = target.orderStatusList,
+                        positiveButtonLabel = R.string.apply
                     )
                 fragment.findNavController().navigateSafely(action)
             }
@@ -74,11 +75,19 @@ class OrderNavigator @Inject constructor() {
                 fragment.findNavController().navigateSafely(action)
             }
             is RefundShippingLabel -> {
-                val action = OrderDetailFragmentDirections
-                    .actionOrderDetailFragmentToOrderShippingLabelRefundFragment(
-                        orderId = target.remoteOrderId,
-                        shippingLabelId = target.shippingLabelId
-                    )
+                val action = if (target.isRevampWooShippingEnabled) {
+                    OrderDetailFragmentDirections
+                        .actionOrderDetailFragmentToWooShippingLabelRefundRequestFragment(
+                            orderId = target.remoteOrderId,
+                            labelId = target.shippingLabelId
+                        )
+                } else {
+                    OrderDetailFragmentDirections
+                        .actionOrderDetailFragmentToOrderShippingLabelRefundFragment(
+                            orderId = target.remoteOrderId,
+                            shippingLabelId = target.shippingLabelId
+                        )
+                }
                 fragment.findNavController().navigateSafely(action)
             }
             is AddOrderShipmentTracking -> {
@@ -194,7 +203,8 @@ class OrderNavigator @Inject constructor() {
                 (fragment.activity as? MainActivity)?.showOrderCreation(
                     OrderCreateEditViewModel.Mode.Edit(target.orderId),
                     target.giftCard,
-                    target.appliedDiscount
+                    target.appliedDiscount,
+                    target.orderCurrency
                 )
             }
             is OrderNavigationTarget.ShowOrder -> {

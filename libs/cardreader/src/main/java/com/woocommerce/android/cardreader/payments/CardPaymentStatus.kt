@@ -24,9 +24,23 @@ sealed class CardPaymentStatus {
 
         sealed class DeclinedByBackendError : CardPaymentStatusErrorType() {
             /**
-             * The specified amount is less than the minimum amount allowed (50 cents at the moment)
+             * The specified amount is less than the minimum amount allowed
+             * When woocommerce payments plugin used then,
+             * this error is returned by WooPayments api during capture step
              */
-            object AmountTooSmall : DeclinedByBackendError()
+            data class AmountTooSmallWooPayments(
+                val message: String,
+                val minAmountInMicroUnits: Long,
+                val currency: String,
+            ) : DeclinedByBackendError()
+
+            /**
+             * The specified amount is less than the minimum amount allowed
+             * When stripe plugin used then, this error is returned by stripe api during createPaymentIntent step
+             */
+            data class AmountTooSmallStripe(
+                val message: String,
+            ) : DeclinedByBackendError()
 
             /**
              * Declined by stripe api with unknown reason

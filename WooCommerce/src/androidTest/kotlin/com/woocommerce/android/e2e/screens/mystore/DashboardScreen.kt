@@ -14,7 +14,7 @@ import com.woocommerce.android.ui.dashboard.stats.DashboardStatsTestTags
 import org.hamcrest.Matchers
 import org.json.JSONArray
 
-class DashboardScreen : Screen(R.id.my_store_refresh_layout) {
+class DashboardScreen : Screen(R.id.dashboard_container) {
     val stats = StatsComponent()
     val topPerformers = TopPerformersComponent()
 

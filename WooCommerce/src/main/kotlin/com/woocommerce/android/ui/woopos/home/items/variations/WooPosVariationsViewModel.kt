@@ -1,21 +1,30 @@
 package com.woocommerce.android.ui.woopos.home.items.variations
 
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.R
+import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
-import com.woocommerce.android.ui.woopos.home.items.WooPosItem
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
+import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
+import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.home.items.WooPosVariationsViewState
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemsNextPageLoaded
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
+import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -26,10 +35,12 @@ class WooPosVariationsViewModel @Inject constructor(
     private val getProductById: WooPosGetProductById,
     private val variationsDataSource: WooPosVariationsDataSource,
     private val priceFormat: WooPosFormatPrice,
+    private val resourceProvider: ResourceProvider,
+    private val analyticsTracker: WooPosAnalyticsTracker,
 ) : ViewModel() {
 
     private val _viewState =
-        MutableStateFlow<WooPosVariationsViewState>(WooPosVariationsViewState.Loading(withCart = true))
+        MutableStateFlow<WooPosVariationsViewState>(WooPosVariationsViewState.Loading())
     val viewState: StateFlow<WooPosVariationsViewState> = _viewState
         .stateIn(
             viewModelScope,
@@ -37,97 +48,182 @@ class WooPosVariationsViewModel @Inject constructor(
             initialValue = _viewState.value,
         )
 
-    private val _events: MutableSharedFlow<WooPosVariationEvents> = MutableSharedFlow(
-        extraBufferCapacity = 1
-    )
-    val events = _events.asSharedFlow()
-
     private var fetchJob: Job? = null
-    private var loadMoreJob: Job? = null
+    private lateinit var sourceType: WooPosAnalyticsEventConstant.ItemsListSourceType
 
-    fun init(productId: Long) {
-        fetchVariations(productId = productId, withPullToRefresh = false, withCart = true)
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    internal var loadMoreJob: Job? = null
+
+    fun init(
+        productId: Long,
+        sourceType: WooPosAnalyticsEventConstant.ItemsListSourceType
+    ) {
+        this.sourceType = sourceType
+        viewModelScope.launch {
+            variationsDataSource.resetState()
+        }
+        loadVariations(
+            productId = productId,
+            withPullToRefresh = false,
+            forceRefresh = false
+        )
     }
 
-    private fun fetchVariations(productId: Long, withPullToRefresh: Boolean, withCart: Boolean) {
-        _viewState.value = if (withPullToRefresh) {
-            buildProductsReloadingState()
-        } else {
-            WooPosVariationsViewState.Loading(withCart = withCart)
-        }
+    private fun loadVariations(
+        productId: Long,
+        forceRefresh: Boolean,
+        withPullToRefresh: Boolean,
+    ) {
         fetchJob?.cancel()
-
         fetchJob = viewModelScope.launch {
-            val product = getProductById(productId)
+            _viewState.value = if (withPullToRefresh) {
+                buildProductsReloadingState()
+            } else {
+                WooPosVariationsViewState.Loading()
+            }
 
-            val result = variationsDataSource.fetchVariations(productId, forceRefresh = true)
-            if (result.isSuccess) {
-                variationsDataSource.getVariationsFlow(productId).collect { variationList ->
-                    _viewState.value = WooPosVariationsViewState.Content(
-                        items = variationList.filter { it.price != null }
-                            .map {
-                                WooPosItem.Variation(
-                                    id = it.remoteVariationId,
-                                    name = it.getName(product),
-                                    productId = it.remoteProductId,
-                                    price = priceFormat(it.price),
-                                    imageUrl = it.image?.source
-                                )
-                            },
-                        loadingMore = false,
-                        reloadingProductsWithPullToRefresh = false,
+            variationsDataSource.fetchFirstPage(productId, forceRefresh = forceRefresh).collect { result ->
+                when (result) {
+                    is FetchResult.Cached -> {
+                        if (result.data.isNotEmpty()) {
+                            updateViewStateWithVariations(result.data, productId)
+                        }
+                    }
+
+                    is FetchResult.Remote -> {
+                        _viewState.value = when {
+                            result.result.isSuccess -> {
+                                val variations = result.result.getOrThrow()
+                                if (variations.isNotEmpty()) {
+                                    WooPosVariationsViewState.Content(
+                                        items = variations.map {
+                                            WooPosItemSelectionViewState.Product.Variation(
+                                                id = it.remoteVariationId,
+                                                name = it.getNameForPOS(getProductById(productId), resourceProvider),
+                                                productId = it.remoteProductId,
+                                                price = priceFormat(it.price),
+                                                imageUrl = it.image?.source
+                                            )
+                                        },
+                                        paginationState = if (loadMoreJob?.isActive == true) {
+                                            WooPosPaginationState.Loading
+                                        } else {
+                                            WooPosPaginationState.None
+                                        }
+                                    )
+                                } else {
+                                    WooPosVariationsViewState.Empty()
+                                }
+                            }
+
+                            else -> WooPosVariationsViewState.Error()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private suspend fun updateViewStateWithVariations(variations: List<ProductVariation>, productId: Long) {
+        if (variations.isEmpty()) {
+            _viewState.value = WooPosVariationsViewState.Empty()
+        } else {
+            _viewState.value = WooPosVariationsViewState.Content(
+                items = variations.map {
+                    WooPosItemSelectionViewState.Product.Variation(
+                        id = it.remoteVariationId,
+                        name = it.getNameForPOS(getProductById(productId), resourceProvider),
+                        productId = it.remoteProductId,
+                        price = priceFormat(it.price),
+                        imageUrl = it.image?.source
                     )
                 }
-            } else {
-                _viewState.value = WooPosVariationsViewState.Error()
-            }
+            )
         }
     }
 
     private fun buildProductsReloadingState() =
         when (val state = viewState.value) {
-            is WooPosVariationsViewState.Content -> state.copy(reloadingProductsWithPullToRefresh = true)
-            is WooPosVariationsViewState.Loading -> state.copy(reloadingProductsWithPullToRefresh = true)
-            is WooPosVariationsViewState.Error -> state.copy(reloadingProductsWithPullToRefresh = true)
-            is WooPosVariationsViewState.Empty -> state.copy(reloadingProductsWithPullToRefresh = true)
+            is WooPosVariationsViewState.Content -> state.copy(
+                pullToRefreshState = WooPosPullToRefreshState.Refreshing
+            )
+
+            is WooPosVariationsViewState.Loading -> state.copy(
+                pullToRefreshState = WooPosPullToRefreshState.Refreshing
+            )
+
+            is WooPosVariationsViewState.Error -> state.copy(
+                pullToRefreshState = WooPosPullToRefreshState.Refreshing,
+            )
+
+            is WooPosVariationsViewState.Empty -> state.copy(
+                pullToRefreshState = WooPosPullToRefreshState.Refreshing,
+            )
         }
 
-    fun loadMore(productId: Long) {
+    private fun loadMore(productId: Long, numOfVariations: Int) {
         val currentState = _viewState.value
         if (currentState !is WooPosVariationsViewState.Content) {
             return
         }
-        if (!variationsDataSource.canLoadMore()) {
+
+        if (!variationsDataSource.canLoadMore(numOfVariations)) {
             return
         }
-        _viewState.value = currentState.copy(loadingMore = true)
+
+        _viewState.value = currentState.copy(paginationState = WooPosPaginationState.Loading)
+
         loadMoreJob?.cancel()
         loadMoreJob = viewModelScope.launch {
             val result = variationsDataSource.loadMore(productId)
-            if (result.isSuccess) {
-                Result.success(Unit)
-                if (!variationsDataSource.canLoadMore()) {
-                    _viewState.value = currentState.copy(loadingMore = false)
-                }
+            _viewState.value = if (result.isSuccess) {
+                trackItemsNextPageLoaded()
+                WooPosVariationsViewState.Content(
+                    items = result.getOrThrow().map {
+                        WooPosItemSelectionViewState.Product.Variation(
+                            id = it.remoteVariationId,
+                            name = it.getNameForPOS(getProductById(productId), resourceProvider),
+                            productId = it.remoteProductId,
+                            price = priceFormat(it.price),
+                            imageUrl = it.image?.source
+                        )
+                    }
+                )
             } else {
-                _events.tryEmit(WooPosVariationEvents.PaginationError)
-                _viewState.value = currentState.copy(loadingMore = false)
+                currentState.copy(paginationState = WooPosPaginationState.Error)
             }
         }
+    }
+
+    private suspend fun trackItemsNextPageLoaded() {
+        analyticsTracker.track(
+            ItemsNextPageLoaded(
+                source = WooPosAnalyticsEventConstant.ItemsListSource.VARIATION,
+                sourceType = this.sourceType,
+            )
+        )
     }
 
     fun onUIEvent(event: WooPosVariationsUIEvents) {
         when (event) {
             is WooPosVariationsUIEvents.EndOfItemsListReached -> {
-                onEndOfVariationsListReached(event.productId)
+                onEndOfVariationsListReached(event.productId, event.numOfVariations)
             }
 
             is WooPosVariationsUIEvents.PullToRefreshTriggered -> {
-                fetchVariations(event.productId, withPullToRefresh = true, withCart = false)
+                loadVariations(event.productId, forceRefresh = true, withPullToRefresh = true)
+                viewModelScope.launch {
+                    analyticsTracker.track(
+                        WooPosAnalyticsEvent.Event.PullToRefreshTriggered(
+                            source = WooPosAnalyticsEventConstant.ItemsListSource.VARIATION,
+                            sourceType = sourceType,
+                        )
+                    )
+                }
             }
 
             is WooPosVariationsUIEvents.VariationsLoadingErrorRetryButtonClicked -> {
-                fetchVariations(event.productId, withPullToRefresh = false, withCart = false)
+                loadVariations(event.productId, forceRefresh = true, withPullToRefresh = false)
             }
 
             is WooPosVariationsUIEvents.OnItemClicked -> {
@@ -137,9 +233,15 @@ class WooPosVariationsViewModel @Inject constructor(
     }
 
     private fun onVariationClicked(productId: Long, variationId: Long) {
+        val item = WooPosItemsViewModel.ItemClickedData.Product.Variation(productId, variationId)
         sendEventToParent(
-            ChildToParentEvent.ItemClickedInProductSelector(
-                WooPosItemsViewModel.ItemClickedData.Variation(productId, variationId)
+            ChildToParentEvent.ItemClickedInItemsList(
+                itemData = WooPosItemsViewModel.ItemClickedData.Product.Variation(productId, variationId),
+                eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
+                    item = item,
+                    source = WooPosAnalyticsEventConstant.ItemsListSource.VARIATION,
+                    sourceType = this.sourceType,
+                ),
             )
         )
     }
@@ -148,11 +250,33 @@ class WooPosVariationsViewModel @Inject constructor(
         viewModelScope.launch { fromChildToParentEventSender.sendToParent(event) }
     }
 
-    private fun onEndOfVariationsListReached(productId: Long) {
-        loadMore(productId)
+    private fun onEndOfVariationsListReached(productId: Long, numOfVariations: Int) {
+        loadMore(productId, numOfVariations)
     }
+}
 
-    sealed class WooPosVariationEvents {
-        data object PaginationError : WooPosVariationEvents()
+fun ProductVariation.getNameForPOS(
+    parentProduct: Product? = null,
+    resourceProvider: ResourceProvider,
+): String {
+    return parentProduct?.variationEnabledAttributes?.joinToString(", ") { attribute ->
+        val option = attributes.firstOrNull { it.name == attribute.name }
+        if (option?.option != null) {
+            "${attribute.name}: ${option.option}"
+        } else {
+            resourceProvider.getString(
+                R.string.woopos_variations_any_variation,
+                attribute.name
+            )
+        }
+    } ?: attributes.joinToString(", ") { attribute ->
+        if (attribute.option != null) {
+            "${attribute.name}: ${attribute.option}"
+        } else {
+            resourceProvider.getString(
+                R.string.woopos_variations_any_variation,
+                attribute.name!!
+            )
+        }
     }
 }

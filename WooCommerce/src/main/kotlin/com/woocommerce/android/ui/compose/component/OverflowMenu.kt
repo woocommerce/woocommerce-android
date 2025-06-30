@@ -54,7 +54,6 @@ fun <T> WCOverflowMenu(
         ) {
             items.forEachIndexed { index, item ->
                 DropdownMenuItem(
-                    modifier = Modifier.height(dimensionResource(id = dimen.major_175)),
                     onClick = {
                         showMenu = false
                         onSelected(item)

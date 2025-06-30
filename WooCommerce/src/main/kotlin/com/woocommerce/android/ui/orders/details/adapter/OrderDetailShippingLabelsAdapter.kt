@@ -28,7 +28,8 @@ class OrderDetailShippingLabelsAdapter(
     private val formatCurrencyForDisplay: (BigDecimal) -> String,
     private val productImageMap: ProductImageMap,
     private val listener: OnShippingLabelClickListener,
-    private val productClickListener: OrderProductActionListener
+    private val productClickListener: OrderProductActionListener,
+    private val isRevampWooShippingEnabled: Boolean
 ) : RecyclerView.Adapter<ShippingLabelsViewHolder>() {
     private val viewPool = RecyclerView.RecycledViewPool()
 
@@ -63,6 +64,7 @@ class OrderDetailShippingLabelsAdapter(
             viewPool,
             productImageMap,
             formatCurrencyForDisplay,
+            isRevampWooShippingEnabled,
             listener,
             productClickListener
         )
@@ -74,16 +76,16 @@ class OrderDetailShippingLabelsAdapter(
 
     override fun getItemCount(): Int = shippingLabels.size
 
+    @Suppress("LongParameterList")
     class ShippingLabelsViewHolder(
         private var viewBinding: OrderDetailShippingLabelListItemBinding,
         private val viewPool: RecyclerView.RecycledViewPool,
         private val productImageMap: ProductImageMap,
         private val formatCurrencyForDisplay: (BigDecimal) -> String,
+        private val isRevampWooShippingEnabled: Boolean,
         private val listener: OnShippingLabelClickListener,
         private val productClickListener: OrderProductActionListener
-    ) : RecyclerView.ViewHolder(
-        viewBinding.root
-    ) {
+    ) : RecyclerView.ViewHolder(viewBinding.root) {
         fun bind(shippingLabel: ShippingLabel) {
             // display product list if product list is not empty
             if (shippingLabel.products.isNotEmpty()) {
@@ -189,20 +191,26 @@ class OrderDetailShippingLabelsAdapter(
                 }
             }
 
-            // click on view more details section
-            viewBinding.shippingLabelItemViewMore.setOnClickListener {
-                val isChecked = viewBinding.shippingLabelItemViewMoreButtonImage.rotation == 0F
-                if (isChecked) {
-                    viewBinding.shippingLabelItemMorePanel.expand()
-                    viewBinding.shippingLabelItemViewMoreButtonImage.animate().rotation(180F).setDuration(200).start()
-                    with(viewBinding.shippingLabelItemViewMoreButtonTitle) {
-                        text = context.getString(R.string.orderdetail_shipping_label_item_hide_shipping)
-                    }
-                } else {
-                    viewBinding.shippingLabelItemMorePanel.collapse()
-                    viewBinding.shippingLabelItemViewMoreButtonImage.animate().rotation(0F).setDuration(200).start()
-                    with(viewBinding.shippingLabelItemViewMoreButtonTitle) {
-                        text = context.getString(R.string.orderdetail_shipping_label_item_show_shipping)
+            if (isRevampWooShippingEnabled && shippingLabel.refund != null) {
+                viewBinding.shippingLabelItemViewMore.isVisible = false
+            } else {
+                viewBinding.shippingLabelItemViewMore.isVisible = true
+                // click on view more details section
+                viewBinding.shippingLabelItemViewMore.setOnClickListener {
+                    val isChecked = viewBinding.shippingLabelItemViewMoreButtonImage.rotation == 0F
+                    if (isChecked) {
+                        viewBinding.shippingLabelItemMorePanel.expand()
+                        viewBinding.shippingLabelItemViewMoreButtonImage.animate().rotation(180F).setDuration(200)
+                            .start()
+                        with(viewBinding.shippingLabelItemViewMoreButtonTitle) {
+                            text = context.getString(R.string.orderdetail_shipping_label_item_hide_shipping)
+                        }
+                    } else {
+                        viewBinding.shippingLabelItemMorePanel.collapse()
+                        viewBinding.shippingLabelItemViewMoreButtonImage.animate().rotation(0F).setDuration(200).start()
+                        with(viewBinding.shippingLabelItemViewMoreButtonTitle) {
+                            text = context.getString(R.string.orderdetail_shipping_label_item_show_shipping)
+                        }
                     }
                 }
             }

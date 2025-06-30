@@ -34,7 +34,12 @@ sealed class OrderNavigationTarget : Event() {
     data class ViewRefundedProducts(val orderId: Long) : OrderNavigationTarget()
     data class ViewOrderFulfillInfo(val orderId: Long) : OrderNavigationTarget()
     data class AddOrderNote(val orderId: Long, val orderNumber: String) : OrderNavigationTarget()
-    data class RefundShippingLabel(val remoteOrderId: Long, val shippingLabelId: Long) : OrderNavigationTarget()
+    data class RefundShippingLabel(
+        val remoteOrderId: Long,
+        val shippingLabelId: Long,
+        val isRevampWooShippingEnabled: Boolean
+    ) : OrderNavigationTarget()
+
     data class AddOrderShipmentTracking(
         val orderId: Long,
         val orderTrackingProvider: String,
@@ -66,7 +71,8 @@ sealed class OrderNavigationTarget : Event() {
     data class EditOrder(
         val orderId: Long,
         val giftCard: String? = null,
-        val appliedDiscount: BigDecimal? = null
+        val appliedDiscount: BigDecimal? = null,
+        val orderCurrency: String? = null,
     ) : OrderNavigationTarget()
     data class ShowOrder(val orderId: Long, val allOrderIds: LongArray) : OrderNavigationTarget()
     data class ViewCustomFields(val orderId: Long) : OrderNavigationTarget()

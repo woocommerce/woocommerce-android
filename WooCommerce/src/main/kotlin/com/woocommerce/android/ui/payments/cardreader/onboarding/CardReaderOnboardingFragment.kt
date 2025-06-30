@@ -23,6 +23,7 @@ import com.woocommerce.android.databinding.FragmentCardReaderOnboardingSelectPay
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingStripeBinding
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingUnsupportedBinding
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingWcpayBinding
+import com.woocommerce.android.extensions.adjustActivityTransition
 import com.woocommerce.android.extensions.startHelpActivity
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.base.BaseFragment
@@ -58,8 +59,12 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
                     if (viewModel.isPos) {
-                        // If the user is in POS, we should navigate back skipping everything
                         requireActivity().finish()
+                        requireActivity().adjustActivityTransition(
+                            overrideTransitionOpen = false,
+                            R.anim.woopos_slide_in_left,
+                            R.anim.woopos_slide_out_right
+                        )
                     } else {
                         findNavController().popBackStack()
                     }

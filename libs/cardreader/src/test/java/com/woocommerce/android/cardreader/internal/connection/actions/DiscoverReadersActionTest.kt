@@ -230,7 +230,7 @@ class DiscoverReadersActionTest : CardReaderBaseUnitTest() {
             any()
         )
         assertThat(configCaptor.firstValue).isEqualTo(
-            DiscoveryConfiguration.LocalMobileDiscoveryConfiguration(
+            DiscoveryConfiguration.TapToPayDiscoveryConfiguration(
                 true
             )
         )

@@ -4,6 +4,7 @@ import android.content.res.Configuration
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -20,8 +21,10 @@ import androidx.compose.material.Button
 import androidx.compose.material.ButtonColors
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.ButtonElevation
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
+import androidx.compose.material.LocalContentColor
 import androidx.compose.material.LocalRippleConfiguration
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
@@ -38,6 +41,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -59,7 +63,10 @@ fun WCColoredButton(
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     colors: ButtonColors = ButtonDefaults.buttonColors(
-        contentColor = colorResource(id = R.color.woo_white)
+        contentColor = colorResource(id = R.color.woo_white),
+        backgroundColor = colorResource(id = R.color.primary_colored_button_background),
+        disabledBackgroundColor = MaterialTheme.colors.onSurface.copy(alpha = 0.06f),
+        disabledContentColor = colorResource(id = R.color.color_on_surface_medium)
     ),
     rippleColor: Color = MaterialTheme.colors.primaryVariant,
     elevation: ButtonElevation? = null,
@@ -97,27 +104,46 @@ fun WCColoredButton(
     trailingIcon: @Composable (() -> Unit)? = null,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     enabled: Boolean = true,
+    loading: Boolean = false,
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     colors: ButtonColors = ButtonDefaults.buttonColors(
-        contentColor = colorResource(id = R.color.woo_white)
-    )
+        contentColor = colorResource(id = R.color.woo_white),
+        backgroundColor = colorResource(id = R.color.primary_colored_button_background),
+        disabledBackgroundColor = MaterialTheme.colors.onSurface.copy(alpha = 0.06f),
+        disabledContentColor = colorResource(id = R.color.color_on_surface_medium)
+    ),
 ) {
     WCColoredButton(
-        onClick = onClick,
+        onClick = { if (!loading) onClick() },
         modifier = modifier,
         enabled = enabled,
         contentPadding = contentPadding,
         interactionSource = interactionSource,
         colors = colors
     ) {
-        if (leadingIcon != null) {
-            leadingIcon()
-            Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.minor_100)))
-        }
-        Text(text = text)
-        if (trailingIcon != null) {
-            Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.minor_100)))
-            trailingIcon()
+        Box {
+            if (loading) {
+                CircularProgressIndicator(
+                    color = LocalContentColor.current,
+                    modifier = Modifier
+                        .size(24.dp)
+                        .align(Alignment.Center)
+                )
+            }
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.alpha(if (loading) 0f else 1f)
+            ) {
+                if (leadingIcon != null) {
+                    leadingIcon()
+                    Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.minor_100)))
+                }
+                Text(text = text)
+                if (trailingIcon != null) {
+                    Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.minor_100)))
+                    trailingIcon()
+                }
+            }
         }
     }
 }
@@ -129,7 +155,9 @@ fun WCOutlinedButton(
     enabled: Boolean = true,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
-    colors: ButtonColors = ButtonDefaults.outlinedButtonColors(),
+    colors: ButtonColors = ButtonDefaults.outlinedButtonColors(
+        disabledContentColor = colorResource(id = R.color.color_on_surface_medium)
+    ),
     border: BorderStroke? = ButtonDefaults.outlinedBorder,
     content: @Composable RowScope.() -> Unit
 ) {
@@ -183,6 +211,41 @@ fun WCOutlinedButton(
 }
 
 @Composable
+fun WCRemoveButton(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+    text: String,
+    leadingIcon: @Composable (() -> Unit)? = null,
+    trailingIcon: @Composable (() -> Unit)? = null,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    enabled: Boolean = true,
+    contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
+    colors: ButtonColors = ButtonDefaults.outlinedButtonColors(
+        contentColor = colorResource(id = R.color.woo_red_50),
+    ),
+) {
+    WCOutlinedButton(
+        onClick = onClick,
+        modifier = modifier,
+        enabled = enabled,
+        contentPadding = contentPadding,
+        interactionSource = interactionSource,
+        border = BorderStroke(1.dp, colorResource(id = R.color.woo_red_50)),
+        colors = colors
+    ) {
+        if (leadingIcon != null) {
+            leadingIcon()
+            Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.minor_100)))
+        }
+        Text(text = text)
+        if (trailingIcon != null) {
+            Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.minor_100)))
+            trailingIcon()
+        }
+    }
+}
+
+@Composable
 fun WCSelectableChip(
     onClick: () -> Unit,
     text: String,
@@ -193,7 +256,7 @@ fun WCSelectableChip(
     enabled: Boolean = true,
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     selectedButtonColors: ButtonColors = ButtonDefaults.outlinedButtonColors(
-        backgroundColor = colorResource(id = R.color.color_primary),
+        backgroundColor = colorResource(id = R.color.primary_colored_button_background),
         contentColor = colorResource(id = R.color.woo_white)
     ),
     defaultButtonColors: ButtonColors = ButtonDefaults.outlinedButtonColors(
@@ -230,7 +293,9 @@ fun WCTextButton(
     enabled: Boolean = true,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     contentPadding: PaddingValues = ButtonDefaults.TextButtonContentPadding,
-    colors: ButtonColors = ButtonDefaults.textButtonColors(),
+    colors: ButtonColors = ButtonDefaults.textButtonColors(
+        disabledContentColor = colorResource(id = R.color.color_on_surface_medium),
+    ),
     content: @Composable RowScope.() -> Unit
 ) {
     TextButton(
@@ -253,7 +318,9 @@ fun WCTextButton(
     allCaps: Boolean = true,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     contentPadding: PaddingValues = ButtonDefaults.TextButtonContentPadding,
-    colors: ButtonColors = ButtonDefaults.textButtonColors(),
+    colors: ButtonColors = ButtonDefaults.textButtonColors(
+        disabledContentColor = colorResource(id = R.color.color_on_surface_medium),
+    ),
 ) {
     TextButton(
         onClick = onClick,
@@ -277,7 +344,9 @@ fun WCTextButton(
     allCaps: Boolean = true,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     contentPadding: PaddingValues = ButtonDefaults.TextButtonContentPadding,
-    colors: ButtonColors = ButtonDefaults.textButtonColors(),
+    colors: ButtonColors = ButtonDefaults.textButtonColors(
+        disabledContentColor = colorResource(id = R.color.color_on_surface_medium),
+    ),
 ) {
     TextButton(
         onClick = onClick,

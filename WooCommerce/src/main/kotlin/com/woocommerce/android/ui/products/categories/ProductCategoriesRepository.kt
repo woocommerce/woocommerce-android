@@ -16,6 +16,7 @@ import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.WCProductAction.ADDED_PRODUCT_CATEGORY
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.WCProductCategoryModel
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductCategoryChanged
@@ -76,26 +77,22 @@ class ProductCategoriesRepository @Inject constructor(
     /**
      * Returns all product categories for the current site that are in the database
      */
-    fun getProductCategoriesList(): List<ProductCategory> {
+    suspend fun getProductCategoriesList(): List<ProductCategory> {
         return productStore.getProductCategoriesForSite(selectedSite.get())
             .map { it.toProductCategory() }
     }
 
-    fun getProductCategoryByRemoteId(remoteId: Long) =
-        productStore.getProductCategoryByRemoteId(selectedSite.get(), remoteId)
-
-    fun getProductCategoryByNameAndParentId(categoryName: String, parentId: Long): ProductCategory? =
-        productStore.getProductCategoryByNameAndParentId(selectedSite.get(), categoryName, parentId)
-            ?.toProductCategory()
+    suspend fun getProductCategoryByRemoteId(remoteId: Long) =
+        productStore.getProductCategoryByRemoteId(selectedSite.get(), RemoteId(remoteId))
 
     suspend fun addProductCategories(categories: List<ProductCategory>): Result<List<ProductCategory>> {
         val result = productStore.addProductCategories(
             site = selectedSite.get(),
             categories = categories.map {
-                WCProductCategoryModel().apply {
-                    name = it.name
+                WCProductCategoryModel(
+                    name = it.name,
                     parent = it.parentId
-                }
+                )
             }
         )
 
@@ -115,10 +112,10 @@ class ProductCategoriesRepository @Inject constructor(
     suspend fun addProductCategory(categoryName: String, parentId: Long): Result<ProductCategory> {
         val result = productStore.addProductCategory(
             site = selectedSite.get(),
-            category = WCProductCategoryModel().apply {
-                name = categoryName
+            category = WCProductCategoryModel(
+                name = categoryName,
                 parent = parentId
-            }
+            )
         )
         return when {
             result.isError -> {
@@ -136,11 +133,11 @@ class ProductCategoriesRepository @Inject constructor(
     suspend fun updateProductCategory(remoteId: Long, categoryName: String, parentId: Long): Result<ProductCategory> {
         val result = productStore.updateProductCategory(
             site = selectedSite.get(),
-            category = WCProductCategoryModel().apply {
-                remoteCategoryId = remoteId
-                name = categoryName
+            category = WCProductCategoryModel(
+                remoteCategoryId = RemoteId(remoteId),
+                name = categoryName,
                 parent = parentId
-            }
+            )
         )
         return when {
             result.isError -> {

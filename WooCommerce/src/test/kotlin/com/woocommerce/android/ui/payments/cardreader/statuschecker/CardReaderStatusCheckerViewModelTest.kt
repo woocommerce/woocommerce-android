@@ -207,7 +207,7 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
             val orderId = 1L
             val param = CardReaderFlowParam.PaymentOrRefund.Payment(orderId = orderId, paymentType = ORDER)
             val connectedReader: CardReader = mock {
-                on { type }.thenReturn(ReaderType.BuildInReader.CotsDevice.name)
+                on { type }.thenReturn(ReaderType.BuildInReader.TapToPayDevice.name)
             }
             whenever(appPrefsWrapper.isCardReaderWelcomeDialogShown()).thenReturn(true)
             whenever(cardReaderManager.readerStatus).thenReturn(
@@ -300,13 +300,13 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given payment flow and connected COTS reader, when vm init, then navigates to payment with built in`() =
+    fun `given payment flow and connected Tap To Pay reader, when vm init, then navigates to payment with built in`() =
         testBlocking {
             // GIVEN
             val orderId = 1L
             val param = CardReaderFlowParam.PaymentOrRefund.Payment(orderId = orderId, paymentType = ORDER)
             val connectedReader: CardReader = mock {
-                on { type }.thenReturn(ReaderType.BuildInReader.CotsDevice.name)
+                on { type }.thenReturn(ReaderType.BuildInReader.TapToPayDevice.name)
             }
             whenever(cardReaderManager.readerStatus).thenReturn(
                 MutableStateFlow(
@@ -511,13 +511,14 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
         cardReaderType: CardReaderType = CardReaderType.EXTERNAL
     ) =
         CardReaderStatusCheckerViewModel(
-            CardReaderStatusCheckerDialogFragmentArgs(
-                param,
-                cardReaderType
+            savedState = CardReaderStatusCheckerDialogFragmentArgs(
+                cardReaderFlowParam = param,
+                cardReaderType = cardReaderType
             ).toSavedStateHandle(),
-            cardReaderManager,
-            cardReaderChecker,
-            paymentsFlowTracker,
-            appPrefsWrapper,
+            storeManagementModePaymentsFlowTracker = paymentsFlowTracker,
+            pointOfSaleModePaymentsFlowTracker = paymentsFlowTracker,
+            cardReaderManager = cardReaderManager,
+            cardReaderChecker = cardReaderChecker,
+            appPrefsWrapper = appPrefsWrapper,
         )
 }

@@ -88,16 +88,17 @@ class SubscriptionProductVariation(
     constructor(model: WCProductVariationModel) :
         this(
             subscriptionDetails = model.metadata?.let { SubscriptionDetailsMapper.toAppModel(it) },
-            remoteProductId = model.remoteProductId,
-            remoteVariationId = model.remoteVariationId,
+            remoteProductId = model.remoteProductId.value,
+            remoteVariationId = model.remoteVariationId.value,
             sku = model.sku,
             globalUniqueId = model.globalUniqueId,
             image = model.getImageModel()?.let {
                 Product.Image(
-                    it.id,
-                    it.name,
-                    it.src,
-                    DateTimeUtils.dateFromIso8601(model.dateCreated) ?: Date()
+                    id = it.id,
+                    name = it.name,
+                    source = it.src,
+                    dateCreated = DateTimeUtils.dateFromIso8601(model.dateCreated) ?: Date(),
+                    isCoverImage = false
                 )
             },
             price = model.price.toBigDecimalOrNull(),

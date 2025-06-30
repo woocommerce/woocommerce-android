@@ -14,7 +14,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import androidx.core.text.HtmlCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -25,6 +24,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.R.style
 import com.woocommerce.android.databinding.FreeDomainRegistrationFragmentBinding
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.prefs.domain.FreeDomainRegistrationViewModel.DomainContactFormModel
 import com.woocommerce.android.ui.prefs.domain.FreeDomainRegistrationViewModel.NavigateToDomainDashboard
@@ -36,6 +36,7 @@ import com.woocommerce.android.ui.prefs.domain.FreeDomainRegistrationViewModel.S
 import com.woocommerce.android.ui.prefs.domain.FreeDomainRegistrationViewModel.ShowTermsOfService
 import com.woocommerce.android.ui.prefs.domain.FreeDomainRegistrationViewModel.ViewState
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import org.apache.commons.text.StringEscapeUtils
@@ -189,13 +190,9 @@ class FreeDomainRegistrationFragment : BaseFragment() {
 
     // make link to ToS clickable
     private fun FreeDomainRegistrationFragmentBinding.setupTosLink() {
-        tosExplanation.text = HtmlCompat.fromHtml(
-            String.format(
-                resources.getString(R.string.domain_registration_privacy_protection_tos),
-                "<u>",
-                "</u>"
-            ),
-            HtmlCompat.FROM_HTML_MODE_LEGACY
+        UiHelpers.setTextOrHide(
+            tosExplanation,
+            UiStringRes(R.string.domain_registration_privacy_protection_tos, containsHtml = true)
         )
         tosExplanation.movementMethod = LinkMovementMethod.getInstance()
         tosExplanation.setOnClickListener {

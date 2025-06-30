@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.NavGraphSettingsDirections
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -46,6 +47,10 @@ class PluginsFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is MultiLiveEvent.Event.Exit -> findNavController().navigateUp()
+                is PluginsEvent.NavigateToPluginsWeb -> {
+                    findNavController()
+                        .navigate(NavGraphSettingsDirections.actionGlobalAuthenticatedWebViewFragment(event.url))
+                }
             }
         }
     }

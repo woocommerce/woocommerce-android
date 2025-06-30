@@ -44,6 +44,7 @@ import com.woocommerce.android.ui.orders.details.OrderProduct
 import com.woocommerce.android.ui.orders.details.OrderProductMapper
 import com.woocommerce.android.ui.orders.details.ShippingLabelOnboardingRepository
 import com.woocommerce.android.ui.orders.details.ShippingLabelOnboardingRepository.ShippingLabelSupport
+import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingLabelRepository
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
@@ -125,6 +126,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val shippingLabelOnboardingRepository: ShippingLabelOnboardingRepository = mock {
         doReturn(ShippingLabelSupport.WCS_SUPPORTED).whenever(it).shippingPluginSupport
     }
+    private val shippingLabelRepository: WooShippingLabelRepository = mock()
 
     private val savedState = OrderDetailFragmentArgs(
         orderId = ORDER_ID,
@@ -205,6 +207,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 paymentsFlowTracker,
                 orderDetailTracker,
                 shippingLabelOnboardingRepository,
+                shippingLabelRepository,
                 orderDetailsTransactionLauncher,
                 getOrderSubscriptions,
                 giftCardRepository,
@@ -478,14 +481,11 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             doReturn(true).whenever(orderDetailRepository).hasVirtualProductsOnly(listOf(3, 4))
             doReturn(virtualOrder).whenever(orderDetailRepository).getOrderById(any())
-            doReturn(virtualOrder).whenever(orderDetailRepository).fetchOrderById(any())
 
             doReturn(testOrderRefunds).whenever(orderDetailRepository).getOrderRefunds(any())
 
-            doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
             doReturn(testOrderNotes).whenever(orderDetailRepository).getOrderNotes(any())
             doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).getOrderShippingLabels(any())
-            doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any())
 
             viewModel.start()
 
@@ -628,86 +628,47 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Hide Create shipping label button and show Products area menu when shipping labels are available`() =
+    fun `Show Products area menu when shipping labels are available`() =
         testBlocking {
-            doReturn(order).whenever(orderDetailRepository).getOrderById(any())
             doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
 
             doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
-            doReturn(testOrderNotes).whenever(orderDetailRepository).getOrderNotes(any())
-
-            doReturn(emptyList<Refund>()).whenever(orderDetailRepository).fetchOrderRefunds(any())
-            doReturn(emptyList<Refund>()).whenever(orderDetailRepository).getOrderRefunds(any())
-
-            doReturn(RequestResult.SUCCESS).whenever(orderDetailRepository).fetchOrderShipmentTrackingList(any())
-            doReturn(testOrderShipmentTrackings).whenever(orderDetailRepository).getOrderShipmentTrackings(any())
 
             doReturn(orderShippingLabels).whenever(orderDetailRepository).getOrderShippingLabels(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
-            doReturn(Unit).whenever(orderDetailRepository).fetchSLCreationEligibility(order.id)
             doReturn(true).whenever(orderDetailRepository).isOrderEligibleForSLCreation(order.id)
-            doReturn(ShippingLabelSupport.WCS_SUPPORTED)
-                .whenever(shippingLabelOnboardingRepository).shippingPluginSupport
 
             val shippingLabels = ArrayList<ShippingLabel>()
-            viewModel.shippingLabels.observeForever {
-                it?.let { shippingLabels.addAll(it) }
-            }
+            viewModel.shippingLabels.observeForever { it?.let { shippingLabels.addAll(it) } }
 
-            var isCreateShippingLabelButtonVisible: Boolean? = null
             var isProductListMenuVisible: Boolean? = null
-            viewModel.viewStateData.observeForever { _, new ->
-                isCreateShippingLabelButtonVisible = new.isCreateShippingLabelButtonVisible
-                isProductListMenuVisible = new.isProductListMenuVisible
-            }
+            viewModel.viewStateData.observeForever { _, new -> isProductListMenuVisible = new.isProductListMenuVisible }
 
             viewModel.start()
 
             assertThat(shippingLabels).isNotEmpty
-            assertThat(isCreateShippingLabelButtonVisible).isFalse
             assertThat(isProductListMenuVisible).isTrue
         }
 
     @Test
-    fun `Show Create shipping label button and hide Products area menu when no shipping labels are available`() =
+    fun `Hide Products area menu when no shipping labels are available`() =
         testBlocking {
-            doReturn(order).whenever(orderDetailRepository).getOrderById(any())
             doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
 
             doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
-            doReturn(testOrderNotes).whenever(orderDetailRepository).getOrderNotes(any())
 
-            doReturn(emptyList<Refund>()).whenever(orderDetailRepository).fetchOrderRefunds(any())
-            doReturn(emptyList<Refund>()).whenever(orderDetailRepository).getOrderRefunds(any())
-
-            doReturn(RequestResult.SUCCESS).whenever(orderDetailRepository).fetchOrderShipmentTrackingList(any())
-            doReturn(testOrderShipmentTrackings).whenever(orderDetailRepository).getOrderShipmentTrackings(any())
-
-            doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).getOrderShippingLabels(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
 
-            doReturn(Unit).whenever(orderDetailRepository).fetchSLCreationEligibility(order.id)
-            doReturn(true).whenever(orderDetailRepository).isOrderEligibleForSLCreation(order.id)
-            doReturn(ShippingLabelSupport.WCS_SUPPORTED)
-                .whenever(shippingLabelOnboardingRepository).shippingPluginSupport
-
             val shippingLabels = ArrayList<ShippingLabel>()
-            viewModel.shippingLabels.observeForever {
-                it?.let { shippingLabels.addAll(it) }
-            }
+            viewModel.shippingLabels.observeForever { it?.let { shippingLabels.addAll(it) } }
 
-            var isCreateShippingLabelButtonVisible: Boolean? = null
             var isProductListMenuVisible: Boolean? = null
-            viewModel.viewStateData.observeForever { _, new ->
-                isCreateShippingLabelButtonVisible = new.isCreateShippingLabelButtonVisible
-                isProductListMenuVisible = new.isProductListMenuVisible
-            }
+            viewModel.viewStateData.observeForever { _, new -> isProductListMenuVisible = new.isProductListMenuVisible }
 
             viewModel.start()
 
             assertThat(shippingLabels).isEmpty()
-            assertThat(isCreateShippingLabelButtonVisible).isTrue
             assertThat(isProductListMenuVisible).isFalse
         }
 
@@ -795,7 +756,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         viewModel.start()
 
         verify(orderDetailRepository, times(1)).fetchOrderById(ORDER_ID)
-        verify(viewModel, never()).order
+        verify(viewModel, never()).awaitOrder()
 
         assertThat(snackbar).isEqualTo(ShowSnackbar(string.order_error_fetch_generic))
     }
@@ -927,30 +888,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         )
 
         assertThat(newOrder?.status).isEqualTo(order.status)
-    }
-
-    @Test
-    fun `Do not update order status when not connected`() = testBlocking {
-        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
-        doReturn(false).whenever(networkStatus).isConnected()
-
-        var snackbar: ShowSnackbar? = null
-        viewModel.event.observeForever {
-            if (it is ShowSnackbar) snackbar = it
-        }
-
-        viewModel.order = order
-        viewModel.start()
-        viewModel.onOrderStatusChanged(
-            OrderStatusUpdateSource.Dialog(
-                oldStatus = order.status.value,
-                newStatus = CoreOrderStatus.PROCESSING.value
-            )
-        )
-
-        verify(orderDetailRepository, never()).updateOrderStatus(any(), any())
-
-        assertThat(snackbar).isEqualTo(ShowSnackbar(string.offline_error))
     }
 
     @Test
@@ -1098,7 +1035,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         viewModel.onCardReaderPaymentCompleted()
 
-        assertThat(viewModel.order).isEqualTo(orderAfterPayment)
+        assertThat(viewModel.awaitOrder()).isEqualTo(orderAfterPayment)
     }
 
     @Test
@@ -2204,14 +2141,16 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                     methodTitle = "Free",
                     methodId = shippingMethod.id,
                     total = BigDecimal.ZERO,
-                    totalTax = BigDecimal.ZERO
+                    totalTax = BigDecimal.ZERO,
+                    taxes = emptyList()
                 ),
                 Order.ShippingLine(
                     itemId = 2L,
                     methodTitle = "Another shipping",
                     methodId = "",
                     total = BigDecimal.TEN,
-                    totalTax = BigDecimal.ZERO
+                    totalTax = BigDecimal.ZERO,
+                    taxes = emptyList()
                 ),
             )
             val testOrder = order.copy(shippingLines = orderShippingLines)
@@ -2254,14 +2193,16 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                     methodTitle = "Free",
                     methodId = "free_shipping",
                     total = BigDecimal.ZERO,
-                    totalTax = BigDecimal.ZERO
+                    totalTax = BigDecimal.ZERO,
+                    taxes = emptyList()
                 ),
                 Order.ShippingLine(
                     itemId = 2L,
                     methodTitle = "Another shipping",
                     methodId = "",
                     total = BigDecimal.TEN,
-                    totalTax = BigDecimal.ZERO
+                    totalTax = BigDecimal.ZERO,
+                    taxes = emptyList()
                 ),
             )
             val testOrder = order.copy(shippingLines = orderShippingLines)
@@ -2302,14 +2243,16 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                     methodTitle = "Free",
                     methodId = "free_shipping",
                     total = BigDecimal.ZERO,
-                    totalTax = BigDecimal.ZERO
+                    totalTax = BigDecimal.ZERO,
+                    taxes = emptyList()
                 ),
                 Order.ShippingLine(
                     itemId = 2L,
                     methodTitle = "Another shipping",
                     methodId = "",
                     total = BigDecimal.TEN,
-                    totalTax = BigDecimal.ZERO
+                    totalTax = BigDecimal.ZERO,
+                    taxes = emptyList()
                 ),
             )
             val testOrder = order.copy(shippingLines = orderShippingLines)
@@ -2434,24 +2377,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given order and store currency mismatch, when edit clicked, then trigger snackbar event`() = testBlocking {
-        // Given
-        whenever(orderDetailRepository.getOrderById(any())).thenReturn(order)
-        whenever(orderDetailRepository.fetchOrderById(any())).thenReturn(order)
-        whenever(orderDetailRepository.fetchOrderNotes(any())).thenReturn(false)
-        whenever(addonsRepository.containsAddonsFrom(any())).thenReturn(false)
-        whenever(isStoreCurrencyMatch.invoke(any())).thenReturn(
-            CurrencyMatchResult(isMatch = false, storeCurrency = "USD")
-        )
-        viewModel.start()
-
-        // When
-        viewModel.onEditClicked()
-
-        assertThat(viewModel.event.value).isInstanceOf(ShowSnackbar::class.java)
-    }
-
-    @Test
     fun `given order and store currency mismatch, when edit clicked, then track proper event`() = testBlocking {
         // Given
         whenever(orderDetailRepository.getOrderById(any())).thenReturn(order)
@@ -2470,7 +2395,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given order and store currency are same, when edit clicked, then trigger EditOrder event`() = testBlocking {
+    fun `when edit clicked, then trigger EditOrder event`() = testBlocking {
         // Given
         whenever(orderDetailRepository.getOrderById(any())).thenReturn(order)
         whenever(orderDetailRepository.fetchOrderById(any())).thenReturn(order)
@@ -2486,5 +2411,52 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         assertThat(viewModel.event.value).isNotInstanceOf(ShowSnackbar::class.java)
         assertThat(viewModel.event.value).isInstanceOf(EditOrder::class.java)
+    }
+
+    @Test
+    fun `when edit clicked, then trigger EditOrder event with order currency passed as parameter`() = testBlocking {
+        // Given
+        whenever(orderDetailRepository.getOrderById(any())).thenReturn(order)
+        whenever(orderDetailRepository.fetchOrderById(any())).thenReturn(order)
+        whenever(orderDetailRepository.fetchOrderNotes(any())).thenReturn(false)
+        whenever(addonsRepository.containsAddonsFrom(any())).thenReturn(false)
+        whenever(isStoreCurrencyMatch.invoke(any())).thenReturn(
+            CurrencyMatchResult(isMatch = true, storeCurrency = "USD")
+        )
+        viewModel.start()
+
+        // When
+        viewModel.onEditClicked()
+
+        assertThat(viewModel.event.value).isNotInstanceOf(ShowSnackbar::class.java)
+        assertThat(viewModel.event.value).isInstanceOf(EditOrder::class.java)
+        assertThat((viewModel.event.value as EditOrder).orderCurrency).isEqualTo(viewModel.awaitOrder().currency)
+    }
+
+    @Test
+    fun `given order in db, when viewmodel start, then view state is updated with order`() = testBlocking {
+        // GIVEN
+        val newOrder = order.copy(
+            status = Order.Status.Processing,
+            number = "NewOrderNumber"
+        )
+        doReturn(newOrder).whenever(orderDetailRepository).getOrderById(any())
+
+        var observedViewState: OrderDetailViewState? = null
+        viewModel.viewStateData.observeForever { _, newState -> observedViewState = newState }
+
+        // WHEN
+        viewModel.start()
+
+        // THEN
+        assertThat(observedViewState!!.orderInfo!!.order).isEqualTo(newOrder)
+        assertThat(observedViewState.orderInfo!!.isPaymentCollectableWithCardReader).isFalse()
+    }
+
+    @Test
+    fun `when view model is initialized then fetchConfig is called`() = testBlocking {
+        viewModel.start()
+
+        verify(shippingLabelRepository, never()).fetchConfig(selectedSite.get(), ORDER_ID)
     }
 }

@@ -1,2 +1,0 @@
-21.2 :
-Les mises à jour sont arrivées ! Activation de Jetpack plus fluide grâce à la création d’un nouveau compte. Dites adieu aux bugs : les problèmes de rafraîchissement des commandes, de modification de l’expédition et d’extraction des reçus sont corrigés. Les dépôts ont été renommés paiements et nous avons amélioré les chargements de médias pour les sites Jetpack. Effectuez la mise à jour dès maintenant afin de profiter d’une meilleure expérience WooCommerce !

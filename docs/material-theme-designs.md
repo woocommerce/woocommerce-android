@@ -5,9 +5,7 @@ This page contains the material theme designs that govern theming inside the Woo
 
 ## Color Palette
 
-| Light | Dark  |
-| -- | -- |
-| ![](/docs/images/colors-light.png) | ![](/docs/images/colors-dark.png) |
+The app uses colors from [Color Studio](https://color-studio.blog/).
 
 <a name="design-typography">
 

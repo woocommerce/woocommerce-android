@@ -1,25 +1,22 @@
 package com.woocommerce.android.ui.themes
 
-import android.view.ViewGroup
-import android.webkit.WebChromeClient
-import android.webkit.WebView
-import android.webkit.WebViewClient
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
-import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
+import com.woocommerce.android.ui.common.webview.WebViewAuthenticator
 import com.woocommerce.android.ui.compose.Screen
 import com.woocommerce.android.ui.compose.Screen.ScreenType
+import com.woocommerce.android.ui.compose.component.web.WCWebView
+import com.woocommerce.android.ui.compose.component.web.WCWebViewSettings
+import com.woocommerce.android.ui.compose.component.web.WebViewProgressIndicator
 import com.woocommerce.android.ui.compose.rememberScreen
 import com.woocommerce.android.ui.themes.ThemePreviewViewModel.ViewState.PreviewType
 import org.wordpress.android.fluxc.network.UserAgent
@@ -30,15 +27,17 @@ fun ThemePreviewWebView(
     url: String,
     userAgent: UserAgent,
     modifier: Modifier = Modifier,
-    wpComAuthenticator: WPComWebViewAuthenticator? = null,
+    authenticator: WebViewAuthenticator? = null,
     previewType: PreviewType
 ) {
     val screen = rememberScreen()
+    var webViewSettings by remember { mutableStateOf(WCWebViewSettings()) }
 
-    var webView by remember { mutableStateOf<WebView?>(null) }
-    var progress by remember { mutableStateOf(0) }
-    var lastLoadedUrl by remember { mutableStateOf("") }
-    var lastPreviewType by remember { mutableStateOf(previewType) }
+    LaunchedEffect(previewType) {
+        webViewSettings = webViewSettings.copy(
+            initialScale = previewType.initialScale(screen)
+        )
+    }
 
     Box(
         modifier = modifier.then(
@@ -51,45 +50,12 @@ fun ThemePreviewWebView(
             }
         )
     ) {
-        fun getProgressAlpha(): Float {
-            return if (progress == 100) 0f else 1f
-        }
-
-        AndroidView(
-            factory = { context ->
-                WebView(context).apply {
-                    layoutParams = ViewGroup.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.MATCH_PARENT
-                    )
-
-                    this.webChromeClient = object : WebChromeClient() {
-                        override fun onProgressChanged(view: WebView?, newProgress: Int) {
-                            progress = newProgress
-                        }
-                    }
-
-                    this.webViewClient = WebViewClient()
-                    this.setInitialScale(previewType.initialScale(screen))
-                    this.settings.userAgentString = userAgent.userAgent
-                }.also { webView = it }
-            },
-        ) { webView ->
-            if (lastPreviewType != previewType) {
-                lastPreviewType = previewType
-                webView.setInitialScale(previewType.initialScale(screen))
-                wpComAuthenticator?.authenticateAndLoadUrl(webView, url) ?: webView.loadUrl(url)
-            }
-            if (lastLoadedUrl == url) return@AndroidView
-            lastLoadedUrl = url
-            wpComAuthenticator?.authenticateAndLoadUrl(webView, url) ?: webView.loadUrl(url)
-        }
-
-        LinearProgressIndicator(
-            progress = (progress / 100f),
-            modifier = Modifier
-                .fillMaxWidth()
-                .alpha(getProgressAlpha())
+        WCWebView(
+            url = url,
+            userAgent = userAgent,
+            authenticator = authenticator,
+            settings = webViewSettings,
+            progressIndicator = WebViewProgressIndicator.Linear()
         )
     }
 }

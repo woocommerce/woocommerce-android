@@ -12,6 +12,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.google.protobuf)
     alias(libs.plugins.fladle)
+    alias(libs.plugins.dependency.analysis)
 }
 
 fladle {
@@ -21,7 +22,7 @@ fladle {
             "notPackage com.woocommerce.android.e2e.tests.screenshot"
     ]
     devices = [
-            [ "model": "Pixel2.arm", "version": "30" ]
+            ["model": "Pixel2.arm", "version": "30"]
     ]
     localResultsDir = "$rootDir/build/instrumented-tests"
 
@@ -58,56 +59,12 @@ sentry {
     ]
 }
 
-repositories {
-    maven {
-        url 'https://a8c-libs.s3.amazonaws.com/android'
-        content {
-            includeGroup "org.wordpress"
-            includeGroup "org.wordpress.fluxc"
-            includeGroup "org.wordpress.fluxc.plugins"
-            includeGroup "org.wordpress.wellsql"
-            includeGroup "org.wordpress.mediapicker"
-            includeGroup "com.automattic"
-            includeGroup "com.automattic.tracks"
-            includeGroup "com.gravatar"
-            includeGroup "org.wordpress.aztec"
-        }
-    }
-    maven {
-        url 'https://zendesk.jfrog.io/zendesk/repo'
-        content {
-            includeGroup "com.zendesk"
-            includeGroup "com.zendesk.belvedere2"
-        }
-    }
-    mavenCentral()
-    maven {
-        url "https://a8c-libs.s3.amazonaws.com/android/jcenter-mirror"
-        content {
-            includeVersion "com.android.volley", "volley", "1.1.1"
-            includeVersion "com.google.android", "flexbox", "2.0.1"
-            includeVersion "com.jraska", "falcon", "2.1.1"
-            includeVersion "org.wordpress", "wellsql", "1.6.0"
-            includeVersion "org.wordpress", "wellsql-core", "1.6.0"
-        }
-    }
-    maven {
-        url "https://jitpack.io"
-        content {
-            includeModule("com.github.wordpress-mobile.WordPress-Aztec-Android", "aztec")
-            includeModule("com.github.wordpress-mobile.WordPress-Aztec-Android", "glide-loader")
-            includeModule("com.github.chrisbanes", "PhotoView")
-            includeModule("com.github.PhilJay", "MPAndroidChart")
-        }
-    }
-}
-
 def versionProperties = loadPropertiesFromFile(file("${rootDir}/version.properties"))
 
 android {
-    namespace "com.woocommerce.android"
+    namespace = "com.woocommerce.android"
 
-    compileSdkVersion gradle.ext.compileSdkVersion
+    compileSdk = gradle.ext.compileSdkVersion
 
     defaultConfig {
         applicationId "com.woocommerce.android"
@@ -140,15 +97,15 @@ android {
     }
 
     buildFeatures {
-        buildConfig true
-        compose true
-        viewBinding true
+        buildConfig = true
+        compose = true
+        viewBinding = true
     }
 
     compileOptions {
-        sourceCompatibility libs.versions.java.get()
-        targetCompatibility libs.versions.java.get()
-        coreLibraryDesugaringEnabled true
+        sourceCompatibility = libs.versions.java.get()
+        targetCompatibility = libs.versions.java.get()
+        coreLibraryDesugaringEnabled = true
     }
 
     flavorDimensions = ["buildType"]
@@ -165,7 +122,7 @@ android {
         wasabi {
             applicationId "com.woocommerce.android.dev"
             dimension "buildType"
-            isDefault true
+            isDefault = true
 
             resConfigs("en", "xxhdpi")
         }
@@ -183,14 +140,14 @@ android {
         release {
             // Proguard is used to shrink our apk, and reduce the number of methods in our final apk,
             // but we don't obfuscate the bytecode.
-            minifyEnabled true
+            minifyEnabled = true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
 
         debug {
-            minifyEnabled false
-            pseudoLocalesEnabled true
-            isDefault true
+            minifyEnabled = false
+            pseudoLocalesEnabled = true
+            isDefault = true
         }
     }
 
@@ -207,8 +164,8 @@ android {
     }
 
     lintOptions {
-        sarifReport System.getenv('CI') ? true : false
-        checkDependencies true
+        sarifReport = gradle.ext.isCi
+        checkDependencies = true
         disable 'InvalidPackage'
     }
 
@@ -260,6 +217,7 @@ dependencies {
     implementation(libs.androidx.recyclerview.selection)
     implementation(libs.androidx.appcompat)
     implementation(libs.google.material)
+    implementation(libs.google.compose.material3)
     implementation(libs.androidx.transition)
     implementation(libs.androidx.cardview)
     implementation(libs.androidx.browser) {
@@ -283,25 +241,13 @@ dependencies {
         exclude group: "com.android.support"
     }
 
-    implementation(libs.automattic.tracks.experimentation) {
-        exclude group: "org.wordpress", module: "fluxc"
-    }
+    implementation(libs.automattic.tracks.experimentation)
     implementation(libs.automattic.tracks.android)
     implementation(libs.automattic.tracks.crashlogging)
 
-    implementation("${gradle.ext.fluxCBinaryPath}:${libs.versions.wordpress.fluxc.get()}") {
-        exclude group: "com.android.support"
-        exclude group: "org.wordpress", module: "utils"
-    }
-    implementation("${gradle.ext.fluxCWooCommercePluginBinaryPath}:${libs.versions.wordpress.fluxc.get()}") {
-        exclude group: "com.android.support"
-        exclude group: "org.wordpress", module: "utils"
-    }
-
-    implementation("$gradle.ext.loginFlowBinaryPath:${libs.versions.wordpress.login.get()}") {
-        exclude group: "org.wordpress", module: "utils"
-        exclude group: "org.wordpress", module: "fluxc"
-    }
+    implementation(project(":libs:fluxc"))
+    implementation(project(":libs:fluxc-plugin"))
+    implementation(project(":libs:login"))
 
     implementation(libs.wordpress.aztec.main) {
         exclude group: "com.android.volley"
@@ -319,7 +265,6 @@ dependencies {
 
     implementation project(":libs:commons")
     implementation project(":libs:cardreader")
-    debugImplementation project(":libs:iap")
 
     implementation(libs.facebook.shimmer)
     implementation(libs.photoview)
@@ -359,14 +304,10 @@ dependencies {
     implementation(libs.google.play.services.wearable)
 
     // Debug dependencies
+    debugImplementation project(":libs:apifaker")
     debugImplementation(libs.facebook.flipper.main)
     debugImplementation(libs.facebook.soloader)
-    debugImplementation(libs.facebook.flipper.network.plugin) {
-        // Force Flipper to use the okhttp version defined in the fluxc module
-        // okhttp versions higher than 3.9.0 break handling for self-signed SSL sites
-        // See https://github.com/wordpress-mobile/WordPress-FluxC-Android/issues/919
-        exclude group: 'com.squareup.okhttp3'
-    }
+    debugImplementation(libs.facebook.flipper.network.plugin)
 
     if (isLeakCanaryEnabled()) {
         debugImplementation(libs.squareup.leakcanary.android)
@@ -375,7 +316,6 @@ dependencies {
     // Dependencies for local unit tests
     testImplementation(libs.junit)
     testImplementation(libs.mockito.kotlin)
-    testImplementation(libs.mockito.inline)
     testImplementation(libs.kotlin.test.junit)
     testImplementation(libs.assertj.core)
     testImplementation(libs.androidx.arch.core.testing) {
@@ -393,7 +333,7 @@ dependencies {
         exclude group: "com.google.protobuf", module: "protobuf-lite"
     }
     androidTestImplementation(libs.google.dagger.hilt.android.testing)
-    kspAndroidTest(libs.google.dagger.hilt.android.compiler)
+    kspAndroidTest(libs.google.dagger.hilt.compiler)
     androidTestImplementation(libs.androidx.test.uiautomator)
 
     // Dependencies for screenshots
@@ -441,7 +381,6 @@ dependencies {
     testImplementation(libs.cashapp.turbine)
 
     implementation(libs.apache.commons.text)
-    implementation(libs.commons.io)
 
     implementation(libs.tinder.statemachine)
 
@@ -449,10 +388,6 @@ dependencies {
         exclude group: "org.wordpress", module: "utils"
     }
     implementation("${gradle.ext.mediaPickerSourceCameraBinaryPath}:${libs.versions.wordpress.mediapicker.get()}")
-    implementation("${gradle.ext.mediaPickerSourceWordPressBinaryPath}:${libs.versions.wordpress.mediapicker.get()}") {
-        exclude group: "org.wordpress", module: "utils"
-        exclude group: "org.wordpress", module: "fluxc"
-    }
 
     // Jetpack Compose
     implementation(platform(libs.androidx.compose.bom))
@@ -466,6 +401,7 @@ dependencies {
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.compose.ui.text.google.fonts)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.compose.material3)
 
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.constraintlayout.compose)
@@ -477,6 +413,9 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
     coreLibraryDesugaring(libs.android.desugar)
+
+    // Lottie
+    implementation(libs.lottie.compose)
 
     // CameraX
     implementation(libs.androidx.camera.camera2)
@@ -531,8 +470,13 @@ task copyGoogleServicesExampleFile(type: Copy) {
 android.buildTypes.all { buildType ->
     (secretProperties + developerProperties).any { property ->
         if (property.key.toLowerCase().startsWith("wc.")) {
-            buildType.buildConfigField "String", property.key.replace("wc.", "").replace(".", "_").toUpperCase(),
-                    "\"${property.value}\""
+            if (property.value == "true" || property.value == "false") {
+                buildType.buildConfigField "boolean", property.key.replace("wc.", "").replace(".", "_").toUpperCase(),
+                        property.value
+            } else {
+                buildType.buildConfigField "String", property.key.replace("wc.", "").replace(".", "_").toUpperCase(),
+                        "\"${property.value}\""
+            }
         }
         if (property.key.toLowerCase().startsWith("wc.res.")) {
             buildType.resValue "string", property.key.replace("wc.res.", "").replace(".", "_").toLowerCase(),

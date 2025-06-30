@@ -6,10 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.core.view.WindowCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.edgeToEdgeForInLandscape
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel.ScreenMode
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -37,7 +39,7 @@ class VariationSelectorFragment : DialogFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-
+            edgeToEdgeForInLandscape()
             setContent {
                 WooThemeWithBackground {
                     VariationSelectorScreen(viewModel)
@@ -49,6 +51,14 @@ class VariationSelectorFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupObservers()
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        dialog?.window?.let {
+            WindowCompat.setDecorFitsSystemWindows(it, false)
+        }
     }
 
     private fun setupObservers() {

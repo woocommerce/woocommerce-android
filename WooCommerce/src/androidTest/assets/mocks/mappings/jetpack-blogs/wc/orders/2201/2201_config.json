@@ -1,0 +1,49 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPathPattern": "/rest/v1.1/jetpack-blogs/161477129/rest-api/",
+    "queryParameters": {
+      "json": {
+        "equalTo": "true"
+      },
+      "path": {
+        "matches": "/wcshipping/v1/config/label-purchase/2201(.*)"
+      },
+      "locale": {
+        "matches": "(.*)"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "success": true,
+      "config": {
+        "order": {},
+        "accountSettings": {},
+        "packagesSettings": {
+          "schema": {
+            "custom": {},
+            "predefined": {}
+          },
+          "packages": {
+            "custom": {},
+            "predefined": {}
+          }
+        },
+        "shippingLabelData": {},
+        "continents": {},
+        "eu_countries": {},
+        "items": {},
+        "is_destination_verified": {},
+        "is_origin_verified": {},
+        "shipments": {},
+        "origin_addresses": {}
+      }
+    },
+    "headers": {
+      "Content-Type": "application/json",
+      "Connection": "keep-alive"
+    }
+  }
+}

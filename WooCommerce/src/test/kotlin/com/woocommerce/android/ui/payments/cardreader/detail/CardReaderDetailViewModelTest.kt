@@ -107,7 +107,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             initConnectedState(
-                readerType = ReaderType.BuildInReader.CotsDevice
+                readerType = ReaderType.BuildInReader.TapToPayDevice
             )
 
             // WHEN
@@ -123,7 +123,7 @@ class CardReaderDetailViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             initConnectedState(
-                readerType = ReaderType.BuildInReader.CotsDevice
+                readerType = ReaderType.BuildInReader.TapToPayDevice
             )
 
             // WHEN

@@ -1,54 +1,56 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.packages.datasource
 
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PredefinedPackagesState
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.Carrier
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.CarrierPackageGroup
-import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.CarrierPackageSelection
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
-import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.SavedPackageSelection
-import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.StorePredefinedPackages
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.StoreOptionsForPackages
 import javax.inject.Inject
 
 class FetchPredefinedPackagesFromStore @Inject constructor(
     private val selectedSite: SelectedSite,
     private val packageRepository: WooShippingLabelPackageRepository
 ) {
-    suspend operator fun invoke(): StorePredefinedPackages? {
+    suspend operator fun invoke(): PredefinedPackagesState {
         val storePackages = selectedSite.getOrNull()
             ?.let { packageRepository.fetchAllStorePackages(it) }
             ?.takeIf { it.isError.not() }
             ?.model
-            ?: return null
+            ?: return PredefinedPackagesState.Error
 
-        return StorePredefinedPackages(
-            savedPackageSelection = storePackages
-                .filterSavedData()
-                .let { SavedPackageSelection(it) },
-            carrierPackageSelection = storePackages
-                .filterCarrierData()
-                .let { CarrierPackageSelection(it) }
+        return PredefinedPackagesState.Data(
+            storeOptions = storePackages.storeOptions.toStoreOptionsForPackages(),
+            savedPackages = storePackages.savedPackages
+                .map { PackageData.fromPackageDAO(it) },
+            carrierPackages = storePackages.filterCarrierData()
         )
     }
 
-    private fun StorePackagesDAO.filterSavedData() =
-        savedPackages.map { packageDAO ->
-            PackageData(
-                name = packageDAO.name,
-                dimensions = packageDAO.dimensions,
-                isSelected = false,
-                isLetter = packageDAO.isLetter
-            )
+    private fun StorePackagesDAO.filterCarrierData(): Map<Carrier, List<CarrierPackageGroup>> {
+        val result = mutableMapOf<Carrier, List<CarrierPackageGroup>>()
+        carrierPackages.parseCarrierData(CarrierType.USPS).takeIf { it.isNotEmpty() }?.let { carrierData ->
+            result[Carrier.USPS] = carrierData
         }
 
-    private fun StorePackagesDAO.filterCarrierData() = mapOf(
-        carrierPackages
-            .parseCarrierData(CarrierType.USPS)
-            .let { Carrier.USPS to it },
+        carrierPackages.parseCarrierData(CarrierType.DHL).takeIf { it.isNotEmpty() }?.let { carrierData ->
+            result[Carrier.DHL] = carrierData
+        }
 
-        carrierPackages
-            .parseCarrierData(CarrierType.DHL)
-            .let { Carrier.DHL to it }
-    )
+        carrierPackages.parseCarrierData(CarrierType.UPS).takeIf { it.isNotEmpty() }?.let { carrierData ->
+            result[Carrier.UPS] = carrierData
+        }
+
+        return result
+    }
+
+    private fun StoreOptionsDAO.toStoreOptionsForPackages() =
+        StoreOptionsForPackages(
+            currencySymbol = currencySymbol,
+            dimensionUnit = dimensionUnit,
+            weightUnit = weightUnit,
+            originCountry = originCountry
+        )
 
     private fun Map<CarrierType, CarrierDAO>.parseCarrierData(
         carrierType: CarrierType
@@ -57,12 +59,7 @@ class FetchPredefinedPackagesFromStore @Inject constructor(
             CarrierPackageGroup(
                 groupName = group.description,
                 packages = group.packages.map { packageItem ->
-                    PackageData(
-                        name = packageItem.name,
-                        dimensions = packageItem.dimensions,
-                        isSelected = false,
-                        isLetter = packageItem.isLetter
-                    )
+                    PackageData.fromPackageDAO(packageItem)
                 }
             )
         }

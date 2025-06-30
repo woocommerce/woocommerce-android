@@ -64,7 +64,7 @@ class JetpackActivationMagicLinkHandlerFragment : BaseFragment() {
         findNavController().navigateSafely(
             JetpackActivationMagicLinkHandlerFragmentDirections
                 .actionJetpackActivationMagicLinkHandlerFragmentToJetpackActivationMainFragment(
-                    isJetpackInstalled = event.isJetpackInstalled,
+                    jetpackStatus = event.jetpackStatus,
                     siteUrl = event.siteUrl
                 )
         )

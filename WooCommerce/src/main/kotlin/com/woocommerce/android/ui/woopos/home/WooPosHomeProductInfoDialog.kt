@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.home
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,9 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedButton
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,9 +24,14 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
-import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosDialogWrapper
-import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 
 @Composable
 fun WooPosProductInfoDialog(
@@ -51,7 +53,8 @@ fun WooPosProductInfoDialog(
     ) {
         Box(
             modifier = Modifier
-                .padding(40.dp.toAdaptivePadding())
+                .background(MaterialTheme.colorScheme.surfaceBright)
+                .padding(WooPosSpacing.XLarge.value.toAdaptivePadding())
                 .semantics(mergeDescendants = true) {
                     contentDescription = dialogContentDescription
                 },
@@ -62,15 +65,15 @@ fun WooPosProductInfoDialog(
             ) {
                 val (header, closeIcon, content) = createRefs()
 
-                Text(
+                WooPosText(
                     text = stringResource(id = state.header),
-                    style = MaterialTheme.typography.h4,
+                    style = WooPosTypography.Heading,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colors.onBackground.copy(alpha = 0.87f),
+
                     modifier = Modifier
                         .padding(
-                            top = 40.dp.toAdaptivePadding(),
-                            bottom = 16.dp.toAdaptivePadding()
+                            top = WooPosSpacing.XLarge.value.toAdaptivePadding(),
+                            bottom = WooPosSpacing.Medium.value.toAdaptivePadding()
                         )
                         .constrainAs(header) {
                             top.linkTo(closeIcon.bottom)
@@ -88,63 +91,53 @@ fun WooPosProductInfoDialog(
                         end.linkTo(parent.end)
                     }
                 ) {
-                    Text(
+                    WooPosText(
                         text = stringResource(id = state.primaryMessage),
-                        style = MaterialTheme.typography.h5,
-                        color = MaterialTheme.colors.onBackground.copy(alpha = 0.87f),
+                        style = WooPosTypography.BodyLarge,
                         textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(bottom = 16.dp.toAdaptivePadding())
+                        modifier = Modifier.padding(bottom = WooPosSpacing.Medium.value.toAdaptivePadding())
                     )
-                    Text(
+                    WooPosText(
                         text = stringResource(id = state.secondaryMessage),
-                        style = MaterialTheme.typography.h5,
-                        color = MaterialTheme.colors.onBackground.copy(alpha = 0.87f),
+                        style = WooPosTypography.BodyLarge,
                         textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(bottom = 16.dp.toAdaptivePadding())
+                        modifier = Modifier.padding(bottom = WooPosSpacing.Medium.value.toAdaptivePadding())
                     )
+                    @Suppress("WooPosDesignSystemSpacingUsageRule")
+                    Spacer(Modifier.height(40.dp.toAdaptivePadding()))
                     Box(
                         Modifier
-                            .clip(RoundedCornerShape(8.dp))
+                            .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
                             .background(
-                                color = WooPosTheme.colors.dialogSubtitleHighlightBackground
+                                color = MaterialTheme.colorScheme.surfaceDim
                             )
-                            .padding(24.dp.toAdaptivePadding()),
+                            .padding(
+                                vertical = WooPosSpacing.XLarge.value.toAdaptivePadding(),
+                                horizontal = WooPosSpacing.Medium.value.toAdaptivePadding()
+                            ),
                         contentAlignment = Alignment.Center,
                     ) {
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Text(
+                            WooPosText(
                                 text = stringResource(id = state.tertiaryMessage),
-                                style = MaterialTheme.typography.subtitle1,
+                                style = WooPosTypography.BodySmall,
                                 textAlign = TextAlign.Center,
-                                fontWeight = FontWeight.Normal,
-                                color = MaterialTheme.colors.onBackground.copy(alpha = 0.87f),
                             )
                         }
                     }
-                    Spacer(modifier = Modifier.height(40.dp.toAdaptivePadding()))
-                    OutlinedButton(
-                        onClick = {
-                            onDismissRequest()
-                        },
+                    Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
+                    WooPosOutlinedButton(
+                        onClick = { onDismissRequest() },
+                        text = stringResource(id = state.primaryButton.label),
                         modifier = Modifier
                             .fillMaxWidth()
                             .semantics {
                                 contentDescription = primaryButtonContentDescription
-                            },
-                        border = BorderStroke(2.dp, MaterialTheme.colors.primary),
-                        shape = RoundedCornerShape(8.dp),
-                    ) {
-                        Text(
-                            modifier = Modifier
-                                .padding(vertical = 20.dp.toAdaptivePadding()),
-                            fontWeight = FontWeight.Bold,
-                            style = MaterialTheme.typography.h5,
-                            text = stringResource(id = state.primaryButton.label)
-                        )
-                    }
+                            }
+                    )
                 }
             }
         }

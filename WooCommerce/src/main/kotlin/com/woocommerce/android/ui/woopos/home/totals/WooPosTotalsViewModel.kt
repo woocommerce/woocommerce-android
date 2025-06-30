@@ -5,35 +5,47 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.WooException
+import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
+import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connecting
+import com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnected
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund
+import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentController
+import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState
+import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState.CardReaderPaymentState
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
-import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderPaymentStatus
-import com.woocommerce.android.ui.woopos.featureflags.WooPosIsCashPaymentsEnabled
-import com.woocommerce.android.ui.woopos.featureflags.WooPosIsReceiptsEnabled
+import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToCashPayment
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToEmailReceipt
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OnNewTransactionStarted
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OrderCreated.CouponInfo
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OrderSuccessfullyPaidByCard
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.ToastMessageDisplayed
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
+import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccessfullyPaid.PaymentMethod
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
-import com.woocommerce.android.ui.woopos.home.totals.payment.receipt.WooPosTotalsPaymentReceiptIsSendingSupported
-import com.woocommerce.android.ui.woopos.home.totals.payment.receipt.WooPosTotalsPaymentReceiptIsSendingSupported.Companion.WC_VERSION_SUPPORTS_SENDING_RECEIPTS_BY_EMAIL
-import com.woocommerce.android.ui.woopos.home.totals.payment.receipt.WooPosTotalsPaymentReceiptRepository
+import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState.PaymentFailed
+import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState.PaymentInProgress
+import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState.Totals
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
-import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLog.T
+import com.woocommerce.android.util.UiStringParser
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import java.math.BigDecimal
 import javax.inject.Inject
 
@@ -44,13 +56,12 @@ class WooPosTotalsViewModel @Inject constructor(
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
     private val cardReaderFacade: WooPosCardReaderFacade,
     private val totalsRepository: WooPosTotalsRepository,
-    private val receiptRepository: WooPosTotalsPaymentReceiptRepository,
     private val priceFormat: WooPosFormatPrice,
-    private val analyticsTracker: WooPosAnalyticsTracker,
     private val networkStatus: WooPosNetworkStatus,
-    private val isReceiptSendingSupported: WooPosTotalsPaymentReceiptIsSendingSupported,
-    private val isReceiptsEnabled: WooPosIsReceiptsEnabled,
-    private val isCashPaymentsEnabled: WooPosIsCashPaymentsEnabled,
+    private val cardReaderPaymentControllerFactory: WooPosCardReaderPaymentControllerFactory,
+    private val uiStringParser: UiStringParser,
+    private val totalsAnalyticsTracker: WooPosTotalsAnalyticsTracker,
+    private val wooPosLogWrapper: WooPosLogWrapper,
     savedState: SavedStateHandle,
 ) : ViewModel() {
 
@@ -60,82 +71,198 @@ class WooPosTotalsViewModel @Inject constructor(
         private val InitialState = WooPosTotalsViewState.Loading
     }
 
-    private val isReceiptSendingSupportedValue: Deferred<Boolean> by lazy {
-        viewModelScope.async((Dispatchers.IO)) { isReceiptSendingSupported() }
-    }
-
-    private val uiState = savedState.getStateFlow<WooPosTotalsViewState>(
-        scope = viewModelScope,
-        initialValue = InitialState,
-        key = "woo_pos_totals_view_state"
-    )
+    private val uiState: MutableStateFlow<WooPosTotalsViewState> =
+        savedState.getStateFlow(
+            scope = viewModelScope,
+            initialValue = InitialState,
+            key = "woo_pos_totals_view_state"
+        )
 
     val state: StateFlow<WooPosTotalsViewState> = uiState
 
-    private var dataState: MutableStateFlow<TotalsDataState> = savedState.getStateFlow(
+    private var createDraftOrderJob: Job? = null
+
+    private val dataState: MutableStateFlow<TotalsDataState> = savedState.getStateFlow(
         scope = viewModelScope,
         initialValue = TotalsDataState(),
         key = KEY_STATE,
     )
 
+    private var isTTPPaymentInProgress: Boolean by TTPPaymentProgressDelegate(savedState)
+
+    private var cardReaderPaymentController: CardReaderPaymentController? = null
+
+    private fun createCardReaderPaymentController(orderId: Long) {
+        cardReaderPaymentController = cardReaderPaymentControllerFactory.create(
+            orderId = orderId,
+            paymentType = PaymentOrRefund.Payment.PaymentType.WOO_POS,
+            isTTPPaymentInProgress = ::isTTPPaymentInProgress,
+        )
+    }
+
     init {
         listenUpEvents()
-        listenToPaymentsStatus()
+        observeCardReaderStatus()
+    }
 
-        initIsReceiptSendingSupportedValue()
+    private fun observeCardReaderStatus() {
+        viewModelScope.launch {
+            cardReaderFacade.readerStatus.combine(
+                dataState
+            ) { status, data -> Pair(status, data) }.collect { (status, data) ->
+                when (status) {
+                    is NotConnected, is Connecting -> {
+                        val state = uiState.value
+                        if (state !is WooPosTotalsViewState.Checkout) return@collect
+                        uiState.value = state.copy(readerStatus = buildTotalsReaderNotConnectedError())
+                        cancelPaymentAction()
+                    }
+
+                    is Connected -> {
+                        val state = uiState.value
+                        if (state !is WooPosTotalsViewState.Checkout) return@collect
+                        uiState.value = state.copy(readerStatus = buildPreparingReaderStatusState())
+                        if (data.orderId != EMPTY_ORDER_ID) {
+                            collectPayment()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun buildPreparingReaderStatusState() = WooPosTotalsViewState.ReaderStatus.Preparing(
+        title = resourceProvider.getString(R.string.woopos_totals_reader_getting_ready),
+        subtitle = resourceProvider.getString(R.string.woopos_totals_reader_checking_order)
+    )
+
+    private fun cancelPaymentAction() {
+        cardReaderPaymentController?.onBackPressed()
+        cardReaderPaymentController?.stop()
+    }
+
+    private fun cancelCreateOrderDraftAction() {
+        createDraftOrderJob?.cancel()
     }
 
     fun onUIEvent(event: WooPosTotalsUIEvent) {
         when (event) {
-            is WooPosTotalsUIEvent.CollectPaymentClicked -> collectPayment()
-            is WooPosTotalsUIEvent.OnNewTransactionClicked -> {
-                viewModelScope.launch {
-                    childrenToParentEventSender.sendToParent(
-                        ChildToParentEvent.NewTransactionClicked
-                    )
-                }
+            is WooPosTotalsUIEvent.OnNewTransactionClicked -> viewModelScope.launch {
+                childrenToParentEventSender.sendToParent(OnNewTransactionStarted)
+                totalsAnalyticsTracker.trackCreateNewOrderTapped()
             }
+
             is WooPosTotalsUIEvent.RetryOrderCreationClicked -> {
                 createOrderDraft(dataState.value.itemClickedDataList)
             }
-            WooPosTotalsUIEvent.OnSendReceiptClicked -> sendReceiptByEmail()
-            WooPosTotalsUIEvent.OnStartReceiptFlowClicked -> {
-                viewModelScope.launch {
-                    if (isReceiptSendingSupportedValue.await()) {
-                        uiState.value = WooPosTotalsViewState.ReceiptSending(email = "")
-                    } else {
-                        childrenToParentEventSender.sendToParent(
-                            ChildToParentEvent.ToastMessageDisplayed(
-                                message = resourceProvider.getString(
-                                    R.string.woopos_receipt_sending_not_supported,
-                                    WC_VERSION_SUPPORTS_SENDING_RECEIPTS_BY_EMAIL,
-                                )
-                            )
-                        )
-                    }
-                }
+
+            WooPosTotalsUIEvent.OnStartReceiptFlowClicked -> handleEmailReceiptClicked()
+
+            WooPosTotalsUIEvent.OnCashPaymentClicked -> informParentAboutNavigatingToCashPayment()
+
+            WooPosTotalsUIEvent.GoBackToCheckoutAfterFailedPayment -> handleGoBackToCheckoutClickedWhenPaymentFailed()
+
+            WooPosTotalsUIEvent.RetryFailedTransactionClicked -> handleRetryFailedTransactionClicked()
+
+            WooPosTotalsUIEvent.ConnectReaderClicked -> cardReaderFacade.connectToReader()
+
+            WooPosTotalsUIEvent.OnBackClicked -> handleBackPress()
+
+            WooPosTotalsUIEvent.GoBackToCheckoutAfterFailedCouponValidation -> handleEditOrderClicked()
+
+            WooPosTotalsUIEvent.OnRemoveCouponsClicked -> handleRemoveCouponsClicked()
+        }
+    }
+
+    private fun handleEmailReceiptClicked() {
+        viewModelScope.launch {
+            totalsAnalyticsTracker.trackEmailReceiptTapped()
+            childrenToParentEventSender.sendToParent(
+                ToEmailReceipt(dataState.value.orderId)
+            )
+        }
+    }
+
+    private fun informParentAboutNavigatingToCashPayment() = viewModelScope.launch {
+        childrenToParentEventSender.sendToParent(
+            ToCashPayment(dataState.value.orderId)
+        )
+    }
+
+    private fun handleGoBackToCheckoutClickedWhenPaymentFailed() {
+        viewModelScope.launch {
+            childrenToParentEventSender.sendToParent(ChildToParentEvent.GoBackToCheckoutAfterFailedPayment)
+            retryPaymentCollectionFromScratch()
+        }
+    }
+
+    private fun handleRetryFailedTransactionClicked() {
+        viewModelScope.launch {
+            val paymentState = cardReaderPaymentController?.paymentState?.value
+            check(paymentState != null) {
+                "Retry failed transaction clicked but payment controller is null"
             }
-            WooPosTotalsUIEvent.OnTakeCashPaymentClicked -> {
-                viewModelScope.launch {
-                    uiState.value = WooPosTotalsViewState.CashPayment(
-                        enteredAmount = "",
-                        changeDue = priceFormat(BigDecimal.ZERO),
-                        total = priceFormat(dataState.value.orderTotal!!),
-                        canBeOrderBeCompleted = false
-                    )
-                }
+            check(paymentState is CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment) {
+                "Retry failed transaction clicked but payment state is not PaymentFailed"
             }
-            is WooPosTotalsUIEvent.OnEmailChanged -> {
-                uiState.value = WooPosTotalsViewState.ReceiptSending(email = event.email)
+            when {
+                paymentState.onRetry != null -> paymentState.onRetry!!()
+                else -> {
+                    childrenToParentEventSender.sendToParent(ChildToParentEvent.ReturnedFromCardReaderPaymentToCheckout)
+                    retryPaymentCollectionFromScratch()
+                }
             }
         }
+    }
+
+    private fun handleBackPress() {
+        viewModelScope.launch {
+            when (state.value) {
+                is PaymentFailed, is PaymentInProgress -> {
+                    val paymentState = cardReaderPaymentController?.paymentState?.value
+                    if (paymentState is CardReaderPaymentState.ProcessingPayment ||
+                        paymentState is CardReaderPaymentState.PaymentCapturing
+                    ) {
+                        return@launch
+                    }
+
+                    childrenToParentEventSender.sendToParent(ChildToParentEvent.ReturnedFromCardReaderPaymentToCheckout)
+                    retryPaymentCollectionFromScratch()
+                }
+
+                else -> {
+                    cancelCreateOrderDraftAction()
+                    childrenToParentEventSender.sendToParent(ChildToParentEvent.BackFromCheckoutToCartClicked)
+                }
+            }
+        }
+    }
+
+    private fun handleEditOrderClicked() {
+        viewModelScope.launch {
+            childrenToParentEventSender.sendToParent(ChildToParentEvent.BackFromCheckoutToCartClicked)
+        }
+    }
+
+    private fun handleRemoveCouponsClicked() {
+        viewModelScope.launch {
+            childrenToParentEventSender.sendToParent(ChildToParentEvent.RemoveCouponsClicked)
+        }
+    }
+
+    private suspend fun retryPaymentCollectionFromScratch() {
+        cancelPaymentAction()
+        val order = totalsRepository.getOrderById(dataState.value.orderId)
+        checkNotNull(order)
+        uiState.value = buildWooPosTotalsViewState(order)
+        collectPayment()
     }
 
     private fun collectPayment() {
         if (!networkStatus.isConnected()) {
             viewModelScope.launch {
                 childrenToParentEventSender.sendToParent(
-                    ChildToParentEvent.ToastMessageDisplayed(
+                    ToastMessageDisplayed(
                         message = resourceProvider.getString(R.string.woopos_no_internet_message)
                     )
                 )
@@ -143,17 +270,17 @@ class WooPosTotalsViewModel @Inject constructor(
         } else {
             val orderId = dataState.value.orderId
             check(orderId != EMPTY_ORDER_ID)
-            cardReaderFacade.collectPayment(orderId)
-        }
-    }
-
-    private fun sendReceiptByEmail() {
-        val viewState = uiState.value as WooPosTotalsViewState.ReceiptSending
-        val email = viewState.email
-        val orderId = dataState.value.orderId
-        check(orderId != EMPTY_ORDER_ID)
-        viewModelScope.launch {
-            receiptRepository.sendReceiptByEmail(orderId, email)
+            if (
+                cardReaderFacade.readerStatus.value is Connected &&
+                dataState.value.orderTotal?.compareTo(BigDecimal.ZERO) == 1
+            ) {
+                val state = uiState.value
+                check(state is WooPosTotalsViewState.Checkout)
+                check(uiState.value is WooPosTotalsViewState.Checkout)
+                createCardReaderPaymentController(dataState.value.orderId)
+                cardReaderPaymentController?.start()
+                listenToPaymentState()
+            }
         }
     }
 
@@ -162,94 +289,329 @@ class WooPosTotalsViewModel @Inject constructor(
             parentToChildrenEventReceiver.events.collect { event ->
                 when (event) {
                     is ParentToChildrenEvent.CheckoutClicked -> {
-                        dataState.value = dataState.value.copy(itemClickedDataList = event.itemClickedDataList)
-                        createOrderDraft(dataState.value.itemClickedDataList)
+                        onCartDataReceived(event.itemClickedDataList)
+                        totalsAnalyticsTracker.incrementCheckoutButtonTaps()
                     }
 
                     is ParentToChildrenEvent.BackFromCheckoutToCartClicked -> {
+                        cancelPaymentAction()
+                        cancelCreateOrderDraftAction()
                         uiState.value = InitialState
                     }
 
-                    is ParentToChildrenEvent.ItemClickedInProductSelector,
-                    ParentToChildrenEvent.OrderSuccessfullyPaid -> Unit
+                    is ParentToChildrenEvent.OrderSuccessfullyPaid -> {
+                        if (event.paymentMethod == PaymentMethod.CASH) {
+                            // Cancel payment intent if order is marked completed by cash
+                            cancelPaymentAction()
+                        }
+                        showSuccessfulPaymentState(event.paymentMethod)
+                    }
+
+                    is ParentToChildrenEvent.CouponsRemoved -> {
+                        onCartDataReceived(event.cartDataList)
+                    }
+
+                    is ParentToChildrenEvent.SearchEvent.RecentSearchSelected,
+                    is ParentToChildrenEvent.ItemClickedInItemsList,
+                    is ParentToChildrenEvent.SearchEvent.ChangedQuery,
+                    ParentToChildrenEvent.SearchEvent.Finished,
+                    is ParentToChildrenEvent.OrderCreated,
+                    ParentToChildrenEvent.SearchEvent.Started,
+                    ParentToChildrenEvent.RemoveCouponsClicked,
+                    ParentToChildrenEvent.RefreshProductList,
+                    ParentToChildrenEvent.CouponsValidationFailed,
+                    is ParentToChildrenEvent.BarcodeEvent -> Unit
                 }
             }
         }
     }
 
-    private fun listenToPaymentsStatus() {
+    private fun onCartDataReceived(newCartData: List<WooPosItemsViewModel.ItemClickedData>) {
+        dataState.value = dataState.value.copy(itemClickedDataList = newCartData)
+        createOrderDraft(dataState.value.itemClickedDataList)
+    }
+
+    private fun listenToPaymentState() {
         viewModelScope.launch {
-            cardReaderFacade.paymentStatus.collect { status ->
-                when (status) {
-                    is WooPosCardReaderPaymentStatus.Success -> {
-                        val state = uiState.value
-                        check(state is WooPosTotalsViewState.Totals)
-                        val orderTotalText = resourceProvider.getString(
-                            R.string.woopos_success_screen_total,
-                            state.orderTotalText
-                        )
-                        uiState.value = WooPosTotalsViewState.PaymentSuccess(
-                            orderTotalText = orderTotalText,
-                            isReceiptAvailable = isReceiptsEnabled()
-                        )
-                        childrenToParentEventSender.sendToParent(ChildToParentEvent.OrderSuccessfullyPaid)
+            cardReaderPaymentController?.paymentState?.collect { paymentState ->
+                when (paymentState) {
+                    is CardReaderPaymentState.CollectingPayment -> handleCollectingPaymentState(paymentState)
+
+                    is CardReaderPaymentState.LoadingData -> handleReaderLoadingPaymentState()
+
+                    is CardReaderPaymentState.PaymentCapturing,
+                    is CardReaderPaymentState.ProcessingPayment -> {
+                        handleProcessingOrCapturingPaymentState()
                     }
-                    is WooPosCardReaderPaymentStatus.Failure,
-                    is WooPosCardReaderPaymentStatus.Unknown -> Unit
+
+                    is CardReaderPaymentState.PaymentSuccessful -> {
+                        childrenToParentEventSender.sendToParent(OrderSuccessfullyPaidByCard)
+                    }
+
+                    is CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment -> {
+                        uiState.value = buildPaymentFailedState(paymentState)
+                        childrenToParentEventSender.sendToParent(ChildToParentEvent.PaymentFailed)
+                    }
+
+                    CardReaderPaymentState.ReFetchingOrder -> Unit
+
+                    is CardReaderPaymentOrRefundState.CardReaderInteracRefundState,
+                    is CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment,
+                    is CardReaderPaymentState.PrintingReceipt,
+                    CardReaderPaymentState.SharingReceipt -> {
+                        throw IllegalArgumentException("Payment state: $paymentState not compatible with POS")
+                    }
                 }
             }
         }
+        viewModelScope.launch { totalsAnalyticsTracker.trackPaymentStates(cardReaderPaymentController?.paymentState) }
     }
 
-    private fun createOrderDraft(itemClickedDataList: List<WooPosItemsViewModel.ItemClickedData>) {
-        viewModelScope.launch {
-            uiState.value = WooPosTotalsViewState.Loading
-
-            totalsRepository.createOrderWithProducts(itemClickedDataList = itemClickedDataList)
-                .fold(
-                    onSuccess = { order ->
-                        dataState.value = dataState.value.copy(
-                            orderId = order.id,
-                            orderTotal = order.total
-                        )
-                        uiState.value = buildWooPosTotalsViewState(order)
-                        analyticsTracker.track(WooPosAnalyticsEvent.Event.OrderCreationSuccess)
-                    },
-                    onFailure = { error ->
-                        WooLog.e(T.POS, "Order creation failed - $error")
-                        uiState.value = WooPosTotalsViewState.Error(
-                            resourceProvider.getString(R.string.woopos_totals_order_creation_error)
-                        )
-                        analyticsTracker.track(
-                            WooPosAnalyticsEvent.Error.OrderCreationError(
-                                errorContext = WooPosTotalsViewModel::class,
-                                errorType = error::class.simpleName,
-                                errorDescription = error.message
-                            )
-                        )
-                    }
-                )
+    private suspend fun handleProcessingOrCapturingPaymentState() {
+        val state = uiState.value
+        if (state is WooPosTotalsViewState.Checkout) {
+            uiState.value = state.copy(totals = Totals.Hidden)
+            // allow the UI to show "shrinking" exit animation of totals grid before showing
+            // the "payment in progress" state.
+            @Suppress("MagicNumber")
+            delay(384)
         }
-    }
-
-    private suspend fun buildWooPosTotalsViewState(order: Order): WooPosTotalsViewState.Totals {
-        val subtotalAmount = order.productsTotal
-        val taxAmount = order.totalTax
-        val totalAmount = order.total
-
-        return WooPosTotalsViewState.Totals(
-            orderSubtotalText = priceFormat(subtotalAmount),
-            orderTaxText = priceFormat(taxAmount),
-            orderTotalText = priceFormat(totalAmount),
-            isCashPaymentAvailable = isCashPaymentsEnabled()
+        uiState.value = buildPaymentInProgressState()
+        childrenToParentEventSender.sendToParent(ChildToParentEvent.PaymentInProgress)
+        childrenToParentEventSender.sendToParent(
+            NavigationEvent.ReturnHomeFromCashWhenCardPaymentStarted
         )
     }
 
-    private fun initIsReceiptSendingSupportedValue() {
-        viewModelScope.launch {
-            isReceiptSendingSupportedValue.await()
+    private suspend fun handleCollectingPaymentState(paymentState: CardReaderPaymentState.CollectingPayment) {
+        val totalsState = uiState.value
+        if (totalsState is WooPosTotalsViewState.Checkout) {
+            uiState.value = totalsState.copy(
+                readerStatus = WooPosTotalsViewState.ReaderStatus.ReadyForPayment(
+                    title = resourceProvider.getString(R.string.woopos_totals_reader_ready_for_payment_title),
+                    subtitle = resourceProvider.getString(
+                        paymentState.cardReaderHint ?: R.string.woopos_totals_reader_ready_for_payment_subtitle
+                    )
+                )
+            )
+        } else {
+            val order = totalsRepository.getOrderById(dataState.value.orderId)
+            checkNotNull(order)
+            uiState.value = buildWooPosTotalsViewState(order)
+            childrenToParentEventSender.sendToParent(ChildToParentEvent.PaymentCollecting)
         }
     }
+
+    private suspend fun handleReaderLoadingPaymentState() {
+        val totalsState = uiState.value
+        if (totalsState is WooPosTotalsViewState.Checkout) {
+            uiState.value = totalsState.copy(
+                readerStatus = WooPosTotalsViewState.ReaderStatus.Preparing(
+                    title = resourceProvider.getString(R.string.woopos_totals_reader_getting_ready),
+                    subtitle = resourceProvider.getString(R.string.woopos_totals_reader_preparing_reader_for_payment)
+                )
+            )
+        } else {
+            val order = totalsRepository.getOrderById(dataState.value.orderId)
+            checkNotNull(order)
+            uiState.value = buildWooPosTotalsViewState(order)
+            childrenToParentEventSender.sendToParent(ChildToParentEvent.PaymentCollecting)
+        }
+    }
+
+    private fun buildPaymentFailedState(
+        state: CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment
+    ): PaymentFailed {
+        val isRetryAvailable = state.onRetry != null
+        val retryButtonLabel = if (isRetryAvailable) {
+            resourceProvider.getString(R.string.woo_pos_payment_failed_try_again)
+        } else {
+            resourceProvider.getString(R.string.woo_pos_payment_failed_try_another_payment_method)
+        }
+        return PaymentFailed(
+            title = resourceProvider.getString(
+                R.string.woopos_success_totals_payment_failed_title
+            ),
+            subtitle = uiStringParser.asString(state.errorType.message),
+            retryPaymentButtonLabel = retryButtonLabel,
+            isReturnToCheckoutButtonVisible = isRetryAvailable
+        )
+    }
+
+    private fun buildPaymentInProgressState(): PaymentInProgress {
+        return PaymentInProgress(
+            title = resourceProvider.getString(
+                R.string.woopos_success_totals_payment_processing_title
+            ),
+            subtitle = resourceProvider.getString(R.string.woopos_success_totals_payment_processing_subtitle)
+        )
+    }
+
+    override fun onCleared() {
+        cardReaderPaymentController?.stop()
+    }
+
+    private fun createOrderDraft(itemClickedDataList: List<WooPosItemsViewModel.ItemClickedData>) {
+        createDraftOrderJob?.cancel()
+        createDraftOrderJob = viewModelScope.launch {
+            uiState.value = WooPosTotalsViewState.Loading
+
+            totalsRepository.createOrderFromCartItems(itemClickedDataList = itemClickedDataList)
+                .fold(
+                    onSuccess = { order -> handleCreatedOrder(order) },
+                    onFailure = { error ->
+                        onCreateOrderDraftFails(error)
+                    }
+                )
+            createDraftOrderJob = null
+        }
+    }
+
+    private suspend fun onCreateOrderDraftFails(exception: Throwable) {
+        wooPosLogWrapper.e("Order creation failed - $exception")
+        val wooError = (exception as? WooException)?.error
+        if (wooError != null && wooError.type == WooErrorType.INVALID_COUPON) {
+            uiState.value = WooPosTotalsViewState.InvalidCouponError(
+                message = resourceProvider.getString(R.string.woopos_totals_invalid_coupon_error),
+                reason = wooError.message ?: ""
+            )
+            childrenToParentEventSender.sendToParent(ChildToParentEvent.CouponsValidationFailed)
+        } else {
+            uiState.value = WooPosTotalsViewState.Error(
+                resourceProvider.getString(R.string.woopos_totals_order_creation_error)
+            )
+        }
+        totalsAnalyticsTracker.trackOrderCreationFailed(exception)
+    }
+
+    private suspend fun handleCreatedOrder(order: Order) {
+        notifyCartAboutOrderCreation(order)
+        dataState.value = dataState.value.copy(
+            orderId = order.id,
+            orderTotal = order.total
+        )
+        uiState.value = buildWooPosTotalsViewState(order)
+        totalsAnalyticsTracker.trackOrderCreationSuccess()
+        collectPayment()
+    }
+
+    private fun notifyCartAboutOrderCreation(order: Order) {
+        viewModelScope.launch {
+            childrenToParentEventSender.sendToParent(
+                ChildToParentEvent.OrderCreated(
+                    updatedProducts = mapItemLines(order),
+                    updatedCoupons = mapCouponLines(order)
+                )
+            )
+        }
+    }
+
+    private fun mapItemLines(order: Order) = order.items.map {
+        val basePrice = if (order.pricesIncludeTax) {
+            it.subtotal + it.subtotalTax
+        } else {
+            it.subtotal
+        }
+        when {
+            it.variationId == 0L -> {
+                ChildToParentEvent.OrderCreated.ProductInfo.Simple(
+                    id = it.productId,
+                    name = it.name,
+                    finalPrice = it.price,
+                    basePrice = basePrice,
+                    quantity = it.quantity
+                )
+            }
+
+            else -> {
+                ChildToParentEvent.OrderCreated.ProductInfo.Variation(
+                    id = it.productId,
+                    name = it.name,
+                    finalPrice = it.price,
+                    quantity = it.quantity,
+                    basePrice = basePrice,
+                    variationId = it.variationId
+                )
+            }
+        }
+    }
+
+    private fun mapCouponLines(order: Order) = order.couponLines
+        .mapNotNull { coupon ->
+            coupon.takeIf { it.id != null && !it.discount.isNullOrEmpty() }?.let {
+                try {
+                    CouponInfo(
+                        id = requireNotNull(it.id),
+                        code = it.code,
+                        discountAmount = BigDecimal(it.discount)
+                    )
+                } catch (e: NumberFormatException) {
+                    wooPosLogWrapper.e(
+                        "Parsing coupon failed, discount: ${it.discount}, code: ${it.code}, id: ${it.id}, $e"
+                    )
+                    null
+                }
+            } ?: null.also {
+                wooPosLogWrapper.e(
+                    "Coupon info is null or empty: ${coupon.code}, coupon id: ${coupon.id}"
+                )
+            }
+        }
+
+    private fun showSuccessfulPaymentState(paymentMethod: PaymentMethod) {
+        viewModelScope.launch {
+            val dataState = dataState.value
+            checkNotNull(dataState.orderTotal)
+            val template = when (paymentMethod) {
+                PaymentMethod.CARD -> R.string.woopos_totals_success_payment_card
+                PaymentMethod.CASH -> R.string.woopos_totals_success_payment_cash
+            }
+            val orderTotalText = resourceProvider.getString(
+                template,
+                priceFormat(dataState.orderTotal)
+            )
+            uiState.value = WooPosTotalsViewState.PaymentSuccess(
+                orderTotalText = orderTotalText
+            )
+        }
+    }
+
+    private suspend fun buildWooPosTotalsViewState(order: Order): WooPosTotalsViewState.Checkout {
+        val discountAmount = order.discountTotal
+        val subtotalAmount = order.productsTotal
+        val taxAmount = order.totalTax
+        val totalAmount = order.total
+        val readerStatus = if (totalAmount.compareTo(BigDecimal.ZERO) == 0) {
+            WooPosTotalsViewState.ReaderStatus.Unavailable
+        } else {
+            when (cardReaderFacade.readerStatus.value) {
+                is Connected -> buildPreparingReaderStatusState()
+                else -> buildTotalsReaderNotConnectedError()
+            }
+        }
+        return WooPosTotalsViewState.Checkout(
+            totals = Totals.Visible(
+                orderDiscountText = if (discountAmount > BigDecimal.ZERO) {
+                    "-${priceFormat(discountAmount)}"
+                } else {
+                    null
+                },
+                orderSubtotalText = priceFormat(subtotalAmount),
+                orderTaxText = priceFormat(taxAmount),
+                orderTotalText = priceFormat(totalAmount),
+            ),
+            readerStatus = readerStatus,
+        )
+    }
+
+    private fun buildTotalsReaderNotConnectedError(): WooPosTotalsViewState.ReaderStatus.Disconnected =
+        WooPosTotalsViewState.ReaderStatus.Disconnected(
+            title = resourceProvider.getString(R.string.woopos_success_totals_error_reader_not_connected_title),
+            subtitle = resourceProvider.getString(R.string.woopos_success_totals_error_reader_not_connected_subtitle),
+            actionButtonLabel = resourceProvider.getString(
+                R.string.woopos_success_totals_error_reader_not_connected_cta_button_label
+            ),
+        )
 
     @Parcelize
     private data class TotalsDataState(

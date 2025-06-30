@@ -29,13 +29,15 @@ class AdjustProductQuantity @Inject constructor() {
                 val newQuantity = quantity + quantityToAdd
                 val discountAmount = subtotal - total
                 val newSubtotal = pricePreDiscount.multiply(newQuantity.toBigDecimal())
-                items[0L] = copy(
-                    itemId = 0L,
-                    quantity = newQuantity,
-                    subtotal = newSubtotal,
-                    total = newSubtotal - discountAmount,
-                    configuration = groupedProduct.getConfiguration()
-                )
+                if (newQuantity > 0) {
+                    items[0L] = copy(
+                        itemId = 0L,
+                        quantity = newQuantity,
+                        subtotal = newSubtotal,
+                        total = newSubtotal - discountAmount,
+                        configuration = groupedProduct.getConfiguration()
+                    )
+                }
             }
             for (child in product.children) {
                 val updatedItem = items[child.item.itemId]?.copy(quantity = 0f) ?: continue

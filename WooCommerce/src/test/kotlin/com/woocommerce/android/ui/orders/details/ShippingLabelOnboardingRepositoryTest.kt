@@ -16,6 +16,7 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import org.mockito.kotlin.wheneverBlocking
 import java.util.Date
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -52,7 +53,7 @@ class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Given WC shipping not ready, when order is eligible for shipping label, then show shipping banner is true`() {
+    fun `Given WC shipping not ready, when order is eligible for shipping label, then show shipping banner is true`() = testBlocking {
         givenWCLegacyShippingPlugin(installed = false, active = false)
         givenStoreCountryCode(SUPPORTED_WCS_COUNTRY)
 
@@ -62,7 +63,7 @@ class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Given WC shipping is active, when order is eligible for shipping label, then show shipping banner is false`() {
+    fun `Given WC shipping is active, when order is eligible for shipping label, then show shipping banner is false`() = testBlocking {
         givenWCLegacyShippingPlugin(installed = true, active = true)
         givenStoreCountryCode(SUPPORTED_WCS_COUNTRY)
 
@@ -72,7 +73,7 @@ class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Given WC shipping not ready, when site is not in the US, then show shipping banner is false`() {
+    fun `Given WC shipping not ready, when site is not in the US, then show shipping banner is false`() = testBlocking {
         givenWCLegacyShippingPlugin(installed = false, active = false)
         givenStoreCountryCode("ES")
 
@@ -82,7 +83,7 @@ class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Given WC shipping not ready, when order is not in USD, then show shipping banner is false`() {
+    fun `Given WC shipping not ready, when order is not in USD, then show shipping banner is false`() = testBlocking {
         givenWCLegacyShippingPlugin(installed = false, active = false)
         givenStoreCountryCode(SUPPORTED_WCS_COUNTRY)
 
@@ -92,7 +93,7 @@ class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Given WC shipping not ready, when order has only virtual products, then show shipping banner is false`() {
+    fun `Given WC shipping not ready, when order has only virtual products, then show shipping banner is false`() = testBlocking {
         givenWCLegacyShippingPlugin(installed = false, active = false)
         givenStoreCountryCode(SUPPORTED_WCS_COUNTRY)
         givenOrderHasVirtualProductsOnly()
@@ -103,7 +104,7 @@ class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Given WC shipping not ready, when order is eligible for SL and IPP, then show shipping banner is false`() {
+    fun `Given WC shipping not ready, when order is eligible for SL and IPP, then show shipping banner is false`() = testBlocking {
         givenWCLegacyShippingPlugin(installed = false, active = false)
         givenStoreCountryCode(SUPPORTED_WCS_COUNTRY)
 
@@ -113,7 +114,7 @@ class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Given WC shipping not ready, when install WCS banner is dismissed, then show shipping banner is false`() {
+    fun `Given WC shipping not ready, when install WCS banner is dismissed, then show shipping banner is false`() = testBlocking {
         givenWCLegacyShippingPlugin(installed = false, active = false)
         givenStoreCountryCode(SUPPORTED_WCS_COUNTRY)
         givenWcShippingBannerIsDismissed(dismissed = true)
@@ -200,8 +201,9 @@ class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
     }
 
     private fun givenOrderHasVirtualProductsOnly() {
-        whenever(orderDetailRepository.hasVirtualProductsOnly(any()))
-            .thenReturn(true)
+        wheneverBlocking {
+            orderDetailRepository.hasVirtualProductsOnly(any())
+        }.thenReturn(true)
     }
 
     private fun givenWcShippingBannerIsDismissed(dismissed: Boolean) {

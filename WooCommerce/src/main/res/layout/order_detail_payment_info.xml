@@ -434,16 +434,20 @@
                     style="@style/Woo.TextView.Caption"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginVertical="@dimen/major_100"
-                    android:layout_marginTop="@dimen/major_100"
+                    android:layout_marginTop="@dimen/minor_100"
                     android:background="?attr/selectableItemBackground"
                     android:drawableStart="@drawable/ic_deprecated_info_outline_24dp"
                     android:drawablePadding="@dimen/major_100"
                     android:gravity="center_vertical"
+                    android:layout_marginStart="0dp"
+                    android:layout_marginEnd="0dp"
+                    android:paddingHorizontal="@dimen/major_100"
+                    android:paddingVertical="@dimen/minor_100"
                     android:text="@string/orderdetail_printing_instructions_button"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/paymentInfo_issueRefundButton" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </LinearLayout>

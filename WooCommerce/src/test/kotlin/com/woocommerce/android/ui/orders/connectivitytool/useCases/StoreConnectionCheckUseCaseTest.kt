@@ -6,6 +6,7 @@ import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatu
 import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.InProgress
 import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.Success
 import com.woocommerce.android.ui.orders.connectivitytool.FailureType
+import com.woocommerce.android.util.WCSSRModelCachingFetcher
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.launchIn
@@ -27,12 +28,14 @@ class StoreConnectionCheckUseCaseTest : BaseUnitTest() {
     private lateinit var sut: StoreConnectionCheckUseCase
     private lateinit var wooCommerceStore: WooCommerceStore
     private lateinit var selectedSite: SelectedSite
+    private lateinit var ssrFetcher: WCSSRModelCachingFetcher
 
     @Before
     fun setUp() {
         wooCommerceStore = mock()
         selectedSite = mock()
-        sut = StoreConnectionCheckUseCase(wooCommerceStore, selectedSite)
+        ssrFetcher = mock()
+        sut = StoreConnectionCheckUseCase(selectedSite, ssrFetcher)
     }
 
     @Test
@@ -45,7 +48,7 @@ class StoreConnectionCheckUseCaseTest : BaseUnitTest() {
                 original = BaseRequest.GenericErrorType.NETWORK_ERROR
             )
         )
-        whenever(wooCommerceStore.fetchSSR(selectedSite.get())).thenReturn(response)
+        whenever(ssrFetcher.load(selectedSite.get())).thenReturn(response)
 
         // When
         sut.invoke().onEach {
@@ -66,7 +69,7 @@ class StoreConnectionCheckUseCaseTest : BaseUnitTest() {
                 original = BaseRequest.GenericErrorType.NETWORK_ERROR
             )
         )
-        whenever(wooCommerceStore.fetchSSR(selectedSite.get())).thenReturn(response)
+        whenever(ssrFetcher.load(selectedSite.get())).thenReturn(response)
 
         // When
         sut.invoke().onEach {
@@ -87,7 +90,7 @@ class StoreConnectionCheckUseCaseTest : BaseUnitTest() {
                 original = BaseRequest.GenericErrorType.NETWORK_ERROR
             )
         )
-        whenever(wooCommerceStore.fetchSSR(selectedSite.get())).thenReturn(response)
+        whenever(ssrFetcher.load(selectedSite.get())).thenReturn(response)
 
         // When
         sut.invoke().onEach {
@@ -108,7 +111,7 @@ class StoreConnectionCheckUseCaseTest : BaseUnitTest() {
                 original = BaseRequest.GenericErrorType.NETWORK_ERROR
             )
         )
-        whenever(wooCommerceStore.fetchSSR(selectedSite.get())).thenReturn(response)
+        whenever(ssrFetcher.load(selectedSite.get())).thenReturn(response)
 
         // When
         sut.invoke().onEach {
@@ -124,7 +127,7 @@ class StoreConnectionCheckUseCaseTest : BaseUnitTest() {
         // Given
         val stateEvents = mutableListOf<ConnectivityCheckStatus>()
         val response = WooResult(WCSSRModel(remoteSiteId = 123L))
-        whenever(wooCommerceStore.fetchSSR(selectedSite.get())).thenReturn(response)
+        whenever(ssrFetcher.load(selectedSite.get())).thenReturn(response)
 
         // When
         sut.invoke().onEach {

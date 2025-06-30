@@ -56,7 +56,7 @@ class PrivacySettingsViewModel @Inject constructor(
 
                 event.onFailure {
                     triggerEvent(
-                        MultiLiveEvent.Event.ShowActionSnackbar(
+                        MultiLiveEvent.Event.ShowActionStringSnackbar(
                             message = resourceProvider.getString(R.string.settings_tracking_analytics_error_fetch),
                             actionText = resourceProvider.getString(R.string.retry),
                         ) {
@@ -70,7 +70,7 @@ class PrivacySettingsViewModel @Inject constructor(
                         args.requestedAnalyticsValue == RequestedAnalyticsValue.ENABLED
 
                     triggerEvent(
-                        MultiLiveEvent.Event.ShowActionSnackbar(
+                        MultiLiveEvent.Event.ShowActionStringSnackbar(
                             message = resourceProvider.getString(R.string.settings_tracking_analytics_error_update),
                             actionText = resourceProvider.getString(R.string.retry),
                         ) { onSendStatsSettingChanged(checked) }
@@ -121,7 +121,7 @@ class PrivacySettingsViewModel @Inject constructor(
                     onFailure = {
                         analyticsTrackerWrapper.sendUsageStats = !checked
                         triggerEvent(
-                            MultiLiveEvent.Event.ShowActionSnackbar(
+                            MultiLiveEvent.Event.ShowActionStringSnackbar(
                                 message = resourceProvider.getString(R.string.settings_tracking_analytics_error_update),
                                 actionText = resourceProvider.getString(R.string.retry),
                             ) { onSendStatsSettingChanged(checked) }

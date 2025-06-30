@@ -34,6 +34,10 @@ class ProductInventoryViewModel @Inject constructor(
     private val navArgs: ProductInventoryFragmentArgs by savedState.navArgs()
     private val isProduct = navArgs.requestCode == RequestCodes.PRODUCT_DETAIL_INVENTORY
 
+    private var _lastClickedBarcodeButton: Int? = null
+    val lastClickedBarcodeButton: Int?
+        get() = _lastClickedBarcodeButton
+
     /**
      * Saving more data than necessary into the SavedState has associated risks which were not known at the time this
      * field was implemented - after we ensure we don't save unnecessary data, we can replace @Suppress("OPT_IN_USAGE")
@@ -71,10 +75,12 @@ class ProductInventoryViewModel @Inject constructor(
      * in the local db. Only if it is not available, the API verification call is initiated.
      */
     fun onSkuChanged(sku: String) {
-        // verify if the sku exists only if the text entered by the user does not match the sku stored locally
-        if (sku.length > 2) {
-            onDataChanged(sku = sku)
-
+        if (sku == viewState.inventoryData.sku) {
+            return
+        }
+        onDataChanged(sku = sku)
+        skuVerificationJob?.cancel()
+        if (sku.isNotEmpty()) {
             if (sku == originalSku) {
                 clearSkuError()
             } else {
@@ -84,14 +90,9 @@ class ProductInventoryViewModel @Inject constructor(
                     clearSkuError()
                 }
 
-                // cancel any existing verification search, then start a new one after a brief delay
-                // so we don't actually perform the fetch until the user stops typing
-                skuVerificationJob?.cancel()
                 skuVerificationJob = launch {
                     delay(AppConstants.SEARCH_TYPING_DELAY_MS)
 
-                    // only after the SKU is available remotely, reset the error if it's available locally, as well
-                    // to avoid showing/hiding error message
                     productRepository.isSkuAvailableRemotely(sku)?.let { isRemotelyAvailable ->
                         if (isRemotelyAvailable) {
                             clearSkuError()
@@ -101,13 +102,18 @@ class ProductInventoryViewModel @Inject constructor(
                     }
                 }
             }
+        } else {
+            clearSkuError()
         }
     }
 
     fun onProductUniqueGlobalIdChanged(globalUniqueId: String) {
+        if (globalUniqueId == viewState.inventoryData.globalUniqueId) {
+            return
+        }
         onDataChanged(globalUniqueId = globalUniqueId)
 
-        if (isOnlyNumbersAndHyphens(globalUniqueId)) {
+        if (isOnlyNumbersAndHyphensOrEmpty(globalUniqueId)) {
             clearGlobalUniqueIdError()
         } else {
             showGlobalUniqueIdError()
@@ -142,9 +148,22 @@ class ProductInventoryViewModel @Inject constructor(
             mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChanges)
         )
         if (hasChanges && !hasSkuError() && !hasGlobalUniqueIdError()) {
+            trackGlobalUniqueIdChangeIfNecessary()
             triggerEvent(ExitWithResult(inventoryData))
         } else {
             triggerEvent(Exit)
+        }
+    }
+
+    fun updateLastClickedBarcodeButton(buttonId: Int?) {
+        _lastClickedBarcodeButton = buttonId
+    }
+
+    private fun trackGlobalUniqueIdChangeIfNecessary() {
+        if (inventoryData.globalUniqueId != originalInventoryData.globalUniqueId) {
+            analyticsTracker.track(
+                AnalyticsEvent.PRODUCT_INVENTORY_SETTINGS_GLOBAL_UNIQUE_IDENTIFIER_FIELD_EDITED
+            )
         }
     }
 
@@ -169,11 +188,9 @@ class ProductInventoryViewModel @Inject constructor(
     private fun hasGlobalUniqueIdError() = viewState.globalUniqueIdErrorMessage != 0 &&
         viewState.globalUniqueIdErrorMessage != null
 
-    private fun isOnlyNumbersAndHyphens(input: String): Boolean {
-        // Define the regex pattern to match only numbers and hyphens
+    private fun isOnlyNumbersAndHyphensOrEmpty(input: String): Boolean {
         val pattern = "^[0-9-]+$"
-        // Check if the input string matches the pattern
-        return input.matches(pattern.toRegex())
+        return input.isEmpty() || input.matches(pattern.toRegex())
     }
 
     override fun onCleared() {

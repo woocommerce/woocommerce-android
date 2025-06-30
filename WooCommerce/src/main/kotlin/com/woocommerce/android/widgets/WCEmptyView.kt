@@ -124,8 +124,8 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
                 isTitleBold = false
                 title = null
                 message = context.getString(R.string.product_list_empty)
-                buttonText = null
-                drawableId = R.drawable.img_empty_products
+                buttonText = context.getString(R.string.grouped_product_add)
+                drawableId = R.drawable.img_empty_grouped_product
             }
 
             ORDER_LIST -> {

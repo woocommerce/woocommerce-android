@@ -29,6 +29,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.mockito.ArgumentMatchers.anyBoolean
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
@@ -63,7 +64,7 @@ class DashboardCouponsViewModelTest : BaseUnitTest() {
     private val couponRepository: CouponRepository = mock {
         onBlocking { fetchMostActiveCoupons(any(), any()) } doReturn Result.success(sampleCouponReports)
         onBlocking { getCoupons(any()) } doReturn sampleCoupons
-        onBlocking { fetchCoupons(any(), any(), any()) } doReturn Result.success(false)
+        onBlocking { fetchCoupons(any(), any(), any(), anyBoolean()) } doReturn Result.success(false)
         on { observeCoupons(any()) } doReturn flowOf(sampleCoupons)
     }
     private val couponUtils: CouponUtils = mock {
@@ -74,7 +75,7 @@ class DashboardCouponsViewModelTest : BaseUnitTest() {
 
         on { getActiveCouponsTab() } doAnswer { prefFlow.value }
         on { setActiveCouponsTab(any()) } doAnswer { prefFlow.value = it.arguments[0] as String }
-        on { observePrefs() } doAnswer { prefFlow.map { Unit } }
+        on { observePrefs() } doAnswer { prefFlow.map {} }
     }
     private val dateUtils: DateUtils = mock()
     private val parameterRepository: ParameterRepository = mock {

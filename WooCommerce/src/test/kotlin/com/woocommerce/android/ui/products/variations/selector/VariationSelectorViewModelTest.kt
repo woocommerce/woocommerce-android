@@ -34,6 +34,27 @@ class VariationSelectorViewModelTest : BaseUnitTest() {
     private val productSelectorTracker: ProductSelectorTracker = ProductSelectorTracker(tracker)
 
     @Test
+    fun `given order creation flow, when view model is initiated, should call fetchVariations with order currency`() = testBlocking {
+        val navArgs = VariationSelectorFragmentArgs(
+            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+            productId = 1L,
+            variationIds = longArrayOf(2L, 3L),
+            productSource = ProductSourceForTracking.ALPHABETICAL,
+            screenMode = VariationSelectorViewModel.ScreenMode.FULLSCREEN,
+            orderCurrency = "USD"
+        ).toSavedStateHandle()
+
+        createViewModel(navArgs)
+
+        verify(listHandler).fetchVariations(
+            1L,
+            forceRefresh = true,
+            filterOptions = null,
+            orderCurrency = "USD"
+        )
+    }
+
+    @Test
     fun `given order creation flow, when item is unselected, should track analytic event`() = testBlocking {
         val navArgs = VariationSelectorFragmentArgs(
             productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,

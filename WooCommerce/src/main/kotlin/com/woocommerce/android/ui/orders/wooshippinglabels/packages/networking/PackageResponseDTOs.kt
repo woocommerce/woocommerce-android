@@ -2,8 +2,9 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.packages.networking
 
 import com.google.gson.annotations.SerializedName
 
-class CustomPackageCreationResponse {
+class PackageCreationResponse {
     val custom: List<CustomPackageDTO>? = null
+    val predefined: Map<String, List<String>>? = null
 }
 
 data class CustomPackageCreationRequestData(

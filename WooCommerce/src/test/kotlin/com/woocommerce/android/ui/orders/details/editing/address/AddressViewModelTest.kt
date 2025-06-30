@@ -35,21 +35,10 @@ import org.wordpress.android.fluxc.store.WCDataStore
 class AddressViewModelTest : BaseUnitTest() {
     private val savedStateHandle: SavedStateHandle = SavedStateHandle()
     private val selectedSite: SelectedSite = mock()
-    private val newCountry = WCLocationModel().apply {
-        name = "Brazil"
-        code = "BR"
-    }
 
-    private val newState = WCLocationModel().apply {
-        name = "Acre"
-        code = "AC"
-        parentCode = "BR"
-    }
-
-    private val newCountryWithoutStates = WCLocationModel().apply {
-        name = "Country without states"
-        code = "123"
-    }
+    private val newCountry = WCLocationModel(name = "Brazil", code = "BR")
+    private val newState = WCLocationModel(name = "Acre", code = "AC", parentCode = "BR")
+    private val newCountryWithoutStates = WCLocationModel(name = "Country without states", code = "123")
 
     private val dataStore: WCDataStore = mock {
         on { getCountries() } doReturn listOf(newCountry, newCountryWithoutStates)

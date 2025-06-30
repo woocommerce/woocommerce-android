@@ -5,6 +5,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -93,6 +94,10 @@ class ProductCategorySelectorViewModel @Inject constructor(
 
     fun onDoneClick() {
         triggerEvent(ExitWithResult(selectedCategories.value))
+    }
+
+    fun onBackPressed() {
+        triggerEvent(MultiLiveEvent.Event.Exit)
     }
 
     private fun monitorSearchQuery() {

@@ -6,23 +6,30 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
-import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.handleDialogResult
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PackageSelected
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PackageType
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.ShowLoadingDialog
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.ShowPackageTypeDialog
-import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.ShowTemplateCreationErrorDialog
+import com.woocommerce.android.widgets.CustomProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class WooShippingLabelPackageCreationFragment : BaseFragment() {
     val viewModel: WooShippingLabelPackageCreationViewModel by viewModels()
+
+    private var progressDialog: CustomProgressDialog? = null
+
+    override fun getFragmentTitle() = getString(R.string.shipping_label_package_title)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return ComposeView(requireContext()).apply {
@@ -45,7 +52,9 @@ class WooShippingLabelPackageCreationFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ShowPackageTypeDialog -> handlePackageTypeSelection(event.currentSelection)
-                is PackageSelected -> handlePackageDataAsResult(event.packageData)
+                is ShowLoadingDialog -> showLoadingDialog(event.show)
+                is ShowTemplateCreationErrorDialog -> handleTemplateCreationError()
+                is PackageSelected -> navigateBackWithResult(PACKAGE_SELECTION_RESULT, event.packageData)
             }
         }
     }
@@ -73,10 +82,28 @@ class WooShippingLabelPackageCreationFragment : BaseFragment() {
             ).let { findNavController().navigateSafely(it) }
     }
 
-    private fun handlePackageDataAsResult(packageData: PackageData) {
-        setFragmentResult(
-            PACKAGE_SELECTION_RESULT,
-            Bundle().apply { putParcelable(PACKAGE_SELECTION_RESULT, packageData) }
+    private fun showLoadingDialog(show: Boolean) {
+        if (show) {
+            progressDialog = CustomProgressDialog.show(
+                title = getString(R.string.loading),
+                message = getString(R.string.please_wait)
+            ).also { it.show(parentFragmentManager, CustomProgressDialog.TAG) }
+        } else {
+            progressDialog?.dismiss()
+            progressDialog = null
+        }
+    }
+
+    private fun handleTemplateCreationError() {
+        WooDialog.showDialog(
+            activity = requireActivity(),
+            titleId = R.string.woo_shipping_labels_package_creation_error_title,
+            messageId = R.string.woo_shipping_labels_package_creation_error_message,
+            positiveButtonId = R.string.woo_shipping_labels_package_creation_error_proceed,
+            neutralButtonId = R.string.woo_shipping_labels_package_creation_error_cancel,
+            posBtnAction = { _, _ ->
+                viewModel.onAddCustomPackageClick(savePackageAsTemplate = false)
+            }
         )
     }
 

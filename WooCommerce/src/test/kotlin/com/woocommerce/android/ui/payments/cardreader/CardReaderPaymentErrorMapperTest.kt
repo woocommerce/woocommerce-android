@@ -1,16 +1,13 @@
 package com.woocommerce.android.ui.payments.cardreader
 
 import com.woocommerce.android.R
-import com.woocommerce.android.cardreader.config.CardReaderConfigForCanada
-import com.woocommerce.android.cardreader.config.CardReaderConfigForGB
-import com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry
-import com.woocommerce.android.cardreader.config.CardReaderConfigForUSA
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByBackendError
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentErrorMapper
 import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError
-import com.woocommerce.android.util.SiteIndependentCurrencyFormatter
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.ResourceProvider
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -22,9 +19,8 @@ class CardReaderPaymentErrorMapperTest {
         on { getString(R.string.card_reader_payment_failed_amount_too_small) }
             .thenReturn("Amount must be at least %1\$s")
     }
-    private val currencyFormatter: SiteIndependentCurrencyFormatter = mock()
+    private val currencyFormatter: CurrencyFormatter = mock()
     private val mapper = CardReaderPaymentErrorMapper(resources, currencyFormatter)
-    private var config: CardReaderConfigForSupportedCountry = mock()
 
     @Test
     fun `given CardReaderTimeOut error, when map to ui error, then Generic error returned`() {
@@ -32,7 +28,7 @@ class CardReaderPaymentErrorMapperTest {
         val error = CardPaymentStatusErrorType.CardReadTimeOut
 
         // WHEN
-        val result = mapper.mapPaymentErrorToUiError(error, config, false)
+        val result = mapper.mapPaymentErrorToUiError(error, false)
 
         // THEN
         assertThat(result).isEqualTo(PaymentFlowError.Generic)
@@ -46,7 +42,7 @@ class CardReaderPaymentErrorMapperTest {
         val error = CardPaymentStatusErrorType.NoNetwork
 
         // WHEN
-        val result = mapper.mapPaymentErrorToUiError(error, config, false)
+        val result = mapper.mapPaymentErrorToUiError(error, false)
 
         // THEN
         assertThat(result).isEqualTo(PaymentFlowError.NoNetwork)
@@ -60,7 +56,7 @@ class CardReaderPaymentErrorMapperTest {
         val error = CardPaymentStatusErrorType.Server("")
 
         // WHEN
-        val result = mapper.mapPaymentErrorToUiError(error, config, false)
+        val result = mapper.mapPaymentErrorToUiError(error, false)
 
         // THEN
         assertThat(result).isEqualTo(PaymentFlowError.Server)
@@ -74,7 +70,7 @@ class CardReaderPaymentErrorMapperTest {
         val error = CardPaymentStatusErrorType.Generic
 
         // WHEN
-        val result = mapper.mapPaymentErrorToUiError(error, config, false)
+        val result = mapper.mapPaymentErrorToUiError(error, false)
 
         // THEN
         assertThat(result).isEqualTo(PaymentFlowError.Generic)
@@ -85,16 +81,19 @@ class CardReaderPaymentErrorMapperTest {
     @Test
     fun `given UK store and AmountTooSmall error, when map to ui error, then AmountTooSmall error returned`() {
         // GIVEN
-        val error = CardPaymentStatusErrorType.DeclinedByBackendError.AmountTooSmall
-        config = CardReaderConfigForGB
+        val error = DeclinedByBackendError.AmountTooSmallWooPayments(
+            "Amount must be at least US$0.50",
+            30,
+            "GPB"
+        )
         whenever(
-            currencyFormatter.formatAmountWithCurrency(
-                config.minimumAllowedChargeAmount.toDouble(),
-                config.currency
+            currencyFormatter.formatCurrencyGivenInTheSmallestCurrencyUnit(
+                30L,
+                "GPB"
             )
         ).thenReturn("£0.30")
         // WHEN
-        val result = mapper.mapPaymentErrorToUiError(error, config, false)
+        val result = mapper.mapPaymentErrorToUiError(error, false)
 
         // THEN
         assertThat(result).isEqualTo(
@@ -107,17 +106,20 @@ class CardReaderPaymentErrorMapperTest {
     @Test
     fun `given US store and AmountTooSmall error, when map to ui error, then AmountTooSmall error returned`() {
         // GIVEN
-        val error = CardPaymentStatusErrorType.DeclinedByBackendError.AmountTooSmall
-        config = CardReaderConfigForUSA
+        val error = DeclinedByBackendError.AmountTooSmallWooPayments(
+            "Amount must be at least US$0.50",
+            50,
+            "USD"
+        )
         whenever(
-            currencyFormatter.formatAmountWithCurrency(
-                config.minimumAllowedChargeAmount.toDouble(),
-                config.currency
+            currencyFormatter.formatCurrencyGivenInTheSmallestCurrencyUnit(
+                50L,
+                "USD"
             )
         ).thenReturn("US$0.50")
 
         // WHEN
-        val result = mapper.mapPaymentErrorToUiError(error, config, false)
+        val result = mapper.mapPaymentErrorToUiError(error, false)
 
         // THEN
         assertThat(result).isEqualTo(
@@ -130,17 +132,20 @@ class CardReaderPaymentErrorMapperTest {
     @Test
     fun `given CA store and AmountTooSmall error, when map to ui error, then AmountTooSmall error returned`() {
         // GIVEN
-        val error = CardPaymentStatusErrorType.DeclinedByBackendError.AmountTooSmall
-        config = CardReaderConfigForCanada
+        val error = DeclinedByBackendError.AmountTooSmallWooPayments(
+            "Amount must be at least CA$0.50",
+            50,
+            "CAD"
+        )
         whenever(
-            currencyFormatter.formatAmountWithCurrency(
-                config.minimumAllowedChargeAmount.toDouble(),
-                config.currency
+            currencyFormatter.formatCurrencyGivenInTheSmallestCurrencyUnit(
+                50L,
+                "CAD"
             )
         ).thenReturn("CA$0.50")
 
         // WHEN
-        val result = mapper.mapPaymentErrorToUiError(error, config, false)
+        val result = mapper.mapPaymentErrorToUiError(error, false)
 
         // THEN
         assertThat(result).isEqualTo(
@@ -153,10 +158,10 @@ class CardReaderPaymentErrorMapperTest {
     @Test
     fun `given Temporary error, when map to ui error, then Temporary error returned`() {
         // GIVEN
-        val error = CardPaymentStatusErrorType.DeclinedByBackendError.CardDeclined.Temporary
+        val error = DeclinedByBackendError.CardDeclined.Temporary
 
         // WHEN
-        val result = mapper.mapPaymentErrorToUiError(error, config, false)
+        val result = mapper.mapPaymentErrorToUiError(error, false)
 
         // THEN
         assertThat(result).isEqualTo(PaymentFlowError.Declined.Temporary)
@@ -167,10 +172,10 @@ class CardReaderPaymentErrorMapperTest {
     @Test
     fun `given Fraud error, when map to ui error, then Fraud error returned`() {
         // GIVEN
-        val error = CardPaymentStatusErrorType.DeclinedByBackendError.CardDeclined.Fraud
+        val error = DeclinedByBackendError.CardDeclined.Fraud
 
         // WHEN
-        val result = mapper.mapPaymentErrorToUiError(error, config, false)
+        val result = mapper.mapPaymentErrorToUiError(error, false)
 
         // THEN
         assertThat(result).isEqualTo(PaymentFlowError.Declined.Fraud)
@@ -181,10 +186,10 @@ class CardReaderPaymentErrorMapperTest {
     @Test
     fun `given Generic card declined error, when map to ui error, then Generic error returned`() {
         // GIVEN
-        val error = CardPaymentStatusErrorType.DeclinedByBackendError.CardDeclined.Generic
+        val error = DeclinedByBackendError.CardDeclined.Generic
 
         // WHEN
-        val result = mapper.mapPaymentErrorToUiError(error, config, false)
+        val result = mapper.mapPaymentErrorToUiError(error, false)
 
         // THEN
         assertThat(result).isEqualTo(PaymentFlowError.Declined.Generic)
@@ -195,10 +200,10 @@ class CardReaderPaymentErrorMapperTest {
     @Test
     fun `given InvalidAccount error, when map to ui error, then InvalidAccount error returned`() {
         // GIVEN
-        val error = CardPaymentStatusErrorType.DeclinedByBackendError.CardDeclined.InvalidAccount
+        val error = DeclinedByBackendError.CardDeclined.InvalidAccount
 
         // WHEN
-        val result = mapper.mapPaymentErrorToUiError(error, config, false)
+        val result = mapper.mapPaymentErrorToUiError(error, false)
 
         // THEN
         assertThat(result).isEqualTo(PaymentFlowError.Declined.InvalidAccount)
@@ -209,10 +214,10 @@ class CardReaderPaymentErrorMapperTest {
     @Test
     fun `given CardNotSupported error, when map to ui error, then CardNotSupported error returned`() {
         // GIVEN
-        val error = CardPaymentStatusErrorType.DeclinedByBackendError.CardDeclined.CardNotSupported
+        val error = DeclinedByBackendError.CardDeclined.CardNotSupported
 
         // WHEN
-        val result = mapper.mapPaymentErrorToUiError(error, config, false)
+        val result = mapper.mapPaymentErrorToUiError(error, false)
 
         // THEN
         assertThat(result).isEqualTo(PaymentFlowError.Declined.CardNotSupported)
@@ -223,10 +228,10 @@ class CardReaderPaymentErrorMapperTest {
     @Test
     fun `given CurrencyNotSupported error, when map to ui error, then CurrencyNotSupported error returned`() {
         // GIVEN
-        val error = CardPaymentStatusErrorType.DeclinedByBackendError.CardDeclined.CurrencyNotSupported
+        val error = DeclinedByBackendError.CardDeclined.CurrencyNotSupported
 
         // WHEN
-        val result = mapper.mapPaymentErrorToUiError(error, config, false)
+        val result = mapper.mapPaymentErrorToUiError(error, false)
 
         // THEN
         assertThat(result).isEqualTo(PaymentFlowError.Declined.CurrencyNotSupported)
@@ -237,10 +242,10 @@ class CardReaderPaymentErrorMapperTest {
     @Test
     fun `given DuplicateTransaction error, when map to ui error, then DuplicateTransaction error returned`() {
         // GIVEN
-        val error = CardPaymentStatusErrorType.DeclinedByBackendError.CardDeclined.DuplicateTransaction
+        val error = DeclinedByBackendError.CardDeclined.DuplicateTransaction
 
         // WHEN
-        val result = mapper.mapPaymentErrorToUiError(error, config, false)
+        val result = mapper.mapPaymentErrorToUiError(error, false)
 
         // THEN
         assertThat(result).isEqualTo(PaymentFlowError.Declined.DuplicateTransaction)
@@ -251,10 +256,10 @@ class CardReaderPaymentErrorMapperTest {
     @Test
     fun `given ExpiredCard error, when map to ui error, then ExpiredCard error returned`() {
         // GIVEN
-        val error = CardPaymentStatusErrorType.DeclinedByBackendError.CardDeclined.ExpiredCard
+        val error = DeclinedByBackendError.CardDeclined.ExpiredCard
 
         // WHEN
-        val result = mapper.mapPaymentErrorToUiError(error, config, false)
+        val result = mapper.mapPaymentErrorToUiError(error, false)
 
         // THEN
         assertThat(result).isEqualTo(PaymentFlowError.Declined.ExpiredCard)
@@ -265,10 +270,10 @@ class CardReaderPaymentErrorMapperTest {
     @Test
     fun `given IncorrectPostalCode error, when map to ui error, then IncorrectPostalCode error returned`() {
         // GIVEN
-        val error = CardPaymentStatusErrorType.DeclinedByBackendError.CardDeclined.IncorrectPostalCode
+        val error = DeclinedByBackendError.CardDeclined.IncorrectPostalCode
 
         // WHEN
-        val result = mapper.mapPaymentErrorToUiError(error, config, false)
+        val result = mapper.mapPaymentErrorToUiError(error, false)
 
         // THEN
         assertThat(result).isEqualTo(PaymentFlowError.Declined.IncorrectPostalCode)
@@ -279,10 +284,10 @@ class CardReaderPaymentErrorMapperTest {
     @Test
     fun `given InvalidAmount error, when map to ui error, then InvalidAmount error returned`() {
         // GIVEN
-        val error = CardPaymentStatusErrorType.DeclinedByBackendError.CardDeclined.InvalidAmount
+        val error = DeclinedByBackendError.CardDeclined.InvalidAmount
 
         // WHEN
-        val result = mapper.mapPaymentErrorToUiError(error, config, false)
+        val result = mapper.mapPaymentErrorToUiError(error, false)
 
         // THEN
         assertThat(result).isEqualTo(PaymentFlowError.Declined.InvalidAmount)
@@ -293,10 +298,10 @@ class CardReaderPaymentErrorMapperTest {
     @Test
     fun `given PinRequired error and hw reader, when map to ui error, then PinRequired error returned`() {
         // GIVEN
-        val error = CardPaymentStatusErrorType.DeclinedByBackendError.CardDeclined.PinRequired
+        val error = DeclinedByBackendError.CardDeclined.PinRequired
 
         // WHEN
-        val result = mapper.mapPaymentErrorToUiError(error, config, false)
+        val result = mapper.mapPaymentErrorToUiError(error, false)
 
         // THEN
         assertThat(result).isEqualTo(PaymentFlowError.Declined.PinRequired)
@@ -307,10 +312,10 @@ class CardReaderPaymentErrorMapperTest {
     @Test
     fun `given PinRequired error and built in, when map to ui error, then PinRequired error returned`() {
         // GIVEN
-        val error = CardPaymentStatusErrorType.DeclinedByBackendError.CardDeclined.PinRequired
+        val error = DeclinedByBackendError.CardDeclined.PinRequired
 
         // WHEN
-        val result = mapper.mapPaymentErrorToUiError(error, config, true)
+        val result = mapper.mapPaymentErrorToUiError(error, true)
 
         // THEN
         assertThat(result).isEqualTo(PaymentFlowError.BuiltInReader.PinRequired)
@@ -321,10 +326,10 @@ class CardReaderPaymentErrorMapperTest {
     @Test
     fun `given IncorrectPin error and hw reader, when map to ui error, then IncorrectPin error returned`() {
         // GIVEN
-        val error = CardPaymentStatusErrorType.DeclinedByBackendError.CardDeclined.IncorrectPin
+        val error = DeclinedByBackendError.CardDeclined.IncorrectPin
 
         // WHEN
-        val result = mapper.mapPaymentErrorToUiError(error, config, false)
+        val result = mapper.mapPaymentErrorToUiError(error, false)
 
         // THEN
         assertThat(result).isEqualTo(PaymentFlowError.Declined.IncorrectPin)
@@ -335,10 +340,10 @@ class CardReaderPaymentErrorMapperTest {
     @Test
     fun `given TooManyPinTries error, when map to ui error, then TooManyPinTries error returned`() {
         // GIVEN
-        val error = CardPaymentStatusErrorType.DeclinedByBackendError.CardDeclined.TooManyPinTries
+        val error = DeclinedByBackendError.CardDeclined.TooManyPinTries
 
         // WHEN
-        val result = mapper.mapPaymentErrorToUiError(error, config, false)
+        val result = mapper.mapPaymentErrorToUiError(error, false)
 
         // THEN
         assertThat(result).isEqualTo(PaymentFlowError.Declined.TooManyPinTries)
@@ -349,10 +354,10 @@ class CardReaderPaymentErrorMapperTest {
     @Test
     fun `given TestCard error, when map to ui error, then TestCard error returned`() {
         // GIVEN
-        val error = CardPaymentStatusErrorType.DeclinedByBackendError.CardDeclined.TestCard
+        val error = DeclinedByBackendError.CardDeclined.TestCard
 
         // WHEN
-        val result = mapper.mapPaymentErrorToUiError(error, config, false)
+        val result = mapper.mapPaymentErrorToUiError(error, false)
 
         // THEN
         assertThat(result).isEqualTo(PaymentFlowError.Declined.TestCard)
@@ -363,10 +368,10 @@ class CardReaderPaymentErrorMapperTest {
     @Test
     fun `given TestModeLiveCard error, when map to ui error, then TestModeLiveCard error returned`() {
         // GIVEN
-        val error = CardPaymentStatusErrorType.DeclinedByBackendError.CardDeclined.TestModeLiveCard
+        val error = DeclinedByBackendError.CardDeclined.TestModeLiveCard
 
         // WHEN
-        val result = mapper.mapPaymentErrorToUiError(error, config, false)
+        val result = mapper.mapPaymentErrorToUiError(error, false)
 
         // THEN
         assertThat(result).isEqualTo(PaymentFlowError.Declined.TestModeLiveCard)
@@ -377,10 +382,10 @@ class CardReaderPaymentErrorMapperTest {
     @Test
     fun `given Unknown error, when map to ui error, then Unknown error returned`() {
         // GIVEN
-        val error = CardPaymentStatusErrorType.DeclinedByBackendError.Unknown
+        val error = DeclinedByBackendError.Unknown
 
         // WHEN
-        val result = mapper.mapPaymentErrorToUiError(error, config, false)
+        val result = mapper.mapPaymentErrorToUiError(error, false)
 
         // THEN
         assertThat(result).isEqualTo(PaymentFlowError.Unknown)
@@ -394,7 +399,7 @@ class CardReaderPaymentErrorMapperTest {
         val error = CardPaymentStatusErrorType.Canceled
 
         // WHEN
-        val result = mapper.mapPaymentErrorToUiError(error, config, false)
+        val result = mapper.mapPaymentErrorToUiError(error, false)
 
         // THEN
         assertThat(result).isEqualTo(PaymentFlowError.Canceled)
@@ -408,7 +413,7 @@ class CardReaderPaymentErrorMapperTest {
         val error = CardPaymentStatusErrorType.BuiltInReader.NfcDisabled
 
         // WHEN
-        val result = mapper.mapPaymentErrorToUiError(error, config, false)
+        val result = mapper.mapPaymentErrorToUiError(error, false)
 
         // THEN
         assertThat(result).isEqualTo(PaymentFlowError.BuiltInReader.NfcDisabled)
@@ -422,7 +427,7 @@ class CardReaderPaymentErrorMapperTest {
         val error = CardPaymentStatusErrorType.BuiltInReader.DeviceIsNotSupported
 
         // WHEN
-        val result = mapper.mapPaymentErrorToUiError(error, config, false)
+        val result = mapper.mapPaymentErrorToUiError(error, false)
 
         // THEN
         assertThat(result).isEqualTo(PaymentFlowError.BuiltInReader.DeviceIsNotSupported)
@@ -436,11 +441,62 @@ class CardReaderPaymentErrorMapperTest {
         val error = CardPaymentStatusErrorType.BuiltInReader.InvalidAppSetup
 
         // WHEN
-        val result = mapper.mapPaymentErrorToUiError(error, config, false)
+        val result = mapper.mapPaymentErrorToUiError(error, false)
 
         // THEN
         assertThat(result).isEqualTo(PaymentFlowError.BuiltInReader.InvalidAppSetup)
         assertThat((result as PaymentFlowError.BuiltInReader.InvalidAppSetup).message)
             .isEqualTo(UiStringRes(R.string.card_reader_payment_failed_app_setup_is_invalid))
+    }
+
+    @Test
+    fun `given AmountTooSmallStripe error, when map to ui error, then AmountTooSmall error returned with error message`() {
+        // GIVEN
+        val errorMessage = "Amount must be at least $0.50"
+        val error = DeclinedByBackendError.AmountTooSmallStripe(errorMessage)
+
+        // WHEN
+        val result = mapper.mapPaymentErrorToUiError(error, false)
+
+        // THEN
+        assertThat(result).isEqualTo(
+            PaymentFlowError.AmountTooSmall(UiStringText(errorMessage))
+        )
+        assertThat((result as PaymentFlowError.AmountTooSmall).message)
+            .isEqualTo(UiStringText(errorMessage))
+    }
+
+    @Test
+    fun `given AmountTooSmallStripe with different currency, when map to ui error, then correct message is returned`() {
+        // GIVEN
+        val errorMessage = "Amount must be at least €0.30"
+        val error = DeclinedByBackendError.AmountTooSmallStripe(errorMessage)
+
+        // WHEN
+        val result = mapper.mapPaymentErrorToUiError(error, false)
+
+        // THEN
+        assertThat(result).isEqualTo(
+            PaymentFlowError.AmountTooSmall(UiStringText(errorMessage))
+        )
+        assertThat((result as PaymentFlowError.AmountTooSmall).message)
+            .isEqualTo(UiStringText(errorMessage))
+    }
+
+    @Test
+    fun `given AmountTooSmallStripe with empty message, when map to ui error, then empty message is returned`() {
+        // GIVEN
+        val errorMessage = ""
+        val error = DeclinedByBackendError.AmountTooSmallStripe(errorMessage)
+
+        // WHEN
+        val result = mapper.mapPaymentErrorToUiError(error, false)
+
+        // THEN
+        assertThat(result).isEqualTo(
+            PaymentFlowError.AmountTooSmall(UiStringText(errorMessage))
+        )
+        assertThat((result as PaymentFlowError.AmountTooSmall).message)
+            .isEqualTo(UiStringText(errorMessage))
     }
 }

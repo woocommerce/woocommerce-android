@@ -65,7 +65,6 @@ class StoreOnboardingViewModel @Inject constructor(
         when (task.taskUiResources) {
             AboutYourStoreTaskRes -> triggerEvent(NavigateToAboutYourStore)
             is AddProductTaskRes -> triggerEvent(NavigateToAddProduct)
-            CustomizeDomainTaskRes -> triggerEvent(NavigateToDomains)
             LaunchStoreTaskRes -> triggerEvent(NavigateToLaunchStore)
             NameYourStoreTaskRes -> triggerEvent(ShowNameYourStoreDialog)
             SetupPaymentsTaskRes -> triggerEvent(NavigateToSetupPayments)

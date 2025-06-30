@@ -4,6 +4,8 @@ import android.view.View
 import androidx.annotation.IdRes
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.datepicker.CalendarConstraints
@@ -31,11 +33,18 @@ import kotlin.math.abs
  * @param [destinationId] an optional destinationId, that can be used to navigate up to a specified destination
  *
  */
-fun <T> Fragment.navigateBackWithResult(key: String, result: T, @IdRes destinationId: Int? = null) {
+fun <T> Fragment.navigateBackWithResult(
+    key: String,
+    result: T,
+    @IdRes destinationId: Int? = null,
+    @IdRes navHostId: Int? = null,
+) {
+    val navController = if (navHostId != null) findNavController(navHostId) else findNavController()
+
     val entry = if (destinationId != null) {
-        findNavController().getBackStackEntry(destinationId)
+        navController.getBackStackEntry(destinationId)
     } else {
-        findNavController().previousBackStackEntry
+        navController.previousBackStackEntry
     }
     entry?.savedStateHandle?.set(key, result)
 
@@ -54,7 +63,7 @@ fun <T> Fragment.navigateBackWithResult(key: String, result: T, @IdRes destinati
  * @param [key] A unique string that is the same as the one used in [handleResult]
  * @param [result] A result value to be returned
  * @param [childId] an destinationId, that used to navigate up from the specified destination
- *
+ * @param [navHostId] An optional ID of the NavHostFragment, it's useful when the fragment is used in two-pane layouts
  */
 fun <T> Fragment.navigateToParentWithResult(key: String, result: T, @IdRes childId: Int) {
     if (findNavController().currentDestination?.id != childId) {
@@ -70,9 +79,14 @@ fun <T> Fragment.navigateToParentWithResult(key: String, result: T, @IdRes child
  *
  * @param [key] A unique string that is the same as the one used in [handleNotice]
  * @param [destinationId] an optional destinationId, that can be used to navigating up to a specified destination
+ * @param [navHostId] An optional ID of the NavHostFragment, it's useful when the fragment is used in two-pane layouts
  */
-fun Fragment.navigateBackWithNotice(key: String, @IdRes destinationId: Int? = null) {
-    navigateBackWithResult(key, key, destinationId)
+fun Fragment.navigateBackWithNotice(
+    key: String,
+    @IdRes destinationId: Int? = null,
+    @IdRes navHostId: Int? = null,
+) {
+    navigateBackWithResult(key, key, destinationId, navHostId)
 }
 
 /**
@@ -82,17 +96,25 @@ fun Fragment.navigateBackWithNotice(key: String, @IdRes destinationId: Int? = nu
  * @param [key] A unique string that is the same as the one used in [navigateBackWithResult]
  * @param [entryId] An optional ID to identify the correct back stack entry. It's required when calling [handleResult]
  *  from TopLevelFragment or Dialog (otherwise the result will get lost upon configuration change)
+ * @param [navHostId] An optional ID of the NavHostFragment, it's useful when the fragment is used in two-pane layouts
  * @param [handler] A result handler
  *
  * Note: The handler is called only if the value wasn't handled before (i.e. the data is fresh). Once the observer is
  * called, the boolean value is updated. This puts a limit on the number of observers for a particular key-result pair
  * to 1.
  */
-fun <T> Fragment.handleResult(key: String, entryId: Int? = null, handler: (T) -> Unit) {
+fun <T> Fragment.handleResult(
+    key: String,
+    @IdRes entryId: Int? = null,
+    @IdRes navHostId: Int? = null,
+    handler: (T) -> Unit
+) {
+    val navController = if (navHostId != null) findNavController(navHostId) else findNavController()
+
     val entry = if (entryId != null) {
-        findNavController().getBackStackEntry(entryId)
+        navController.getBackStackEntry(entryId)
     } else {
-        findNavController().currentBackStackEntry
+        navController.currentBackStackEntry
     }
 
     entry?.savedStateHandle?.let { saveState ->
@@ -113,14 +135,20 @@ fun <T> Fragment.handleResult(key: String, entryId: Int? = null, handler: (T) ->
  * @param [key] A unique string that is the same as the one used in [navigateBackWithResult]
  * @param [entryId] A mandatory ID to identify the correct back stack entry. It's required when calling [handleResult]
  *  from TopLevelFragment or Dialog (otherwise the result will get lost upon configuration change)
+ * @param [navHostId] An optional ID of the NavHostFragment, it's useful when the fragment is used in two-pane layouts
  * @param [handler] A result handler
  *
  * Note: The handler is called only if the value wasn't handled before (i.e. the data is fresh). Once the observer is
  * called, the value is nulled and the handler won't be called. This puts a limit on the number of observers for
  * a particular key-result pair to 1.
  */
-fun <T> Fragment.handleDialogResult(key: String, entryId: Int, handler: (T) -> Unit) {
-    handleResult(key, entryId, handler)
+fun <T> Fragment.handleDialogResult(
+    key: String,
+    @IdRes entryId: Int,
+    @IdRes navHostId: Int? = null,
+    handler: (T) -> Unit
+) {
+    handleResult(key, entryId, navHostId, handler)
 }
 
 /**
@@ -131,14 +159,20 @@ fun <T> Fragment.handleDialogResult(key: String, entryId: Int, handler: (T) -> U
  * @param [key] A unique string that is the same as the one used in [navigateBackWithNotice]
  * @param [entryId] A mandatory ID to identify the correct back stack entry. It's required when calling [handleNotice]
  *  from TopLevelFragment or Dialog (otherwise the result will get lost upon configuration change)
+ * @param [navHostId] An optional ID of the NavHostFragment, it's useful when the fragment is used in two-pane layouts
  * @param [handler] A result handler
  *
  * Note: The handler is called only if the value wasn't handled before (i.e. the data is fresh). Once the observer is
  * called, the value is nulled and the handler won't be called. This puts a limit on the number of observers for
  * a particular key-result pair to 1.
  */
-fun Fragment.handleDialogNotice(key: String, entryId: Int, handler: () -> Unit) {
-    handleNotice(key, entryId, handler)
+fun Fragment.handleDialogNotice(
+    key: String,
+    @IdRes entryId: Int,
+    @IdRes navHostId: Int? = null,
+    handler: () -> Unit
+) {
+    handleNotice(key, entryId, navHostId, handler)
 }
 
 /**
@@ -148,17 +182,25 @@ fun Fragment.handleDialogNotice(key: String, entryId: Int, handler: () -> Unit) 
  * @param [key] A unique string that is the same as the one used in [navigateBackWithNotice]
  * @param [entryId] A mandatory ID to identify the correct back stack entry. It's required when calling [handleNotice]
  *  from TopLevelFragment or Dialog (otherwise the result will get lost upon configuration change)
+ * @param [navHostId] An optional ID of the NavHostFragment, it's useful when the fragment is used in two-pane layouts
  * @param [handler] A result handler
  *
  * Note: The handler is called only if the value wasn't handled before (i.e. the data is fresh). Once the observer is
  * called, the value is nulled and the handler won't be called. This puts a limit on the number of observers for
  * a particular key-result pair to 1.
  */
-fun Fragment.handleNotice(key: String, entryId: Int? = null, handler: () -> Unit) {
+fun Fragment.handleNotice(
+    key: String,
+    @IdRes entryId: Int? = null,
+    @IdRes navHostId: Int? = null,
+    handler: () -> Unit
+) {
+    val navController = if (navHostId != null) findNavController(navHostId) else findNavController()
+
     val entry = if (entryId != null) {
-        findNavController().getBackStackEntry(entryId)
+        navController.getBackStackEntry(entryId)
     } else {
-        findNavController().currentBackStackEntry
+        navController.currentBackStackEntry
     }
 
     entry?.savedStateHandle?.let { saveState ->
@@ -235,4 +277,22 @@ fun Fragment.showDateRangePicker(
 
         onCustomRangeSelected(start, end)
     }
+}
+
+/**
+ * Finds the NavController associated with the NavHostFragment with the given ID,
+ * useful when trying to find a parent NavController from a child fragment used in two-pane layouts.
+ *
+ * @param navHostId The ID of the NavHostFragment
+ * @return The NavController
+ */
+fun Fragment.findNavController(@IdRes navHostId: Int): NavController {
+    var parentFragment = parentFragment
+    while (parentFragment != null) {
+        if (parentFragment is NavHostFragment && parentFragment.id == navHostId) {
+            return parentFragment.navController
+        }
+        parentFragment = parentFragment.parentFragment
+    }
+    error("No NavHostFragment found with id $navHostId")
 }

@@ -1,0 +1,298 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 3,
+    "identityHash": "f93440a02cd238b1abd2ab0bf6095530",
+    "entities": [
+      {
+        "tableName": "AddonEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`addonLocalId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `globalGroupLocalId` INTEGER, `productRemoteId` INTEGER, `siteRemoteId` INTEGER, `type` TEXT NOT NULL, `display` TEXT, `name` TEXT NOT NULL, `titleFormat` TEXT NOT NULL, `description` TEXT, `required` INTEGER NOT NULL, `position` INTEGER NOT NULL, `restrictions` TEXT, `priceType` TEXT, `price` TEXT, `min` INTEGER, `max` INTEGER, FOREIGN KEY(`globalGroupLocalId`) REFERENCES `GlobalAddonGroupEntity`(`globalGroupLocalId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "addonLocalId",
+            "columnName": "addonLocalId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "globalGroupLocalId",
+            "columnName": "globalGroupLocalId",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "productRemoteId",
+            "columnName": "productRemoteId",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "siteRemoteId",
+            "columnName": "siteRemoteId",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "display",
+            "columnName": "display",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "titleFormat",
+            "columnName": "titleFormat",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "required",
+            "columnName": "required",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "position",
+            "columnName": "position",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "restrictions",
+            "columnName": "restrictions",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "priceType",
+            "columnName": "priceType",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "price",
+            "columnName": "price",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "min",
+            "columnName": "min",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "max",
+            "columnName": "max",
+            "affinity": "INTEGER",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "addonLocalId"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "GlobalAddonGroupEntity",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "globalGroupLocalId"
+            ],
+            "referencedColumns": [
+              "globalGroupLocalId"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "AddonOptionEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`addonOptionLocalId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `addonLocalId` INTEGER NOT NULL, `priceType` TEXT NOT NULL, `label` TEXT, `price` TEXT, `image` TEXT, FOREIGN KEY(`addonLocalId`) REFERENCES `AddonEntity`(`addonLocalId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "addonOptionLocalId",
+            "columnName": "addonOptionLocalId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "addonLocalId",
+            "columnName": "addonLocalId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priceType",
+            "columnName": "priceType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "label",
+            "columnName": "label",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "price",
+            "columnName": "price",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "image",
+            "columnName": "image",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "addonOptionLocalId"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "AddonEntity",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "addonLocalId"
+            ],
+            "referencedColumns": [
+              "addonLocalId"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "GlobalAddonGroupEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`globalGroupLocalId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `restrictedCategoriesIds` TEXT NOT NULL, `siteRemoteId` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "globalGroupLocalId",
+            "columnName": "globalGroupLocalId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "restrictedCategoriesIds",
+            "columnName": "restrictedCategoriesIds",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "siteRemoteId",
+            "columnName": "siteRemoteId",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "globalGroupLocalId"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "SSREntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`remoteSiteId` INTEGER NOT NULL, `environment` TEXT, `database` TEXT, `activePlugins` TEXT, `theme` TEXT, `settings` TEXT, `security` TEXT, `pages` TEXT, PRIMARY KEY(`remoteSiteId`))",
+        "fields": [
+          {
+            "fieldPath": "remoteSiteId",
+            "columnName": "remoteSiteId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "environment",
+            "columnName": "environment",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "database",
+            "columnName": "database",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "activePlugins",
+            "columnName": "activePlugins",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "theme",
+            "columnName": "theme",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "settings",
+            "columnName": "settings",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "security",
+            "columnName": "security",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "pages",
+            "columnName": "pages",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "remoteSiteId"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f93440a02cd238b1abd2ab0bf6095530')"
+    ]
+  }
+}

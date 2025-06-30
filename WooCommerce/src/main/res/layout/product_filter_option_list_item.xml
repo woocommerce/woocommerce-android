@@ -5,10 +5,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
     android:minHeight="@dimen/min_tap_target"
     android:paddingTop="@dimen/minor_100"
-    android:paddingBottom="@dimen/minor_100"
-    android:background="?attr/selectableItemBackground">
+    android:paddingBottom="@dimen/minor_100">
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/filterOptionItem_name"
@@ -23,21 +23,22 @@
 
     <Button
         android:id="@+id/explorePlugin"
+        style="@style/Woo.Button.Colored"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/major_100"
+        android:clickable="false"
         android:text="@string/product_filter_explore_plugin"
+        android:textAllCaps="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginEnd="@dimen/major_100"
-        android:textAllCaps="false"
-        android:visibility="gone"
-        android:clickable="false"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/filterOptionItem_tick"
         android:layout_width="@dimen/image_minor_60"
         android:layout_height="@dimen/image_minor_60"
+        android:layout_marginEnd="@dimen/major_100"
         android:button="@null"
         android:contentDescription="@string/product_list_filters_list_item"
         android:src="@drawable/ic_done_secondary"
@@ -45,7 +46,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginEnd="@dimen/major_100"
         tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

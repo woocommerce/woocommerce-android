@@ -2,17 +2,20 @@ package com.woocommerce.android.support.requests
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.core.widget.doOnTextChanged
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.ActivitySupportRequestFormBinding
+import com.woocommerce.android.extensions.adjustActivityTransition
+import com.woocommerce.android.extensions.doOnApplyWindowInsets
 import com.woocommerce.android.extensions.serializable
 import com.woocommerce.android.support.SupportHelper
 import com.woocommerce.android.support.help.HelpOrigin
@@ -22,7 +25,6 @@ import com.woocommerce.android.support.requests.SupportRequestFormViewModel.Show
 import com.woocommerce.android.support.zendesk.TicketType
 import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.ui.dialog.WooDialog
-import com.woocommerce.android.util.SystemVersionUtils
 import com.woocommerce.android.widgets.CustomProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -51,6 +53,21 @@ class SupportRequestFormActivity : AppCompatActivity() {
         zendeskSettings.setup(context = this)
 
         ActivitySupportRequestFormBinding.inflate(layoutInflater).apply {
+            this.root.doOnApplyWindowInsets(
+                insetsMask = WindowInsetsCompat.Type.systemBars()
+                    or WindowInsetsCompat.Type.displayCutout()
+                    or WindowInsetsCompat.Type.ime(),
+                consumeInsets = true
+            ) { insets ->
+                this.root.updatePadding(
+                    left = insets.left,
+                    right = insets.right,
+                    bottom = insets.bottom
+                )
+                this.appBarLayout.updatePadding(
+                    top = insets.top
+                )
+            }
             setContentView(root)
             setupActionBar()
             observeViewEvents(this)
@@ -58,7 +75,13 @@ class SupportRequestFormActivity : AppCompatActivity() {
         }
         viewModel.onViewCreated()
 
-        adjustActivityTransitions()
+        if (isPOS()) {
+            adjustActivityTransition(
+                overrideTransitionOpen = true,
+                enterAnim = R.anim.woopos_slide_in_right,
+                exitAnim = R.anim.woopos_slide_out_left,
+            )
+        }
     }
 
     override fun finish() {
@@ -66,35 +89,10 @@ class SupportRequestFormActivity : AppCompatActivity() {
         adjustExitTransition()
     }
 
-    private fun SupportRequestFormActivity.adjustActivityTransitions() {
-        if (isPOS()) {
-            if (SystemVersionUtils.isAtLeastU()) {
-                overrideActivityTransition(
-                    OVERRIDE_TRANSITION_CLOSE,
-                    R.anim.woopos_slide_in_left,
-                    R.anim.woopos_slide_out_right,
-                    Color.TRANSPARENT
-                )
-                overrideActivityTransition(
-                    OVERRIDE_TRANSITION_OPEN,
-                    R.anim.woopos_slide_in_right,
-                    R.anim.woopos_slide_out_left,
-                    Color.TRANSPARENT
-                )
-            } else {
-                @Suppress("DEPRECATION")
-                overridePendingTransition(
-                    R.anim.woopos_slide_in_right,
-                    R.anim.woopos_slide_out_left
-                )
-            }
-        }
-    }
-
     private fun adjustExitTransition() {
-        if (isPOS() && SystemVersionUtils.isAtMostT()) {
-            @Suppress("DEPRECATION")
-            overridePendingTransition(
+        if (isPOS()) {
+            adjustActivityTransition(
+                overrideTransitionOpen = false,
                 R.anim.woopos_slide_in_left,
                 R.anim.woopos_slide_out_right
             )

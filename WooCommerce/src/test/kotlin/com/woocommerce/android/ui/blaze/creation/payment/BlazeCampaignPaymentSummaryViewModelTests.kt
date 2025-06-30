@@ -43,7 +43,8 @@ class BlazeCampaignPaymentSummaryViewModelTests : BaseUnitTest() {
                 targetUrl = "https://test.com",
                 parameters = emptyMap()
             ),
-            objectiveId = "sales"
+            objectiveId = "sales",
+            acceptedTos = false,
         )
     }
 

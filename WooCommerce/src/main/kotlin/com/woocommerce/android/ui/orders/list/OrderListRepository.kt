@@ -40,6 +40,7 @@ class OrderListRepository @Inject constructor(
     companion object {
         private const val TAG = "OrderListRepository"
         private const val ORDER_STATUS_TRASH = "trash"
+        private const val BULK_UPDATE_ORDER_NO_RESPONSE = "No response received."
     }
 
     private var isFetchingOrderStatusOptions = false
@@ -175,6 +176,51 @@ class OrderListRepository @Inject constructor(
             continuationOrderStatus.continueWith(RequestResult.ERROR)
         } else {
             continuationOrderStatus.continueWith(RequestResult.SUCCESS)
+        }
+    }
+
+    suspend fun bulkUpdateOrderStatus(orderIds: List<Long>, newStatus: Order.Status): BulkUpdateOrderResult {
+        val result = orderStore.batchUpdateOrdersStatus(
+            site = selectedSite.get(),
+            orderIds = orderIds,
+            newStatus = WCOrderStatusModel(statusKey = newStatus.value)
+        )
+
+        return if (result.isError) {
+            WooLog.e(ORDERS, "Error bulk updating order status: ${result.error.message}")
+            BulkUpdateOrderResult.Error(WooException(result.error))
+        } else {
+            result.model?.let {
+                logBulkOrderUpdateResults(it)
+
+                when {
+                    it.failedOrders.isNotEmpty() && it.updatedOrders.isEmpty() -> BulkUpdateOrderResult.AllFailed
+                    it.failedOrders.isEmpty() && it.updatedOrders.isEmpty() -> BulkUpdateOrderResult.NoOrdersUpdated
+                    it.failedOrders.isNotEmpty() && it.updatedOrders.isNotEmpty() ->
+                        BulkUpdateOrderResult.PartialSuccess(
+                            successCount = it.updatedOrders.size,
+                            failureCount = it.failedOrders.size
+                        )
+
+                    else -> BulkUpdateOrderResult.AllSuccess
+                }
+            } ?: BulkUpdateOrderResult.Error(Exception(BULK_UPDATE_ORDER_NO_RESPONSE))
+        }
+    }
+
+    private fun logBulkOrderUpdateResults(model: WCOrderStore.UpdateOrdersStatusResult) {
+        WooLog.i(ORDERS, "Bulk update order status completed.")
+        if (model.updatedOrders.isNotEmpty()) {
+            WooLog.i(ORDERS, "Successfully updated ${model.updatedOrders.size} orders")
+        }
+        if (model.failedOrders.isNotEmpty()) {
+            model.failedOrders.forEach { failed ->
+                WooLog.e(
+                    ORDERS,
+                    "Failed to update order ${failed.id}: " +
+                        "[Code: ${failed.errorCode}, Status: ${failed.errorStatus}] ${failed.errorMessage}"
+                )
+            }
         }
     }
 }

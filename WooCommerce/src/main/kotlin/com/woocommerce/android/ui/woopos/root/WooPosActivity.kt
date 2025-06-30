@@ -7,15 +7,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
-import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
+import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationFacade
 import com.woocommerce.android.ui.woopos.support.WooPosGetSupportFacade
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.ext.isGestureNavigation
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -28,6 +29,12 @@ class WooPosActivity : AppCompatActivity() {
     @Inject
     lateinit var wooPosGetSupportFacade: WooPosGetSupportFacade
 
+    @Inject
+    lateinit var wooPosAnalyticsTracker: WooPosAnalyticsTracker
+
+    @Inject
+    lateinit var wooPosCouponCreationFacade: WooPosCouponCreationFacade
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -35,23 +42,15 @@ class WooPosActivity : AppCompatActivity() {
 
         lifecycle.addObserver(wooPosCardReaderFacade)
         lifecycle.addObserver(wooPosGetSupportFacade)
+        lifecycle.addObserver(wooPosCouponCreationFacade)
 
         setContent {
             WooPosTheme {
-                SystemBars()
-
                 WooPosRootScreen(
-                    modifier = Modifier.gesturesOrButtonsNavigationPadding()
+                    modifier = Modifier.gesturesOrButtonsNavigationPadding(),
+                    wooPosAnalyticsTracker = wooPosAnalyticsTracker
                 )
             }
-        }
-    }
-
-    @Composable
-    private fun SystemBars() {
-        SideEffect {
-            window.statusBarColor = getColor(android.R.color.transparent)
-            window.navigationBarColor = getColor(android.R.color.transparent)
         }
     }
 }
@@ -63,7 +62,7 @@ private fun Modifier.gesturesOrButtonsNavigationPadding(): Modifier {
     val isGestureNavigation = insets.isGestureNavigation(view.context)
 
     return if (isGestureNavigation) {
-        this.padding(bottom = 0.dp)
+        this.padding(bottom = WooPosSpacing.None.value)
     } else {
         this.navigationBarsPadding()
     }

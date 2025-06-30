@@ -42,9 +42,14 @@ class OrderCreateEditCustomAmountAdapter(
 
         fun bind(customAmountUIModel: CustomAmountUIModel) {
             binding.customAmountLayout.customAmountName.text = customAmountUIModel.name
-            binding.customAmountLayout.customAmountAmount.text = currencyFormatter.formatCurrency(
-                customAmountUIModel.amount.toString()
-            )
+            binding.customAmountLayout.customAmountAmount.text = customAmountUIModel.currencyCode?.let {
+                currencyFormatter.formatCurrency(
+                    customAmountUIModel.amount.toString(),
+                    currencyCode = it.value
+                )
+            } ?: run {
+                currencyFormatter.formatCurrency(customAmountUIModel.amount.toString())
+            }
             binding.customAmountLayout.customAmountEdit.isVisible = isLocked.not()
             if (isLocked.not()) {
                 binding.root.setOnClickListener {

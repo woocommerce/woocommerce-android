@@ -36,7 +36,9 @@ steps:
 
       - label: "detekt"
         command: |
-          echo "--- 🧹 Linting"
+          if .buildkite/commands/should-skip-job.sh --job-type validation; then
+            exit 0
+          fi
           ./gradlew detektAll
         plugins: [$CI_TOOLKIT]
         artifact_paths:
@@ -55,19 +57,24 @@ steps:
         artifact_paths:
           - "**/build/reports/diff/*"
 
+      - label: "Merged Manifest Diff"
+        command: ".buildkite/commands/diff-merged-manifest.sh vanillaRelease"
+        if: build.pull_request.id != null
+        plugins: [$CI_TOOLKIT]
+        artifact_paths:
+          - "**/build/reports/diff_manifest/**/**/*"
+
   ########################################
   - group: "🛠 Prototype Builds"
     steps:
 
       - label: "🛠 Prototype Build: Mobile App"
-        command: |
-          ".buildkite/commands/prototype-build.sh" "WooCommerce"
+        command: ".buildkite/commands/prototype-build.sh WooCommerce"
         if: build.pull_request.id != null
         plugins: [$CI_TOOLKIT]
 
       - label: "🛠 Prototype Build: Wear App"
-        command: |
-          ".buildkite/commands/prototype-build.sh" "WooCommerce-Wear"
+        command: ".buildkite/commands/prototype-build.sh WooCommerce-Wear"
         if: build.pull_request.id != null
         plugins: [$CI_TOOLKIT]
 
@@ -94,3 +101,8 @@ steps:
               api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_INSTRUMENTED_TESTS"
         artifact_paths:
           - "**/build/instrumented-tests/**/*"
+
+
+  - label: "🐘 Populate Gradle build cache"
+    command: .buildkite/commands/gradle-cache-build.sh
+    plugins: [$CI_TOOLKIT]

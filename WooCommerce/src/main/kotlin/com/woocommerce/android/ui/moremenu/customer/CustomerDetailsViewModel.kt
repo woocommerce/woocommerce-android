@@ -5,8 +5,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.R
 import com.woocommerce.android.model.CustomerWithAnalytics
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
@@ -20,13 +22,14 @@ class CustomerDetailsViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val refreshCustomerData: RefreshCustomerData,
     private val getCustomerWithStats: GetCustomerWithStats,
+    private val resourceProvider: ResourceProvider,
 ) : ScopedViewModel(savedState) {
 
     private val navArgs: CustomerDetailsFragmentArgs by savedState.navArgs()
 
     private val _viewState = savedState.getStateFlow(
         scope = viewModelScope,
-        initialValue = CustomerViewState(navArgs.customer, true, false)
+        initialValue = CustomerViewState(navArgs.customer, getCustomerName(navArgs.customer), true, false)
     )
     val viewState: LiveData<CustomerViewState> = _viewState.asLiveData()
 
@@ -43,7 +46,8 @@ class CustomerDetailsViewModel @Inject constructor(
                     _viewState.value = CustomerViewState(
                         customerWithAnalytics = refreshedCustomer,
                         isLoadingAnalytics = false,
-                        isRefreshingData = false
+                        isRefreshingData = false,
+                        customerName = getCustomerName(refreshedCustomer)
                     )
                 },
                 onFailure = { }
@@ -63,11 +67,17 @@ class CustomerDetailsViewModel @Inject constructor(
     fun onEmailTapped() {
         triggerEvent(SendEmailEvent(viewState.value?.customerWithAnalytics?.email ?: ""))
     }
+
+    private fun getCustomerName(customer: CustomerWithAnalytics): String {
+        return customer.getFullName().takeIf { it.isNotBlank() }
+            ?: resourceProvider.getString(R.string.customer_detail_guest_customer)
+    }
 }
 
 @Parcelize
 data class CustomerViewState(
     val customerWithAnalytics: CustomerWithAnalytics,
+    val customerName: String,
     val isLoadingAnalytics: Boolean,
     val isRefreshingData: Boolean
 ) : Parcelable

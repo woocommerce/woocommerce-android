@@ -15,12 +15,10 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel.RefreshEvent
 import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
 import com.woocommerce.android.ui.onboarding.AboutYourStoreTaskRes
 import com.woocommerce.android.ui.onboarding.AddProductTaskRes
-import com.woocommerce.android.ui.onboarding.CustomizeDomainTaskRes
 import com.woocommerce.android.ui.onboarding.LaunchStoreTaskRes
 import com.woocommerce.android.ui.onboarding.NameYourStoreTaskRes
 import com.woocommerce.android.ui.onboarding.NavigateToAboutYourStore
 import com.woocommerce.android.ui.onboarding.NavigateToAddProduct
-import com.woocommerce.android.ui.onboarding.NavigateToDomains
 import com.woocommerce.android.ui.onboarding.NavigateToLaunchStore
 import com.woocommerce.android.ui.onboarding.NavigateToOnboardingFullScreen
 import com.woocommerce.android.ui.onboarding.NavigateToSetupPayments
@@ -123,7 +121,6 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
         when (task.taskUiResources) {
             AboutYourStoreTaskRes -> triggerEvent(NavigateToAboutYourStore)
             AddProductTaskRes -> triggerEvent(NavigateToAddProduct)
-            CustomizeDomainTaskRes -> triggerEvent(NavigateToDomains)
             LaunchStoreTaskRes -> triggerEvent(NavigateToLaunchStore)
             NameYourStoreTaskRes -> triggerEvent(ShowNameYourStoreDialog)
             SetupPaymentsTaskRes -> triggerEvent(NavigateToSetupPayments)

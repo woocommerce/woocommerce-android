@@ -18,6 +18,7 @@ class ProductItemViewHolder(val viewBinding: ProductListItemBinding) :
         currencyFormatter: CurrencyFormatter,
         isActivated: Boolean = false,
         isProductHighlighted: Boolean = false,
+        isUploadingMedia: Boolean = false,
         isLastItem: Boolean,
     ) {
         viewBinding.root.isActivated = isActivated
@@ -35,7 +36,8 @@ class ProductItemViewHolder(val viewBinding: ProductListItemBinding) :
         viewBinding.productItemView.bind(
             product = product,
             currencyFormatter = currencyFormatter,
-            isActivated = isActivated
+            isActivated = isActivated,
+            isUploadingMedia = isUploadingMedia
         )
 
         ViewCompat.setTransitionName(

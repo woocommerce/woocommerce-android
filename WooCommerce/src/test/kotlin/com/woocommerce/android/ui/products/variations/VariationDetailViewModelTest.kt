@@ -12,13 +12,12 @@ import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.variations.VariationDetailViewModel.HideImageUploadErrorSnackbar
 import com.woocommerce.android.ui.products.variations.VariationDetailViewModel.VariationViewState
 import com.woocommerce.android.viewmodel.BaseUnitTest
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionStringSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -160,7 +159,7 @@ class VariationDetailViewModelTest : BaseUnitTest() {
         errorEvents.emit(errors)
 
         assertThat(sut.event.value).matches {
-            it is ShowActionSnackbar &&
+            it is ShowActionStringSnackbar &&
                 it.message == errorMessage
         }
     }
@@ -168,7 +167,7 @@ class VariationDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `Display error message on min-max quantities update product error`() = testBlocking {
         val displayErrorMessage = "This is an error message"
-        var result = WCProductStore.OnVariationUpdated(1, 1, 2)
+        val result = WCProductStore.OnVariationUpdated(remoteProductId = 1, remoteVariationId = 2)
         result.error = WCProductStore.ProductError(
             type = WCProductStore.ProductErrorType.INVALID_MIN_MAX_QUANTITY,
             message = displayErrorMessage
@@ -184,7 +183,7 @@ class VariationDetailViewModelTest : BaseUnitTest() {
 
         sut.onUpdateButtonClicked()
 
-        Assertions.assertThat(showUpdateProductError?.message)
+        assertThat(showUpdateProductError?.message)
             .isEqualTo(displayErrorMessage)
     }
 

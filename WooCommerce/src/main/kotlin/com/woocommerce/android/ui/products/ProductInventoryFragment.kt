@@ -10,10 +10,13 @@ import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.databinding.FragmentProductInventoryBinding
 import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.expand
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.ui.barcodescanner.BarcodeScanningFragment
+import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.products.ProductItemSelectorDialog.ProductItemSelectorDialogListener
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -54,6 +57,7 @@ class ProductInventoryFragment :
 
         setupObservers(viewModel)
         setupViews()
+        setupBarcodeScanningResultHandlers()
     }
 
     override fun onDestroyView() {
@@ -162,12 +166,7 @@ class ProductInventoryFragment :
     private fun setupViews() {
         if (!isAdded) return
 
-        with(binding.productSku) {
-            setOnTextChangedListener {
-                viewModel.onSkuChanged(it.toString())
-            }
-        }
-
+        setupSkuView()
         setupProductUniqueGlobalIdView()
 
         with(binding.manageStockSwitch) {
@@ -226,14 +225,31 @@ class ProductInventoryFragment :
         )
     }
 
+    private fun setupSkuView() {
+        with(binding.productSku) {
+            setOnTextChangedListener {
+                viewModel.onSkuChanged(it.toString())
+            }
+        }
+
+        with(binding.productSkuBarcodeScan) {
+            setOnClickListener {
+                viewModel.updateLastClickedBarcodeButton(R.id.product_sku_barcode_scan)
+                navigateToBarcodeScanningFragment()
+            }
+        }
+    }
+
     private fun setupProductUniqueGlobalIdView() {
-        val featureIsEnabled = FeatureFlag.PRODUCT_GLOBAL_UNIQUE_IDENTIFIER_SUPPORT.isEnabled()
-
         with(binding.productGlobalUniqueId) {
-            visibility = if (featureIsEnabled) View.VISIBLE else View.GONE
-
             setOnTextChangedListener {
                 viewModel.onProductUniqueGlobalIdChanged(it.toString())
+            }
+        }
+        with(binding.productGtinBarcodeScan) {
+            setOnClickListener {
+                viewModel.updateLastClickedBarcodeButton(R.id.product_gtin_barcode_scan)
+                navigateToBarcodeScanningFragment()
             }
         }
     }
@@ -249,6 +265,41 @@ class ProductInventoryFragment :
                 binding.editProductStockStatus.expand()
             }
         }
+    }
+
+    private fun setupBarcodeScanningResultHandlers() {
+        handleResult<CodeScannerStatus>(BarcodeScanningFragment.KEY_BARCODE_SCANNING_SCAN_STATUS) { status ->
+            when (status) {
+                is CodeScannerStatus.Success -> {
+                    populateFieldWithScannedCode(status.code)
+                }
+                is CodeScannerStatus.Failure -> {
+                    uiMessageResolver.showSnack(getString(R.string.order_creation_barcode_scanning_scanning_failed))
+                }
+                CodeScannerStatus.NotFound -> {
+                    uiMessageResolver.showSnack(getString(R.string.order_creation_barcode_scanning_scanning_failed))
+                }
+            }
+        }
+    }
+
+    private fun navigateToBarcodeScanningFragment() {
+        findNavController().navigateSafely(
+            ProductInventoryFragmentDirections.actionProductInventoryFragmentToBarcodeScanningFragment()
+        )
+    }
+
+    private fun populateFieldWithScannedCode(code: String) {
+        when (viewModel.lastClickedBarcodeButton) {
+            R.id.product_sku_barcode_scan -> {
+                binding.productSku.text = code
+            }
+            R.id.product_gtin_barcode_scan -> {
+                binding.productGlobalUniqueId.text = code
+            }
+            else -> {}
+        }
+        viewModel.updateLastClickedBarcodeButton(null)
     }
 
     override fun onProductItemSelected(resultCode: Int, selectedItem: String?) {

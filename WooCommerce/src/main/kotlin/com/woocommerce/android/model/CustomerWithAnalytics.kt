@@ -62,7 +62,7 @@ fun WCCustomerModel.toCustomerWithAnalytics(
     val billingState = repository.getState(billingAddress.country, billingAddress.state)
 
     return CustomerWithAnalytics(
-        remoteCustomerId = this.remoteCustomerId,
+        remoteCustomerId = this.remoteCustomerId.value,
         analyticsCustomerId = this.analyticsCustomerId,
         firstName = this.firstName,
         lastName = this.lastName,

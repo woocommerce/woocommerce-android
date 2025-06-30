@@ -100,13 +100,18 @@ object ChromeCustomTabUtils {
             }) {}
     }
 
-    fun launchUrl(context: Context, url: String, height: Height = Full) {
+    fun launchUrl(
+        context: Context,
+        url: String,
+        height: Height = Full,
+        enableSlideAnimation: Boolean = false,
+    ) {
         try {
             if (canUseCustomTabs(context)) {
                 if (session == null && height is Partial && activityResultLauncher != null) {
                     activityResultLauncher?.launch(PartialTabParams(url, height))
                 } else {
-                    createIntent(context, height, session).launchUrl(context, Uri.parse(url))
+                    createIntent(context, height, session, enableSlideAnimation).launchUrl(context, Uri.parse(url))
                 }
             } else {
                 ActivityUtils.openUrlExternal(context, url)
@@ -120,17 +125,22 @@ object ChromeCustomTabUtils {
     private fun createIntent(
         context: Context,
         height: Height,
-        tabSession: CustomTabsSession? = null
+        tabSession: CustomTabsSession? = null,
+        enableSlideAnimation: Boolean = false,
     ): CustomTabsIntent {
         val defaultColorSchemeParams = CustomTabColorSchemeParams.Builder()
             .setToolbarColor(ContextCompat.getColor(context, R.color.color_toolbar))
             .build()
-        val intent = Builder(tabSession)
+        val builder = Builder(tabSession)
             .setDefaultColorSchemeParams(defaultColorSchemeParams)
             .setShareState(CustomTabsIntent.SHARE_STATE_ON)
             .setShowTitle(true)
             .setTabHeight(height, context)
-            .build()
+        if (enableSlideAnimation) {
+            builder.setStartAnimations(context, R.anim.woopos_slide_in_right, R.anim.woopos_slide_out_left)
+                .setExitAnimations(context, R.anim.woopos_slide_in_left, R.anim.woopos_slide_out_right)
+        }
+        val intent = builder.build()
         intent.intent.putExtra(Intent.EXTRA_REFERRER, Uri.parse("android-app://" + context.packageName))
         return intent
     }

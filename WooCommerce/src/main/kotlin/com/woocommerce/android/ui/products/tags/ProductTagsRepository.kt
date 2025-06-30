@@ -59,7 +59,7 @@ class ProductTagsRepository @Inject constructor(
     /**
      * Returns all product tags for the current site that are in the database
      */
-    fun getProductTags(): List<ProductTag> {
+    suspend fun getProductTags(): List<ProductTag> {
         return productStore.getTagsForSite(selectedSite.get())
             .map { it.toProductTag() }
     }
@@ -80,9 +80,9 @@ class ProductTagsRepository @Inject constructor(
         }
     }
 
-    fun getProductTagsByNames(names: List<String>) =
+    private suspend fun getProductTagsByNames(names: List<String>) =
         productStore.getProductTagsByNames(selectedSite.get(), names).map { it.toProductTag() }
 
-    fun getProductTagByName(name: String) =
+    suspend fun getProductTagByName(name: String) =
         productStore.getProductTagByName(selectedSite.get(), name)?.toProductTag()
 }

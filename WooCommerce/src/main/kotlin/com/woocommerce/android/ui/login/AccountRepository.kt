@@ -8,6 +8,7 @@ import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
+import com.woocommerce.android.ui.sitepicker.sitevisibility.VisibleWooSitesDataStore
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.LOGIN
 import com.woocommerce.android.util.dispatchAndAwait
@@ -15,10 +16,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
+import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.generated.SiteActionBuilder
 import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
+import org.wordpress.android.fluxc.store.NotificationStore.OnDeviceUnregistered
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.account.CloseAccountStore
 import org.wordpress.android.fluxc.store.account.CloseAccountStore.CloseAccountErrorType
@@ -32,7 +35,8 @@ class AccountRepository @Inject constructor(
     private val dispatcher: Dispatcher,
     private val zendeskSettings: ZendeskSettings,
     private val prefs: AppPrefs,
-    @AppCoroutineScope private val appCoroutineScope: CoroutineScope
+    @AppCoroutineScope private val appCoroutineScope: CoroutineScope,
+    private val siteVisibilityDataStore: VisibleWooSitesDataStore
 ) {
     fun getUserAccount(): AccountModel? = accountStore.account.takeIf { it.userId != 0L }
 
@@ -50,9 +54,12 @@ class AccountRepository @Inject constructor(
             (selectedSite.connectionType == SiteConnectionType.ApplicationPasswords)
     }
 
+    @Suppress("ReturnCount")
     suspend fun logout(): Boolean {
         if (!isUserLoggedIn()) return true
         return if (accountStore.hasAccessToken()) {
+            unregisterDevice()
+
             // WordPress.com account logout
             val event: OnAccountChanged = dispatcher.dispatchAndAwait(AccountActionBuilder.newSignOutAction())
             if (event.isError) {
@@ -112,13 +119,22 @@ class AccountRepository @Inject constructor(
         AnalyticsTracker.clearAllData()
         zendeskSettings.clearIdentity()
 
-        // Wipe user-specific preferences
-        prefs.resetUserPreferences()
+        // Wipe user-specific preferences and prefs data store
+        appCoroutineScope.launch {
+            prefs.resetUserPreferences()
+            siteVisibilityDataStore.clearAll()
+        }
 
         selectedSite.reset()
 
         // Delete sites
         dispatcher.dispatch(SiteActionBuilder.newRemoveAllSitesAction())
+    }
+
+    private suspend fun unregisterDevice() {
+        dispatcher.dispatchAndAwait<Void, OnDeviceUnregistered>(
+            NotificationActionBuilder.newUnregisterDeviceAction()
+        )
     }
 
     sealed class CloseAccountResult {

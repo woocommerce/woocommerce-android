@@ -40,15 +40,20 @@ class ProductItemView @JvmOverloads constructor(
     private val statusColor = ContextCompat.getColor(context, R.color.product_status_fg_other)
     private val statusPendingColor = ContextCompat.getColor(context, R.color.product_status_fg_pending)
 
+    companion object {
+        private const val LOW_IMAGE_ALPHA = 0.3f
+    }
+
     fun bind(
         product: Product,
         currencyFormatter: CurrencyFormatter,
         currencyCode: String? = null,
-        isActivated: Boolean = false
+        isActivated: Boolean = false,
+        isUploadingMedia: Boolean = false
     ) {
         showProductName(product.name)
         showProductSku(product.sku)
-        showProductImage(product.firstImageUrl, isActivated)
+        showProductImage(product.firstImageUrl, isActivated, isUploadingMedia)
         showProductStockStatusPrice(product, currencyFormatter, currencyCode)
     }
 
@@ -106,7 +111,8 @@ class ProductItemView @JvmOverloads constructor(
 
     private fun showProductImage(
         imageUrl: String?,
-        isActivated: Boolean = false
+        isActivated: Boolean = false,
+        isUploadingMedia: Boolean = false
     ) {
         val size: Int
         when {
@@ -124,7 +130,18 @@ class ProductItemView @JvmOverloads constructor(
                     .into(binding.productImage)
             }
         }
-        binding.productImageSelected.visibility = if (isActivated) View.VISIBLE else View.GONE
+
+        // There are two possible overlays for the product image, but we only show one at a time:
+        // - Checkmark, when `isActivated` (when in bulk selection mode and the product is selected)
+        // - Loading animation, when `isUploadingMedia` (when merchant uploads images in product details, then
+        //   returns to product list while the upload is still ongoing)
+        //
+        // If both states are true, the checkmark overlay takes precedence.
+        binding.productImageSelected.isVisible = isActivated
+        binding.mediaUploadProgress.isVisible = !isActivated && isUploadingMedia
+        // Add transparency to product image when uploading media so that the progress bar is more visible
+        binding.productImage.alpha = if (!isActivated && isUploadingMedia) LOW_IMAGE_ALPHA else 1f
+
         binding.productImage.layoutParams.apply {
             height = size
             width = size

@@ -5,7 +5,8 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.IsRemoteFeatureFlagEnabled
 import com.woocommerce.android.util.RemoteFeatureFlag.WOO_POS
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -17,31 +18,45 @@ class WooPosIsEnabled @Inject constructor(
     private val getWooCoreVersion: GetWooCorePluginCachedVersion,
     private val wooCommerceStore: WooCommerceStore,
     private val isRemoteFeatureFlagEnabled: IsRemoteFeatureFlagEnabled,
+    private val isRemotelyEnabled: WooPOSIsRemotelyEnabled
 ) {
     @Suppress("ReturnCount")
-    suspend operator fun invoke(): Boolean = coroutineScope {
-        val selectedSite = selectedSite.getOrNull() ?: return@coroutineScope false
+    suspend operator fun invoke(): Boolean = withContext(Dispatchers.IO) {
+        val selectedSite = selectedSite.getOrNull() ?: return@withContext false
 
-        if (!isRemoteFeatureFlagEnabled(WOO_POS)) return@coroutineScope false
-        if (!isScreenSizeAllowed()) return@coroutineScope false
-        if (!isWooCoreSupportsOrderAutoDraftsAndExtraPaymentsProps()) return@coroutineScope false
+        if (!isRemoteFeatureFlagEnabled(WOO_POS)) return@withContext false
+        if (!isScreenSizeAllowed()) return@withContext false
+        if (!isWooCoreSupportsOrderAutoDraftsAndExtraPaymentsProps()) return@withContext false
+        if (isFeatureSwitchSupported() && isRemotelyEnabled() != true) return@withContext false
 
-        val siteSettings = wooCommerceStore.getSiteSettings(selectedSite) ?: return@coroutineScope false
-        if (siteSettings.countryCode.lowercase() !in SUPPORTED_COUNTRIES) return@coroutineScope false
-        if (siteSettings.currencyCode.lowercase() !in SUPPORTED_CURRENCIES) return@coroutineScope false
+        val siteSettings = wooCommerceStore.getSiteSettings(selectedSite)
+            ?: wooCommerceStore.fetchSiteGeneralSettings(selectedSite).model
 
-        return@coroutineScope true
+        if (siteSettings == null) return@withContext false
+
+        return@withContext isCountryAndCurrencySupported(
+            countryCode = siteSettings.countryCode,
+            currency = siteSettings.currencyCode
+        )
     }
+
+    private fun isCountryAndCurrencySupported(countryCode: String, currency: String) =
+        SUPPORTED_COUNTRY_CURRENCY_PAIRS.any { it.first.equals(countryCode, true) && it.second.equals(currency, true) }
 
     private fun isWooCoreSupportsOrderAutoDraftsAndExtraPaymentsProps(): Boolean {
         val wooCoreVersion = getWooCoreVersion() ?: return false
-        return wooCoreVersion.semverCompareTo(WC_VERSION_SUPPORTS_ORDER_AUTO_DRAFTS_AND_EXTRA_PAYMENTS_PROPS) >= 0
+        return wooCoreVersion.semverCompareTo(WC_VERSION_SUPPORTS_POS_PRODUCT_FILTERING) >= 0
+    }
+
+    private fun isFeatureSwitchSupported(): Boolean {
+        val wooCoreVersion = getWooCoreVersion() ?: return false
+        return wooCoreVersion.semverCompareTo(WC_VERSION_SUPPORTS_POS_FEATURE_SWITCH) >= 0
     }
 
     private companion object {
-        const val WC_VERSION_SUPPORTS_ORDER_AUTO_DRAFTS_AND_EXTRA_PAYMENTS_PROPS = "6.6.0"
+        const val WC_VERSION_SUPPORTS_POS_PRODUCT_FILTERING = "9.6.0"
+        const val WC_VERSION_SUPPORTS_POS_FEATURE_SWITCH = "10.0.0"
 
-        val SUPPORTED_COUNTRIES = listOf("us")
-        val SUPPORTED_CURRENCIES = listOf("usd")
+        val SUPPORTED_COUNTRY_CURRENCY_PAIRS = listOf("us" to "usd", "gb" to "gbp")
     }
 }

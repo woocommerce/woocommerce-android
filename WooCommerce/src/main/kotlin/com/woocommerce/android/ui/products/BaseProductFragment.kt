@@ -11,7 +11,6 @@ import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.details.ProductDetailViewModel
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
@@ -46,7 +45,6 @@ abstract class BaseProductFragment : BaseFragment, BackPressListener {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is Exit -> requireActivity().onBackPressedDispatcher.onBackPressed()
                 is ShowDialog -> WooDialog.showDialog(
                     requireActivity(),
                     event.positiveBtnAction,

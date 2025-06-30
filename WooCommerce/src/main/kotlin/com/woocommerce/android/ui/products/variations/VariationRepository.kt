@@ -74,7 +74,7 @@ class VariationRepository @Inject constructor(
     /**
      * Returns all product variations for a product and current site that are in the database
      */
-    fun getProductVariationList(remoteProductId: Long): List<ProductVariation> {
+    suspend fun getProductVariationList(remoteProductId: Long): List<ProductVariation> {
         val product = productStore.getProductByRemoteId(selectedSite.get(), remoteProductId)
         return productStore.getVariationsForProduct(selectedSite.get(), remoteProductId)
             .map {

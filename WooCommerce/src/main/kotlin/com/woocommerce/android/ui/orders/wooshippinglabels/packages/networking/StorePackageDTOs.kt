@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 class SavedPackageInfoDTO {
     val custom: List<CustomPackageDTO>? = null
+    val predefined: Map<String, List<String>>? = null // Carrier -> List of Package IDs
 }
 
 class CustomPackageDTO {

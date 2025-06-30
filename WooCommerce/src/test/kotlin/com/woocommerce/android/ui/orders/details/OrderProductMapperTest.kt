@@ -101,6 +101,7 @@ class OrderProductMapperTest : BaseUnitTest() {
             sku = "sku_$n",
             quantity = 1f,
             subtotal = total,
+            subtotalTax = BigDecimal.ZERO,
             totalTax = BigDecimal.ZERO,
             total = total,
             variationId = -1,

@@ -1,341 +1,75 @@
 package com.woocommerce.android.ui.woopos.home.items
 
 import app.cash.turbine.test
-import com.woocommerce.android.R
-import com.woocommerce.android.ui.products.ProductTestUtils
+import com.woocommerce.android.ui.coupons.CouponTestUtils
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
+import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
-import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
-import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
+import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
+import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationFacade
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
-import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
-import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SearchButtonTapped
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule
+import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import java.math.BigDecimal
-import kotlin.test.Test
-import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
 class WooPosItemsViewModelTest {
-
     @Rule
     @JvmField
     val coroutinesTestRule = WooPosCoroutineTestRule()
 
-    private val productsDataSource: WooPosProductsDataSource = mock()
-    private val fromChildToParentEventSender: WooPosChildrenToParentEventSender = mock()
-    private val posPreferencesRepository: WooPosPreferencesRepository = mock()
-    private val wooPosItemsNavigator: WooPosItemsNavigator = mock()
-    private val priceFormat: WooPosFormatPrice = mock {
-        onBlocking { invoke(BigDecimal("10.0")) }.thenReturn("$10.0")
-        onBlocking { invoke(BigDecimal("20.0")) }.thenReturn("$20.0")
+    private val tabs = listOf(
+        WooPosItemsToolbarViewState.Tab.Products(
+            "Products",
+            WooPosItemsToolbarViewState.Tab.HighlightLevel.Full
+        ),
+        WooPosItemsToolbarViewState.Tab.Coupons(
+            "Coupons",
+            WooPosItemsToolbarViewState.Tab.HighlightLevel.Normal
+        )
+    )
+
+    private val searchHelper: WooPosItemsSearchHelper = mock()
+    private val tabsHelper: WooPosItemsTabsHelper = mock {
+        on { defaultTabs }.thenReturn(tabs)
     }
+    private val analyticsTracker: WooPosAnalyticsTracker = mock()
+    private val couponCreationFacade: WooPosCouponCreationFacade = mock()
+    private val fromChildToParentEventSender: WooPosChildrenToParentEventSender = mock()
+    private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock()
 
     @Before
     fun setup() {
-        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerWasHiddenByUser).thenReturn(
-            flowOf(false)
+        whenever(searchHelper.getInitialSearchState()).thenReturn(
+            WooPosItemsToolbarViewState.SearchState.Visible(
+                state = WooPosSearchInputState.Closed
+            )
         )
+        whenever(parentToChildrenEventReceiver.events).thenReturn(flowOf())
     }
 
     @Test
-    fun `given products from data source, when view model created, then view state updated correctly`() = runTest {
+    fun `when view model created, then search state is visible`() = runTest {
         // GIVEN
-        val products = listOf(
-            ProductTestUtils.generateProduct(
-                productId = 1,
-                productName = "Product 1",
-                amount = "10.0",
-                productType = "simple",
-                isDownloadable = false,
-            ),
-            ProductTestUtils.generateProduct(
-                productId = 2,
-                productName = "Product 2",
-                amount = "20.0",
-                productType = "simple",
-                isDownloadable = false,
-            ).copy(firstImageUrl = "https://test.com")
-        )
-
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
-            flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
-                    Result.success(products)
-                )
-            )
-        )
-
-        // WHEN
-        val viewModel = createViewModel()
-        viewModel.viewState.test {
-            // THEN
-            val value = awaitItem() as WooPosItemsViewState.Content
-
-            @Suppress("UNCHECKED_CAST")
-            val items = value.items as List<WooPosItem.SimpleProduct>
-            assertThat(items).hasSize(2)
-            assertThat(items[0].id).isEqualTo(1)
-            assertThat(items[0].name).isEqualTo("Product 1")
-            assertThat(items[0].price).isEqualTo("$10.0")
-            assertThat(items[1].id).isEqualTo(2)
-            assertThat(items[1].name).isEqualTo("Product 2")
-            assertThat(items[1].price).isEqualTo("$20.0")
-            assertThat(items[1].imageUrl).isEqualTo("https://test.com")
-        }
-    }
-
-    @Test
-    fun `given empty products list returned, when view model created, then view state is empty`() = runTest {
-        // GIVEN
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
-            flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
-                    Result.success(emptyList())
-                )
-            )
-        )
-
-        // WHEN
-        val viewModel = createViewModel()
-        viewModel.viewState.test {
-            // THEN
-            val value = awaitItem()
-            assertThat(value).isEqualTo(WooPosItemsViewState.Empty())
-        }
-    }
-
-    @Test
-    fun `given loading products is failure, when view model created, then view state is error`() = runTest {
-        // GIVEN
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
-            flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
-                    Result.failure(Exception())
-                )
-            )
-        )
-
-        // WHEN
-        val viewModel = createViewModel()
-        viewModel.viewState.test {
-            // THEN
-            val value = awaitItem()
-            assertThat(value).isEqualTo(WooPosItemsViewState.Error())
-        }
-    }
-
-    @Test
-    fun `given products from data source, when pulled to refresh, then should remove products and fetch again`() =
-        runTest {
-            // GIVEN
-            val products = listOf(
-                ProductTestUtils.generateProduct(
-                    productId = 1,
-                    productName = "Product 1",
-                    amount = "10.0",
-                    productType = "simple"
-                ),
-                ProductTestUtils.generateProduct(
-                    productId = 2,
-                    productName = "Product 2",
-                    amount = "20.0",
-                    productType = "simple"
-                ).copy(firstImageUrl = "https://test.com")
-            )
-
-            whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
-                flowOf(
-                    WooPosProductsDataSource.ProductsResult.Remote(
-                        Result.success(products)
-                    )
-                )
-            )
-
-            // WHEN
-            val viewModel = createViewModel()
-            viewModel.onUIEvent(WooPosItemsUIEvent.PullToRefreshTriggered)
-            viewModel.viewState.test {
-                // THEN
-                verify(productsDataSource).loadSimpleProducts(forceRefreshProducts = true)
-                cancelAndConsumeRemainingEvents()
-            }
-        }
-
-    @Test
-    fun `given content state, when end of products grid reached and no more pages, then do not load more`() = runTest {
-        // GIVEN
-        val products = listOf(
-            ProductTestUtils.generateProduct(
-                productId = 1,
-                productName = "Product 1",
-                amount = "10.0",
-                productType = "simple"
-            ),
-            ProductTestUtils.generateProduct(
-                productId = 2,
-                productName = "Product 2",
-                amount = "20.0",
-                productType = "simple"
-            ).copy(firstImageUrl = "https://test.com")
-        )
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
-            flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
-                    Result.success(products)
-                )
-            )
-        )
-        whenever(productsDataSource.hasMorePages).thenReturn(false)
-
-        val viewModel = createViewModel()
-
-        // WHEN
-        viewModel.onUIEvent(WooPosItemsUIEvent.EndOfItemsListReached)
-        viewModel.viewState.test {
-            // THEN
-            val value = awaitItem() as WooPosItemsViewState.Content
-            assertThat(value.loadingMore).isFalse()
-        }
-    }
-
-    @Test
-    fun `when item clicked, then send event to parent`() = runTest {
-        // GIVEN
-        val products = listOf(
-            ProductTestUtils.generateProduct(
-                productId = 1,
-                productName = "Product 1",
-                amount = "10.0",
-                productType = "simple"
-            ),
-            ProductTestUtils.generateProduct(
-                productId = 2,
-                productName = "Product 2",
-                amount = "20.0",
-                productType = "simple"
-            ).copy(firstImageUrl = "https://test.com")
-        )
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
-            flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
-                    Result.success(products)
-                )
-            )
-        )
-
-        val product = WooPosItem.SimpleProduct(
-            id = 1,
-            name = "Product 1",
-            price = "$10.0",
-            imageUrl = "https://test.com"
-        )
-        val viewModel = createViewModel()
-
-        // WHEN
-        viewModel.onUIEvent(WooPosItemsUIEvent.ItemClicked(product))
-        viewModel.viewState.test {
-            // THEN
-            verify(fromChildToParentEventSender).sendToParent(
-                ChildToParentEvent.ItemClickedInProductSelector(
-                    WooPosItemsViewModel.ItemClickedData.SimpleProduct(
-                        id = product.id
-                    )
-                )
-            )
-            cancelAndConsumeRemainingEvents()
-        }
-    }
-
-    @Test
-    fun `given load more products is called, when products source loads successfully then state is updated`() =
-        runTest {
-            // GIVEN
-            val products = listOf(
-                ProductTestUtils.generateProduct(
-                    productId = 1,
-                    productName = "Product 1",
-                    amount = "10.0",
-                    productType = "simple"
-                ),
-                ProductTestUtils.generateProduct(
-                    productId = 2,
-                    productName = "Product 2",
-                    amount = "20.0",
-                    productType = "simple"
-                ).copy(firstImageUrl = "https://test.com")
-            )
-            whenever(productsDataSource.loadSimpleProducts(eq(false))).thenReturn(
-                flowOf(
-                    WooPosProductsDataSource.ProductsResult.Remote(
-                        Result.success(products)
-                    )
-                )
-            )
-
-            val viewModel = createViewModel()
-            viewModel.onUIEvent(WooPosItemsUIEvent.EndOfItemsListReached)
-            viewModel.viewState.test {
-                // THEN
-                val value = awaitItem() as WooPosItemsViewState.Content
-                assertThat(value.loadingMore).isFalse()
-            }
-        }
-
-    @Test
-    fun `when loading without pull to refresh, then should not ask to remove products`() = runTest {
-        // GIVEN
-        val products = listOf(
-            ProductTestUtils.generateProduct(
-                productId = 1,
-                productName = "Product 1",
-                amount = "10.0",
-                productType = "simple"
-            ),
-            ProductTestUtils.generateProduct(
-                productId = 2,
-                productName = "Product 2",
-                amount = "20.0",
-                productType = "simple"
-            ).copy(firstImageUrl = "https://test.com")
-        )
-
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
-            flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
-                    Result.success(products)
-                )
-            )
-        )
-
-        // WHEN
-        val viewModel = createViewModel()
-
-        viewModel.viewState.test {
-            // THEN
-            verify(productsDataSource).loadSimpleProducts(forceRefreshProducts = false)
-            cancelAndConsumeRemainingEvents()
-        }
-    }
-
-    @Test
-    fun `when loadProducts called, then view state is Loading`() = runTest {
-        // GIVEN
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
-            flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
-                    Result.success(emptyList())
-                )
+        whenever(searchHelper.getInitialSearchState()).thenReturn(
+            WooPosItemsToolbarViewState.SearchState.Visible(
+                state = WooPosSearchInputState.Closed
             )
         )
 
@@ -343,577 +77,372 @@ class WooPosItemsViewModelTest {
         val viewModel = createViewModel()
 
         // THEN
-        assertThat(viewModel.viewState.value).isInstanceOf(WooPosItemsViewState.Loading::class.java)
-    }
-
-    @Test
-    fun `given error from load more, when list end reached, then state is Error`() = runTest {
-        // GIVEN
-        val products = listOf(
-            ProductTestUtils.generateProduct(
-                productId = 1,
-                productName = "Product 1",
-                amount = "10.0",
-                productType = "simple"
-            )
-        )
-        whenever(productsDataSource.loadSimpleProducts(eq(false))).thenReturn(
-            flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
-                    Result.success(products)
-                )
-            )
-        )
-        whenever(productsDataSource.loadMore()).thenReturn(Result.failure(Exception()))
-        whenever(productsDataSource.hasMorePages).thenReturn(true)
-
-        val viewModel = createViewModel()
-
-        // WHEN
-        viewModel.onUIEvent(WooPosItemsUIEvent.EndOfItemsListReached)
         viewModel.viewState.test {
-            // THEN
-            val value = awaitItem()
-            assertThat(value).isInstanceOf(WooPosItemsViewState.Error::class.java)
+            val contentState = awaitItem() as WooPosItemsToolbarViewState.ProductList
+            assertThat(contentState.search).isInstanceOf(WooPosItemsToolbarViewState.SearchState.Visible::class.java)
+            val searchState = contentState.search as WooPosItemsToolbarViewState.SearchState.Visible
+            assertThat(searchState.state).isEqualTo(WooPosSearchInputState.Closed)
         }
     }
 
     @Test
-    fun `given no products, when pull to refresh, then state is Empty`() = runTest {
+    fun `given search visible, when close search clicked, then search state is closed`() = runTest {
+        // WHEN
+        val viewModel = createViewModel()
+        viewModel.onUIEvent(WooPosItemsUIEvent.CloseSearchClicked)
+
+        // THEN
+        verify(searchHelper).onCloseSearchClicked()
+    }
+
+    @Test
+    fun `given search visible, when search text changed, then search helper is called`() = runTest {
         // GIVEN
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
-            flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
-                    Result.success(emptyList())
+        val query = "test query"
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosItemsUIEvent.SearchChanged(query, 0))
+
+        // THEN
+        verify(searchHelper).onSearchChanged(query, 0)
+    }
+
+    @Test
+    fun `given search visible, when clear search clicked, then search helper is called`() = runTest {
+        // GIVEN
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosItemsUIEvent.ClearSearchClicked)
+
+        // THEN
+        verify(searchHelper).onClearSearchClicked()
+    }
+
+    @Test
+    fun `given search visible, when close search clicked, then search helper is called`() = runTest {
+        // GIVEN
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosItemsUIEvent.CloseSearchClicked)
+
+        // THEN
+        verify(searchHelper).onCloseSearchClicked()
+    }
+
+    @Test
+    fun `when tab clicked, then tab is selected and state is updated`() = runTest {
+        // GIVEN
+        val couponsTab = WooPosItemsToolbarViewState.Tab.Coupons(
+            "Coupons",
+            WooPosItemsToolbarViewState.Tab.HighlightLevel.Normal
+        )
+
+        whenever(tabsHelper.selectTab(any(), eq(couponsTab))).thenReturn(
+            listOf(
+                WooPosItemsToolbarViewState.Tab.Products(
+                    "Products",
+                    WooPosItemsToolbarViewState.Tab.HighlightLevel.Normal
+                ),
+                WooPosItemsToolbarViewState.Tab.Coupons(
+                    "Coupons",
+                    WooPosItemsToolbarViewState.Tab.HighlightLevel.Full
                 )
             )
         )
 
-        // WHEN
         val viewModel = createViewModel()
-        viewModel.onUIEvent(WooPosItemsUIEvent.PullToRefreshTriggered)
+
+        // WHEN
+        viewModel.onUIEvent(WooPosItemsUIEvent.OnTabClicked(couponsTab))
 
         // THEN
         viewModel.viewState.test {
             val value = awaitItem()
-            assertThat(value).isInstanceOf(WooPosItemsViewState.Empty::class.java)
+            assertThat(value).isInstanceOf(WooPosItemsToolbarViewState.CouponList::class.java)
         }
     }
 
     @Test
-    fun `given empty list, when pull to refresh, then parent notified correctly`() = runTest {
+    fun `when search icon is tapped, then track analytics event`() = runTest {
         // GIVEN
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
-            flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
-                    Result.success(emptyList())
-                )
-            )
-        )
-
         val viewModel = createViewModel()
-        viewModel.onUIEvent(WooPosItemsUIEvent.PullToRefreshTriggered)
-        viewModel.viewState.test {
-            // THEN
-            verify(fromChildToParentEventSender).sendToParent(ChildToParentEvent.ProductsStatusChanged.FullScreen)
-            cancelAndConsumeRemainingEvents()
-        }
-    }
-
-    @Test
-    fun `given products, when pull to refresh, then parent notified correctly`() = runTest {
-        // GIVEN
-        val products = listOf(
-            ProductTestUtils.generateProduct(
-                productId = 1,
-                productName = "Product 1",
-                amount = "10.0",
-                productType = "simple"
-            )
-        )
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
-            flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
-                    Result.success(products)
-                )
-            )
-        )
-        val viewModel = createViewModel()
-        viewModel.onUIEvent(WooPosItemsUIEvent.PullToRefreshTriggered)
-        viewModel.viewState.test {
-            // THEN
-            verify(fromChildToParentEventSender).sendToParent(ChildToParentEvent.ProductsStatusChanged.WithCart)
-            cancelAndConsumeRemainingEvents()
-        }
-    }
-
-    @Test
-    fun `when simple products only banner is closed, then state is updated to true`() = runTest {
-        // GIVEN
-        val products = listOf(
-            ProductTestUtils.generateProduct(
-                productId = 1,
-                productName = "Product 1",
-                amount = "10.0",
-                productType = "simple"
-            ),
-            ProductTestUtils.generateProduct(
-                productId = 2,
-                productName = "Product 2",
-                amount = "20.0",
-                productType = "simple"
-            ).copy(firstImageUrl = "https://test.com")
-        )
-
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
-            flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
-                    Result.success(products)
-                )
-            )
-        )
-        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerWasHiddenByUser).thenReturn(
-            flowOf(true)
-        )
 
         // WHEN
-        val viewModel = createViewModel()
-        viewModel.viewState.test {
-            val contentState = awaitItem() as WooPosItemsViewState.Content
-            viewModel.onUIEvent(WooPosItemsUIEvent.SimpleProductsBannerClosed)
-
-            // THEN
-            assertTrue(contentState.bannerState.isBannerHiddenByUser)
-        }
-    }
-
-    @Test
-    fun `when simple products only banner is closed, then data store is updated to true`() = runTest {
-        // GIVEN
-        val products = listOf(
-            ProductTestUtils.generateProduct(
-                productId = 1,
-                productName = "Product 1",
-                amount = "10.0",
-                productType = "simple"
-            ),
-            ProductTestUtils.generateProduct(
-                productId = 2,
-                productName = "Product 2",
-                amount = "20.0",
-                productType = "simple"
-            ).copy(firstImageUrl = "https://test.com")
-        )
-
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
-            flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
-                    Result.success(products)
-                )
-            )
-        )
-        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerWasHiddenByUser).thenReturn(
-            flowOf(true)
-        )
-
-        // WHEN
-        val viewModel = createViewModel()
-        viewModel.onUIEvent(WooPosItemsUIEvent.SimpleProductsBannerClosed)
+        viewModel.onUIEvent(WooPosItemsUIEvent.SearchIconClicked)
 
         // THEN
-        verify(posPreferencesRepository).setSimpleProductsOnlyBannerWasHiddenByUser(true)
+        verify(analyticsTracker).track(
+            eq(
+                SearchButtonTapped(
+                    source = WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT,
+                )
+            )
+        )
     }
 
     @Test
-    fun `given simple products only banner is shown, when view model init, then state is updated with false`() =
-        runTest {
-            // GIVEN
-            val products = listOf(
-                ProductTestUtils.generateProduct(
-                    productId = 1,
-                    productName = "Product 1",
-                    amount = "10.0",
-                    productType = "simple"
+    fun `when search icon is tapped on coupon tab, then track analytics event with COUPON source`() = runTest {
+        // GIVEN
+        val couponsTab = WooPosItemsToolbarViewState.Tab.Coupons(
+            "Coupons",
+            WooPosItemsToolbarViewState.Tab.HighlightLevel.Normal
+        )
+
+        whenever(tabsHelper.selectTab(any(), eq(couponsTab))).thenReturn(
+            listOf(
+                WooPosItemsToolbarViewState.Tab.Products(
+                    "Products",
+                    WooPosItemsToolbarViewState.Tab.HighlightLevel.Normal
                 ),
-                ProductTestUtils.generateProduct(
-                    productId = 2,
-                    productName = "Product 2",
-                    amount = "20.0",
-                    productType = "simple"
-                ).copy(firstImageUrl = "https://test.com")
-            )
-
-            whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
-                flowOf(
-                    WooPosProductsDataSource.ProductsResult.Remote(
-                        Result.success(products)
-                    )
-                )
-            )
-            whenever(posPreferencesRepository.isSimpleProductsOnlyBannerWasHiddenByUser).thenReturn(
-                flowOf(false)
-            )
-
-            // WHEN
-            val viewModel = createViewModel()
-            viewModel.viewState.test {
-                val contentState = awaitItem() as WooPosItemsViewState.Content
-
-                // THEN
-                assertThat(contentState.bannerState.isBannerHiddenByUser).isFalse()
-            }
-        }
-
-    @Test
-    fun `given simple products only banner already closed by user, when view model init, then banner state is updated to true`() =
-        runTest {
-            // GIVEN
-            val products = listOf(
-                ProductTestUtils.generateProduct(
-                    productId = 1,
-                    productName = "Product 1",
-                    amount = "10.0",
-                    productType = "simple"
-                ),
-                ProductTestUtils.generateProduct(
-                    productId = 2,
-                    productName = "Product 2",
-                    amount = "20.0",
-                    productType = "simple"
-                ).copy(firstImageUrl = "https://test.com")
-            )
-
-            whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
-                flowOf(
-                    WooPosProductsDataSource.ProductsResult.Remote(
-                        Result.success(products)
-                    )
-                )
-            )
-            whenever(posPreferencesRepository.isSimpleProductsOnlyBannerWasHiddenByUser).thenReturn(
-                flowOf(true)
-            )
-
-            // WHEN
-            val viewModel = createViewModel()
-            viewModel.viewState.test {
-                val contentState = awaitItem() as WooPosItemsViewState.Content
-
-                // THEN
-                assertTrue(contentState.bannerState.isBannerHiddenByUser)
-            }
-        }
-
-    @Test
-    fun `given simple products only banner is shown, then correct title is displayed`() = runTest {
-        // GIVEN
-        val products = listOf(
-            ProductTestUtils.generateProduct(
-                productId = 1,
-                productName = "Product 1",
-                amount = "10.0",
-                productType = "simple"
-            ),
-            ProductTestUtils.generateProduct(
-                productId = 2,
-                productName = "Product 2",
-                amount = "20.0",
-                productType = "simple"
-            ).copy(firstImageUrl = "https://test.com")
-        )
-
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
-            flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
-                    Result.success(products)
+                WooPosItemsToolbarViewState.Tab.Coupons(
+                    "Coupons",
+                    WooPosItemsToolbarViewState.Tab.HighlightLevel.Full
                 )
             )
         )
-        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerWasHiddenByUser).thenReturn(
-            flowOf(false)
-        )
+
+        val viewModel = createViewModel()
+        viewModel.onUIEvent(WooPosItemsUIEvent.OnTabClicked(couponsTab))
 
         // WHEN
-        val viewModel = createViewModel()
-        viewModel.viewState.test {
-            val contentState = awaitItem() as WooPosItemsViewState.Content
-
-            // THEN
-            assertThat(contentState.bannerState.title).isEqualTo(R.string.woopos_banner_simple_products_only_title)
-        }
-    }
-
-    @Test
-    fun `given simple products only banner is shown, then correct message is displayed`() = runTest {
-        // GIVEN
-        val products = listOf(
-            ProductTestUtils.generateProduct(
-                productId = 1,
-                productName = "Product 1",
-                amount = "10.0",
-                productType = "simple"
-            ),
-            ProductTestUtils.generateProduct(
-                productId = 2,
-                productName = "Product 2",
-                amount = "20.0",
-                productType = "simple"
-            ).copy(firstImageUrl = "https://test.com")
-        )
-
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
-            flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
-                    Result.success(products)
-                )
-            )
-        )
-        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerWasHiddenByUser).thenReturn(
-            flowOf(false)
-        )
-
-        // WHEN
-        val viewModel = createViewModel()
-        viewModel.viewState.test {
-            val contentState = awaitItem() as WooPosItemsViewState.Content
-
-            // THEN
-            assertThat(contentState.bannerState.message).isEqualTo(R.string.woopos_banner_simple_products_only_message)
-        }
-    }
-
-    @Test
-    fun `given simple products only banner is shown, then correct banner icon is displayed`() = runTest {
-        // GIVEN
-        val products = listOf(
-            ProductTestUtils.generateProduct(
-                productId = 1,
-                productName = "Product 1",
-                amount = "10.0",
-                productType = "simple"
-            ),
-            ProductTestUtils.generateProduct(
-                productId = 2,
-                productName = "Product 2",
-                amount = "20.0",
-                productType = "simple"
-            ).copy(firstImageUrl = "https://test.com")
-        )
-
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
-            flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
-                    Result.success(products)
-                )
-            )
-        )
-        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerWasHiddenByUser).thenReturn(
-            flowOf(false)
-        )
-
-        // WHEN
-        val viewModel = createViewModel()
-        viewModel.viewState.test {
-            // THEN
-            val contentState = awaitItem() as WooPosItemsViewState.Content
-
-            // THEN
-            assertThat(contentState.bannerState.icon).isEqualTo(R.drawable.info)
-        }
-    }
-
-    @Test
-    fun `given info icon displayed, when clicked, then appropriate event is triggered`() = runTest {
-        // GIVEN
-        val products = listOf(
-            ProductTestUtils.generateProduct(
-                productId = 1,
-                productName = "Product 1",
-                amount = "10.0",
-                productType = "simple"
-            ),
-            ProductTestUtils.generateProduct(
-                productId = 2,
-                productName = "Product 2",
-                amount = "20.0",
-                productType = "simple"
-            ).copy(firstImageUrl = "https://test.com")
-        )
-
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
-            flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
-                    Result.success(products)
-                )
-            )
-        )
-        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerWasHiddenByUser).thenReturn(
-            flowOf(true)
-        )
-
-        // WHEN
-        val viewModel = createViewModel()
-        viewModel.onUIEvent(WooPosItemsUIEvent.SimpleProductsDialogInfoIconClicked)
+        viewModel.onUIEvent(WooPosItemsUIEvent.SearchIconClicked)
 
         // THEN
-        verify(fromChildToParentEventSender).sendToParent(ChildToParentEvent.ProductsDialogInfoIconClicked)
+        verify(analyticsTracker).track(
+            eq(
+                SearchButtonTapped(
+                    source = WooPosAnalyticsEventConstant.ItemsListSource.COUPON,
+                )
+            )
+        )
     }
 
     @Test
-    fun `given simple products banner displayed, when learn more clicked, then appropriate event is triggered`() =
-        runTest {
-            // GIVEN
-            val products = listOf(
-                ProductTestUtils.generateProduct(
-                    productId = 1,
-                    productName = "Product 1",
-                    amount = "10.0",
-                    productType = "simple"
-                ),
-                ProductTestUtils.generateProduct(
-                    productId = 2,
-                    productName = "Product 2",
-                    amount = "20.0",
-                    productType = "simple"
-                ).copy(firstImageUrl = "https://test.com")
-            )
+    fun `when search icon is tapped, then search helper is called with empty query`() = runTest {
+        // GIVEN
+        val viewModel = createViewModel()
 
-            whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
-                flowOf(
-                    WooPosProductsDataSource.ProductsResult.Remote(
-                        Result.success(products)
+        // WHEN
+        viewModel.onUIEvent(WooPosItemsUIEvent.SearchIconClicked)
+
+        // THEN
+        verify(searchHelper).onSearchChanged("", 0)
+    }
+
+    @Test
+    fun `when add coupon icon is tapped, then newly created coupon added to cart`() = runTest {
+        // GIVEN
+        whenever(couponCreationFacade.createCoupon())
+            .thenReturn(CouponTestUtils.generateTestCoupon(1L, "test"))
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosItemsUIEvent.AddCouponIconClicked)
+
+        // THEN
+        val item = ItemClickedData.Coupon(1L, "test")
+        verify(fromChildToParentEventSender).sendToParent(
+            eq(
+                ChildToParentEvent.ItemClickedInItemsList(
+                    itemData = item,
+                    eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
+                        item = item,
+                        source = WooPosAnalyticsEventConstant.ItemsListSource.COUPON,
+                        sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST
                     )
                 )
             )
-            whenever(posPreferencesRepository.isSimpleProductsOnlyBannerWasHiddenByUser).thenReturn(
-                flowOf(false)
-            )
+        )
+    }
 
-            // WHEN
-            val viewModel = createViewModel()
-            viewModel.onUIEvent(WooPosItemsUIEvent.SimpleProductsBannerLearnMoreClicked)
+    @Test
+    fun `when add coupon icon is tapped, then track analytics event`() = runTest {
+        // GIVEN
+        whenever(couponCreationFacade.createCoupon())
+            .thenReturn(CouponTestUtils.generateTestCoupon(1L, "test"))
+        val viewModel = createViewModel()
 
-            // THEN
-            verify(fromChildToParentEventSender).sendToParent(ChildToParentEvent.ProductsDialogInfoIconClicked)
+        // WHEN
+        viewModel.onUIEvent(WooPosItemsUIEvent.AddCouponIconClicked)
+
+        // THEN
+        verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.CouponsCreateTapped)
+    }
+
+    @Test
+    fun `given coupon creation returns null, when add coupon icon is tapped, then no event is sent`() = runTest {
+        // GIVEN
+        whenever(couponCreationFacade.createCoupon()).thenReturn(null)
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosItemsUIEvent.AddCouponIconClicked)
+
+        // THEN
+        verify(fromChildToParentEventSender, org.mockito.kotlin.never()).sendToParent(any())
+    }
+
+    @Test
+    fun `when variable product item clicked, then state changes to variation list`() = runTest {
+        // GIVEN
+        val variableProductData = ItemClickedData.VariableProduct(
+            id = 123L,
+            name = "Test Variable Product",
+            numOfVariations = 5,
+            sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST
+        )
+        whenever(parentToChildrenEventReceiver.events).thenReturn(
+            flowOf(ParentToChildrenEvent.ItemClickedInItemsList(variableProductData, null))
+        )
+        val viewModel = createViewModel()
+
+        // WHEN/THEN
+        viewModel.viewState.test {
+            val state = awaitItem()
+            assertThat(state).isInstanceOf(WooPosItemsToolbarViewState.VariationList::class.java)
+            val variationListState = state as WooPosItemsToolbarViewState.VariationList
+            assertThat(variationListState.variableProductData.id).isEqualTo(123L)
+            assertThat(variationListState.variableProductData.numOfVariations).isEqualTo(5)
+            assertThat(variationListState.tabs).hasSize(1)
+            val tab = variationListState.tabs.first() as WooPosItemsToolbarViewState.Tab.Variations
+            assertThat(tab.name).isEqualTo("Test Variable Product")
+            assertThat(tab.highlightLevel).isEqualTo(WooPosItemsToolbarViewState.Tab.HighlightLevel.Full)
         }
+    }
 
     @Test
-    fun `given variable product, when clicked on it, then trigger proper event`() = runTest {
+    fun `when variable product item clicked, then search helper loading state is updated`() = runTest {
         // GIVEN
-        val products = listOf(
-            ProductTestUtils.generateProduct(
-                productId = 1,
-                productName = "Product 1",
-                amount = "10.0",
-                productType = "variable",
-                isVariable = true
-            )
+        val variableProductData = ItemClickedData.VariableProduct(
+            id = 123L,
+            name = "Test Variable Product",
+            numOfVariations = 5,
+            sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST
         )
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
-            flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
-                    Result.success(products)
-                )
-            )
-        )
-        val viewModel = createViewModel()
-        viewModel.onUIEvent(
-            WooPosItemsUIEvent.ItemClicked(
-                WooPosItem.VariableProduct(
-                    id = 1L,
-                    name = "Product 1",
-                    numOfVariations = 10,
-                    variationIds = emptyList(),
-                    price = "$10.0",
-                    imageUrl = null
-                )
-            )
+        whenever(parentToChildrenEventReceiver.events).thenReturn(
+            flowOf(ParentToChildrenEvent.ItemClickedInItemsList(variableProductData, null))
         )
 
-        verify(wooPosItemsNavigator).sendNavigationEvent(
-            WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateToVariationsScreen(
-                WooPosItemNavigationData.VariableProductData(
-                    id = 1,
-                    name = "Product 1",
-                    numOfVariations = 10,
-                )
-            )
+        // WHEN
+        createViewModel()
+
+        // THEN
+        verify(searchHelper).updateLoadingState(isLoading = false)
+    }
+
+    @Test
+    fun `when back from variations clicked, then state changes back to preserved state`() = runTest {
+        // GIVEN
+        val variableProductData = ItemClickedData.VariableProduct(
+            id = 123L,
+            name = "Test Variable Product",
+            numOfVariations = 5,
+            sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST
+        )
+        whenever(parentToChildrenEventReceiver.events).thenReturn(
+            flowOf(ParentToChildrenEvent.ItemClickedInItemsList(variableProductData, null))
+        )
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosItemsUIEvent.BackFromVariationsClicked)
+
+        // THEN
+        viewModel.viewState.test {
+            val state = awaitItem()
+            assertThat(state).isInstanceOf(WooPosItemsToolbarViewState.ProductList::class.java)
+        }
+    }
+
+    @Test
+    fun `when products tab clicked, then analytics event is tracked`() = runTest {
+        // GIVEN
+        val productsTab = WooPosItemsToolbarViewState.Tab.Products(
+            "Products",
+            WooPosItemsToolbarViewState.Tab.HighlightLevel.Normal
+        )
+        whenever(tabsHelper.selectTab(any(), eq(productsTab))).thenReturn(tabs)
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosItemsUIEvent.OnTabClicked(productsTab))
+
+        // THEN
+        val capture = argumentCaptor<WooPosAnalyticsEvent.Event.ItemsHeaderTapped>()
+        verify(analyticsTracker).track(capture.capture())
+        assertThat(capture.firstValue.name).isEqualTo("items_header_tapped")
+        assertThat(capture.firstValue.properties["type"]).isEqualTo(
+            WooPosAnalyticsEventConstant.ItemsHeaderType.PRODUCT.value
         )
     }
 
     @Test
-    fun `given variations screen, when clicked back, then trigger proper event`() = runTest {
+    fun `when single tab present, then tab selection is ignored`() = runTest {
         // GIVEN
-        val products = listOf(
-            ProductTestUtils.generateProduct(
-                productId = 1,
-                productName = "Product 1",
-                amount = "10.0",
-                productType = "variable",
-                isVariable = true
+        val singleTab = listOf(
+            WooPosItemsToolbarViewState.Tab.Products(
+                "Products",
+                WooPosItemsToolbarViewState.Tab.HighlightLevel.Full
             )
         )
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
-            flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
-                    Result.success(products)
-                )
-            )
+        whenever(tabsHelper.defaultTabs).thenReturn(singleTab)
+        val couponsTab = WooPosItemsToolbarViewState.Tab.Coupons(
+            "Coupons",
+            WooPosItemsToolbarViewState.Tab.HighlightLevel.Normal
         )
         val viewModel = createViewModel()
-        viewModel.onUIEvent(WooPosItemsUIEvent.BackButtonClicked)
 
-        verify(wooPosItemsNavigator).sendNavigationEvent(
-            WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateBackToItemListScreen
-        )
+        // WHEN
+        viewModel.onUIEvent(WooPosItemsUIEvent.OnTabClicked(couponsTab))
+
+        // THEN
+        viewModel.viewState.test {
+            val state = awaitItem()
+            assertThat(state).isInstanceOf(WooPosItemsToolbarViewState.ProductList::class.java)
+        }
     }
 
     @Test
-    fun `given variable products from data source, when view model created, then items list updated correctly`() =
-        runTest {
-            // GIVEN
-            val products = listOf(
-                ProductTestUtils.generateProduct(
-                    productId = 1,
-                    productName = "Product 1",
-                    amount = "10.0",
-                    productType = "simple",
-                    isDownloadable = false,
+    fun `when switching tabs, then search loading state is reset`() = runTest {
+        // GIVEN
+        val couponsTab = WooPosItemsToolbarViewState.Tab.Coupons(
+            "Coupons",
+            WooPosItemsToolbarViewState.Tab.HighlightLevel.Normal
+        )
+
+        whenever(tabsHelper.selectTab(any(), eq(couponsTab))).thenReturn(
+            listOf(
+                WooPosItemsToolbarViewState.Tab.Products(
+                    "Products",
+                    WooPosItemsToolbarViewState.Tab.HighlightLevel.Normal
                 ),
-                ProductTestUtils.generateProduct(
-                    productId = 2,
-                    productName = "Product 2",
-                    amount = "20.0",
-                    productType = "variable",
-                    isDownloadable = false,
-                    isVariable = true
-                ).copy(firstImageUrl = "https://test.com")
-            )
-
-            whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
-                flowOf(
-                    WooPosProductsDataSource.ProductsResult.Remote(
-                        Result.success(products)
-                    )
+                WooPosItemsToolbarViewState.Tab.Coupons(
+                    "Coupons",
+                    WooPosItemsToolbarViewState.Tab.HighlightLevel.Full
                 )
             )
-
-            // WHEN
-            val viewModel = createViewModel()
-            viewModel.viewState.test {
-                // THEN
-                val value = awaitItem() as WooPosItemsViewState.Content
-
-                assertThat(value.items.filterIsInstance<WooPosItem.VariableProduct>().size).isEqualTo(1)
-            }
-        }
-
-    private fun createViewModel() =
-        WooPosItemsViewModel(
-            productsDataSource,
-            fromChildToParentEventSender,
-            priceFormat,
-            posPreferencesRepository,
-            wooPosItemsNavigator,
         )
+
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosItemsUIEvent.OnTabClicked(couponsTab))
+
+        // THEN
+        verify(searchHelper).updateLoadingState(isLoading = false)
+    }
+
+    private fun createViewModel(): WooPosItemsViewModel {
+        return WooPosItemsViewModel(
+            searchHelper = searchHelper,
+            tabsHelper = tabsHelper,
+            couponCreationFacade = couponCreationFacade,
+            fromChildToParentEventSender = fromChildToParentEventSender,
+            parentToChildrenEventReceiver = parentToChildrenEventReceiver,
+            analyticsTracker = analyticsTracker,
+        )
+    }
 }

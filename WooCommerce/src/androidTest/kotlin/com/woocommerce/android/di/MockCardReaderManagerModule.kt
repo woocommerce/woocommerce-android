@@ -2,6 +2,7 @@ package com.woocommerce.android.di
 
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.CardReaderManager.SimulatorUpdateFrequency
+import com.woocommerce.android.cardreader.CardReaderManager.TapToPayUxConfig
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
@@ -42,7 +43,7 @@ class MockCardReaderManagerModule {
             override val id: String
                 get() = "ADEE123"
             override val type: String
-                get() = "COTS_DEVICE"
+                get() = "TAP_TO_PAY_DEVICE"
             override val currentBatteryLevel: Float
                 get() = 1f
             override val firmwareVersion: String
@@ -76,6 +77,8 @@ class MockCardReaderManagerModule {
         ): Flow<CardReaderDiscoveryEvents> {
             return emptyFlow()
         }
+
+        override fun setupTapToPayUx(config: TapToPayUxConfig) {}
 
         override fun startConnectionToReader(cardReader: CardReader, locationId: String) {}
 

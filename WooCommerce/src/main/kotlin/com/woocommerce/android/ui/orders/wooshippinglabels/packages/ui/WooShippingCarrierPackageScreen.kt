@@ -1,9 +1,11 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui
 
+import android.content.res.Configuration
 import androidx.annotation.DrawableRes
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,7 +17,9 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -40,47 +44,75 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel
-import com.woocommerce.android.ui.orders.wooshippinglabels.packages.components.WooSavedPackageListItem
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PageType
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PredefinedPackagesState
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.components.ErrorMessageWithButton
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.components.WooShippingPackageListItem
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.components.WooShippingPackageListItemSkeleton
 import kotlinx.coroutines.launch
 
 @Composable
-fun WooShippingCarrierPackageScreen(viewModel: WooShippingLabelPackageCreationViewModel) {
+fun WooShippingCarrierPackageScreen(
+    viewModel: WooShippingLabelPackageCreationViewModel,
+    onTabChange: (PageType) -> Unit
+) {
     val viewState by viewModel.viewState.observeAsState()
     WooShippingCarrierPackageScreen(
-        carrierPackages = viewState?.carrierPackageSection?.carrierPackages ?: emptyMap(),
-        isAddPackageEnabled = viewState?.carrierPackageSection?.hasSelection ?: false,
+        packageState = viewState?.predefinedPackagesState ?: PredefinedPackagesState.Waiting,
+        isAddPackageEnabled = viewState?.predefinedPackagesData?.hasCarrierSelection == true,
         onPackageSelected = viewModel::onCarrierPackageSelected,
-        onAddPackageClick = viewModel::onAddCarrierPackageClick
+        onAddPackageClick = viewModel::onAddCarrierPackageClick,
+        onRetryClick = viewModel::onRetryClick,
+        onTabChange = onTabChange,
+        onPackageStarred = viewModel::onCarrierPackageStarred
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun WooShippingCarrierPackageScreen(
     modifier: Modifier = Modifier,
-    carrierPackages: Map<Carrier, List<CarrierPackageGroup>>,
+    packageState: PredefinedPackagesState,
     onPackageSelected: (PackageData, Boolean) -> Unit,
     isAddPackageEnabled: Boolean = false,
-    onAddPackageClick: () -> Unit = {}
+    onAddPackageClick: () -> Unit = {},
+    onRetryClick: () -> Unit,
+    onTabChange: (PageType) -> Unit,
+    onPackageStarred: (PackageData, Boolean) -> Unit = { _, _ -> }
 ) {
-    val pagerState = rememberPagerState { carrierPackages.keys.size }
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colors.surface)
-    ) {
-        CarrierTabRow(
-            modifier = modifier,
-            pagerState = pagerState,
-            carriers = carrierPackages.keys.toList()
-        )
-        PackageListPager(
-            modifier = modifier
-                .weight(1f),
-            pagerState = pagerState,
-            carrierPackages = carrierPackages,
-            onPackageSelected = onPackageSelected
-        )
+    Column(modifier = modifier) {
+        Box(modifier = modifier.weight(1f)) {
+            when {
+                packageState is PredefinedPackagesState.Data && packageState.carrierPackages.isEmpty() -> EmptyPackages(
+                    modifier = modifier,
+                    R.drawable.ic_delivery,
+                    R.string.woo_shipping_labels_package_creation_empty_carrier_message
+                ) { onTabChange(PageType.CUSTOM) }
+
+                packageState is PredefinedPackagesState.Data -> WooShippingCarrierPackageContent(
+                    modifier = modifier,
+                    carrierPackages = packageState.carrierPackages,
+                    onPackageSelected = onPackageSelected,
+                    onPackageStarred = onPackageStarred
+                )
+
+                packageState is PredefinedPackagesState.Error -> ErrorMessageWithButton(
+                    modifier = modifier,
+                    message = R.string.woo_shipping_labels_package_creation_carrier_loading_error,
+                    onRetryClick = onRetryClick
+                )
+
+                packageState is PredefinedPackagesState.Waiting -> Column(
+                    modifier = modifier
+                        .fillMaxSize()
+                        .padding(16.dp)
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    WooShippingPackageListItemSkeleton()
+                    WooShippingPackageListItemSkeleton()
+                    WooShippingPackageListItemSkeleton()
+                }
+            }
+        }
         Divider()
         Button(
             modifier = modifier
@@ -94,7 +126,36 @@ fun WooShippingCarrierPackageScreen(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun WooShippingCarrierPackageContent(
+    modifier: Modifier = Modifier,
+    carrierPackages: Map<Carrier, List<CarrierPackageGroup>>,
+    onPackageSelected: (PackageData, Boolean) -> Unit,
+    onPackageStarred: (PackageData, Boolean) -> Unit
+) {
+    val pagerState = rememberPagerState { carrierPackages.keys.size }
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colors.surface)
+    ) {
+        CarrierTabRow(
+            modifier = modifier,
+            pagerState = pagerState,
+            carriers = carrierPackages.keys.toList()
+        )
+        Divider(modifier = Modifier.fillMaxWidth())
+        PackageListPager(
+            modifier = modifier
+                .weight(1f),
+            pagerState = pagerState,
+            carrierPackages = carrierPackages,
+            onPackageSelected = onPackageSelected,
+            onPackageStarred = onPackageStarred
+        )
+    }
+}
+
 @Composable
 private fun CarrierTabRow(
     modifier: Modifier,
@@ -108,6 +169,7 @@ private fun CarrierTabRow(
         edgePadding = dimensionResource(R.dimen.major_100),
         backgroundColor = MaterialTheme.colors.surface,
         contentColor = MaterialTheme.colors.primary,
+        divider = {}
     ) {
         carriers.forEachIndexed { index, carrier ->
             val textColor = if (index == pagerState.currentPage) {
@@ -137,13 +199,13 @@ private fun CarrierTabRow(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun PackageListPager(
     modifier: Modifier,
     pagerState: PagerState,
     carrierPackages: Map<Carrier, List<CarrierPackageGroup>>,
-    onPackageSelected: (PackageData, Boolean) -> Unit
+    onPackageSelected: (PackageData, Boolean) -> Unit,
+    onPackageStarred: (PackageData, Boolean) -> Unit
 ) {
     HorizontalPager(
         state = pagerState,
@@ -154,7 +216,8 @@ private fun PackageListPager(
         val carrierPackageGroups = carrierPackages[carrierForPageIndex] ?: emptyList()
         PackageList(
             packageGroups = carrierPackageGroups,
-            onPackageSelected = onPackageSelected
+            onPackageSelected = onPackageSelected,
+            onPackageStarred = onPackageStarred
         )
     }
 }
@@ -162,15 +225,21 @@ private fun PackageListPager(
 @Composable
 private fun PackageList(
     packageGroups: List<CarrierPackageGroup>,
-    onPackageSelected: (PackageData, Boolean) -> Unit
+    onPackageSelected: (PackageData, Boolean) -> Unit,
+    onPackageStarred: (PackageData, Boolean) -> Unit
 ) {
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(
+        modifier = Modifier
+            .verticalScroll(rememberScrollState())
+            .fillMaxSize()
+    ) {
         packageGroups.forEach { group ->
             Spacer(modifier = Modifier.height(8.dp))
             PackageListSection(
                 sectionHeader = group.groupName,
                 packages = group.packages,
-                onPackageSelected = onPackageSelected
+                onPackageSelected = onPackageSelected,
+                onPackageStarred = onPackageStarred
             )
         }
     }
@@ -180,7 +249,8 @@ private fun PackageList(
 private fun PackageListSection(
     sectionHeader: String,
     packages: List<PackageData>,
-    onPackageSelected: (PackageData, Boolean) -> Unit
+    onPackageSelected: (PackageData, Boolean) -> Unit,
+    onPackageStarred: (PackageData, Boolean) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -195,10 +265,14 @@ private fun PackageListSection(
         )
         Divider()
         packages.forEach { packageData ->
-            WooSavedPackageListItem(
-                modifier = Modifier.padding(start = 16.dp),
+            WooShippingPackageListItem(
+                modifier = Modifier
+                    .clickable { onPackageSelected(packageData, packageData.isSelected.not()) }
+                    .padding(start = 16.dp),
                 packageData = packageData,
-                onPackageSelected = onPackageSelected
+                onPackageSelected = onPackageSelected,
+                packageItemSupportsStarring = true,
+                onPackageStarred = onPackageStarred
             )
         }
     }
@@ -223,7 +297,7 @@ private fun CarrierLogo(
 @Composable
 fun WooShippingCarrierPackageScreenPreview() {
     WooThemeWithBackground {
-        WooShippingCarrierPackageScreen(
+        WooShippingCarrierPackageContent(
             carrierPackages = mapOf(
                 Carrier.DHL to listOf(
                     CarrierPackageGroup(
@@ -231,15 +305,19 @@ fun WooShippingCarrierPackageScreenPreview() {
                         packages = listOf(
                             PackageData(
                                 name = "Package 1 - Carrier 1",
-                                dimensions = "10 x 10 x 10 cm",
+                                dimensions = "10 x 10 x 10",
+                                weight = "10",
                                 isSelected = false,
-                                isLetter = false
+                                isLetter = false,
+                                id = "1",
                             ),
                             PackageData(
                                 name = "Package 2 - Carrier 1",
-                                dimensions = "20 x 20 x 20 cm",
+                                dimensions = "20 x 20 x 20",
+                                weight = "20",
                                 isSelected = false,
-                                isLetter = false
+                                isLetter = false,
+                                id = "1",
                             )
                         )
                     ),
@@ -248,15 +326,19 @@ fun WooShippingCarrierPackageScreenPreview() {
                         packages = listOf(
                             PackageData(
                                 name = "Package 3 - Carrier 1",
-                                dimensions = "30 x 30 x 30 cm",
+                                dimensions = "30 x 30 x 30",
+                                weight = "30",
                                 isSelected = false,
-                                isLetter = false
+                                isLetter = false,
+                                id = "1",
                             ),
                             PackageData(
                                 name = "Package 4 - Carrier 1",
-                                dimensions = "40 x 40 x 40 cm",
+                                dimensions = "40 x 40 x 40",
+                                weight = "40",
                                 isSelected = false,
-                                isLetter = false
+                                isLetter = false,
+                                id = "1",
                             )
                         )
                     )
@@ -267,21 +349,44 @@ fun WooShippingCarrierPackageScreenPreview() {
                         packages = listOf(
                             PackageData(
                                 name = "Package 1 - Carrier 2",
-                                dimensions = "10 x 10 x 10 cm",
+                                dimensions = "10 x 10 x 10",
+                                weight = "10",
                                 isSelected = false,
-                                isLetter = false
+                                isLetter = false,
+                                id = "1",
                             ),
                             PackageData(
                                 name = "Package 2 Carrier - 2",
-                                dimensions = "20 x 20 x 20 cm",
+                                dimensions = "20 x 20 x 20",
+                                weight = "20",
                                 isSelected = false,
-                                isLetter = false
+                                isLetter = false,
+                                id = "1",
                             )
                         )
                     )
                 )
             ),
-            onPackageSelected = { _, _ -> }
+            onPackageSelected = { _, _ -> },
+            onPackageStarred = { _, _ -> }
+        )
+    }
+}
+
+@Preview(name = "light", uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(name = "dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun WooShippingCarrierPackageEmptyScreenPreview() {
+    WooThemeWithBackground {
+        WooShippingCarrierPackageScreen(
+            packageState = PredefinedPackagesState.Data(
+                storeOptions = StoreOptionsForPackages.DEFAULT,
+                savedPackages = emptyList(),
+                carrierPackages = emptyMap()
+            ),
+            onPackageSelected = { _, _ -> },
+            onRetryClick = {},
+            onTabChange = {}
         )
     }
 }

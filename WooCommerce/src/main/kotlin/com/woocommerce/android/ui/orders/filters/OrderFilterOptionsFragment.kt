@@ -3,17 +3,17 @@ package com.woocommerce.android.ui.orders.filters
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.view.WindowCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderFilterListBinding
-import com.woocommerce.android.extensions.WindowSizeClass
+import com.woocommerce.android.extensions.edgeToEdgeHandlingForNavigationAndStatusBar
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.showDateRangePicker
-import com.woocommerce.android.extensions.windowSizeClass
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.filters.OrderFilterCategoriesFragment.Companion.KEY_UPDATED_FILTER_OPTIONS
 import com.woocommerce.android.ui.orders.filters.adapter.OrderFilterOptionAdapter
@@ -23,7 +23,6 @@ import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.ShowCust
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterOptionUiModel
 import com.woocommerce.android.ui.orders.list.OrderListFragment
 import dagger.hilt.android.AndroidEntryPoint
-import org.wordpress.android.util.DisplayUtils
 
 @AndroidEntryPoint
 class OrderFilterOptionsFragment :
@@ -32,30 +31,20 @@ class OrderFilterOptionsFragment :
 
     private var _binding: FragmentOrderFilterListBinding? = null
     private val binding get() = _binding!!
-    private companion object {
-        const val DATE_PICKER_FRAGMENT_TAG = "DateRangePicker"
-        const val TABLET_LANDSCAPE_WIDTH_RATIO = 0.55f
-        const val TABLET_LANDSCAPE_HEIGHT_RATIO = 0.6f
-    }
 
     private val viewModel: OrderFilterOptionsViewModel by viewModels()
     lateinit var orderFilterOptionAdapter: OrderFilterOptionAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        if (requireContext().windowSizeClass != WindowSizeClass.Compact) {
-            setStyle(STYLE_NO_TITLE, R.style.Theme_Woo_Dialog_RoundedCorners_NoMinWidth)
-        } else {
-            /* This draws the dialog as full screen */
-            setStyle(STYLE_NO_TITLE, R.style.Theme_Woo)
-        }
+        setStyle(STYLE_NO_TITLE, R.style.Theme_Woo)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentOrderFilterListBinding.bind(view)
+        binding.root.edgeToEdgeHandlingForNavigationAndStatusBar(binding.appBarLayout)
         setupToolbar(binding)
         setUpObservers(viewModel)
         setUpFilterOptionsRecyclerView(binding)
@@ -66,11 +55,8 @@ class OrderFilterOptionsFragment :
 
     override fun onStart() {
         super.onStart()
-        if (requireContext().windowSizeClass != WindowSizeClass.Compact) {
-            dialog?.window?.setLayout(
-                (DisplayUtils.getWindowPixelWidth(requireContext()) * TABLET_LANDSCAPE_WIDTH_RATIO).toInt(),
-                (DisplayUtils.getWindowPixelHeight(requireContext()) * TABLET_LANDSCAPE_HEIGHT_RATIO).toInt()
-            )
+        dialog?.window?.let {
+            WindowCompat.setDecorFitsSystemWindows(it, false)
         }
     }
 

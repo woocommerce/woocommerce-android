@@ -40,6 +40,7 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.Selec
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.LAST_YEAR
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.TODAY
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.WEEK_TO_DATE
+import com.woocommerce.android.ui.common.webview.CanAutoAuthenticateInWebView
 import com.woocommerce.android.ui.dashboard.DashboardStatsUsageTracksEventEmitter
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
 import com.woocommerce.android.ui.feedback.FeedbackRepository
@@ -100,6 +101,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
     private val dateUtils: DateUtils = mock()
     private val trackerEventEmitter: DashboardStatsUsageTracksEventEmitter = mock()
     private val observeAnalyticsCardsConfiguration: ObserveAnalyticsCardsConfiguration = mock()
+    private val canAutoAuthenticateInWebView: CanAutoAuthenticateInWebView = mock()
 
     private lateinit var localeProvider: LocaleProvider
     private lateinit var testLocale: Locale
@@ -772,20 +774,24 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when site is a wpcom and see report is pressed then open a wpcom webview`() = testBlocking {
-        whenever(selectedSite.getOrNull()).thenReturn(SiteModel().apply { setIsWpComStore(true) })
-        sut = givenAViewModel()
-        sut.onSeeReport("https://report-url", ReportCard.Revenue)
-        assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.OpenWPComWebView::class.java)
-    }
+    fun `given we can auto-authenticate in WebView, when see report is pressed, then open an authenticated webview`() =
+        testBlocking {
+            whenever(selectedSite.getOrNull()).thenReturn(SiteModel())
+            whenever(canAutoAuthenticateInWebView.invoke(any())).thenReturn(true)
+            sut = givenAViewModel()
+            sut.onSeeReport("https://report-url", ReportCard.Revenue)
+            assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.OpenAuthenticatedWebView::class.java)
+        }
 
     @Test
-    fun `when site is not a wpcom and see report is pressed then open the default webview`() = testBlocking {
-        whenever(selectedSite.getOrNull()).thenReturn(SiteModel().apply { setIsWpComStore(false) })
-        sut = givenAViewModel()
-        sut.onSeeReport("https://report-url", ReportCard.Revenue)
-        assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.OpenUrl::class.java)
-    }
+    fun `given we can't auto-authenticate in WebView, when see report is pressed, then open the default webview`() =
+        testBlocking {
+            whenever(selectedSite.getOrNull()).thenReturn(SiteModel())
+            whenever(canAutoAuthenticateInWebView.invoke(any())).thenReturn(false)
+            sut = givenAViewModel()
+            sut.onSeeReport("https://report-url", ReportCard.Revenue)
+            assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.OpenUrl::class.java)
+        }
 
     @Test
     fun `when see report is pressed then track see report event`() = testBlocking {
@@ -1035,6 +1041,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
             selectedSite,
             getReportUrl,
             observeAnalyticsCardsConfiguration,
+            canAutoAuthenticateInWebView,
             savedState
         )
     }

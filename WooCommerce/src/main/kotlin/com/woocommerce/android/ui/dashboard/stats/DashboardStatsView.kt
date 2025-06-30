@@ -29,12 +29,14 @@ import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_INTERACTED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_DATE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_GRANULARITY
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_RANGE
 import com.woocommerce.android.databinding.MyStoreStatsBinding
 import com.woocommerce.android.extensions.convertedFrom
+import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.analytics.ranges.myStoreTrackingGranularityString
@@ -180,10 +182,10 @@ class DashboardStatsView @JvmOverloads constructor(
                 .debounce(EVENT_EMITTER_INTERACTION_DEBOUNCE)
                 .collect {
                     usageTracksEventEmitter.interacted()
-
-                    if (statsTimeRangeSelection.selectionType == SelectionType.CUSTOM) {
-                        usageTracksEventEmitter.interactedWithCustomRange()
-                    }
+                    AnalyticsTracker.track(
+                        DYNAMIC_DASHBOARD_CARD_INTERACTED,
+                        mapOf(AnalyticsTracker.KEY_TYPE to DashboardWidget.Type.STATS.trackingIdentifier)
+                    )
                 }
         }
     }

@@ -128,7 +128,7 @@ fun List<ProductCategory>.sortCategories(
 
 fun WCProductCategoryModel.toProductCategory(): ProductCategory {
     return ProductCategory(
-        remoteCategoryId = this.remoteCategoryId,
+        remoteCategoryId = this.remoteCategoryId.value,
         name = this.name,
         slug = this.slug,
         parentId = this.parent

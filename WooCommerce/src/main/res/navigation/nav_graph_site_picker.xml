@@ -28,6 +28,9 @@
         <action
             android:id="@+id/action_sitePickerFragment_to_closeAccountDialogFragment"
             app:destination="@id/closeAccountDialogFragment" />
+        <action
+            android:id="@+id/action_sitePickerFragment_to_storeVisibilityFragment"
+            app:destination="@id/storeVisibilityFragment" />
     </fragment>
     <fragment
         android:id="@+id/sitePickerSiteDiscoveryFragment"
@@ -55,12 +58,23 @@
             android:name="primaryButton"
             android:defaultValue="NONE"
             app:argType="com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel$AccountMismatchPrimaryButton" />
-        <argument
-            android:name="errorType"
-            app:argType="com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel$AccountMismatchErrorType" />
+        <action
+            android:id="@+id/action_accountMismatchErrorFragment_to_nav_graph_jetpack_activation"
+            app:destination="@id/nav_graph_jetpack_activation" >
+            <argument
+                android:name="siteUrl"
+                app:argType="string" />
+            <argument
+                android:name="jetpackStatus"
+                app:argType="com.woocommerce.android.model.JetpackStatus" />
+        </action>
     </fragment>
     <dialog
         android:id="@+id/closeAccountDialogFragment"
         android:name="com.woocommerce.android.ui.prefs.account.CloseAccountDialogFragment"
         android:label="CloseAccountDialogFragment" />
+    <fragment
+        android:id="@+id/storeVisibilityFragment"
+        android:name="com.woocommerce.android.ui.sitepicker.sitevisibility.WooSitesVisibilityFragment"
+        android:label="StoreVisibilityFragment" />
 </navigation>

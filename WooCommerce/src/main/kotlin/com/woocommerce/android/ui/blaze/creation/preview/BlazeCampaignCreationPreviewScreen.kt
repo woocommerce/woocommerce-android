@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
+import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -29,6 +30,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
+import androidx.compose.material3.Checkbox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -42,11 +44,15 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
+import com.woocommerce.android.model.UiString.UiStringRes
+import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.AdDetailsUi.AdDetails
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.AdDetailsUi.Loading
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignDetailItemUi
@@ -54,11 +60,13 @@ import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPr
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignPreviewUiState
 import com.woocommerce.android.ui.compose.Render
 import com.woocommerce.android.ui.compose.animations.SkeletonView
+import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
+import com.woocommerce.android.ui.compose.component.getText
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
-import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.ChromeCustomTabUtils
 
 @Composable
 fun BlazeCampaignCreationPreviewScreen(viewModel: BlazeCampaignCreationPreviewViewModel) {
@@ -68,7 +76,8 @@ fun BlazeCampaignCreationPreviewScreen(viewModel: BlazeCampaignCreationPreviewVi
             onBackPressed = viewModel::onBackPressed,
             onEditAdClicked = viewModel::onEditAdClicked,
             onConfirmDetailsClicked = viewModel::onConfirmClicked,
-            onHelpTapped = viewModel::onHelpTapped
+            onHelpTapped = viewModel::onHelpTapped,
+            onTosAccepted = viewModel::onTosAccepted
         )
     }
 }
@@ -79,7 +88,8 @@ private fun BlazeCampaignCreationPreviewScreen(
     onBackPressed: () -> Unit,
     onEditAdClicked: () -> Unit,
     onConfirmDetailsClicked: () -> Unit,
-    onHelpTapped: () -> Unit
+    onHelpTapped: () -> Unit,
+    onTosAccepted: (Boolean) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -114,20 +124,56 @@ private fun BlazeCampaignCreationPreviewScreen(
                     .padding(16.dp)
             )
             Spacer(modifier = Modifier.height(16.dp))
-            Divider()
-            WCColoredButton(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                    .padding(bottom = 8.dp),
-                text = stringResource(id = R.string.blaze_campaign_preview_details_confirm_details_button),
-                onClick = onConfirmDetailsClicked,
-                enabled = previewState.adDetails != Loading
+            ConfirmationFooter(
+                previewState,
+                onConfirmDetailsClicked,
+                onTosAccepted
             )
         }
     }
 
     previewState.dialogState?.Render()
+}
+
+@Composable
+private fun ConfirmationFooter(
+    previewState: CampaignPreviewUiState,
+    onConfirmDetailsClicked: () -> Unit,
+    onTosAccepted: (Boolean) -> Unit
+) {
+    val context = LocalContext.current
+    val campaignTosText = annotatedStringRes(
+        stringResId = previewState.campaignDetails.campaignTosText.stringRes,
+        onUrlClick = { ChromeCustomTabUtils.launchUrl(context, AppUrls.BLAZE_CANCEL_INSTRUCTIONS) },
+        args = previewState.campaignDetails.campaignTosText.params.map { it.getText() }.toTypedArray()
+    )
+    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+        Divider()
+        Row(
+            modifier = Modifier.padding(top = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Checkbox(
+                checked = previewState.campaignDetails.campaignTosAccepted,
+                onCheckedChange = onTosAccepted
+            )
+            Text(
+                modifier = Modifier.padding(start = 4.dp),
+                text = campaignTosText,
+                textAlign = TextAlign.Justify,
+                style = MaterialTheme.typography.caption,
+                color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium),
+            )
+        }
+        WCColoredButton(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp),
+            text = stringResource(id = R.string.blaze_campaign_preview_details_confirm_details_button),
+            onClick = onConfirmDetailsClicked,
+            enabled = previewState.adDetails != Loading && previewState.campaignDetails.campaignTosAccepted
+        )
+    }
 }
 
 @Composable
@@ -220,8 +266,7 @@ fun AdPreview(
             modifier = Modifier
                 .fillMaxWidth(),
             backgroundColor = colorResource(id = R.color.woo_white),
-            contentColor =
-            if (isSystemInDarkTheme()) {
+            contentColor = if (isSystemInDarkTheme()) {
                 colorResource(id = R.color.color_surface)
             } else {
                 colorResource(id = R.color.color_on_surface)
@@ -241,7 +286,9 @@ fun AdPreview(
                     fallback = painterResource(R.drawable.blaze_campaign_product_placeholder),
                     placeholder = painterResource(R.drawable.blaze_campaign_product_placeholder),
                     error = painterResource(R.drawable.blaze_campaign_product_placeholder),
-                    contentDescription = "",
+                    contentDescription = stringResource(
+                        R.string.blaze_campaign_preview_product_image_content_description
+                    ),
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -330,11 +377,7 @@ fun CampaignDetails(
             style = MaterialTheme.typography.body2
         )
         // Campaign Details
-        if (FeatureFlag.OBJECTIVE_SECTION.isEnabled()) {
-            CampaignPropertyGroupItem(items = listOf(campaignDetails.selectedObjective, campaignDetails.budget))
-        } else {
-            CampaignPropertyGroupItem(items = listOf(campaignDetails.budget))
-        }
+        CampaignPropertyGroupItem(items = listOf(campaignDetails.selectedObjective, campaignDetails.budget))
         Spacer(modifier = Modifier.height(16.dp))
 
         // Ad Audience
@@ -491,12 +534,18 @@ fun CampaignScreenPreview() {
                     displayValue = "Sales",
                     onItemSelected = {},
                 ),
+                campaignTosText = UiStringRes(
+                    stringRes = R.string.blaze_campaign_preview_tos_checkbox_evergreen_campaigns,
+                    params = listOf(UiStringText("35$"), UiStringText("July 15, 2025"))
+                ),
+                campaignTosAccepted = false
             )
         ),
         onBackPressed = { },
         onEditAdClicked = { },
         onConfirmDetailsClicked = { },
-        onHelpTapped = { }
+        onHelpTapped = { },
+        onTosAccepted = {}
     )
 }
 

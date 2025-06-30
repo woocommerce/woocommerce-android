@@ -3,6 +3,7 @@
 package com.woocommerce.android.ui.compose.component
 
 import android.content.res.Configuration
+import androidx.appcompat.view.ContextThemeWrapper
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -252,7 +253,8 @@ private fun CalendarView(
     AndroidView(
         modifier = modifier.wrapContentSize(),
         factory = { context ->
-            AndroidCalendarView(context)
+            val themedContext = ContextThemeWrapper(context, R.style.Woo_Theme_CalendarView)
+            AndroidCalendarView(themedContext)
         },
         update = { view ->
             if (minDate != null) {

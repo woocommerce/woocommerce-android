@@ -2,13 +2,14 @@
 
 package com.woocommerce.android.ui.orders.creation.customerlist
 
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.AppBarDefaults
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
@@ -19,18 +20,30 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.customer.CustomerListScreen
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 
+/**
+ * @param handleInsets true if the screen should handle insets manually.
+ *  This is needed when the screen is used in a DialogFragment, otherwise the handling of insets at the root
+ *  layout will be enough.
+ *
+ *  Note: normally this shouldn't be needed, as we consume the insets in the root layout, but due to this
+ *  bug https://issuetracker.google.com/issues/411868840 the insets are re-applied when the keyboard is shown.
+ */
 @Composable
-fun OrderCustomerListScreen(viewModel: CustomerListSelectionViewModel) {
+fun OrderCustomerListScreen(
+    viewModel: CustomerListSelectionViewModel,
+    handleInsets: Boolean
+) {
     val state by viewModel.viewState.observeAsState()
     state?.let {
         OrderCustomerListScreen(
             state = it,
+            handleInsets = handleInsets,
             onNavigateBack = viewModel::onNavigateBack,
             onAddCustomerClicked = viewModel::onAddCustomerClicked,
             onCustomerSelected = viewModel::onCustomerSelected,
@@ -44,6 +57,7 @@ fun OrderCustomerListScreen(viewModel: CustomerListSelectionViewModel) {
 @Composable
 fun OrderCustomerListScreen(
     state: CustomerListViewState,
+    handleInsets: Boolean,
     onNavigateBack: () -> Unit,
     onAddCustomerClicked: () -> Unit,
     onCustomerSelected: (WCCustomerModel) -> Unit,
@@ -54,18 +68,11 @@ fun OrderCustomerListScreen(
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(stringResource(id = R.string.order_creation_add_customer)) },
-                navigationIcon = {
-                    IconButton(onNavigateBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(id = R.string.back)
-                        )
-                    }
-                },
-                backgroundColor = colorResource(id = R.color.color_toolbar),
-                elevation = 0.dp,
+            Toolbar(
+                title = stringResource(id = R.string.order_creation_add_customer),
+                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
+                onNavigationButtonClick = onNavigateBack,
+                windowInsets = if (handleInsets) AppBarDefaults.topAppBarWindowInsets else WindowInsets(0),
             )
         },
         floatingActionButton = {
@@ -74,7 +81,9 @@ fun OrderCustomerListScreen(
         modifier = modifier
     ) { padding ->
         CustomerListScreen(
-            modifier = Modifier.padding(padding),
+            modifier = Modifier
+                .padding(padding)
+                .then(if (handleInsets) Modifier.navigationBarsPadding().imePadding() else Modifier),
             state = state,
             onCustomerSelected = onCustomerSelected,
             onSearchQueryChanged = onSearchQueryChanged,
@@ -161,6 +170,7 @@ fun OrderCustomerListScreenPreview() {
                     shouldResetScrollPosition = true
                 ),
             ),
+            handleInsets = false,
             onNavigateBack = {},
             onAddCustomerClicked = {},
             onCustomerSelected = {},

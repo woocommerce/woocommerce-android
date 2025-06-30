@@ -121,6 +121,7 @@ class ScreenshotTest : TestBase(failOnUnmatchedWireMockRequests = false) {
         TabNavComponent()
             .gotoProductsScreen()
             .tapOnCreateProduct()
+            .tapOnAddManually(composeTestRule)
             .thenTakeScreenshot<ProductListScreen>("add-product")
             .goBackToProductList()
 

@@ -1,0 +1,324 @@
+package com.woocommerce.android.ui.orders.wooshippinglabels.networking
+
+import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.text.toLowerCase
+import com.woocommerce.android.model.Address
+import com.woocommerce.android.model.AmbiguousLocation
+import com.woocommerce.android.model.Location
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.AccountSettingsModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.AddressNormalizationModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.PaymentMethodModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.PaymentMethodOptions
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.PurchasedLabelData
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.StoreOptionsModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
+import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRatesDatasourceMapper
+import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.DestinationAddressDTO
+import com.woocommerce.android.util.StringUtils.combineStrings
+import java.math.BigDecimal
+import java.util.Date
+import javax.inject.Inject
+
+class WooShippingNetworkingMapper @Inject constructor(
+    private val ratesMapper: WooShippingRatesDatasourceMapper
+) {
+    operator fun invoke(accountSettingsDTO: AccountSettingsDTO): AccountSettingsModel {
+        return with(accountSettingsDTO) {
+            AccountSettingsModel(
+                storeOptions = StoreOptionsModel(
+                    currencySymbol = storeOptions.currencySymbol.orEmpty(),
+                    dimensionUnit = storeOptions.dimensionUnit.orEmpty(),
+                    weightUnit = storeOptions.weightUnit.orEmpty(),
+                    originCountry = storeOptions.originCountry.orEmpty()
+                ),
+                paymentMethodOptions = PaymentMethodOptions(
+                    selectedPaymentId = formData.selectedPaymentId,
+                    paymentMethods = formMeta.paymentMethods.map { paymentMethod ->
+                        PaymentMethodModel(
+                            paymentMethodId = paymentMethod.paymentMethodId,
+                            name = paymentMethod.name,
+                            cardType = paymentMethod.cardType,
+                            cardDigits = paymentMethod.cardDigits,
+                            expiry = paymentMethod.expiry
+                        )
+                    },
+                    addPaymentMethodUrl = formMeta.addPaymentMethodUrl,
+                    emailReceipts = formData.emailReceipts
+                ),
+                canManagePayments = formMeta.canManagePayments,
+                canEditSettings = formMeta.canEditSettings,
+                storeOwnerName = formMeta.masterUserName,
+                storeOwnerUsername = formMeta.masterUserWpcomLogin
+            )
+        }
+    }
+
+    operator fun invoke(shippingLabelDTO: ShippingLabelDTO): ShippingLabelModel {
+        return ShippingLabelModel(
+            labelId = shippingLabelDTO.labelId ?: 0,
+            tracking = shippingLabelDTO.tracking.orEmpty(),
+            refundableAmount = shippingLabelDTO.refundableAmount ?: BigDecimal.ZERO,
+            status = shippingLabelDTO.status,
+            created = shippingLabelDTO.created?.let { Date(it) },
+            carrierId = shippingLabelDTO.carrierId.orEmpty(),
+            serviceName = shippingLabelDTO.serviceName.orEmpty(),
+            commercialInvoiceUrl = shippingLabelDTO.commercialInvoiceUrl.orEmpty(),
+            isCommercialInvoiceSubmittedElectronically = shippingLabelDTO
+                .isCommercialInvoiceSubmittedElectronically == true,
+            packageName = shippingLabelDTO.packageName.orEmpty(),
+            isLetter = shippingLabelDTO.isLetter == true,
+            productNames = shippingLabelDTO.productNames.orEmpty(),
+            productIds = shippingLabelDTO.productIds.orEmpty(),
+            shipmentId = shippingLabelDTO.shipmentId.orEmpty(),
+            receiptItemId = shippingLabelDTO.receiptItemId ?: 0,
+            createdDate = shippingLabelDTO.createdDate?.let { Date(it) },
+            mainReceiptId = shippingLabelDTO.mainReceiptId ?: 0,
+            rate = shippingLabelDTO.rate ?: BigDecimal.ZERO,
+            currency = shippingLabelDTO.currency.orEmpty(),
+            expiryDate = shippingLabelDTO.expiryDate ?: 0,
+            usedDate = shippingLabelDTO.usedDate
+        )
+    }
+
+    operator fun invoke(destinationAddressDTO: DestinationAddressDTO): Address {
+        val name = destinationAddressDTO.name?.split(" ") ?: listOf("", "")
+        return Address(
+            company = destinationAddressDTO.company.orEmpty(),
+            address1 = destinationAddressDTO.address.orEmpty(),
+            city = destinationAddressDTO.city.orEmpty(),
+            state = AmbiguousLocation.Raw(destinationAddressDTO.state.orEmpty()),
+            postcode = destinationAddressDTO.postcode.orEmpty(),
+            country = Location(
+                name = destinationAddressDTO.country.orEmpty(),
+                code = destinationAddressDTO.country.orEmpty()
+            ),
+            firstName = name.getOrElse(0) { "" },
+            phone = destinationAddressDTO.phone.orEmpty(),
+            address2 = destinationAddressDTO.address2.orEmpty(),
+            email = destinationAddressDTO.email.orEmpty(),
+            lastName = name.getOrElse(1) { "" }
+        )
+    }
+
+    operator fun invoke(originAddressPurchaseDTO: OriginAddressPurchaseDTO): OriginShippingAddress {
+        val name = originAddressPurchaseDTO.name?.split(" ") ?: listOf("", "")
+        return OriginShippingAddress(
+            id = originAddressPurchaseDTO.id.orEmpty(),
+            address1 = originAddressPurchaseDTO.address,
+            address2 = originAddressPurchaseDTO.address2,
+            city = originAddressPurchaseDTO.city,
+            state = originAddressPurchaseDTO.state,
+            postcode = originAddressPurchaseDTO.postcode.orEmpty(),
+            country = originAddressPurchaseDTO.country.orEmpty(),
+            firstName = name.getOrElse(0) { "" },
+            company = originAddressPurchaseDTO.company,
+            phone = originAddressPurchaseDTO.phone.orEmpty(),
+            email = originAddressPurchaseDTO.email.orEmpty(),
+            isDefault = false,
+            isVerified = originAddressPurchaseDTO.isVerified,
+            lastName = name.getOrElse(1) { "" }
+        )
+    }
+
+    operator fun invoke(purchasedShippingLabelResponseDTO: PurchasedShippingLabelResponseDTO) = PurchasedLabelData(
+        labels = purchasedShippingLabelResponseDTO.labels.map { invoke(it) },
+        destination = purchasedShippingLabelResponseDTO.selectedDestination.mapValues { invoke(it.value) },
+        origin = purchasedShippingLabelResponseDTO.selectedOrigin.mapValues { invoke(it.value) },
+        rates = purchasedShippingLabelResponseDTO.selectedRates.mapValues { ratesMapper(it.key, it.value) }
+    )
+
+    operator fun invoke(addressListDTO: Array<AddressDTO>): List<OriginShippingAddress> {
+        return addressListDTO.map {
+            OriginShippingAddress(
+                id = it.id.orEmpty(),
+                address1 = it.address.orEmpty(),
+                address2 = it.address2.orEmpty(),
+                city = it.city.orEmpty(),
+                state = it.state.orEmpty(),
+                postcode = it.postcode.orEmpty(),
+                country = it.country.orEmpty(),
+                firstName = it.firstName.orEmpty(),
+                lastName = it.lastName.orEmpty(),
+                company = it.company.orEmpty(),
+                phone = it.phone.orEmpty(),
+                email = it.email.orEmpty(),
+                isDefault = it.defaultAddress,
+                isVerified = it.isVerified,
+            )
+        }
+    }
+
+    operator fun invoke(addressDTO: AddressDTO): Address {
+        return Address(
+            address1 = addressDTO.address.orEmpty(),
+            address2 = addressDTO.address2.orEmpty(),
+            city = addressDTO.city.orEmpty(),
+            state = AmbiguousLocation.Raw(addressDTO.state.orEmpty()),
+            postcode = addressDTO.postcode.orEmpty(),
+            country = AmbiguousLocation.Raw(addressDTO.country.orEmpty()).asLocation(),
+            firstName = if (addressDTO.name.isNullOrEmpty()) addressDTO.firstName.orEmpty() else addressDTO.name,
+            lastName = addressDTO.lastName.orEmpty(),
+            company = addressDTO.company.orEmpty(),
+            phone = addressDTO.phone.orEmpty(),
+            email = addressDTO.email.orEmpty(),
+        )
+    }
+
+    fun toOriginAddress(addressDTO: AddressDTO): OriginShippingAddress {
+        return OriginShippingAddress(
+            id = addressDTO.id.orEmpty(),
+            address1 = addressDTO.address.orEmpty(),
+            address2 = addressDTO.address2.orEmpty(),
+            city = addressDTO.city.orEmpty(),
+            state = addressDTO.state.orEmpty(),
+            postcode = addressDTO.postcode.orEmpty(),
+            country = addressDTO.country.orEmpty(),
+            firstName = addressDTO.firstName.orEmpty(),
+            lastName = addressDTO.lastName.orEmpty(),
+            company = addressDTO.company.orEmpty(),
+            phone = addressDTO.phone.orEmpty(),
+            email = addressDTO.email.orEmpty(),
+            isDefault = addressDTO.defaultAddress,
+            isVerified = addressDTO.isVerified,
+        )
+    }
+
+    operator fun invoke(normalizationResponseDTO: NormalizationResponseDTO): AddressNormalizationModel {
+        return AddressNormalizationModel(
+            address = invoke(normalizationResponseDTO.address),
+            normalizedAddress = invoke(normalizationResponseDTO.normalizedAddress),
+            isTrivial = normalizationResponseDTO.isTrivialNormalization
+        )
+    }
+
+    fun toOriginAddressPurchaseDTO(address: OriginShippingAddress): OriginAddressPurchaseDTO {
+        return OriginAddressPurchaseDTO(
+            id = address.id,
+            address = address.address1,
+            address2 = address.address2,
+            city = address.city,
+            state = address.state,
+            postcode = address.postcode,
+            country = address.country,
+            name = "${address.firstName} ${address.lastName}",
+            company = address.company,
+            phone = address.phone
+        )
+    }
+
+    fun toDestinationAddressDTO(address: Address): DestinationAddressDTO {
+        return DestinationAddressDTO(
+            address = address.address1,
+            city = address.city,
+            state = address.state.codeOrRaw,
+            postcode = address.postcode,
+            country = address.country.code,
+            name = "${address.firstName} ${address.lastName}"
+        )
+    }
+
+    fun toPackagePurchaseDTO(
+        selectedPackage: PackageData,
+        selectedRate: WooShippingRateModel,
+        shippableItems: List<Long>,
+        weight: Float
+    ): PackagePurchaseDTO {
+        return PackagePurchaseDTO(
+            id = "default_package",
+            boxId = selectedPackage.id,
+            length = selectedPackage.length.toFloat(),
+            width = selectedPackage.width.toFloat(),
+            height = selectedPackage.height.toFloatOrNull() ?: PackageData.DEFAULT_HEIGHT.toFloat(),
+            weight = weight,
+            isLetter = selectedPackage.isLetter,
+            shipmentId = selectedRate.shipmentId,
+            products = shippableItems,
+            rateId = selectedRate.rateId,
+            serviceId = selectedRate.serviceId,
+            carrierId = selectedRate.carrierId,
+            serviceName = selectedRate.serviceName
+        )
+    }
+
+    fun toRateDTO(selectedRate: WooShippingRateModel): RateDTO {
+        return RateDTO(
+            rateId = selectedRate.rateId,
+            serviceId = selectedRate.serviceId,
+            carrierId = selectedRate.carrierId,
+            title = selectedRate.serviceName,
+            rate = selectedRate.price,
+            deliveryDays = selectedRate.deliveryDays,
+            shipmentId = selectedRate.shipmentId,
+            deliveryDate = selectedRate.deliveryDate,
+            deliveryDateGuaranteed = selectedRate.isDeliveryDateGuaranteed,
+            freePickup = selectedRate.hasFreePickup,
+            insurance = selectedRate.insurance,
+            isSelected = selectedRate.isSelected,
+            tracking = selectedRate.isTrackingEnabled,
+            listRate = selectedRate.listRate,
+            retailRate = selectedRate.discount
+        )
+    }
+
+    fun toAddressDTO(address: Address, id: String? = null): AddressDTO {
+        return AddressDTO(
+            id = id,
+            address = address.address1,
+            address2 = address.address2,
+            city = address.city,
+            state = address.state.codeOrRaw,
+            postcode = address.postcode,
+            country = address.country.code,
+            company = address.company,
+            name = combineStrings(address.firstName, address.lastName),
+            phone = address.phone,
+            email = address.email
+        )
+    }
+
+    fun toCustomsDTO(
+        customsDataList: List<CustomsData>
+    ): Map<String, CustomsDTO> {
+        return customsDataList.map { customsData ->
+            CustomsDTO(
+                contentsType = customsData.contentType.name.toLowerCase(Locale.current),
+                contentExplanation = customsData.contentDescription,
+                restrictionType = customsData.restrictionType.name.toLowerCase(Locale.current),
+                restrictionComments = customsData.restrictionDescription,
+                isReturnToSender = if (customsData.isReturnToSender) "return" else "abandon",
+                itn = customsData.itn,
+                items = customsData.items.map {
+                    CustomsItemDTO(
+                        productId = it.productID,
+                        description = it.description,
+                        quantity = it.quantity,
+                        value = it.value.toDouble(),
+                        weight = it.weight.toDouble(),
+                        hsTariffNumber = it.hsTariffNumber,
+                        originCountry = it.originCountryCode
+                    )
+                }
+            )
+        }.withIndex().associateBy(
+            keySelector = { "${CUSTOMS_PACKAGE_PREFIX}${it.index}" },
+            valueTransform = { it.value }
+        )
+    }
+
+    fun toHazmatDTO(hazmatSelection: ShippingLabelHazmatCategory?) =
+        hazmatSelection?.let {
+            HazmatDTO(
+                isHazmat = true,
+                category = hazmatSelection.requestFieldValue
+            )
+        } ?: HazmatDTO()
+
+    companion object {
+        private const val CUSTOMS_PACKAGE_PREFIX = "shipment_"
+    }
+}

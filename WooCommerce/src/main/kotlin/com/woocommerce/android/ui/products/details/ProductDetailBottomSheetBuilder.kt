@@ -105,7 +105,7 @@ class ProductDetailBottomSheetBuilder(
         }
     }
 
-    private fun ProductAggregate.getShipping(): ProductDetailBottomSheetUiItem? {
+    private suspend fun ProductAggregate.getShipping(): ProductDetailBottomSheetUiItem? {
         return if (!product.isVirtual && !hasShipping) {
             ProductDetailBottomSheetUiItem(
                 ProductDetailBottomSheetType.PRODUCT_SHIPPING,

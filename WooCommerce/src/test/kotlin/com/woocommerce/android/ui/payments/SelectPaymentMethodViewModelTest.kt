@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.payments
 
-import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.internal.payments.PaymentUtils
@@ -51,11 +50,11 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCSettingsModel
 import org.wordpress.android.fluxc.model.gateways.WCGatewayModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
+import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.fluxc.store.WCGatewayStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
@@ -86,9 +85,6 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     private val orderStore: WCOrderStore = mock {
         onBlocking { getOrderByIdAndSite(any(), any()) }.thenReturn(orderEntity)
         on { getOrderStatusForSiteAndKey(any(), any()) }.thenReturn(mock())
-        onBlocking { updateOrderStatusAndPaymentMethod(any(), any(), any(), any(), any()) }.thenReturn(
-            flowOf(WCOrderStore.UpdateOrderResult.RemoteUpdateResult(OnOrderChanged()))
-        )
         onBlocking { updateOrderStatus(any(), any(), any()) }.thenReturn(
             flowOf(WCOrderStore.UpdateOrderResult.RemoteUpdateResult(OnOrderChanged()))
         )
@@ -113,7 +109,6 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     private val learnMoreUrlProvider: LearnMoreUrlProvider = mock()
     private val paymentsFlowTracker: PaymentsFlowTracker = mock()
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus = mock()
-    private val appPrefs: AppPrefs = mock()
     private val paymentsUtils: PaymentUtils = mock()
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper = mock()
     private val logOrderCurrencyMismatchWithSiteSettings = mock<SelectPaymentMethodCurrencyMissMatchLog>()
@@ -437,20 +432,18 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                     title = CUSTOM_PAYMENT_METHOD_TITLE,
                 )
             )
-            whenever(orderStore.updateOrderStatusAndPaymentMethod(any(), any(), any(), any(), any())).thenReturn(
-                flowOf(WCOrderStore.UpdateOrderResult.RemoteUpdateResult(OnOrderChanged()))
-            )
 
             // WHEN
             viewModel.handleIsOrderPaid(true)
 
             // THEN
-            verify(orderStore).updateOrderStatusAndPaymentMethod(
+            verify(orderStore).updateOrderStatusAndPaymentDetails(
                 any(),
                 any(),
                 any(),
                 eq(CASH_ON_DELIVERY_PAYMENT_TYPE),
                 eq(CUSTOM_PAYMENT_METHOD_TITLE),
+                eq(null)
             )
         }
 
@@ -465,12 +458,13 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             viewModel.handleIsOrderPaid(true)
 
             // THEN
-            verify(orderStore).updateOrderStatusAndPaymentMethod(
+            verify(orderStore).updateOrderStatusAndPaymentDetails(
                 any(),
                 any(),
                 any(),
                 eq(CASH_ON_DELIVERY_PAYMENT_TYPE),
                 eq(DEFAULT_PAYMENT_METHOD_TITLE),
+                eq(null)
             )
         }
 
@@ -586,19 +580,6 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                 cardReaderType = "built_in",
                 timeElapsed = null,
             )
-        }
-
-    @Test
-    fun `when on tap too pay clicked, then app prefs stores ttp was used`() =
-        testBlocking {
-            // GIVEN
-            val viewModel = initViewModel(Payment(1L, SIMPLE))
-
-            // WHEN
-            viewModel.onTapToPayClicked()
-
-            // THEN
-            verify(appPrefs).setTTPWasUsedAtLeastOnce()
         }
 
     @Test
@@ -1226,7 +1207,6 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             paymentsFlowTracker,
             tapToPayAvailabilityStatus,
             cardReaderTrackingInfoKeeper,
-            appPrefs,
             paymentsUtils,
             logOrderCurrencyMismatchWithSiteSettings,
         )

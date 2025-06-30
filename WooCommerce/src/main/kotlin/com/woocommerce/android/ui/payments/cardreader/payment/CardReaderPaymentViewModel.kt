@@ -5,13 +5,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.map
-import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.payments.PaymentData
+import com.woocommerce.android.di.StoreManagementMode
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
-import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentController
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentEvent
@@ -43,8 +42,8 @@ class CardReaderPaymentViewModel @Inject constructor(
     appPrefs: AppPrefs = AppPrefs,
     paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker,
     interacRefundableChecker: CardReaderInteracRefundableChecker,
-    tracker: PaymentsFlowTracker,
-    trackCancelledFlow: CardReaderTrackCanceledFlowAction,
+    @StoreManagementMode tracker: PaymentsFlowTracker,
+    @StoreManagementMode trackCancelledFlow: CardReaderTrackCanceledFlowAction,
     currencyFormatter: CurrencyFormatter,
     errorMapper: CardReaderPaymentErrorMapper,
     interacRefundErrorMapper: CardReaderInteracRefundErrorMapper,
@@ -55,7 +54,6 @@ class CardReaderPaymentViewModel @Inject constructor(
     cardReaderPaymentOrderHelper: CardReaderPaymentOrderHelper,
     paymentReceiptHelper: PaymentReceiptHelper,
     cardReaderOnboardingChecker: CardReaderOnboardingChecker,
-    cardReaderConfigProvider: CardReaderCountryConfigProvider,
     paymentReceiptShare: PaymentReceiptShare,
     paymentStateMapper: CardReaderPaymentStateToViewStateMapper,
 ) : ScopedViewModel(savedState) {
@@ -68,7 +66,6 @@ class CardReaderPaymentViewModel @Inject constructor(
         }
 
     private val paymentController = CardReaderPaymentController(
-        scope = viewModelScope,
         cardReaderManager = cardReaderManager,
         orderRepository = orderRepository,
         selectedSite = selectedSite,
@@ -87,7 +84,6 @@ class CardReaderPaymentViewModel @Inject constructor(
         cardReaderPaymentOrderHelper = cardReaderPaymentOrderHelper,
         paymentReceiptHelper = paymentReceiptHelper,
         cardReaderOnboardingChecker = cardReaderOnboardingChecker,
-        cardReaderConfigProvider = cardReaderConfigProvider,
         paymentReceiptShare = paymentReceiptShare,
         paymentOrRefund = arguments.paymentOrRefund,
         cardReaderType = arguments.cardReaderType,
@@ -120,15 +116,12 @@ class CardReaderPaymentViewModel @Inject constructor(
     fun retry(orderId: Long, billingEmail: String, paymentData: PaymentData, amountLabel: String) =
         paymentController.retry(orderId, billingEmail, paymentData, amountLabel)
 
-    @VisibleForTesting
-    fun reFetchOrder() = paymentController.reFetchOrder()
-
     fun onViewCreated() = paymentController.onViewCreated()
 
     fun onPrintResult(result: PrintJobResult) = paymentController.onPrintResult(result)
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    public override fun onCleared() = paymentController.onCleared()
+    public override fun onCleared() = paymentController.stop()
 
     fun onBackPressed() = paymentController.onBackPressed()
 }

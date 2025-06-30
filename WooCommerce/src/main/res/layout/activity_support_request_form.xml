@@ -8,6 +8,7 @@
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar_layout"
+        android:background="@color/color_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -198,8 +199,7 @@
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.15"
+        android:layout_height="wrap_content"
         android:background="@color/color_surface"
         android:orientation="vertical">
 

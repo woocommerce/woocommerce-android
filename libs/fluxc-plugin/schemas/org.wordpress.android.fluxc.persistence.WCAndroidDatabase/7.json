@@ -1,0 +1,536 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 7,
+    "identityHash": "38081df5a9dc4a02c48a2f92c7987d00",
+    "entities": [
+      {
+        "tableName": "AddonEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`addonLocalId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `globalGroupLocalId` INTEGER, `productRemoteId` INTEGER, `siteRemoteId` INTEGER, `type` TEXT NOT NULL, `display` TEXT, `name` TEXT NOT NULL, `titleFormat` TEXT NOT NULL, `description` TEXT, `required` INTEGER NOT NULL, `position` INTEGER NOT NULL, `restrictions` TEXT, `priceType` TEXT, `price` TEXT, `min` INTEGER, `max` INTEGER, FOREIGN KEY(`globalGroupLocalId`) REFERENCES `GlobalAddonGroupEntity`(`globalGroupLocalId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "addonLocalId",
+            "columnName": "addonLocalId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "globalGroupLocalId",
+            "columnName": "globalGroupLocalId",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "productRemoteId",
+            "columnName": "productRemoteId",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "siteRemoteId",
+            "columnName": "siteRemoteId",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "display",
+            "columnName": "display",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "titleFormat",
+            "columnName": "titleFormat",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "required",
+            "columnName": "required",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "position",
+            "columnName": "position",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "restrictions",
+            "columnName": "restrictions",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "priceType",
+            "columnName": "priceType",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "price",
+            "columnName": "price",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "min",
+            "columnName": "min",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "max",
+            "columnName": "max",
+            "affinity": "INTEGER",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "addonLocalId"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "GlobalAddonGroupEntity",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "globalGroupLocalId"
+            ],
+            "referencedColumns": [
+              "globalGroupLocalId"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "AddonOptionEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`addonOptionLocalId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `addonLocalId` INTEGER NOT NULL, `priceType` TEXT NOT NULL, `label` TEXT, `price` TEXT, `image` TEXT, FOREIGN KEY(`addonLocalId`) REFERENCES `AddonEntity`(`addonLocalId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "addonOptionLocalId",
+            "columnName": "addonOptionLocalId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "addonLocalId",
+            "columnName": "addonLocalId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priceType",
+            "columnName": "priceType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "label",
+            "columnName": "label",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "price",
+            "columnName": "price",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "image",
+            "columnName": "image",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "addonOptionLocalId"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "AddonEntity",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "addonLocalId"
+            ],
+            "referencedColumns": [
+              "addonLocalId"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "GlobalAddonGroupEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`globalGroupLocalId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `restrictedCategoriesIds` TEXT NOT NULL, `siteRemoteId` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "globalGroupLocalId",
+            "columnName": "globalGroupLocalId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "restrictedCategoriesIds",
+            "columnName": "restrictedCategoriesIds",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "siteRemoteId",
+            "columnName": "siteRemoteId",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "globalGroupLocalId"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "OrderEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `localSiteId` INTEGER NOT NULL, `remoteOrderId` INTEGER NOT NULL, `number` TEXT NOT NULL, `status` TEXT NOT NULL, `currency` TEXT NOT NULL, `orderKey` TEXT NOT NULL, `dateCreated` TEXT NOT NULL, `dateModified` TEXT NOT NULL, `total` TEXT NOT NULL, `totalTax` TEXT NOT NULL, `shippingTotal` TEXT NOT NULL, `paymentMethod` TEXT NOT NULL, `paymentMethodTitle` TEXT NOT NULL, `datePaid` TEXT NOT NULL, `pricesIncludeTax` INTEGER NOT NULL, `customerNote` TEXT NOT NULL, `discountTotal` TEXT NOT NULL, `discountCodes` TEXT NOT NULL, `refundTotal` TEXT NOT NULL, `billingFirstName` TEXT NOT NULL, `billingLastName` TEXT NOT NULL, `billingCompany` TEXT NOT NULL, `billingAddress1` TEXT NOT NULL, `billingAddress2` TEXT NOT NULL, `billingCity` TEXT NOT NULL, `billingState` TEXT NOT NULL, `billingPostcode` TEXT NOT NULL, `billingCountry` TEXT NOT NULL, `billingEmail` TEXT NOT NULL, `billingPhone` TEXT NOT NULL, `shippingFirstName` TEXT NOT NULL, `shippingLastName` TEXT NOT NULL, `shippingCompany` TEXT NOT NULL, `shippingAddress1` TEXT NOT NULL, `shippingAddress2` TEXT NOT NULL, `shippingCity` TEXT NOT NULL, `shippingState` TEXT NOT NULL, `shippingPostcode` TEXT NOT NULL, `shippingCountry` TEXT NOT NULL, `shippingPhone` TEXT NOT NULL, `lineItems` TEXT NOT NULL, `shippingLines` TEXT NOT NULL, `feeLines` TEXT NOT NULL, `taxLines` TEXT NOT NULL, `metaData` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "localSiteId",
+            "columnName": "localSiteId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "remoteOrderId",
+            "columnName": "remoteOrderId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "number",
+            "columnName": "number",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "currency",
+            "columnName": "currency",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "orderKey",
+            "columnName": "orderKey",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dateCreated",
+            "columnName": "dateCreated",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dateModified",
+            "columnName": "dateModified",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "total",
+            "columnName": "total",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "totalTax",
+            "columnName": "totalTax",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "shippingTotal",
+            "columnName": "shippingTotal",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "paymentMethod",
+            "columnName": "paymentMethod",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "paymentMethodTitle",
+            "columnName": "paymentMethodTitle",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "datePaid",
+            "columnName": "datePaid",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "pricesIncludeTax",
+            "columnName": "pricesIncludeTax",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "customerNote",
+            "columnName": "customerNote",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "discountTotal",
+            "columnName": "discountTotal",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "discountCodes",
+            "columnName": "discountCodes",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "refundTotal",
+            "columnName": "refundTotal",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "billingFirstName",
+            "columnName": "billingFirstName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "billingLastName",
+            "columnName": "billingLastName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "billingCompany",
+            "columnName": "billingCompany",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "billingAddress1",
+            "columnName": "billingAddress1",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "billingAddress2",
+            "columnName": "billingAddress2",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "billingCity",
+            "columnName": "billingCity",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "billingState",
+            "columnName": "billingState",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "billingPostcode",
+            "columnName": "billingPostcode",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "billingCountry",
+            "columnName": "billingCountry",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "billingEmail",
+            "columnName": "billingEmail",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "billingPhone",
+            "columnName": "billingPhone",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "shippingFirstName",
+            "columnName": "shippingFirstName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "shippingLastName",
+            "columnName": "shippingLastName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "shippingCompany",
+            "columnName": "shippingCompany",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "shippingAddress1",
+            "columnName": "shippingAddress1",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "shippingAddress2",
+            "columnName": "shippingAddress2",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "shippingCity",
+            "columnName": "shippingCity",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "shippingState",
+            "columnName": "shippingState",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "shippingPostcode",
+            "columnName": "shippingPostcode",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "shippingCountry",
+            "columnName": "shippingCountry",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "shippingPhone",
+            "columnName": "shippingPhone",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lineItems",
+            "columnName": "lineItems",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "shippingLines",
+            "columnName": "shippingLines",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "feeLines",
+            "columnName": "feeLines",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "taxLines",
+            "columnName": "taxLines",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "metaData",
+            "columnName": "metaData",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_OrderEntity_localSiteId_remoteOrderId",
+            "unique": true,
+            "columnNames": [
+              "localSiteId",
+              "remoteOrderId"
+            ],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_OrderEntity_localSiteId_remoteOrderId` ON `${TABLE_NAME}` (`localSiteId`, `remoteOrderId`)"
+          }
+        ],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '38081df5a9dc4a02c48a2f92c7987d00')"
+    ]
+  }
+}

@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.BaseFragment
@@ -44,6 +45,12 @@ class DeveloperOptionsFragment : BaseFragment() {
                         values = event.options,
                         mapper = { requireContext().getString(it.title) },
                         selectedValue = event.selectedValue
+                    )
+                }
+
+                is DeveloperOptionsViewModel.DeveloperOptionsEvents.OpenApiFaker -> {
+                    findNavController().navigate(
+                        DeveloperOptionsFragmentDirections.actionDeveloperOptionsFragmentToApiFaker()
                     )
                 }
             }

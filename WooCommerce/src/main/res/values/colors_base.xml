@@ -3,7 +3,7 @@
     <!--
         General colors
     -->
-    <color name="color_primary">@color/woo_purple_60</color>
+    <color name="color_primary">@color/woo_purple_40</color>
     <color name="color_primary_surface">@color/woo_purple_60</color>
     <color name="color_primary_variant">@color/woo_purple_80</color>
     <color name="color_secondary">@color/woo_pink_50</color>
@@ -11,7 +11,7 @@
     <color name="color_surface">@color/woo_white</color>
     <color name="color_surface_variant">@color/woo_gray_40</color>
     <color name="color_surface_elevated">@color/woo_white</color>
-    <color name="color_error">@color/woo_red_50</color>
+    <color name="color_error">@color/woo_red_60</color>
     <color name="color_alert">@color/woo_yellow_50</color>
     <color name="color_info">@color/woo_green_50</color>
 
@@ -47,7 +47,8 @@
     <!--
         Color resource used to indicate selected state of an item
     -->
-    <color name="woo_item_selected">@color/woo_purple_10</color>
+    <color name="woo_item_selected">@color/woo_purple_0</color>
+    <color name="woo_item_selected_disabled">@color/woo_gray_0</color>
     <color name="color_item_selected">@color/woo_item_selected</color>
 
     <!--
@@ -86,9 +87,10 @@
     <color name="divider_color">@color/woo_black_90_alpha_012</color>
     <color name="color_ripple_overlay">@color/woo_black_90_alpha_012</color>
     <color name="image_border_color">@color/woo_black_90_alpha_012</color>
-    <color name="splash_background">@color/woo_purple_60</color>
+    <color name="splash_background">@color/woo_purple_40</color>
     <color name="color_toolbar">@color/woo_white</color>
     <color name="bottom_sheet_background">@color/color_surface</color>
+    <color name="color_woo_logo">@color/color_primary</color>
 
     <!--
         Elevation colors
@@ -103,6 +105,12 @@
     <color name="graph_highlight_color">@color/woo_pink_90</color>
     <color name="graph_no_data_text_color">@color/color_on_surface</color>
     <color name="graph_label_color">@color/color_on_surface_medium</color>
+
+    <!-- Prologue colors-->
+    <color name="prologue_carousel_shape_color">@color/woo_gray_0</color>
+    <color name="prologue_login_background_color">@color/woo_purple_70</color>
+    <color name="prologue_login_shape_color">@color/woo_purple_40</color>
+    <color name="prologue_login_button_color">@color/white</color>
 
     <!--
         Rating widget colors
@@ -120,7 +128,7 @@
     <color name="tag_bg_on_hold">@color/woo_orange_5</color>
     <color name="tag_bg_completed">@color/woo_blue_5</color>
     <color name="tag_bg_other">@color/woo_gray_5</color>
-    <color name="tag_bg_main">@color/woo_purple_15</color>
+    <color name="tag_bg_main">@color/woo_purple_0</color>
     <color name="tag_text_main">@color/color_primary</color>
     <color name="tag_task_label">@color/woo_gray_6</color>
     <color name="tag_task_label_text">@color/woo_black_90_alpha_060</color>
@@ -228,6 +236,9 @@
     -->
     <color name="light_colored_button_text">@color/color_primary</color>
     <color name="light_colored_button_background">@color/woo_gray_6</color>
+    <color name="light_colored_button_text_secondary">@color/color_primary</color>
+    <color name="primary_colored_button_background">@color/woo_purple_40</color>
+    <color name="text_button_over_bottom_sheet">@color/color_primary</color>
 
     <!--
     Analytics
@@ -313,10 +324,32 @@
     <color name="payout_summary_status_in_transit_text">@color/woo_orange_70</color>
     <color name="payout_summary_status_paid_background">@color/woo_green_0</color>
     <color name="payout_summary_status_paid_text">@color/woo_green_50</color>
-    <color name="payout_summary_status_canceled_background">@color/woo_purple_15</color>
+    <color name="payout_summary_status_canceled_background">@color/woo_purple_0</color>
     <color name="payout_summary_status_canceled_text">@color/woo_purple_80</color>
     <color name="payout_summary_status_failed_background">@color/woo_red_5</color>
     <color name="payout_summary_status_failed_text">@color/woo_red_70</color>
     <color name="payout_summary_status_unknown_background">@color/woo_gray_6</color>
     <color name="payout_summary_status_unknown_text">@color/woo_gray_80</color>
+
+    <!--
+    Shipping labels
+    -->
+
+    <color name="woo_shipping_label_success">@color/woo_green_60</color>
+    <color name="woo_shipping_label_success_surface">@color/woo_green_0</color>
+    <color name="woo_shipping_label_error">@color/woo_red_60</color>
+    <color name="woo_shipping_label_error_surface">@color/woo_red_0</color>
+    <color name="woo_shipping_label_purchased_color">@color/woo_green_70</color>
+
+    <!--
+        Custom Message Color
+    -->
+    <color name="woo_message_surface">#1C1C1E</color>
+    <color name="woo_message_on_surface">@color/woo_purple_30</color>
+
+    <!--
+        Order Creation
+    -->
+    <color name="order_update_overlay_background">@color/woo_white_alpha_060</color>
+
 </resources>

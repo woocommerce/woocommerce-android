@@ -61,36 +61,15 @@ class EditShippingLabelAddressViewModelTest : BaseUnitTest() {
     private var addressType = ORIGIN
 
     private val countries = listOf(
-        WCLocationModel().also {
-            it.name = "Virgin Islands (US)"
-            it.code = "VI"
-        },
-        WCLocationModel().also {
-            it.name = "USA"
-            it.code = "US"
-        },
-        WCLocationModel().also {
-            it.name = "Puerto Rico"
-            it.code = "PR"
-        }
+        WCLocationModel(name = "Virgin Islands (US)", code = "VI"),
+        WCLocationModel(name = "USA", code = "US"),
+        WCLocationModel(name = "Puerto Rico", code = "PR"),
     )
 
     private val states = listOf(
-        WCLocationModel().also {
-            it.name = "New York"
-            it.code = "NY"
-            it.parentCode = "US"
-        },
-        WCLocationModel().also {
-            it.name = "Kentucky"
-            it.code = "KY"
-            it.parentCode = "US"
-        },
-        WCLocationModel().also {
-            it.name = "New Jersey"
-            it.code = "NJ"
-            it.parentCode = "US"
-        }
+        WCLocationModel(name = "New York", code = "NY", parentCode = "US"),
+        WCLocationModel(name = "Kentucky", code = "KY", parentCode = "US"),
+        WCLocationModel(name = "New Jersey", code = "NJ", parentCode = "US"),
     )
 
     private val savedState

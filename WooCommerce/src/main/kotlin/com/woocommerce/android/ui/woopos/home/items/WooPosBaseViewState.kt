@@ -1,11 +1,17 @@
 package com.woocommerce.android.ui.woopos.home.items
 
-sealed class WooPosBaseViewState(
-    open val reloadingProductsWithPullToRefresh: Boolean
-)
+interface WooPosContentViewState {
+    val items: List<WooPosItemSelectionViewState>
+    val pullToRefreshState: WooPosPullToRefreshState
+    val paginationState: WooPosPaginationState
+}
 
-interface ContentViewState {
-    val items: List<WooPosItem>
-    val loadingMore: Boolean
-    val reloadingProductsWithPullToRefresh: Boolean
+sealed class WooPosPaginationState {
+    data object None : WooPosPaginationState()
+    data object Loading : WooPosPaginationState()
+    data object Error : WooPosPaginationState()
+}
+
+enum class WooPosPullToRefreshState {
+    Disabled, Enabled, Refreshing,
 }

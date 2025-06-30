@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.creation
 
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.ui.common.CurrencyCode
 import com.woocommerce.android.ui.orders.CustomAmountUIModel
 import com.woocommerce.android.ui.payments.customamounts.CustomAmountsFragment.Companion.CUSTOM_AMOUNT
 import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel
@@ -9,7 +10,7 @@ import javax.inject.Inject
 
 class MapFeeLineToCustomAmountUiModel @Inject constructor() {
 
-    operator fun invoke(feeLine: Order.FeeLine): CustomAmountUIModel {
+    operator fun invoke(feeLine: Order.FeeLine, orderCurrency: String): CustomAmountUIModel {
         return CustomAmountUIModel(
             id = feeLine.id,
             amount = feeLine.total,
@@ -19,7 +20,8 @@ class MapFeeLineToCustomAmountUiModel @Inject constructor() {
                 Order.FeeLine.FeeLineTaxStatus.NONE -> TaxStatus(isTaxable = false)
                 Order.FeeLine.FeeLineTaxStatus.UNKNOWN -> TaxStatus(isTaxable = false)
             },
-            type = CustomAmountsViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
+            type = CustomAmountsViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT,
+            currencyCode = CurrencyCode(orderCurrency)
         )
     }
 }

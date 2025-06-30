@@ -1,4 +1,7 @@
 import com.automattic.android.measure.MeasureBuildsExtension
+import com.automattic.android.measure.reporters.InternalA8cCiReporter
+import com.automattic.android.measure.reporters.SlowSlowTasksMetricsReporter
+import com.automattic.android.measure.reporters.RemoteBuildCacheMetricsReporter
 import io.gitlab.arturbosch.detekt.Detekt
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -12,58 +15,35 @@ plugins {
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.kotlin.compose).apply(false)
     alias(libs.plugins.kotlin.parcelize) apply false
+    alias(libs.plugins.kotlin.kapt) apply false
     alias(libs.plugins.google.dagger.hilt) apply false
     alias(libs.plugins.androidx.navigation.safeargs) apply false
     alias(libs.plugins.google.services) apply false
     alias(libs.plugins.ksp) apply false
+    alias(libs.plugins.room) apply false
 }
 
 ext {
-    secretProperties = loadPropertiesWithFallback(
-            logger,
-            file("${rootDir}/defaults.properties"),
-            file("${System.getProperty("user.home")}/.configure/woocommerce-android/secrets/secrets.properties")
-    )
-    userEnabledTracking = secretProperties.get('measureBuildsEnabled')?.toBoolean() ?: false
-
-    developerProperties = loadPropertiesWithFallback(
-            logger,
-            file("${rootDir}/developer.properties-example"),
-            file("${rootDir}/developer.properties")
-    )
+    secretProperties = gradle.ext.secretProperties
+    developerProperties = gradle.ext.developerProperties
 }
 
 measureBuilds {
-    enable = userEnabledTracking
-    automatticProject = MeasureBuildsExtension.AutomatticProject.WooCommerce
-    attachGradleScanId = true
-    authToken = secretProperties.get('appsMetricsToken')
-}
-
-static def loadPropertiesWithFallback(Logger logger, File fallbackFile, File primaryFile) {
-    if (primaryFile.exists()) {
-        return readPropertiesFromFile(primaryFile)
-    } else {
-        logger.warn("Primary properties file not found: ${primaryFile}. Using fallback: ${fallbackFile}.")
-        return readPropertiesFromFile(fallbackFile)
+    enable = secretProperties.getProperty("measureBuildsEnabled", "false").toBoolean()
+    onBuildMetricsReadyListener { report ->
+        SlowSlowTasksMetricsReporter.report(report)
+        RemoteBuildCacheMetricsReporter.report(report)
+        InternalA8cCiReporter.reportBlocking(
+                report,
+                "woocommerce",
+                secretProperties.getProperty("appsMetricsToken")
+        )
     }
-}
-
-static def readPropertiesFromFile(File file) {
-    def properties = new Properties()
-    file.withInputStream { stream ->
-        properties.load(stream)
-    }
-    return properties
+    attachGradleScanId = false
 }
 
 allprojects {
     apply plugin: libs.plugins.detekt.get().pluginId
-
-    repositories {
-        google()
-        mavenCentral()
-    }
 
     tasks.withType(KotlinCompile).all {
         kotlinOptions {
@@ -74,12 +54,6 @@ allprojects {
                     "-Xjvm-default=all-compatibility",
             ]
         }
-    }
-}
-
-subprojects {
-    configurations {
-        compile.exclude group: 'org.jetbrains', module: 'annotations-java5'
     }
 }
 
@@ -103,6 +77,7 @@ tasks.register("detektAll", Detekt) {
 
 dependencies {
     detektPlugins(libs.detekt.formatting)
+    detektPlugins project(':libs:detektrules')
 }
 
 tasks.register('clean', Delete) {
@@ -121,4 +96,3 @@ tasks.register("installGitHooks", Copy) {
 }
 
 apply from: './config/gradle/jacoco.gradle'
-apply from: './config/gradle/gradle_build_scan.gradle'

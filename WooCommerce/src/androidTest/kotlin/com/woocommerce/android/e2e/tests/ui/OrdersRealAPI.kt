@@ -117,6 +117,7 @@ class OrdersRealAPI : TestBase() {
             .assertOrdersCount(2)
     }
 
+    @Retry(numberOfTimes = 1)
     @Test
     fun e2eRealApiOrderDetails() {
         try {

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
@@ -41,7 +42,13 @@ fun CustomAmountCard(
 ) {
     Card(
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxWidth(),
+        shape = MaterialTheme.shapes.medium.copy(
+            topStart = CornerSize(0.dp),
+            topEnd = CornerSize(0.dp),
+            bottomStart = CornerSize(0.dp),
+            bottomEnd = CornerSize(0.dp)
+        )
     ) {
         Column(
             modifier = Modifier
@@ -90,7 +97,6 @@ fun CustomAmountCard(
                     thickness = dimensionResource(id = R.dimen.minor_10),
                     modifier = Modifier.padding(
                         vertical = dimensionResource(id = R.dimen.minor_100),
-                        horizontal = dimensionResource(id = R.dimen.minor_100)
                     )
                 )
             }

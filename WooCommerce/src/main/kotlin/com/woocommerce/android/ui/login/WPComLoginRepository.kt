@@ -79,7 +79,6 @@ class WPComLoginRepository @Inject constructor(
     suspend fun requestMagicLink(
         emailOrUsername: String,
         flow: MagicLinkFlow,
-        source: MagicLinkSource,
         isSignup: Boolean
     ): Result<Unit> {
         WooLog.i(WooLog.T.LOGIN, "Submitting a Magic Link request")
@@ -89,7 +88,7 @@ class WPComLoginRepository @Inject constructor(
                 emailOrUsername,
                 isSignup,
                 flow,
-                source,
+                null,
                 AuthEmailPayloadScheme.WOOCOMMERCE
             )
         )

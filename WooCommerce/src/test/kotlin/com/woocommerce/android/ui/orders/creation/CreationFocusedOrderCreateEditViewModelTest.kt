@@ -31,6 +31,7 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.CustomAmountUIModel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
+import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Failed
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Ongoing
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.PendingDebounce
@@ -60,9 +61,11 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
@@ -90,7 +93,7 @@ import kotlin.test.assertNotNull
 
 @ExperimentalCoroutinesApi
 class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() {
-    override val mode: Mode = Creation()
+    override val mode: Mode = Creation
     override val sku: String = ""
     override val barcodeFormat: BarcodeFormat = BarcodeFormat.FormatUPCA
     override val tracksFlow: String = VALUE_FLOW_CREATION
@@ -712,7 +715,9 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     @Test
     fun `when creating the order fails, then trigger Snackbar with fail message`() {
         orderCreateEditRepository = mock {
-            onBlocking { createOrUpdateOrder(defaultOrderValue) } doReturn Result.failure(Throwable())
+            onBlocking {
+                createOrUpdateOrder(defaultOrderValue, source = OrderCreationSource.STORE_MANAGEMENT)
+            } doReturn Result.failure(Throwable())
         }
         createSut()
 
@@ -912,7 +917,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                 Succeeded(
                     Order.getEmptyOrder(Date(), Date()).copy(
                         shippingLines = listOf(
-                            Order.ShippingLine(itemId, "first", "first", BigDecimal(1), BigDecimal.ZERO),
+                            Order.ShippingLine(itemId, "first", "first", BigDecimal(1), BigDecimal.ZERO, emptyList()),
                             Order.ShippingLine("second", "second", BigDecimal(2)),
                             Order.ShippingLine("third", "third", BigDecimal(3)),
                         )
@@ -952,7 +957,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                 Succeeded(
                     Order.getEmptyOrder(Date(), Date()).copy(
                         shippingLines = listOf(
-                            Order.ShippingLine(itemId, "first", "first", BigDecimal(1), BigDecimal.ZERO),
+                            Order.ShippingLine(itemId, "first", "first", BigDecimal(1), BigDecimal.ZERO, emptyList()),
                             Order.ShippingLine("second", "second", BigDecimal(2)),
                             Order.ShippingLine("third", "third", BigDecimal(3)),
                         )
@@ -1014,9 +1019,9 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                 Succeeded(
                     Order.getEmptyOrder(Date(), Date()).copy(
                         shippingLines = listOf(
-                            Order.ShippingLine(itemId, "first", "first", BigDecimal(1), BigDecimal.ZERO),
-                            Order.ShippingLine(2L, "second", "second", BigDecimal(2), BigDecimal.ZERO),
-                            Order.ShippingLine(3L, "third", "third", BigDecimal(3), BigDecimal.ZERO),
+                            Order.ShippingLine(itemId, "first", "first", BigDecimal(1), BigDecimal.ZERO, emptyList()),
+                            Order.ShippingLine(2L, "second", "second", BigDecimal(2), BigDecimal.ZERO, emptyList()),
+                            Order.ShippingLine(3L, "third", "third", BigDecimal(3), BigDecimal.ZERO, emptyList()),
                         )
                     )
                 )
@@ -1121,6 +1126,35 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         assertThat(viewState?.willUpdateOrderDraft).isFalse
         assertThat(viewState?.isUpdatingOrderDraft).isFalse
         assertThat(viewState?.showOrderUpdateSnackbar).isTrue
+    }
+
+    @Test
+    fun `given order failed, when user retries, then adjust view state to reflect the loading`() = runTest {
+        val myFlow: MutableStateFlow<OrderUpdateStatus> =
+            MutableStateFlow(Failed(throwable = Throwable(message = "fail")))
+        createUpdateOrderUseCase = mock {
+            onBlocking { invoke(any(), any()) } doReturn myFlow
+        }
+
+        createSut()
+
+        var viewState: ViewState? = null
+
+        sut.viewStateData.observeForever { _, new ->
+            viewState = new
+        }
+
+        assertThat(viewState).isNotNull
+        assertThat(viewState?.willUpdateOrderDraft).isFalse
+        assertThat(viewState?.isUpdatingOrderDraft).isFalse
+        assertThat(viewState?.showOrderUpdateSnackbar).isTrue
+
+        myFlow.emit(Ongoing) // simulation of retry action
+        advanceUntilIdle()
+
+        assertThat(viewState?.willUpdateOrderDraft).isFalse
+        assertThat(viewState?.isUpdatingOrderDraft).isTrue
+        assertThat(viewState?.showOrderUpdateSnackbar).isFalse
     }
 
     @Test
@@ -1277,7 +1311,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `given sku, when view model init, then fetch product information`() {
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
-                Creation(),
+                Creation,
                 "123",
                 BarcodeFormat.FormatUPCA,
             ).toSavedStateHandle()
@@ -1294,7 +1328,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
             createSut(navArgs)
 
-            verify(fetchProductBySKU).invoke(
+            verify(fetchProductByIdentifier).invoke(
                 "123",
                 BarcodeFormat.FormatUPCA,
             )
@@ -1305,7 +1339,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `given sku, when view model init, then display progress indicator`() {
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
-                Creation(),
+                Creation,
                 "123",
                 BarcodeFormat.FormatUPCA,
             ).toSavedStateHandle()
@@ -1334,7 +1368,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `given empty sku, when view model init, then do not fetch product information`() {
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
-                Creation(),
+                Creation,
                 "",
                 null,
             ).toSavedStateHandle()
@@ -1351,7 +1385,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
             createSut(navArgs)
 
-            verify(fetchProductBySKU, never()).invoke(
+            verify(fetchProductByIdentifier, never()).invoke(
                 eq("123"),
                 any()
             )
@@ -1362,7 +1396,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `given scanning initiated from the order list screen, when product search via sku succeeds, then track event with proper source`() {
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
-                Creation(),
+                Creation,
                 "12345",
                 BarcodeFormat.FormatUPCA,
             ).toSavedStateHandle()
@@ -1377,7 +1411,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                 )
             )
             whenever(
-                fetchProductBySKU.invoke(
+                fetchProductByIdentifier.invoke(
                     "12345",
                     BarcodeFormat.FormatUPCA,
                 )
@@ -1407,7 +1441,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `given scanning initiated from the order list screen, when product search via sku fails, then track event with proper source`() {
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
-                Creation(),
+                Creation,
                 "12345",
                 BarcodeFormat.FormatUPCA,
             ).toSavedStateHandle()
@@ -1422,7 +1456,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                 )
             )
             whenever(
-                fetchProductBySKU.invoke(
+                fetchProductByIdentifier.invoke(
                     "12345",
                     BarcodeFormat.FormatUPCA,
                 )
@@ -1447,7 +1481,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `given variable product from order list screen, when product added via scanning, then track correct source`() {
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
-                Creation(),
+                Creation,
                 "12345",
                 BarcodeFormat.FormatUPCA,
             ).toSavedStateHandle()
@@ -1462,7 +1496,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                 )
             )
             whenever(
-                fetchProductBySKU.invoke(
+                fetchProductByIdentifier.invoke(
                     "12345",
                     BarcodeFormat.FormatUPCA,
                 )
@@ -1496,7 +1530,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `given non-variable product from order list screen, when product added via scanning, then track correct source`() {
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
-                Creation(),
+                Creation,
                 "12345",
                 BarcodeFormat.FormatUPCA,
             ).toSavedStateHandle()
@@ -1512,7 +1546,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             )
 
             whenever(
-                fetchProductBySKU.invoke(
+                fetchProductByIdentifier.invoke(
                     "12345",
                     BarcodeFormat.FormatUPCA,
                 )
@@ -1562,7 +1596,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
     @Test
     fun `when custom amount added, then disable the custom amount section until the operation is complete`() {
-        var viewState: MutableList<ViewState> = mutableListOf()
+        val viewState: MutableList<ViewState> = mutableListOf()
         sut.viewStateData.liveData.observeForever {
             viewState.add(it)
         }
@@ -1581,7 +1615,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
     @Test
     fun `when custom amount added, then enable the custom amount section after the operation is complete`() {
-        var viewState: MutableList<ViewState> = mutableListOf()
+        val viewState: MutableList<ViewState> = mutableListOf()
         sut.viewStateData.liveData.observeForever {
             viewState.add(it)
         }
@@ -1897,7 +1931,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
     @Test
     fun `when custom amount removed, then disable the custom amount section until the operation is complete`() {
-        var viewState: MutableList<ViewState> = mutableListOf()
+        val viewState: MutableList<ViewState> = mutableListOf()
         sut.viewStateData.liveData.observeForever {
             viewState.add(it)
         }
@@ -1923,7 +1957,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
     @Test
     fun `when custom amount removed, then enable the custom amount section after the operation is complete`() {
-        var viewState: MutableList<ViewState> = mutableListOf()
+        val viewState: MutableList<ViewState> = mutableListOf()
         sut.viewStateData.liveData.observeForever {
             viewState.add(it)
         }

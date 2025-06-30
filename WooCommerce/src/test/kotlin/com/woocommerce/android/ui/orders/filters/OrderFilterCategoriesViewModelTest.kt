@@ -137,6 +137,18 @@ class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
         )
     }
 
+    @Test
+    fun `Given product filter is applied, when onClearProductFilter is called, then product filter is reset`() {
+        viewModel.onClearProductFilter()
+
+        assertThat(
+            viewModel.categories.liveData.getOrAwaitValue().list.filter {
+                it.categoryKey == OrderListFilterCategory.PRODUCT
+            }
+        )
+            .allMatch { it.orderFilterOptions.none { it.isSelected } }
+    }
+
     private fun allFilterOptionsAreUnselected() = currentCategoryList
         .map {
             it.orderFilterOptions.any { filterOption ->

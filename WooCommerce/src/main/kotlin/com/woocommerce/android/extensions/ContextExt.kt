@@ -15,25 +15,41 @@ import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
 import com.woocommerce.android.util.SystemVersionUtils
 import kotlinx.parcelize.Parcelize
+import kotlin.math.max
+import kotlin.math.min
 
-val Context.windowSizeClass: WindowSizeClass
-    get() = determineWindowWidthSizeClassByGivenSize(resources.configuration.screenWidthDp)
+val Context.isTwoPanesShouldBeUsed: Boolean
+    get() = determineIfTwoPanesShouldBeUsed(
+        resources.configuration.screenWidthDp,
+        resources.configuration.screenHeightDp
+    )
 
 val Context.windowHeightSizeClass: WindowSizeClass
     get() = determineWindowHeightSizeClassByGivenSize(resources.configuration.screenHeightDp)
 
-private fun determineWindowWidthSizeClassByGivenSize(sizeDp: Int): WindowSizeClass {
-    return when {
-        sizeDp < WindowSizeClass.Compact.maxWidthDp -> WindowSizeClass.Compact
-        sizeDp < WindowSizeClass.Medium.maxWidthDp -> WindowSizeClass.Medium
-        else -> WindowSizeClass.ExpandedAndBigger
-    }
+val Context.windowWidthSizeClass: WindowSizeClass
+    get() = determineWindowWidthSizeClassByGivenSize(resources.configuration.screenWidthDp)
+
+private const val MIN_SCREEN_SHORT_SIZE_DP = 674
+private const val MIN_SCREEN_LONG_SIZE_DP = 800
+private fun determineIfTwoPanesShouldBeUsed(widthDp: Int, heightDp: Int): Boolean {
+    val shortSize = min(widthDp, heightDp)
+    val longSize = max(widthDp, heightDp)
+    return shortSize >= MIN_SCREEN_SHORT_SIZE_DP && longSize >= MIN_SCREEN_LONG_SIZE_DP
 }
 
 private fun determineWindowHeightSizeClassByGivenSize(sizeDp: Int): WindowSizeClass {
     return when {
         sizeDp < WindowSizeClass.Compact.maxHeightDp -> WindowSizeClass.Compact
         sizeDp < WindowSizeClass.Medium.maxHeightDp -> WindowSizeClass.Medium
+        else -> WindowSizeClass.ExpandedAndBigger
+    }
+}
+
+private fun determineWindowWidthSizeClassByGivenSize(sizeDp: Int): WindowSizeClass {
+    return when {
+        sizeDp < WindowSizeClass.Compact.maxWidthDp -> WindowSizeClass.Compact
+        sizeDp < WindowSizeClass.Medium.maxWidthDp -> WindowSizeClass.Medium
         else -> WindowSizeClass.ExpandedAndBigger
     }
 }

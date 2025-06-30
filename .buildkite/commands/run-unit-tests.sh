@@ -1,19 +1,31 @@
 #!/bin/bash -eu
 
-echo "--- 🧪 Testing"
+# Check if we can skip this job based on PR changes
+if .buildkite/commands/should-skip-job.sh --job-type validation; then
+  mkdir -p WooCommerce/build/buildkite-test-analytics && touch WooCommerce/build/buildkite-test-analytics/empty.xml
+  exit 0
+fi
+
+"$(dirname "${BASH_SOURCE[0]}")/restore-cache.sh"
+
+echo "--- :rubygems: Setting up Gems"
+install_gems
+
+echo "--- :closed_lock_with_key: Installing Secrets"
+bundle exec fastlane run configure_apply
+
+echo "+++ 🧪 Testing"
 set +e
-./gradlew testJalapenoDebugUnitTest lib:cardreader:testDebugUnitTest lib:iap:testDebugUnitTest
+./gradlew testJalapenoDebugUnitTest testDebugUnitTest jacocoTestReport
 TESTS_EXIT_STATUS=$?
 set -e
 
-if [[ "$TESTS_EXIT_STATUS" -ne 0 ]]; then
-  # Keep the (otherwise collapsed) current "Testing" section open in Buildkite logs on error. See https://buildkite.com/docs/pipelines/managing-log-output#collapsing-output
-  echo "^^^ +++"
-  echo "Unit Tests failed!"
+if [[ "$TESTS_EXIT_STATUS" -eq 0 ]]; then
+  echo -e "\n--- ⚒️ Uploading code coverage"
+  .buildkite/commands/upload-code-coverage.sh
 fi
 
-
-echo "--- 🚦 Report Tests Status"
+echo -e "\n--- 🚦 Report Tests Status"
 results_file="WooCommerce/build/test-results/merged-test-results.xml"
 # Merge JUnit results into a single file (for performance reasons with reporting)
 # See https://github.com/woocommerce/woocommerce-android/pull/12064
@@ -24,10 +36,6 @@ if [[ $BUILDKITE_BRANCH == trunk ]] || [[ $BUILDKITE_BRANCH == release/* ]]; the
 else
     annotate_test_failures "$results_file"
 fi
-
-echo "--- ⚒️ Generating and uploading code coverage"
-./gradlew jacocoTestReport
-.buildkite/commands/upload-code-coverage.sh
 
 echo "--- 🧪 Copying test logs for test collector"
 mkdir WooCommerce/build/buildkite-test-analytics && cp "$results_file" WooCommerce/build/buildkite-test-analytics

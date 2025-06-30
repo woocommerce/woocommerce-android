@@ -1,91 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:background="@color/color_surface_elevated"
+    android:keepScreenOn="true"
+    android:minWidth="@dimen/payments_dialog_width"
+    android:minHeight="@dimen/payments_dialog_height"
+    android:paddingVertical="@dimen/major_175"
     tools:context="com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateDialogFragment">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="@dimen/payments_dialog_width"
-        android:layout_height="@dimen/payments_dialog_height"
-        android:background="@color/color_surface_elevated"
-        android:keepScreenOn="true"
-        android:paddingVertical="@dimen/major_175">
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/titleTextView"
+        style="@style/Woo.TextView.Subtitle2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:gravity="center_horizontal"
+        android:textColor="@color/color_on_surface_high"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="@string/card_reader_software_update_title" />
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/titleTextView"
-            style="@style/Woo.TextView.Subtitle2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:textColor="@color/color_on_surface_high"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="@string/card_reader_software_update_title" />
+    <com.woocommerce.android.widgets.CircleProgressOverlayView
+        android:id="@+id/progressCircleProgressOverlayView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:circleProgressBorderColor="@color/reader_update_border_color"
+        app:circleProgressBorderSize="2dp"
+        app:circleProgressProgressColor="@color/reader_update_progress_color"
+        app:circleProgressRestColor="@color/reader_update_rest_color"
+        app:layout_constraintBottom_toBottomOf="@id/progressImageView"
+        app:layout_constraintEnd_toEndOf="@id/progressImageView"
+        app:layout_constraintStart_toStartOf="@id/progressImageView"
+        app:layout_constraintTop_toTopOf="@id/progressImageView" />
 
-        <com.woocommerce.android.widgets.CircleProgressOverlayView
-            android:id="@+id/progressCircleProgressOverlayView"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:circleProgressProgressColor="@color/reader_update_progress_color"
-            app:circleProgressRestColor="@color/reader_update_rest_color"
-            app:circleProgressBorderColor="@color/reader_update_border_color"
-            app:circleProgressBorderSize="2dp"
-            app:layout_constraintBottom_toBottomOf="@id/progressImageView"
-            app:layout_constraintEnd_toEndOf="@id/progressImageView"
-            app:layout_constraintStart_toStartOf="@id/progressImageView"
-            app:layout_constraintTop_toTopOf="@id/progressImageView" />
+    <ImageView
+        android:id="@+id/progressImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/major_175"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/titleTextView"
+        tools:src="@drawable/img_card_reader_update_progress" />
 
-        <ImageView
-            android:id="@+id/progressImageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/major_175"
-            tools:src="@drawable/img_card_reader_update_progress"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/titleTextView" />
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/progressTextView"
+        style="@style/Woo.TextView.Subtitle2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/major_125"
+        android:layout_marginTop="@dimen/major_125"
+        android:ellipsize="end"
+        android:gravity="center_horizontal"
+        android:textColor="@color/color_on_surface"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/progressImageView"
+        tools:text="100% complete" />
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/progressTextView"
-            style="@style/Woo.TextView.Subtitle2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/major_125"
-            android:layout_marginTop="@dimen/major_125"
-            android:gravity="center_horizontal"
-            android:textColor="@color/color_on_surface"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/progressImageView"
-            tools:text="100% complete" />
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/descriptionTextView"
+        style="@style/Woo.TextView.Body2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/major_125"
+        android:ellipsize="end"
+        android:gravity="center_horizontal"
+        android:textColor="@color/color_on_surface_high"
+        app:layout_constraintBottom_toTopOf="@id/actionButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/progressTextView"
+        tools:text="@string/card_reader_software_update_progress_cancel_required_warning" />
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/descriptionTextView"
-            style="@style/Woo.TextView.Body2"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/major_125"
-            android:gravity="center_horizontal"
-            android:textColor="@color/color_on_surface_high"
-            app:layout_constraintBottom_toTopOf="@id/actionButton"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/progressTextView"
-            tools:text="@string/card_reader_software_update_progress_cancel_required_warning" />
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/actionButton"
+        style="@style/Woo.Button.Outlined"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/major_200"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="Cancel" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/actionButton"
-            style="@style/Woo.Button.Outlined"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/major_200"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:text="Cancel" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

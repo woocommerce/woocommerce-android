@@ -1,12 +1,10 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creation
 
 import android.os.Bundle
-import android.view.MenuItem
 import android.view.View
 import androidx.annotation.StringRes
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
+import androidx.lifecycle.lifecycleScope
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentShippingLabelCreateCustomPackageBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -16,9 +14,13 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreateCustomPackageViewModel.InputName
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreateCustomPackageViewModel.PackageSuccessfullyMadeEvent
+import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreatePackageViewModel.PackageType.CUSTOM
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.CustomProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
@@ -42,25 +44,9 @@ class ShippingLabelCreateCustomPackageFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentShippingLabelCreateCustomPackageBinding.bind(view)
-        setupToolbar()
 
         initializeInputFields()
         setupObservers()
-    }
-
-    private fun setupToolbar() {
-        binding.toolbar.title = getString(R.string.shipping_label_package_selector_title)
-        binding.toolbar.setOnMenuItemClickListener { menuItem ->
-            onMenuItemSelected(menuItem)
-        }
-        binding.toolbar.navigationIcon = AppCompatResources.getDrawable(
-            requireActivity(),
-            R.drawable.ic_back_24dp
-        )
-        binding.toolbar.setNavigationOnClickListener {
-            findNavController().navigateUp()
-        }
-        binding.toolbar.inflateMenu(R.menu.menu_done)
     }
 
     private fun initializeInputFields() {
@@ -154,6 +140,13 @@ class ShippingLabelCreateCustomPackageFragment :
                 else -> event.isHandled = false
             }
         }
+
+        parentViewModel.creationDoneFlow
+            .filter { it.selectedTab == CUSTOM }
+            .onEach {
+                ActivityUtils.hideKeyboard(activity)
+                viewModel.onCustomFormDoneMenuClicked()
+            }.launchIn(viewLifecycleOwner.lifecycleScope)
     }
 
     private fun showProgressDialog(@StringRes title: Int, @StringRes message: Int) {
@@ -168,16 +161,5 @@ class ShippingLabelCreateCustomPackageFragment :
     private fun hideProgressDialog() {
         progressDialog?.dismiss()
         progressDialog = null
-    }
-
-    private fun onMenuItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.menu_done -> {
-                ActivityUtils.hideKeyboard(activity)
-                viewModel.onCustomFormDoneMenuClicked()
-                true
-            }
-            else -> false
-        }
     }
 }

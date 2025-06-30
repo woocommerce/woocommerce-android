@@ -46,6 +46,9 @@ val SiteModel.isSimpleWPComSite
 val SiteModel.adminUrlOrDefault
     get() = adminUrl ?: url.slashJoin("wp-admin")
 
+val SiteModel.loginUrlOrDefault
+    get() = loginUrl ?: url.slashJoin("wp-login.php")
+
 val SiteModel.clock: Clock
     @Suppress("TooGenericExceptionCaught")
     get() {

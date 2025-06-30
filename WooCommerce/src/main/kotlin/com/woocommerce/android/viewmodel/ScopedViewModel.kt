@@ -41,6 +41,11 @@ abstract class ScopedViewModel(
         }
     }
 
+    protected fun postTriggerEvent(event: Event) {
+        event.isHandled = false
+        _event.postValue(event)
+    }
+
     /**
      * Convert a [Flow] to [StateFlow].
      *

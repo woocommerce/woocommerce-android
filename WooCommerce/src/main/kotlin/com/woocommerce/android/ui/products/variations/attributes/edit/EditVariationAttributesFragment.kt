@@ -14,8 +14,10 @@ import com.woocommerce.android.databinding.FragmentEditVariationAttributesBindin
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.variations.attributes.edit.EditVariationAttributesViewModel.ViewState
+import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -39,6 +41,9 @@ class EditVariationAttributesFragment :
 
     private val skeletonView = SkeletonView()
 
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
+
     private var isLoadingSkeletonVisible: Boolean = false
         set(show) {
             field = show
@@ -61,6 +66,13 @@ class EditVariationAttributesFragment :
         _binding = FragmentEditVariationAttributesBinding.bind(view)
         setupObservers()
         setupViews()
+        setupTabletSecondPaneToolbar(
+            title = getString(R.string.product_attributes),
+            onMenuItemSelected = { _ -> false },
+            onCreateMenu = { toolbar ->
+                toolbar.setNavigationOnClickListener { viewModel.exit() }
+            }
+        )
         viewModel.start(navArgs.remoteProductId, navArgs.remoteVariationId)
     }
 

@@ -168,7 +168,7 @@ class AnalyticsTracker private constructor(
         private const val TRACKS_ANON_ID = "nosara_tracks_anon_id"
         private const val EVENTS_PREFIX = "woocommerceandroid_"
         private const val POS_EVENTS_PREFIX = "woocommerceandroid_pos_"
-        private const val KEY_SITE_URL = "site_url"
+        const val KEY_SITE_URL = "site_url"
 
         const val IS_DEBUG = "is_debug"
         const val KEY_ALREADY_READ = "already_read"
@@ -257,6 +257,8 @@ class AnalyticsTracker private constructor(
         const val VALUE_SORT_NAME_DESC = "name,descending"
         const val VALUE_SORT_DATE_ASC = "date,ascending"
         const val VALUE_SORT_DATE_DESC = "date,descending"
+
+        const val KEY_SELECTED_ORDERS_COUNT = "selected_orders_count"
 
         const val VALUE_API_SUCCESS = "success"
         const val VALUE_API_FAILED = "failed"
@@ -357,7 +359,6 @@ class AnalyticsTracker private constructor(
         const val VALUE_FEEDBACK_CANCELED = "canceled"
         const val VALUE_FEEDBACK_DISMISSED = "dismissed"
         const val VALUE_FEEDBACK_GIVEN = "gave_feedback"
-        const val VALUE_SHIPPING_LABELS_M4_FEEDBACK = "shipping_labels_m4"
         const val VALUE_PRODUCT_ADDONS_FEEDBACK = "product_addons"
         const val VALUE_ANALYTICS_HUB_FEEDBACK = "analytics_hub"
         const val VALUE_ORDER_SHIPPING_LINES_FEEDBACK = "order_shipping_lines"
@@ -365,8 +366,6 @@ class AnalyticsTracker private constructor(
         const val VALUE_STATE_OFF = "off"
 
         const val VALUE_SIMPLE_PAYMENTS_FLOW = "simple_payment"
-        const val VALUE_SIMPLE_PAYMENTS_FEEDBACK = "simple_payments"
-        const val VALUE_TAP_TO_PAY_FEEDBACK = "tap_to_pay"
         const val VALUE_SIMPLE_PAYMENTS_COLLECT_CARD = "card"
         const val VALUE_SIMPLE_PAYMENTS_COLLECT_CASH = "cash"
         const val VALUE_SIMPLE_PAYMENTS_COLLECT_LINK = "payment_link"
@@ -437,7 +436,6 @@ class AnalyticsTracker private constructor(
         const val IMAGE_SOURCE_WPMEDIA = "wpmedia"
 
         const val KEY_REFUND_IS_FULL = "is_full"
-        const val KEY_REFUND_TYPE = "method"
         const val KEY_REFUND_METHOD = "gateway"
         const val KEY_AMOUNT = "amount"
         const val KEY_AMOUNT_NORMALIZED = "amount_normalized"
@@ -532,6 +530,9 @@ class AnalyticsTracker private constructor(
         const val VALUE_JETPACK_SETUP_TAP_GO_TO_STORE = "go_to_store"
         const val VALUE_JETPACK_SETUP_TAP_SUPPORT = "support"
         const val VALUE_JETPACK_SETUP_TAP_TRY_AGAIN = "try_again"
+        const val KEY_CONNECTION_TYPE = "connection_type"
+        const val VALUE_CONNECTION_TYPE_NATIVE = "native"
+        const val VALUE_CONNECTION_TYPE_WEB = "web"
 
         // -- Upsell banner
         const val KEY_BANNER_SOURCE = "source"

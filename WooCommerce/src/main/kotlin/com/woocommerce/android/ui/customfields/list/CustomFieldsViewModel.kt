@@ -207,7 +207,7 @@ class CustomFieldsViewModel @Inject constructor(
         }
 
         triggerEvent(
-            MultiLiveEvent.Event.ShowActionSnackbar(
+            MultiLiveEvent.Event.ShowActionStringSnackbar(
                 message = resourceProvider.getString(R.string.custom_fields_list_field_deleted),
                 actionText = resourceProvider.getString(R.string.undo),
                 action = {

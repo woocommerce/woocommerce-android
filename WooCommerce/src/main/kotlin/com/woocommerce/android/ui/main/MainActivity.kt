@@ -68,6 +68,7 @@ import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.main.BottomNavigationPosition.MORE
 import com.woocommerce.android.ui.main.BottomNavigationPosition.MY_STORE
 import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
+import com.woocommerce.android.ui.main.BottomNavigationPosition.POS
 import com.woocommerce.android.ui.main.BottomNavigationPosition.PRODUCTS
 import com.woocommerce.android.ui.main.MainActivityViewModel.BottomBarState
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
@@ -103,6 +104,7 @@ import com.woocommerce.android.ui.prefs.RequestedAnalyticsValue
 import com.woocommerce.android.ui.products.details.ProductDetailFragment
 import com.woocommerce.android.ui.products.list.ProductListFragmentDirections
 import com.woocommerce.android.ui.reviews.ReviewListFragmentDirections
+import com.woocommerce.android.ui.woopos.tab.WooPosTabController
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
@@ -180,6 +182,10 @@ class MainActivity :
     lateinit var trialStatusBarFormatterFactory: TrialStatusBarFormatterFactory
 
     @Inject lateinit var animatorHelper: MainAnimatorHelper
+
+    @Inject lateinit var edgeToEdgeHelper: MainActivityEdgeToEdgeHelper
+
+    @Inject lateinit var posTabController: WooPosTabController
 
     private val viewModel: MainActivityViewModel by viewModels()
 
@@ -264,7 +270,10 @@ class MainActivity :
                     binding.appBarDivider.isVisible = appBarStatus.hasDivider
                 }
 
-                AppBarStatus.Hidden -> hideToolbar(animate = f is TopLevelFragment)
+                AppBarStatus.Hidden -> {
+                    hideToolbar(animate = f is TopLevelFragment)
+                    binding.appBarLayout.targetElevation = 0f
+                }
             }
 
             if (f is TopLevelFragment) {
@@ -302,7 +311,10 @@ class MainActivity :
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        edgeToEdgeHelper.applyEdgeToEdgeSettings(binding)
+
         toolbar = binding.toolbar.toolbar
+
         setSupportActionBar(toolbar)
         toolbar.navigationIcon = null
 
@@ -318,6 +330,8 @@ class MainActivity :
         navController.graph = navGraph
         navHostFragment.childFragmentManager.registerFragmentLifecycleCallbacks(fragmentLifecycleObserver, false)
         binding.bottomNav.init(navController, this)
+
+        posTabController.initialize(this, binding, navController)
 
         presenter.takeView(this)
 
@@ -346,7 +360,7 @@ class MainActivity :
 
         if (savedInstanceState == null) {
             viewModel.handleIncomingAppLink(intent?.data)
-            viewModel.handleShortcutAction(intent?.action?.toLowerCase(Locale.ROOT))
+            viewModel.handleShortcutAction(intent?.action?.lowercase(Locale.ROOT))
             handleIncomingImages()
         }
     }
@@ -736,11 +750,12 @@ class MainActivity :
         binding.bottomNav.setOrderBadgeCount(0)
     }
 
-    override fun onNavItemSelected(navPos: BottomNavigationPosition) {
+    override fun onNavItemSelected(navPos: BottomNavigationPosition): Boolean {
         val stat = when (navPos) {
             MY_STORE -> AnalyticsEvent.MAIN_TAB_DASHBOARD_SELECTED
             ORDERS -> AnalyticsEvent.MAIN_TAB_ORDERS_SELECTED
             PRODUCTS -> AnalyticsEvent.MAIN_TAB_PRODUCTS_SELECTED
+            POS -> AnalyticsEvent.MAIN_TAB_POS_SELECTED
             MORE -> AnalyticsEvent.MAIN_TAB_HUB_MENU_SELECTED
         }
         AnalyticsTracker.track(stat, mapOf(KEY_HORIZONTAL_SIZE_CLASS to deviceTypeToAnalyticsString))
@@ -748,6 +763,15 @@ class MainActivity :
         if (navPos == ORDERS) {
             viewModel.removeOrderNotifications()
         }
+
+        if (navPos == POS) {
+            posTabController.navigateToPOS()
+
+            // Do not keep the tab selected for POS
+            return false
+        }
+
+        return true
     }
 
     override fun onNavItemReselected(navPos: BottomNavigationPosition) {
@@ -756,8 +780,11 @@ class MainActivity :
             ORDERS -> AnalyticsEvent.MAIN_TAB_ORDERS_RESELECTED
             PRODUCTS -> AnalyticsEvent.MAIN_TAB_PRODUCTS_RESELECTED
             MORE -> AnalyticsEvent.MAIN_TAB_HUB_MENU_RESELECTED
+            POS -> null
         }
-        AnalyticsTracker.track(stat, mapOf(KEY_HORIZONTAL_SIZE_CLASS to deviceTypeToAnalyticsString))
+        stat?.let {
+            AnalyticsTracker.track(it, mapOf(KEY_HORIZONTAL_SIZE_CLASS to deviceTypeToAnalyticsString))
+        }
 
         // if we're at the root scroll the active fragment to the top
         // TODO bring back clearing the backstack when the navgraphs are fixed to support multiple backstacks:
@@ -937,7 +964,7 @@ class MainActivity :
 
     private fun navigateToWebView(event: ViewUrlInWebView) {
         navController.navigate(
-            NavGraphMainDirections.actionGlobalWPComWebViewFragment(
+            NavGraphMainDirections.actionGlobalAuthenticatedWebViewFragment(
                 urlToLoad = event.url
             )
         )
@@ -1073,7 +1100,7 @@ class MainActivity :
         binding.bottomNav.currentPosition = ORDERS
         binding.bottomNav.active(ORDERS.position)
         val action = OrderListFragmentDirections.actionOrderListFragmentToOrderCreationFragment(
-            OrderCreateEditViewModel.Mode.Creation(),
+            OrderCreateEditViewModel.Mode.Creation,
             null,
             null,
         )
@@ -1164,12 +1191,14 @@ class MainActivity :
     fun showOrderCreation(
         mode: OrderCreateEditViewModel.Mode,
         giftCardCode: String?,
-        giftCardAmount: BigDecimal?
+        giftCardAmount: BigDecimal?,
+        orderCurrency: String? = null,
     ) {
         NavGraphMainDirections.actionGlobalToOrderCreationFragment(
             mode = mode,
             giftCardCode = giftCardCode,
             giftCardAmount = giftCardAmount,
+            orderCurrency = orderCurrency
         ).apply {
             navController.navigateSafely(this)
         }

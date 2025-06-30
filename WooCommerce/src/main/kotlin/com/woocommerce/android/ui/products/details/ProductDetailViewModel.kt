@@ -17,7 +17,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.analytics.IsScreenLargerThanCompactValue
+import com.woocommerce.android.analytics.IsScreenInTwoPaneLayout
 import com.woocommerce.android.analytics.deviceTypeToAnalyticsString
 import com.woocommerce.android.extensions.addNewItem
 import com.woocommerce.android.extensions.clearList
@@ -42,6 +42,7 @@ import com.woocommerce.android.model.ProductTag
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.SubscriptionDetails
 import com.woocommerce.android.model.SubscriptionPeriod
+import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.model.addTags
 import com.woocommerce.android.model.sortCategories
 import com.woocommerce.android.model.toAppModel
@@ -50,6 +51,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
 import com.woocommerce.android.ui.blaze.IsProductCurrentlyPromoted
+import com.woocommerce.android.ui.common.webview.CanAutoAuthenticateInWebView
 import com.woocommerce.android.ui.customfields.CustomFieldsRepository
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.media.getMediaUploadErrorMessage
@@ -71,6 +73,7 @@ import com.woocommerce.android.ui.products.canDisplayMessage
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoryItemUiModel
 import com.woocommerce.android.ui.products.details.ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem
+import com.woocommerce.android.ui.products.details.ProductDetailViewModel.Companion.DEFAULT_ADD_NEW_PRODUCT_ID
 import com.woocommerce.android.ui.products.list.ProductListRepository
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.SiteParameters
@@ -92,10 +95,9 @@ import com.woocommerce.android.util.IsWindowClassLargeThanCompact
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.LaunchUrlInChromeTab
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUiStringSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
@@ -161,7 +163,8 @@ class ProductDetailViewModel @Inject constructor(
     private val isProductCurrentlyPromoted: IsProductCurrentlyPromoted,
     private val isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact,
     private val determineProductPasswordApi: DetermineProductPasswordApi,
-    private val customFieldsRepository: CustomFieldsRepository
+    private val customFieldsRepository: CustomFieldsRepository,
+    private val canAutoAuthenticateInWebView: CanAutoAuthenticateInWebView
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
@@ -341,11 +344,17 @@ class ProductDetailViewModel @Inject constructor(
             val showShareOptionAsActionWithText =
                 showShareOption && !showSaveOptionAsActionWithText && !showPublishOption
 
+            // Show "View Product" option only if the product is published or we can auto-authenticate the user
+            // in a WebView.
+            val showViewProductOption = !isProductUnderCreation &&
+                productDraft.permalink.isNotEmpty() &&
+                (isProductPublished || canAutoAuthenticateInWebView(productDraft.permalink))
+
             MenuButtonsState(
                 saveOption = showSaveOptionAsActionWithText,
                 saveAsDraftOption = canBeSavedAsDraft,
                 publishOption = showPublishOption,
-                viewProductOption = isProductPublished && !isProductUnderCreation,
+                viewProductOption = showViewProductOption,
                 shareOption = showShareOption,
                 showShareOptionAsActionWithText = showShareOptionAsActionWithText,
                 trashOption = !isProductUnderCreation && navArgs.isTrashEnabled
@@ -548,9 +557,7 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     fun onLearnMoreClicked() {
-        triggerEvent(
-            LaunchUrlInChromeTab(AppUrls.AUTOMATTIC_AI_GUIDELINES)
-        )
+        triggerEvent(Event.LaunchUrlInChromeTab(AppUrls.AUTOMATTIC_AI_GUIDELINES))
     }
 
     fun onBlazeClicked() {
@@ -930,6 +937,7 @@ class ProductDetailViewModel @Inject constructor(
             val positiveAction = DialogInterface.OnClickListener { _, _ ->
                 // Make sure to cancel any remaining image uploads
                 mediaFileUploadHandler.cancelUpload(getRemoteProductId())
+                mediaFileUploadHandler.clearImageErrors(getRemoteProductId())
                 triggerEvent(ProductNavigationTarget.ExitProduct)
             }
 
@@ -1212,7 +1220,11 @@ class ProductDetailViewModel @Inject constructor(
     fun onViewProductOnStoreLinkClicked() {
         tracker.track(AnalyticsEvent.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED)
         viewState.productDraft?.permalink?.let { url ->
-            triggerEvent(LaunchUrlInChromeTab(url))
+            if (canAutoAuthenticateInWebView(url)) {
+                triggerEvent(Event.LaunchUrlInAuthenticatedWebView(url))
+            } else {
+                triggerEvent(Event.LaunchUrlInChromeTab(url))
+            }
         }
     }
 
@@ -1500,7 +1512,7 @@ class ProductDetailViewModel @Inject constructor(
                         AnalyticsTracker.KEY_HAS_LINKED_PRODUCTS to product.hasLinkedProducts(),
                         AnalyticsTracker.KEY_HAS_MIN_MAX_QUANTITY_RULES to product.hasQuantityRules(),
                         AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to
-                            IsScreenLargerThanCompactValue(isWindowClassLargeThanCompact()).deviceTypeToAnalyticsString,
+                            IsScreenInTwoPaneLayout(isWindowClassLargeThanCompact()).deviceTypeToAnalyticsString,
                     )
                     tracker.track(AnalyticsEvent.PRODUCT_DETAIL_LOADED, properties)
                 }
@@ -1509,7 +1521,7 @@ class ProductDetailViewModel @Inject constructor(
                     AnalyticsEvent.PRODUCT_DETAIL_LOADED,
                     mapOf(
                         AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to
-                            IsScreenLargerThanCompactValue(isWindowClassLargeThanCompact()).deviceTypeToAnalyticsString
+                            IsScreenInTwoPaneLayout(isWindowClassLargeThanCompact()).deviceTypeToAnalyticsString
                     )
                 )
             }
@@ -2077,7 +2089,7 @@ class ProductDetailViewModel @Inject constructor(
     /**
      * Fetch the shipping class name of a product based on the remote shipping class id
      */
-    fun getShippingClassByRemoteShippingClassId(remoteShippingClassId: Long) =
+    suspend fun getShippingClassByRemoteShippingClassId(remoteShippingClassId: Long) =
         productRepository.getProductShippingClassByRemoteId(remoteShippingClassId)?.name
             ?: viewState.productDraft?.shippingClass ?: ""
 
@@ -2134,15 +2146,16 @@ class ProductDetailViewModel @Inject constructor(
                     mediaFileUploadHandler.observeCurrentUploadErrors(productId)
                         .onEach { errorList ->
                             if (errorList.isEmpty()) {
+                                viewState = viewState.copy(hasUploadErrors = false)
                                 triggerEvent(HideImageUploadErrorSnackbar)
                             } else {
+                                viewState = viewState.copy(hasUploadErrors = true)
                                 triggerEvent(
-                                    ShowActionSnackbar(
-                                        message = resources.getMediaUploadErrorMessage(errorList.size),
-                                        actionText = resources.getString(R.string.details)
-                                    ) {
-                                        triggerEvent(ProductNavigationTarget.ViewMediaUploadErrors(productId))
-                                    }
+                                    ShowUiStringSnackbar(
+                                        message = UiStringText(
+                                            resources.getMediaUploadErrorMessage(errorList.size)
+                                        ),
+                                    )
                                 )
                             }
                         }
@@ -2391,13 +2404,15 @@ class ProductDetailViewModel @Inject constructor(
     fun onProductTagAdded(tagName: String) {
         // verify if the entered tagName exists for the site
         // It so, the tag should be added to the product directly
-        productTagsRepository.getProductTagByName(tagName)?.let {
-            onProductTagSelected(it)
-        } ?: run {
-            // Since the tag does not exist for the site, add the tag to
-            // a list of newly added tags
-            _addedProductTags.addNewItem(ProductTag(name = tagName))
-            loadProductTags()
+        viewModelScope.launch {
+            productTagsRepository.getProductTagByName(tagName)?.let {
+                onProductTagSelected(it)
+            } ?: run {
+                // Since the tag does not exist for the site, add the tag to
+                // a list of newly added tags
+                _addedProductTags.addNewItem(ProductTag(name = tagName))
+                loadProductTags()
+            }
         }
     }
 
@@ -2451,12 +2466,13 @@ class ProductDetailViewModel @Inject constructor(
      */
     fun setProductTagsFilter(filter: String) {
         productTagsViewState = productTagsViewState.copy(currentFilter = filter)
-        val productTags = productTagsRepository.getProductTags()
-        filterProductTagList(productTags)
 
-        // fetch from the backend when a filter exists in case not all tags have been fetched yet
-        if (filter.isNotEmpty()) {
-            launch {
+        launch {
+            val productTags = productTagsRepository.getProductTags()
+            filterProductTagList(productTags)
+
+            // fetch from the backend when a filter exists in case not all tags have been fetched yet
+            if (filter.isNotEmpty()) {
                 fetchProductTags(searchQuery = filter)
             }
         }
@@ -2651,6 +2667,10 @@ class ProductDetailViewModel @Inject constructor(
         }
     }
 
+    fun openUploadScreen() {
+        triggerEvent(ProductNavigationTarget.ViewMediaUploadErrors(getRemoteProductId()))
+    }
+
     /**
      * Sealed class that handles the back navigation for the product detail screens while providing a common
      * interface for managing them as a single type. Currently used in all the product sub detail screens when
@@ -2720,6 +2740,7 @@ class ProductDetailViewModel @Inject constructor(
         val productAggregateDraft: ProductAggregate? = null,
         val auxiliaryState: AuxiliaryState = AuxiliaryState.None,
         val uploadingImageUris: List<Uri>? = null,
+        val hasUploadErrors: Boolean? = null,
         val isProgressDialogShown: Boolean? = null,
         val showBottomSheetButton: Boolean? = null,
         val isConfirmingTrash: Boolean = false,

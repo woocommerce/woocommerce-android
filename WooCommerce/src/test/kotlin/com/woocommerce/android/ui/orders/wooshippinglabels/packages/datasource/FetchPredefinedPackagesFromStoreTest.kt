@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.packages.datasource
 
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationViewModel.PredefinedPackagesState
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.Carrier
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.CarrierPackageGroup
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
@@ -33,31 +34,41 @@ class FetchPredefinedPackagesFromStoreTest : BaseUnitTest() {
         whenever(selectedSite.getOrNull()).thenReturn(site)
         whenever(packageRepository.fetchAllStorePackages(site)).thenReturn(WooResult(storePackages))
 
-        val result = fetchPredefinedPackagesFromStore()!!
+        val result = fetchPredefinedPackagesFromStore() as PredefinedPackagesState.Data
 
-        assertThat(result.savedPackageSelection.packages).containsExactly(
+        assertThat(result.savedPackages).containsExactly(
             PackageData(
+                id = "1",
                 name = "Saved Package 1",
                 dimensions = "dimensions",
+                weight = "weight",
                 isSelected = false,
-                isLetter = false
+                isLetter = false,
+                isPredefined = true,
             ),
             PackageData(
+                id = "2",
                 name = "Saved Package 2",
                 dimensions = "dimensions",
+                weight = "weight",
                 isSelected = false,
-                isLetter = false
+                isLetter = false,
+                isPredefined = true,
+                isStarred = true,
             )
         )
-        assertThat(result.carrierPackageSelection.carrierPackages[Carrier.USPS]).containsExactly(
+        assertThat(result.carrierPackages[Carrier.USPS]).containsExactly(
             CarrierPackageGroup(
                 groupName = "Group 1",
                 packages = listOf(
                     PackageData(
+                        id = "1",
                         name = "Carrier Package 1",
                         dimensions = "dimensions",
+                        weight = "weight",
                         isSelected = false,
-                        isLetter = false
+                        isLetter = false,
+                        isPredefined = true,
                     )
                 )
             )
@@ -65,7 +76,7 @@ class FetchPredefinedPackagesFromStoreTest : BaseUnitTest() {
     }
 
     @Test
-    fun `invoke should return null StorePredefinedPackages when fetchAllStorePackages returns error`() = testBlocking {
+    fun `invoke should return Error StorePredefinedPackages when fetchAllStorePackages returns error`() = testBlocking {
         val error = WooError(WooErrorType.GENERIC_ERROR, BaseRequest.GenericErrorType.UNKNOWN)
         val site = SiteModel().apply { id = 1 }
         whenever(selectedSite.getOrNull()).thenReturn(site)
@@ -73,31 +84,45 @@ class FetchPredefinedPackagesFromStoreTest : BaseUnitTest() {
 
         val result = fetchPredefinedPackagesFromStore()
 
-        assertThat(result).isNull()
+        assertThat(result).isEqualTo(PredefinedPackagesState.Error)
     }
 
     @Test
-    fun `invoke should return null StorePredefinedPackages when site is not available`() = testBlocking {
+    fun `invoke should return Error StorePredefinedPackages when site is not available`() = testBlocking {
         whenever(selectedSite.getOrNull()).thenReturn(null)
 
         val result = fetchPredefinedPackagesFromStore()
 
-        assertThat(result).isNull()
+        assertThat(result).isEqualTo(PredefinedPackagesState.Error)
     }
 
     private fun generatePackagesData() = StorePackagesDAO(
+        storeOptions = StoreOptionsDAO(
+            currencySymbol = "$",
+            dimensionUnit = "cm",
+            weightUnit = "kg",
+            originCountry = "US"
+        ),
         savedPackages = listOf(
             PackageDAO(
                 id = "1",
                 name = "Saved Package 1",
                 dimensions = "dimensions",
-                isLetter = false
+                weight = "weight",
+                isLetter = false,
+                dimensionUnit = "cm",
+                weightUnit = "kg",
+                saved = false
             ),
             PackageDAO(
                 id = "2",
                 name = "Saved Package 2",
                 dimensions = "dimensions",
-                isLetter = false
+                weight = "weight",
+                isLetter = false,
+                dimensionUnit = "cm",
+                weightUnit = "kg",
+                saved = true
             )
         ),
         carrierPackages = mapOf(
@@ -110,7 +135,11 @@ class FetchPredefinedPackagesFromStoreTest : BaseUnitTest() {
                                 id = "1",
                                 name = "Carrier Package 1",
                                 dimensions = "dimensions",
-                                isLetter = false
+                                weight = "weight",
+                                isLetter = false,
+                                dimensionUnit = "cm",
+                                weightUnit = "kg",
+                                saved = false
                             )
                         )
                     )

@@ -74,12 +74,6 @@ class StoreOnboardingFragment : BaseFragment() {
                         directions = StoreOnboardingFragmentDirections.actionOnboardingFragmentToLaunchStoreFragment()
                     )
 
-                is NavigateToDomains ->
-                    findNavController().navigateSafely(
-                        directions = StoreOnboardingFragmentDirections
-                            .actionStoreOnboardingFragmentToNavGraphDomainChange()
-                    )
-
                 is NavigateToSetupPayments ->
                     findNavController().navigateSafely(
                         directions = StoreOnboardingFragmentDirections

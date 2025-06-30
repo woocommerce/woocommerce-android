@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.WindowCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -40,6 +41,14 @@ class FeatureAnnouncementDialogFragment : DialogFragment() {
         viewModel.setAnnouncementData(navArgs.announcement)
         setupView(binding)
         setupObservers()
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        dialog?.window?.let {
+            WindowCompat.setDecorFitsSystemWindows(it, false)
+        }
     }
 
     private fun setupView(binding: FeatureAnnouncementDialogFragmentBinding) {

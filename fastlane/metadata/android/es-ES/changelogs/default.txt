@@ -1,2 +1,0 @@
-21.2:
-Han llegado las actualizaciones mejoradas. Una activación de Jetpack más sencilla con la nueva creación de cuentas. Despídete de los errores: los problemas de actualización de pedidos, modificaciones de envíos y recuperación de recibos están solucionados. Hemos cambiado el nombre de Depósitos y ahora se llama Pagos, y hemos mejorado la subida de medios en los sitios de Jetpack. Actualiza ahora y disfruta de una experiencia mejorada con WooCommerce.

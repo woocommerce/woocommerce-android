@@ -28,7 +28,7 @@ open class WooCommerce : Application(), HasAndroidInjector, Configuration.Provid
 
         // Stripe Tap to Pay library starts it's own process. That causes the crash:
         //  > Caused by: java.lang.IllegalStateException: Default FirebaseApp is not initialized in this process
-        //  > com.woocommerce.android:stripelocalmobile Make sure to call FirebaseApp.initializeApp(Context) first.
+        //  > com.woocommerce.android:stripetaptopay Make sure to call FirebaseApp.initializeApp(Context) first.
         // In this case we don't want to initialize any Firebase (or any at all) features of the app in their process.
         if (getCurrentProcessName() == "${BuildConfig.APPLICATION_ID}:$TAP_TO_PAY_STRIPE_PROCESS_NAME_SUFFIX") return
 
@@ -55,6 +55,6 @@ open class WooCommerce : Application(), HasAndroidInjector, Configuration.Provid
     override fun androidInjector(): AndroidInjector<Any> = androidInjector
 
     companion object {
-        private const val TAP_TO_PAY_STRIPE_PROCESS_NAME_SUFFIX = "stripelocalmobile"
+        private const val TAP_TO_PAY_STRIPE_PROCESS_NAME_SUFFIX = "stripetaptopay"
     }
 }

@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.payments.receipt.preview
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptShare
 import com.woocommerce.android.ui.payments.receipt.preview.ReceiptPreviewViewModel.ReceiptPreviewViewState.Content
 import com.woocommerce.android.ui.payments.receipt.preview.ReceiptPreviewViewModel.ReceiptPreviewViewState.Loading
@@ -18,6 +19,7 @@ import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.SiteModel
 
 @ExperimentalCoroutinesApi
 class ReceiptPreviewViewModelTest : BaseUnitTest() {
@@ -25,6 +27,7 @@ class ReceiptPreviewViewModelTest : BaseUnitTest() {
 
     private val paymentsFlowTracker: PaymentsFlowTracker = mock()
     private val paymentReceiptShare: PaymentReceiptShare = mock()
+    private val selectedSite: SelectedSite = mock()
 
     private val savedState: SavedStateHandle = ReceiptPreviewFragmentArgs(
         receiptUrl = "testing url",
@@ -34,7 +37,12 @@ class ReceiptPreviewViewModelTest : BaseUnitTest() {
 
     @Before
     fun setUp() {
-        viewModel = ReceiptPreviewViewModel(savedState, paymentsFlowTracker, paymentReceiptShare)
+        viewModel = ReceiptPreviewViewModel(
+            savedState,
+            paymentsFlowTracker,
+            paymentReceiptShare,
+            selectedSite
+        )
     }
 
     @Test
@@ -185,5 +193,33 @@ class ReceiptPreviewViewModelTest : BaseUnitTest() {
             viewModel.onPrintResult(STARTED)
 
             verify(paymentsFlowTracker).trackPrintReceiptSucceeded()
+        }
+
+    @Test
+    fun `given valid receipt domain, then isReceiptTrustable returns true`() =
+        testBlocking {
+            whenever(selectedSite.getIfExists()).thenReturn(
+                SiteModel().apply {
+                    url = "https://www.woocommerce.com"
+                    origin = SiteModel.ORIGIN_WPAPI
+                }
+            )
+            val receiptUrl = "https://www.woocommerce.com/receipt"
+
+            assertThat(viewModel.isReceiptDomainTrustable(receiptUrl)).isTrue()
+        }
+
+    @Test
+    fun `given invalid receipt domain, then isReceiptTrustable returns false`() =
+        testBlocking {
+            whenever(selectedSite.getIfExists()).thenReturn(
+                SiteModel().apply {
+                    url = "https://www.woocommerce.com"
+                    origin = SiteModel.ORIGIN_WPAPI
+                }
+            )
+            val receiptUrl = "https://www.wocommerce.com/receipt"
+
+            assertThat(viewModel.isReceiptDomainTrustable(receiptUrl)).isFalse()
         }
 }

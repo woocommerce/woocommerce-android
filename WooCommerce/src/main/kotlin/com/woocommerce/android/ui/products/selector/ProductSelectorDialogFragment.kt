@@ -6,14 +6,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.core.view.WindowCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.WindowSizeClass
+import com.woocommerce.android.extensions.edgeToEdgeForInLandscape
 import com.woocommerce.android.extensions.navigateBackWithResult
-import com.woocommerce.android.extensions.windowSizeClass
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.products.ProductNavigationTarget
 import com.woocommerce.android.ui.products.ProductNavigator
@@ -21,18 +21,16 @@ import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.Sel
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import dagger.hilt.android.AndroidEntryPoint
-import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class ProductSelectorDialogFragment : DialogFragment() {
     companion object {
         const val PRODUCT_SELECTOR_RESULT = "product-selector-result"
-        private const val TABLET_LANDSCAPE_WIDTH_RATIO = 0.55f
-        private const val TABLET_LANDSCAPE_HEIGHT_RATIO = 0.6f
     }
 
-    @Inject lateinit var navigator: ProductNavigator
+    @Inject
+    lateinit var navigator: ProductNavigator
 
     private val viewModel: ProductSelectorViewModel by viewModels()
 
@@ -40,13 +38,7 @@ class ProductSelectorDialogFragment : DialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        if (requireContext().windowSizeClass != WindowSizeClass.Compact) {
-            setStyle(STYLE_NO_TITLE, R.style.Theme_Woo_Dialog_RoundedCorners_NoMinWidth)
-        } else {
-            /* This draws the dialog as full screen */
-            setStyle(STYLE_NO_TITLE, R.style.Theme_Woo)
-        }
+        setStyle(STYLE_NO_TITLE, R.style.Theme_Woo)
 
         if (args.selectionHandling != ProductSelectorViewModel.SelectionHandling.SIMPLE) {
             // If we want to support the other handling, we need to make all of the destinations as dialogs
@@ -58,11 +50,12 @@ class ProductSelectorDialogFragment : DialogFragment() {
         return ComposeView(requireContext()).apply {
             id = R.id.product_selector_compose_view
 
+            edgeToEdgeForInLandscape()
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
             setContent {
                 WooThemeWithBackground {
-                    ProductSelectorScreen(viewModel)
+                    ProductSelectorScreen(viewModel = viewModel, handleInsets = true)
                 }
             }
         }
@@ -76,11 +69,8 @@ class ProductSelectorDialogFragment : DialogFragment() {
 
     override fun onStart() {
         super.onStart()
-        if (requireContext().windowSizeClass != WindowSizeClass.Compact) {
-            dialog?.window?.setLayout(
-                (DisplayUtils.getWindowPixelWidth(requireContext()) * TABLET_LANDSCAPE_WIDTH_RATIO).toInt(),
-                (DisplayUtils.getWindowPixelHeight(requireContext()) * TABLET_LANDSCAPE_HEIGHT_RATIO).toInt()
-            )
+        dialog?.window?.let {
+            WindowCompat.setDecorFitsSystemWindows(it, false)
         }
     }
 
@@ -94,6 +84,7 @@ class ProductSelectorDialogFragment : DialogFragment() {
                         event.data as Collection<SelectedItem>
                     )
                 }
+
                 is ProductNavigationTarget -> navigator.navigate(this, event)
                 is Exit -> findNavController().navigateUp()
             }

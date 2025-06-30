@@ -103,7 +103,11 @@ class VariationSelectorViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             loadingState.value = LOADING
-            variationListHandler.fetchVariations(productId = navArgs.productId, forceRefresh = true)
+            variationListHandler.fetchVariations(
+                productId = navArgs.productId,
+                forceRefresh = true,
+                orderCurrency = navArgs.orderCurrency
+            )
             loadingState.value = IDLE
         }
     }
@@ -122,7 +126,13 @@ class VariationSelectorViewModel @Inject constructor(
             else -> resourceProvider.getString(stockStatus.stringResource)
         }
 
-        val price = price?.let { PriceUtils.formatCurrency(price, currencyCode, currencyFormatter) }
+        val price = price?.let {
+            PriceUtils.formatCurrency(
+                price,
+                navArgs.orderCurrency ?: currencyCode,
+                currencyFormatter
+            )
+        }
 
         val stockAndPrice = listOfNotNull(stockStatus, price).joinToString(" \u2022 ")
 

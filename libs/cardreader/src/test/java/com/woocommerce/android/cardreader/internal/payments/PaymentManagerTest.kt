@@ -668,5 +668,6 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
             statementDescriptor = StatementDescriptor(statementDescriptor),
             countryCode = countryCode,
             feeAmount = feeAmount,
+            channel = PaymentInfo.PaymentChannel.StoreManager
         )
 }

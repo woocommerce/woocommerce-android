@@ -27,7 +27,7 @@ class WCViewPagerIndicator @JvmOverloads constructor(
 
         for (page in 0 until pageCount) {
             ImageView(context).also { imageView ->
-                imageView.setImageResource(R.drawable.ic_tab_indicator)
+                imageView.setImageResource(R.drawable.ic_pager_indicator)
                 imageView.isSelected = page == 0
                 imageView.setPadding(padding, 0, padding, 0)
                 this.addView(imageView)

@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.moremenu
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.notifications.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
@@ -13,7 +12,6 @@ import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.plans.domain.SitePlan
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
-import com.woocommerce.android.ui.woopos.WooPosIsEnabled
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -84,10 +82,6 @@ class MoreMenuViewModelTests : BaseUnitTest() {
 
     private val hasGoogleAdsCampaigns: HasGoogleAdsCampaigns = mock()
 
-    private val isWooPosEnabled: WooPosIsEnabled = mock {
-        onBlocking { invoke() } doReturn true
-    }
-
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 
     private val blazeCampaignsStore: BlazeCampaignsStore = mock()
@@ -111,8 +105,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             isBlazeEnabled = isBlazeEnabled,
             isGoogleForWooEnabled = isGoogleForWooEnabled,
             hasGoogleAdsCampaigns = hasGoogleAdsCampaigns,
-            isWooPosEnabled = isWooPosEnabled,
-            analyticsTrackerWrapper = analyticsTrackerWrapper,
+            analyticsTrackerWrapper = analyticsTrackerWrapper
         )
     }
 
@@ -432,75 +425,9 @@ class MoreMenuViewModelTests : BaseUnitTest() {
     }
 
     @Test
-    fun `given isWooPosEnabled returns false, when building state, then WooPOS section is not displayed`() =
-        testBlocking {
-            // GIVEN
-            setup {
-                whenever(isWooPosEnabled.invoke()).thenReturn(false)
-            }
-
-            // WHEN
-            val states = viewModel.moreMenuViewState.captureValues()
-
-            // THEN
-            assertThat(
-                states.last().menuSections.flatMap { it.items }
-                    .firstOrNull { it.title == R.string.more_menu_button_woo_pos }
-            ).isNull()
-        }
-
-    @Test
-    fun `given isWooPosEnabled returns true, when building state, then WooPOS section is displayed`() = testBlocking {
-        // GIVEN
-        setup {
-            whenever(isWooPosEnabled.invoke()).thenReturn(true)
-        }
-
-        // WHEN
-        val states = viewModel.moreMenuViewState.captureValues()
-
-        // THEN
-        assertThat(states.last().menuSections.first().title).isNull()
-        assertThat(states.last().menuSections.first().items.count()).isEqualTo(1)
-        assertThat(
-            states.last().menuSections.flatMap { it.items }
-                .first { it.title == R.string.more_menu_button_woo_pos }.state
-        ).isEqualTo(MoreMenuItemButton.State.Visible)
-    }
-
-    @Test
-    fun `given isWooPosEnabled returns true, when building state, then 3 sections are shown without dividers at the end`() =
-        testBlocking {
-            // GIVEN
-            setup {
-                whenever(isWooPosEnabled.invoke()).thenReturn(true)
-                whenever(moreMenuRepository.isUpgradesEnabled()).thenReturn(true)
-            }
-
-            // WHEN
-            val states = viewModel.moreMenuViewState.captureValues()
-
-            // THEN
-            assertThat(states.last().menuSections.count()).isEqualTo(3)
-
-            assertThat(states.last().menuSections[0].title).isNull()
-            val itemsFirstSection = states.last().menuSections[0].items
-            assertThat(itemsFirstSection.count()).isEqualTo(1)
-
-            assertThat(states.last().menuSections[1].title).isEqualTo(R.string.more_menu_settings_section_title)
-            val itemsThirdSection = states.last().menuSections[1].items
-            assertThat(itemsThirdSection.count()).isEqualTo(2)
-
-            assertThat(states.last().menuSections[2].title).isEqualTo(R.string.more_menu_general_section_title)
-            val itemsSecondSection = states.last().menuSections[2].items
-            assertThat(itemsSecondSection.count()).isEqualTo(9)
-        }
-
-    @Test
     fun `when building state, then all optional buttons start with loading state`() = testBlocking {
         // GIVEN
         setup {
-            whenever(isWooPosEnabled()).thenReturn(true)
             whenever(isBlazeEnabled.invoke()).thenReturn(true)
             whenever(isGoogleForWooEnabled.invoke()).thenReturn(true)
             whenever(moreMenuRepository.isUpgradesEnabled()).thenReturn(true)
@@ -512,32 +439,11 @@ class MoreMenuViewModelTests : BaseUnitTest() {
 
         // THEN
         val items = states.first().menuSections.flatMap { it.items }
-        assertThat(items.first { it.title == R.string.more_menu_button_woo_pos }.state)
-            .isEqualTo(MoreMenuItemButton.State.Loading)
         assertThat(items.first { it.title == R.string.more_menu_button_blaze }.state)
             .isEqualTo(MoreMenuItemButton.State.Loading)
         assertThat(items.first { it.title == R.string.more_menu_button_google }.state)
             .isEqualTo(MoreMenuItemButton.State.Loading)
         assertThat(items.first { it.title == R.string.more_menu_button_inbox }.state)
             .isEqualTo(MoreMenuItemButton.State.Loading)
-    }
-
-    @Test
-    fun `when WooPOS button clicked, then VALUE_MORE_MENU_POS tracking is triggered`() = testBlocking {
-        // GIVEN
-        setup {
-            whenever(isWooPosEnabled()).thenReturn(true)
-        }
-
-        // WHEN
-        val state = viewModel.moreMenuViewState.captureValues().last()
-        val posButton = state.menuSections.flatMap { it.items }.first { it.title == R.string.more_menu_button_woo_pos }
-        posButton.onClick()
-
-        // THEN
-        verify(analyticsTrackerWrapper).track(
-            AnalyticsEvent.HUB_MENU_OPTION_TAPPED,
-            mapOf("option" to "pointOfSale")
-        )
     }
 }

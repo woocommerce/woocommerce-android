@@ -11,8 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
-import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCircularLoadingIndicator
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 
 @Composable
@@ -40,7 +40,7 @@ private fun Loading() {
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        WooPosCircularLoadingIndicator(modifier = Modifier.size(156.dp))
+        WooPosCircularLoadingIndicator(modifier = Modifier.size(160.dp))
     }
 }
 

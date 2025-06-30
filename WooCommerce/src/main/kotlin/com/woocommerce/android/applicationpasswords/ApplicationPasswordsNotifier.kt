@@ -33,7 +33,10 @@ class ApplicationPasswordsNotifier @Inject constructor(
     override fun onFeatureUnavailable(siteModel: SiteModel, networkError: WPAPINetworkError) {
         trackGenerationFailure(
             cause = GenerationFailureCause.FEATURE_DISABLED,
-            networkError = networkError
+            networkError = networkError,
+            additionalProperties = mapOf(
+                AnalyticsTracker.KEY_SITE_URL to siteModel.url
+            )
         )
         _featureUnavailableEvents.tryEmit(networkError)
     }
@@ -65,7 +68,8 @@ class ApplicationPasswordsNotifier @Inject constructor(
 
     private fun trackGenerationFailure(
         cause: GenerationFailureCause,
-        networkError: WPAPINetworkError
+        networkError: WPAPINetworkError,
+        additionalProperties: Map<String, String> = emptyMap()
     ) {
         val scenario = if (selectedSite.exists()) {
             GenerationFailureScenario.REGENERATION
@@ -78,7 +82,7 @@ class ApplicationPasswordsNotifier @Inject constructor(
             properties = mapOf(
                 AnalyticsTracker.KEY_SCENARIO to scenario.name.lowercase(),
                 AnalyticsTracker.KEY_CAUSE to cause.name.lowercase()
-            ),
+            ) + additionalProperties,
             errorContext = networkError.javaClass.simpleName,
             errorType = networkError.type.name,
             errorDescription = networkError.message

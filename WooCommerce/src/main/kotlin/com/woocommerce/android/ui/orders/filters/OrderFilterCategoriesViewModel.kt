@@ -113,6 +113,23 @@ class OrderFilterCategoriesViewModel @Inject constructor(
         )
     }
 
+    fun onClearProductFilter() {
+        _categories = _categories.copy(
+            _categories.list.map {
+                if (it.categoryKey == PRODUCT) {
+                    it.copy(
+                        orderFilterOptions = it.orderFilterOptions
+                            .clearAllFilterSelections()
+                            .markOptionAllIfNothingSelected(),
+                        displayValue = resourceProvider.getString(R.string.orderfilters_default_filter_value)
+                    )
+                } else {
+                    it
+                }
+            }
+        )
+    }
+
     fun onFilterOptionsUpdated(updatedCategory: OrderFilterCategoryUiModel) {
         _categories.list.let { filterOptions ->
             _categories = OrderFilterCategories(
@@ -212,7 +229,7 @@ class OrderFilterCategoriesViewModel @Inject constructor(
         )
     }
 
-    private fun getCustomerFilterOptions(): List<OrderFilterOptionUiModel> {
+    private suspend fun getCustomerFilterOptions(): List<OrderFilterOptionUiModel> {
         return listOfNotNull(
             orderFilterRepository.customerFilter?.let {
                 OrderFilterOptionUiModel(
@@ -259,6 +276,7 @@ class OrderFilterCategoriesViewModel @Inject constructor(
             when (selectedFilterCategoryKey) {
                 ORDER_STATUS -> getNumberOfSelectedFilterOptions()
                     .toString()
+
                 DATE_RANGE,
                 PRODUCT,
                 CUSTOMER -> first { it.isSelected }.displayName
@@ -290,20 +308,23 @@ class OrderFilterCategoriesViewModel @Inject constructor(
 
     fun onCustomerSelected(customer: Order.Customer) {
         orderFilterRepository.customerFilter = customer.customerId
-        onFilterOptionsUpdated(
-            OrderFilterCategoryUiModel(
-                categoryKey = CUSTOMER,
-                displayName = resourceProvider.getString(R.string.orderfilters_customer_filter),
-                displayValue = getCustomerDisplayValueFrom(customer.customerId),
-                orderFilterOptions = listOf(
-                    OrderFilterOptionUiModel(
-                        key = customer.customerId?.toString() ?: error("Customer ID is null"),
-                        displayName = getCustomerDisplayValueFrom(customer.customerId),
-                        isSelected = true
+        launch {
+            val displayValue = getCustomerDisplayValueFrom(customer.customerId)
+            onFilterOptionsUpdated(
+                OrderFilterCategoryUiModel(
+                    categoryKey = CUSTOMER,
+                    displayName = resourceProvider.getString(R.string.orderfilters_customer_filter),
+                    displayValue = displayValue,
+                    orderFilterOptions = listOf(
+                        OrderFilterOptionUiModel(
+                            key = customer.customerId?.toString() ?: error("Customer ID is null"),
+                            displayName = displayValue,
+                            isSelected = true
+                        )
                     )
                 )
             )
-        )
+        }
     }
 
     fun onProductSelected(productId: Long) {
@@ -324,7 +345,7 @@ class OrderFilterCategoriesViewModel @Inject constructor(
         )
     }
 
-    private fun getCustomerDisplayValueFrom(customerId: Long?): String =
+    private suspend fun getCustomerDisplayValueFrom(customerId: Long?): String =
         customerId?.let { id ->
             customerStore.getCustomerByRemoteId(selectedSite.get(), id)
                 ?.let { customer ->

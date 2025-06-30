@@ -57,14 +57,22 @@ fun BarcodeScanner(
         }
     }
     val selector = remember {
-        CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_BACK).build()
+        val cameraProvider = cameraProviderFuture.get()
+        val hasBackCamera = cameraProvider.hasCamera(CameraSelector.DEFAULT_BACK_CAMERA)
+        val hasFrontCamera = cameraProvider.hasCamera(CameraSelector.DEFAULT_FRONT_CAMERA)
+
+        when {
+            hasBackCamera -> CameraSelector.DEFAULT_BACK_CAMERA
+            hasFrontCamera -> CameraSelector.DEFAULT_FRONT_CAMERA
+            else -> error(IllegalStateException("No available camera"))
+        }
     }
 
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
-                try {
-                    previewView.post {
+                previewView.post {
+                    try {
                         val cameraProvider = cameraProviderFuture.get()
                         val imageAnalysisUseCase = ImageAnalysis.Builder()
                             .setTargetResolution(
@@ -94,14 +102,16 @@ fun BarcodeScanner(
                             previewView.width.toFloat() / 2,
                             previewView.height.toFloat() / 2
                         )
-                        val action = FocusMeteringAction.Builder(centerPoint, FocusMeteringAction.FLAG_AF).apply {
-                            // Confusing naming - that means focus and metering will reset after 5 seconds
-                            setAutoCancelDuration(5, TimeUnit.SECONDS)
-                        }.build()
+                        val action =
+                            FocusMeteringAction.Builder(centerPoint, FocusMeteringAction.FLAG_AF)
+                                .apply {
+                                    // Confusing naming - that means focus and metering will reset after 5 seconds
+                                    setAutoCancelDuration(5, TimeUnit.SECONDS)
+                                }.build()
                         camera.cameraControl.startFocusAndMetering(action)
+                    } catch (e: Exception) {
+                        onBindingException(e)
                     }
-                } catch (e: Exception) {
-                    onBindingException(e)
                 }
             }
         }

@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.util.analytics
 
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.analytics.IAnalyticsEvent
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import kotlinx.coroutines.test.runTest
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
@@ -21,7 +22,11 @@ class WooPosAnalyticsEventTrackerTest {
     @Test
     fun `given an event, when track is called, then it should track the event via wrapper`() = runTest {
         // GIVEN
-        val event = WooPosAnalyticsEvent.Event.ItemAddedToCart
+        val event = WooPosAnalyticsEvent.Event.ItemAddedToCart(
+            source = WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT,
+            sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST,
+            item = WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L)
+        )
 
         // WHEN
         tracker.track(event)
@@ -58,7 +63,11 @@ class WooPosAnalyticsEventTrackerTest {
     @Test
     fun `given an event and common properties, when track is called, then it should track the event with common properties`() = runTest {
         // GIVEN
-        val event = WooPosAnalyticsEvent.Event.ItemAddedToCart
+        val event = WooPosAnalyticsEvent.Event.ItemAddedToCart(
+            source = WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT,
+            sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST,
+            item = WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L)
+        )
         val commonProperties = mapOf("test" to "test")
         whenever(commonPropertiesProvider.commonProperties).thenReturn(commonProperties)
 

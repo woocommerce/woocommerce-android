@@ -50,7 +50,6 @@ import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.onboarding.AboutYourStoreTaskRes
 import com.woocommerce.android.ui.onboarding.NavigateToAboutYourStore
 import com.woocommerce.android.ui.onboarding.NavigateToAddProduct
-import com.woocommerce.android.ui.onboarding.NavigateToDomains
 import com.woocommerce.android.ui.onboarding.NavigateToLaunchStore
 import com.woocommerce.android.ui.onboarding.NavigateToOnboardingFullScreen
 import com.woocommerce.android.ui.onboarding.NavigateToSetupPayments
@@ -120,11 +119,6 @@ private fun HandleEvents(
                 is NavigateToLaunchStore ->
                     navController.navigateSafely(
                         directions = DashboardFragmentDirections.actionDashboardToLaunchStoreFragment()
-                    )
-
-                is NavigateToDomains ->
-                    navController.navigateSafely(
-                        directions = DashboardFragmentDirections.actionDashboardToNavGraphDomainChange()
                     )
 
                 is NavigateToAddProduct -> {

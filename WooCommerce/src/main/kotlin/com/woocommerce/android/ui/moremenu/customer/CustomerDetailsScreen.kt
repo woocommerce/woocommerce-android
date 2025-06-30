@@ -51,7 +51,7 @@ fun CustomerDetailsScreen(viewModel: CustomerDetailsViewModel) {
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text(currentState.customerWithAnalytics.getFullName()) },
+                    title = { Text(currentState.customerName) },
                     navigationIcon = {
                         IconButton(viewModel::onNavigateBack) {
                             Icon(

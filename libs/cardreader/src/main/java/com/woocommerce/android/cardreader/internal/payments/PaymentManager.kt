@@ -37,7 +37,7 @@ internal class PaymentManager(
     private val errorMapper: PaymentErrorMapper,
     private val cardReaderConfigFactory: CardReaderConfigFactory,
 ) {
-    suspend fun acceptPayment(paymentInfo: PaymentInfo): Flow<CardPaymentStatus> = flow {
+    fun acceptPayment(paymentInfo: PaymentInfo): Flow<CardPaymentStatus> = flow {
         if (isInvalidState(paymentInfo)) return@flow
 
         val paymentIntent = createPaymentIntent(paymentInfo)

@@ -22,7 +22,8 @@ class ShippingLineDetailsTest {
             methodId = "method$i",
             methodTitle = "shippingLineTitle$i",
             totalTax = BigDecimal.TEN * i.toBigDecimal(),
-            total = BigDecimal.ZERO
+            total = BigDecimal.ZERO,
+            taxes = emptyList()
         )
     }
 
@@ -55,7 +56,8 @@ class ShippingLineDetailsTest {
                 methodId = null,
                 methodTitle = "shippingLineDiscarded",
                 totalTax = BigDecimal.TEN,
-                total = BigDecimal.ZERO
+                total = BigDecimal.ZERO,
+                taxes = emptyList()
             )
         )
         val result = shippingLines.toShippingLineDetails(defaultShippingMethods)

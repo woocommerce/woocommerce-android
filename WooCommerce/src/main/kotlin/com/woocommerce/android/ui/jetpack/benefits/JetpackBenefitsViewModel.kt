@@ -15,7 +15,8 @@ import com.woocommerce.android.model.UserRole
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
-import com.woocommerce.android.ui.jetpack.benefits.FetchJetpackStatus.JetpackStatusFetchResponse
+import com.woocommerce.android.ui.jetpack.FetchJetpackStatus
+import com.woocommerce.android.ui.jetpack.FetchJetpackStatus.JetpackStatusFetchResponse
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -62,12 +63,16 @@ class JetpackBenefitsViewModel @Inject constructor(
 
                 triggerEvent(StartJetpackActivationForJetpackCP)
             }
+
             SiteConnectionType.ApplicationPasswords -> {
                 AnalyticsTracker.track(stat = JETPACK_BENEFITS_LOGIN_BUTTON_TAPPED)
 
                 _viewState.update { it.copy(isLoadingDialogShown = true) }
 
-                val jetpackStatusResult = fetchJetpackStatus()
+                val jetpackStatusResult = fetchJetpackStatus(
+                    site = selectedSite.get(),
+                    useApplicationPasswords = true
+                )
                 handleJetpackStatusResult(jetpackStatusResult)
 
                 _viewState.update { it.copy(isLoadingDialogShown = false) }
@@ -92,9 +97,9 @@ class JetpackBenefitsViewModel @Inject constructor(
             analyticsTrackerWrapper.track(
                 stat = JETPACK_SETUP_CONNECTION_CHECK_COMPLETED,
                 properties = mapOf(
-                    AnalyticsTracker.KEY_JETPACK_SETUP_IS_ALREADY_CONNECTED to jetpackStatus.isJetpackConnected,
+                    AnalyticsTracker.KEY_JETPACK_SETUP_IS_ALREADY_CONNECTED to jetpackStatus.isCurrentUserConnected,
                     AnalyticsTracker.KEY_JETPACK_SETUP_REQUIRES_CONNECTION_ONLY to
-                        (jetpackStatus.isJetpackInstalled && !jetpackStatus.isJetpackConnected)
+                        (jetpackStatus.isJetpackInstalled && !jetpackStatus.isCurrentUserConnected)
                 )
             )
         }
@@ -109,6 +114,7 @@ class JetpackBenefitsViewModel @Inject constructor(
                             hasInstallCapability && statusCode == ERROR_CODE_NOT_FOUND && jetpackStatus != null -> {
                                 startJetpackActivation(jetpackStatus)
                             }
+
                             else -> {
                                 triggerEvent(OpenJetpackEligibilityError(user.username, user.roles.first().value))
 
@@ -138,6 +144,7 @@ class JetpackBenefitsViewModel @Inject constructor(
                             handleUserEligibility(ERROR_CODE_NOT_FOUND, fetchResponse.status)
                         }
                     }
+
                     JetpackStatusFetchResponse.ConnectionForbidden -> handleUserEligibility(ERROR_CODE_FORBIDDEN)
                 }
             },
@@ -184,6 +191,7 @@ class JetpackBenefitsViewModel @Inject constructor(
         val siteUrl: String,
         val jetpackStatus: JetpackStatus
     ) : Event()
+
     data class OpenWpAdminJetpackActivation(val activationUrl: String) : Event()
     data class OpenJetpackEligibilityError(val username: String, val role: String) : Event()
 }

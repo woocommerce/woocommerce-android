@@ -1,5 +1,6 @@
 package com.woocommerce.android.mediapicker
 
+import com.woocommerce.android.mediapicker.medialibrary.MediaLibraryPickerSetup
 import org.wordpress.android.mediapicker.api.MediaPickerSetup
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.CAMERA
@@ -8,7 +9,6 @@ import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.WP_MEDI
 import org.wordpress.android.mediapicker.model.MediaTypes
 import org.wordpress.android.mediapicker.setup.SystemMediaPickerSetup
 import org.wordpress.android.mediapicker.source.camera.CameraMediaPickerSetup
-import org.wordpress.android.mediapicker.source.wordpress.MediaLibraryPickerSetup
 import java.security.InvalidParameterException
 import javax.inject.Inject
 

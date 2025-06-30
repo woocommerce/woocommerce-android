@@ -8,13 +8,13 @@ import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.model.toAppModel
-import org.wordpress.android.fluxc.model.LocalOrRemoteId
-import org.wordpress.android.fluxc.model.OrderEntity
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.metadata.WCMetaData
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
+import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
 import java.text.SimpleDateFormat
@@ -39,7 +39,7 @@ object OrderTestUtils {
             number = "55",
             status = "pending, Custom 1,Custom 2,Custom 3",
             total = "106.00",
-            localSiteId = LocalOrRemoteId.LocalId(1),
+            localSiteId = LocalId(1),
             metaData = metadata,
             paymentMethod = paymentMethod,
             datePaid = datePaid,
@@ -50,12 +50,12 @@ object OrderTestUtils {
     fun generateOrderShipmentProviders(): List<WCOrderShipmentProviderModel> {
         val result = ArrayList<WCOrderShipmentProviderModel>()
         result.add(
-            WCOrderShipmentProviderModel().apply {
-                localSiteId = 1
-                country = "Australia"
-                carrierName = "Anitaa Test"
+            WCOrderShipmentProviderModel(
+                localSiteId = LocalId(1),
+                country = "Australia",
+                carrierName = "Anitaa Test",
                 carrierLink = "http://google.com"
-            }
+            )
         )
         return result
     }
@@ -213,7 +213,7 @@ object OrderTestUtils {
             "    \"subtotal_tax\":\"0.00\",\n" +
             "    \"total\":\"10.00\",\n" +
             "    \"total_tax\":\"0.00\",\n" +
-            "    \"taxes\":[],\n" +
+            "    \"taxes\":[{\"id\":1, \"total\":2}, {\"id\":2, \"total\":5}],\n" +
             "    \"meta_data\":[],\n" +
             "    \"sku\":null,\n" +
             "    \"price\":10\n" +
@@ -224,7 +224,7 @@ object OrderTestUtils {
             billingLastName = "King",
             currency = "USD",
             dateCreated = "2018-02-02T16:11:13Z",
-            localSiteId = LocalOrRemoteId.LocalId(1),
+            localSiteId = LocalId(1),
             orderId = 1,
             number = "55",
             status = "pending",
@@ -241,7 +241,7 @@ object OrderTestUtils {
                 "   \"instance_id\":\"0\",\n" +
                 "   \"total\":\"30.00\",\n" +
                 "   \"total_tax\":\"0.00\",\n" +
-                "   \"taxes\":[],\n" +
+                "   \"taxes\":[{\"id\":1, \"total\":2}, {\"id\":2, \"total\":5}],\n" +
                 "   \"meta_data\":[]}]",
         )
     }
@@ -258,7 +258,7 @@ object OrderTestUtils {
                 "    \"subtotal_tax\":\"0.00\",\n" +
                 "    \"total\":\"10.00\",\n" +
                 "    \"total_tax\":\"0.00\",\n" +
-                "    \"taxes\":[],\n" +
+                "    \"taxes\":[{\"id\":1, \"total\":2}, {\"id\":2, \"total\":5}],\n" +
                 "    \"meta_data\":[],\n" +
                 "    \"sku\":null,\n" +
                 "    \"price\":10\n" +
@@ -269,7 +269,7 @@ object OrderTestUtils {
             billingLastName = "King",
             currency = "USD",
             dateCreated = "2018-02-02T16:11:13Z",
-            localSiteId = LocalOrRemoteId.LocalId(1),
+            localSiteId = LocalId(1),
             orderId = 1,
             number = "55",
             status = "complete",
@@ -288,7 +288,7 @@ object OrderTestUtils {
             billingLastName = "King",
             currency = "USD",
             dateCreated = "2018-02-02T16:11:13Z",
-            localSiteId = LocalOrRemoteId.LocalId(1),
+            localSiteId = LocalId(1),
             orderId = 1,
             number = "55",
             status = "pending",
@@ -305,7 +305,7 @@ object OrderTestUtils {
                 "    \"subtotal_tax\":\"0.00\",\n" +
                 "    \"total\":\"10.00\",\n" +
                 "    \"total_tax\":\"0.00\",\n" +
-                "    \"taxes\":[],\n" +
+                "    \"taxes\":[{\"id\":1, \"total\":2}, {\"id\":2, \"total\":5}],\n" +
                 "    \"meta_data\":[],\n" +
                 "    \"sku\":null,\n" +
                 "    \"price\":10\n" +
@@ -319,7 +319,7 @@ object OrderTestUtils {
                 "   \"instance_id\":\"0\",\n" +
                 "   \"total\":\"30.00\",\n" +
                 "   \"total_tax\":\"0.00\",\n" +
-                "   \"taxes\":[],\n" +
+                "   \"taxes\":[{\"id\":1, \"total\":2}, {\"id\":2, \"total\":5}],\n" +
                 "   \"meta_data\":[]},\n" +
                 "{  " +
                 "\"id\":120,\n" +
@@ -328,7 +328,7 @@ object OrderTestUtils {
                 "   \"instance_id\":\"0\",\n" +
                 "   \"total\":\"20.00\",\n" +
                 "   \"total_tax\":\"0.00\",\n" +
-                "   \"taxes\":[],\n" +
+                "   \"taxes\":[{\"id\":1, \"total\":3}, {\"id\":2, \"total\":4}],\n" +
                 "   \"meta_data\":[]\n" +
                 "}]",
         )
@@ -377,7 +377,8 @@ object OrderTestUtils {
     fun generateTestOrderItems(
         count: Int = 1,
         productId: Long = -1,
-        quantity: Float = 1F
+        quantity: Float = 1F,
+        taxes: (Int) -> List<Order.LineTaxEntry> = { emptyList() }
     ): List<Item> {
         val list = mutableListOf<Item>()
         for (i in 1..count) {
@@ -390,10 +391,12 @@ object OrderTestUtils {
                     sku = "",
                     quantity = quantity,
                     subtotal = BigDecimal("10"),
+                    subtotalTax = BigDecimal.ZERO,
                     totalTax = BigDecimal.ZERO,
                     total = BigDecimal("10"),
                     variationId = 0,
-                    attributesList = emptyList()
+                    attributesList = emptyList(),
+                    taxes = taxes(i),
                 )
             )
         }

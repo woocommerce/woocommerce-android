@@ -3,24 +3,23 @@ package com.woocommerce.android.ui.woopos.home.items
 import android.os.Parcelable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.R
-import com.woocommerce.android.model.Product
-import com.woocommerce.android.ui.products.ProductType
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
+import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
-import com.woocommerce.android.ui.woopos.home.items.WooPosItem.SimpleProduct
-import com.woocommerce.android.ui.woopos.home.items.WooPosItem.VariableProduct
-import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
-import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
-import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
-import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
+import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.SearchState
+import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.Tab
+import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationFacade
+import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsNavigationData
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SearchButtonTapped
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
@@ -28,18 +27,16 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WooPosItemsViewModel @Inject constructor(
-    private val productsDataSource: WooPosProductsDataSource,
+    private val searchHelper: WooPosItemsSearchHelper,
+    private val tabsHelper: WooPosItemsTabsHelper,
+    private val couponCreationFacade: WooPosCouponCreationFacade,
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender,
-    private val priceFormat: WooPosFormatPrice,
-    private val preferencesRepository: WooPosPreferencesRepository,
-    private val navigator: WooPosItemsNavigator,
+    private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
+    private val analyticsTracker: WooPosAnalyticsTracker,
 ) : ViewModel() {
-    private var loadMoreProductsJob: Job? = null
-
-    private val _viewState =
-        MutableStateFlow<WooPosItemsViewState>(WooPosItemsViewState.Loading(withCart = true))
-    val viewState: StateFlow<WooPosItemsViewState> = _viewState
-        .onEach { notifyParentAboutStatusChange(it) }
+    private var preservedStateBeforeOpeningVariations: WooPosItemsToolbarViewState? = null
+    private val _viewState = MutableStateFlow<WooPosItemsToolbarViewState>(initialState())
+    val viewState: StateFlow<WooPosItemsToolbarViewState> = _viewState
         .stateIn(
             viewModelScope,
             started = SharingStarted.WhileSubscribed(),
@@ -47,254 +44,195 @@ class WooPosItemsViewModel @Inject constructor(
         )
 
     init {
-        loadProducts(
-            forceRefreshProducts = false,
-            withPullToRefresh = false,
-            withCart = true,
+        listenUpEvents()
+        searchHelper.initialize(
+            coroutineScope = viewModelScope,
+            viewStateFlow = _viewState
         )
     }
 
     fun onUIEvent(event: WooPosItemsUIEvent) {
         when (event) {
-            is WooPosItemsUIEvent.EndOfItemsListReached -> {
-                onEndOfProductsListReached()
+            WooPosItemsUIEvent.BackFromVariationsClicked -> {
+                navigateBackFromVariations()
             }
 
-            is WooPosItemsUIEvent.ItemClicked -> {
-                handleItemClick(event)
-            }
-
-            WooPosItemsUIEvent.PullToRefreshTriggered -> {
-                loadProducts(
-                    forceRefreshProducts = true,
-                    withPullToRefresh = true,
-                    withCart = true,
-                )
-            }
-
-            WooPosItemsUIEvent.ProductsLoadingErrorRetryButtonClicked -> {
-                loadProducts(
-                    forceRefreshProducts = false,
-                    withPullToRefresh = false,
-                    withCart = false,
-                )
-            }
-
-            WooPosItemsUIEvent.SimpleProductsBannerClosed -> {
-                onSimpleProductsOnlyBannerClosed()
-            }
-
-            WooPosItemsUIEvent.SimpleProductsBannerLearnMoreClicked -> {
-                onSimpleProductsOnlyBannerLearnMoreClicked()
-            }
-
-            WooPosItemsUIEvent.SimpleProductsDialogInfoIconClicked -> {
-                onSimpleProductsDialogInfoClicked()
-            }
-
-            WooPosItemsUIEvent.BackButtonClicked -> {
-                navigateBackToItemListScreen()
-            }
-        }
-    }
-
-    private fun navigateBackToItemListScreen() {
-        viewModelScope.launch {
-            navigator.sendNavigationEvent(
-                WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateBackToItemListScreen
+            WooPosItemsUIEvent.ClearSearchClicked -> searchHelper.onClearSearchClicked()
+            WooPosItemsUIEvent.CloseSearchClicked -> searchHelper.onCloseSearchClicked()
+            is WooPosItemsUIEvent.SearchChanged -> searchHelper.onSearchChanged(
+                event.query,
+                event.cursorPosition
             )
+
+            is WooPosItemsUIEvent.OnTabClicked -> selectTab(event.tab)
+            WooPosItemsUIEvent.SearchIconClicked -> {
+                searchHelper.onSearchChanged("", 0)
+                trackSearchIconClicked()
+            }
+
+            is WooPosItemsUIEvent.AddCouponIconClicked -> createAndAddCoupon()
         }
     }
 
-    private fun handleItemClick(event: WooPosItemsUIEvent.ItemClicked) {
-        when (event.item) {
-            is SimpleProduct -> {
-                onItemClicked(
-                    ItemClickedData.SimpleProduct(
-                        id = event.item.id
-                    )
+    private fun listenUpEvents() {
+        viewModelScope.launch {
+            parentToChildrenEventReceiver.events.collect { event ->
+                when (event) {
+                    ParentToChildrenEvent.BackFromCheckoutToCartClicked,
+                    is ParentToChildrenEvent.CheckoutClicked,
+                    is ParentToChildrenEvent.CouponsRemoved,
+                    ParentToChildrenEvent.CouponsValidationFailed,
+                    is ParentToChildrenEvent.OrderCreated,
+                    ParentToChildrenEvent.RefreshProductList,
+                    ParentToChildrenEvent.RemoveCouponsClicked,
+                    is ParentToChildrenEvent.SearchEvent.ChangedQuery,
+                    ParentToChildrenEvent.SearchEvent.Finished,
+                    is ParentToChildrenEvent.SearchEvent.RecentSearchSelected,
+                    ParentToChildrenEvent.SearchEvent.Started,
+                    is ParentToChildrenEvent.BarcodeEvent -> Unit
+
+                    is ParentToChildrenEvent.OrderSuccessfullyPaid -> _viewState.value = initialState()
+
+                    is ParentToChildrenEvent.ItemClickedInItemsList -> handleItemClicked(event)
+                }
+            }
+        }
+    }
+
+    private fun handleItemClicked(event: ParentToChildrenEvent.ItemClickedInItemsList) {
+        when (event.itemData) {
+            is ItemClickedData.Coupon,
+            is ItemClickedData.Product.Simple,
+            is ItemClickedData.Product.Variation -> Unit
+
+            is ItemClickedData.VariableProduct -> {
+                searchHelper.updateLoadingState(isLoading = false)
+                preservedStateBeforeOpeningVariations = _viewState.value
+                _viewState.value = WooPosItemsToolbarViewState.VariationList(
+                    tabs = listOf(
+                        Tab.Variations(
+                            name = event.itemData.name,
+                            highlightLevel = Tab.HighlightLevel.Full
+                        )
+                    ),
+                    variableProductData = WooPosVariationsNavigationData(
+                        id = event.itemData.id,
+                        numOfVariations = event.itemData.numOfVariations,
+                        sourceType = event.itemData.sourceType,
+                    ),
                 )
             }
+        }
+    }
 
-            is VariableProduct -> {
+    private fun trackSearchIconClicked() {
+        viewModelScope.launch {
+            val source = when (_viewState.value) {
+                is WooPosItemsToolbarViewState.ProductList -> WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT
+                is WooPosItemsToolbarViewState.CouponList -> WooPosAnalyticsEventConstant.ItemsListSource.COUPON
+                is WooPosItemsToolbarViewState.VariationList -> WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT
+            }
+            val event = SearchButtonTapped(source = source)
+            analyticsTracker.track(event)
+        }
+    }
+
+    private fun navigateBackFromVariations() {
+        when (_viewState.value) {
+            is WooPosItemsToolbarViewState.VariationList -> {
+                _viewState.value = preservedStateBeforeOpeningVariations ?: initialState()
+                preservedStateBeforeOpeningVariations = null
+            }
+
+            else -> error("Unexpected state: ${_viewState.value}")
+        }
+    }
+
+    private fun selectTab(selectedTab: Tab) {
+        if (_viewState.value.tabs.size == 1) return
+
+        val state = _viewState.value
+
+        searchHelper.updateLoadingState(isLoading = false)
+
+        _viewState.value = when (selectedTab) {
+            is Tab.Products -> WooPosItemsToolbarViewState.ProductList(
+                tabs = tabsHelper.selectTab(state.tabs, selectedTab),
+                search = searchHelper.getInitialSearchState(),
+            ).also {
                 viewModelScope.launch {
-                    navigator.sendNavigationEvent(
-                        WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateToVariationsScreen(
-                            WooPosItemNavigationData.VariableProductData(
-                                id = event.item.id,
-                                name = event.item.name,
-                                numOfVariations = event.item.numOfVariations,
-                            )
+                    analyticsTracker.track(
+                        WooPosAnalyticsEvent.Event.ItemsHeaderTapped(
+                            WooPosAnalyticsEventConstant.ItemsHeaderType.PRODUCT
                         )
                     )
                 }
             }
 
-            else -> {
-                // Do nothing
+            is Tab.Coupons -> WooPosItemsToolbarViewState.CouponList(
+                tabs = tabsHelper.selectTab(state.tabs, selectedTab),
+                search = SearchState.Visible(WooPosSearchInputState.Closed)
+            ).also {
+                viewModelScope.launch {
+                    analyticsTracker.track(
+                        WooPosAnalyticsEvent.Event.ItemsHeaderTapped(
+                            WooPosAnalyticsEventConstant.ItemsHeaderType.COUPON
+                        )
+                    )
+                }
             }
-        }
-    }
 
-    private fun onSimpleProductsOnlyBannerLearnMoreClicked() {
-        onSimpleProductsDialogInfoClicked()
-    }
-
-    private fun onSimpleProductsDialogInfoClicked() {
-        viewModelScope.launch {
-            fromChildToParentEventSender.sendToParent(ChildToParentEvent.ProductsDialogInfoIconClicked)
-        }
-    }
-
-    private fun onSimpleProductsOnlyBannerClosed() {
-        viewModelScope.launch {
-            val currentState = _viewState.value as WooPosItemsViewState.Content
-            preferencesRepository.setSimpleProductsOnlyBannerWasHiddenByUser(true)
-            _viewState.value = currentState.copy(
-                bannerState = currentState.bannerState.copy(
-                    isBannerHiddenByUser = true
-                )
+            is Tab.Variations -> WooPosItemsToolbarViewState.VariationList(
+                tabs = tabsHelper.selectTab(state.tabs, selectedTab),
+                variableProductData = (state as WooPosItemsToolbarViewState.VariationList).variableProductData,
             )
         }
     }
 
-    private fun loadProducts(
-        forceRefreshProducts: Boolean,
-        withPullToRefresh: Boolean,
-        withCart: Boolean
-    ) {
-        viewModelScope.launch {
-            _viewState.value = if (withPullToRefresh) {
-                buildProductsReloadingState()
-            } else {
-                WooPosItemsViewState.Loading(withCart = withCart)
-            }
-
-            productsDataSource.loadSimpleProducts(forceRefreshProducts = forceRefreshProducts).collect { result ->
-                when (result) {
-                    is WooPosProductsDataSource.ProductsResult.Cached -> {
-                        if (result.products.isNotEmpty()) {
-                            _viewState.value = result.products.toContentState()
-                        }
-                    }
-
-                    is WooPosProductsDataSource.ProductsResult.Remote -> {
-                        _viewState.value = when {
-                            result.productsResult.isSuccess -> {
-                                val products = result.productsResult.getOrThrow()
-                                if (products.isNotEmpty()) {
-                                    products.toContentState()
-                                } else {
-                                    WooPosItemsViewState.Empty()
-                                }
-                            }
-
-                            else -> WooPosItemsViewState.Error()
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private fun buildProductsReloadingState() =
-        when (val state = viewState.value) {
-            is WooPosItemsViewState.Content -> state.copy(reloadingProductsWithPullToRefresh = true)
-            is WooPosItemsViewState.Loading -> state.copy(reloadingProductsWithPullToRefresh = true)
-            is WooPosItemsViewState.Error -> state.copy(reloadingProductsWithPullToRefresh = true)
-            is WooPosItemsViewState.Empty -> state.copy(reloadingProductsWithPullToRefresh = true)
-        }
-
-    private suspend fun List<Product>.toContentState() = WooPosItemsViewState.Content(
-        items = map { product ->
-            if (product.isVariable()) {
-                VariableProduct(
-                    id = product.remoteId,
-                    name = product.name,
-                    price = priceFormat(product.price),
-                    imageUrl = product.firstImageUrl,
-                    numOfVariations = product.numVariations,
-                    variationIds = product.variationIds
-                )
-            } else {
-                SimpleProduct(
-                    id = product.remoteId,
-                    name = product.name,
-                    price = priceFormat(product.price),
-                    imageUrl = product.firstImageUrl,
-                )
-            }
-        },
-        loadingMore = false,
-        reloadingProductsWithPullToRefresh = false,
-        bannerState = WooPosItemsViewState.Content.BannerState(
-            isBannerHiddenByUser = isBannerHiddenByUser(),
-            title = R.string.woopos_banner_simple_products_only_title,
-            message = R.string.woopos_banner_simple_products_only_message,
-            icon = R.drawable.info,
-        ),
+    private fun initialState(): WooPosItemsToolbarViewState.ProductList = WooPosItemsToolbarViewState.ProductList(
+        tabs = tabsHelper.defaultTabs,
+        search = searchHelper.getInitialSearchState(),
     )
 
-    private fun onEndOfProductsListReached() {
-        val currentState = _viewState.value
-        if (currentState !is WooPosItemsViewState.Content) {
-            return
-        }
-
-        if (!productsDataSource.hasMorePages) {
-            return
-        }
-
-        _viewState.value = currentState.copy(loadingMore = true)
-
-        loadMoreProductsJob?.cancel()
-        loadMoreProductsJob = viewModelScope.launch {
-            val result = productsDataSource.loadMore()
-            _viewState.value = if (result.isSuccess) {
-                result.getOrThrow().toContentState()
-            } else {
-                WooPosItemsViewState.Error()
+    private fun createAndAddCoupon() {
+        viewModelScope.launch {
+            analyticsTracker.track(WooPosAnalyticsEvent.Event.CouponsCreateTapped)
+            val coupon = couponCreationFacade.createCoupon()
+            if (coupon != null) {
+                val itemData = ItemClickedData.Coupon(coupon.id, coupon.code ?: "")
+                fromChildToParentEventSender.sendToParent(
+                    ChildToParentEvent.ItemClickedInItemsList(
+                        itemData = itemData,
+                        eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
+                            item = itemData,
+                            source = WooPosAnalyticsEventConstant.ItemsListSource.COUPON,
+                            sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.LIST
+                        )
+                    )
+                )
             }
         }
     }
-
-    private fun notifyParentAboutStatusChange(newState: WooPosItemsViewState) {
-        sendEventToParent(
-            when (newState) {
-                is WooPosItemsViewState.Content -> ChildToParentEvent.ProductsStatusChanged.WithCart
-
-                is WooPosItemsViewState.Empty,
-                is WooPosItemsViewState.Error -> ChildToParentEvent.ProductsStatusChanged.FullScreen
-                is WooPosItemsViewState.Loading -> {
-                    if (newState.withCart) {
-                        ChildToParentEvent.ProductsStatusChanged.WithCart
-                    } else {
-                        ChildToParentEvent.ProductsStatusChanged.FullScreen
-                    }
-                }
-            }
-        )
-    }
-
-    private fun onItemClicked(itemData: ItemClickedData) {
-        sendEventToParent(ChildToParentEvent.ItemClickedInProductSelector(itemData))
-    }
-
-    private fun sendEventToParent(event: ChildToParentEvent) {
-        viewModelScope.launch { fromChildToParentEventSender.sendToParent(event) }
-    }
-
-    private suspend fun isBannerHiddenByUser(): Boolean {
-        return preferencesRepository.isSimpleProductsOnlyBannerWasHiddenByUser.first()
-    }
-
-    private fun Product.isVariable() =
-        productType == ProductType.VARIABLE ||
-            productType == ProductType.VARIATION
 
     @Parcelize
     sealed class ItemClickedData(open val id: Long) : Parcelable {
-        data class SimpleProduct(override val id: Long) : ItemClickedData(id)
-        data class Variation(val productId: Long, override val id: Long) : ItemClickedData(id)
+        @Parcelize
+        sealed class Product(override val id: Long) : ItemClickedData(id), Parcelable {
+            @Parcelize
+            data class Simple(override val id: Long) : Product(id), Parcelable
+
+            @Parcelize
+            data class Variation(val productId: Long, override val id: Long) : Product(id), Parcelable
+        }
+
+        data class VariableProduct(
+            override val id: Long,
+            val name: String,
+            val numOfVariations: Int,
+            val sourceType: WooPosAnalyticsEventConstant.ItemsListSourceType,
+        ) : ItemClickedData(id)
+
+        @Parcelize
+        data class Coupon(override val id: Long, val couponCode: String) : ItemClickedData(id), Parcelable
     }
 }

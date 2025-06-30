@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
@@ -41,6 +42,7 @@ fun WooShippingCustomPackageCreationScreen(viewModel: WooShippingLabelPackageCre
         packageHeight = viewState?.customPackageCreationData?.height.orEmpty(),
         packageLength = viewState?.customPackageCreationData?.length.orEmpty(),
         packageWidth = viewState?.customPackageCreationData?.width.orEmpty(),
+        packageWeight = viewState?.customPackageCreationData?.weight.orEmpty(),
         isAddPackageEnabled = viewState?.customPackageCreationData?.isValid ?: false,
         isSaveAsTemplateChecked = viewState?.customPackageCreationData?.saveAsTemplate ?: false,
         onAddPackageClick = viewModel::onAddCustomPackageClick,
@@ -48,6 +50,7 @@ fun WooShippingCustomPackageCreationScreen(viewModel: WooShippingLabelPackageCre
         onLengthChange = viewModel::onLengthChange,
         onWidthChange = viewModel::onWidthChange,
         onHeightChange = viewModel::onHeightChange,
+        onWeightChange = viewModel::onWeightChange,
         onPackageNameChange = viewModel::onPackageNameChange,
         onSavePackageChanged = viewModel::onSavePackageChanged
     )
@@ -61,6 +64,7 @@ fun WooShippingCustomPackageCreationScreen(
     packageLength: String,
     packageWidth: String,
     packageHeight: String,
+    packageWeight: String,
     isAddPackageEnabled: Boolean,
     isSaveAsTemplateChecked: Boolean,
     onAddPackageClick: (saveAsTemplate: Boolean) -> Unit,
@@ -68,6 +72,7 @@ fun WooShippingCustomPackageCreationScreen(
     onLengthChange: (String) -> Unit,
     onWidthChange: (String) -> Unit,
     onHeightChange: (String) -> Unit,
+    onWeightChange: (String) -> Unit,
     onPackageNameChange: (String) -> Unit,
     onSavePackageChanged: (Boolean) -> Unit
 ) {
@@ -75,10 +80,11 @@ fun WooShippingCustomPackageCreationScreen(
         modifier = modifier
             .fillMaxSize()
             .padding(16.dp)
-            .verticalScroll(rememberScrollState())
     ) {
         Column(
-            modifier = modifier.weight(1f),
+            modifier = modifier
+                .weight(1f)
+                .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Column(modifier = modifier) {
@@ -98,7 +104,10 @@ fun WooShippingCustomPackageCreationScreen(
                     onValueChange = onLengthChange,
                     label = stringResource(id = R.string.woo_shipping_labels_package_creation_length),
                     singleLine = true,
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Next
+                    ),
                     modifier = modifier.weight(1f)
                 )
 
@@ -107,7 +116,10 @@ fun WooShippingCustomPackageCreationScreen(
                     onValueChange = onWidthChange,
                     label = stringResource(id = R.string.woo_shipping_labels_package_creation_width),
                     singleLine = true,
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Next
+                    ),
                     modifier = modifier.weight(1f)
                 )
 
@@ -116,7 +128,10 @@ fun WooShippingCustomPackageCreationScreen(
                     onValueChange = onHeightChange,
                     label = stringResource(id = R.string.woo_shipping_labels_package_creation_height),
                     singleLine = true,
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Next
+                    ),
                     modifier = modifier.weight(1f)
                 )
             }
@@ -138,6 +153,19 @@ fun WooShippingCustomPackageCreationScreen(
                 )
             }
             if (isSaveAsTemplateChecked) {
+                Column(modifier = modifier) {
+                    WCOutlinedTextField(
+                        value = packageWeight,
+                        onValueChange = onWeightChange,
+                        label = stringResource(id = R.string.woo_shipping_labels_package_creation_weight),
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Next
+                        ),
+                        modifier = modifier.fillMaxWidth()
+                    )
+                }
                 Column(modifier = modifier) {
                     WCOutlinedTextField(
                         value = packageName,
@@ -170,6 +198,7 @@ fun PreviewWooShippingCustomPackageCreationScreen() {
             packageLength = "10",
             packageWidth = "10",
             packageHeight = "10",
+            packageWeight = "10",
             isAddPackageEnabled = true,
             isSaveAsTemplateChecked = true,
             onAddPackageClick = {},
@@ -177,6 +206,7 @@ fun PreviewWooShippingCustomPackageCreationScreen() {
             onLengthChange = {},
             onWidthChange = {},
             onHeightChange = {},
+            onWeightChange = {},
             onPackageNameChange = {},
             onSavePackageChanged = {}
         )

@@ -20,6 +20,7 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -42,7 +43,8 @@ class ProductListRepository @Inject constructor(
         private const val PRODUCT_PAGE_SIZE = WCProductStore.DEFAULT_PRODUCT_PAGE_SIZE
     }
 
-    private var searchContinuation = ContinuationWrapper<List<Product>>(WooLog.T.PRODUCTS)
+    private var searchBySKUContinuation = ContinuationWrapper<List<Product>>(WooLog.T.PRODUCTS)
+    private var searchByGlobalUniqueIdContinuation = ContinuationWrapper<List<Product>>(WooLog.T.PRODUCTS)
     private var trashContinuation = ContinuationWrapper<Boolean>(WooLog.T.PRODUCTS)
     private var offset = 0
 
@@ -81,7 +83,7 @@ class ProductListRepository @Inject constructor(
     suspend fun fetchProductList(
         loadMore: Boolean = false,
         productFilterOptions: Map<WCProductStore.ProductFilterOption, String> = emptyMap(),
-        excludedProductIds: List<Long>? = null,
+        excludedProductIds: List<Long> = emptyList(),
         sortType: WCProductStore.ProductSorting? = null
     ): Result<List<Product>> {
         offset = if (loadMore) offset + PRODUCT_PAGE_SIZE else 0
@@ -94,7 +96,8 @@ class ProductListRepository @Inject constructor(
             offset = offset,
             sortType = sortType ?: productSortingChoice,
             filterOptions = productFilterOptions,
-            excludedProductIds = excludedProductIds.orEmpty()
+            excludedProductIds = excludedProductIds,
+            includeTypes = emptyList()
         ).let { result ->
             if (result.isError) {
                 AnalyticsTracker.track(
@@ -131,7 +134,7 @@ class ProductListRepository @Inject constructor(
         excludedProductIds: List<Long>? = null,
         productFilterOptions: Map<WCProductStore.ProductFilterOption, String> = emptyMap(),
     ): List<Product>? {
-        val result = searchContinuation.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
+        val result = searchBySKUContinuation.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
             offset = if (loadMore) offset + PRODUCT_PAGE_SIZE else 0
             lastSearchQuery = searchQuery
             lastIsSkuSearch = skuSearchOptions
@@ -146,6 +149,32 @@ class ProductListRepository @Inject constructor(
                 filterOptions = productFilterOptions
             )
             dispatcher.dispatch(WCProductActionBuilder.newSearchProductsAction(payload))
+        }
+
+        return when (result) {
+            is ContinuationWrapper.ContinuationResult.Cancellation -> null
+            is ContinuationWrapper.ContinuationResult.Success -> result.value
+        }
+    }
+
+    suspend fun searchProductListByGlobalUniqueId(
+        globalUniqueId: String,
+        loadMore: Boolean = false,
+        excludedProductIds: List<Long>? = null,
+        productFilterOptions: Map<WCProductStore.ProductFilterOption, String> = emptyMap(),
+    ): List<Product>? {
+        val result = searchByGlobalUniqueIdContinuation.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
+            offset = if (loadMore) offset + PRODUCT_PAGE_SIZE else 0
+            val payload = WCProductStore.SearchProductsByGlobalUniqueIdPayload(
+                site = selectedSite.get(),
+                globalUniqueId = globalUniqueId,
+                pageSize = PRODUCT_PAGE_SIZE,
+                offset = offset,
+                sorting = productSortingChoice,
+                excludedProductIds = excludedProductIds,
+                filterOptions = productFilterOptions
+            )
+            dispatcher.dispatch(WCProductActionBuilder.newSearchProductsByGlobalUniqueIdAction(payload))
         }
 
         return when (result) {
@@ -178,17 +207,18 @@ class ProductListRepository @Inject constructor(
      */
     fun getProductList(
         productFilterOptions: Map<WCProductStore.ProductFilterOption, String> = emptyMap(),
-        excludedProductIds: List<Long>? = null,
+        excludedProductIds: List<Long> = emptyList(),
         sortType: WCProductStore.ProductSorting? = null
     ): List<Product> {
-        val excludedIds = excludedProductIds?.takeIf { it.isNotEmpty() }
         return if (selectedSite.exists()) {
-            val wcProducts = productStore.getProducts(
-                selectedSite.get(),
-                filterOptions = productFilterOptions,
-                sortType = sortType ?: productSortingChoice,
-                excludedProductIds = excludedIds
-            )
+            val wcProducts = runBlocking {
+                productStore.getProducts(
+                    selectedSite.get(),
+                    filterOptions = productFilterOptions,
+                    sortType = sortType ?: productSortingChoice,
+                    excludedProductIds = excludedProductIds
+                )
+            }
             wcProducts.map { it.toAppModel() }
         } else {
             WooLog.w(WooLog.T.PRODUCTS, "No site selected - unable to load products")
@@ -240,12 +270,18 @@ class ProductListRepository @Inject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onProductsSearched(event: WCProductStore.OnProductsSearched) {
+        val continuation = if (event.globalUniqueIdSearchQuery != null) {
+            searchByGlobalUniqueIdContinuation
+        } else {
+            searchBySKUContinuation
+        }
+
         if (event.isError) {
-            searchContinuation.continueWith(emptyList())
+            continuation.continueWith(emptyList())
         } else {
             canLoadMoreProducts = event.canLoadMore
             val products = event.searchResults.map { it.toAppModel() }
-            searchContinuation.continueWith(products)
+            continuation.continueWith(products)
         }
     }
 
@@ -257,9 +293,7 @@ class ProductListRepository @Inject constructor(
             site = selectedSite.get(),
             remoteProductIds = productsIds.toList()
         ).map {
-            it.apply {
-                status = newStatus.toString()
-            }
+            it.copy(status = newStatus.toString())
         }
 
         bulkUpdateProducts(updatedProducts)
@@ -273,9 +307,7 @@ class ProductListRepository @Inject constructor(
             site = selectedSite.get(),
             remoteProductIds = productsIds
         ).map {
-            it.apply {
-                regularPrice = newRegularPrice
-            }
+            it.copy(regularPrice = newRegularPrice)
         }
 
         bulkUpdateProducts(updatedProducts)
@@ -320,7 +352,7 @@ class ProductListRepository @Inject constructor(
 
             val productsToUpdate =
                 allProducts.filterNot { it.manageStock || ProductType.fromString(it.type).isVariableProduct() }.map {
-                    it.apply { stockStatus = ProductStockStatus.fromStockStatus(newStatus) }
+                    it.copy(stockStatus = ProductStockStatus.fromStockStatus(newStatus))
                 }
 
             if (productsToUpdate.isEmpty() && allProducts.isNotEmpty()) {

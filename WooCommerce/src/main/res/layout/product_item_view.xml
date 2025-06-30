@@ -28,6 +28,23 @@
             tools:src="@drawable/ic_product" />
     </FrameLayout>
 
+    <!--
+        When a product currently has image(s) being uploaded to it, this progress bar
+        will be shown. This applies when multiple selection is inactive, otherwise
+        it should be hidden.
+    -->
+    <ProgressBar
+        android:id="@+id/mediaUploadProgress"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        tools:visibility="visible"
+        app:layout_constraintTop_toTopOf="@+id/productImageFrame"
+        app:layout_constraintStart_toStartOf="@+id/productImageFrame"
+        app:layout_constraintEnd_toEndOf="@+id/productImageFrame"
+        app:layout_constraintBottom_toBottomOf="@+id/productImageFrame" />
+
     <ImageView
         android:id="@+id/productImageSelected"
         android:layout_width="0dp"

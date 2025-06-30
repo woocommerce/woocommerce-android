@@ -1,5 +1,10 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.models
 
+import android.os.Parcelable
+import com.woocommerce.android.extensions.appendWithIfNotEmpty
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
 data class OriginShippingAddress(
     val id: String,
     val company: String?,
@@ -15,4 +20,36 @@ data class OriginShippingAddress(
     val phone: String?,
     val isDefault: Boolean,
     val isVerified: Boolean
-)
+) : Parcelable {
+    companion object {
+        val EMPTY = OriginShippingAddress(
+            id = "",
+            company = null,
+            firstName = null,
+            lastName = null,
+            email = null,
+            address1 = null,
+            address2 = null,
+            city = null,
+            state = null,
+            postcode = "",
+            country = "",
+            phone = null,
+            isDefault = false,
+            isVerified = false
+        )
+    }
+
+    fun format(singleLine: Boolean): String {
+        val separator = if (singleLine) ", " else "\n"
+
+        return buildString {
+            appendWithIfNotEmpty(address1, separator)
+            appendWithIfNotEmpty(address2, separator)
+            appendWithIfNotEmpty(city, separator = separator)
+            appendWithIfNotEmpty(state, separator = " ")
+            appendWithIfNotEmpty(postcode, separator = " ")
+            appendWithIfNotEmpty(country, separator = separator)
+        }
+    }
+}

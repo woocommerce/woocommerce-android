@@ -392,7 +392,7 @@ class ProductListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when image upload finishes for a product, then reload products`() {
+    fun `when image upload finishes for a product, then reload products`() = testBlocking {
         whenever(mediaFileUploadHandler.observeProductImageChanges()).thenReturn(flowOf(1L))
         createViewModel()
 

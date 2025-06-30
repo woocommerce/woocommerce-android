@@ -338,7 +338,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         setup {
             whenever(wpApiSiteRepository.login(siteAddress, testUsername, testPassword))
                 .thenReturn(Result.failure(Exception()))
-            whenever(wpApiSiteRepository.fetchSite(siteAddress, testUsername, testPassword))
+            whenever(wpApiSiteRepository.fetchSite(siteAddress))
                 .thenReturn(Result.success(testSite.apply { applicationPasswordsAuthorizeUrl = null }))
         }
 
@@ -357,7 +357,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         setup {
             whenever(wpApiSiteRepository.login(siteAddress, testUsername, testPassword))
                 .thenReturn(Result.failure(Exception()))
-            whenever(wpApiSiteRepository.fetchSite(siteAddress, testUsername, testPassword))
+            whenever(wpApiSiteRepository.fetchSite(siteAddress))
                 .thenReturn(Result.success(testSite.apply { applicationPasswordsAuthorizeUrl = urlAuthBase }))
         }
 

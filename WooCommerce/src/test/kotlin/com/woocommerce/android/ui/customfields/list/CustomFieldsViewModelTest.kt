@@ -356,7 +356,7 @@ class CustomFieldsViewModelTest : BaseUnitTest() {
         }.last()
 
         assertThat(event).matches {
-            it is MultiLiveEvent.Event.ShowActionSnackbar &&
+            it is MultiLiveEvent.Event.ShowActionStringSnackbar &&
                 it.message == resourceProvider.getString(R.string.custom_fields_list_field_deleted) &&
                 it.actionText == resourceProvider.getString(R.string.undo)
         }
@@ -373,7 +373,7 @@ class CustomFieldsViewModelTest : BaseUnitTest() {
         }.last()
 
         val state = viewModel.state.runAndCaptureValues {
-            (event as MultiLiveEvent.Event.ShowActionSnackbar).action.onClick(null)
+            (event as MultiLiveEvent.Event.ShowActionStringSnackbar).action.onClick(null)
             advanceUntilIdle()
         }.last()
 

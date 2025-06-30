@@ -1,2 +1,0 @@
-21.2:
-Er staan naadloze updates klaar! Soepelere Jetpack-activatie bij het aanmaken van een nieuw account. Zeg maar gedag tegen die bugs: problemen met bestellingen vernieuwen, verzendingen bewerken en betalingsbewijzen ophalen zijn opgelost. We hebben aanbetalingen hernoemd tot uitbetalingen en media-uploads voor Jetpack-sites verbeterd. Update nu voor een betere WooCommerce-ervaring!

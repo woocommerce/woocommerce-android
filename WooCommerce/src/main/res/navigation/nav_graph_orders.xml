@@ -166,13 +166,13 @@
         tools:layout="@layout/fragment_order_detail">
         <argument
             android:name="orderId"
-            app:argType="long"
-            android:defaultValue="-1L"/>
+            android:defaultValue="-1L"
+            app:argType="long" />
         <argument
             android:name="allOrderIds"
             android:defaultValue="@null"
-            app:nullable="true"
-            app:argType="long[]" />
+            app:argType="long[]"
+            app:nullable="true" />
         <argument
             android:name="remoteNoteId"
             android:defaultValue="0L"
@@ -204,6 +204,9 @@
         <action
             android:id="@+id/action_orderDetailFragment_to_orderFulfillFragment"
             app:destination="@id/orderFulfillFragment" />
+        <action
+            android:id="@+id/action_orderDetailFragment_to_wooShippingLabelRefundRequestFragment"
+            app:destination="@id/wooShippingLabelRefundRequestFragment" />
         <action
             android:id="@+id/action_orderDetailFragment_to_orderShippingLabelRefundFragment"
             app:destination="@id/shippingLabelRefundFragment" />
@@ -273,19 +276,19 @@
             <argument
                 android:name="sku"
                 app:argType="string"
-                app:nullable="true"/>
+                app:nullable="true" />
             <argument
                 android:name="barcodeFormat"
                 app:argType="com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper$BarcodeFormat"
-                app:nullable="true"/>
+                app:nullable="true" />
             <argument
                 android:name="giftCardCode"
                 app:argType="string"
-                app:nullable="true"/>
+                app:nullable="true" />
             <argument
                 android:name="giftCardAmount"
                 app:argType="java.math.BigDecimal"
-                app:nullable="true"/>
+                app:nullable="true" />
         </action>
 
         <action
@@ -296,14 +299,14 @@
             app:destination="@id/AIThankYouNoteBottomSheetFragment" />
         <action
             android:id="@+id/action_orderDetailFragment_to_customFieldsFragment"
-            app:destination="@id/nav_graph_custom_fields" >
+            app:destination="@id/nav_graph_custom_fields">
             <argument
                 android:name="parentItemId"
                 app:argType="long" />
             <argument
                 android:name="parentItemType"
-                app:argType="org.wordpress.android.fluxc.model.metadata.MetaDataParentItemType"
-                android:defaultValue="ORDER" />
+                android:defaultValue="ORDER"
+                app:argType="org.wordpress.android.fluxc.model.metadata.MetaDataParentItemType" />
         </action>
         <action
             android:id="@+id/action_orderDetailFragment_to_wooShippingLabelCreationFragment"
@@ -319,6 +322,9 @@
         <argument
             android:name="orderStatusList"
             app:argType="com.woocommerce.android.model.Order$OrderStatus[]" />
+        <argument
+            android:name="positiveButtonLabel"
+            app:argType="integer" />
     </dialog>
     <fragment
         android:id="@+id/printShippingLabelInfoFragment"
@@ -481,46 +487,7 @@
         android:id="@+id/editShippingLabelPaymentFragment"
         android:name="com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentFragment"
         android:label="EditShippingLabelPaymentFragment"
-        tools:layout="@layout/fragment_edit_shipping_label_payment">
-    </fragment>
-    <action
-        android:id="@+id/action_global_WPComWebViewFragment"
-        app:destination="@id/WPComWebViewFragment" />
-    <fragment
-        android:id="@+id/WPComWebViewFragment"
-        android:name="com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment"
-        android:label="WPComWebViewFragment"
-        tools:layout="@layout/fragment_wpcom_webview">
-        <argument
-            android:name="urlToLoad"
-            app:argType="string" />
-        <argument
-            android:name="title"
-            android:defaultValue="@null"
-            app:argType="string"
-            app:nullable="true" />
-        <argument
-            android:name="urlsToTriggerExit"
-            android:defaultValue="@null"
-            app:argType="string[]"
-            app:nullable="true" />
-        <argument
-            android:name="captureBackButton"
-            android:defaultValue="true"
-            app:argType="boolean" />
-        <argument
-            android:name="displayMode"
-            android:defaultValue="REGULAR"
-            app:argType="com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel$DisplayMode" />
-        <argument
-            android:name="urlComparisonMode"
-            android:defaultValue="PARTIAL"
-            app:argType="com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel$UrlComparisonMode" />
-        <argument
-            android:name="clearCache"
-            android:defaultValue="false"
-            app:argType="boolean" />
-    </fragment>
+        tools:layout="@layout/fragment_edit_shipping_label_payment"></fragment>
     <fragment
         android:id="@+id/shippingCarrierRatesFragment"
         android:name="com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingCarrierRatesFragment"
@@ -642,7 +609,7 @@
         android:id="@+id/shippingAddressEditingFragment"
         android:name="com.woocommerce.android.ui.orders.details.editing.address.ShippingAddressEditingFragment"
         android:label="ShippingAddressEditingFragment"
-        tools:layout="@layout/fragment_base_edit_address" >
+        tools:layout="@layout/fragment_base_edit_address">
         <argument
             android:name="storedAddress"
             app:argType="com.woocommerce.android.model.Address" />
@@ -651,7 +618,7 @@
         android:id="@+id/billingAddressEditingFragment"
         android:name="com.woocommerce.android.ui.orders.details.editing.address.BillingAddressEditingFragment"
         android:label="BillingAddressEditingFragment"
-        tools:layout="@layout/fragment_base_edit_address" >
+        tools:layout="@layout/fragment_base_edit_address">
         <argument
             android:name="storedAddress"
             app:argType="com.woocommerce.android.model.Address" />
@@ -730,7 +697,7 @@
     <fragment
         android:id="@+id/wooShippingLabelCreationFragment"
         android:name="com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationFragment"
-        android:label="WooShippingLabelCreationFragment" >
+        android:label="WooShippingLabelCreationFragment">
         <argument
             android:name="orderId"
             app:argType="long" />
@@ -739,13 +706,34 @@
             android:id="@+id/action_wooShippingLabelCreationFragment_to_wooShippingLabelPackageCreationFragment"
             app:destination="@id/wooShippingLabelPackageCreationFragment" />
         <action
-            android:id="@+id/action_wooShippingLabelCreationFragment_to_wooShippingLabelPurchasedFragment"
-            app:destination="@id/wooShippingLabelPurchasedFragment" />
+            android:id="@+id/action_wooShippingLabelCreationFragment_to_wooShippingEditOriginAddressFragment"
+            app:destination="@id/wooShippingEditOriginAddressFragment" />
+        <action
+            android:id="@+id/action_wooShippingLabelCreationFragment_to_wooShippingLabelCustomsFormFragment"
+            app:destination="@id/wooShippingLabelCustomsFormFragment" />
+        <action
+            android:id="@+id/action_wooShippingLabelCreationFragment_to_wooShippingSplitShipmentFragment"
+            app:destination="@id/wooShippingSplitShipmentFragment" />
+        <action
+            android:id="@+id/action_wooShippingLabelCreationFragment_to_wooShippingLabelHazmatFormFragment"
+            app:destination="@id/wooShippingLabelHazmatFormFragment" />
+        <action
+            android:id="@+id/action_wooShippingLabelCreationFragment_to_printShippingLabelInfoFragment"
+            app:destination="@id/printShippingLabelInfoFragment" />
+        <action
+            android:id="@+id/action_wooShippingLabelCreationFragment_to_wooShippingLabelRefundRequestFragment"
+            app:destination="@id/wooShippingLabelRefundRequestFragment" />
+        <action
+            android:id="@+id/action_wooShippingLabelCreationFragment_to_wooShippingEditPaymentDialogFragment"
+            app:destination="@id/wooShippingEditPaymentDialogFragment" />
+        <action
+            android:id="@+id/action_wooShippingLabelCreationFragment_to_upsDapTermsOfServiceBottomSheetFragment"
+            app:destination="@id/upsDapTermsOfServiceBottomSheetFragment" />
     </fragment>
     <fragment
         android:id="@+id/wooShippingLabelPackageCreationFragment"
         android:name="com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationFragment"
-        android:label="WooShippingLabelPackageCreationFragment" >
+        android:label="WooShippingLabelPackageCreationFragment">
 
         <action
             android:id="@+id/action_wooShippingLabelPackageCreationFragment_to_itemSelectorDialog"
@@ -753,7 +741,84 @@
 
     </fragment>
     <fragment
-        android:id="@+id/wooShippingLabelPurchasedFragment"
-        android:name="com.woocommerce.android.ui.orders.wooshippinglabels.purchased.WooShippingLabelPurchasedFragment"
-        android:label="WooShippingLabelPurchasedFragment" />
+        android:id="@+id/wooShippingEditOriginAddressFragment"
+        android:name="com.woocommerce.android.ui.orders.wooshippinglabels.address.WooShippingEditAddressFragment"
+        android:label="WooShippingEditOriginAddressFragment">
+        <argument
+            android:name="flow"
+            app:argType="com.woocommerce.android.ui.orders.wooshippinglabels.address.EditAddressFlow" />
+        <action
+            android:id="@+id/action_search_filter_fragment"
+            app:destination="@id/searchFilterFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/wooShippingLabelCustomsFormFragment"
+        android:name="com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormFragment"
+        android:label="WooShippingLabelCustomsFormFragment">
+        <argument
+            android:name="shippableItems"
+            app:argType="com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel[]" />
+
+        <argument
+            android:name="destinationCountryCode"
+            app:argType="string" />
+
+        <argument
+            android:name="customsData"
+            app:argType="com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData"
+            app:nullable="true" />
+
+        <action
+            android:id="@+id/action_wooShippingLabelCustomsFormFragment_to_itemSelectorDialog"
+            app:destination="@id/itemSelectorDialog" />
+
+        <action
+            android:id="@+id/action_search_filter_fragment"
+            app:destination="@id/searchFilterFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/wooShippingSplitShipmentFragment"
+        android:name="com.woocommerce.android.ui.orders.wooshippinglabels.split.WooShippingSplitShipmentFragment"
+        android:label="WooShippingSplitShipmentFragment">
+        <argument
+            android:name="shipmentArgs"
+            app:argType="com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel$SplitShipmentArgs" />
+    </fragment>
+    <fragment
+        android:id="@+id/wooShippingLabelHazmatFormFragment"
+        android:name="com.woocommerce.android.ui.orders.wooshippinglabels.hazmat.WooShippingLabelHazmatFormFragment"
+        android:label="WooShippingLabelHazmatFormFragment">
+        <argument
+            android:name="selectedCategoryName"
+            app:argType="string"
+            app:nullable="true" />
+
+        <action
+            android:id="@+id/action_wooShippingLabelHazmatFormFragment_to_hazmatCategorySelector"
+            app:destination="@id/searchFilterFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/wooShippingLabelRefundRequestFragment"
+        android:name="com.woocommerce.android.ui.orders.wooshippinglabels.refund.WooShippingLabelRefundFragment"
+        android:label="WooShippingLabelRefundFragment">
+        <argument
+            android:name="orderId"
+            app:argType="long" />
+        <argument
+            android:name="labelId"
+            app:argType="long" />
+    </fragment>
+    <dialog
+        android:id="@+id/wooShippingEditPaymentDialogFragment"
+        android:name="com.woocommerce.android.ui.orders.wooshippinglabels.payment.WooShippingEditPaymentDialogFragment"
+        android:label="WooShippingEditPaymentDialogFragment" />
+
+    <dialog
+        android:id="@+id/upsDapTermsOfServiceBottomSheetFragment"
+        android:name="com.woocommerce.android.ui.orders.wooshippinglabels.upsdap.UPSDAPTermsOfServiceBottomSheetFragment"
+        android:label="UPSDAPTermsOfServiceBottomSheetFragment">
+        <argument
+            android:name="originAddress"
+            app:argType="com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress" />
+    </dialog>
 </navigation>

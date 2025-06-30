@@ -371,7 +371,7 @@ class CardReaderOnboardingErrorCtaClickHandlerTest : BaseUnitTest() {
             // THEN
             assertThat(result).isEqualTo(
                 CardReaderOnboardingErrorCtaClickHandler.Reaction.OpenBrowser(
-                    url = "$adminUrl/admin.php?page=wc-admin&path=%2Fpayments%2Foverview"
+                    url = "$adminUrl/admin.php?page=wc-admin&path=%2Fpayments%2Fconnect"
                 )
             )
         }
@@ -405,7 +405,7 @@ class CardReaderOnboardingErrorCtaClickHandlerTest : BaseUnitTest() {
             // THEN
             assertThat(result).isEqualTo(
                 CardReaderOnboardingErrorCtaClickHandler.Reaction.OpenBrowser(
-                    url = "$adminUrl/admin.php?page=wc-admin&path=%2Fpayments%2Foverview"
+                    url = "$adminUrl/admin.php?page=wc-settings&tab=checkout&section=stripe&panel=settings"
                 )
             )
         }

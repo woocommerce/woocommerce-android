@@ -171,7 +171,7 @@ fun QRCodePreview() {
         QRCode(
             content = "https://woocommerce.com",
             size = 150.dp,
-            overlayId = R.drawable.img_woo_bubble_white
+            overlayId = R.drawable.img_woo_white
         )
     }
 }

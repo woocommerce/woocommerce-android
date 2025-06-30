@@ -78,7 +78,7 @@
         android:text="@string/open_mail" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/login_enter_password"
+        android:id="@+id/login_magic_link_fallback_button"
         style="@style/Widget.LoginFlow.Button.Tertiary"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

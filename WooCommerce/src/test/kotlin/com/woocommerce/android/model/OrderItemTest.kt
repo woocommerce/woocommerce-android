@@ -17,6 +17,7 @@ class OrderItemTest {
             sku = "test-sku",
             quantity = 123f,
             subtotal = (123).toBigDecimal(),
+            subtotalTax = (123).toBigDecimal(),
             totalTax = (123).toBigDecimal(),
             total = (123).toBigDecimal(),
             variationId = 123,

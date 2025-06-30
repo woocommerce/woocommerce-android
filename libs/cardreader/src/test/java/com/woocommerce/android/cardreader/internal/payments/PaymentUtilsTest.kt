@@ -1,11 +1,16 @@
 package com.woocommerce.android.cardreader.internal.payments
 
+import com.woocommerce.android.cardreader.LogWrapper
 import com.woocommerce.android.cardreader.config.CardReaderConfigForCanada
+import com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry
 import com.woocommerce.android.cardreader.config.CardReaderConfigForUSA
 import com.woocommerce.android.cardreader.internal.CardReaderBaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import java.math.BigDecimal
 
 private const val NONE_USD_CURRENCY = "CZK"
@@ -13,7 +18,14 @@ private const val USD_CURRENCY = "USD"
 
 @ExperimentalCoroutinesApi
 class PaymentUtilsTest : CardReaderBaseUnitTest() {
-    private val paymentUtils = PaymentUtils
+    private lateinit var paymentUtils: PaymentUtils
+    private lateinit var mockLogWrapper: LogWrapper
+
+    @Before
+    fun setup() {
+        mockLogWrapper = mock()
+        paymentUtils = PaymentUtils(mockLogWrapper)
+    }
 
     @Test
     fun `given two decimal currency, given supported country, when not supported currency invoked, then false returned`() =
@@ -29,6 +41,28 @@ class PaymentUtilsTest : CardReaderBaseUnitTest() {
             val result = paymentUtils.isSupportedCurrency(USD_CURRENCY, CardReaderConfigForUSA)
 
             assertThat(result).isTrue()
+        }
+
+    @Test
+    fun `given case difference, when is currency supported invoked, then true returned`() =
+        testBlocking {
+            val mockConfig = mock<CardReaderConfigForSupportedCountry>()
+            whenever(mockConfig.currency).thenReturn("USD")
+
+            val result = paymentUtils.isSupportedCurrency("usd", mockConfig)
+
+            assertThat(result).isTrue()
+        }
+
+    @Test
+    fun `given empty currency, when is currency supported invoked, then false returned`() =
+        testBlocking {
+            val mockConfig = mock<CardReaderConfigForSupportedCountry>()
+            whenever(mockConfig.currency).thenReturn("USD")
+
+            val result = paymentUtils.isSupportedCurrency("", mockConfig)
+
+            assertThat(result).isFalse()
         }
 
     @Test
@@ -139,6 +173,58 @@ class PaymentUtilsTest : CardReaderBaseUnitTest() {
         )
 
         assertThat(result).isEqualTo(100000)
+    }
+
+    @Test
+    fun `given negative amount, when converting to smallest unit, then correct negative value returned`() {
+        val result = paymentUtils.convertToSmallestCurrencyUnit(
+            BigDecimal("-10.50"),
+            TWO_DECIMAL_CURRENCY_CODE,
+        )
+
+        assertThat(result).isEqualTo(-1050)
+    }
+
+    @Test
+    fun `given zero amount, when converting to smallest unit, then zero returned`() {
+        val result = paymentUtils.convertToSmallestCurrencyUnit(
+            BigDecimal.ZERO,
+            TWO_DECIMAL_CURRENCY_CODE,
+        )
+
+        assertThat(result).isEqualTo(0)
+    }
+
+    @Test
+    fun `given very small amount, when converting to smallest unit, then correct value returned`() {
+        val result = paymentUtils.convertToSmallestCurrencyUnit(
+            BigDecimal("0.01"),
+            TWO_DECIMAL_CURRENCY_CODE,
+        )
+
+        assertThat(result).isEqualTo(1)
+    }
+
+    @Test
+    fun `given large amount, when converting to smallest unit, then correct value returned`() {
+        val result = paymentUtils.convertToSmallestCurrencyUnit(
+            BigDecimal("9999.99"),
+            TWO_DECIMAL_CURRENCY_CODE,
+        )
+
+        assertThat(result).isEqualTo(999999)
+    }
+
+    @Test
+    fun `given invalid currency code, when converting to smallest unit, then fallback mechanism used`() {
+        val invalidCurrencyCode = "INVALID"
+
+        val result = paymentUtils.convertToSmallestCurrencyUnit(
+            BigDecimal("10.50"),
+            invalidCurrencyCode
+        )
+
+        assertThat(result).isEqualTo(1050)
     }
 
     private companion object {

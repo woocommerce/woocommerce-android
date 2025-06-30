@@ -1,107 +1,121 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:background="@color/color_surface_elevated"
+    android:gravity="center_horizontal"
+    android:minWidth="@dimen/payments_dialog_width"
+    android:minHeight="@dimen/payments_dialog_height"
+    android:orientation="vertical"
+    android:paddingStart="@dimen/major_75"
+    android:paddingTop="@dimen/major_200"
+    android:paddingEnd="@dimen/major_75"
+    android:paddingBottom="@dimen/payments_dialog_bottom_padding"
     tools:context="com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectDialogFragment">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="@dimen/payments_dialog_width"
-        android:layout_height="@dimen/payments_dialog_height"
-        android:background="@color/color_surface_elevated"
-        android:gravity="center_horizontal"
-        android:orientation="vertical"
-        android:paddingTop="@dimen/major_200"
-        android:paddingBottom="@dimen/payments_dialog_bottom_padding">
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/header_label"
+        style="@style/Woo.TextView.Subtitle2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/major_125"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:textColor="@color/color_on_surface_high"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Collect payment" />
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/header_label"
-            style="@style/Woo.TextView.Subtitle2"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/major_125"
-            android:layout_marginTop="0dp"
-            android:layout_marginBottom="0dp"
-            android:gravity="center"
-            android:textColor="@color/color_on_surface_high"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Collect payment" />
+    <ImageView
+        android:id="@+id/illustration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginVertical="@dimen/margin_extra_extra_medium_large"
+        android:contentDescription="@null"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/header_label"
+        tools:srcCompat="@drawable/img_card_reader_scanning" />
 
-        <ImageView
-            android:id="@+id/illustration"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="@dimen/margin_extra_extra_medium_large"
-            android:contentDescription="@null"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/header_label"
-            tools:srcCompat="@drawable/img_card_reader_scanning" />
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/hint_label"
+        style="@style/Woo.Card.Body.High"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/major_75"
+        android:layout_marginTop="@dimen/margin_small_medium"
+        android:layout_marginBottom="@dimen/margin_small_medium"
+        android:ellipsize="end"
+        android:gravity="center"
+        app:layout_constraintBottom_toTopOf="@id/primary_action_btn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/illustration"
+        tools:text="Please wait" />
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/hint_label"
-            style="@style/Woo.Card.Body.High"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/major_125"
-            android:layout_marginEnd="@dimen/major_125"
-            android:gravity="center"
-            app:layout_constraintBottom_toTopOf="@id/secondary_action_btn"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/illustration"
-            tools:text="Please wait" />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/multiple_card_readers_found_rv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="@dimen/margin_extra_large"
+        app:layout_constraintBottom_toTopOf="@id/buttons_group"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/header_label"
+        app:layout_constraintVertical_chainStyle="spread"
+        tools:listitem="@layout/card_reader_connect_reader_item"
+        tools:visibility="gone" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/multiple_card_readers_found_rv"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="@dimen/margin_extra_large"
-            app:layout_constraintBottom_toTopOf="@id/secondary_action_btn"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/header_label"
-            tools:listitem="@layout/card_reader_connect_reader_item"
-            tools:visibility="gone" />
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/buttons_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="top"
+        app:constraint_referenced_ids="primary_action_btn,secondary_action_btn,tertiary_action_btn" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/primary_action_btn"
-            style="@style/Woo.Button.Colored"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/major_200"
-            android:layout_marginTop="0dp"
-            app:layout_constraintBottom_toTopOf="@id/secondary_action_btn"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:text="Connect" />
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/primary_action_btn"
+        style="@style/Woo.Button.Colored"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/major_150"
+        app:layout_constraintBottom_toTopOf="@id/secondary_action_btn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/buttons_group"
+        app:layout_constraintVertical_bias="1"
+        app:layout_constraintVertical_chainStyle="packed"
+        tools:text="Connect to a reader" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/secondary_action_btn"
-            style="@style/Woo.Button.Outlined"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/major_200"
-            app:layout_constraintBottom_toTopOf="@id/tertiary_action_btn"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:text="Keep Searching" />
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/secondary_action_btn"
+        style="@style/Woo.Button.Outlined"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/major_150"
+        app:layout_constraintBottom_toTopOf="@id/tertiary_action_btn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/primary_action_btn"
+        app:layout_constraintVertical_chainStyle="packed"
+        tools:text="Keep Searching" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/tertiary_action_btn"
-            style="@style/Woo.Button.TextButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/major_200"
-            android:textAllCaps="false"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:text="Cancel" />
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/tertiary_action_btn"
+        style="@style/Woo.Button.TextButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/major_150"
+        android:textAllCaps="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/secondary_action_btn"
+        app:layout_constraintVertical_chainStyle="packed"
+        tools:text="Cancel" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

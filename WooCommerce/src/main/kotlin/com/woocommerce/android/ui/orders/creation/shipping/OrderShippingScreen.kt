@@ -58,6 +58,7 @@ fun UpdateShippingScreen(
             UpdateShippingScreen(
                 name = currentState.name,
                 amount = currentState.amount,
+                orderCurrency = currentState.orderCurrency,
                 method = currentState.method?.title,
                 isEditFlow = viewModel.isEditFlow,
                 isSaveChangesEnabled = currentState.isSaveChangesEnabled,
@@ -87,6 +88,7 @@ fun UpdateShippingScreen(
     name: String?,
     onNameChanged: (String) -> Unit,
     amount: BigDecimal,
+    orderCurrency: String? = null,
     onAmountChanged: (BigDecimal) -> Unit,
     method: String?,
     onSelectMethod: () -> Unit,
@@ -120,6 +122,7 @@ fun UpdateShippingScreen(
                 )
                 AmountBigDecimalTextField(
                     value = amount,
+                    currency = orderCurrency,
                     onValueChange = { amount -> onAmountChanged(amount) },
                     modifier = Modifier
                         .fillMaxWidth()

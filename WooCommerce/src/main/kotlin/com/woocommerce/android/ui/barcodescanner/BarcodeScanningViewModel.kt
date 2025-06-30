@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.barcodescanner
 
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.annotation.StringRes
+import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageProxy
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -39,6 +40,7 @@ class BarcodeScanningViewModel @Inject constructor(
     fun startCodesRecognition() {
         frameChannel = createChannel()
         processingJob = launch {
+            @ExperimentalGetImage
             for (frame in frameChannel) {
                 codeScanner.recogniseCode(frame).let { status ->
                     when (status) {

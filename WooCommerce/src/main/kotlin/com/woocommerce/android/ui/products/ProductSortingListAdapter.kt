@@ -8,12 +8,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.databinding.ProductSortingListItemBinding
 import com.woocommerce.android.ui.products.ProductSortingListAdapter.ProductSortingViewHolder
 import com.woocommerce.android.ui.products.ProductSortingViewModel.SortingListItemUIModel
-import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
 
 class ProductSortingListAdapter(
-    private val onItemClicked: (option: ProductSorting) -> Unit,
+    private val onItemClicked: (option: SortingListItemUIModel.Sorting) -> Unit,
     private val options: List<SortingListItemUIModel>,
-    private val selectedOption: ProductSorting
+    private val selectedOption: SortingListItemUIModel.Sorting
 ) : RecyclerView.Adapter<ProductSortingViewHolder>() {
     init {
         setHasStableIds(true)
@@ -44,8 +43,8 @@ class ProductSortingListAdapter(
         RecyclerView.ViewHolder(viewBinding.root) {
         fun bind(
             item: SortingListItemUIModel,
-            onItemClicked: (option: ProductSorting) -> Unit,
-            selectedOption: ProductSorting
+            onItemClicked: (option: SortingListItemUIModel.Sorting) -> Unit,
+            selectedOption: SortingListItemUIModel.Sorting
         ) {
             viewBinding.sortingItemName.text = itemView.context.getString(item.stringResource)
             viewBinding.sortingItemTick.isVisible = item.value == selectedOption
