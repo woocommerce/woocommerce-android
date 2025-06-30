@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
-import org.wordpress.android.fluxc.model.WCSettingsModel
+import org.wordpress.android.fluxc.model.settings.CurrencyPosition
 import org.wordpress.android.fluxc.store.WCGatewayStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -66,10 +66,10 @@ class WooPosCashPaymentRepository @Inject constructor(
             }.first()
     }
 
-    suspend fun getCurrencySymbolPosition(): WCSettingsModel.CurrencyPosition {
+    suspend fun getCurrencySymbolPosition(): CurrencyPosition {
         val params = getParams()
         val currencyFormattingParameters = params.currencyFormattingParameters
-        return currencyFormattingParameters?.currencyPosition ?: WCSettingsModel.CurrencyPosition.LEFT
+        return currencyFormattingParameters?.currencyPosition ?: CurrencyPosition.LEFT
     }
 
     suspend fun getDecimalSeparator(): String {
