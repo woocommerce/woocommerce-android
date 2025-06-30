@@ -4694,6 +4694,13 @@
     <string name="wpp_shipping_ups_tos_condition_technology_agreement">I also agree to the &lt;a href=\"ups-technology-agreement\"&gt;UPS® Technology Agreement&lt;/a&gt;.</string>
     <string name="wpp_shipping_ups_tos_accept">Confirm and continue</string>
 
+    <string name="woo_shipping_rate_surcharge_description_template">%1$s (%2$s)</string>
+    <string name="woo_shipping_rate_option_signature_required">Signature required</string>
+    <string name="woo_shipping_rate_option_adult_signature_required">Adult signature required</string>
+    <string name="woo_shipping_rate_option_carbon_neutral">Carbon neutral</string>
+    <string name="woo_shipping_rate_option_saturday_delivery">Saturday delivery</string>
+    <string name="woo_shipping_rate_option_additional_handling">Additional handling</string>
+
     <string name="media_library_title">WordPress Media Library</string>
     <string name="media_loading_failed">Media loading failed</string>
     <string name="no_network_message">There is no network available</string>

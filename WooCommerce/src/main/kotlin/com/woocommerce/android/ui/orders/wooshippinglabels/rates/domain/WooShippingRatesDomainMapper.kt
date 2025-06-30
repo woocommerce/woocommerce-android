@@ -67,65 +67,41 @@ class WooShippingRatesDomainMapper @Inject constructor(
         resourceProvider: ResourceProvider,
         currencyCode: String?
     ): ShippingRateUI {
-        val options = rate.rateOptions.mapValues {
-            when (it.value.option) {
+        val options = rate.rateOptions.mapValues { rateOption ->
+            when (rateOption.value.option) {
                 Option.DEFAULT -> {
                     ShippingRateOptionUI(
-                        title = it.value.serviceName,
-                        formatedPrice = formatCurrency(it.value.price, currencyCode),
+                        title = rateOption.value.serviceName,
+                        formatedPrice = formatCurrency(rateOption.value.price, currencyCode),
                         formattedFee = "",
                         feeDescription = "",
                         formattedOptionName = "",
-                        formattedEstimatedDays = getEstimatedDays(it.value, resourceProvider),
-                        shippingRateOptions = getShippingRateOptionsList(it.value, resourceProvider, currencyCode),
-                        option = it.value.option,
-                        rate = it.value
+                        formattedEstimatedDays = getEstimatedDays(rateOption.value, resourceProvider),
+                        shippingRateOptions = getShippingRateOptionsList(rateOption.value, resourceProvider, currencyCode),
+                        option = rateOption.value.option,
+                        rate = rateOption.value
                     )
                 }
 
-                Option.SIGNATURE -> {
+                else -> {
                     val fee = rate.rateOptions[Option.DEFAULT]?.let { default ->
-                        it.value.price.minus(default.price)
+                        rateOption.value.price.minus(default.price)
                     }
                     val formattedFee = formatFee(fee, currencyCode)
                     ShippingRateOptionUI(
-                        title = it.value.serviceName,
-                        formatedPrice = formatCurrency(it.value.price, currencyCode),
+                        title = rateOption.value.serviceName,
+                        formatedPrice = formatCurrency(rateOption.value.price, currencyCode),
                         formattedFee = formattedFee,
                         feeDescription = resourceProvider.getString(
-                            R.string.shipping_label_rate_option_signature_required,
+                            R.string.woo_shipping_rate_surcharge_description_template,
+                            rateOption.value.option.getTitle(),
                             formattedFee
                         ),
-                        formattedEstimatedDays = getEstimatedDays(it.value, resourceProvider),
-                        shippingRateOptions = getShippingRateOptionsList(it.value, resourceProvider, currencyCode),
-                        option = it.value.option,
-                        rate = it.value,
-                        formattedOptionName = resourceProvider.getString(
-                            R.string.shipping_label_rate_option_signature_required_name
-                        )
-                    )
-                }
-
-                Option.ADULT_SIGNATURE -> {
-                    val fee = rate.rateOptions[Option.DEFAULT]?.let { default ->
-                        it.value.price.minus(default.price)
-                    }
-                    val formattedFee = formatFee(fee, currencyCode)
-                    ShippingRateOptionUI(
-                        title = it.value.serviceName,
-                        formatedPrice = formatCurrency(it.value.price, currencyCode),
-                        formattedFee = formattedFee,
-                        feeDescription = resourceProvider.getString(
-                            R.string.shipping_label_rate_option_adult_signature_required,
-                            formattedFee
-                        ),
-                        formattedEstimatedDays = getEstimatedDays(it.value, resourceProvider),
-                        shippingRateOptions = getShippingRateOptionsList(it.value, resourceProvider, currencyCode),
-                        option = it.value.option,
-                        rate = it.value,
-                        formattedOptionName = resourceProvider.getString(
-                            R.string.shipping_label_rate_option_adult_signature_required_name
-                        )
+                        formattedEstimatedDays = getEstimatedDays(rateOption.value, resourceProvider),
+                        shippingRateOptions = getShippingRateOptionsList(rateOption.value, resourceProvider, currencyCode),
+                        option = rateOption.value.option,
+                        rate = rateOption.value,
+                        formattedOptionName = rateOption.value.option.getTitle()
                     )
                 }
             }
@@ -193,5 +169,14 @@ class WooShippingRatesDomainMapper @Inject constructor(
         return currencyCode?.let {
             currencyFormatter.formatCurrency(amount = amount, currencyCode = it)
         } ?: currencyFormatter.formatCurrency(amount = amount)
+    }
+
+    private fun Option.getTitle() = when (this) {
+        Option.DEFAULT -> ""
+        Option.SIGNATURE -> resourceProvider.getString(R.string.woo_shipping_rate_option_signature_required)
+        Option.ADULT_SIGNATURE -> resourceProvider.getString(R.string.woo_shipping_rate_option_adult_signature_required)
+        Option.CARBON_NEUTRAL -> resourceProvider.getString(R.string.woo_shipping_rate_option_carbon_neutral)
+        Option.ADDITIONAL_HANDLING -> resourceProvider.getString(R.string.woo_shipping_rate_option_additional_handling)
+        Option.SATURDAY_DELIVERY -> resourceProvider.getString(R.string.woo_shipping_rate_option_saturday_delivery)
     }
 }

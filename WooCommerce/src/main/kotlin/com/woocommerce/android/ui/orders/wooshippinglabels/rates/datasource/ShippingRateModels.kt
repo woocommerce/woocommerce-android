@@ -31,7 +31,10 @@ data class WooShippingRateModel(
     enum class Option {
         DEFAULT,
         SIGNATURE,
-        ADULT_SIGNATURE
+        ADULT_SIGNATURE,
+        CARBON_NEUTRAL,
+        ADDITIONAL_HANDLING,
+        SATURDAY_DELIVERY
     }
 }
 
