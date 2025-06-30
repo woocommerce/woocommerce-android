@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.woopos.home.cart
 
+import com.woocommerce.android.ui.woopos.common.composeui.modifier.BarcodeInputDetector
+
 sealed class WooPosCartUIEvent {
     data object CheckoutClicked : WooPosCartUIEvent()
     data class ItemRemovedFromCart(
@@ -7,5 +9,7 @@ sealed class WooPosCartUIEvent {
     ) : WooPosCartUIEvent()
     data object ClearAllClicked : WooPosCartUIEvent()
     data object BackClicked : WooPosCartUIEvent()
-    data class OnBarcodeScanned(val barcode: String) : WooPosCartUIEvent()
+    data class OnBarcodeEvent(
+        val result: BarcodeInputDetector.BarcodeResult
+    ) : WooPosCartUIEvent()
 }

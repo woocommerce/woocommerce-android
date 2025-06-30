@@ -13,6 +13,10 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.Dest
 import java.lang.reflect.Type
 import java.math.BigDecimal
 
+data class EligibilityResponse(
+    @SerializedName("is_eligible") val isEligible: Boolean? = null,
+)
+
 data class AccountSettingsDTO(
     val storeOptions: StoreOptionsDTO,
     val formData: FormDataDTO,

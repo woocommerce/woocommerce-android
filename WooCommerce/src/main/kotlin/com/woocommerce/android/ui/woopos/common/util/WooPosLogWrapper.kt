@@ -10,8 +10,8 @@ class WooPosLogWrapper @Inject constructor() {
         WooLog.d(WooLog.T.POS, message)
     }
 
-    fun e(message: String) {
-        WooLog.e(WooLog.T.POS, message)
+    fun e(message: String, throwable: Throwable? = null) {
+        WooLog.e(WooLog.T.POS, message, throwable)
     }
 
     fun w(message: String) {

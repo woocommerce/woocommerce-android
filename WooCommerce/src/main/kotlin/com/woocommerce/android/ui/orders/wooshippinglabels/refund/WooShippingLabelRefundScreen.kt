@@ -70,7 +70,7 @@ fun WooShippingLabelRefundScreen(
             )
 
             Text(
-                text = stringResource(R.string.woo_shipping_refund_description, refundDuration),
+                text = stringResource(R.string.woo_shipping_refund_duration_description, refundDuration),
                 style = MaterialTheme.typography.bodyMedium,
                 color = colorResource(id = R.color.color_on_surface),
                 modifier = Modifier.padding(top = 16.dp)
