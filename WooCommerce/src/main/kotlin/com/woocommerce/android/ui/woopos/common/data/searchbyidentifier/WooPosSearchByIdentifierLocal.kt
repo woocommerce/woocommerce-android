@@ -9,24 +9,27 @@ class WooPosSearchByIdentifierLocal @Inject constructor(
     private val variationsCache: WooPosVariationsLRUCache,
 ) {
     suspend operator fun invoke(identifier: String): WooPosSearchByIdentifierResult {
-        val allProducts = productsCache.getAll()
+        findProductByIdentifier(identifier)?.let {
+            return WooPosSearchByIdentifierResult.Success(it)
+        }
 
-        allProducts.firstOrNull { product ->
-            product.globalUniqueId.equals(identifier, ignoreCase = true)
-        }?.let { return WooPosSearchByIdentifierResult.Success(it) }
-
-        val allVariations = variationsCache.getAll()
-        val matchingVariation = allVariations.firstOrNull { variation ->
-            variation.globalUniqueId.equals(identifier, ignoreCase = true)
-        } ?: return WooPosSearchByIdentifierResult.Failure(
+        return findVariationWithParentByIdentifier(identifier) ?: WooPosSearchByIdentifierResult.Failure(
             WooPosSearchByIdentifierResult.Error.NotFound
         )
+    }
 
-        val parentProduct = productsCache.getProductById(matchingVariation.remoteProductId)
-            ?: return WooPosSearchByIdentifierResult.Failure(
-                WooPosSearchByIdentifierResult.Error.NotFound
-            )
+    private suspend fun findProductByIdentifier(identifier: String) =
+        productsCache.getAll().firstOrNull { product ->
+            product.globalUniqueId.equals(identifier, ignoreCase = true)
+        }
 
-        return WooPosSearchByIdentifierResult.VariationSuccess(matchingVariation, parentProduct)
+    private suspend fun findVariationWithParentByIdentifier(identifier: String): WooPosSearchByIdentifierResult.VariationSuccess? {
+        val variation = variationsCache.getAll().firstOrNull { variation ->
+            variation.globalUniqueId.equals(identifier, ignoreCase = true)
+        } ?: return null
+
+        return productsCache.getProductById(variation.remoteProductId)?.let { parentProduct ->
+            WooPosSearchByIdentifierResult.VariationSuccess(variation, parentProduct)
+        }
     }
 }
