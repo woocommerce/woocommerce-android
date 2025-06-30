@@ -1151,19 +1151,31 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when UPS terms accepted, then fetch new rates and reselect same rate as before`() = testBlocking {
+        val firstRatesFetchResult = mapOf(
+            defaultCarrier to defaultShippingRates[defaultCarrier]!!.map {
+                it.copy(
+                    options = mapOf(
+                        ShippingRateOption.DEFAULT to it.options.getValue(ShippingRateOption.DEFAULT),
+                        ShippingRateOption.ADDITIONAL_HANDLING to it.options.getValue(ShippingRateOption.DEFAULT)
+                    )
+                )
+            }
+        )
         val rateToBeSelected = defaultShippableItemUI.copy(
             rate = defaultShippingRate.copy(rateId = "2")
         )
         val secondRatesFetchResult = mapOf(
             defaultCarrier to defaultShippingRates[defaultCarrier]!!.map {
                 it.copy(
-                    options = mapOf(ShippingRateOption.DEFAULT to rateToBeSelected),
-                    selectedOption = ShippingRateOption.DEFAULT
+                    options = mapOf(
+                        ShippingRateOption.DEFAULT to rateToBeSelected,
+                        ShippingRateOption.ADDITIONAL_HANDLING to rateToBeSelected
+                    )
                 )
             }
         )
         whenever(getShippingRates(any(), any(), any(), any(), any(), any(), anyOrNull(), anyOrNull()))
-            .thenReturn(Result.success(defaultShippingRates))
+            .thenReturn(Result.success(firstRatesFetchResult))
             .thenReturn(Result.success(secondRatesFetchResult))
 
         createViewModel()
@@ -1177,8 +1189,9 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
         val viewState = sut.viewState.runAndCaptureValues {
             // Select a shipping rate
-            val selectedRate = defaultShippingRates.values.first().first()
+            val selectedRate = firstRatesFetchResult.values.first().first()
             shippingRateState.onSelectedShippingRateChanged(selectedRate)
+            shippingRateState.onSelectedRateOptionChanged(ShippingRateOption.ADDITIONAL_HANDLING, true)
             advanceUntilIdle()
 
             // Simulate UPS terms acceptance
@@ -1193,6 +1206,8 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
             .isInstanceOf(ShippingRatesState.DataState::class.java)
         val ratesState = shipment.shippingRatesState as ShippingRatesState.DataState
         assertThat(ratesState.selectedRate!!.selectedRateOption).isEqualTo(rateToBeSelected)
+        assertThat(ratesState.selectedRate!!.additionalSelectedOptions)
+            .isEqualTo(listOf(ShippingRateOption.ADDITIONAL_HANDLING))
     }
 
     @Test

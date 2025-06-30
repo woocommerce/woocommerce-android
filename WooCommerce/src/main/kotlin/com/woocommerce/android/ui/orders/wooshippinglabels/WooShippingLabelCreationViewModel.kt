@@ -697,7 +697,10 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         ) {
             val newRate = newRates.values.flatten().find {
                 it.defaultRate.rate.serviceId == previouslySelectedRate.defaultRate.rate.serviceId
-            }?.copy(selectedOption = previouslySelectedRate.selectedOption) ?: return
+            }?.copy(
+                selectedOption = previouslySelectedRate.selectedOption,
+                additionalSelectedOptions = previouslySelectedRate.additionalSelectedOptions
+            ) ?: return
 
             selectedRatesFlow.update { currentRates ->
                 currentRates.toMutableList().apply {
