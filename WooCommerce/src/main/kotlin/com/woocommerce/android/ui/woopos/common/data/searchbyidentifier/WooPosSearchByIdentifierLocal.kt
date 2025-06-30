@@ -16,13 +16,17 @@ class WooPosSearchByIdentifierLocal @Inject constructor(
         }?.let { return WooPosSearchByIdentifierResult.Success(it) }
 
         val allVariations = variationsCache.getAll()
-        return allVariations.firstOrNull { variation ->
+        val matchingVariation = allVariations.firstOrNull { variation ->
             variation.globalUniqueId.equals(identifier, ignoreCase = true)
-        }?.let {
-            val parentProduct = productsCache.getProductById(it.remoteProductId)
-            WooPosSearchByIdentifierResult.VariationSuccess(it, parentProduct!!)
-        } ?: WooPosSearchByIdentifierResult.Failure(
+        } ?: return WooPosSearchByIdentifierResult.Failure(
             WooPosSearchByIdentifierResult.Error.NotFound
         )
+
+        val parentProduct = productsCache.getProductById(matchingVariation.remoteProductId)
+            ?: return WooPosSearchByIdentifierResult.Failure(
+                WooPosSearchByIdentifierResult.Error.NotFound
+            )
+
+        return WooPosSearchByIdentifierResult.VariationSuccess(matchingVariation, parentProduct)
     }
 }
