@@ -145,6 +145,28 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             }
         }
 
+        data class BarcodeScanningFailed(
+            val scanDurationMs: Long,
+            val isNumericOnly: Boolean,
+            val barcodeLength: Int,
+            val scannerInfo: String?,
+            val failReason: String,
+        ) : Event() {
+            override val name: String = "barcode_scanning_failed"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "barcode_length" to barcodeLength.toString(),
+                        "scan_duration_ms" to scanDurationMs.toString(),
+                        "is_numeric_only" to isNumericOnly.toString(),
+                        "scanner_info" to (scannerInfo ?: "unknown"),
+                        "fail_reason" to failReason
+                    )
+                )
+            }
+        }
+
         data object CouponsCreateTapped : Event() {
             override val name: String = "coupons_create_tapped"
         }

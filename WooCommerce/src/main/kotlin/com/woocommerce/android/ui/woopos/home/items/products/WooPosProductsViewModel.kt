@@ -70,7 +70,7 @@ class WooPosProductsViewModel @Inject constructor(
                     }
 
                     ParentToChildrenEvent.BackFromCheckoutToCartClicked,
-                    is ParentToChildrenEvent.BarcodeScanned,
+                    is ParentToChildrenEvent.BarcodeEvent,
                     is ParentToChildrenEvent.CheckoutClicked,
                     is ParentToChildrenEvent.CouponsRemoved,
                     ParentToChildrenEvent.CouponsValidationFailed,

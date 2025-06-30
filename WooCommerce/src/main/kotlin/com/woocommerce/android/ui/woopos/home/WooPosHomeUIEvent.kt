@@ -9,8 +9,7 @@ sealed class WooPosHomeUIEvent {
     data object DismissBarcodeInfoDialog : WooPosHomeUIEvent()
     data object OnPaymentCompletedViaCash : WooPosHomeUIEvent()
     data object ExitPosClicked : WooPosHomeUIEvent()
-    data class OnBarcodeScanned(
-        val barcode: String,
-        val metadata: BarcodeInputDetector.ScanMetadata
+    data class OnBarcodeEvent(
+        val result: BarcodeInputDetector.BarcodeResult
     ) : WooPosHomeUIEvent()
 }

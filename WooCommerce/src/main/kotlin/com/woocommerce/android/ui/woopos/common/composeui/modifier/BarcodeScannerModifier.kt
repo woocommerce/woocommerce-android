@@ -18,11 +18,11 @@ import org.wordpress.android.fluxc.utils.CurrentTimeProvider
 private const val FIRST_PRINTABLE_CHAR_CODE = 32
 
 fun Modifier.listenForBarcodes(
-    onBarcodeScanned: (String, BarcodeInputDetector.ScanMetadata) -> Unit,
+    onBarcodeEvent: (BarcodeInputDetector.BarcodeResult) -> Unit,
     enabled: Boolean = true
 ): Modifier = composed {
     val focusRequester = remember { FocusRequester() }
-    val detector = remember { BarcodeInputDetector(onBarcodeScanned, CurrentTimeProvider()) }
+    val detector = remember { BarcodeInputDetector(onBarcodeEvent, CurrentTimeProvider()) }
 
     LaunchedEffect(enabled) {
         if (enabled) {
@@ -60,13 +60,13 @@ fun Modifier.listenForBarcodes(
 }
 
 class BarcodeInputDetector(
-    private val onBarcodeScanned: (String, ScanMetadata) -> Unit,
+    private val onBarcodeEvent: (BarcodeResult) -> Unit,
     private val currentTimeProvider: CurrentTimeProvider,
 ) {
 
     private companion object {
         const val MAX_SCANNER_INTER_CHAR_DELAY_MS = 200L
-        const val MIN_BARCODE_LENGTH = 1
+        const val MIN_BARCODE_LENGTH = 6
     }
 
     private val barcodeBuffer = StringBuilder()
@@ -77,6 +77,16 @@ class BarcodeInputDetector(
         val currentTime = currentTimeProvider.currentDate().time
 
         if (lastCharTime != -1L && currentTime - lastCharTime > MAX_SCANNER_INTER_CHAR_DELAY_MS) {
+            if (barcodeBuffer.isNotEmpty()) {
+                val scanDuration = if (scanStartTime != -1L) currentTime - scanStartTime else 0L
+                val event = BarcodeResult.Error(
+                    barcode = barcodeBuffer.toString(),
+                    scanDurationMs = scanDuration,
+                    failureReason = FailureReason.NO_TERMINATOR,
+                )
+                onBarcodeEvent(event)
+                WooPosLogWrapper.d("Barcode scanning failed: $event")
+            }
             clear()
         }
 
@@ -99,12 +109,26 @@ class BarcodeInputDetector(
     private fun processBarcodeBuffer() {
         val scannedBarcode = barcodeBuffer.toString()
         val currentTime = currentTimeProvider.currentDate().time
+        val scanDuration = if (scanStartTime != -1L) currentTime - scanStartTime else 0L
 
-        if (scannedBarcode.length >= MIN_BARCODE_LENGTH) {
-            val scanDuration = if (scanStartTime != -1L) currentTime - scanStartTime else 0L
-            val metadata = ScanMetadata(scanDurationMs = scanDuration)
-            onBarcodeScanned(scannedBarcode, metadata)
-            WooPosLogWrapper.d("Barcode scanned: $scannedBarcode (duration: ${scanDuration}ms)")
+        val event = if (scannedBarcode.length >= MIN_BARCODE_LENGTH) {
+            BarcodeResult.Success(
+                barcode = scannedBarcode,
+                scanDurationMs = scanDuration
+            )
+        } else if (scannedBarcode.isNotEmpty()) {
+            BarcodeResult.Error(
+                barcode = scannedBarcode,
+                scanDurationMs = scanDuration,
+                failureReason = FailureReason.TOO_SHORT,
+            )
+        } else {
+            null
+        }
+
+        event?.let {
+            onBarcodeEvent(it)
+            WooPosLogWrapper.d("Barcode event: $it")
         }
 
         clear()
@@ -116,7 +140,24 @@ class BarcodeInputDetector(
         scanStartTime = -1
     }
 
-    data class ScanMetadata(
-        val scanDurationMs: Long,
-    )
+    sealed class BarcodeResult {
+        abstract val scanDurationMs: Long
+        abstract val barcode: String
+
+        data class Success(
+            override val barcode: String,
+            override val scanDurationMs: Long,
+        ) : BarcodeResult()
+
+        data class Error(
+            override val barcode: String,
+            override val scanDurationMs: Long,
+            val failureReason: FailureReason,
+        ) : BarcodeResult()
+    }
+
+    enum class FailureReason(val value: String) {
+        TOO_SHORT("too_short"),
+        NO_TERMINATOR("no_terminator")
+    }
 }

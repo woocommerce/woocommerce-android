@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.home.cart
 
-import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -17,7 +16,6 @@ import com.woocommerce.android.ui.woopos.common.data.WooPosGetVariationById
 import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosSearchByIdentifier
 import com.woocommerce.android.ui.woopos.common.data.searchbyidentifier.WooPosSearchByIdentifierResult
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
-import com.woocommerce.android.ui.woopos.common.util.WooPosScannerDetectionUtil
 import com.woocommerce.android.ui.woopos.common.util.WooPosSoundHelper
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.CouponsRemoved
@@ -41,12 +39,12 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTrackingDataKeeper
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosBarcodeEventTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosCouponsFormatter
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicInteger
@@ -69,8 +67,7 @@ class WooPosCartViewModel @Inject constructor(
     private val searchByIdentifier: WooPosSearchByIdentifier,
     private val wooPosLogWrapper: WooPosLogWrapper,
     private val soundHelper: WooPosSoundHelper,
-    private val scannerDetectionUtil: WooPosScannerDetectionUtil,
-    @ApplicationContext private val context: Context,
+    private val barcodeEventTracker: WooPosBarcodeEventTracker,
     savedState: SavedStateHandle,
 ) : ViewModel() {
     private val _state = savedState.getStateFlow(
@@ -131,8 +128,8 @@ class WooPosCartViewModel @Inject constructor(
                 )
             }
 
-            is WooPosCartUIEvent.OnBarcodeScanned -> {
-                onBarcodeScanned(event.barcode, event.metadata)
+            is WooPosCartUIEvent.OnBarcodeEvent -> {
+                onBarcodeEvent(event.result)
             }
         }
     }
@@ -218,8 +215,8 @@ class WooPosCartViewModel @Inject constructor(
                         removeCouponsFromCart()
                     }
 
-                    is ParentToChildrenEvent.BarcodeScanned -> {
-                        onBarcodeScanned(event.barcode, event.metadata)
+                    is ParentToChildrenEvent.BarcodeEvent -> {
+                        onBarcodeEvent(event.result)
                     }
                 }
             }
@@ -352,9 +349,7 @@ class WooPosCartViewModel @Inject constructor(
         _state.value = WooPosCartState()
     }
 
-    private fun onBarcodeScanned(barcode: String, metadata: BarcodeInputDetector.ScanMetadata) {
-        trackBarcodeScanned(barcode, metadata)
-
+    private fun onBarcodeScanned(barcode: String) {
         if (_state.value.cartStatus !in listOf(EDITABLE, EMPTY)) {
             return
         }
@@ -389,21 +384,10 @@ class WooPosCartViewModel @Inject constructor(
         }
     }
 
-    private fun trackBarcodeScanned(barcode: String, metadata: BarcodeInputDetector.ScanMetadata) {
-        viewModelScope.launch {
-            val connectedScanner = scannerDetectionUtil.detectConnectedScanner(context)
-            val scannerInfo = scannerDetectionUtil.getScannerInfoString(connectedScanner)
-
-            val isNumericOnly = barcode.all { it.isDigit() }
-
-            analyticsTracker.track(
-                WooPosAnalyticsEvent.Event.BarcodeScanned(
-                    scanDurationMs = metadata.scanDurationMs,
-                    isNumericOnly = isNumericOnly,
-                    barcodeLength = barcode.length,
-                    scannerInfo = scannerInfo,
-                )
-            )
+    private fun onBarcodeEvent(result: BarcodeInputDetector.BarcodeResult) {
+        viewModelScope.launch { barcodeEventTracker.trackBarcodeEvent(result) }
+        if (result is BarcodeInputDetector.BarcodeResult.Success) {
+            onBarcodeScanned(result.barcode)
         }
     }
 
