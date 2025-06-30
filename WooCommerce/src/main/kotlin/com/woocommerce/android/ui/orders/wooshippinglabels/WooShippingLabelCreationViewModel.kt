@@ -57,6 +57,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.purchased.printing.Fe
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.domain.GetShippingRates
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.CarrierUI
+import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRateOption
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRateUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingSortOption
 import com.woocommerce.android.util.CurrencyFormatter
@@ -325,11 +326,26 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                 it.toMutableList().apply { set(selectedShipmentIndex, rate) }
             }
         }
+
         fun onSelectedRateOptionChanged(
             option: WooShippingRateModel.Option,
             checked: Boolean
         ) {
-            TODO()
+            selectedRatesFlow.update { currentRates ->
+                val currentRate = currentRates[selectedShipmentIndex] ?: return
+                val newRate = if (!option.isAdditionalOption) {
+                    currentRate.copy(selectedOption = if (checked) option else ShippingRateOption.DEFAULT)
+                } else {
+                    currentRate.copy(
+                        additionalSelectedOptions = currentRate.additionalSelectedOptions.let {
+                            if (checked) it + option else it - option
+                        }
+                    )
+                }
+                currentRates.toMutableList().apply {
+                    set(selectedShipmentIndex, newRate)
+                }
+            }
         }
 
         combine(
