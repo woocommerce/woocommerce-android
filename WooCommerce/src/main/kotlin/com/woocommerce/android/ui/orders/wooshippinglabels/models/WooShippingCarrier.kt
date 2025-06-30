@@ -9,7 +9,7 @@ enum class WooShippingCarrier(val carrierIds: List<String>) {
 
     companion object {
         fun fromCarrierId(carrierId: String): WooShippingCarrier {
-            return values().firstOrNull { it.carrierIds.contains(carrierId) } ?: UNKNOWN
+            return entries.firstOrNull { it.carrierIds.contains(carrierId) } ?: UNKNOWN
         }
     }
 }
