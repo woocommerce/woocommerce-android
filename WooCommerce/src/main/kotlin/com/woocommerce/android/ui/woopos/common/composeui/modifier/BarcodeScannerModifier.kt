@@ -4,6 +4,7 @@ import androidx.compose.foundation.focusable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.focus.FocusRequester
@@ -13,6 +14,10 @@ import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.key.utf16CodePoint
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.utils.CurrentTimeProvider
 
 private const val FIRST_PRINTABLE_CHAR_CODE = 32
@@ -22,7 +27,8 @@ fun Modifier.listenForBarcodes(
     enabled: Boolean = true
 ): Modifier = composed {
     val focusRequester = remember { FocusRequester() }
-    val detector = remember { BarcodeInputDetector(onBarcodeEvent, CurrentTimeProvider()) }
+    val coroutineScope = rememberCoroutineScope()
+    val detector = remember { BarcodeInputDetector(onBarcodeEvent, CurrentTimeProvider(), coroutineScope) }
 
     LaunchedEffect(enabled) {
         if (enabled) {
@@ -62,6 +68,7 @@ fun Modifier.listenForBarcodes(
 class BarcodeInputDetector(
     private val onBarcodeEvent: (BarcodeResult) -> Unit,
     private val currentTimeProvider: CurrentTimeProvider,
+    private val coroutineScope: CoroutineScope,
 ) {
 
     private companion object {
@@ -72,23 +79,10 @@ class BarcodeInputDetector(
     private val barcodeBuffer = StringBuilder()
     private var lastCharTime: Long = -1L
     private var scanStartTime: Long = -1L
+    private var timeoutJob: Job? = null
 
     fun handleKeyInput(char: Char): Boolean {
         val currentTime = currentTimeProvider.currentDate().time
-
-        if (lastCharTime != -1L && currentTime - lastCharTime > MAX_SCANNER_INTER_CHAR_DELAY_MS) {
-            if (barcodeBuffer.isNotEmpty()) {
-                val scanDuration = if (scanStartTime != -1L) currentTime - scanStartTime else 0L
-                val event = BarcodeResult.Error(
-                    barcode = barcodeBuffer.toString(),
-                    scanDurationMs = scanDuration,
-                    failureReason = FailureReason.NO_TERMINATOR,
-                )
-                onBarcodeEvent(event)
-                WooPosLogWrapper.d("Barcode scanning failed: $event")
-            }
-            clear()
-        }
 
         when (char) {
             '\n', '\r' -> {
@@ -101,12 +95,14 @@ class BarcodeInputDetector(
                 }
                 lastCharTime = currentTime
                 barcodeBuffer.append(char)
+                startTimeoutTimer()
             }
         }
         return true
     }
 
     private fun processBarcodeBuffer() {
+        cancelTimeoutTimer()
         val scannedBarcode = barcodeBuffer.toString()
         val currentTime = currentTimeProvider.currentDate().time
         val scanDuration = if (scanStartTime != -1L) currentTime - scanStartTime else 0L
@@ -138,6 +134,31 @@ class BarcodeInputDetector(
         barcodeBuffer.clear()
         lastCharTime = -1
         scanStartTime = -1
+        cancelTimeoutTimer()
+    }
+
+    private fun startTimeoutTimer() {
+        cancelTimeoutTimer()
+        timeoutJob = coroutineScope.launch {
+            delay(MAX_SCANNER_INTER_CHAR_DELAY_MS)
+            if (barcodeBuffer.isNotEmpty()) {
+                val currentTime = currentTimeProvider.currentDate().time
+                val scanDuration = if (scanStartTime != -1L) currentTime - scanStartTime else 0L
+                val event = BarcodeResult.Error(
+                    barcode = barcodeBuffer.toString(),
+                    scanDurationMs = scanDuration,
+                    failureReason = FailureReason.NO_TERMINATOR,
+                )
+                onBarcodeEvent(event)
+                WooPosLogWrapper.d("Barcode scanning failed: $event")
+                clear()
+            }
+        }
+    }
+
+    private fun cancelTimeoutTimer() {
+        timeoutJob?.cancel()
+        timeoutJob = null
     }
 
     sealed class BarcodeResult {
