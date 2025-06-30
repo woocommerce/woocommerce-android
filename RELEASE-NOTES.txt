@@ -3,7 +3,7 @@
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 22.8
 -----
-
+- [*] Fixed a rare crash in the POS when adding a variation product to the cart by scanning a barcode. [https://github.com/woocommerce/woocommerce-android/pull/14259]
 
 22.7
 -----
