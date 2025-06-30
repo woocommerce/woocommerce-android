@@ -151,7 +151,7 @@ private fun ShippingRatesState.toShipmentCostUI(
         is ShippingRatesState.DataState -> {
             val selectedRate = selectedRate ?: return null
             val totalPrice = selectedRate.selectedRateOption.rate.price +
-                selectedRate.additionalSelectedOptions.sumOf { selectedRate.options.getValue(it).rate.price }
+                selectedRate.additionalSelectedOptions.sumOf { selectedRate.options.getValue(it).fee }
 
             ShipmentCostUI(
                 serviceName = selectedRate.title,

@@ -72,7 +72,7 @@ class WooShippingRatesDomainMapper @Inject constructor(
                 Option.DEFAULT -> {
                     ShippingRateOptionUI(
                         optionName = "",
-                        fee = null,
+                        fee = BigDecimal.ZERO,
                         formattedFee = "",
                         feeDescription = "",
                         option = rateOption.value.option,
@@ -81,10 +81,9 @@ class WooShippingRatesDomainMapper @Inject constructor(
                 }
 
                 else -> {
-                    val fee = rate.rateOptions[Option.DEFAULT]?.let { default ->
-                        rateOption.value.price.minus(default.price)
-                    }
+                    val fee = rateOption.value.price.minus(rate.defaultRate.price)
                     val formattedFee = formatFee(fee, currencyCode)
+
                     ShippingRateOptionUI(
                         optionName = rateOption.value.option.getTitle(),
                         fee = fee,

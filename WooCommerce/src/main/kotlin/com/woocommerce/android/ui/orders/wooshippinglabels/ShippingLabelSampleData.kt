@@ -152,7 +152,7 @@ object ShippingLabelSampleData {
             val option = ShippingRateOptionUI(
                 option = rate.option,
                 optionName = "",
-                fee = null,
+                fee = BigDecimal.ZERO,
                 formattedFee = "",
                 rate = rate,
                 feeDescription = "Default"

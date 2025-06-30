@@ -559,7 +559,7 @@ data class ShippingRateUI(
 data class ShippingRateOptionUI(
     val option: ShippingRateOption,
     val optionName: String,
-    val fee: BigDecimal?,
+    val fee: BigDecimal,
     val formattedFee: String,
     val feeDescription: String,
     val rate: WooShippingRateModel
