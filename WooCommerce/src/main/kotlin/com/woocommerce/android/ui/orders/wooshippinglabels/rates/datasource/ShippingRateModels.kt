@@ -39,7 +39,7 @@ data class WooShippingRateModel(
         ADULT_SIGNATURE(isAdditionalOption = false),
         CARBON_NEUTRAL(isAdditionalOption = true),
         ADDITIONAL_HANDLING(isAdditionalOption = true),
-        SATURDAY_DELIVERY(isAdditionalOption = true);
+        SATURDAY_DELIVERY(isAdditionalOption = true)
     }
 }
 

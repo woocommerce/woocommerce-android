@@ -153,6 +153,7 @@ private fun ShippingRatesState.toShipmentCostUI(
             val totalPrice = selectedRate.selectedRateOption.rate.price +
                 selectedRate.additionalSelectedOptions.sumOf { selectedRate.options.getValue(it).fee }
 
+            @Suppress("SpreadOperator")
             ShipmentCostUI(
                 serviceName = selectedRate.title,
                 formattedBasePrice = selectedRate.formattedBasePrice,
@@ -164,7 +165,8 @@ private fun ShippingRatesState.toShipmentCostUI(
                         "" to null
                     },
                     *selectedRate.additionalSelectedOptions.map { option ->
-                        selectedRate.options.getValue(option).optionName to selectedRate.options.getValue(option).formattedFee
+                        val rateOption = selectedRate.options.getValue(option)
+                        rateOption.optionName to rateOption.formattedFee
                     }.toTypedArray()
                 ).filterNotNull()
             )

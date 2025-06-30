@@ -703,10 +703,12 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
         val selectedRate = defaultShippingRates.values.first().first()
 
-        val ratesState = (sut.viewState.runAndCaptureValues {
-            sut.onPackageSelected(defaultPackageData)
-            advanceUntilIdle()
-        }.last() as DataState).shipmentUIList.first().shippingRatesState as ShippingRatesState.DataState
+        val ratesState = (
+            sut.viewState.runAndCaptureValues {
+                sut.onPackageSelected(defaultPackageData)
+                advanceUntilIdle()
+            }.last() as DataState
+            ).shipmentUIList.first().shippingRatesState as ShippingRatesState.DataState
 
         ratesState.onSelectedShippingRateChanged(selectedRate)
 
@@ -1131,10 +1133,11 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
             val selectedRate = defaultShippingRates.values.first().first()
 
-            val ratesState = (sut.viewState.runAndCaptureValues {
+            val viewState = sut.viewState.runAndCaptureValues {
                 sut.onPackageSelected(defaultPackageData)
                 advanceUntilIdle()
-            }.last() as DataState).shipmentUIList.first().shippingRatesState as ShippingRatesState.DataState
+            }.last() as DataState
+            val ratesState = viewState.shipmentUIList.first().shippingRatesState as ShippingRatesState.DataState
 
             ratesState.onSelectedShippingRateChanged(selectedRate)
 
@@ -1181,11 +1184,13 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         createViewModel()
         advanceUntilIdle()
 
-        val shippingRateState = (sut.viewState.runAndCaptureValues {
+        val firstViewState = sut.viewState.runAndCaptureValues {
             // Select a package
             sut.onPackageSelected(defaultPackageData)
             advanceUntilIdle()
-        }.last() as DataState).shipmentUIList.first().shippingRatesState as ShippingRatesState.DataState
+        }.last() as DataState
+
+        val shippingRateState = firstViewState.shipmentUIList.first().shippingRatesState as ShippingRatesState.DataState
 
         val viewState = sut.viewState.runAndCaptureValues {
             // Select a shipping rate
@@ -1229,11 +1234,13 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         createViewModel()
         advanceUntilIdle()
 
-        val shippingRateState = (sut.viewState.runAndCaptureValues {
+        val firstViewState = sut.viewState.runAndCaptureValues {
             // Select a package
             sut.onPackageSelected(defaultPackageData)
             advanceUntilIdle()
-        }.last() as DataState).shipmentUIList.first().shippingRatesState as ShippingRatesState.DataState
+        }.last() as DataState
+
+        val shippingRateState = firstViewState.shipmentUIList.first().shippingRatesState as ShippingRatesState.DataState
 
         val viewState = sut.viewState.runAndCaptureValues {
             val selectedRate = defaultShippingRates.values.first().first()
