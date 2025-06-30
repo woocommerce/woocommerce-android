@@ -14,7 +14,7 @@ class WooShippingRatesDatasourceMapperTest : BaseUnitTest() {
     private val packagesIds = listOf("package1", "package2", "package3")
     private val optionIds = listOf("default", "signature_required", "adult_signature_required")
     private val carriers =
-        listOf("usps", "fedex", "ups", "dhlexpress", "dhlecommerce", "dhlecommerceasia", "canapost", "null")
+        listOf("usps", "fedex", "upsdap", "dhlexpress", "dhlecommerce", "dhlecommerceasia", "canapost", "null")
 
     @Test
     fun `mapper can parse rates with 1 package 2 carriers 5 rates`() {

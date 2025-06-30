@@ -1,11 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-06-02 15:54:05+0000
+Translation-Revision-Date: 2025-06-17 14:54:05+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="no_network_message">Nessuna rete disponibile</string>
+    <string name="media_loading_failed">Caricamento dei file multimediali non riuscito</string>
+    <string name="media_library_title">Libreria multimediale WordPress</string>
+    <string name="woo_shipping_refund_note">Tieni presente che questa richiesta di rimborso si applica solo all\'etichetta di spedizione inutilizzata e non riguarda l\'ordine in sé.</string>
+    <string name="woo_shipping_refund_amount_eligible_for_refund">&lt;b&gt;Importo idoneo al rimborso:&lt;/b&gt; %s</string>
+    <string name="woo_shipping_refund_purchase_date">&lt;b&gt;Data di acquisto:&lt;/b&gt; %s</string>
+    <string name="woo_shipping_refund_description">Richiedi un rimborso per l\'etichetta di spedizione inutilizzata. La procedura di rimborso per l\'etichetta di spedizione verrà avviata immediatamente e in genere viene completata entro 14 giorni lavorativi.</string>
+    <string name="woo_shipping_refund_title">Richiedi un rimborso dell\'etichetta di spedizione</string>
+    <string name="woo_shipping_split_shipment_error">Impossibile dividere le spedizioni. Riprova.</string>
+    <string name="woopos_cart_searching_for_item">Ricerca</string>
+    <string name="woopos_cart_adding_item_to_cart_failed">Aggiunta dell\'articolo al carrello non riuscita, %s.</string>
+    <string name="woopos_cart_coupon_added_to_cart_accessibility">Codice promozionale %1$s aggiunto al carrello</string>
+    <string name="woopos_cart_product_added_to_cart_accessibility">Prodotto %1$s aggiunto al carrello, prezzo %2$s</string>
+    <string name="woopos_barcode_scanning_title">Scansione dei codici a barre</string>
+    <string name="woopos_dialog_barcode_info_background_content_description">Sfondo oscurato. Tocca per ignorare la finestra di dialogo.</string>
+    <string name="woopos_dialog_barcode_info_content_description">Finestra di dialogo con le informazioni sulla scansione dei codici a barre</string>
+    <string name="woopos_dialog_barcode_info_button_label">OK</string>
+    <string name="woopos_dialog_barcode_info_quinary_message">Lo scanner emula una tastiera, quindi a volte impedisce la visualizzazione della tastiera virtuale, ad esempio nella ricerca. Tocca l\'icona della tastiera per mostrare di nuovo la tastiera virtuale.</string>
+    <string name="woopos_dialog_barcode_info_quaternary_message">• Scansiona i codici a barre nell\'elenco degli articoli per aggiungere prodotti al carrello.</string>
+    <string name="woopos_dialog_barcode_info_tertiary_message">• Connetti lo scanner di codici a barre nelle impostazioni Bluetooth del sistema.</string>
+    <string name="woopos_dialog_barcode_info_secondary_message">• Per impostare la modalità HID, consulta le istruzioni dello scanner di codici a barre Bluetooth.</string>
+    <string name="woopos_dialog_barcode_info_more_details_link">Ulteriori dettagli</string>
+    <string name="woopos_dialog_barcode_info_primary_message">• Configura i codici a barre nel campo \"GTIN, UPC, EAN, ISBN\" in Prodotti &gt; Dettagli del prodotto &gt; Inventario. </string>
+    <string name="woopos_dialog_barcode_info_intro_message">Per creare rapidamente un carrello, puoi scansionare i codici a barre utilizzando uno scanner esterno.</string>
+    <string name="woopos_dialog_barcode_info_heading">Scansione dei codici a barre</string>
+    <string name="woopos_cart_barcode_scan_result_request_cancelled">Richiesta annullata</string>
+    <string name="woopos_cart_barcode_scan_result_network_error">Nessuna connessione a Internet</string>
+    <string name="woopos_cart_barcode_scan_result_unsupported_product">Articolo non supportato: %s</string>
+    <string name="woopos_cart_barcode_scan_result_product_not_found">Articolo scansionato sconosciuto</string>
+    <string name="woopos_add_coupon_to_cart_accessibility_label">Aggiungi il codice promozionale al carrello</string>
+    <string name="woopos_add_variable_product_to_cart_accessibility_label">Elenco aperto delle varianti</string>
+    <string name="woopos_add_product_to_cart_accessibility_label">Aggiungi il prodotto al carrello</string>
+    <string name="woopos_cart_item_error_content_description">Errore durante il caricamento dell\'articolo %s</string>
+    <string name="woopos_cart_item_loading_content_description">Caricamento dell\'articolo %s</string>
+    <string name="blaze_campaign_edit_ad_arrow_back_description">Suggerimento precedente</string>
+    <string name="blaze_campaign_edit_ad_arrow_forward_description">Suggerimento successivo</string>
+    <string name="blaze_campaign_preview_tos_checkbox_evergreen_campaigns">Accetto un addebito settimanale ricorrente che non superi un importo di %1$s, a partire dal giorno %2$s. Il momento in cui avvengono gli addebiti può variare durante la campagna. &lt;a href=\'cancelInstructions\'&gt;&lt;u&gt;Posso annullare in qualsiasi momento&lt;/u&gt;&lt;/a&gt;. Corrisponderò solo l\'importo degli annunci pubblicitari inviati prima della cancellazione.</string>
+    <string name="blaze_campaign_preview_tos_checkbox_over_7_days_campaign">Accetto un addebito ricorrente che non superi un importo di %1$s a settimana, a partire dal giorno %2$s. Il momento in cui avvengono gli addebiti può variare durante la campagna. &lt;a href=\'cancelInstructions\'&gt;&lt;u&gt;Posso annullare in qualsiasi momento&lt;/u&gt;&lt;/a&gt;. Corrisponderò solo l\'importo degli annunci pubblicitari inviati prima della cancellazione.</string>
+    <string name="blaze_campaign_preview_tos_checkbox_less_than_7_days_campaign">Accetto un addebito che non superi un importo di %1$s, a partire dal giorno %2$s. Durante il periodo in cui la campagna è attiva, gli addebiti possono essere corrisposti in uno o più pagamenti. &lt;a href=\'cancelInstructions\'&gt;&lt;u&gt;Posso annullare in qualsiasi momento&lt;/u&gt;&lt;/a&gt;. Corrisponderò solo l\'importo degli annunci pubblicitari inviati prima della cancellazione.</string>
+    <string name="customer_detail_guest_customer">Ospite</string>
     <string name="woopos_search_items_error_description">Riprova.</string>
     <string name="woopos_search_coupons_error_title">Impossibile caricare i codici promozionali</string>
     <string name="woopos_search_items_error_title">Impossibile caricare i prodotti</string>
@@ -45,7 +85,7 @@ Language: it
     <string name="woopos_coupons_empty_list_image_description">Nessun codice promozionale</string>
     <string name="woopos_coupons_screen_title">Codici promozionali</string>
     <string name="woopos_product_limitations_title">Dove sono i miei prodotti?</string>
-    <string name="woopos_coupon_item_content_description">Codice promozionale %s</string>
+    <string name="woopos_coupon_item_content_description_v2">Codice promozionale %s, %s</string>
     <string name="woo_shipping_split_shipment_bottom_sheet_remove_button">Rimuovi spedizione</string>
     <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_plural">Scegli dove spostare %d articoli di questa spedizione.</string>
     <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_one">Scegli dove spostare %d articolo di questa spedizione.</string>
@@ -269,7 +309,7 @@ Language: it
     <string name="woopos_variations_loading_error_title">Impossibile caricare le varianti</string>
     <string name="woopos_variations_back_content_description">Indietro</string>
     <string name="woopos_variation_item_content_description">Variante %s, prezzo %s</string>
-    <string name="woopos_variable_product_item_content_description">Prodotto variabile %s, prezzo %s</string>
+    <string name="woopos_variable_product_item_content_description_v2">Prodotto variabile %s</string>
     <string name="blaze_campaign_edit_ad_change_description_empty_error">La descrizione non può essere vuota</string>
     <string name="blaze_campaign_edit_ad_change_cta_text_title">Invito all\'azione</string>
     <string name="blaze_campaign_edit_ad_change_tagline_empty_error">Lo slogan non può essere vuoto</string>

@@ -1,11 +1,20 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
+22.8
+-----
+
+
 22.7
 -----
 - [*] Improved filtering UI in the order's screen [https://github.com/woocommerce/woocommerce-android/pull/14212]
 - [**] Allow setting SKU and Global Unique Identifier fields on Products by scanning a barcode. [https://github.com/woocommerce/woocommerce-android/pull/14228]
+- [*] Fixed issue which prevented users from clearing SKU and Global Unique Identifier fields on Products. [https://github.com/woocommerce/woocommerce-android/pull/14229]
 - [*] POS is now more easily accessible through a tab on the tab bar [https://github.com/woocommerce/woocommerce-android/pull/14236]
+
+22.6.1
+-----
+- [*] Allow scanning barcodes in the POS of length shorter than 4 characters. [https://github.com/woocommerce/woocommerce-android/pull/14238]
 
 22.6
 -----

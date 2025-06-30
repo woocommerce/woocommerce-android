@@ -156,6 +156,7 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
             assertThat(actual?.globalUniqueIdErrorMessage).isEqualTo(0)
         }
 
+    @Test
     fun `Test that a discard dialog isn't shown if no data changed`() =
         testBlocking {
             val events = mutableListOf<Event>()
@@ -271,5 +272,79 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
         verify(analyticsTracker).track(
             AnalyticsEvent.PRODUCT_INVENTORY_SETTINGS_GLOBAL_UNIQUE_IDENTIFIER_FIELD_EDITED
         )
+    }
+
+    @Test
+    fun `Test that SKU can be cleared with empty string`() = testBlocking {
+        // given
+        var actual: ViewState? = null
+        viewModel.viewStateData.observeForever { _, new ->
+            actual = new
+        }
+        viewModel.onSkuChanged("some-sku")
+        assertThat(actual?.inventoryData?.sku).isEqualTo("some-sku")
+
+        // when
+        viewModel.onSkuChanged("")
+
+        // then
+        assertThat(actual?.inventoryData?.sku).isEqualTo("")
+        assertThat(actual?.skuErrorMessage).isEqualTo(0)
+    }
+
+    @Test
+    fun `Test that global unique id can be cleared with empty string`() = testBlocking {
+        // given
+        var actual: ViewState? = null
+        viewModel.viewStateData.observeForever { _, new ->
+            actual = new
+        }
+        viewModel.onProductUniqueGlobalIdChanged("123-456")
+        assertThat(actual?.inventoryData?.globalUniqueId).isEqualTo("123-456")
+
+        // when
+        viewModel.onProductUniqueGlobalIdChanged("")
+
+        // then
+        assertThat(actual?.inventoryData?.globalUniqueId).isEqualTo("")
+        assertThat(actual?.globalUniqueIdErrorMessage).isEqualTo(0)
+    }
+
+    @Test
+    fun `Test that empty string SKU does not trigger error validation`() = testBlocking {
+        // given
+        whenever(productDetailRepository.isSkuAvailableLocally(takenSku)).thenReturn(false)
+
+        var actual: ViewState? = null
+        viewModel.viewStateData.observeForever { _, new ->
+            actual = new
+        }
+        viewModel.onSkuChanged(takenSku)
+        assertThat(actual?.skuErrorMessage).isEqualTo(string.product_inventory_update_sku_error)
+
+        // when
+        viewModel.onSkuChanged("")
+
+        // then
+        assertThat(actual?.inventoryData?.sku).isEqualTo("")
+        assertThat(actual?.skuErrorMessage).isEqualTo(0)
+    }
+
+    @Test
+    fun `Test that empty string global unique id is considered valid`() = testBlocking {
+        // given
+        var actual: ViewState? = null
+        viewModel.viewStateData.observeForever { _, new ->
+            actual = new
+        }
+        viewModel.onProductUniqueGlobalIdChanged("invalid-chars!")
+        assertThat(actual?.globalUniqueIdErrorMessage).isEqualTo(string.product_inventory_update_global_unique_id_error)
+
+        // when
+        viewModel.onProductUniqueGlobalIdChanged("")
+
+        // then
+        assertThat(actual?.inventoryData?.globalUniqueId).isEqualTo("")
+        assertThat(actual?.globalUniqueIdErrorMessage).isEqualTo(0)
     }
 }

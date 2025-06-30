@@ -47,7 +47,9 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -176,7 +178,8 @@ private fun WooShippingEditPaymentContent(
     Column(
         modifier
             .padding(16.dp)
-            .verticalScroll(rememberScrollState())
+            .nestedScroll(rememberNestedScrollInteropConnection())
+            .verticalScroll(rememberScrollState()),
     ) {
         BottomSheetHandle(modifier = Modifier.align(Alignment.CenterHorizontally))
 
@@ -208,9 +211,7 @@ private fun WooShippingEditPaymentContent(
         }
     }
 
-    viewState.dialogState?.let {
-        it.Render()
-    }
+    viewState.dialogState?.Render()
 }
 
 @Composable
