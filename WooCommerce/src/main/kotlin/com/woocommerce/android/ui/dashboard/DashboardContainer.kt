@@ -119,11 +119,11 @@ private fun DashboardWidgets(
             widgetUiModels.forEach { widget ->
                 AnimatedVisibility(widget.isVisible) {
                     DashboardWidgetCard(
-                        widget,
-                        mainActivityViewModel,
-                        dashboardViewModel,
-                        blazeCampaignCreationDispatcher,
-                        Modifier.fillMaxWidth()
+                        it = widget,
+                        mainActivityViewModel = mainActivityViewModel,
+                        dashboardViewModel = dashboardViewModel,
+                        blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher,
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
             }
@@ -150,11 +150,11 @@ private fun DashboardWidgets(
                     ) {
                         columnWidgets.forEach { widget ->
                             DashboardWidgetCard(
-                                widget,
-                                mainActivityViewModel,
-                                dashboardViewModel,
-                                blazeCampaignCreationDispatcher,
-                                Modifier.fillMaxWidth()
+                                it = widget,
+                                mainActivityViewModel = mainActivityViewModel,
+                                dashboardViewModel = dashboardViewModel,
+                                blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher,
+                                modifier = Modifier.fillMaxWidth()
                             )
                         }
                     }
@@ -196,7 +196,7 @@ private fun DashboardWidgetCard(
     mainActivityViewModel: MainActivityViewModel,
     dashboardViewModel: DashboardViewModel,
     blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher,
-    widgetModifier: Modifier
+    modifier: Modifier
 ) {
     when (it) {
         is ConfigurableWidget -> {
@@ -205,28 +205,28 @@ private fun DashboardWidgetCard(
                 mainActivityViewModel = mainActivityViewModel,
                 dashboardViewModel = dashboardViewModel,
                 blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher,
-                modifier = widgetModifier
+                modifier = modifier
             )
         }
 
         is ShareStoreWidget -> {
             ShareStoreCard(
                 onShareClicked = it.onShareClicked,
-                modifier = widgetModifier
+                modifier = modifier
             )
         }
 
         is FeedbackWidget -> {
             FeedbackCard(
                 widget = it,
-                modifier = widgetModifier
+                modifier = modifier
             )
         }
 
         is NewWidgetsCard -> {
             NewWidgetsCard(
                 state = it,
-                modifier = widgetModifier
+                modifier = modifier
             )
         }
     }
