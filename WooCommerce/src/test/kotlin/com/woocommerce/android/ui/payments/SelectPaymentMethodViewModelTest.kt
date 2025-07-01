@@ -51,7 +51,6 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.WCSettingsModel
 import org.wordpress.android.fluxc.model.gateways.WCGatewayModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.persistence.entity.OrderEntity
@@ -59,6 +58,7 @@ import org.wordpress.android.fluxc.store.WCGatewayStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.fluxc.wc.settings.WCSettingsTestUtils
 import java.math.BigDecimal
 
 private const val PAYMENT_URL = "paymentUrl"
@@ -68,8 +68,9 @@ private const val CUSTOM_PAYMENT_METHOD_TITLE = "Custom title"
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SelectPaymentMethodViewModelTest : BaseUnitTest() {
-    private val site: SiteModel = mock {
-        on { name }.thenReturn("siteName")
+    private val site: SiteModel = SiteModel().apply {
+        id = 1
+        name = "siteName"
     }
     private val order: Order = mock {
         on { paymentUrl }.thenReturn(PAYMENT_URL)
@@ -1174,9 +1175,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         whenever(wooCommerceStore.getStoreCountryCode(any())).thenReturn("US")
         whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(mock())
         whenever(orderMapper.toAppModel(any())).thenReturn(order)
-        val settings = mock<WCSettingsModel> {
-            on { currencyCode }.thenReturn("EUR")
-        }
+        val settings = WCSettingsTestUtils.generateSettings(site.localId()).copy(currencyCode = "EUR")
         whenever(wooCommerceStore.getSiteSettings(any())).thenReturn(settings)
         val param = Payment(orderId = 1L, paymentType = SIMPLE)
 

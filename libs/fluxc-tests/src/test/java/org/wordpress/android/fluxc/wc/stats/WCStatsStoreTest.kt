@@ -1,6 +1,7 @@
 package org.wordpress.android.fluxc.wc.stats
 
-import androidx.room.Room
+import android.app.Application
+import androidx.test.core.app.ApplicationProvider
 import com.yarolegovich.wellsql.WellSql
 import junit.framework.TestCase.assertFalse
 import kotlinx.coroutines.runBlocking
@@ -8,6 +9,7 @@ import org.hamcrest.CoreMatchers.anyOf
 import org.hamcrest.CoreMatchers.not
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.any
@@ -17,7 +19,6 @@ import org.mockito.kotlin.reset
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.SingleStoreWellSqlConfigForTests
@@ -36,7 +37,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.bundlestats.BundleStats
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bundlestats.BundleStatsTotals
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.orderstats.OrderStatsRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.orderstats.VisitorStatsSummaryApiResponse
-import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
+import org.wordpress.android.fluxc.persistence.DatabaseTestRule
 import org.wordpress.android.fluxc.persistence.WCVisitorStatsSqlUtils
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.fluxc.store.WCStatsStore
@@ -57,15 +58,21 @@ import org.hamcrest.CoreMatchers.`is` as isEqual
 @Config(manifest = Config.NONE)
 @RunWith(RobolectricTestRunner::class)
 class WCStatsStoreTest {
+
+    private val context = ApplicationProvider.getApplicationContext<Application>()
+
+    @Rule
+    @JvmField
+    val databaseRule = DatabaseTestRule(context)
+
     private val mockOrderStatsRestClient = mock<OrderStatsRestClient>()
     private val mockBundleStatsRestClient = mock<BundleStatsRestClient>()
-    private val appContext = RuntimeEnvironment.application.applicationContext
     private lateinit var wcStatsStore: WCStatsStore
 
     @Before
     fun setUp() {
         val config = SingleStoreWellSqlConfigForTests(
-                appContext,
+                context,
                 listOf(
                     WCRevenueStatsModel::class.java,
                     WCNewVisitorStatsModel::class.java
@@ -75,16 +82,12 @@ class WCStatsStoreTest {
         WellSql.init(config)
         config.reset()
 
-        val database = Room.inMemoryDatabaseBuilder(appContext, WCAndroidDatabase::class.java)
-            .allowMainThreadQueries()
-            .build()
-
         wcStatsStore = WCStatsStore(
             dispatcher = Dispatcher(),
             wcOrderStatsClient = mockOrderStatsRestClient,
             bundleStatsRestClient = mockBundleStatsRestClient,
             coroutineEngine = initCoroutineEngine(),
-            visitorSummaryStatsDao = database.visitorSummaryStatsDao
+            visitorSummaryStatsDao = databaseRule.db.visitorSummaryStatsDao
         )
     }
 

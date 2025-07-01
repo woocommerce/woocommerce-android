@@ -1,12 +1,11 @@
 package org.wordpress.android.fluxc.persistence.dao
 
 import android.app.Application
-import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.mock
@@ -14,21 +13,21 @@ import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
-import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
+import org.wordpress.android.fluxc.persistence.DatabaseTestRule
 import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 
 @RunWith(RobolectricTestRunner::class)
 class OrdersDaoDecoratorTest {
+
+    @Rule
+    @JvmField
+    val databaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext<Application>())
+
     private lateinit var sut: OrdersDaoDecorator
-    private lateinit var database: WCAndroidDatabase
 
     @Before
     fun setUp() {
-        val context = ApplicationProvider.getApplicationContext<Application>()
-        database = Room.inMemoryDatabaseBuilder(context, WCAndroidDatabase::class.java)
-                .allowMainThreadQueries()
-                .build()
-        sut = OrdersDaoDecorator(mock(), database.ordersDao)
+        sut = OrdersDaoDecorator(mock(), databaseRule.db.ordersDao)
     }
 
     @Test
@@ -92,11 +91,6 @@ class OrdersDaoDecoratorTest {
             val deletedOrders = sut.getOrdersForSite(site.localId())
             assertThat(deletedOrders).isEmpty()
         }
-    }
-
-    @After
-    fun tearDown() {
-        database.close()
     }
 
     private companion object {

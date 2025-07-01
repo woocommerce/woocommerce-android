@@ -2,7 +2,7 @@ package com.woocommerce.android.ui.products.models
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition
+import org.wordpress.android.fluxc.model.settings.CurrencyPosition
 
 @Parcelize
 data class SiteParameters(

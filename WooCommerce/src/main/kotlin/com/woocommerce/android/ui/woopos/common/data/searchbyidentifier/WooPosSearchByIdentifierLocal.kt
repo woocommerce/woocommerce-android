@@ -9,18 +9,27 @@ class WooPosSearchByIdentifierLocal @Inject constructor(
     private val variationsCache: WooPosVariationsLRUCache,
 ) {
     suspend operator fun invoke(identifier: String): WooPosSearchByIdentifierResult {
-        val allProducts = productsCache.getAll()
+        findProductByIdentifier(identifier)?.let {
+            return WooPosSearchByIdentifierResult.Success(it)
+        }
 
-        allProducts.firstOrNull { product ->
+        return findVariationWithParentByIdentifier(identifier)
+    }
+
+    private suspend fun findProductByIdentifier(identifier: String) =
+        productsCache.getAll().firstOrNull { product ->
             product.globalUniqueId.equals(identifier, ignoreCase = true)
-        }?.let { return WooPosSearchByIdentifierResult.Success(it) }
+        }
 
-        val allVariations = variationsCache.getAll()
-        return allVariations.firstOrNull { variation ->
+    private suspend fun findVariationWithParentByIdentifier(identifier: String): WooPosSearchByIdentifierResult {
+        val variation = variationsCache.getAll().firstOrNull { variation ->
             variation.globalUniqueId.equals(identifier, ignoreCase = true)
-        }?.let {
-            val parentProduct = productsCache.getProductById(it.remoteProductId)
-            WooPosSearchByIdentifierResult.VariationSuccess(it, parentProduct!!)
+        } ?: return WooPosSearchByIdentifierResult.Failure(
+            WooPosSearchByIdentifierResult.Error.NotFound
+        )
+
+        return productsCache.getProductById(variation.remoteProductId)?.let { parentProduct ->
+            WooPosSearchByIdentifierResult.VariationSuccess(variation, parentProduct)
         } ?: WooPosSearchByIdentifierResult.Failure(
             WooPosSearchByIdentifierResult.Error.NotFound
         )
