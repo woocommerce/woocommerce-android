@@ -9,7 +9,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShipping
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PurchasedLabelData
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingLabelRepository
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
-import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRateUI
 import javax.inject.Inject
 
 class PurchaseShippingLabel @Inject constructor(
@@ -24,7 +24,7 @@ class PurchaseShippingLabel @Inject constructor(
         shipmentId: Int,
         shipTo: Address,
         shipFrom: OriginShippingAddress,
-        shippingRate: WooShippingRateModel,
+        shippingRate: ShippingRateUI,
         weight: Float,
         lastOrderComplete: Boolean,
         customsData: List<CustomsData>? = null,
@@ -37,7 +37,7 @@ class PurchaseShippingLabel @Inject constructor(
             shipmentId = shipmentId.toString(),
             shipTo = shipTo,
             shipFrom = shipFrom,
-            selectedRate = shippingRate,
+            selectedRate = shippingRate.selectedRateOption.rate,
             weight = weight,
             lastOrderComplete = lastOrderComplete,
             customsData = customsData,

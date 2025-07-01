@@ -739,7 +739,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     fun onPurchaseShippingLabel() {
         val selectedPackage = selectedPackagesFlow.value[selectedShipmentIndex]
         val addresses = shippingAddresses.value
-        val shippingRate = selectedRatesFlow.value[selectedShipmentIndex]?.selectedRateOption?.rate
+        val shippingRate = selectedRatesFlow.value[selectedShipmentIndex]
         val weight = packageWeightsFlow.value[selectedShipmentIndex]?.totalWeight
 
         if (selectedPackage == null || addresses == null || shippingRate == null || weight == null) return
