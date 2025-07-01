@@ -60,7 +60,6 @@ import com.woocommerce.android.ui.dashboard.stats.DashboardStatsCard
 import com.woocommerce.android.ui.dashboard.stock.DashboardProductStockCard
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersWidgetCard
 import com.woocommerce.android.ui.main.MainActivityViewModel
-import com.woocommerce.android.util.WooLog
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -70,21 +69,12 @@ fun DashboardContainer(
     blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher,
 ) {
     dashboardViewModel.dashboardCardsState.observeAsState().value?.let { state ->
-        WooLog.d(
-            WooLog.T.DASHBOARD,
-            "DashboardCardsState observed: widgets=${state.widgets.size}, refreshing=${state.isRefreshing}"
-        )
-
         val pullRefreshState = rememberPullRefreshState(state.isRefreshing, dashboardViewModel::onPullToRefresh)
         BoxWithConstraints(
             modifier = Modifier
                 .pullRefresh(pullRefreshState)
                 .fillMaxSize()
         ) {
-            WooLog.d(
-                WooLog.T.DASHBOARD,
-                "BoxWithConstraints: maxWidth=${maxWidth.value}, maxHeight=${maxHeight.value}"
-            )
             val boxWithConstraintsScope = this
             DashboardWidgets(
                 widgetUiModels = state.widgets,
@@ -118,13 +108,7 @@ private fun DashboardWidgets(
 ) {
     val nestedScrollInterop = rememberNestedScrollInteropConnection()
 
-    WooLog.d(
-        WooLog.T.DASHBOARD,
-        "DashboardWidgets: numberOfColumns=$numberOfColumns, visibleWidgets=${widgetUiModels.count { it.isVisible }}"
-    )
-
     if (numberOfColumns == 1) {
-        WooLog.d(WooLog.T.DASHBOARD, "Using single-column layout with Column + verticalScroll")
         Column(
             modifier = modifier
                 .nestedScroll(nestedScrollInterop)
@@ -146,12 +130,10 @@ private fun DashboardWidgets(
             Spacer(modifier = Modifier)
         }
     } else {
-        WooLog.d(WooLog.T.DASHBOARD, "Using multi-column layout with Box + verticalScroll")
         val widgetColumns = splitWidgetsIntoColumns(
             numberOfColumns = numberOfColumns,
             visibleUiWidgets = widgetUiModels.filter { it.isVisible }
         )
-        WooLog.d(WooLog.T.DASHBOARD, "Split widgets into ${widgetColumns.size} columns")
         Box(
             modifier = modifier
                 .nestedScroll(nestedScrollInterop)
@@ -162,7 +144,6 @@ private fun DashboardWidgets(
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 widgetColumns.forEachIndexed { columnIndex, columnWidgets ->
-                    WooLog.d(WooLog.T.DASHBOARD, "Rendering column $columnIndex with ${columnWidgets.size} widgets")
                     Column(
                         modifier = Modifier.weight(1f),
                         verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -195,12 +176,6 @@ private fun calculateColumnNumber(
     }
 
     val visibleWidgetsCount = state.widgets.count { it.isVisible }
-    WooLog.d(
-        WooLog.T.DASHBOARD,
-        "calculateColumnNumber: availableWidthInDp=$availableWidthInDp, " +
-            "columns=$columns, " +
-            "visibleWidgetsCount=$visibleWidgetsCount"
-    )
     return columns.coerceAtMost(maximumValue = maxOf(visibleWidgetsCount, 1))
 }
 
