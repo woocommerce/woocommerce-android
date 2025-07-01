@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.common.composeui.modifier
 
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
@@ -15,6 +16,7 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.utils.CurrentTimeProvider
 import java.util.Date
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class BarcodeInputDetectorTest {
     private var onBarcodeEvent: (BarcodeInputDetector.BarcodeResult) -> Unit = mock()
     private var timeProvider: CurrentTimeProvider = mock()
