@@ -648,10 +648,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
 
-            doReturn(orderShippingLabels).whenever(orderDetailRepository).getOrderShippingLabels(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
-
-            doReturn(true).whenever(orderDetailRepository).isOrderEligibleForSLCreation(order.id)
 
             val shippingLabels = ArrayList<ShippingLabelModel>()
             viewModel.shippingLabels.observeForever { shippingLabelModelList ->
@@ -2367,7 +2364,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `when woo shipping is installed, then navigate to the new shipping flow`() = testBlocking {
         doReturn(order).whenever(orderDetailRepository).getOrderById(any())
-        doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
         doReturn(ShippingLabelSupport.WC_SHIPPING_SUPPORTED)
             .whenever(shippingLabelOnboardingRepository).shippingPluginSupport
 
