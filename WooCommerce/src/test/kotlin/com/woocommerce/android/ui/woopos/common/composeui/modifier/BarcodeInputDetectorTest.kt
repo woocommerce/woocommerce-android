@@ -1,5 +1,8 @@
 package com.woocommerce.android.ui.woopos.common.composeui.modifier
 
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -13,15 +16,16 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.utils.CurrentTimeProvider
 import java.util.Date
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class BarcodeInputDetectorTest {
     private var onBarcodeEvent: (BarcodeInputDetector.BarcodeResult) -> Unit = mock()
     private var timeProvider: CurrentTimeProvider = mock()
     private var currentTime = 10000L
 
-    private fun setupDetector(): BarcodeInputDetector {
+    private fun setupDetector(testScope: TestScope): BarcodeInputDetector {
         currentTime = 10000L
         whenever(timeProvider.currentDate()).thenReturn(Date(currentTime))
-        return BarcodeInputDetector(onBarcodeEvent, timeProvider)
+        return BarcodeInputDetector(onBarcodeEvent, timeProvider, testScope)
     }
 
     private fun advanceTestTimeBy(milliseconds: Long) {
@@ -32,7 +36,7 @@ class BarcodeInputDetectorTest {
     @Test
     fun `given fast keyboard input, when enter key pressed, then success event is triggered with correct data`() = runTest {
         // GIVEN
-        val detector = setupDetector()
+        val detector = setupDetector(this)
         val barcode = "12345678"
         val resultCaptor = argumentCaptor<BarcodeInputDetector.BarcodeResult>()
 
@@ -55,7 +59,7 @@ class BarcodeInputDetectorTest {
     @Test
     fun `given slow keyboard input, when timeout occurs, then error event triggered with no_terminator reason`() = runTest {
         // GIVEN
-        val detector = setupDetector()
+        val detector = setupDetector(this)
         val barcode = "12345678"
         val resultCaptor = argumentCaptor<BarcodeInputDetector.BarcodeResult>()
 
@@ -64,6 +68,7 @@ class BarcodeInputDetectorTest {
             detector.handleKeyInput(char)
             if (index == 3) {
                 advanceTestTimeBy(250)
+                advanceTimeBy(250)
                 detector.handleKeyInput('9')
                 break
             } else {
@@ -84,7 +89,7 @@ class BarcodeInputDetectorTest {
     @Test
     fun `given input shorter than minimum length, when enter pressed, then error event triggered with too_short reason`() = runTest {
         // GIVEN
-        val detector = setupDetector()
+        val detector = setupDetector(this)
         val shortBarcode = "12345"
         val resultCaptor = argumentCaptor<BarcodeInputDetector.BarcodeResult>()
 
@@ -108,7 +113,7 @@ class BarcodeInputDetectorTest {
     @Test
     fun `given two consecutive valid barcodes, when both scanned, then both success events are detected`() = runTest {
         // GIVEN
-        val detector = setupDetector()
+        val detector = setupDetector(this)
         val barcode1 = "12345678"
         val barcode2 = "87654321"
         val resultCaptor = argumentCaptor<BarcodeInputDetector.BarcodeResult>()
@@ -140,7 +145,7 @@ class BarcodeInputDetectorTest {
     @Test
     fun `given partial input with timeout, when new input starts, then error event followed by success event`() = runTest {
         // GIVEN
-        val detector = setupDetector()
+        val detector = setupDetector(this)
         val resultCaptor = argumentCaptor<BarcodeInputDetector.BarcodeResult>()
 
         // WHEN
@@ -149,6 +154,7 @@ class BarcodeInputDetectorTest {
         advanceTestTimeBy(10)
 
         advanceTestTimeBy(250)
+        advanceTimeBy(250)
 
         val barcode = "87654321"
         for (char in barcode) {
@@ -172,7 +178,7 @@ class BarcodeInputDetectorTest {
     @Test
     fun `given carriage return terminator, when valid barcode scanned, then success event is detected`() = runTest {
         // GIVEN
-        val detector = setupDetector()
+        val detector = setupDetector(this)
         val barcode = "12345678"
         val resultCaptor = argumentCaptor<BarcodeInputDetector.BarcodeResult>()
 
@@ -194,7 +200,7 @@ class BarcodeInputDetectorTest {
     @Test
     fun `given empty buffer, when terminator pressed, then no barcode is scanned`() = runTest {
         // GIVEN
-        val detector = setupDetector()
+        val detector = setupDetector(this)
 
         // WHEN
         detector.handleKeyInput('\n')
@@ -206,7 +212,7 @@ class BarcodeInputDetectorTest {
     @Test
     fun `given minimum length barcode, when scanned, then success event triggered`() = runTest {
         // GIVEN
-        val detector = setupDetector()
+        val detector = setupDetector(this)
         val minLengthBarcode = "123456"
         val resultCaptor = argumentCaptor<BarcodeInputDetector.BarcodeResult>()
 
@@ -228,7 +234,7 @@ class BarcodeInputDetectorTest {
     @Test
     fun `given very short barcode, when scanned, then error event with too_short reason`() = runTest {
         // GIVEN
-        val detector = setupDetector()
+        val detector = setupDetector(this)
         val veryShortBarcode = "1" // Much shorter than minimum
         val resultCaptor = argumentCaptor<BarcodeInputDetector.BarcodeResult>()
 
@@ -249,7 +255,7 @@ class BarcodeInputDetectorTest {
     @Test
     fun `given long valid barcode, when scanned successfully, then success event contains full barcode`() = runTest {
         // GIVEN
-        val detector = setupDetector()
+        val detector = setupDetector(this)
         val longBarcode = "1234567890123456789"
         val resultCaptor = argumentCaptor<BarcodeInputDetector.BarcodeResult>()
 
@@ -272,7 +278,7 @@ class BarcodeInputDetectorTest {
     @Test
     fun `given detector clear called, when next input processed, then scan duration starts fresh`() = runTest {
         // GIVEN
-        val detector = setupDetector()
+        val detector = setupDetector(this)
         val barcode = "12345678"
 
         for (char in barcode) {

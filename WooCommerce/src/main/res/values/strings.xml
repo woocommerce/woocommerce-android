@@ -4296,6 +4296,8 @@
     <string name="woopos_cart_barcode_scan_result_unsupported_product">Unsupported item – %s</string>
     <string name="woopos_cart_barcode_scan_result_server_error">Server error - %s</string>
     <string name="woopos_cart_barcode_scan_result_network_error">No internet connection</string>
+    <string name="woopos_cart_barcode_scan_result_too_short">Scanned barcode is too short</string>
+    <string name="woopos_cart_barcode_scan_result_no_terminator">Scanner did not send end-of-line character</string>
     <string name="woopos_clear_cart_button">Clear</string>
 
     <string name="woopos_banner_simple_products_dialog_content_description">Simple, variable and virtual products only dialog</string>
