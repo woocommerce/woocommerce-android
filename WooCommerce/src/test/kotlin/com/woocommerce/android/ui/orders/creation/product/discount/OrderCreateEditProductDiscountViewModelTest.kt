@@ -30,7 +30,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
-import org.wordpress.android.fluxc.model.WCSettingsModel
+import org.wordpress.android.fluxc.model.settings.CurrencyPosition
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 
@@ -62,7 +62,7 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
             "",
             "",
             2,
-            WCSettingsModel.CurrencyPosition.LEFT
+            CurrencyPosition.LEFT
         ),
         weightUnit = "kg",
         dimensionUnit = "cm",

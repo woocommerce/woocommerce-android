@@ -11,10 +11,11 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.WCSettingsModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.fluxc.wc.settings.WCSettingsTestUtils
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -199,17 +200,17 @@ class WooPosIsEnabledTest : BaseUnitTest() {
 
         whenever(isScreenSizeAllowed()).thenReturn(true)
 
-        val mockSiteSettings = mock<WCSettingsModel>()
-        whenever(mockSiteSettings.countryCode).thenReturn("US")
-        whenever(mockSiteSettings.currencyCode).thenReturn("USD")
-        whenever(wooCommerceStore.getSiteSettings(any())).thenReturn(mockSiteSettings)
+        val siteSettings = buildSiteSettings()
+        whenever(wooCommerceStore.getSiteSettings(any())).thenReturn(siteSettings)
     }
 
     private fun buildSiteSettings(
         countryCode: String = "US",
         currencyCode: String = "USD"
-    ) = mock<WCSettingsModel> {
-        on { this.countryCode }.thenReturn(countryCode)
-        on { this.currencyCode }.thenReturn(currencyCode)
-    }
+    ) = WCSettingsTestUtils.generateSettings(
+        siteId = LocalOrRemoteId.LocalId(1)
+    ).copy(
+        countryCode = countryCode,
+        currencyCode = currencyCode
+    )
 }

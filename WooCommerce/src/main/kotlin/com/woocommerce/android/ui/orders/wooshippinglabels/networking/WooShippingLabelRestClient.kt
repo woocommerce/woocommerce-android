@@ -18,6 +18,21 @@ import javax.inject.Inject
 class WooShippingLabelRestClient @Inject constructor(
     private val wooNetwork: WooNetwork
 ) {
+    suspend fun fetchShippingEligibility(site: SiteModel, orderId: Long): WooPayload<EligibilityResponse> {
+        val url = "/wcshipping/v1/eligibility/$orderId"
+
+        return wooNetwork.executeGetGsonRequest(
+            site = site,
+            path = url,
+            params = mapOf(
+                "can_create_customs_form" to true.toString(),
+                "can_create_package" to true.toString(),
+                "can_create_payment_method" to true.toString()
+            ),
+            clazz = EligibilityResponse::class.java,
+        ).toWooPayload()
+    }
+
     suspend fun fetchShippingLabelPrinting(
         site: SiteModel,
         labelIds: List<Long>,
@@ -79,6 +94,7 @@ class WooShippingLabelRestClient @Inject constructor(
                     message = "Something went wrong"
                 )
             )
+
             else -> WooPayload(Unit)
         }
     }

@@ -22,6 +22,7 @@ import org.wordpress.android.fluxc.model.taxes.TaxRateEntity
 import org.wordpress.android.fluxc.model.taxes.WCTaxClassModel
 import org.wordpress.android.fluxc.model.user.WCUserModel
 import org.wordpress.android.fluxc.persistence.converters.BigDecimalConverter
+import org.wordpress.android.fluxc.persistence.converters.CurrencyPositionConverter
 import org.wordpress.android.fluxc.persistence.converters.LocalIdConverter
 import org.wordpress.android.fluxc.persistence.converters.LongListConverter
 import org.wordpress.android.fluxc.persistence.converters.RemoteIdConverter
@@ -43,6 +44,7 @@ import org.wordpress.android.fluxc.persistence.dao.ProductShippingClassesDao
 import org.wordpress.android.fluxc.persistence.dao.ProductTagsDao
 import org.wordpress.android.fluxc.persistence.dao.ProductVariationsDao
 import org.wordpress.android.fluxc.persistence.dao.ProductsDao
+import org.wordpress.android.fluxc.persistence.dao.SettingsDao
 import org.wordpress.android.fluxc.persistence.dao.ShippingMethodDao
 import org.wordpress.android.fluxc.persistence.dao.TaxBasedOnDao
 import org.wordpress.android.fluxc.persistence.dao.TaxClassDao
@@ -65,6 +67,7 @@ import org.wordpress.android.fluxc.persistence.entity.OrderNoteEntity
 import org.wordpress.android.fluxc.persistence.entity.ShippingMethodEntity
 import org.wordpress.android.fluxc.persistence.entity.TopPerformerProductEntity
 import org.wordpress.android.fluxc.persistence.entity.VisitorSummaryStatsEntity
+import org.wordpress.android.fluxc.persistence.entity.WCSettingsModel
 import org.wordpress.android.fluxc.persistence.entity.WooPaymentsBalanceEntity
 import org.wordpress.android.fluxc.persistence.entity.WooPaymentsDepositEntity
 import org.wordpress.android.fluxc.persistence.entity.WooPaymentsDepositsOverviewEntity
@@ -96,7 +99,7 @@ import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_7_8
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_8_9
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_9_10
 
-const val WC_DATABASE_VERSION = 50
+const val WC_DATABASE_VERSION = 51
 
 @Database(
     version = WC_DATABASE_VERSION,
@@ -133,6 +136,7 @@ const val WC_DATABASE_VERSION = 50
         WCOrderShipmentProviderModel::class,
         WCUserModel::class,
         WCTaxClassModel::class,
+        WCSettingsModel::class,
     ],
     autoMigrations = [
         AutoMigration(from = 12, to = 13),
@@ -166,6 +170,7 @@ const val WC_DATABASE_VERSION = 50
         AutoMigration(from = 47, to = 48),
         AutoMigration(from = 48, to = 49),
         AutoMigration(from = 49, to = 50),
+        AutoMigration(from = 50, to = 51),
     ]
 )
 @TypeConverters(
@@ -174,7 +179,8 @@ const val WC_DATABASE_VERSION = 50
         LongListConverter::class,
         StringListConverter::class,
         RemoteIdConverter::class,
-        BigDecimalConverter::class
+        BigDecimalConverter::class,
+        CurrencyPositionConverter::class,
     ]
 )
 abstract class WCAndroidDatabase : RoomDatabase(), TransactionExecutor {
@@ -203,13 +209,18 @@ abstract class WCAndroidDatabase : RoomDatabase(), TransactionExecutor {
     internal abstract val productSettingsDao: ProductSettingsDao
     internal abstract val taxClassDao: TaxClassDao
     internal abstract val userDao: UserDao
+    internal abstract val settingsDao: SettingsDao
 
     companion object {
-        fun buildDb(applicationContext: Context) = Room.databaseBuilder(
+        fun buildDb(
+            applicationContext: Context,
+            currencyPositionConverter: CurrencyPositionConverter
+        ) = Room.databaseBuilder(
             applicationContext,
             WCAndroidDatabase::class.java,
             "wc-android-database"
         ).allowMainThreadQueries()
+            .addTypeConverter(currencyPositionConverter)
             .fallbackToDestructiveMigrationOnDowngrade()
             .fallbackToDestructiveMigrationFrom(1, 2)
             .addMigrations(MIGRATION_3_4)

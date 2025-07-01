@@ -15,13 +15,15 @@ import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.WCSettingsModel
+import org.wordpress.android.fluxc.model.settings.Settings
 import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.fluxc.wc.settings.WCSettingsTestUtils.generateSettings
 import java.util.Locale
 
 @ExperimentalCoroutinesApi
@@ -81,15 +83,7 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
             delay(1_000)
             emit(secondSite)
         }
-        val firstSettings = WCSettingsModel(
-            localSiteId = 1,
-            currencyCode = "ARS",
-            currencyPosition = WCSettingsModel.CurrencyPosition.RIGHT_SPACE,
-            currencyThousandSeparator = ",",
-            currencyDecimalSeparator = ".",
-            currencyDecimalNumber = 2,
-            couponsEnabled = false
-        )
+        val firstSettings = generateSettings(LocalId(1)).copy(currencyCode = "ARS")
         val secondSettings = firstSettings.copy(currencyCode = "USD")
         whenever(selectedSite.observe()).thenReturn(sitesFlow)
         whenever(wcStore.getSiteSettings(firstSite)).thenReturn(firstSettings)
@@ -107,25 +101,17 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
     private suspend fun setupExponentialBackoff() {
         val site = SiteModel().also { it.id = 1 }
         val sitesFlow = flow { emit(site) }
-        val siteSettings = WCSettingsModel(
-            localSiteId = 1,
-            currencyCode = "ARS",
-            currencyPosition = WCSettingsModel.CurrencyPosition.RIGHT_SPACE,
-            currencyThousandSeparator = ",",
-            currencyDecimalSeparator = ".",
-            currencyDecimalNumber = 2,
-            couponsEnabled = false
-        )
+        val siteSettings = generateSettings(LocalId(1)).copy(currencyCode = "ARS")
         whenever(selectedSite.observe()).thenReturn(sitesFlow)
         // First time return an error
-        val firstCall = WooResult<WCSettingsModel>(
+        val firstCall = WooResult<Settings>(
             error = WooError(
                 WooErrorType.INVALID_RESPONSE,
                 BaseRequest.GenericErrorType.INVALID_RESPONSE
             )
         )
         // Second time return an empty response
-        val secondCall = WooResult<WCSettingsModel>()
+        val secondCall = WooResult<Settings>()
         // Third time return valid settings
         val thirdCall = WooResult(siteSettings)
         whenever(wcStore.fetchSiteGeneralSettings(site)).doReturn(firstCall, secondCall, thirdCall)

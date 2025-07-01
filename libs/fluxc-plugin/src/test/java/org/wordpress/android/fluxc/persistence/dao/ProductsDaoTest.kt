@@ -1,36 +1,34 @@
 package org.wordpress.android.fluxc.persistence.dao
 
 import android.app.Application
-import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
-import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCProductModel
-import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
+import org.wordpress.android.fluxc.persistence.DatabaseTestRule
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.wc.product.ProductTestUtils
-import java.io.IOException
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 @RunWith(RobolectricTestRunner::class)
 class ProductsDaoTest {
+
+    @Rule
+    @JvmField
+    val databaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext<Application>())
+
     private lateinit var sut: ProductsDao
-    private lateinit var database: WCAndroidDatabase
 
     @Before
     fun setUp() {
-        val context = ApplicationProvider.getApplicationContext<Application>()
-        database = Room.inMemoryDatabaseBuilder(context, WCAndroidDatabase::class.java)
-            .allowMainThreadQueries()
-            .build()
-        sut = database.productsDao
+        sut = databaseRule.db.productsDao
     }
 
     @Test
@@ -451,10 +449,4 @@ class ProductsDaoTest {
         excludedProductIds = emptyList(),
         limit = null
     )
-
-    @After
-    @Throws(IOException::class)
-    fun closeDb() {
-        database.close()
-    }
 }

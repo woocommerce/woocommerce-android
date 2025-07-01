@@ -1463,4 +1463,70 @@ class WooPosCartViewModelTest {
             savedState,
         )
     }
+
+    @Test
+    fun `given barcode too short, when scanned, then error item added to cart with correct message`() = runTest {
+        // GIVEN
+        val shortBarcode = "12345"
+        val errorMessage = "Scanned barcode is too short"
+        whenever(resourceProvider.getString(R.string.woopos_cart_barcode_scan_result_too_short))
+            .thenReturn(errorMessage)
+
+        val sut = createSut()
+        val states = sut.state.captureValues()
+
+        // WHEN
+        sut.onUIEvent(
+            WooPosCartUIEvent.OnBarcodeEvent(
+                BarcodeInputDetector.BarcodeResult.Error(
+                    barcode = shortBarcode,
+                    scanDurationMs = 100L,
+                    failureReason = BarcodeInputDetector.FailureReason.TOO_SHORT
+                )
+            )
+        )
+        advanceUntilIdle()
+
+        // THEN
+        val finalItemsInCart = (states.last().body as WooPosCartState.Body.WithItems).itemsInCart
+        assertThat(finalItemsInCart).hasSize(1)
+        assertThat(finalItemsInCart.first()).isInstanceOf(WooPosCartItemViewState.Error::class.java)
+        val errorItem = finalItemsInCart.first() as WooPosCartItemViewState.Error
+        assertThat(errorItem.name).isEqualTo(shortBarcode)
+        assertThat(errorItem.message).isEqualTo(errorMessage)
+        verify(soundHelper).playBarcodeScanFailure()
+    }
+
+    @Test
+    fun `given barcode without terminator, when scanned, then error item added to cart with correct message`() = runTest {
+        // GIVEN
+        val barcodeWithoutTerminator = "1234567890"
+        val errorMessage = "Scanner did not send end-of-line character"
+        whenever(resourceProvider.getString(R.string.woopos_cart_barcode_scan_result_no_terminator))
+            .thenReturn(errorMessage)
+
+        val sut = createSut()
+        val states = sut.state.captureValues()
+
+        // WHEN
+        sut.onUIEvent(
+            WooPosCartUIEvent.OnBarcodeEvent(
+                BarcodeInputDetector.BarcodeResult.Error(
+                    barcode = barcodeWithoutTerminator,
+                    scanDurationMs = 100L,
+                    failureReason = BarcodeInputDetector.FailureReason.NO_TERMINATOR
+                )
+            )
+        )
+        advanceUntilIdle()
+
+        // THEN
+        val finalItemsInCart = (states.last().body as WooPosCartState.Body.WithItems).itemsInCart
+        assertThat(finalItemsInCart).hasSize(1)
+        assertThat(finalItemsInCart.first()).isInstanceOf(WooPosCartItemViewState.Error::class.java)
+        val errorItem = finalItemsInCart.first() as WooPosCartItemViewState.Error
+        assertThat(errorItem.name).isEqualTo(barcodeWithoutTerminator)
+        assertThat(errorItem.message).isEqualTo(errorMessage)
+        verify(soundHelper).playBarcodeScanFailure()
+    }
 }

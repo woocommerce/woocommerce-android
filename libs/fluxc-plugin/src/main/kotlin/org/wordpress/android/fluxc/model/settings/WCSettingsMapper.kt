@@ -3,16 +3,17 @@ package org.wordpress.android.fluxc.model.settings
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCProductSettingsModel
-import org.wordpress.android.fluxc.model.WCSettingsModel
-import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition
 import org.wordpress.android.fluxc.model.taxes.TaxBasedOnSettingEntity
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.SiteSettingOptionResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.SiteSettingsResponse
+import org.wordpress.android.fluxc.persistence.entity.WCSettingsModel
 import javax.inject.Inject
 
 class WCSettingsMapper
 @Inject constructor() {
-    fun mapSiteSettings(response: List<SiteSettingsResponse>, site: SiteModel): WCSettingsModel {
+
+    @Suppress("CyclomaticComplexMethod")
+    internal fun mapSiteSettings(response: List<SiteSettingsResponse>, site: SiteModel): WCSettingsModel {
         val currencyCode = getValueForSettingsField(response, "woocommerce_currency")
         val currencyPosition = getValueForSettingsField(response, "woocommerce_currency_pos")
         val currencyThousandSep = getValueForSettingsField(response, "woocommerce_price_thousand_sep")
@@ -29,9 +30,9 @@ class WCSettingsMapper
         val couponsEnabled = getValueForSettingsField(response, "woocommerce_enable_coupons")
 
         return WCSettingsModel(
-            localSiteId = site.id,
+            localSiteId = site.localId(),
             currencyCode = currencyCode ?: "",
-            currencyPosition = CurrencyPosition.fromString(currencyPosition),
+            currencyPosition = currencyPosition.toCurrencyPositionOrDefault(),
             currencyThousandSeparator = currencyThousandSep ?: "",
             currencyDecimalSeparator = currencyDecimalSep ?: "",
             currencyDecimalNumber = currencyNumDecimals?.toIntOrNull() ?: 2,
@@ -44,6 +45,10 @@ class WCSettingsMapper
             couponsEnabled = couponsEnabled?.let { it == "yes" } ?: false
         )
     }
+
+    private fun String?.toCurrencyPositionOrDefault(): CurrencyPosition = this?.let {
+        CurrencyPosition.valueOf(it.uppercase())
+    } ?: CurrencyPosition.LEFT
 
     fun mapProductSettings(response: List<SiteSettingsResponse>, site: SiteModel): WCProductSettingsModel {
         val weightUnit = getValueForSettingsField(response, "woocommerce_weight_unit")
@@ -68,5 +73,24 @@ class WCSettingsMapper
 
     private fun getValueForSettingsField(settingsResponse: List<SiteSettingsResponse>, field: String): String? {
         return settingsResponse.find { it.id != null && it.id == field }?.value?.asString
+    }
+
+    companion object {
+        internal fun mapToDomain(entity: WCSettingsModel): Settings {
+            return Settings(
+                currencyCode = entity.currencyCode,
+                currencyPosition = entity.currencyPosition,
+                currencyThousandSeparator = entity.currencyThousandSeparator,
+                currencyDecimalSeparator = entity.currencyDecimalSeparator,
+                currencyDecimalNumber = entity.currencyDecimalNumber,
+                countryCode = entity.countryCode,
+                stateCode = entity.stateCode,
+                address = entity.address,
+                address2 = entity.address2,
+                city = entity.city,
+                postalCode = entity.postalCode,
+                couponsEnabled = entity.couponsEnabled
+            )
+        }
     }
 }

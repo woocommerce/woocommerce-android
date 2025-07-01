@@ -38,16 +38,16 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
-import org.wordpress.android.fluxc.model.WCSettingsModel
+import org.wordpress.android.fluxc.model.settings.CurrencyPosition
+import org.wordpress.android.fluxc.model.settings.CurrencyPosition.LEFT
 import java.math.BigDecimal
-import kotlin.text.isEmpty
 
 @Composable
 fun WooPosMoneyInputField(
     value: BigDecimal?,
     onValueChange: (BigDecimal?) -> Unit,
     currencySymbol: String,
-    currencyPosition: WCSettingsModel.CurrencyPosition,
+    currencyPosition: CurrencyPosition,
     decimalSeparator: String,
     numberOfDecimals: Int,
     textStyle: WooPosTypography = WooPosTypography.BodyLarge,
@@ -227,7 +227,7 @@ fun WooPosMoneyInputFieldPreview() {
                 value = null,
                 onValueChange = {},
                 currencySymbol = "$",
-                currencyPosition = WCSettingsModel.CurrencyPosition.LEFT,
+                currencyPosition = LEFT,
                 decimalSeparator = ".",
                 numberOfDecimals = 2,
                 textColor = MaterialTheme.colorScheme.onSurface,
@@ -239,7 +239,7 @@ fun WooPosMoneyInputFieldPreview() {
                 value = BigDecimal.ZERO,
                 onValueChange = {},
                 currencySymbol = "$",
-                currencyPosition = WCSettingsModel.CurrencyPosition.LEFT,
+                currencyPosition = LEFT,
                 decimalSeparator = ".",
                 numberOfDecimals = 2,
                 textColor = MaterialTheme.colorScheme.onSurface,
@@ -251,7 +251,7 @@ fun WooPosMoneyInputFieldPreview() {
                 value = BigDecimal.TEN,
                 onValueChange = {},
                 currencySymbol = "$",
-                currencyPosition = WCSettingsModel.CurrencyPosition.LEFT,
+                currencyPosition = LEFT,
                 decimalSeparator = ".",
                 numberOfDecimals = 2,
                 textColor = MaterialTheme.colorScheme.onSurface,
