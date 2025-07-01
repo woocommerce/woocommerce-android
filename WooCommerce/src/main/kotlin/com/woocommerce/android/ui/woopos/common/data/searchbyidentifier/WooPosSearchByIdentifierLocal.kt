@@ -13,9 +13,7 @@ class WooPosSearchByIdentifierLocal @Inject constructor(
             return WooPosSearchByIdentifierResult.Success(it)
         }
 
-        return findVariationWithParentByIdentifier(identifier) ?: WooPosSearchByIdentifierResult.Failure(
-            WooPosSearchByIdentifierResult.Error.NotFound
-        )
+        return findVariationWithParentByIdentifier(identifier)
     }
 
     private suspend fun findProductByIdentifier(identifier: String) =
@@ -24,13 +22,17 @@ class WooPosSearchByIdentifierLocal @Inject constructor(
         }
 
     private suspend fun findVariationWithParentByIdentifier(identifier: String):
-        WooPosSearchByIdentifierResult.VariationSuccess? {
+        WooPosSearchByIdentifierResult {
         val variation = variationsCache.getAll().firstOrNull { variation ->
             variation.globalUniqueId.equals(identifier, ignoreCase = true)
-        } ?: return null
+        } ?: return WooPosSearchByIdentifierResult.Failure(
+            WooPosSearchByIdentifierResult.Error.NotFound
+        )
 
         return productsCache.getProductById(variation.remoteProductId)?.let { parentProduct ->
             WooPosSearchByIdentifierResult.VariationSuccess(variation, parentProduct)
-        }
+        } ?: return WooPosSearchByIdentifierResult.Failure(
+            WooPosSearchByIdentifierResult.Error.NotFound
+        )
     }
 }
