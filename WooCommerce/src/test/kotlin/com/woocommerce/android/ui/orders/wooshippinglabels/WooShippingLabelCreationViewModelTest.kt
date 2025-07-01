@@ -185,7 +185,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         serviceName = "Default",
         deliveryDays = 1,
         price = BigDecimal(12),
-        discount = BigDecimal.ZERO,
+
         option = Option.DEFAULT,
         carrier = defaultCarrier.carrier,
         hasFreePickup = true,
