@@ -3,7 +3,9 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.networking
 import com.google.gson.JsonObject
 import com.woocommerce.android.extensions.filterNotNull
 import com.woocommerce.android.ui.orders.wooshippinglabels.purchased.printing.ShippingLabelPrintingResponse
+import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.DestinationAddressDTO
+import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.ShippingRateSurchargeDTO
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
@@ -137,6 +139,7 @@ class WooShippingLabelRestClient @Inject constructor(
         shipmentId: String,
         selectedRate: RateDTO,
         parentRate: RateDTO?,
+        selectedRateOptions: Map<WooShippingRateModel.Option, ShippingRateSurchargeDTO>,
         markOrderComplete: Boolean,
         hazmat: HazmatDTO = HazmatDTO(),
         customs: Map<String, CustomsDTO>,
@@ -154,8 +157,7 @@ class WooShippingLabelRestClient @Inject constructor(
                     "rate" to selectedRate,
                     "parent" to parentRate
                 ),
-                // TODO: `selected_rate_options` will be updated while adding UPS support PaJDVv-2Gf-p2
-                "selected_rate_options" to "",
+                "selected_rate_options" to selectedRateOptions.mapKeys { it.key.typeId },
                 "hazmat" to mapOf(selectedPackage.boxId to hazmat),
                 "customs" to customs,
                 "user_meta" to mapOf("last_order_completed" to markOrderComplete),

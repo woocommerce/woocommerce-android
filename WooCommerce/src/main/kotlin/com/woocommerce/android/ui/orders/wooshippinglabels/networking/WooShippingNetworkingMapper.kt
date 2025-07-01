@@ -20,6 +20,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooS
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRatesDatasourceMapper
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingSelectedRateModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.DestinationAddressDTO
+import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.ShippingRateSurchargeDTO
 import com.woocommerce.android.util.StringUtils.combineStrings
 import java.math.BigDecimal
 import java.util.Date
@@ -280,6 +281,33 @@ class WooShippingNetworkingMapper @Inject constructor(
             listRate = selectedRate.listRate,
             retailRate = selectedRate.retailRate
         )
+    }
+
+    fun toSelectedRateOptions(
+        selectedRate: WooShippingSelectedRateModel
+    ): Map<WooShippingRateModel.Option, ShippingRateSurchargeDTO> {
+        val additionalRates = selectedRate.additionalRates.associate {
+            it.option to ShippingRateSurchargeDTO(
+                value = true,
+                surcharge = selectedRate.getSurcharge(it.option)
+            )
+        }
+
+        val signatureSurcharge = if (selectedRate.rate.option == WooShippingRateModel.Option.SIGNATURE ||
+            selectedRate.rate.option == WooShippingRateModel.Option.ADULT_SIGNATURE
+        ) {
+            selectedRate.rate.option to ShippingRateSurchargeDTO(
+                value = if (selectedRate.rate.option == WooShippingRateModel.Option.SIGNATURE) {
+                    "yes"
+                } else {
+                    "adult"
+                },
+                surcharge = selectedRate.getSurcharge(selectedRate.rate.option)
+            )
+        } else {
+            null
+        }
+        return additionalRates + (signatureSurcharge?.let { mapOf(it) } ?: emptyMap())
     }
 
     fun toAddressDTO(address: Address, id: String? = null): AddressDTO {
