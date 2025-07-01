@@ -21,6 +21,7 @@ class WCProductPropertyReadMoreView @JvmOverloads constructor(
     private var textCaption: MaterialTextView
     private var textContent: MaterialTextView
     private var btnReadMore: MaterialButton
+    private var globalLayoutListener: ViewTreeObserver.OnGlobalLayoutListener? = null
 
     init {
         with(inflate(context, R.layout.product_property_read_more_view_layout, this)) {
@@ -39,9 +40,14 @@ class WCProductPropertyReadMoreView @JvmOverloads constructor(
         textCaption.text = caption
         textContent.text = content
 
-        textContent.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+        globalLayoutListener?.let {
+            textContent.viewTreeObserver.removeOnGlobalLayoutListener(it)
+        }
+
+        globalLayoutListener = object : ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
                 textContent.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                globalLayoutListener = null
                 if (textContent.lineCount > maxLines) {
                     textContent.maxLines = maxLines
                     btnReadMore.visibility = VISIBLE
@@ -50,7 +56,16 @@ class WCProductPropertyReadMoreView @JvmOverloads constructor(
                     btnReadMore.visibility = GONE
                 }
             }
-        })
+        }
+        textContent.viewTreeObserver.addOnGlobalLayoutListener(globalLayoutListener)
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        globalLayoutListener?.let {
+            textContent.viewTreeObserver.removeOnGlobalLayoutListener(it)
+            globalLayoutListener = null
+        }
     }
 
     private fun showFullContent(caption: String, content: String) {
