@@ -18,8 +18,11 @@ import com.woocommerce.android.databinding.FragmentProductDetailBinding
 import com.woocommerce.android.ui.products.list.ProductListFragment
 import com.woocommerce.android.util.IsWindowClassLargeThanCompact
 import org.wordpress.android.util.ActivityUtils
+import javax.inject.Inject
 
-class ProductDetailsToolbarHelper : FragmentManager.FragmentLifecycleCallbacks(), Toolbar.OnMenuItemClickListener {
+class ProductDetailsToolbarHelper @Inject constructor() :
+    FragmentManager.FragmentLifecycleCallbacks(),
+    Toolbar.OnMenuItemClickListener {
     private var fragment: ProductDetailFragment? = null
     private var binding: FragmentProductDetailBinding? = null
     private var viewModel: ProductDetailViewModel? = null
@@ -85,6 +88,7 @@ class ProductDetailsToolbarHelper : FragmentManager.FragmentLifecycleCallbacks()
                         null
                     }
                 }
+
                 isPartOfProductListFlow() -> {
                     AppCompatResources.getDrawable(activity!!, R.drawable.ic_back_24dp)
                 }
