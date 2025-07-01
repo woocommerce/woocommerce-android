@@ -948,6 +948,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     fun `show shipping label creation if the order is eligible`() = testBlocking {
         doReturn(ShippingLabelSupport.WC_SHIPPING_SUPPORTED)
             .whenever(shippingLabelOnboardingRepository).shippingPluginSupport
+        doReturn(flowOf(OrderTestUtils.generateShippingLabelModels(2)))
+            .whenever(configDataStore).getShippingLabels(any())
         doReturn(flowOf(true))
             .whenever(shippingEligibilityDataStore).observeEligibility(any())
         doReturn(order).whenever(orderDetailRepository).getOrderById(any())
