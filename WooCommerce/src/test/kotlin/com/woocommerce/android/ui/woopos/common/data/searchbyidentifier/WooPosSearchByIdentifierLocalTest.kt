@@ -162,6 +162,30 @@ class WooPosSearchByIdentifierLocalTest {
         assertEquals(product, result.parentProduct)
     }
 
+    @Test
+    fun `given variation found but parent product not found, when search called, then return failure`() = runTest {
+        // GIVEN
+        val identifier = "VAR123456"
+        val productId = 1L
+        val variation: ProductVariation = mock {
+            on { remoteVariationId }.thenReturn(10L)
+            on { remoteProductId }.thenReturn(productId)
+            on { globalUniqueId }.thenReturn(identifier)
+            on { sku }.thenReturn("")
+        }
+
+        whenever(productsCache.getAll()).thenReturn(emptyList())
+        whenever(variationsCache.getAll()).thenReturn(listOf(variation))
+        whenever(productsCache.getProductById(productId)).thenReturn(null)
+
+        // WHEN
+        val result = sut(identifier)
+
+        // THEN
+        assertTrue(result is WooPosSearchByIdentifierResult.Failure)
+        assertEquals(WooPosSearchByIdentifierResult.Error.NotFound, result.error)
+    }
+
     @Suppress("LongMethod")
     private fun createProduct(
         remoteId: Long = 1,
