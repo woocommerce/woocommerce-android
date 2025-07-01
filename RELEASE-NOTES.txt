@@ -3,6 +3,7 @@
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 22.8
 - [*] Use new Woo brand colors on the card reader update indicator in the in-person payments flow [https://github.com/woocommerce/woocommerce-android/pull/14249]
+- [Internal] [*] Bump target SDK to 35 [https://github.com/woocommerce/woocommerce-android/pull/14262]
 
 22.7
 -----
