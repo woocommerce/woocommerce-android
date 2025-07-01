@@ -5,7 +5,7 @@ agents:
   queue: "android"
 
 steps:
-  - label: "Generate Baseline Profile"
+  - label: "Generate & Benchmark Baseline Profile"
     key: "generate-baseline-profile"
     command: |
       echo "--- :rubygems: Setting up Gems"
@@ -14,25 +14,12 @@ steps:
       echo "--- :closed_lock_with_key: Installing Secrets"
       bundle exec fastlane run configure_apply
 
-      echo "--- :hammer_and_wrench: Building"
+      echo "--- :hammer_and_wrench: Generate Baseline Profile"
       ./gradlew :WooCommerce:generateVanillaReleaseBaselineProfile
-    plugins: [ $CI_TOOLKIT ]
-    artifact_paths:
-      - "**/src/vanillaRelease/generated/baselineProfiles/*"
 
-  - label: "Benchmark Baseline Profile"
-    key: "benchmark-baseline-profile"
-    depends_on:
-      - "generate-baseline-profile"
-    command: |
-      echo "--- :rubygems: Setting up Gems"
-      install_gems
-
-      echo "--- :closed_lock_with_key: Installing Secrets"
-      bundle exec fastlane run configure_apply
-
-      echo "--- :hammer_and_wrench: Building"
+      echo "--- :hammer_and_wrench: Benchmark Baseline Profile"
       ./gradlew :baselineprofile:ftlDeviceTokay35VanillaBenchmarkReleaseAndroidTest
     plugins: [ $CI_TOOLKIT ]
     artifact_paths:
+      - "**/src/vanillaRelease/generated/baselineProfiles/*"
       - "**/build/outputs/androidTest-results/managedDevice/benchmarkrelease/flavors/vanilla/**/results/**/artifacts/storage/emulated/0/Android/media/**/com.woocommerce.android.baselineprofile-benchmarkData.json"
