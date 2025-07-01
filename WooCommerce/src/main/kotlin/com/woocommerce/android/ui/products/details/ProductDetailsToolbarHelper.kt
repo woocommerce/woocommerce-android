@@ -9,8 +9,8 @@ import androidx.annotation.IdRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
@@ -23,7 +23,8 @@ import javax.inject.Inject
 class ProductDetailsToolbarHelper @Inject constructor(
     private val activity: Activity,
     private val isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact,
-) : FragmentManager.FragmentLifecycleCallbacks(), Toolbar.OnMenuItemClickListener {
+) : DefaultLifecycleObserver,
+    Toolbar.OnMenuItemClickListener {
     private var fragment: ProductDetailFragment? = null
     private var binding: FragmentProductDetailBinding? = null
     private var viewModel: ProductDetailViewModel? = null
@@ -39,7 +40,7 @@ class ProductDetailsToolbarHelper @Inject constructor(
         this.binding = binding
         this.viewModel = viewModel
 
-        fragment.parentFragmentManager.registerFragmentLifecycleCallbacks(this, false)
+        fragment.lifecycle.addObserver(this)
 
         setupToolbar()
 
@@ -48,18 +49,15 @@ class ProductDetailsToolbarHelper @Inject constructor(
         }
     }
 
-    override fun onFragmentViewDestroyed(fm: FragmentManager, f: Fragment) {
-        if (f == fragment) {
-            binding = null
-            menu = null
-            fragment = null
-            viewModel = null
-            fm.unregisterFragmentLifecycleCallbacks(this)
-        }
-    }
-
     fun updateTitle(title: String) {
         binding?.productDetailToolbar?.title = title
+    }
+
+    override fun onDestroy(owner: LifecycleOwner) {
+        fragment = null
+        binding = null
+        viewModel = null
+        menu = null
     }
 
     fun setupToolbar() {
