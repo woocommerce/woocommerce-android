@@ -82,11 +82,11 @@ class WooShippingRatesRepository @Inject constructor(
     ): PackageDTO {
         return if (customsData != null) {
             PackageWithCustomsDTO(
-                id = selectedPackage.id,
-                boxId = "default_package",
+                id = "default_package",
+                boxId = selectedPackage.id,
                 length = selectedPackage.length.toDouble(),
                 width = selectedPackage.width.toDouble(),
-                height = selectedPackage.height.toDouble(),
+                height = selectedPackage.height.toDoubleOrNull() ?: PackageData.DEFAULT_HEIGHT,
                 weight = weight.toDouble(),
                 isLetter = selectedPackage.isLetter,
                 contentsType = customsData.contentType.name.toLowerCase(Locale.current),
@@ -110,11 +110,11 @@ class WooShippingRatesRepository @Inject constructor(
             )
         } else {
             CommonPackageDTO(
-                id = selectedPackage.id,
-                boxId = "default_package",
+                id = "default_package",
+                boxId = selectedPackage.id,
                 length = selectedPackage.length.toDouble(),
                 width = selectedPackage.width.toDouble(),
-                height = selectedPackage.height.toDouble(),
+                height = selectedPackage.height.toDoubleOrNull() ?: PackageData.DEFAULT_HEIGHT,
                 weight = weight.toDouble(),
                 isLetter = selectedPackage.isLetter,
                 hazmatCategory = hazmatSelection?.toHazmatCategory(),

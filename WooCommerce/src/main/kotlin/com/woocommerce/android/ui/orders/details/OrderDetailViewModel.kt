@@ -58,6 +58,7 @@ import com.woocommerce.android.ui.orders.creation.shipping.RefreshShippingMethod
 import com.woocommerce.android.ui.orders.creation.shipping.ShippingLineDetails
 import com.woocommerce.android.ui.orders.creation.shipping.ShippingMethodsRepository
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigDataStore
+import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingEligibilityDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.fillProducts
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingLabelRepository
@@ -112,6 +113,7 @@ class OrderDetailViewModel @Inject constructor(
     private val tracker: OrderDetailTracker,
     private val shippingLabelOnboardingRepository: ShippingLabelOnboardingRepository,
     private val shippingLabelRepository: WooShippingLabelRepository,
+    private val eligibilityDataStore: WooShippingEligibilityDataStore,
     private val configDataStore: WooShippingConfigDataStore,
     private val orderDetailsTransactionLauncher: OrderDetailsTransactionLauncher,
     private val getOrderSubscriptions: GetOrderSubscriptions,
@@ -828,7 +830,9 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     private fun fetchSLCreationEligibilityAsync() = async {
-        if (shippingLabelOnboardingRepository.shippingPluginSupport.isSupported()) {
+        if (isRevampWooShippingEnabled) {
+            shippingLabelRepository.fetchShippingEligibility(selectedSite.get(), navArgs.orderId)
+        } else if (shippingLabelOnboardingRepository.shippingPluginSupport.isSupported()) {
             orderDetailRepository.fetchSLCreationEligibility(navArgs.orderId)
         }
         orderDetailsTransactionLauncher.onPackageCreationEligibleFetched()
@@ -941,9 +945,7 @@ class OrderDetailViewModel @Inject constructor(
 
         val orderEligibleForInPersonPayments = viewState.orderInfo?.isPaymentCollectableWithCardReader == true
 
-        val isOrderEligibleForSLCreation = shippingLabelOnboardingRepository.shippingPluginSupport.isSupported() &&
-            orderDetailRepository.isOrderEligibleForSLCreation(awaitOrder().id) &&
-            !orderEligibleForInPersonPayments
+        val isOrderEligibleForSLCreation = isOrderEligibleForSLCreation(orderEligibleForInPersonPayments)
 
         if (isOrderEligibleForSLCreation &&
             viewState.isCreateShippingLabelButtonVisible != true &&
@@ -967,6 +969,14 @@ class OrderDetailViewModel @Inject constructor(
             isAIThankYouNoteButtonShown = shouldShowThankYouNoteButton()
         )
     }
+
+    private suspend fun isOrderEligibleForSLCreation(orderEligibleForInPersonPayments: Boolean) =
+        if (isRevampWooShippingEnabled) {
+            eligibilityDataStore.observeEligibility(awaitOrder().id).first() == true
+        } else {
+            shippingLabelOnboardingRepository.shippingPluginSupport.isSupported() &&
+                orderDetailRepository.isOrderEligibleForSLCreation(awaitOrder().id)
+        } && !orderEligibleForInPersonPayments
 
     private suspend fun shouldShowThankYouNoteButton() =
         selectedSite.getIfExists()?.isWPComAtomic == true &&

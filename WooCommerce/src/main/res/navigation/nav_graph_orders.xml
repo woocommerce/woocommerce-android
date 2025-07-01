@@ -730,6 +730,9 @@
         <action
             android:id="@+id/action_wooShippingLabelCreationFragment_to_wooShippingEditPaymentDialogFragment"
             app:destination="@id/wooShippingEditPaymentDialogFragment" />
+        <action
+            android:id="@+id/action_wooShippingLabelCreationFragment_to_upsDapTermsOfServiceBottomSheetFragment"
+            app:destination="@id/upsDapTermsOfServiceBottomSheetFragment" />
     </fragment>
     <fragment
         android:id="@+id/wooShippingLabelPackageCreationFragment"
@@ -813,4 +816,13 @@
         android:id="@+id/wooShippingEditPaymentDialogFragment"
         android:name="com.woocommerce.android.ui.orders.wooshippinglabels.payment.WooShippingEditPaymentDialogFragment"
         android:label="WooShippingEditPaymentDialogFragment" />
+
+    <dialog
+        android:id="@+id/upsDapTermsOfServiceBottomSheetFragment"
+        android:name="com.woocommerce.android.ui.orders.wooshippinglabels.upsdap.UPSDAPTermsOfServiceBottomSheetFragment"
+        android:label="UPSDAPTermsOfServiceBottomSheetFragment">
+        <argument
+            android:name="originAddress"
+            app:argType="com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress" />
+    </dialog>
 </navigation>

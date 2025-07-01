@@ -1,11 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-06-03 09:54:04+0000
+Translation-Revision-Date: 2025-06-17 09:54:05+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="no_network_message">利用可能なネットワークがありません</string>
+    <string name="media_loading_failed">メディア読み込み失敗</string>
+    <string name="media_library_title">WordPress メディアライブラリ</string>
+    <string name="woo_shipping_refund_note">この返金リクエストは未使用の配送ラベルにのみ適用され、注文そのものには影響しないことに注意してください。</string>
+    <string name="woo_shipping_refund_amount_eligible_for_refund">&lt;b&gt;返金対象額:&lt;/b&gt; %s</string>
+    <string name="woo_shipping_refund_purchase_date">&lt;b&gt;購入日:&lt;/b&gt; %s</string>
+    <string name="woo_shipping_refund_description">未使用の配送ラベルの返金をリクエストします。 配送ラベルの返金プロセスは直ちに開始され、通常14営業日以内に完了します。</string>
+    <string name="woo_shipping_refund_title">配送ラベルの返金をリクエスト</string>
+    <string name="woo_shipping_split_shipment_error">配送を分割できませんでした。 もう一度お試しください。</string>
+    <string name="woopos_cart_searching_for_item">検索中</string>
+    <string name="woopos_cart_adding_item_to_cart_failed">お買い物カゴへのアイテムの追加に失敗しました: %s。</string>
+    <string name="woopos_cart_coupon_added_to_cart_accessibility">クーポン %1$s がお買い物カゴに追加されました</string>
+    <string name="woopos_cart_product_added_to_cart_accessibility">商品 %1$s がお買い物カゴに追加されました (価格%2$s)</string>
+    <string name="woopos_barcode_scanning_title">バーコードスキャン</string>
+    <string name="woopos_dialog_barcode_info_background_content_description">背景を暗くしました。 タップしてダイアログを閉じます。</string>
+    <string name="woopos_dialog_barcode_info_content_description">バーコードスキャン情報ダイアログ</string>
+    <string name="woopos_dialog_barcode_info_button_label">OK</string>
+    <string name="woopos_dialog_barcode_info_quinary_message">スキャナーはキーボードをエミュレートするため、ソフトウェアのキーボードが表示されない場合があります (検索内など)。 キーボードのアイコンをタップすると、ソフトウェアのキーボードが再び表示されます。</string>
+    <string name="woopos_dialog_barcode_info_quaternary_message">• アイテムリストでバーコードをスキャンすると、商品がお買い物カゴに追加されます。</string>
+    <string name="woopos_dialog_barcode_info_tertiary_message">• システム Bluetooth 設定でバーコードスキャナーを接続します。</string>
+    <string name="woopos_dialog_barcode_info_secondary_message">• Bluetooth バーコードスキャナーの手順を参照して HID モードを設定します。</string>
+    <string name="woopos_dialog_barcode_info_more_details_link">詳細情報</string>
+    <string name="woopos_dialog_barcode_info_primary_message">• 「商品」&gt;「商品情報」&gt;「在庫」の「GTIN、UPC、EAN、ISBN」フィールドでバーコードを設定します。 </string>
+    <string name="woopos_dialog_barcode_info_intro_message">外部スキャナーを使用してバーコードをスキャンし、お買い物カゴをすばやく作成できます。</string>
+    <string name="woopos_dialog_barcode_info_heading">バーコードスキャン</string>
+    <string name="woopos_cart_barcode_scan_result_request_cancelled">リクエストがキャンセルされました</string>
+    <string name="woopos_cart_barcode_scan_result_network_error">インターネットに接続していません</string>
+    <string name="woopos_cart_barcode_scan_result_unsupported_product">サポートされていないアイテム  – %s</string>
+    <string name="woopos_cart_barcode_scan_result_product_not_found">不明なスキャン済みアイテム</string>
+    <string name="woopos_add_coupon_to_cart_accessibility_label">お買い物カゴにクーポンを追加</string>
+    <string name="woopos_add_variable_product_to_cart_accessibility_label">バリエーションリストを開く</string>
+    <string name="woopos_add_product_to_cart_accessibility_label">商品をお買い物カゴに追加</string>
+    <string name="woopos_cart_item_error_content_description">アイテム %s の読み込み中にエラーが発生しました</string>
+    <string name="woopos_cart_item_loading_content_description">アイテム %s の読み込み中</string>
+    <string name="blaze_campaign_edit_ad_arrow_back_description">以前の提案</string>
+    <string name="blaze_campaign_edit_ad_arrow_forward_description">次の提案</string>
+    <string name="blaze_campaign_preview_tos_checkbox_evergreen_campaigns">%2$sより毎週最大%1$sを定期的に請求されることに同意します。 キャンペーン中のさまざまなタイミングで請求が発生する場合があります。 &lt;a href=\'cancelInstructions\'&gt;&lt;u&gt;いつでもキャンセル可能です&lt;/u&gt;&lt;/a&gt;。キャンセルまでに配信された広告に対してのみ支払います。</string>
+    <string name="blaze_campaign_preview_tos_checkbox_over_7_days_campaign">%2$sより毎週最大%1$sを定期的に請求されることに同意します。 キャンペーン中のさまざまなタイミングで請求が発生する場合があります。 &lt;a href=\'cancelInstructions\'&gt;&lt;u&gt;いつでもキャンセル可能です&lt;/u&gt;&lt;/a&gt;。キャンセルまでに配信された広告に対してのみ支払います。</string>
+    <string name="blaze_campaign_preview_tos_checkbox_less_than_7_days_campaign">%2$sより最大%1$sを請求されることに同意します。 キャンペーン期間中、複数の支払いで請求が発生する場合があります。 &lt;a href=\'cancelInstructions\'&gt;&lt;u&gt;いつでもキャンセル可能です&lt;/u&gt;&lt;/a&gt;。キャンセルまでに配信された広告に対してのみ支払います。</string>
+    <string name="customer_detail_guest_customer">ゲスト</string>
     <string name="woopos_search_items_error_description">もう一度お試しください。</string>
     <string name="woopos_search_coupons_error_title">クーポンを読み込めません</string>
     <string name="woopos_search_items_error_title">商品を読み込めません</string>
@@ -45,7 +85,7 @@ Language: ja_JP
     <string name="woopos_coupons_empty_list_image_description">クーポンがありません</string>
     <string name="woopos_coupons_screen_title">クーポン</string>
     <string name="woopos_product_limitations_title">商品はどこにありますか ?</string>
-    <string name="woopos_coupon_item_content_description">クーポン %s</string>
+    <string name="woopos_coupon_item_content_description_v2">クーポン %s、%s</string>
     <string name="woo_shipping_split_shipment_bottom_sheet_remove_button">配送を削除</string>
     <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_plural">この配送の%d件のアイテムの移動先を選択します。</string>
     <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_one">この配送の%d件のアイテムの移動先を選択します。</string>
@@ -270,7 +310,7 @@ Language: ja_JP
     <string name="woopos_variations_loading_error_title">バリエーションを読み込めません</string>
     <string name="woopos_variations_back_content_description">戻る</string>
     <string name="woopos_variation_item_content_description">バリエーション %s、価格 %s</string>
-    <string name="woopos_variable_product_item_content_description">バリエーションのある商品 %s、価格 %s</string>
+    <string name="woopos_variable_product_item_content_description_v2">バリエーションのある商品 %s</string>
     <string name="blaze_campaign_edit_ad_change_description_empty_error">説明を空にすることはできません</string>
     <string name="blaze_campaign_edit_ad_change_cta_text_title">行動喚起 (CTA)</string>
     <string name="blaze_campaign_edit_ad_change_tagline_empty_error">キャッチフレーズを空にすることはできません</string>

@@ -48,7 +48,7 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTypedTextField
 import com.woocommerce.android.ui.compose.component.WCSwitch
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import org.wordpress.android.fluxc.model.WCSettingsModel
+import org.wordpress.android.fluxc.model.settings.CurrencyPosition
 import java.math.BigDecimal
 
 private const val MAX_INPUT_CHARS = 30
@@ -229,7 +229,7 @@ fun ChangeDueCalculatorScreenSuccessPreviewUnchecked() {
             recordTransactionDetailsChecked = false,
             canCompleteOrder = true,
             currencySymbol = "$",
-            currencyPosition = WCSettingsModel.CurrencyPosition.LEFT,
+            currencyPosition = CurrencyPosition.LEFT,
             decimalSeparator = ".",
             numberOfDecimals = 2
         ),
@@ -253,7 +253,7 @@ fun ChangeDueCalculatorScreenSuccessPreviewChecked() {
             recordTransactionDetailsChecked = true,
             canCompleteOrder = true,
             currencySymbol = "€",
-            currencyPosition = WCSettingsModel.CurrencyPosition.LEFT_SPACE,
+            currencyPosition = CurrencyPosition.LEFT_SPACE,
             decimalSeparator = ".",
             numberOfDecimals = 2
         ),
@@ -277,7 +277,7 @@ fun ChangeDueCalculatorScreenSuccessPreviewDisabled() {
             recordTransactionDetailsChecked = true,
             canCompleteOrder = false,
             currencySymbol = "€",
-            currencyPosition = WCSettingsModel.CurrencyPosition.LEFT,
+            currencyPosition = CurrencyPosition.LEFT,
             decimalSeparator = ".",
             numberOfDecimals = 2
         ),

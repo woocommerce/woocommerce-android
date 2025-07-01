@@ -199,7 +199,7 @@ class WCShippingLabelStore @Inject constructor(
         return coroutineEngine.withDefaultContext(AppLog.T.API, this, "verifyAddress") {
             val response = restClient.verifyAddress(site, address, type)
             return@withDefaultContext if (response.isError) {
-                WooResult(response.error.apply { message = message ?: "" })
+                WooResult(response.error)
             } else if (response.result?.error != null) {
                 if (!response.result.error.address.isNullOrBlank()) {
                     WooResult(InvalidAddress(response.result.error.address))

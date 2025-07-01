@@ -28,10 +28,11 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.WCSettingsModel
-import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition.LEFT
+import org.wordpress.android.fluxc.model.settings.CurrencyPosition.LEFT
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.fluxc.wc.settings.WCSettingsTestUtils
 import java.math.BigDecimal
 import java.util.Calendar
 import java.util.Date
@@ -92,9 +93,9 @@ class ProductPricingViewModelTest : BaseUnitTest() {
 
     @Before
     fun setup() {
-        val siteSettings = mock<WCSettingsModel> {
-            on(it.currencyDecimalNumber).thenReturn(viewState.decimals)
-        }
+        val siteSettings = WCSettingsTestUtils.generateSettings(LocalId(1)).copy(
+            currencyDecimalNumber = viewState.decimals
+        )
         doReturn(SiteModel()).whenever(selectedSite).get()
         doReturn(siteSettings).whenever(wooCommerceStore).getSiteSettings(any())
         doReturn(taxClasses).whenever(productRepository).getTaxClassesForSite()

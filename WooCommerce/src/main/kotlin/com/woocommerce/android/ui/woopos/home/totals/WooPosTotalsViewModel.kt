@@ -320,7 +320,7 @@ class WooPosTotalsViewModel @Inject constructor(
                     ParentToChildrenEvent.RemoveCouponsClicked,
                     ParentToChildrenEvent.RefreshProductList,
                     ParentToChildrenEvent.CouponsValidationFailed,
-                    is ParentToChildrenEvent.BarcodeScanned -> Unit
+                    is ParentToChildrenEvent.BarcodeEvent -> Unit
                 }
             }
         }

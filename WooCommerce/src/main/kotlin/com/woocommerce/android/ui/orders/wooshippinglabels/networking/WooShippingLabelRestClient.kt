@@ -18,6 +18,21 @@ import javax.inject.Inject
 class WooShippingLabelRestClient @Inject constructor(
     private val wooNetwork: WooNetwork
 ) {
+    suspend fun fetchShippingEligibility(site: SiteModel, orderId: Long): WooPayload<EligibilityResponse> {
+        val url = "/wcshipping/v1/eligibility/$orderId"
+
+        return wooNetwork.executeGetGsonRequest(
+            site = site,
+            path = url,
+            params = mapOf(
+                "can_create_customs_form" to true.toString(),
+                "can_create_package" to true.toString(),
+                "can_create_payment_method" to true.toString()
+            ),
+            clazz = EligibilityResponse::class.java,
+        ).toWooPayload()
+    }
+
     suspend fun fetchShippingLabelPrinting(
         site: SiteModel,
         labelIds: List<Long>,
@@ -79,6 +94,7 @@ class WooShippingLabelRestClient @Inject constructor(
                     message = "Something went wrong"
                 )
             )
+
             else -> WooPayload(Unit)
         }
     }
@@ -158,7 +174,8 @@ class WooShippingLabelRestClient @Inject constructor(
                 "selected_rate_options" to "",
                 "hazmat" to mapOf(selectedPackage.boxId to hazmat),
                 "customs" to customs,
-                "user_meta" to mapOf("last_order_completed" to markOrderComplete)
+                "user_meta" to mapOf("last_order_completed" to markOrderComplete),
+                "features_supported_by_client" to listOf("upsdap"),
             ),
             clazz = PurchasedShippingLabelResponseDTO::class.java,
         ).toWooPayload()
@@ -275,5 +292,41 @@ class WooShippingLabelRestClient @Inject constructor(
             path = url,
             clazz = RefundLabelResponseDTO::class.java,
         ).toWooPayload()
+    }
+
+    suspend fun updateUPSDAPAgreement(
+        site: SiteModel,
+        originAddress: OriginAddressPurchaseDTO,
+        agreementAccepted: Boolean
+    ): WooPayload<Unit> {
+        val url = "/wcshipping/v1/carrier-strategy/upsdap"
+
+        val result = wooNetwork.executePostGsonRequest(
+            site = site,
+            path = url,
+            body = mapOf(
+                "origin" to mapOf(
+                    "address" to originAddress.address,
+                    "address_2" to originAddress.address2,
+                    "city" to originAddress.city,
+                    "company" to originAddress.company,
+                    "country" to originAddress.country,
+                    // The `name` field is required by the API, but it can't be blank
+                    "name" to originAddress.name.orEmpty().ifBlank { "" },
+                    "phone" to originAddress.phone,
+                    "postcode" to originAddress.postcode,
+                    "state" to originAddress.state,
+                    "email" to originAddress.email
+                ),
+                "confirmed" to agreementAccepted
+            ),
+            clazz = JsonObject::class.java,
+        )
+
+        return if (result is WPAPIResponse.Error) {
+            WooPayload(error = result.error.toWooError())
+        } else {
+            WooPayload(Unit)
+        }
     }
 }
