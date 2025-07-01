@@ -61,6 +61,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
 
     private var lastEmptyViewType: EmptyViewType? = null
     private var globalLayoutListener: ViewTreeObserver.OnGlobalLayoutListener? = null
+    private var fadingOutDelayHandler: Handler? = null
 
     private fun isParentViewHeightSufficient(): Boolean {
         var isSufficient = false
@@ -92,6 +93,8 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
             viewTreeObserver.removeOnGlobalLayoutListener(it)
             globalLayoutListener = null
         }
+        fadingOutDelayHandler?.removeCallbacksAndMessages(null)
+        fadingOutDelayHandler = null
     }
 
     @Suppress("LongMethod", "ComplexMethod")
@@ -106,7 +109,9 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         if (visibility == View.VISIBLE && type != lastEmptyViewType) {
             WooAnimUtils.fadeOut(this, Duration.SHORT)
             val durationMs = Duration.SHORT.toMillis(context) + 50L
-            Handler(Looper.getMainLooper()).postDelayed(
+            fadingOutDelayHandler?.removeCallbacksAndMessages(null)
+            fadingOutDelayHandler = Handler(Looper.getMainLooper())
+            fadingOutDelayHandler?.postDelayed(
                 {
                     show(type, searchQueryOrFilter, onButtonClick)
                 },
