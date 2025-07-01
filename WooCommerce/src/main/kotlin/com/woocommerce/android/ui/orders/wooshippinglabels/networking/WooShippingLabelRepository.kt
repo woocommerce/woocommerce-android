@@ -115,7 +115,7 @@ class WooShippingLabelRepository @Inject constructor(
         val destination = mapper.toDestinationAddressDTO(shipTo)
         val packageDTO = mapper.toPackagePurchaseDTO(
             selectedPackage = selectedPackage,
-            selectedRate = selectedRate.rate,
+            selectedRate = selectedRate,
             shippableItems = shippableItems,
             weight = weight
         )

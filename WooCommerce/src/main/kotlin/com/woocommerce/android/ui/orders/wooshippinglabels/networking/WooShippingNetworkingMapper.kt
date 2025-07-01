@@ -18,6 +18,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.StoreOptionsMo
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRatesDatasourceMapper
+import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingSelectedRateModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.DestinationAddressDTO
 import com.woocommerce.android.util.StringUtils.combineStrings
 import java.math.BigDecimal
@@ -226,7 +227,7 @@ class WooShippingNetworkingMapper @Inject constructor(
 
     fun toPackagePurchaseDTO(
         selectedPackage: PackageData,
-        selectedRate: WooShippingRateModel,
+        selectedRate: WooShippingSelectedRateModel,
         shippableItems: List<Long>,
         weight: Float
     ): PackagePurchaseDTO {
@@ -238,12 +239,26 @@ class WooShippingNetworkingMapper @Inject constructor(
             height = selectedPackage.height.toFloatOrNull() ?: PackageData.DEFAULT_HEIGHT.toFloat(),
             weight = weight,
             isLetter = selectedPackage.isLetter,
-            shipmentId = selectedRate.shipmentId,
+            shipmentId = selectedRate.rate.shipmentId,
             products = shippableItems,
-            rateId = selectedRate.rateId,
-            serviceId = selectedRate.serviceId,
-            carrierId = selectedRate.carrierId,
-            serviceName = selectedRate.serviceName
+            rateId = selectedRate.rate.rateId,
+            serviceId = selectedRate.rate.serviceId,
+            carrierId = selectedRate.rate.carrierId,
+            serviceName = selectedRate.rate.serviceName,
+            signature = when (selectedRate.rate.option) {
+                WooShippingRateModel.Option.SIGNATURE -> "yes"
+                WooShippingRateModel.Option.ADULT_SIGNATURE -> "adult"
+                else -> null
+            },
+            carbonNeutral = selectedRate.additionalRates
+                .any { it.option == WooShippingRateModel.Option.CARBON_NEUTRAL }
+                .takeIf { true },
+            additionalHandling = selectedRate.additionalRates
+                .any { it.option == WooShippingRateModel.Option.ADDITIONAL_HANDLING }
+                .takeIf { true },
+            saturdayDelivery = selectedRate.additionalRates
+                .any { it.option == WooShippingRateModel.Option.SATURDAY_DELIVERY }
+                .takeIf { true }
         )
     }
 
