@@ -119,7 +119,6 @@ class WooShippingLabelRepository @Inject constructor(
             shippableItems = shippableItems,
             weight = weight
         )
-        val rateDTO = mapper.toRateDTO(selectedRate.rate)
         val customsDTO = customsData?.let { mapper.toCustomsDTO(it) }
         val hazmatDTO = mapper.toHazmatDTO(hazmatSelection)
         return restClient.purchaseShippingLabel(
@@ -129,7 +128,8 @@ class WooShippingLabelRepository @Inject constructor(
             destination = destination,
             selectedPackage = packageDTO,
             shipmentId = shipmentId,
-            selectedRate = rateDTO,
+            selectedRate = mapper.toRateDTO(selectedRate.rate),
+            parentRate = selectedRate.parentRate?.let { mapper.toRateDTO(it) },
             customs = customsDTO ?: emptyMap(),
             hazmat = hazmatDTO,
             markOrderComplete = lastOrderComplete

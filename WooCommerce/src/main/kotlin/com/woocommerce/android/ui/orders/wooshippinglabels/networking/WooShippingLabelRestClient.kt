@@ -136,6 +136,7 @@ class WooShippingLabelRestClient @Inject constructor(
         selectedPackage: PackagePurchaseDTO,
         shipmentId: String,
         selectedRate: RateDTO,
+        parentRate: RateDTO?,
         markOrderComplete: Boolean,
         hazmat: HazmatDTO = HazmatDTO(),
         customs: Map<String, CustomsDTO>,
@@ -150,10 +151,8 @@ class WooShippingLabelRestClient @Inject constructor(
                 // For this purchase endpoint, `id` represents the shipment ID instead of the package ID
                 "packages" to listOf(selectedPackage.copy(id = shipmentId)),
                 "selected_rate" to mapOf(
-                    selectedPackage.boxId to mapOf(
-                        "rate" to selectedRate,
-                        "parent" to null
-                    )
+                    "rate" to selectedRate,
+                    "parent" to parentRate
                 ),
                 // TODO: `selected_rate_options` will be updated while adding UPS support PaJDVv-2Gf-p2
                 "selected_rate_options" to "",
