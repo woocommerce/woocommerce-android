@@ -60,6 +60,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
     }
 
     private var lastEmptyViewType: EmptyViewType? = null
+    private var globalLayoutListener: ViewTreeObserver.OnGlobalLayoutListener? = null
 
     private fun isParentViewHeightSufficient(): Boolean {
         var isSufficient = false
@@ -73,14 +74,24 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
 
     init {
         // Add a global layout listener to check the height of the parent view
-        viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+        globalLayoutListener = object : ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
                 // Remove the listener to prevent it from being called multiple times
                 viewTreeObserver.removeOnGlobalLayoutListener(this)
+                globalLayoutListener = null
                 // Update the visibility based on the parent view's height
                 binding.emptyViewImage.isVisible = isParentViewHeightSufficient()
             }
-        })
+        }
+        viewTreeObserver.addOnGlobalLayoutListener(globalLayoutListener)
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        globalLayoutListener?.let {
+            viewTreeObserver.removeOnGlobalLayoutListener(it)
+            globalLayoutListener = null
+        }
     }
 
     @Suppress("LongMethod", "ComplexMethod")
