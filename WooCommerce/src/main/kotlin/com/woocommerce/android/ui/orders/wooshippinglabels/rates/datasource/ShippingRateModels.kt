@@ -49,3 +49,9 @@ data class WooShippingRateOptionsModel(
     val defaultRate: WooShippingRateModel
         get() = rateOptions[Option.DEFAULT] ?: rateOptions.values.first()
 }
+
+data class WooShippingSelectedRateModel(
+    val rate: WooShippingRateModel,
+    val parentRate: WooShippingRateModel?,
+    val additionalRates: List<WooShippingRateModel>
+)

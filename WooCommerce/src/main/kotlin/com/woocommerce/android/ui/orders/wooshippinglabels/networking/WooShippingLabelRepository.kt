@@ -11,7 +11,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShi
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PurchasedLabelData
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
-import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingSelectedRateModel
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
@@ -105,7 +105,7 @@ class WooShippingLabelRepository @Inject constructor(
         shipmentId: String,
         shipTo: Address,
         shipFrom: OriginShippingAddress,
-        selectedRate: WooShippingRateModel,
+        selectedRate: WooShippingSelectedRateModel,
         weight: Float,
         lastOrderComplete: Boolean,
         customsData: List<CustomsData>?,
@@ -115,11 +115,11 @@ class WooShippingLabelRepository @Inject constructor(
         val destination = mapper.toDestinationAddressDTO(shipTo)
         val packageDTO = mapper.toPackagePurchaseDTO(
             selectedPackage = selectedPackage,
-            selectedRate = selectedRate,
+            selectedRate = selectedRate.rate,
             shippableItems = shippableItems,
             weight = weight
         )
-        val rateDTO = mapper.toRateDTO(selectedRate)
+        val rateDTO = mapper.toRateDTO(selectedRate.rate)
         val customsDTO = customsData?.let { mapper.toCustomsDTO(it) }
         val hazmatDTO = mapper.toHazmatDTO(hazmatSelection)
         return restClient.purchaseShippingLabel(

@@ -9,12 +9,14 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShipping
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PurchasedLabelData
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingLabelRepository
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
+import com.woocommerce.android.ui.orders.wooshippinglabels.rates.domain.WooShippingRatesDomainMapper
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRateUI
 import javax.inject.Inject
 
 class PurchaseShippingLabel @Inject constructor(
     private val selectedSite: SelectedSite,
-    private val wooShippingLabelRepository: WooShippingLabelRepository
+    private val wooShippingLabelRepository: WooShippingLabelRepository,
+    private val ratesMapper: WooShippingRatesDomainMapper
 ) {
     @Suppress("LongParameterList")
     suspend operator fun invoke(
@@ -37,7 +39,7 @@ class PurchaseShippingLabel @Inject constructor(
             shipmentId = shipmentId.toString(),
             shipTo = shipTo,
             shipFrom = shipFrom,
-            selectedRate = shippingRate.selectedRateOption.rate,
+            selectedRate = ratesMapper(shippingRate),
             weight = weight,
             lastOrderComplete = lastOrderComplete,
             customsData = customsData,
