@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.payments.changeduecalculator
 import androidx.compose.ui.text.AnnotatedString
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import org.wordpress.android.fluxc.model.WCSettingsModel
+import org.wordpress.android.fluxc.model.settings.CurrencyPosition
 
 class CurrencyVisualTransformationTest {
 
@@ -11,7 +11,7 @@ class CurrencyVisualTransformationTest {
     fun `given currency symbol on the left, when transforming text, then prefix is added to the text`() {
         // GIVEN
         val currencySymbol = "$"
-        val transformation = CurrencyVisualTransformation(currencySymbol, WCSettingsModel.CurrencyPosition.LEFT)
+        val transformation = CurrencyVisualTransformation(currencySymbol, CurrencyPosition.LEFT)
         val input = AnnotatedString("123.45")
         val expectedTransformedText = AnnotatedString("$123.45")
 
@@ -26,7 +26,7 @@ class CurrencyVisualTransformationTest {
     fun `given currency symbol on the left space, when transforming text, then prefix and space are added to the text`() {
         // GIVEN
         val currencySymbol = "$"
-        val transformation = CurrencyVisualTransformation(currencySymbol, WCSettingsModel.CurrencyPosition.LEFT_SPACE)
+        val transformation = CurrencyVisualTransformation(currencySymbol, CurrencyPosition.LEFT_SPACE)
         val input = AnnotatedString("123.45")
         val expectedTransformedText = AnnotatedString("$ 123.45")
 
@@ -41,7 +41,7 @@ class CurrencyVisualTransformationTest {
     fun `given currency symbol on the right, when transforming text, then suffix is added to the text`() {
         // GIVEN
         val currencySymbol = "$"
-        val transformation = CurrencyVisualTransformation(currencySymbol, WCSettingsModel.CurrencyPosition.RIGHT)
+        val transformation = CurrencyVisualTransformation(currencySymbol, CurrencyPosition.RIGHT)
         val input = AnnotatedString("123.45")
         val expectedTransformedText = AnnotatedString("123.45$")
 
@@ -56,7 +56,7 @@ class CurrencyVisualTransformationTest {
     fun `given currency symbol on the right space, when transforming text, then suffix and space are added to the text`() {
         // GIVEN
         val currencySymbol = "$"
-        val transformation = CurrencyVisualTransformation(currencySymbol, WCSettingsModel.CurrencyPosition.RIGHT_SPACE)
+        val transformation = CurrencyVisualTransformation(currencySymbol, CurrencyPosition.RIGHT_SPACE)
         val input = AnnotatedString("123.45")
         val expectedTransformedText = AnnotatedString("123.45 $")
 
@@ -72,7 +72,7 @@ class CurrencyVisualTransformationTest {
         // GIVEN
         val currencySymbol = "$"
         val prefixLength = currencySymbol.length
-        val transformation = CurrencyVisualTransformation(currencySymbol, WCSettingsModel.CurrencyPosition.LEFT)
+        val transformation = CurrencyVisualTransformation(currencySymbol, CurrencyPosition.LEFT)
         val input = AnnotatedString("123.45")
 
         // WHEN
@@ -95,7 +95,7 @@ class CurrencyVisualTransformationTest {
         // GIVEN
         val currencySymbol = "$"
         val prefixLength = currencySymbol.length + 1
-        val transformation = CurrencyVisualTransformation(currencySymbol, WCSettingsModel.CurrencyPosition.LEFT_SPACE)
+        val transformation = CurrencyVisualTransformation(currencySymbol, CurrencyPosition.LEFT_SPACE)
         val input = AnnotatedString("123.45")
 
         // WHEN
@@ -117,7 +117,7 @@ class CurrencyVisualTransformationTest {
     fun `given currency symbol on the right, when transforming text, then offset mapping is correct after transformation`() {
         // GIVEN
         val currencySymbol = "$"
-        val transformation = CurrencyVisualTransformation(currencySymbol, WCSettingsModel.CurrencyPosition.RIGHT)
+        val transformation = CurrencyVisualTransformation(currencySymbol, CurrencyPosition.RIGHT)
         val input = AnnotatedString("123.45")
 
         // WHEN
@@ -143,7 +143,7 @@ class CurrencyVisualTransformationTest {
     fun `given currency symbol on the right space, when transforming text, then offset mapping is correct after transformation`() {
         // GIVEN
         val currencySymbol = "$"
-        val transformation = CurrencyVisualTransformation(currencySymbol, WCSettingsModel.CurrencyPosition.RIGHT_SPACE)
+        val transformation = CurrencyVisualTransformation(currencySymbol, CurrencyPosition.RIGHT_SPACE)
         val input = AnnotatedString("123.45")
 
         // WHEN

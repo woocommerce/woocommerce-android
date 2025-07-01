@@ -204,10 +204,6 @@
     -->
     <color name="jetpack_install_progressbar">@color/jetpack_green_40</color>
 
-    <color name="reader_update_progress_color">@color/woo_purple_50</color>
-    <color name="reader_update_rest_color">@color/woo_purple_30</color>
-    <color name="reader_update_border_color">#533582</color>
-
     <!--
     Media picker colors
     -->

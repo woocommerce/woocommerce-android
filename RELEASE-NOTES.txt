@@ -4,6 +4,7 @@
 22.8
 -----
 - [*] POS: Show error messages when scanned barcodes are too short or improperly formatted [https://github.com/woocommerce/woocommerce-android/pull/14255]
+- [*] Use new Woo brand colors on the card reader update indicator in the in-person payments flow [https://github.com/woocommerce/woocommerce-android/pull/14249]
 
 22.7
 -----
