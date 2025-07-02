@@ -6,6 +6,7 @@
 - [*] Fixed a rare crash in the POS when adding a variation product to the cart by scanning a barcode. [https://github.com/woocommerce/woocommerce-android/pull/14259]
 - [*] POS: Show error messages when scanned barcodes are too short or improperly formatted [https://github.com/woocommerce/woocommerce-android/pull/14255]
 - [*] Use new Woo brand colors on the card reader update indicator in the in-person payments flow [https://github.com/woocommerce/woocommerce-android/pull/14249]
+- [internal] Fixed a memory leak on the ProductDetailScreen [https://github.com/woocommerce/woocommerce-android/pull/14264]
 
 22.7
 -----
