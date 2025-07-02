@@ -135,6 +135,7 @@ fun WooShippingLabelCreationScreen(viewModel: WooShippingLabelCreationViewModel)
                 onTrackShipmentClicked = viewModel::onTrackShipmentClicked,
                 onSchedulePickUpClicked = viewModel::onSchedulePickUpClicked,
                 onRefundClicked = viewModel::onRefundClicked,
+                onPrintCustomsClicked = viewModel::onPrintCustomsClicked,
                 onLearnMoreClicked = viewModel::onLearnMoreClicked,
                 onEditPaymentMethodClicked = viewModel::onEditPaymentMethodClicked,
             )
@@ -186,6 +187,7 @@ fun WooShippingLabelCreationScreen(
     onTrackShipmentClicked: () -> Unit,
     onSchedulePickUpClicked: () -> Unit,
     onRefundClicked: () -> Unit,
+    onPrintCustomsClicked: () -> Unit,
     onLearnMoreClicked: () -> Unit,
     onEditPaymentMethodClicked: () -> Unit,
 ) {
@@ -244,6 +246,7 @@ fun WooShippingLabelCreationScreen(
             onTrackShipmentClicked = onTrackShipmentClicked,
             onSchedulePickUpClicked = onSchedulePickUpClicked,
             onRefundClicked = onRefundClicked,
+            onPrintCustomsClicked = onPrintCustomsClicked,
             onLearnMoreClicked = onLearnMoreClicked,
             onEditPaymentMethodClicked = onEditPaymentMethodClicked,
         )
@@ -335,6 +338,7 @@ private fun LabelCreationScreenWithBottomSheet(
     onTrackShipmentClicked: () -> Unit,
     onSchedulePickUpClicked: () -> Unit,
     onRefundClicked: () -> Unit,
+    onPrintCustomsClicked: () -> Unit,
     onLearnMoreClicked: () -> Unit,
     onEditPaymentMethodClicked: () -> Unit,
 ) {
@@ -491,6 +495,7 @@ private fun LabelCreationScreenWithBottomSheet(
                         onTrackShipmentClicked = onTrackShipmentClicked,
                         onSchedulePickUpClicked = onSchedulePickUpClicked,
                         onRefundClicked = onRefundClicked,
+                        onPrintCustomsClicked = onPrintCustomsClicked,
                         onLearnMoreClicked = onLearnMoreClicked,
                     )
                 }
@@ -536,6 +541,7 @@ private fun CreateShippingCards(
     onTrackShipmentClicked: () -> Unit,
     onSchedulePickUpClicked: () -> Unit,
     onRefundClicked: () -> Unit,
+    onPrintCustomsClicked: () -> Unit,
     onLearnMoreClicked: () -> Unit,
 ) {
     Column {
@@ -552,6 +558,7 @@ private fun CreateShippingCards(
                 onTrackShipmentClicked = onTrackShipmentClicked,
                 onSchedulePickUpClicked = onSchedulePickUpClicked,
                 onRefundClicked = onRefundClicked,
+                onPrintCustomsClicked = onPrintCustomsClicked,
                 onLearnMoreClicked = onLearnMoreClicked,
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
@@ -971,6 +978,7 @@ private fun WooShippingLabelCreationScreenPreview() {
             onTrackShipmentClicked = {},
             onSchedulePickUpClicked = {},
             onRefundClicked = {},
+            onPrintCustomsClicked = {},
             onLearnMoreClicked = {},
             onEditPaymentMethodClicked = {},
         )

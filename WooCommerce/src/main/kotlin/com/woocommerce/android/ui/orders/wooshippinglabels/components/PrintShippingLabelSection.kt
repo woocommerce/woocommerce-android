@@ -58,6 +58,7 @@ fun PrintShippingLabelSection(
     onTrackShipmentClicked: () -> Unit,
     onSchedulePickUpClicked: () -> Unit,
     onRefundClicked: () -> Unit,
+    onPrintCustomsClicked: () -> Unit,
     onLearnMoreClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -102,6 +103,7 @@ fun PrintShippingLabelSection(
             onTrackShipmentClicked = onTrackShipmentClicked,
             onSchedulePickUpClicked = onSchedulePickUpClicked,
             onRefundClicked = onRefundClicked,
+            onPrintCustomsClicked = onPrintCustomsClicked,
             onLearnMoreClicked = onLearnMoreClicked,
         )
         Text(
@@ -125,6 +127,7 @@ private fun PrintShippingLabelCard(
     onTrackShipmentClicked: () -> Unit,
     onSchedulePickUpClicked: () -> Unit,
     onRefundClicked: () -> Unit,
+    onPrintCustomsClicked: () -> Unit,
     onLearnMoreClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -318,6 +321,7 @@ internal fun PrintShippingLabelSectionPreview() {
                 onTrackShipmentClicked = {},
                 onSchedulePickUpClicked = {},
                 onRefundClicked = {},
+                onPrintCustomsClicked = {},
                 onLearnMoreClicked = {}
             )
         }
