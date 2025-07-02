@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.upsdap
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,8 +16,11 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -38,83 +42,94 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShipping
 
 @Composable
 fun UPSDAPTermsOfServiceBottomSheet(
-    viewModel: UPSDAPTermsOfServiceViewModel
+    viewModel: UPSDAPTermsOfServiceViewModel,
+    snackbarHostState: SnackbarHostState
 ) {
     viewModel.viewState.observeAsState().value?.let {
-        UPSDAPTermsOfServiceBottomSheet(it)
+        UPSDAPTermsOfServiceBottomSheet(it, snackbarHostState)
     }
 }
 
 @Composable
 fun UPSDAPTermsOfServiceBottomSheet(
-    viewState: UPSDAPTermsOfServiceViewModel.ViewState
+    viewState: UPSDAPTermsOfServiceViewModel.ViewState,
+    snackbarHostState: SnackbarHostState
 ) {
-    Surface(
-        shape = RoundedCornerShape(
-            topStart = dimensionResource(id = R.dimen.minor_100),
-            topEnd = dimensionResource(id = R.dimen.minor_100)
-        )
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+    Box {
+        Surface(
+            shape = RoundedCornerShape(
+                topStart = dimensionResource(id = R.dimen.minor_100),
+                topEnd = dimensionResource(id = R.dimen.minor_100)
+            )
         ) {
-            Spacer(modifier = Modifier.height(8.dp))
-            BottomSheetHandle(Modifier.align(Alignment.CenterHorizontally))
-
             Column(
-                Modifier
+                modifier = Modifier
                     .fillMaxWidth()
-                    .nestedScroll(rememberNestedScrollInteropConnection())
-                    .verticalScroll(rememberScrollState()),
+                    .padding(horizontal = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Spacer(modifier = Modifier.height(24.dp))
-                Text(
-                    text = stringResource(id = R.string.wpp_shipping_ups_tos_title),
-                    style = MaterialTheme.typography.h6,
-                    textAlign = TextAlign.Center
-                )
+                Spacer(modifier = Modifier.height(8.dp))
+                BottomSheetHandle(Modifier.align(Alignment.CenterHorizontally))
 
-                Spacer(modifier = Modifier.height(24.dp))
-
-                OriginAddressSection(address = viewState.originShippingAddress)
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Divider()
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Text(
-                    text = stringResource(id = R.string.wpp_shipping_ups_tos_description),
-                    style = MaterialTheme.typography.body1,
-                    textAlign = TextAlign.Start,
-                    modifier = Modifier
+                Column(
+                    Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 8.dp)
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Conditions(
-                    conditionsState = viewState.conditionsState,
-                    onUrlClicked = viewState.onUrlClicked
-                )
-
-                Spacer(modifier = Modifier.height(32.dp))
-
-                WCColoredButton(
-                    onClick = viewState.onContinueClicked,
-                    enabled = viewState.areAllConditionsAccepted,
-                    modifier = Modifier.fillMaxWidth()
+                        .nestedScroll(rememberNestedScrollInteropConnection())
+                        .verticalScroll(rememberScrollState()),
                 ) {
-                    Text(text = stringResource(id = R.string.wpp_shipping_ups_tos_accept))
-                }
+                    Spacer(modifier = Modifier.height(24.dp))
+                    Text(
+                        text = stringResource(id = R.string.wpp_shipping_ups_tos_title),
+                        style = MaterialTheme.typography.h6,
+                        textAlign = TextAlign.Center
+                    )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    OriginAddressSection(address = viewState.originShippingAddress)
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Divider()
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Text(
+                        text = stringResource(id = R.string.wpp_shipping_ups_tos_description),
+                        style = MaterialTheme.typography.body1,
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 8.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Conditions(
+                        conditionsState = viewState.conditionsState,
+                        onUrlClicked = viewState.onUrlClicked
+                    )
+
+                    Spacer(modifier = Modifier.height(32.dp))
+
+                    WCColoredButton(
+                        onClick = viewState.onContinueClicked,
+                        text = stringResource(id = R.string.wpp_shipping_ups_tos_accept),
+                        enabled = viewState.areAllConditionsAccepted,
+                        loading = viewState.isLoading,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
             }
+
+            SnackbarHost(
+                snackbarHostState,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 24.dp)
+            )
         }
     }
 }
@@ -207,6 +222,7 @@ fun UPSDAPTermsOfServiceBottomSheetPreview() {
     WooThemeWithBackground {
         UPSDAPTermsOfServiceBottomSheet(
             UPSDAPTermsOfServiceViewModel.ViewState(
+                isLoading = false,
                 originShippingAddress = ShippingLabelSampleData.getShipFrom(),
                 conditionsState = UPSDAPTermsOfServiceViewModel.ConditionsState(
                     isTermsOfServiceChecked = true,
@@ -218,7 +234,8 @@ fun UPSDAPTermsOfServiceBottomSheetPreview() {
                 ),
                 onUrlClicked = {},
                 onContinueClicked = {}
-            )
+            ),
+            snackbarHostState = remember { SnackbarHostState() }
         )
     }
 }
