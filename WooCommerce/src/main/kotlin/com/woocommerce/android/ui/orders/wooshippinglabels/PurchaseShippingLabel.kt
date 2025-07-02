@@ -29,14 +29,14 @@ class PurchaseShippingLabel @Inject constructor(
         shippingRate: ShippingRateUI,
         weight: Float,
         lastOrderComplete: Boolean,
-        customsData: List<CustomsData>? = null,
+        customsData: CustomsData? = null,
         hazmatSelection: ShippingLabelHazmatCategory? = null
     ): Result<PurchasedLabelData> {
         val response = wooShippingLabelRepository.purchaseShippingLabel(
             orderId = orderId,
             shippableItems = shippableItems,
             selectedPackage = selectedPackage,
-            shipmentId = shipmentId.toString(),
+            shipmentId = shipmentId,
             shipTo = shipTo,
             shipFrom = shipFrom,
             selectedRate = ratesMapper(shippingRate),

@@ -136,30 +136,31 @@ class WooShippingLabelRestClient @Inject constructor(
         origin: OriginAddressPurchaseDTO,
         destination: DestinationAddressDTO,
         selectedPackage: PackagePurchaseDTO,
-        shipmentId: String,
+        shipmentId: Int,
         selectedRate: RateDTO,
         parentRate: RateDTO?,
         selectedRateOptions: Map<WooShippingRateModel.Option, ShippingRateSurchargeDTO>,
         markOrderComplete: Boolean,
-        hazmat: HazmatDTO = HazmatDTO(),
-        customs: Map<String, CustomsDTO>,
+        hazmat: HazmatDTO,
+        customs: CustomsDTO?,
     ): WooPayload<PurchasedShippingLabelResponseDTO> {
         val url = "/wcshipping/v1/label/purchase/$orderId/"
         return wooNetwork.executePostGsonRequest(
             site = site,
             path = url,
             body = mapOf(
+                "async" to true,
                 "origin" to origin,
                 "destination" to destination,
                 // For this purchase endpoint, `id` represents the shipment ID instead of the package ID
-                "packages" to listOf(selectedPackage.copy(id = shipmentId)),
+                "packages" to listOf(selectedPackage.copy(id = shipmentId.toString())),
                 "selected_rate" to mapOf(
                     "rate" to selectedRate,
                     "parent" to parentRate
                 ),
                 "selected_rate_options" to selectedRateOptions.mapKeys { it.key.typeId },
-                "hazmat" to mapOf(selectedPackage.boxId to hazmat),
-                "customs" to customs,
+                "hazmat" to mapOf(selectedPackage.id to hazmat),
+                "customs" to customs?.let { mapOf(selectedPackage.id to it) }.orEmpty(),
                 "user_meta" to mapOf("last_order_completed" to markOrderComplete),
                 "features_supported_by_client" to listOf("upsdap"),
             ),

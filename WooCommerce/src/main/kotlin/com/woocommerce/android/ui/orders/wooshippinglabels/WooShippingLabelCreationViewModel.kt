@@ -755,7 +755,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             shipments.value[selectedShipmentIndex].copy(purchaseState = PurchaseState.InProgress)
         )
 
-        val customsData = customsFormDataFlow.value[selectedShipmentIndex]?.let { listOf(it) }
+        val customsData = customsFormDataFlow.value[selectedShipmentIndex]
 
         launch {
             purchaseShippingLabel(

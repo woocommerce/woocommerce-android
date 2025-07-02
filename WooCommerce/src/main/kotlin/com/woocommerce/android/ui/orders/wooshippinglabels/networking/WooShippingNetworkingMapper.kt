@@ -228,13 +228,14 @@ class WooShippingNetworkingMapper @Inject constructor(
     }
 
     fun toPackagePurchaseDTO(
+        shipmentId: Int,
         selectedPackage: PackageData,
         selectedRate: WooShippingSelectedRateModel,
         shippableItems: List<Long>,
         weight: Float
     ): PackagePurchaseDTO {
         return PackagePurchaseDTO(
-            id = "default_package",
+            id = "${SHIPMENT_ID_PREFIX}$shipmentId",
             boxId = selectedPackage.id,
             length = selectedPackage.length.toFloat(),
             width = selectedPackage.width.toFloat(),
@@ -334,31 +335,26 @@ class WooShippingNetworkingMapper @Inject constructor(
     }
 
     fun toCustomsDTO(
-        customsDataList: List<CustomsData>
-    ): Map<String, CustomsDTO> {
-        return customsDataList.map { customsData ->
-            CustomsDTO(
-                contentsType = customsData.contentType.name.toLowerCase(Locale.current),
-                contentExplanation = customsData.contentDescription,
-                restrictionType = customsData.restrictionType.name.toLowerCase(Locale.current),
-                restrictionComments = customsData.restrictionDescription,
-                isReturnToSender = if (customsData.isReturnToSender) "return" else "abandon",
-                itn = customsData.itn,
-                items = customsData.items.map {
-                    CustomsItemDTO(
-                        productId = it.productID,
-                        description = it.description,
-                        quantity = it.quantity,
-                        value = it.value.toDouble(),
-                        weight = it.weight.toDouble(),
-                        hsTariffNumber = it.hsTariffNumber,
-                        originCountry = it.originCountryCode
-                    )
-                }
-            )
-        }.withIndex().associateBy(
-            keySelector = { "${CUSTOMS_PACKAGE_PREFIX}${it.index}" },
-            valueTransform = { it.value }
+        customsData: CustomsData
+    ): CustomsDTO {
+        return CustomsDTO(
+            contentsType = customsData.contentType.name.toLowerCase(Locale.current),
+            contentExplanation = customsData.contentDescription,
+            restrictionType = customsData.restrictionType.name.toLowerCase(Locale.current),
+            restrictionComments = customsData.restrictionDescription,
+            isReturnToSender = if (customsData.isReturnToSender) "return" else "abandon",
+            itn = customsData.itn,
+            items = customsData.items.map {
+                CustomsItemDTO(
+                    productId = it.productID,
+                    description = it.description,
+                    quantity = it.quantity,
+                    value = it.value.toDouble(),
+                    weight = it.weight.toDouble(),
+                    hsTariffNumber = it.hsTariffNumber,
+                    originCountry = it.originCountryCode
+                )
+            }
         )
     }
 
@@ -371,6 +367,6 @@ class WooShippingNetworkingMapper @Inject constructor(
         } ?: HazmatDTO()
 
     companion object {
-        private const val CUSTOMS_PACKAGE_PREFIX = "shipment_"
+        private const val SHIPMENT_ID_PREFIX = "shipment_"
     }
 }

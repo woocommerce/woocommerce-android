@@ -102,39 +102,33 @@ class WooShippingLabelRepository @Inject constructor(
         orderId: Long,
         shippableItems: List<Long>,
         selectedPackage: PackageData,
-        shipmentId: String,
+        shipmentId: Int,
         shipTo: Address,
         shipFrom: OriginShippingAddress,
         selectedRate: WooShippingSelectedRateModel,
         weight: Float,
         lastOrderComplete: Boolean,
-        customsData: List<CustomsData>?,
+        customsData: CustomsData?,
         hazmatSelection: ShippingLabelHazmatCategory? = null
     ): WooResult<PurchasedLabelData> {
-        val origin = mapper.toOriginAddressPurchaseDTO(shipFrom)
-        val destination = mapper.toDestinationAddressDTO(shipTo)
-        val packageDTO = mapper.toPackagePurchaseDTO(
-            selectedPackage = selectedPackage,
-            selectedRate = selectedRate,
-            shippableItems = shippableItems,
-            weight = weight
-        )
-        val customsDTO = customsData?.let { mapper.toCustomsDTO(it) }
-        val hazmatDTO = mapper.toHazmatDTO(hazmatSelection)
-        val selectedRateOptions = mapper.toSelectedRateOptions(selectedRate)
-
         return restClient.purchaseShippingLabel(
             site = site,
             orderId = orderId,
-            origin = origin,
-            destination = destination,
-            selectedPackage = packageDTO,
+            origin = mapper.toOriginAddressPurchaseDTO(shipFrom),
+            destination = mapper.toDestinationAddressDTO(shipTo),
+            selectedPackage = mapper.toPackagePurchaseDTO(
+                shipmentId = shipmentId,
+                selectedPackage = selectedPackage,
+                selectedRate = selectedRate,
+                shippableItems = shippableItems,
+                weight = weight
+            ),
             shipmentId = shipmentId,
             selectedRate = mapper.toRateDTO(selectedRate.rate),
             parentRate = selectedRate.parentRate?.let { mapper.toRateDTO(it) },
-            selectedRateOptions = selectedRateOptions,
-            customs = customsDTO ?: emptyMap(),
-            hazmat = hazmatDTO,
+            selectedRateOptions = mapper.toSelectedRateOptions(selectedRate),
+            customs = customsData?.let { mapper.toCustomsDTO(it) },
+            hazmat = mapper.toHazmatDTO(hazmatSelection),
             markOrderComplete = lastOrderComplete
         ).asWooResult { mapper(it) }
     }
