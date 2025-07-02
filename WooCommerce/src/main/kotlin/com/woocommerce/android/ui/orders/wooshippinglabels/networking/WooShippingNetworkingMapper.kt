@@ -80,7 +80,11 @@ class WooShippingNetworkingMapper @Inject constructor(
             mainReceiptId = shippingLabelDTO.mainReceiptId ?: 0,
             rate = shippingLabelDTO.rate ?: BigDecimal.ZERO,
             currency = shippingLabelDTO.currency.orEmpty(),
-            expiryDate = shippingLabelDTO.expiryDate ?: 0
+            expiryDate = shippingLabelDTO.expiryDate ?: 0,
+            usedDate = shippingLabelDTO.usedDate,
+            refund = shippingLabelDTO.refund?.let { refund ->
+                ShippingLabelModel.Refund(status = refund.status, requestDate = refund.requestDate?.let { Date(it) })
+            }
         )
     }
 
@@ -128,7 +132,9 @@ class WooShippingNetworkingMapper @Inject constructor(
         labels = purchasedShippingLabelResponseDTO.labels.map { invoke(it) },
         destination = purchasedShippingLabelResponseDTO.selectedDestination.mapValues { invoke(it.value) },
         origin = purchasedShippingLabelResponseDTO.selectedOrigin.mapValues { invoke(it.value) },
-        rates = purchasedShippingLabelResponseDTO.selectedRates.mapValues { ratesMapper(it.key, it.value) }
+        rates = purchasedShippingLabelResponseDTO.selectedRates.mapValues {
+            requireNotNull(ratesMapper(it.key, it.value))
+        }
     )
 
     operator fun invoke(addressListDTO: Array<AddressDTO>): List<OriginShippingAddress> {
@@ -228,11 +234,11 @@ class WooShippingNetworkingMapper @Inject constructor(
         weight: Float
     ): PackagePurchaseDTO {
         return PackagePurchaseDTO(
-            id = selectedPackage.id,
-            boxId = "default_package",
+            id = "default_package",
+            boxId = selectedPackage.id,
             length = selectedPackage.length.toFloat(),
             width = selectedPackage.width.toFloat(),
-            height = selectedPackage.height.toFloat(),
+            height = selectedPackage.height.toFloatOrNull() ?: PackageData.DEFAULT_HEIGHT.toFloat(),
             weight = weight,
             isLetter = selectedPackage.isLetter,
             shipmentId = selectedRate.shipmentId,
@@ -260,7 +266,7 @@ class WooShippingNetworkingMapper @Inject constructor(
             isSelected = selectedRate.isSelected,
             tracking = selectedRate.isTrackingEnabled,
             listRate = selectedRate.listRate,
-            retailRate = selectedRate.discount
+            retailRate = selectedRate.retailRate
         )
     }
 

@@ -13,6 +13,10 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.Dest
 import java.lang.reflect.Type
 import java.math.BigDecimal
 
+data class EligibilityResponse(
+    @SerializedName("is_eligible") val isEligible: Boolean? = null,
+)
+
 data class AccountSettingsDTO(
     val storeOptions: StoreOptionsDTO,
     val formData: FormDataDTO,
@@ -27,7 +31,7 @@ data class StoreOptionsDTO(
 )
 
 data class FormDataDTO(
-    @SerializedName("selected_payment_method_id") val selectedPaymentId: Int?,
+    @SerializedName("selected_payment_method_id") val selectedPaymentId: Long?,
     @SerializedName("email_receipts") val emailReceipts: Boolean = false
 )
 
@@ -42,7 +46,7 @@ data class FormMetaDTO(
 
 data class PaymentMethodDTO(
     @SerializedName("payment_method_id")
-    val paymentMethodId: Int,
+    val paymentMethodId: Long,
     @SerializedName("name")
     val name: String,
     @SerializedName("card_type")
@@ -115,10 +119,14 @@ data class ShippingLabelDTO(
     @SerializedName("rate") val rate: BigDecimal? = null,
     @SerializedName("currency") val currency: String? = null,
     @SerializedName("expiry_date") val expiryDate: Long? = null,
+    @SerializedName("used_date") val usedDate: Long? = null,
     @SerializedName("refund") val refund: LabelRefund? = null
 )
 
-data class LabelRefund(@SerializedName("status") val status: String? = null)
+data class LabelRefund(
+    @SerializedName("status") val status: String? = null,
+    @SerializedName("request_date") val requestDate: Long? = null
+)
 
 data class PurchasedShippingLabelResponseDTO(
     val success: Boolean,

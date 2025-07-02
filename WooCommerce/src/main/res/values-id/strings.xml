@@ -1,11 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-06-03 09:54:05+0000
+Translation-Revision-Date: 2025-06-17 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="no_network_message">Tidak ada jaringan yang tersedia</string>
+    <string name="media_loading_failed">Gagal memuat media</string>
+    <string name="media_library_title">Pustaka Media WordPress</string>
+    <string name="woo_shipping_refund_note">Perhatikan bahwa permintaan pengembalian dana ini hanya berlaku untuk label pengiriman yang belum digunakan dan tidak memengaruhi pesanan itu sendiri.</string>
+    <string name="woo_shipping_refund_amount_eligible_for_refund">&lt;b&gt;Jumlah yang memenuhi syarat pengembalian dana:&lt;/b&gt; %s</string>
+    <string name="woo_shipping_refund_purchase_date">&lt;b&gt;Tanggal pembelian:&lt;/b&gt; %s</string>
+    <string name="woo_shipping_refund_description">Minta pengembalian dana untuk label pengiriman yang tidak terpakai. Proses pengembalian dana untuk label pengiriman akan segera diajukan dan biasanya selesai dalam waktu 14 hari kerja.</string>
+    <string name="woo_shipping_refund_title">Minta pengembalian dana label pengiriman</string>
+    <string name="woo_shipping_split_shipment_error">Kami tidak dapat membagi pengiriman. Coba lagi.</string>
+    <string name="woopos_cart_searching_for_item">Mencari</string>
+    <string name="woopos_cart_adding_item_to_cart_failed">Gagal menambahkan item ke keranjang, %s.</string>
+    <string name="woopos_cart_coupon_added_to_cart_accessibility">Kupon %1$s ditambahkan ke keranjang</string>
+    <string name="woopos_cart_product_added_to_cart_accessibility">Produk %1$s ditambahkan ke keranjang, harga %2$s</string>
+    <string name="woopos_barcode_scanning_title">Pemindaian barcode</string>
+    <string name="woopos_dialog_barcode_info_background_content_description">Latar belakang diredupkan. Ketuk untuk menutup dialog.</string>
+    <string name="woopos_dialog_barcode_info_content_description">Dialog informasi pemindaian barcode</string>
+    <string name="woopos_dialog_barcode_info_button_label">Oke</string>
+    <string name="woopos_dialog_barcode_info_quinary_message">Pemindai bekerja dengan menyerupai keyboard, sehingga terkadang akan menghalangi kemunculan keyboard perangkat lunak, misalnya saat mencari. Ketuk ikon keyboard untuk menampilkan kembali keyboard perangkat lunak.</string>
+    <string name="woopos_dialog_barcode_info_quaternary_message">• Pindai barcode saat berada di daftar item untuk menambahkan produk ke keranjang.</string>
+    <string name="woopos_dialog_barcode_info_tertiary_message">• Hubungkan pemindai barcode Anda di pengaturan Bluetooth Sistem.</string>
+    <string name="woopos_dialog_barcode_info_secondary_message">• Lihat petunjuk pemindai barcode Bluetooth untuk mengatur mode HID.</string>
+    <string name="woopos_dialog_barcode_info_more_details_link">Detail selengkapnya</string>
+    <string name="woopos_dialog_barcode_info_primary_message">• Atur barcode di kolom \"GTIN, UPC, EAN, ISBN\" di Produk &gt; Detail Produk &gt; Inventaris. </string>
+    <string name="woopos_dialog_barcode_info_intro_message">Anda dapat memindai barcode menggunakan pemindai eksternal untuk menyusun isi keranjang dengan cepat.</string>
+    <string name="woopos_dialog_barcode_info_heading">Pemindaian barcode</string>
+    <string name="woopos_cart_barcode_scan_result_request_cancelled">Permintaan dibatalkan</string>
+    <string name="woopos_cart_barcode_scan_result_network_error">Tidak ada koneksi internet</string>
+    <string name="woopos_cart_barcode_scan_result_unsupported_product">Item tidak didukung – %s</string>
+    <string name="woopos_cart_barcode_scan_result_product_not_found">Item yang dipindai tidak diketahui</string>
+    <string name="woopos_add_coupon_to_cart_accessibility_label">Tambahkan kupon ke keranjang</string>
+    <string name="woopos_add_variable_product_to_cart_accessibility_label">Buka daftar variasi</string>
+    <string name="woopos_add_product_to_cart_accessibility_label">Tambahkan produk ke keranjang</string>
+    <string name="woopos_cart_item_error_content_description">Terjadi kesalahan saat memuat item %s</string>
+    <string name="woopos_cart_item_loading_content_description">Memuat item %s</string>
+    <string name="blaze_campaign_edit_ad_arrow_back_description">Saran sebelumnya</string>
+    <string name="blaze_campaign_edit_ad_arrow_forward_description">Saran selanjutnya</string>
+    <string name="blaze_campaign_preview_tos_checkbox_evergreen_campaigns">Saya menyetujui tagihan mingguan berulang hingga %1$s mulai dari %2$s. Tagihan dapat diajukan sewaktu-waktu selama kampanye. &lt;a href=\'cancelInstructions\'&gt;&lt;u&gt;Saya dapat membatalkan kapan saja&lt;/u&gt;&lt;/a&gt;; saya hanya akan membayar iklan yang dipajang hingga saat pembatalan dilakukan.</string>
+    <string name="blaze_campaign_preview_tos_checkbox_over_7_days_campaign">Saya menyetujui tagihan mingguan berulang hingga %1$s, mulai dari %2$s. Tagihan dapat diajukan sewaktu-waktu selama kampanye. &lt;a href=\'cancelInstructions\'&gt;&lt;u&gt;Saya dapat membatalkan kapan saja&lt;/u&gt;&lt;/a&gt;; saya hanya akan membayar iklan yang dipajang hingga saat pembatalan dilakukan.</string>
+    <string name="blaze_campaign_preview_tos_checkbox_less_than_7_days_campaign">Saya setuju untuk ditagih hingga %1$s mulai dari %2$s. Tagihan dapat diajukan dalam satu atau lebih pembayaran selama kampanye sedang aktif. &lt;a href=\'cancelInstructions\'&gt;&lt;u&gt;Saya dapat membatalkan kapan saja&lt;/u&gt;&lt;/a&gt;; saya hanya akan membayar iklan yang dipajang hingga saat pembatalan dilakukan.</string>
+    <string name="customer_detail_guest_customer">Tamu</string>
     <string name="woopos_search_items_error_description">Silakan coba lagi.</string>
     <string name="woopos_search_coupons_error_title">Tidak dapat memuat kupon</string>
     <string name="woopos_search_items_error_title">Tidak dapat memuat produk</string>
@@ -45,7 +85,7 @@ Language: id
     <string name="woopos_coupons_empty_list_image_description">Tidak ada kupon</string>
     <string name="woopos_coupons_screen_title">Kupon</string>
     <string name="woopos_product_limitations_title">Di mana produk saya?</string>
-    <string name="woopos_coupon_item_content_description">Kupon %s</string>
+    <string name="woopos_coupon_item_content_description_v2">Kupon %s, %s</string>
     <string name="woo_shipping_split_shipment_bottom_sheet_remove_button">Hapus Pengiriman</string>
     <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_plural">Pilih ke mana %d item pengiriman ini akan dipindahkan.</string>
     <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_one">Pilih ke mana %d item pengiriman ini akan dipindahkan.</string>
@@ -270,7 +310,7 @@ Language: id
     <string name="woopos_variations_loading_error_title">Tidak dapat memuat variasi</string>
     <string name="woopos_variations_back_content_description">Kembali</string>
     <string name="woopos_variation_item_content_description">Variasi %s, Harga %s</string>
-    <string name="woopos_variable_product_item_content_description">Produk Variabel %s, Harga %s</string>
+    <string name="woopos_variable_product_item_content_description_v2">Variabel Produk %s</string>
     <string name="blaze_campaign_edit_ad_change_description_empty_error">Deskripsi tidak boleh kosong</string>
     <string name="blaze_campaign_edit_ad_change_cta_text_title">Call to action</string>
     <string name="blaze_campaign_edit_ad_change_tagline_empty_error">Slogan tidak boleh kosong</string>

@@ -6,7 +6,10 @@ class CarrierPredefinedPackagesDTO {
     val usps: USPSPackageDTO? = null
 
     @SerializedName("dhlexpress")
-    val dhlExpress: DHLPackageDTO? = null
+    val dhlExpress: DomesticAndInternationalGroupDTO? = null
+
+    @SerializedName("upsdap")
+    val ups: DomesticAndInternationalGroupDTO? = null
 }
 
 class USPSPackageDTO {
@@ -26,7 +29,7 @@ class USPSPackageDTO {
     val expressEnvelopes: CarrierPackageGroupDTO? = null
 }
 
-class DHLPackageDTO {
+class DomesticAndInternationalGroupDTO {
     @SerializedName("domestic_and_international")
     val domesticAndInternationalPackages: CarrierPackageGroupDTO? = null
 }

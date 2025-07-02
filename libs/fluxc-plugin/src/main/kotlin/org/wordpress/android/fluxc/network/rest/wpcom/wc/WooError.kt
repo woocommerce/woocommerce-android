@@ -18,10 +18,11 @@ import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.WPComGsonNetworkError
 import org.wordpress.android.fluxc.store.Store.OnChangedError
 
-class WooError(
-    var type: WooErrorType,
-    var original: GenericErrorType,
-    var message: String? = null
+data class WooError(
+    val type: WooErrorType,
+    val original: GenericErrorType,
+    val message: String? = null,
+    val apiErrorCode: String? = null
 ) : OnChangedError
 
 enum class WooErrorType {
@@ -42,13 +43,15 @@ enum class WooErrorType {
 fun WPComGsonNetworkError.toWooError() = WooError(
     type = type.getWooErrorType(apiError),
     original = type,
-    message = message
+    message = message,
+    apiErrorCode = apiError
 )
 
 fun WPAPINetworkError.toWooError() = WooError(
     type = type.getWooErrorType(errorCode),
     original = type,
-    message = message
+    message = message,
+    apiErrorCode = errorCode
 )
 
 private fun GenericErrorType?.getWooErrorType(apiError: String?) = when (this) {

@@ -1,11 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-06-05 09:54:04+0000
+Translation-Revision-Date: 2025-06-17 12:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="no_network_message">Uygun durumda şebeke yok</string>
+    <string name="media_loading_failed">Medya yükleme başarısız oldu</string>
+    <string name="media_library_title">WordPress Ortam Kütüphanesi</string>
+    <string name="woo_shipping_refund_note">Lütfen bu iade isteğinin yalnızca kullanılmayan gönderim etiketlerine uygulandığını ve siparişin kendisini etkilemeyeceğini unutmayın.</string>
+    <string name="woo_shipping_refund_amount_eligible_for_refund">&lt;b&gt;İade edilebilecek tutar:&lt;/b&gt; %s</string>
+    <string name="woo_shipping_refund_purchase_date">&lt;b&gt;Satın alma tarihi:&lt;/b&gt; %s</string>
+    <string name="woo_shipping_refund_description">Kullanılmayan gönderim etiketiniz için bir iade talep edin. Gönderim etiketinin iade işlemi hemen başlayacak ve genellikle 14 iş gününde tamamlanır.</string>
+    <string name="woo_shipping_refund_title">Gönderim etiketi iadesi talep et</string>
+    <string name="woo_shipping_split_shipment_error">Gönderimleri bölemedik. Lütfen tekrar deneyin.</string>
+    <string name="woopos_cart_searching_for_item">Arama</string>
+    <string name="woopos_cart_adding_item_to_cart_failed">Öğe sepete eklenemedi, %s.</string>
+    <string name="woopos_cart_coupon_added_to_cart_accessibility">%1$s kuponu sepete eklendi</string>
+    <string name="woopos_cart_product_added_to_cart_accessibility">%1$s ürünü sepete eklendi, fiyatı %2$s</string>
+    <string name="woopos_barcode_scanning_title">Barkod taraması</string>
+    <string name="woopos_dialog_barcode_info_background_content_description">Soluk arka plan. Pencereyi kapatmak için dokunun.</string>
+    <string name="woopos_dialog_barcode_info_content_description">Barkod tarama bilgisi iletişim kutusu</string>
+    <string name="woopos_dialog_barcode_info_button_label">Tamam</string>
+    <string name="woopos_dialog_barcode_info_quinary_message">Tarayıcı bir klavyeyi taklit eder, bu nedenle bazen yazılım klavyesinin görünmesini engeller (ör. aramada). Yazılım klavyesini yeniden göstermek için klavye simgesine dokunun.</string>
+    <string name="woopos_dialog_barcode_info_quaternary_message">• Sepete ürün eklemek için ürün listesindeyken barkodu tarayın.</string>
+    <string name="woopos_dialog_barcode_info_tertiary_message">• Barkod tarayıcınızı Sistem Bluetooth ayarlarından bağlayın.</string>
+    <string name="woopos_dialog_barcode_info_secondary_message">• HID modunu ayarlamak için Bluetooth barkod tarayıcınızın talimatlarına bakın.</string>
+    <string name="woopos_dialog_barcode_info_more_details_link">Daha fazla ayrıntı</string>
+    <string name="woopos_dialog_barcode_info_primary_message">• Ürünler &gt; Ürün Ayrıntıları &gt; Envanter bölümünde \"GTIN, UPC, EAN, ISBN\" alanında barkodlar ayarlayın. </string>
+    <string name="woopos_dialog_barcode_info_intro_message">Bir sepeti hızlıca oluşturmak için harici bir tarayıcı kullanarak barkodları tarayabilirsiniz.</string>
+    <string name="woopos_dialog_barcode_info_heading">Barkod taraması</string>
+    <string name="woopos_cart_barcode_scan_result_request_cancelled">İstek iptal edildi</string>
+    <string name="woopos_cart_barcode_scan_result_network_error">İnternet bağlantısı yok</string>
+    <string name="woopos_cart_barcode_scan_result_unsupported_product">Desteklenmeyen öğe – %s</string>
+    <string name="woopos_cart_barcode_scan_result_product_not_found">Bilinmeyen taranan öğe</string>
+    <string name="woopos_add_coupon_to_cart_accessibility_label">Kuponu sepete ekle</string>
+    <string name="woopos_add_variable_product_to_cart_accessibility_label">Varyasyon listesini aç</string>
+    <string name="woopos_add_product_to_cart_accessibility_label">Ürünü sepete ekle</string>
+    <string name="woopos_cart_item_error_content_description">%s öğesi yüklenirken bir hata oluştu</string>
+    <string name="woopos_cart_item_loading_content_description">%s öğesi yükleniyor</string>
+    <string name="blaze_campaign_edit_ad_arrow_back_description">Önceki öneri</string>
+    <string name="blaze_campaign_edit_ad_arrow_forward_description">Sonraki öneri</string>
+    <string name="blaze_campaign_preview_tos_checkbox_evergreen_campaigns">%2$s tarihinden itibaren haftalık tekrarlayan %1$s tutarına kadar ücreti kabul ediyorum. Ücretler kampanya sırasında farklı zamanlarda ortaya çıkabilir. &lt;a href=\'cancelInstructions\'&gt;&lt;u&gt;İstediğim zaman iptal edebilirim&lt;/u&gt;&lt;/a&gt;; yalnızca iptal etme zamanına kadar teslim edilen reklamların ücretini ödeyeceğim.</string>
+    <string name="blaze_campaign_preview_tos_checkbox_over_7_days_campaign">%2$s tarihinden itibaren haftalık %1$s tutarına kadar tekrarlayan ücreti kabul ediyorum. Ücretler kampanya sırasında farklı zamanlarda ortaya çıkabilir. &lt;a href=\'cancelInstructions\'&gt;&lt;u&gt;İstediğim zaman iptal edebilirim&lt;/u&gt;&lt;/a&gt;; yalnızca iptal etme zamanına kadar teslim edilen reklamların ücretini ödeyeceğim.</string>
+    <string name="blaze_campaign_preview_tos_checkbox_less_than_7_days_campaign">%2$s tarihinden itibaren %1$s tutarına kadar ücretlendirilmeyi kabul ediyorum. Kampanya etkinken ücretler bir veya daha fazla ödemede gerçekleşebilir. &lt;a href=\'cancelInstructions\'&gt;&lt;u&gt;İstediğim zaman iptal edebilirim&lt;/u&gt;&lt;/a&gt;; yalnızca iptal etme zamanına kadar teslim edilen reklamların ücretini ödeyeceğim.</string>
+    <string name="customer_detail_guest_customer">Misafir</string>
     <string name="woopos_search_items_error_description">Lütfen tekrar deneyin.</string>
     <string name="woopos_search_coupons_error_title">Kuponlar yüklenemiyor</string>
     <string name="woopos_search_items_error_title">Ürünler yüklenemiyor</string>
@@ -45,7 +85,7 @@ Language: tr
     <string name="woopos_coupons_empty_list_image_description">Kupon yok</string>
     <string name="woopos_coupons_screen_title">Kuponlar</string>
     <string name="woopos_product_limitations_title">Ürünlerim nerede?</string>
-    <string name="woopos_coupon_item_content_description">Kupon %s</string>
+    <string name="woopos_coupon_item_content_description_v2">Kupon%s, %s</string>
     <string name="woo_shipping_split_shipment_bottom_sheet_remove_button">Gönderiyi Kaldır</string>
     <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_plural">Bu gönderideki %d öğenin nereye taşınacağını seçin.</string>
     <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_one">Bu gönderideki %d öğenin nereye taşınacağını seçin.</string>
@@ -270,7 +310,7 @@ Language: tr
     <string name="woopos_variations_loading_error_title">Varyasyonlar yüklenemiyor</string>
     <string name="woopos_variations_back_content_description">Geri</string>
     <string name="woopos_variation_item_content_description">%s Varyasyon, %s Fiyat</string>
-    <string name="woopos_variable_product_item_content_description">%s Varyasyonlu Ürün, %s Fiyat</string>
+    <string name="woopos_variable_product_item_content_description_v2">Varyasyonlu Ürün %s</string>
     <string name="blaze_campaign_edit_ad_change_description_empty_error">Açıklama boş olamaz</string>
     <string name="blaze_campaign_edit_ad_change_cta_text_title">Eylem çağrısı</string>
     <string name="blaze_campaign_edit_ad_change_tagline_empty_error">Site sloganı boş olamaz</string>

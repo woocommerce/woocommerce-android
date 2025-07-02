@@ -9,6 +9,7 @@ import com.woocommerce.android.extensions.formatToLocalizedMedium
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigDataStore
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingLabelRepository
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -20,11 +21,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
@@ -39,8 +38,7 @@ class WooShippingLabelRefundViewModel @Inject constructor(
     private val arguments: WooShippingLabelRefundFragmentArgs by savedState.navArgs()
 
     // Finding the shipping label from cached config data
-    private val shippingLabelFlow = configDataStore.observeConfig(arguments.orderId)
-        .map { it?.shippingLabelData?.currentOrderLabels?.find { it.labelId == arguments.labelId } }
+    private val shippingLabelFlow = configDataStore.getShippingLabel(arguments.orderId, arguments.labelId)
         .shareIn(viewModelScope, started = SharingStarted.Lazily, replay = 1)
 
     private val isLoadingFlow = MutableStateFlow(false)
@@ -49,11 +47,15 @@ class WooShippingLabelRefundViewModel @Inject constructor(
         if (isLoading) {
             ViewState.Loading
         } else {
-            val purchaseDate = label?.createdDate?.let { date -> Date(date) }?.formatToLocalizedMedium()
+            val purchaseDate = label?.createdDate?.formatToLocalizedMedium().orEmpty()
             val refundableAmount = label?.refundableAmount?.let { amount ->
-                label.currency?.let { currency -> currencyFormatter.formatCurrency(amount, currency) }
-            }
-            ViewState.DataState(purchaseDate, refundableAmount)
+                currencyFormatter.formatCurrency(amount, label.currency)
+            }.orEmpty()
+            ViewState.DataState(
+                purchaseDate,
+                refundableAmount,
+                label?.refundDuration ?: ShippingLabelModel.REFUND_DURATION_DEFAULT
+            )
         }
     }.asLiveData()
 
@@ -88,7 +90,8 @@ class WooShippingLabelRefundViewModel @Inject constructor(
         data object Loading : ViewState()
         data class DataState(
             val purchaseDate: String? = null,
-            val refundableAmount: String? = null
+            val refundableAmount: String? = null,
+            val refundDuration: Int
         ) : ViewState()
     }
 }

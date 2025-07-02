@@ -10,6 +10,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreat
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel.Companion.SINGLE_QUANTITY
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.split.SelectableShippableItemUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.split.SelectableShippableItemsUI
 import com.woocommerce.android.util.CurrencyFormatter
@@ -57,7 +58,8 @@ fun List<ShippableItemModel>.toUIModel(
             ?: WooShippingLabelCreationViewModel.HazmatState.NoSelection,
         shippingRatesState = shippingRates,
         purchaseState = shipmentUIModel.purchaseState,
-        status = shipmentUIModel.status
+        status = shipmentUIModel.label?.status ?: ShippingLabelStatus.UNKNOWN,
+        isRefundAvailable = shipmentUIModel.label?.isRefundAvailable == true
     )
 }
 

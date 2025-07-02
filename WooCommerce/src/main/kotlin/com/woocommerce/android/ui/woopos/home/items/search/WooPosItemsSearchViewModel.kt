@@ -185,7 +185,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
                     ParentToChildrenEvent.SearchEvent.Started -> Unit
                     ParentToChildrenEvent.SearchEvent.Finished -> Unit
                     is ParentToChildrenEvent.BackFromCheckoutToCartClicked -> Unit
-                    is ParentToChildrenEvent.BarcodeScanned -> Unit
+                    is ParentToChildrenEvent.BarcodeEvent -> Unit
                     is ParentToChildrenEvent.OrderSuccessfullyPaid -> Unit
                     is ParentToChildrenEvent.CheckoutClicked -> Unit
                     is ParentToChildrenEvent.SearchEvent.RecentSearchSelected -> Unit

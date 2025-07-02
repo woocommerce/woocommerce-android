@@ -8,7 +8,9 @@ import com.google.gson.Gson
 import com.woocommerce.android.datastore.DataStoreQualifier
 import com.woocommerce.android.datastore.DataStoreType
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ConfigDTO
+import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingNetworkingMapper
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -17,7 +19,8 @@ import javax.inject.Inject
 class WooShippingConfigDataStore @Inject constructor(
     @DataStoreQualifier(DataStoreType.SHIPPING_LABELS_DATA) private val dataStore: DataStore<Preferences>,
     private val gson: Gson,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val mapper: WooShippingNetworkingMapper,
 ) {
     private fun getConfigKey(orderId: Long) = "${selectedSite.get().id}:${orderId}Config"
 
@@ -25,6 +28,18 @@ class WooShippingConfigDataStore @Inject constructor(
         val config = prefs[stringPreferencesKey(getConfigKey(orderId))]
         runCatching { gson.fromJson(config, ConfigDTO::class.java) }.getOrNull()
     }.distinctUntilChanged()
+
+    fun getShippingLabel(orderId: Long, labelId: Long) = observeConfig(orderId).map { config ->
+        config?.shippingLabelData?.currentOrderLabels
+            ?.find { it.labelId == labelId }
+            ?.let { mapper(it) }
+    }
+
+    fun getShippingLabels(orderId: Long): Flow<List<ShippingLabelModel>?> = observeConfig(orderId).map { config ->
+        config?.shippingLabelData?.currentOrderLabels?.let {
+            it.map { shippingLabelDTO -> mapper(shippingLabelDTO) }
+        }
+    }
 
     suspend fun saveConfig(orderId: Long, config: ConfigDTO) {
         dataStore.edit { preferences ->

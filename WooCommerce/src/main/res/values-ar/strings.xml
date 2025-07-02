@@ -1,11 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-06-02 15:54:04+0000
+Translation-Revision-Date: 2025-06-16 13:54:05+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="no_network_message">لاتوجد شبكة متاحة</string>
+    <string name="media_loading_failed">فشل تحميل الوسائط</string>
+    <string name="media_library_title">مكتبة وسائط ووردبريس</string>
+    <string name="woo_shipping_refund_note">يُرجى ملاحظة أن طلب استرداد الأموال هذا لا ينطبق سوى على ملصق الشحن غير المستخدم ولن يؤثر في الطلب نفسه.</string>
+    <string name="woo_shipping_refund_amount_eligible_for_refund">&lt;b&gt;المبلغ المؤهل للاسترداد:&lt;/b&gt; %s</string>
+    <string name="woo_shipping_refund_purchase_date">&lt;b&gt;تاريخ الشراء:&lt;/b&gt; %s</string>
+    <string name="woo_shipping_refund_description">اطلب استرداد الأموال لملصق شحنك غير المستخدم. ستبدأ عملية استرداد أموال ملصق الشحن فورًا وعادة ما تكتمل خلال 14 يوم عمل.</string>
+    <string name="woo_shipping_refund_title">طلب استرداد أموال ملصق الشحن</string>
+    <string name="woo_shipping_split_shipment_error">تعذر علينا تقسيم الشحنات. يُرجى المحاولة مجددًا.</string>
+    <string name="woopos_cart_searching_for_item">جارٍ البحث</string>
+    <string name="woopos_cart_adding_item_to_cart_failed">فشلت إضافة العنصر إلى عربة التسوق، %s.</string>
+    <string name="woopos_cart_coupon_added_to_cart_accessibility">القسيمة ⁦%1$s⁩ مُضافة لعربة التسوق</string>
+    <string name="woopos_cart_product_added_to_cart_accessibility">المنتج ⁦%1$s⁩ مُضاف لعربة التسوق، السعر⁦%2$s⁩</string>
+    <string name="woopos_barcode_scanning_title">مسح الرمز الشريطي</string>
+    <string name="woopos_dialog_barcode_info_background_content_description">خلفية خافتة. انقر لتجاهل مربع الحوار.</string>
+    <string name="woopos_dialog_barcode_info_content_description">مربع حوار معلومات مسح الرمز الشريطي</string>
+    <string name="woopos_dialog_barcode_info_button_label">موافق</string>
+    <string name="woopos_dialog_barcode_info_quinary_message">تُحاكي أداة الفحص لوحة المفاتيح، لذا ستمنع لوحة مفاتيح البرنامج من الظهور في بعض الأحيان، على سبيل المثال في البحث. انقر على أيقونة لوحة المفاتيح لعرض لوحة مفاتيح البرنامج مرة أخرى.</string>
+    <string name="woopos_dialog_barcode_info_quaternary_message">• امسح الرموز الشريطية ضوئيًا أثناء وجودك في قائمة العناصر لإضافة المنتجات إلى عربة التسوق.</string>
+    <string name="woopos_dialog_barcode_info_tertiary_message">• وصّل ماسحك الضوئي للرمز الشريطي في إعدادات البلوتوث بالنظام.</string>
+    <string name="woopos_dialog_barcode_info_secondary_message">• راجع تعليمات البلوتوث لماسح الرمز الشريطي للتعيين إلى وضع HID.</string>
+    <string name="woopos_dialog_barcode_info_more_details_link">المزيد من التفاصيل</string>
+    <string name="woopos_dialog_barcode_info_primary_message">• جهّز الرموز الشريطية في حقول \"GTIN، UPC، EAN، ISBN\" في المنتجات &gt; تفاصيل المنتج &gt; المخزون. </string>
+    <string name="woopos_dialog_barcode_info_intro_message">يمكنك مسح الرموز الشريطية ضوئيًا باستخدام ماسح ضوئي خارجي لإعداد عربة التسوق سريعًا.</string>
+    <string name="woopos_dialog_barcode_info_heading">مسح الرمز الشريطي</string>
+    <string name="woopos_cart_barcode_scan_result_request_cancelled">أُلغي الطلب</string>
+    <string name="woopos_cart_barcode_scan_result_network_error">لا يوجد اتصال بالإنترنت</string>
+    <string name="woopos_cart_barcode_scan_result_unsupported_product">عنصر غير مدعوم – %s</string>
+    <string name="woopos_cart_barcode_scan_result_product_not_found">عنصر ممسوح ضوئيًا غير معروف</string>
+    <string name="woopos_add_coupon_to_cart_accessibility_label">إضافة قسيمة إلى عربة التسوق</string>
+    <string name="woopos_add_variable_product_to_cart_accessibility_label">قائمة مفتوحة للأنواع الفرعية</string>
+    <string name="woopos_add_product_to_cart_accessibility_label">إضافة منتج لعربة التسوق</string>
+    <string name="woopos_cart_item_error_content_description">خطأ في تحميل العنصر %s</string>
+    <string name="woopos_cart_item_loading_content_description">جارٍ تحميل العنصر %s</string>
+    <string name="blaze_campaign_edit_ad_arrow_back_description">الاقتراح السابق</string>
+    <string name="blaze_campaign_edit_ad_arrow_forward_description">الاقتراح التالي</string>
+    <string name="blaze_campaign_preview_tos_checkbox_evergreen_campaigns">أوافق على فرض رسوم أسبوعية متكررة تصل إلى ⁦%1$s⁩ بداية من ⁦%2$s⁩. قد تُفرض الرسوم في أوقات مختلفة خلال الحملة. &lt;a href=\'cancelInstructions\'&gt;&lt;u&gt;يمكنني الإلغاء في أي وقت&lt;/u&gt;&lt;/a&gt;؛ سأدفع فقط مقابل الإعلانات المُسلمة حتى الإلغاء.</string>
+    <string name="blaze_campaign_preview_tos_checkbox_over_7_days_campaign">أوافق على فرض رسوم متكررة تصل إلى ⁦%1$s⁩ أسبوعيًا، بداية من ⁦%2$s⁩. قد تُفرض الرسوم في أوقات مختلفة خلال الحملة. &lt;a href=\'cancelInstructions\'&gt;&lt;u&gt;يمكنني الإلغاء في أي وقت&lt;/u&gt;&lt;/a&gt;؛ سأدفع فقط مقابل الإعلانات المُسلمة حتى الإلغاء.</string>
+    <string name="blaze_campaign_preview_tos_checkbox_less_than_7_days_campaign">أوافق على دفع رسوم تصل إلى ⁦%1$s⁩ بداية من ⁦%2$s⁩. قد تُفرض رسوم في عملية دفع واحدة أو أكثر عندما تكون الحملة نشطة. &lt;a href=\'cancelInstructions\'&gt;&lt;u&gt;يمكنني الإلغاء في أي وقت&lt;/u&gt;&lt;/a&gt;؛ سأدفع فقط مقابل الإعلانات المُسلمة حتى الإلغاء.</string>
+    <string name="customer_detail_guest_customer">ضيف</string>
     <string name="woopos_search_items_error_description">يُرجى المحاولة مجددًا.</string>
     <string name="woopos_search_coupons_error_title">يتعذر تحميل القسائم</string>
     <string name="woopos_search_items_error_title">يتعذر تحميل المنتجات</string>
@@ -45,7 +85,7 @@ Language: ar
     <string name="woopos_coupons_empty_list_image_description">لا توجد قسائم</string>
     <string name="woopos_coupons_screen_title">القسائم</string>
     <string name="woopos_product_limitations_title">أين منتجاتي؟</string>
-    <string name="woopos_coupon_item_content_description">القسيمة %s</string>
+    <string name="woopos_coupon_item_content_description_v2">القسيمة%s، %s</string>
     <string name="woo_shipping_split_shipment_bottom_sheet_remove_button">إزالة الشحنة</string>
     <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_plural">اختر المكان الذي يتم نقل العناصر %d إليه في هذه الشحنة.</string>
     <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_one">اختر المكان الذي يتم نقل العنصر %d إليه في هذه الشحنة.</string>
@@ -270,7 +310,7 @@ Language: ar
     <string name="woopos_variations_loading_error_title">يتعذر تحميل التباينات</string>
     <string name="woopos_variations_back_content_description">رجوع</string>
     <string name="woopos_variation_item_content_description">الشكل %s، الشعر %s</string>
-    <string name="woopos_variable_product_item_content_description">المنتج المتغير %s، السعر %s</string>
+    <string name="woopos_variable_product_item_content_description_v2">منتج متغير %s</string>
     <string name="blaze_campaign_edit_ad_change_description_empty_error">يتعذر أن يكون الوصف فارغًا</string>
     <string name="blaze_campaign_edit_ad_change_cta_text_title">حثّ على المبادرة</string>
     <string name="blaze_campaign_edit_ad_change_tagline_empty_error">يتعذر أن يكون الشعار فارغًا</string>

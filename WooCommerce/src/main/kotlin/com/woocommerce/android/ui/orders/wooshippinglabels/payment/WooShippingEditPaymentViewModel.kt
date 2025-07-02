@@ -10,6 +10,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.FetchAccountSettings
 import com.woocommerce.android.ui.orders.wooshippinglabels.ObserveAccountSettings
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.AccountSettingsModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PaymentMethodOptions
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
@@ -33,6 +34,7 @@ class WooShippingEditPaymentViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     observeAccountSettings: ObserveAccountSettings,
     private val fetchAccountSettings: FetchAccountSettings,
+    private val updatePaymentOptions: UpdatePaymentOptions,
     private val webViewAuthenticator: WebViewAuthenticator,
     private val userAgent: UserAgent
 ) : ScopedViewModel(savedStateHandle) {
@@ -43,7 +45,7 @@ class WooShippingEditPaymentViewModel @Inject constructor(
     private val selectedPaymentMethod = savedStateHandle.getNullableStateFlow(
         scope = viewModelScope,
         initialValue = null,
-        clazz = Int::class.java,
+        clazz = Long::class.java,
         key = "selectedPaymentMethod",
     )
 
@@ -134,16 +136,42 @@ class WooShippingEditPaymentViewModel @Inject constructor(
         isAddPaymentMethodWebViewVisible.value = true
     }
 
-    private fun onPaymentMethodSelected(paymentMethodId: Int?) {
+    private fun onPaymentMethodSelected(paymentMethodId: Long?) {
         selectedPaymentMethod.value = paymentMethodId
-    }
-
-    private fun onSaveClicked() {
-        TODO()
     }
 
     private fun onEmailReceiptsChanged(value: Boolean) {
         emailReceipts.value = value
+    }
+
+    private fun onSaveClicked() {
+        val currentPaymentOptions = accountSettings.value?.paymentMethodOptions ?: return
+        val selectedPaymentMethod = selectedPaymentMethod.value ?: currentPaymentOptions.selectedPaymentId
+        val emailReceipts = emailReceipts.value ?: currentPaymentOptions.emailReceipts
+
+        if (selectedPaymentMethod == currentPaymentOptions.selectedPaymentId &&
+            emailReceipts == currentPaymentOptions.emailReceipts
+        ) {
+            // No changes were made, return right away
+            triggerEvent(MultiLiveEvent.Event.Exit)
+            return
+        }
+
+        launch {
+            loadingState.value = LoadingState.Saving
+            updatePaymentOptions(
+                selectedPaymentMethodId = selectedPaymentMethod,
+                emailReceipts = emailReceipts
+            ).fold(
+                onSuccess = {
+                    triggerEvent(MultiLiveEvent.Event.Exit)
+                },
+                onFailure = {
+                    triggerEvent(ShowSnackbar(R.string.error_generic))
+                }
+            )
+            loadingState.value = LoadingState.Idle
+        }
     }
 
     private fun onPaymentMethodAdded() {
@@ -193,12 +221,12 @@ class WooShippingEditPaymentViewModel @Inject constructor(
             val canManagePaymentMethods: Boolean,
             val canEditSettings: Boolean,
             val emailReceipts: Boolean,
-            val selectedPaymentMethodId: Int?,
+            val selectedPaymentMethodId: Long?,
             val storeOwnerName: String,
             val storeOwnerUsername: String,
             val currentPaymentOptions: PaymentMethodOptions,
             val onAddNewPaymentMethod: () -> Unit,
-            val onPaymentMethodSelected: (Int) -> Unit,
+            val onPaymentMethodSelected: (Long) -> Unit,
             val onEmailReceiptsChanged: (Boolean) -> Unit,
             val onSaveClicked: () -> Unit
         ) : ViewState {

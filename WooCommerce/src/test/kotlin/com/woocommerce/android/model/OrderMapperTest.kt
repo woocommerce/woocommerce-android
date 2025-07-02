@@ -44,39 +44,39 @@ class OrderMapperTest {
     }
 
     @Test
-    fun `when createdVia is rest-api, then salesChannel is ALL_OTHER`() {
+    fun `when createdVia is rest-api, then salesChannel is NON_POS`() {
         val orderEntity = createTestOrderEntity(createdVia = "rest-api")
 
         val result = orderMapper.toAppModel(orderEntity)
 
-        assertThat(result.salesChannel).isEqualTo(Order.SalesChannel.ALL_OTHER)
+        assertThat(result.salesChannel).isEqualTo(Order.SalesChannel.NON_POS)
     }
 
     @Test
-    fun `when createdVia is empty, then salesChannel is ALL_OTHER`() {
+    fun `when createdVia is empty, then salesChannel is NON_POS`() {
         val orderEntity = createTestOrderEntity(createdVia = "")
 
         val result = orderMapper.toAppModel(orderEntity)
 
-        assertThat(result.salesChannel).isEqualTo(Order.SalesChannel.ALL_OTHER)
+        assertThat(result.salesChannel).isEqualTo(Order.SalesChannel.NON_POS)
     }
 
     @Test
-    fun `when createdVia is wc-admin, then salesChannel is ALL_OTHER`() {
+    fun `when createdVia is wc-admin, then salesChannel is NON_POS`() {
         val orderEntity = createTestOrderEntity(createdVia = "wc-admin")
 
         val result = orderMapper.toAppModel(orderEntity)
 
-        assertThat(result.salesChannel).isEqualTo(Order.SalesChannel.ALL_OTHER)
+        assertThat(result.salesChannel).isEqualTo(Order.SalesChannel.NON_POS)
     }
 
     @Test
-    fun `when createdVia is checkout, then salesChannel is ALL_OTHER`() {
+    fun `when createdVia is checkout, then salesChannel is NON_POS`() {
         val orderEntity = createTestOrderEntity(createdVia = "checkout")
 
         val result = orderMapper.toAppModel(orderEntity)
 
-        assertThat(result.salesChannel).isEqualTo(Order.SalesChannel.ALL_OTHER)
+        assertThat(result.salesChannel).isEqualTo(Order.SalesChannel.NON_POS)
     }
 
     private fun createTestOrderEntity(createdVia: String = ""): OrderEntity {

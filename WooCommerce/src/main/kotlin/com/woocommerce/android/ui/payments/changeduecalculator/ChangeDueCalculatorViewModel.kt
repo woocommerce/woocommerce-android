@@ -16,7 +16,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import org.wordpress.android.fluxc.model.WCSettingsModel
+import org.wordpress.android.fluxc.model.settings.CurrencyPosition
 import java.math.BigDecimal
 import javax.inject.Inject
 
@@ -40,7 +40,7 @@ class ChangeDueCalculatorViewModel @Inject constructor(
         val recordTransactionDetailsChecked: Boolean = false,
         val canCompleteOrder: Boolean,
         val currencySymbol: String,
-        val currencyPosition: WCSettingsModel.CurrencyPosition,
+        val currencyPosition: CurrencyPosition,
         val decimalSeparator: String,
         val numberOfDecimals: Int,
         val title: String = "",
@@ -129,9 +129,9 @@ class ChangeDueCalculatorViewModel @Inject constructor(
         }
     }
 
-    private fun getCurrencySymbolPosition(): WCSettingsModel.CurrencyPosition {
+    private fun getCurrencySymbolPosition(): CurrencyPosition {
         val siteParameters = parameterRepository.getParameters()
-        var position = WCSettingsModel.CurrencyPosition.LEFT
+        var position = CurrencyPosition.LEFT
         if (siteParameters.currencyFormattingParameters != null) {
             position = siteParameters.currencyFormattingParameters.currencyPosition
         }

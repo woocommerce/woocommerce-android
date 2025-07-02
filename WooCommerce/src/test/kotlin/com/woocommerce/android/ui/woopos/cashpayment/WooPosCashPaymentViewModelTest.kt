@@ -24,7 +24,7 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.model.WCSettingsModel
+import org.wordpress.android.fluxc.model.settings.CurrencyPosition
 import java.math.BigDecimal
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -54,7 +54,7 @@ class WooPosCashPaymentViewModelTest {
 
         whenever(repository.getOrderById(orderId)).thenReturn(mockOrder)
         whenever(repository.getCurrencySymbol()).thenReturn("$")
-        whenever(repository.getCurrencySymbolPosition()).thenReturn(WCSettingsModel.CurrencyPosition.LEFT)
+        whenever(repository.getCurrencySymbolPosition()).thenReturn(CurrencyPosition.LEFT)
         whenever(repository.getDecimalSeparator()).thenReturn(".")
         whenever(repository.getNumberOfDecimals()).thenReturn(2)
         whenever(resourceProvider.getString(R.string.woopos_cash_payment_total, "100.00"))
@@ -89,7 +89,7 @@ class WooPosCashPaymentViewModelTest {
         assertThat(collectingState.total).isEqualTo(BigDecimal("100.00"))
         assertThat(collectingState.totalText).isEqualTo("Total: $100.00")
         assertThat(collectingState.currencySymbol).isEqualTo("$")
-        assertThat(collectingState.currencyPosition).isEqualTo(WCSettingsModel.CurrencyPosition.LEFT)
+        assertThat(collectingState.currencyPosition).isEqualTo(CurrencyPosition.LEFT)
         assertThat(collectingState.decimalSeparator).isEqualTo(".")
         assertThat(collectingState.numberOfDecimals).isEqualTo(2)
     }

@@ -56,7 +56,7 @@ data class Order(
 ) : Parcelable {
     enum class SalesChannel {
         POS,
-        ALL_OTHER
+        NON_POS
     }
 
     @IgnoredOnParcel
@@ -420,7 +420,7 @@ data class Order(
                 selectedGiftCard = "",
                 giftCardDiscountedAmount = null,
                 shippingTax = BigDecimal(0),
-                salesChannel = SalesChannel.ALL_OTHER
+                salesChannel = SalesChannel.NON_POS
             )
         }
 

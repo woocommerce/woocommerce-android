@@ -31,7 +31,7 @@ data class User(
 
 fun WCUserModel.toAppModel(): User {
     return User(
-        id = this.remoteUserId,
+        id = this.remoteUserId.value,
         firstName = this.firstName,
         lastName = this.lastName,
         username = this.username,
