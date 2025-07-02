@@ -50,6 +50,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelS
 @Composable
 fun PrintShippingLabelSection(
     status: ShippingLabelStatus,
+    isCustomsFormAvailable: Boolean,
     isRefundAvailable: Boolean,
     selectedLabelPaperSizeOption: WooShippingLabelPaperSize,
     onLabelPaperSizeOptionSelected: (WooShippingLabelPaperSize) -> Unit,
@@ -93,6 +94,7 @@ fun PrintShippingLabelSection(
         Spacer(modifier = Modifier.padding(top = 16.dp))
         PrintShippingLabelCard(
             isPrintButtonEnabled = status == PURCHASED,
+            isCustomsFormAvailable = isCustomsFormAvailable,
             isRefundAvailable = isRefundAvailable,
             selectedLabelPaperSizeOption = selectedLabelPaperSizeOption,
             onLabelPaperSizeOptionSelected = onLabelPaperSizeOptionSelected,
@@ -115,6 +117,7 @@ fun PrintShippingLabelSection(
 @Composable
 private fun PrintShippingLabelCard(
     isPrintButtonEnabled: Boolean,
+    isCustomsFormAvailable: Boolean,
     isRefundAvailable: Boolean,
     selectedLabelPaperSizeOption: WooShippingLabelPaperSize,
     onLabelPaperSizeOptionSelected: (WooShippingLabelPaperSize) -> Unit,
@@ -307,6 +310,7 @@ internal fun PrintShippingLabelSectionPreview() {
                 remember { mutableStateOf(WooShippingLabelPaperSize.LEGAL) }
             PrintShippingLabelSection(
                 status = PURCHASED,
+                isCustomsFormAvailable = true,
                 isRefundAvailable = true,
                 selectedLabelPaperSizeOption = selectedLabelPaperSizeOption.value,
                 onLabelPaperSizeOptionSelected = { selectedLabelPaperSizeOption.value = it },

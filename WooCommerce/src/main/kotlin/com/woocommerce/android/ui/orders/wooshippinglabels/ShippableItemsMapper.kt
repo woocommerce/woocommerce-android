@@ -59,7 +59,8 @@ fun List<ShippableItemModel>.toUIModel(
         shippingRatesState = shippingRates,
         purchaseState = shipmentUIModel.purchaseState,
         status = shipmentUIModel.label?.status ?: ShippingLabelStatus.UNKNOWN,
-        isRefundAvailable = shipmentUIModel.label?.isRefundAvailable == true
+        isRefundAvailable = shipmentUIModel.label?.isRefundAvailable == true,
+        isCustomsFormAvailable = shipmentUIModel.purchased && shipmentUIModel.label?.customsData != null
     )
 }
 
