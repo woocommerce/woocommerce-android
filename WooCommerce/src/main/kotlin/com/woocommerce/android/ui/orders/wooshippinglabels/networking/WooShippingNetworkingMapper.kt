@@ -295,7 +295,7 @@ class WooShippingNetworkingMapper @Inject constructor(
                 contentExplanation = customsData.contentDescription,
                 restrictionType = customsData.restrictionType.name.toLowerCase(Locale.current),
                 restrictionComments = customsData.restrictionDescription,
-                isReturnToSender = if (customsData.isReturnToSender) "return" else "abandon",
+                nonDeliveryOption = if (customsData.isReturnToSender) "return" else "abandon",
                 itn = customsData.itn,
                 items = customsData.items.map {
                     CustomsItemDTO(
