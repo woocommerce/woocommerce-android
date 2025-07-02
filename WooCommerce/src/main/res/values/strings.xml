@@ -620,12 +620,13 @@
     <string name="orderlist_order_trashed_error">Error trashing order</string>
     <string name="orderlist_selection_count">%d orders selected</string>
     <string name="orderlist_selection_count_single">%d order selected</string>
-    <string name="orderlist_selection_menu_update_status">Update status</string>
+    <string name="orderlist_selection_menu_update_status">Update kstatus</string>
     <string name="orderlist_bulk_update_status_updated">Status updated!</string>
     <string name="orderlist_bulk_update_maximum_reached">Maximum selection count (%d) is reached.</string>
     <string name="orderlist_bulk_update_result_no_orders_updated">No orders updated. Please try again.</string>
     <string name="orderlist_bulk_update_result_all_failed">Failed to update orders. Please try again.</string>
     <string name="orderlist_bulk_update_result_partial_success">%d order(s) updated, and %d order(s) failed to update. Please try again.</string>
+    <string name="pos_badge" translatable="false">POS</string>
 
     <!--
          Simple Payments

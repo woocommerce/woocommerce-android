@@ -81,7 +81,7 @@ class OrderListItemDataSource @Inject constructor(
                         currencyCode = order.currency,
                         isLastItemInSection = isLastItemByRemoteIdMap[order.orderId] ?: false,
                         salesChannelLabel = if (order.createdVia == "pos-rest-api") {
-                            OrderListItemUI.SalesChannelLabel.Visible("POS")
+                            OrderListItemUI.SalesChannelLabel.Visible(resourceProvider.getString(R.string.pos_badge))
                         } else {
                             OrderListItemUI.SalesChannelLabel.Hidden
                         }
