@@ -235,7 +235,7 @@ class WooShippingNetworkingMapper @Inject constructor(
         weight: Float
     ): PackagePurchaseDTO {
         return PackagePurchaseDTO(
-            id = "${SHIPMENT_ID_PREFIX}$shipmentId",
+            id = shipmentId.toString(),
             boxId = selectedPackage.id,
             length = selectedPackage.length.toFloat(),
             width = selectedPackage.width.toFloat(),
@@ -365,8 +365,4 @@ class WooShippingNetworkingMapper @Inject constructor(
                 category = hazmatSelection.requestFieldValue
             )
         } ?: HazmatDTO()
-
-    companion object {
-        private const val SHIPMENT_ID_PREFIX = "shipment_"
-    }
 }

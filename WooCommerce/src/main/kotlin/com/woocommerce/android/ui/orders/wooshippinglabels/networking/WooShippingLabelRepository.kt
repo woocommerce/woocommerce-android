@@ -123,7 +123,6 @@ class WooShippingLabelRepository @Inject constructor(
                 shippableItems = shippableItems,
                 weight = weight
             ),
-            shipmentId = shipmentId,
             selectedRate = mapper.toRateDTO(selectedRate.rate),
             parentRate = selectedRate.parentRate?.let { mapper.toRateDTO(it) },
             selectedRateOptions = mapper.toSelectedRateOptions(selectedRate),
