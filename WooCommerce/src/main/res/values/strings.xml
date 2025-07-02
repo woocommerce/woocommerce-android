@@ -4296,6 +4296,8 @@
     <string name="woopos_cart_barcode_scan_result_unsupported_product">Unsupported item – %s</string>
     <string name="woopos_cart_barcode_scan_result_server_error">Server error - %s</string>
     <string name="woopos_cart_barcode_scan_result_network_error">No internet connection</string>
+    <string name="woopos_cart_barcode_scan_result_too_short">Scanned barcode is too short</string>
+    <string name="woopos_cart_barcode_scan_result_no_terminator">Scanner did not send end-of-line character</string>
     <string name="woopos_clear_cart_button">Clear</string>
 
     <string name="woopos_banner_simple_products_dialog_content_description">Simple, variable and virtual products only dialog</string>
@@ -4669,7 +4671,7 @@
     <string name="purchased_shipment_content_description">Purchased</string>
 
     <string name="woo_shipping_refund_title">Request a shipping label refund</string>
-    <string name="woo_shipping_refund_description">Request a refund for your unused shipping label. The refund process for the shipping label will begin immediately and is typically completed within 14 business days.</string>
+    <string name="woo_shipping_refund_duration_description">Request a refund for your unused shipping label. The refund process for the shipping label will begin immediately and is typically completed within %d business days.</string>
     <string name="woo_shipping_refund_purchase_date"><![CDATA[<b>Purchase date:</b> %s]]></string>
     <string name="woo_shipping_refund_amount_eligible_for_refund"><![CDATA[<b>Amount eligible for refund:</b> %s]]></string>
     <string name="woo_shipping_refund_note">Please note that this refund request applies only to the unused shipping label and will not affect the order itself.</string>
@@ -4685,6 +4687,14 @@
     <string name="woo_shipping_payment_use_card_button">Use this card</string>
     <string name="woo_shipping_payment_method_added">Payment method added</string>
     <string name="woo_shipping_payment_fetching_cards_failed">Unable to refresh your payment methods</string>
+
+    <string name="wpp_shipping_ups_tos_title">UPS® Terms and Conditions</string>
+    <string name="wpp_shipping_ups_tos_shipping_from">Shipping from</string>
+    <string name="wpp_shipping_ups_tos_description">To start shipping from this address with UPS®, we need you to agree to the following terms and conditions:</string>
+    <string name="wpp_shipping_ups_tos_condition_terms">I agree to the &lt;a href=\"ups-tos\"&gt;UPS® Terms of Service&lt;/a&gt;.</string>
+    <string name="wpp_shipping_ups_tos_condition_prohibited_items">I will not ship any &lt;a href=\"ups-prohibited-items\"&gt;Prohibited Items&lt;/a&gt; that UPS® disallows, nor any regulated items without the necessary permissions.</string>
+    <string name="wpp_shipping_ups_tos_condition_technology_agreement">I also agree to the &lt;a href=\"ups-technology-agreement\"&gt;UPS® Technology Agreement&lt;/a&gt;.</string>
+    <string name="wpp_shipping_ups_tos_accept">Confirm and continue</string>
 
     <string name="media_library_title">WordPress Media Library</string>
     <string name="media_loading_failed">Media loading failed</string>

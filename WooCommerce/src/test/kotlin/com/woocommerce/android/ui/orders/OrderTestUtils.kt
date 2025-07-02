@@ -8,7 +8,9 @@ import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.model.toAppModel
-import org.wordpress.android.fluxc.model.LocalOrRemoteId
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus.UNKNOWN
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
@@ -39,7 +41,7 @@ object OrderTestUtils {
             number = "55",
             status = "pending, Custom 1,Custom 2,Custom 3",
             total = "106.00",
-            localSiteId = LocalOrRemoteId.LocalId(1),
+            localSiteId = LocalId(1),
             metaData = metadata,
             paymentMethod = paymentMethod,
             datePaid = datePaid,
@@ -50,12 +52,12 @@ object OrderTestUtils {
     fun generateOrderShipmentProviders(): List<WCOrderShipmentProviderModel> {
         val result = ArrayList<WCOrderShipmentProviderModel>()
         result.add(
-            WCOrderShipmentProviderModel().apply {
-                localSiteId = 1
-                country = "Australia"
-                carrierName = "Anitaa Test"
+            WCOrderShipmentProviderModel(
+                localSiteId = LocalId(1),
+                country = "Australia",
+                carrierName = "Anitaa Test",
                 carrierLink = "http://google.com"
-            }
+            )
         )
         return result
     }
@@ -95,6 +97,39 @@ object OrderTestUtils {
                     serviceName = "Service$i",
                     createdDate = Date(),
                     commercialInvoiceUrl = "",
+                )
+            )
+        }
+        return result
+    }
+
+    fun generateShippingLabelModels(totalCount: Int = 5): List<ShippingLabelModel> {
+        val result = ArrayList<ShippingLabelModel>()
+        for (i in totalCount downTo 1) {
+            result.add(
+                ShippingLabelModel(
+                    labelId = i.toLong(),
+                    packageName = "Package$i",
+                    serviceName = "Service$i",
+                    createdDate = Date(),
+                    tracking = "",
+                    refundableAmount = BigDecimal.ZERO,
+                    status = UNKNOWN,
+                    created = null,
+                    carrierId = "",
+                    commercialInvoiceUrl = "",
+                    isCommercialInvoiceSubmittedElectronically = false,
+                    isLetter = false,
+                    productNames = emptyList(),
+                    productIds = emptyList(),
+                    shipmentId = "0",
+                    receiptItemId = 0L,
+                    mainReceiptId = 0L,
+                    rate = BigDecimal.ZERO,
+                    currency = "",
+                    expiryDate = 0L,
+                    usedDate = 0L,
+                    refund = null,
                 )
             )
         }
@@ -224,7 +259,7 @@ object OrderTestUtils {
             billingLastName = "King",
             currency = "USD",
             dateCreated = "2018-02-02T16:11:13Z",
-            localSiteId = LocalOrRemoteId.LocalId(1),
+            localSiteId = LocalId(1),
             orderId = 1,
             number = "55",
             status = "pending",
@@ -269,7 +304,7 @@ object OrderTestUtils {
             billingLastName = "King",
             currency = "USD",
             dateCreated = "2018-02-02T16:11:13Z",
-            localSiteId = LocalOrRemoteId.LocalId(1),
+            localSiteId = LocalId(1),
             orderId = 1,
             number = "55",
             status = "complete",
@@ -288,7 +323,7 @@ object OrderTestUtils {
             billingLastName = "King",
             currency = "USD",
             dateCreated = "2018-02-02T16:11:13Z",
-            localSiteId = LocalOrRemoteId.LocalId(1),
+            localSiteId = LocalId(1),
             orderId = 1,
             number = "55",
             status = "pending",

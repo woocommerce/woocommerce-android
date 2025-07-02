@@ -1,11 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-06-03 09:54:04+0000
+Translation-Revision-Date: 2025-06-17 14:54:06+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="no_network_message">Es ist kein Netzwerk verfügbar</string>
+    <string name="media_loading_failed">Laden der Medien fehlgeschlagen</string>
+    <string name="media_library_title">WordPress-Mediathek</string>
+    <string name="woo_shipping_refund_note">Bitte beachte, dass sich dieser Antrag auf Rückerstattung nur auf das unbenutzte Versandetikett bezieht und nicht auf die Bestellung selbst.</string>
+    <string name="woo_shipping_refund_amount_eligible_for_refund">&lt;b&gt;Rückerstattbarer Betrag:&lt;/b&gt; %s</string>
+    <string name="woo_shipping_refund_purchase_date">&lt;b&gt;Kaufdatum:&lt;/b&gt; %s</string>
+    <string name="woo_shipping_refund_description">Du kannst eine Rückerstattung für dein unbenutztes Versandetikett anfordern. Der Rückerstattungsprozess für das Versandetikett beginnt sofort und wird normalerweise innerhalb von 14 Geschäftstagen abgeschlossen.</string>
+    <string name="woo_shipping_refund_title">Rückerstattung eines Versandetiketts anfordern</string>
+    <string name="woo_shipping_split_shipment_error">Wir konnten die Sendungen nicht aufteilen. Bitte versuche es erneut.</string>
+    <string name="woopos_cart_searching_for_item">Suchen</string>
+    <string name="woopos_cart_adding_item_to_cart_failed">Hinzufügen des Artikels zum Warenkorb fehlgeschlagen, %s.</string>
+    <string name="woopos_cart_coupon_added_to_cart_accessibility">Gutschein %1$s zum Warenkorb hinzugefügt</string>
+    <string name="woopos_cart_product_added_to_cart_accessibility">Produkt %1$s zum Warenkorb hinzugefügt; Preis: %2$s</string>
+    <string name="woopos_barcode_scanning_title">Barcode-Scans</string>
+    <string name="woopos_dialog_barcode_info_background_content_description">Abgedunkelter Hintergrund. Zum Schließen des Dialogs tippen.</string>
+    <string name="woopos_dialog_barcode_info_content_description">Dialogfeld mit Informationen zum Barcode-Scan</string>
+    <string name="woopos_dialog_barcode_info_button_label">OK</string>
+    <string name="woopos_dialog_barcode_info_quinary_message">Der Scanner zeigt eine Tastatur an, sodass in manchen Fällen die Softwaretastatur nicht angezeigt wird, z. B. in der Suche. Tippe auf das Tastaturicon, um die Softwaretastatur wieder anzuzeigen.</string>
+    <string name="woopos_dialog_barcode_info_quaternary_message">• In der Ansicht mit der Artikelliste kannst du Barcodes scannen, um Produkte zum Warenkorb hinzuzufügen.</string>
+    <string name="woopos_dialog_barcode_info_tertiary_message">• Stelle über die Bluetooth-Systemeinstellungen eine Verbindung mit deinem Barcode-Scanner her.</string>
+    <string name="woopos_dialog_barcode_info_secondary_message">• Informationen zum Festlegen des HID-Modus findest du in der Anleitung des Bluetooth-Barcodescanners.</string>
+    <string name="woopos_dialog_barcode_info_more_details_link">Weitere Details</string>
+    <string name="woopos_dialog_barcode_info_primary_message">• Du kannst Barcodes unter „Produkte &gt; Produktdetails &gt; Bestand“ im Feld „GTIN, UPC, EAN, ISBN“ einrichten. </string>
+    <string name="woopos_dialog_barcode_info_intro_message">Du kannst Barcodes mit einem externen Scanner scannen, um schnell deinen Warenkorb zu füllen.</string>
+    <string name="woopos_dialog_barcode_info_heading">Barcode-Scans</string>
+    <string name="woopos_cart_barcode_scan_result_request_cancelled">Anfrage abgebrochen</string>
+    <string name="woopos_cart_barcode_scan_result_network_error">Keine Internetverbindung</string>
+    <string name="woopos_cart_barcode_scan_result_unsupported_product">Nicht unterstützter Artikel ‒ %s</string>
+    <string name="woopos_cart_barcode_scan_result_product_not_found">Gescannter Artikel nicht bekannt</string>
+    <string name="woopos_add_coupon_to_cart_accessibility_label">Gutschein in den Warenkorb legen</string>
+    <string name="woopos_add_variable_product_to_cart_accessibility_label">Liste der Varianten öffnen</string>
+    <string name="woopos_add_product_to_cart_accessibility_label">Produkt zum Warenkorb hinzufügen</string>
+    <string name="woopos_cart_item_error_content_description">Fehler beim Laden des Artikels %s</string>
+    <string name="woopos_cart_item_loading_content_description">Artikel %s wird geladen</string>
+    <string name="blaze_campaign_edit_ad_arrow_back_description">Vorheriger Vorschlag</string>
+    <string name="blaze_campaign_edit_ad_arrow_forward_description">Nächster Vorschlag</string>
+    <string name="blaze_campaign_preview_tos_checkbox_evergreen_campaigns">Ich stimme einer wiederkehrenden wöchentlichen Abbuchung in Höhe von bis zu %1$s ab dem %2$s zu. Die Abbuchungen können zu verschiedenen Zeiten während der Kampagne erfolgen. &lt;a href=\'cancelInstructions\'&gt;&lt;u&gt;Ich kann jederzeit kündigen&lt;/u&gt;&lt;/a&gt;; ich bezahle nur für Werbung, die bis zur Kündigung geschaltet wurde.</string>
+    <string name="blaze_campaign_preview_tos_checkbox_over_7_days_campaign">Ich stimme einer wiederkehrenden Abbuchung in Höhe von bis zu %1$s/Woche ab dem %2$s zu. Die Abbuchungen können zu verschiedenen Zeiten während der Kampagne erfolgen. &lt;a href=\'cancelInstructions\'&gt;&lt;u&gt;Ich kann jederzeit kündigen&lt;/u&gt;&lt;/a&gt;; ich bezahle nur für Werbung, die bis zur Kündigung geschaltet wurde.</string>
+    <string name="blaze_campaign_preview_tos_checkbox_less_than_7_days_campaign">Ich stimme zu, dass mir die entstehenden Kosten in Höhe von bis zu %1$s ab dem %2$s in Rechnung gestellt werden. Solange die Kampagne aktiv ist, können eine oder mehrere Zahlungen fällig werden. &lt;a href=\'cancelInstructions\'&gt;&lt;u&gt;Ich kann jederzeit kündigen&lt;/u&gt;&lt;/a&gt;; ich bezahle nur für Werbung, die bis zur Kündigung geschaltet wurde.</string>
+    <string name="customer_detail_guest_customer">Gast</string>
     <string name="woopos_search_items_error_description">Bitte versuche es erneut.</string>
     <string name="woopos_search_coupons_error_title">Gutscheine konnten nicht geladen werden</string>
     <string name="woopos_search_items_error_title">Produkte konnten nicht geladen werden</string>
@@ -45,7 +85,7 @@ Language: de
     <string name="woopos_coupons_empty_list_image_description">Keine Gutscheine</string>
     <string name="woopos_coupons_screen_title">Gutscheine</string>
     <string name="woopos_product_limitations_title">Wo sind meine Produkte?</string>
-    <string name="woopos_coupon_item_content_description">Gutschein %s</string>
+    <string name="woopos_coupon_item_content_description_v2">Gutschein %s, %s</string>
     <string name="woo_shipping_split_shipment_bottom_sheet_remove_button">Sendung entfernen</string>
     <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_plural">Wähle, wohin die %d Artikel in dieser Sendung verschoben werden sollen.</string>
     <string name="woo_shipping_split_shipment_bottom_sheet_desc_multiple_shipment_one">Wähle, wohin der %d Artikel in dieser Sendung verschoben werden sollen.</string>
@@ -270,7 +310,7 @@ Language: de
     <string name="woopos_variations_loading_error_title">Varianten konnten nicht geladen werden</string>
     <string name="woopos_variations_back_content_description">Zurück</string>
     <string name="woopos_variation_item_content_description">Variante: %s, Preis: %s</string>
-    <string name="woopos_variable_product_item_content_description">Variables Produkt: %s, Preis: %s</string>
+    <string name="woopos_variable_product_item_content_description_v2">Variables Produkt %s</string>
     <string name="blaze_campaign_edit_ad_change_description_empty_error">Beschreibung darf nicht leer sein</string>
     <string name="blaze_campaign_edit_ad_change_cta_text_title">Call-to-Action</string>
     <string name="blaze_campaign_edit_ad_change_tagline_empty_error">Untertitel darf nicht leer sein</string>

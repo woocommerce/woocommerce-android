@@ -2,7 +2,6 @@
 package org.wordpress.android.fluxc.wc.order
 
 import android.app.Application
-import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.yarolegovich.wellsql.WellSql
 import kotlinx.coroutines.InternalCoroutinesApi
@@ -12,6 +11,7 @@ import kotlinx.coroutines.runBlocking
 import okhttp3.internal.toImmutableMap
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.any
@@ -39,8 +39,8 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus.COMPLETED
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderDto
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient
+import org.wordpress.android.fluxc.persistence.DatabaseTestRule
 import org.wordpress.android.fluxc.persistence.OrderSqlUtils
-import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.fluxc.persistence.dao.MetaDataDao
 import org.wordpress.android.fluxc.persistence.dao.OrderNotesDao
@@ -68,7 +68,14 @@ private const val CUSTOM_PAYMENT_METHOD_TITLE = "Pay in Person"
 @InternalCoroutinesApi
 @Config(manifest = Config.NONE)
 @RunWith(RobolectricTestRunner::class)
-class WCOrderStoreTest {
+internal class WCOrderStoreTest {
+
+    private val context = ApplicationProvider.getApplicationContext<Application>()
+
+    @Rule
+    @JvmField
+    val databaseRule = DatabaseTestRule(context)
+
     private val orderFetcher: WCOrderFetcher = mock()
     private val orderRestClient: OrderRestClient = mock()
     lateinit var ordersDaoDecorator: OrdersDaoDecorator
@@ -79,16 +86,10 @@ class WCOrderStoreTest {
 
     @Before
     fun setUp() {
-        val appContext = ApplicationProvider.getApplicationContext<Application>()
-
-        val database = Room.inMemoryDatabaseBuilder(appContext, WCAndroidDatabase::class.java)
-                .allowMainThreadQueries()
-                .build()
-
         val dispatcher = Dispatcher()
-        ordersDaoDecorator = OrdersDaoDecorator(dispatcher, database.ordersDao)
-        orderNotesDao = database.orderNotesDao
-        metaDataDao = database.metaDataDao
+        ordersDaoDecorator = OrdersDaoDecorator(dispatcher, databaseRule.db.ordersDao)
+        orderNotesDao = databaseRule.db.orderNotesDao
+        metaDataDao = databaseRule.db.metaDataDao
 
         orderStore = WCOrderStore(
                 dispatcher = dispatcher,
@@ -98,11 +99,12 @@ class WCOrderStoreTest {
                 ordersDaoDecorator = ordersDaoDecorator,
                 orderNotesDao = orderNotesDao,
                 metaDataDao = metaDataDao,
-                insertOrder = insertOrder
+                insertOrder = insertOrder,
+                orderShipmentProvidersDao = databaseRule.db.orderShipmentProvidersDao
         )
 
         val config = SingleStoreWellSqlConfigForTests(
-                appContext,
+                context,
                 listOf(WCOrderStatusModel::class.java),
                 WellSqlConfig.ADDON_WOOCOMMERCE
         )

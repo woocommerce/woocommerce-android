@@ -1,3 +1,4 @@
+@file:Suppress("MagicNumber")
 package org.wordpress.android.fluxc.wc.order
 
 import com.google.gson.Gson
@@ -24,8 +25,6 @@ import org.wordpress.android.fluxc.persistence.entity.OrderNoteEntity
 import org.wordpress.android.fluxc.site.SiteUtils
 import org.wordpress.android.fluxc.utils.DateUtils
 import kotlin.collections.MutableMap.MutableEntry
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 
 object OrderTestUtils {
     fun generateSampleOrder(
@@ -120,12 +119,12 @@ object OrderTestUtils {
         jsonElement.asJsonObject.entrySet().forEach { countryEntry: MutableEntry<String, JsonElement> ->
             countryEntry.value.asJsonObject.entrySet().map { carrierEntry ->
                 carrierEntry?.let { carrier ->
-                    val provider = WCOrderShipmentProviderModel().apply {
-                        localSiteId = siteId
-                        this.country = countryEntry.key
-                        this.carrierName = carrier.key
-                        this.carrierLink = carrier.value.asString
-                    }
+                    val provider = WCOrderShipmentProviderModel(
+                        localSiteId = LocalId(siteId),
+                        country = countryEntry.key,
+                        carrierName = carrier.key,
+                        carrierLink = carrier.value.asString
+                    )
                     providers.add(provider)
                 }
             }
@@ -134,12 +133,12 @@ object OrderTestUtils {
     }
 
     fun generateOrderShipmentProvider(siteId: Int): WCOrderShipmentProviderModel {
-        return WCOrderShipmentProviderModel().apply {
-            localSiteId = siteId
-            country = "Australia"
-            carrierName = "Amanda Test"
+        return WCOrderShipmentProviderModel(
+            localSiteId = LocalId(siteId),
+            country = "Australia",
+            carrierName = "Amanda Test",
             carrierLink = "http://google.com"
-        }
+        )
     }
 
     fun getOrderSummariesFromJsonString(json: String, siteId: Int): List<WCOrderSummaryModel> {
@@ -161,7 +160,7 @@ object OrderTestUtils {
         }
         TestSiteSqlUtils.siteSqlUtils.insertOrUpdateSite(siteModel)
         siteModel = TestSiteSqlUtils.siteSqlUtils.getSitesByNameOrUrlMatching("Generic").firstOrNull()
-        assertNotNull(siteModel)
+        assert(siteModel != null)
 
         return siteModel
     }
@@ -169,7 +168,7 @@ object OrderTestUtils {
     fun getTestOrderSummaryList(site: SiteModel): List<WCOrderSummaryModel> {
         val json = UnitTestUtils.getStringFromResourceFile(this.javaClass, "wc/order-summaries.json")
         val summaryList = getOrderSummariesFromJsonString(json, site.id)
-        assertEquals(10, summaryList.size)
+        assert(summaryList.size == 10)
 
         return summaryList
     }
@@ -177,7 +176,7 @@ object OrderTestUtils {
     fun getTestOrderSummaryExtendedList(site: SiteModel): List<WCOrderSummaryModel> {
         val json = UnitTestUtils.getStringFromResourceFile(this.javaClass, "wc/order-summaries-extended.json")
         val summaryList = getOrderSummariesFromJsonString(json, site.id)
-        assertEquals(300, summaryList.size)
+        assert(summaryList.size == 300)
 
         return summaryList
     }

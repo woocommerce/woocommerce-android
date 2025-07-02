@@ -1,16 +1,38 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.networking
 
+import com.google.gson.JsonObject
+import com.woocommerce.android.extensions.filterNotNull
 import com.woocommerce.android.ui.orders.wooshippinglabels.purchased.printing.ShippingLabelPrintingResponse
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.DestinationAddressDTO
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.BaseRequest
+import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooNetwork
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.toWooError
 import org.wordpress.android.fluxc.utils.toWooPayload
 import javax.inject.Inject
 
 class WooShippingLabelRestClient @Inject constructor(
     private val wooNetwork: WooNetwork
 ) {
+    suspend fun fetchShippingEligibility(site: SiteModel, orderId: Long): WooPayload<EligibilityResponse> {
+        val url = "/wcshipping/v1/eligibility/$orderId"
+
+        return wooNetwork.executeGetGsonRequest(
+            site = site,
+            path = url,
+            params = mapOf(
+                "can_create_customs_form" to true.toString(),
+                "can_create_package" to true.toString(),
+                "can_create_payment_method" to true.toString()
+            ),
+            clazz = EligibilityResponse::class.java,
+        ).toWooPayload()
+    }
+
     suspend fun fetchShippingLabelPrinting(
         site: SiteModel,
         labelIds: List<Long>,
@@ -41,6 +63,40 @@ class WooShippingLabelRestClient @Inject constructor(
         )
 
         return result.toWooPayload()
+    }
+
+    suspend fun updateAccountSettings(
+        site: SiteModel,
+        selectedPaymentMethodId: Long?,
+        emailReceipts: Boolean
+    ): WooPayload<Unit> {
+        val url = "/wcshipping/v1/account/settings/"
+
+        val result = wooNetwork.executePostGsonRequest(
+            site = site,
+            path = url,
+            clazz = JsonObject::class.java,
+            body = mapOf(
+                "selected_payment_method_id" to selectedPaymentMethodId,
+                "email_receipts" to emailReceipts,
+                "enabled" to true // See WOOSHIP-1410
+            ).filterNotNull()
+        )
+
+        val success = (result as? WPAPIResponse.Success<JsonObject>)?.data?.get("success")?.asBoolean ?: false
+
+        return when {
+            result is WPAPIResponse.Error -> WooPayload(error = result.error.toWooError())
+            !success -> WooPayload(
+                error = WooError(
+                    type = WooErrorType.API_ERROR,
+                    original = BaseRequest.GenericErrorType.UNKNOWN,
+                    message = "Something went wrong"
+                )
+            )
+
+            else -> WooPayload(Unit)
+        }
     }
 
     suspend fun fetchConfig(site: SiteModel, orderId: Long): WooPayload<ConfigResponse> {
@@ -93,6 +149,7 @@ class WooShippingLabelRestClient @Inject constructor(
         origin: OriginAddressPurchaseDTO,
         destination: DestinationAddressDTO,
         selectedPackage: PackagePurchaseDTO,
+        shipmentId: String,
         selectedRate: RateDTO,
         markOrderComplete: Boolean,
         hazmat: HazmatDTO = HazmatDTO(),
@@ -103,10 +160,10 @@ class WooShippingLabelRestClient @Inject constructor(
             site = site,
             path = url,
             body = mapOf(
-                "async" to true,
                 "origin" to origin,
                 "destination" to destination,
-                "packages" to listOf(selectedPackage),
+                // For this purchase endpoint, `id` represents the shipment ID instead of the package ID
+                "packages" to listOf(selectedPackage.copy(id = shipmentId)),
                 "selected_rate" to mapOf(
                     selectedPackage.boxId to mapOf(
                         "rate" to selectedRate,
@@ -117,7 +174,8 @@ class WooShippingLabelRestClient @Inject constructor(
                 "selected_rate_options" to "",
                 "hazmat" to mapOf(selectedPackage.boxId to hazmat),
                 "customs" to customs,
-                "user_meta" to mapOf("last_order_completed" to markOrderComplete)
+                "user_meta" to mapOf("last_order_completed" to markOrderComplete),
+                "features_supported_by_client" to listOf("upsdap"),
             ),
             clazz = PurchasedShippingLabelResponseDTO::class.java,
         ).toWooPayload()
@@ -234,5 +292,41 @@ class WooShippingLabelRestClient @Inject constructor(
             path = url,
             clazz = RefundLabelResponseDTO::class.java,
         ).toWooPayload()
+    }
+
+    suspend fun updateUPSDAPAgreement(
+        site: SiteModel,
+        originAddress: OriginAddressPurchaseDTO,
+        agreementAccepted: Boolean
+    ): WooPayload<Unit> {
+        val url = "/wcshipping/v1/carrier-strategy/upsdap"
+
+        val result = wooNetwork.executePostGsonRequest(
+            site = site,
+            path = url,
+            body = mapOf(
+                "origin" to mapOf(
+                    "address" to originAddress.address,
+                    "address_2" to originAddress.address2,
+                    "city" to originAddress.city,
+                    "company" to originAddress.company,
+                    "country" to originAddress.country,
+                    // The `name` field is required by the API, but it can't be blank
+                    "name" to originAddress.name.orEmpty().ifBlank { "" },
+                    "phone" to originAddress.phone,
+                    "postcode" to originAddress.postcode,
+                    "state" to originAddress.state,
+                    "email" to originAddress.email
+                ),
+                "confirmed" to agreementAccepted
+            ),
+            clazz = JsonObject::class.java,
+        )
+
+        return if (result is WPAPIResponse.Error) {
+            WooPayload(error = result.error.toWooError())
+        } else {
+            WooPayload(Unit)
+        }
     }
 }

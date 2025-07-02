@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.wooshippinglabels
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
+import com.woocommerce.android.WooException
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.Location
@@ -14,6 +15,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreat
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.HazmatState
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigateToHazmatFormEdit
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigateToRefundRequest
+import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.NavigateToUPSDAPTermsOfService
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.OpenLearnMoreScreen
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.OpenShippingLabelFile
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.OpenUrl
@@ -30,11 +32,16 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.components.WooShippin
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ShouldRequireCustomsForm
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.domain.ShouldRequireITN
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.AccountSettingsModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PaymentMethodModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PaymentMethodOptions
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.PurchasedLabelData
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus.PURCHASED
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus.UNKNOWN
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.StoreOptionsModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingCarrier
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
@@ -47,6 +54,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRate
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRateUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingSortOption
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -56,6 +64,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
@@ -66,6 +75,9 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import java.io.File
 import java.math.BigDecimal
 import kotlin.test.assertEquals
@@ -167,7 +179,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         shipmentId = "1",
         rateId = "1",
         serviceId = "1",
-        carrierId = "1",
+        carrierId = WooShippingCarrier.UPS.carrierIds.first(),
         serviceName = "Default",
         deliveryDays = 1,
         price = BigDecimal(12),
@@ -194,6 +206,31 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         rate = defaultShippingRate,
         feeDescription = "fee description",
         formattedOptionName = Option.DEFAULT.name
+    )
+
+    private val shippingLabelModel = ShippingLabelModel(
+        labelId = 1,
+        tracking = "",
+        refundableAmount = BigDecimal.ZERO,
+        status = UNKNOWN,
+        created = null,
+        carrierId = "",
+        serviceName = "",
+        commercialInvoiceUrl = "",
+        isCommercialInvoiceSubmittedElectronically = false,
+        packageName = "",
+        isLetter = false,
+        productNames = emptyList(),
+        productIds = emptyList(),
+        shipmentId = "0",
+        receiptItemId = 0L,
+        createdDate = null,
+        mainReceiptId = 0L,
+        rate = BigDecimal.ZERO,
+        currency = "",
+        expiryDate = 0L,
+        usedDate = 0L,
+        refund = null,
     )
 
     private val defaultShippingRates = mapOf(
@@ -227,7 +264,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         WooShippingLabelCreationFragmentArgs(orderId = orderId).toSavedStateHandle()
 
     private val shouldRequireCustomsForm: ShouldRequireCustomsForm = mock {
-        on { invoke(any()) } doReturn true
+        on { invoke(any()) } doReturn false
     }
 
     private val addressValidationHelper: AddressValidationHelper = mock {
@@ -242,8 +279,12 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     private val observeAccountSettings: ObserveAccountSettings = mock {
         on { invoke() } doReturn flowOf(defaultAccountSettings)
     }
-    private val verifyDestinationAddress: VerifyDestinationAddress = mock()
-    private val observeShippingLabelNotice: ObserveShippingLabelNotice = mock()
+    private val verifyDestinationAddress: VerifyDestinationAddress = mock {
+        onBlocking { invoke(orderId) } doReturn Result.success(DestinationShippingAddress(defaultShipToAddress, true))
+    }
+    private val observeShippingLabelNotice: ObserveShippingLabelNotice = mock {
+        on { invoke(any(), any(), any(), any()) } doReturn flowOf(null)
+    }
     private val shouldRequireITN: ShouldRequireITN = mock {
         on { invoke(any(), any()) } doReturn false
     }
@@ -349,15 +390,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when shipping rates succeed then display the shipping rates`() = testBlocking {
-        val order = OrderTestUtils.generateTestOrder(orderId = orderId).copy(
-            shippingLines = defaultShippingLines,
-            customer = Order.Customer(
-                billingAddress = defaultShipToAddress,
-                shippingAddress = defaultShipToAddress
-            )
-        )
         whenever(shouldRequireCustomsForm.invoke(any())) doReturn false
-        whenever(orderDetailRepository.getOrderById(any())) doReturn order
         whenever(
             getShippingRates(any(), any(), any(), any(), any(), any(), isNull(), isNull())
         ) doReturn Result.success(defaultShippingRates)
@@ -418,15 +451,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when shipping rates fail then display an error`() = testBlocking {
-        val order = OrderTestUtils.generateTestOrder(orderId = orderId).copy(
-            shippingLines = defaultShippingLines,
-            customer = Order.Customer(
-                billingAddress = defaultShipToAddress,
-                shippingAddress = defaultShipToAddress
-            )
-        )
         whenever(shouldRequireCustomsForm.invoke(any())) doReturn false
-        whenever(orderDetailRepository.getOrderById(any())) doReturn order
         whenever(
             getShippingRates(any(), any(), any(), any(), any(), any(), isNull(), isNull())
         ) doReturn Result.failure(Exception("Random error"))
@@ -446,15 +471,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when refresh rates is triggered then refresh shipping rates`() = testBlocking {
-        val order = OrderTestUtils.generateTestOrder(orderId = orderId).copy(
-            shippingLines = defaultShippingLines,
-            customer = Order.Customer(
-                billingAddress = defaultShipToAddress,
-                shippingAddress = defaultShipToAddress
-            )
-        )
         whenever(shouldRequireCustomsForm.invoke(any())) doReturn false
-        whenever(orderDetailRepository.getOrderById(any())) doReturn order
         whenever(
             getShippingRates(any(), any(), any(), any(), any(), any(), isNull(), isNull())
         ) doReturn Result.success(defaultShippingRates)
@@ -474,15 +491,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when rates sort order is changed then DON'T refresh shipping rates`() = testBlocking {
-        val order = OrderTestUtils.generateTestOrder(orderId = orderId).copy(
-            shippingLines = defaultShippingLines,
-            customer = Order.Customer(
-                billingAddress = defaultShipToAddress,
-                shippingAddress = defaultShipToAddress
-            )
-        )
         whenever(shouldRequireCustomsForm.invoke(any())) doReturn false
-        whenever(orderDetailRepository.getOrderById(any())) doReturn order
         whenever(
             getShippingRates(any(), any(), any(), any(), any(), any(), isNull(), isNull())
         ) doReturn Result.success(defaultShippingRates)
@@ -503,15 +512,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when rates sort order is NOT changed then DON'T refresh shipping rates`() = testBlocking {
-        val order = OrderTestUtils.generateTestOrder(orderId = orderId).copy(
-            shippingLines = defaultShippingLines,
-            customer = Order.Customer(
-                billingAddress = defaultShipToAddress,
-                shippingAddress = defaultShipToAddress
-            )
-        )
         whenever(shouldRequireCustomsForm.invoke(any())) doReturn false
-        whenever(orderDetailRepository.getOrderById(any())) doReturn order
         whenever(
             getShippingRates(any(), any(), any(), any(), any(), any(), isNull(), isNull())
         ) doReturn Result.success(defaultShippingRates)
@@ -655,10 +656,6 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     fun `CustomState is ItnMissing when shouldRequireCustomsForm returns true and ShippingLines exceeds the 2500 limit`() =
         testBlocking {
             var currentViewState: WooShippingViewState? = null
-            val order = OrderTestUtils.generateTestOrder(orderId = orderId).copy(
-                shippingLines = defaultShippingLines
-            )
-            whenever(orderDetailRepository.getOrderById(any())) doReturn order
 
             whenever(shouldRequireCustomsForm.invoke(any())) doReturn true
             whenever(shouldRequireITN.invoke(any(), any())) doReturn true
@@ -682,12 +679,8 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when onPurchaseShippingLabel fails then show a snackbar`() = testBlocking {
-        val order = OrderTestUtils.generateTestOrder(orderId = orderId)
-
-        whenever(orderDetailRepository.getOrderById(any())) doReturn order
-
         whenever(
-            purchaseShippingLabel(any(), any(), any(), any(), any(), any(), any(), any(), isNull(), isNull())
+            purchaseShippingLabel(any(), any(), any(), any(), any(), any(), any(), any(), any(), isNull(), isNull())
         ) doReturn Result.failure(Exception("Random error"))
 
         createViewModel()
@@ -707,9 +700,6 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     @Test
     fun `when the view model is created, then get store options from the local preferences and update settings on background`() =
         testBlocking {
-            val order = OrderTestUtils.generateTestOrder(orderId = orderId)
-
-            whenever(orderDetailRepository.getOrderById(any())) doReturn order
             whenever(observeAccountSettings()) doReturn flowOf(null, defaultAccountSettings)
 
             createViewModel()
@@ -721,9 +711,6 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when there is no cached store options and API request fails then display error`() = testBlocking {
-        val order = OrderTestUtils.generateTestOrder(orderId = orderId)
-
-        whenever(orderDetailRepository.getOrderById(any())) doReturn order
         whenever(observeAccountSettings()) doReturn flowOf(null)
 
         createViewModel()
@@ -736,9 +723,6 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when shipment details is expanded then the back gesture closes the sheet`() = testBlocking {
-        val order = OrderTestUtils.generateTestOrder(orderId = orderId)
-
-        whenever(orderDetailRepository.getOrderById(any())) doReturn order
         whenever(observeAccountSettings()) doReturn flowOf(null)
 
         createViewModel()
@@ -757,9 +741,6 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when there is no bottom sheet expanded, then on back navigates to the previous screen`() = testBlocking {
-        val order = OrderTestUtils.generateTestOrder(orderId = orderId)
-
-        whenever(orderDetailRepository.getOrderById(any())) doReturn order
         whenever(observeAccountSettings()) doReturn flowOf(null)
 
         createViewModel()
@@ -773,14 +754,11 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when there are notices then display the notices`() = testBlocking {
-        val order = OrderTestUtils.generateTestOrder(orderId = orderId)
         val notice = NoticeBannerUiState(
             message = R.string.woo_shipping_address_notification_destination_missing,
             type = NoticeType.MISSING_DESTINATION_ADDRESS,
             error = true,
         )
-
-        whenever(orderDetailRepository.getOrderById(any())) doReturn order
 
         whenever(observeShippingLabelNotice(any(), any(), any(), any())) doReturn flowOf(notice)
 
@@ -794,11 +772,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when there are no notices then do not display the notices`() = testBlocking {
-        val order = OrderTestUtils.generateTestOrder(orderId = orderId)
         val notice = null
-
-        whenever(orderDetailRepository.getOrderById(any())) doReturn order
-
         whenever(observeShippingLabelNotice(any(), any(), any(), any())) doReturn flowOf(notice)
 
         createViewModel()
@@ -810,11 +784,25 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when current label is purchased, then do not display notices`() = testBlocking {
+        whenever(getShipments(any())) doReturn listOf(
+            ShipmentUIModel(
+                localId = "0",
+                items = defaultShippableItems,
+                purchased = true
+            )
+        )
+
+        createViewModel()
+
+        advanceUntilIdle()
+
+        val dataState = sut.viewState.value as DataState
+        assertThat(dataState.uiState.noticeBannerUiState).isNull()
+    }
+
+    @Test
     fun `when the destination address is missing then verify endpoint should not be called`() = testBlocking {
-        val order = OrderTestUtils.generateTestOrder(orderId = orderId)
-
-        whenever(orderDetailRepository.getOrderById(any())) doReturn order
-
         whenever(addressValidationHelper.isMissingDestinationAddress(any())) doReturn true
 
         createViewModel()
@@ -826,10 +814,6 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when the destination address exists then verify endpoint should be called`() = testBlocking {
-        val order = OrderTestUtils.generateTestOrder(orderId = orderId)
-
-        whenever(orderDetailRepository.getOrderById(any())) doReturn order
-
         whenever(addressValidationHelper.isMissingDestinationAddress(any())) doReturn false
 
         createViewModel()
@@ -883,8 +867,6 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     fun `when NavigateToHazmatFormEdit is triggered with a selected category, the event contains the expected category value`() =
         testBlocking {
             var event: MultiLiveEvent.Event? = null
-            val order = OrderTestUtils.generateTestOrder(orderId = orderId)
-            whenever(orderDetailRepository.getOrderById(any())) doReturn order
 
             createViewModel()
 
@@ -898,9 +880,6 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when initialized, show expected item quantity`() = testBlocking {
-        val order = OrderTestUtils.generateTestOrder(orderId = orderId)
-        whenever(orderDetailRepository.getOrderById(any())) doReturn order
-
         whenever(shouldRequireCustomsForm.invoke(any())) doReturn false
 
         val expectedItemQuantity = defaultShippableItems.size
@@ -918,7 +897,11 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     @Test
     fun `onPrintShippingLabelClicked triggers OpenShippingLabelFile event`() = testBlocking {
         whenever(getShipments(any())) doReturn listOf(
-            ShipmentUIModel(localId = "0", items = defaultShippableItems, labelId = 123)
+            ShipmentUIModel(
+                localId = "0",
+                items = defaultShippableItems,
+                label = shippingLabelModel.copy(labelId = 123L)
+            )
         )
         whenever(fetchShippingLabelFile(eq(listOf(123)), any())).thenReturn(file)
 
@@ -935,9 +918,6 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
     @Test
     fun `ViewState starts with LABEL paper size as default`() = testBlocking {
-        val order = OrderTestUtils.generateTestOrder(orderId = orderId)
-        whenever(orderDetailRepository.getOrderById(any())) doReturn order
-
         createViewModel()
 
         val currentViewState = sut.viewState.value
@@ -948,9 +928,6 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
     @Test
     fun `onLabelPaperSizeOptionSelected updates the ViewState as expected`() = testBlocking {
-        val order = OrderTestUtils.generateTestOrder(orderId = orderId)
-        whenever(orderDetailRepository.getOrderById(any())) doReturn order
-
         createViewModel()
 
         sut.onLabelPaperSizeOptionSelected(WooShippingLabelPaperSize.LETTER)
@@ -967,8 +944,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
             ShipmentUIModel(
                 localId = "0",
                 items = defaultShippableItems,
-                carrierId = "usps",
-                trackingNumber = "123456"
+                label = shippingLabelModel.copy(carrierId = "usps", tracking = "123456"),
             )
         )
 
@@ -985,7 +961,11 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     @Test
     fun `onSchedulePickUpClicked triggers OpenUrl event`() = testBlocking {
         whenever(getShipments(any())) doReturn listOf(
-            ShipmentUIModel(localId = "0", items = defaultShippableItems, carrierId = "usps")
+            ShipmentUIModel(
+                localId = "0",
+                items = defaultShippableItems,
+                label = shippingLabelModel.copy(carrierId = "usps")
+            )
         )
 
         createViewModel()
@@ -1002,7 +982,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     fun `onRefundClicked triggers NavigateToRefundRequest event`() = testBlocking {
         val labelId = 123L
         whenever(getShipments(any())) doReturn defaultShipments.toMutableList().apply {
-            set(0, defaultShipments.first().copy(labelId = labelId))
+            set(0, defaultShipments.first().copy(label = shippingLabelModel.copy(labelId = labelId)))
         }
 
         createViewModel()
@@ -1111,5 +1091,116 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
         val viewState = sut.viewState.value as DataState
         assertThat(viewState.paymentsSectionUI.selectedPaymentMethod).isNull()
+    }
+
+    @Test
+    fun `when purchase shipping label fails with UPSDAP_MISSING_TOS_ERROR_CODE, then navigate to UPS DAP terms of service`() =
+        testBlocking {
+            val wooError = WooError(
+                type = WooErrorType.API_ERROR,
+                original = GenericErrorType.UNKNOWN,
+                apiErrorCode = WooShippingLabelCreationViewModel.UPSDAP_MISSING_TOS_ERROR_CODE,
+                message = "Missing UPS DAP terms of service acceptance"
+            )
+            val wooException = WooException(wooError)
+            whenever(
+                purchaseShippingLabel(any(), any(), any(), any(), any(), any(), any(), any(), any(), isNull(), isNull())
+            ) doReturn Result.failure(wooException)
+
+            createViewModel()
+
+            val selectedRate = defaultShippingRates.values.first().first()
+            sut.onPackageSelected(defaultPackageData)
+            sut.onSelectedSippingRateChanged(selectedRate)
+
+            advanceUntilIdle()
+
+            var event: NavigateToUPSDAPTermsOfService? = null
+            sut.event.observeForever { if (it is NavigateToUPSDAPTermsOfService) event = it }
+
+            sut.onPurchaseShippingLabel()
+
+            assertThat(event).isNotNull
+            assertThat(event?.originAddress).isEqualTo(defaultOriginAddresses.first())
+        }
+
+    @Test
+    fun `when UPS terms accepted, then fetch new rates and reselect same rate as before`() = testBlocking {
+        val rateToBeSelected = defaultShippableItemUI.copy(
+            rate = defaultShippingRate.copy(rateId = "2")
+        )
+        val secondRatesFetchResult = mapOf(
+            defaultCarrier to defaultShippableItems.map {
+                ShippingRateUI(
+                    options = mapOf(Option.DEFAULT to rateToBeSelected),
+                    selectedOption = rateToBeSelected
+                )
+            }
+        )
+        whenever(getShippingRates(any(), any(), any(), any(), any(), any(), anyOrNull(), anyOrNull()))
+            .thenReturn(Result.success(defaultShippingRates))
+            .thenReturn(Result.success(secondRatesFetchResult))
+
+        createViewModel()
+        advanceUntilIdle()
+
+        val viewState = sut.viewState.runAndCaptureValues {
+            // Select a package
+            sut.onPackageSelected(defaultPackageData)
+            advanceUntilIdle()
+
+            // Select a shipping rate
+            val selectedRate = defaultShippingRates.values.first().first()
+            sut.onSelectedSippingRateChanged(selectedRate)
+            advanceUntilIdle()
+
+            // Simulate UPS terms acceptance
+            sut.onUPSTermsAccepted()
+            advanceUntilIdle()
+        }.last() as DataState
+
+        // The rates should be fetched again and the same rate should be selected
+        verify(getShippingRates, times(2)).invoke(any(), any(), any(), any(), any(), any(), anyOrNull(), anyOrNull())
+        val shipment = viewState.shipmentUIList[0]
+        assertThat(shipment.shippingRatesState)
+            .isInstanceOf(WooShippingLabelCreationViewModel.ShippingRatesState.DataState::class.java)
+        val ratesState = shipment.shippingRatesState as WooShippingLabelCreationViewModel.ShippingRatesState.DataState
+        assertThat(ratesState.selectedRate!!.selectedOption).isEqualTo(rateToBeSelected)
+    }
+
+    @Test
+    fun `when UPS terms are accepted, then continue purchase`() = testBlocking {
+        whenever(getShippingRates(any(), any(), any(), any(), any(), any(), anyOrNull(), anyOrNull()))
+            .thenReturn(Result.success(defaultShippingRates))
+        val purchasedLabel = shippingLabelModel.copy(status = PURCHASED)
+        whenever(
+            purchaseShippingLabel(any(), any(), any(), any(), any(), any(), any(), any(), any(), isNull(), isNull())
+        ) doReturn Result.success(
+            PurchasedLabelData(
+                labels = listOf(purchasedLabel),
+                origin = emptyMap(),
+                destination = emptyMap(),
+                rates = emptyMap()
+            )
+        )
+
+        createViewModel()
+        advanceUntilIdle()
+
+        val viewState = sut.viewState.runAndCaptureValues {
+            sut.onPackageSelected(defaultPackageData)
+            advanceUntilIdle()
+
+            val selectedRate = defaultShippingRates.values.first().first()
+            sut.onSelectedSippingRateChanged(selectedRate)
+            advanceUntilIdle()
+
+            sut.onUPSTermsAccepted()
+            advanceUntilIdle()
+        }.last() as DataState
+
+        viewState.shipmentUIList.first().let {
+            assertThat(it.purchased).isTrue()
+        }
     }
 }

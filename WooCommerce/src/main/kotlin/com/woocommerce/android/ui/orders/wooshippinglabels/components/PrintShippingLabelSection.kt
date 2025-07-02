@@ -50,6 +50,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelS
 @Composable
 fun PrintShippingLabelSection(
     status: ShippingLabelStatus,
+    isRefundAvailable: Boolean,
     selectedLabelPaperSizeOption: WooShippingLabelPaperSize,
     onLabelPaperSizeOptionSelected: (WooShippingLabelPaperSize) -> Unit,
     onPrintShippingLabelClicked: () -> Unit,
@@ -92,6 +93,7 @@ fun PrintShippingLabelSection(
         Spacer(modifier = Modifier.padding(top = 16.dp))
         PrintShippingLabelCard(
             isPrintButtonEnabled = status == PURCHASED,
+            isRefundAvailable = isRefundAvailable,
             selectedLabelPaperSizeOption = selectedLabelPaperSizeOption,
             onLabelPaperSizeOptionSelected = onLabelPaperSizeOptionSelected,
             onPrintShippingLabelClicked = onPrintShippingLabelClicked,
@@ -113,6 +115,7 @@ fun PrintShippingLabelSection(
 @Composable
 private fun PrintShippingLabelCard(
     isPrintButtonEnabled: Boolean,
+    isRefundAvailable: Boolean,
     selectedLabelPaperSizeOption: WooShippingLabelPaperSize,
     onLabelPaperSizeOptionSelected: (WooShippingLabelPaperSize) -> Unit,
     onPrintShippingLabelClicked: () -> Unit,
@@ -189,14 +192,16 @@ private fun PrintShippingLabelCard(
             showIcon = true,
             modifier = Modifier.padding(vertical = 8.dp)
         )
-        ShippingLabelLink(
-            text = stringResource(id = R.string.shipping_label_purchased_request_refund),
-            onClick = {
-                onRefundClicked()
-            },
-            showIcon = false,
-            modifier = Modifier.padding(vertical = 8.dp)
-        )
+        if (isRefundAvailable) {
+            ShippingLabelLink(
+                text = stringResource(id = R.string.shipping_label_purchased_request_refund),
+                onClick = {
+                    onRefundClicked()
+                },
+                showIcon = false,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+        }
     }
 }
 
@@ -302,6 +307,7 @@ internal fun PrintShippingLabelSectionPreview() {
                 remember { mutableStateOf(WooShippingLabelPaperSize.LEGAL) }
             PrintShippingLabelSection(
                 status = PURCHASED,
+                isRefundAvailable = true,
                 selectedLabelPaperSizeOption = selectedLabelPaperSizeOption.value,
                 onLabelPaperSizeOptionSelected = { selectedLabelPaperSizeOption.value = it },
                 onPrintShippingLabelClicked = {},

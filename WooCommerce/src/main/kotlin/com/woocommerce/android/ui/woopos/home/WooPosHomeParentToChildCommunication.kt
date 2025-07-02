@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.home
 
+import com.woocommerce.android.ui.woopos.common.composeui.modifier.BarcodeInputDetector
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import dagger.hilt.android.scopes.ActivityRetainedScoped
@@ -32,7 +33,9 @@ sealed class ParentToChildrenEvent {
         val itemData: WooPosItemsViewModel.ItemClickedData,
         val eventForTracking: WooPosAnalyticsEvent.Event.ItemAddedToCart?
     ) : ParentToChildrenEvent()
-    data class BarcodeScanned(val barcode: String) : ParentToChildrenEvent()
+    data class BarcodeEvent(
+        val result: BarcodeInputDetector.BarcodeResult
+    ) : ParentToChildrenEvent()
 
     data class CheckoutClicked(
         val itemClickedDataList: List<WooPosItemsViewModel.ItemClickedData>

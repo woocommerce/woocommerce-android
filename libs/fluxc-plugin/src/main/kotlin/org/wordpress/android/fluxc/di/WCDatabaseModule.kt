@@ -9,6 +9,7 @@ import org.wordpress.android.fluxc.persistence.OrderSqlUtils
 import org.wordpress.android.fluxc.persistence.ProductSqlUtils
 import org.wordpress.android.fluxc.persistence.TransactionExecutor
 import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
+import org.wordpress.android.fluxc.persistence.converters.CurrencyPositionConverter
 import org.wordpress.android.fluxc.persistence.dao.AddonsDao
 import org.wordpress.android.fluxc.persistence.dao.CouponsDao
 import org.wordpress.android.fluxc.persistence.dao.CustomerFromAnalyticsDao
@@ -24,8 +25,10 @@ import javax.inject.Singleton
 )
 interface WCDatabaseModule {
     companion object {
-        @Singleton @Provides fun provideDatabase(context: Context): WCAndroidDatabase {
-            return WCAndroidDatabase.buildDb(context)
+        @Singleton
+        @Provides
+        fun provideDatabase(context: Context, currencyPositionConverter: CurrencyPositionConverter): WCAndroidDatabase {
+            return WCAndroidDatabase.buildDb(context, currencyPositionConverter)
         }
 
         @Provides internal fun provideAddonsDao(database: WCAndroidDatabase): AddonsDao {
@@ -92,7 +95,15 @@ interface WCDatabaseModule {
 
         @Provides internal fun provideProductSettingsDao(database: WCAndroidDatabase) = database.productSettingsDao
 
+        @Provides internal fun provideUserDao(database: WCAndroidDatabase) = database.userDao
+
         @Provides internal fun provideLocationsDao(database: WCAndroidDatabase) = database.locationsDao
+
+        @Provides internal fun provideOrderShipmentProvidersDao(database: WCAndroidDatabase) = database.orderShipmentProvidersDao
+
+        @Provides internal fun provideTaxClassDao(database: WCAndroidDatabase) = database.taxClassDao
+
+        @Provides internal fun provideWCSettingsDao(database: WCAndroidDatabase) = database.settingsDao
     }
     @Binds fun bindTransactionExecutor(database: WCAndroidDatabase): TransactionExecutor
 }

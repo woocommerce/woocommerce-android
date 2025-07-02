@@ -1,10 +1,13 @@
 package com.woocommerce.android.ui.orders.tracking
 
-import com.woocommerce.android.model.OrderShipmentProvider
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.tracking.OrderShipmentProvidersRepository.OrderShipmentProvidersFetchResult.CarriersFetched
+import com.woocommerce.android.ui.orders.tracking.OrderShipmentProvidersRepository.OrderShipmentProvidersFetchResult.NoCarriersFound
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.ORDERS
+import kotlinx.coroutines.flow.map
+import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderShipmentProvidersPayload
 import javax.inject.Inject
@@ -13,38 +16,47 @@ class OrderShipmentProvidersRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val orderStore: WCOrderStore
 ) {
-    @Suppress("ReturnCount")
-    suspend fun fetchOrderShipmentProviders(orderId: Long): List<OrderShipmentProvider>? {
-        // Check db first
-        val providersInDb = getShipmentProvidersFromDB()
-        if (providersInDb.isNotEmpty()) {
-            return providersInDb
+
+    fun observeOrderShipmentProviders() =
+        orderStore.observeOrderShipmentProviders(selectedSite.get()).map { entity ->
+            entity.map(WCOrderShipmentProviderModel::toAppModel)
         }
 
+    suspend fun fetchOrderShipmentProviders(orderId: Long): Result<OrderShipmentProvidersFetchResult> {
         // Fetch from API
         val order = orderStore.getOrderByIdAndSite(orderId, selectedSite.get())
         if (order == null) {
-            WooLog.e(
-                ORDERS,
-                "Can't find order with id $orderId while trying to fetch shipment providers list"
-            )
-            return null
+            val exception = OrderNotFoundException(orderId)
+            WooLog.e(ORDERS, exception)
+            return Result.failure(exception)
         }
         val payload = FetchOrderShipmentProvidersPayload(selectedSite.get(), order)
         val result = orderStore.fetchOrderShipmentProviders(payload)
         return when {
             result.isError -> {
-                WooLog.e(ORDERS, "Error fetching shipment providers: ${result.error.message}")
-                null
+                val exception = OrderShipmentProvidersFetchException(result.error.message)
+                WooLog.e(ORDERS, exception)
+                Result.failure(exception)
             }
-            result.rowsAffected == 0 -> {
+
+            result.shipmentProvidersFetchedCount == 0 -> {
                 WooLog.i(ORDERS, "No shipment providers fetched")
-                emptyList()
+                Result.success(NoCarriersFound)
             }
-            else -> getShipmentProvidersFromDB()
+
+            else -> Result.success(CarriersFetched)
         }
     }
 
-    private fun getShipmentProvidersFromDB(): List<OrderShipmentProvider> =
-        orderStore.getShipmentProvidersForSite(selectedSite.get()).map { it.toAppModel() }
+    class OrderNotFoundException(orderId: Long) :
+        Exception("Can't find order with id $orderId while trying to fetch shipment providers list")
+
+    class OrderShipmentProvidersFetchException(
+        errorMessage: String
+    ) : Exception("Error fetching order shipment providers: $errorMessage")
+
+    sealed class OrderShipmentProvidersFetchResult {
+        data object CarriersFetched : OrderShipmentProvidersFetchResult()
+        data object NoCarriersFound : OrderShipmentProvidersFetchResult()
+    }
 }
