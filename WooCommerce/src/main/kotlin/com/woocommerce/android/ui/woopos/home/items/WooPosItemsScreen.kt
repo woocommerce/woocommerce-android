@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ExperimentalMaterialApi
@@ -109,8 +110,9 @@ private fun MainItemsList(
         ) {
             WooPosItemsToolbar(
                 modifier = Modifier
+                    .statusBarsPadding()
                     .padding(
-                        top = WooPosSpacing.XLarge.value.toAdaptivePadding(),
+                        top = WooPosSpacing.Small.value.toAdaptivePadding(),
                         end = WooPosSpacing.Medium.value.toAdaptivePadding(),
                     ),
                 state = state.value,
