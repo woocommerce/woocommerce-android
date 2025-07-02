@@ -174,7 +174,10 @@ class GetShipmentsTests : BaseUnitTest() {
             )
         )
         whenever(configDataStore.observeConfig(eq(order.id))) doReturn flowOf(
-            ConfigDTO(shipments = shipments, shippingLabelData = ShippingLabelDataDTO(emptyList()))
+            ConfigDTO(
+                shipments = shipments,
+                shippingLabelData = ShippingLabelDataDTO(currentOrderLabels = emptyList(), storedData = null)
+            )
         )
 
         val result = sut.invoke(order)
@@ -206,7 +209,7 @@ class GetShipmentsTests : BaseUnitTest() {
         )
         val configDTO = ConfigDTO(
             shipments = shipments,
-            shippingLabelData = ShippingLabelDataDTO(currentOrderLabels = listOf(shippingLabel))
+            shippingLabelData = ShippingLabelDataDTO(currentOrderLabels = listOf(shippingLabel), storedData = null)
         )
         whenever(configDataStore.observeConfig(eq(order.id))) doReturn flowOf(configDTO)
 

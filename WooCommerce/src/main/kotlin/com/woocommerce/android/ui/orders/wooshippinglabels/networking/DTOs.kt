@@ -82,7 +82,40 @@ data class ConfigDTO(
 )
 
 data class ShippingLabelDataDTO(
-    @SerializedName("currentOrderLabels") val currentOrderLabels: List<ShippingLabelDTO>
+    @SerializedName("currentOrderLabels") val currentOrderLabels: List<ShippingLabelDTO>?,
+    @SerializedName("storedData") val storedData: StoredDataDTO?
+)
+
+/**
+ * Deserializer for the `customs_information` field in the shipping label data.
+ * The `customs_information` field can contain either a JSON object with customs details
+ * or an empty JSON array for shipments. This deserializer handles this by ignoring the array entries and only parsing
+ * the object entries.
+ */
+class CustomsInformationDeserializer : JsonDeserializer<Map<String, CustomsDTO>> {
+    override fun deserialize(
+        json: JsonElement?,
+        typeOfT: Type?,
+        context: JsonDeserializationContext?
+    ): Map<String, CustomsDTO> {
+        val resultMap = mutableMapOf<String, CustomsDTO>()
+        if (json == null || !json.isJsonObject || context == null) {
+            return resultMap
+        }
+
+        json.asJsonObject.entrySet().forEach { (key, value) ->
+            if (value.isJsonObject) {
+                resultMap[key] = context.deserialize(value, CustomsDTO::class.java)
+            }
+        }
+        return resultMap
+    }
+}
+
+data class StoredDataDTO(
+    @SerializedName("customs_information")
+    @JsonAdapter(CustomsInformationDeserializer::class)
+    val customsInformation: Map<String, CustomsDTO>
 )
 
 data class Item(@SerializedName("id") val id: Long?, @SerializedName("subItems") val subItems: List<String>?)
@@ -195,23 +228,25 @@ data class VerifyDestinationAddressResponseDTO(
 )
 
 data class CustomsDTO(
-    @SerializedName("contents_type") val contentsType: String,
-    @SerializedName("contents_explanation") val contentExplanation: String,
-    @SerializedName("restriction_type") val restrictionType: String,
-    @SerializedName("restriction_comments") val restrictionComments: String,
+    @SerializedName("contents_type", ["contentsType"]) val contentsType: String,
+    @SerializedName("contents_explanation") val contentExplanation: String?,
+    @SerializedName("restriction_type", ["restrictionType"]) val restrictionType: String,
+    @SerializedName("restriction_comments", ["restrictionComments"]) val restrictionComments: String?,
     @SerializedName("non_delivery_option") val nonDeliveryOption: String,
     val itn: String,
-    val items: List<CustomsItemDTO>
+    val items: List<CustomsItemDTO>,
+    @SerializedName("isReturnToSender") val isReturnToSender: Boolean? = null,
 )
 
 data class CustomsItemDTO(
     val description: String,
     val quantity: Float,
-    val value: Double,
+    val value: Double?,
     val weight: Double,
-    @SerializedName("hs_tariff_number") val hsTariffNumber: String,
-    @SerializedName("origin_country") val originCountry: String,
-    @SerializedName("product_id") val productId: Long
+    @SerializedName("hs_tariff_number", ["hsTariffNumber"]) val hsTariffNumber: String,
+    @SerializedName("origin_country", ["originCountry"]) val originCountry: String,
+    @SerializedName("product_id") val productId: Long,
+    @SerializedName("price") val price: Double? = null,
 )
 
 data class RefundLabelResponseDTO(val success: Boolean)

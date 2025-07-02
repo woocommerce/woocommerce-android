@@ -28,7 +28,7 @@ data class CustomsItem(
     val weight: Float,
     val hsTariffNumber: String,
     val originCountry: String,
-    val originCountryCode: String
+    val originCountryCode: String = ""
 ) : Parcelable
 
 enum class ContentType(val resourceId: Int) {
