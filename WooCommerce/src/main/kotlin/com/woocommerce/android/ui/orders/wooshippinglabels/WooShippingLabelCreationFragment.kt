@@ -174,7 +174,7 @@ class WooShippingLabelCreationFragment : BaseFragment(), BackPressListener {
             UPSDAPTermsOfServiceBottomSheetFragment.TOS_ACCEPTED_NOTICE_KEY,
             entryId = R.id.wooShippingLabelCreationFragment
         ) {
-            viewModel.onPurchaseShippingLabel()
+            viewModel.onUPSTermsAccepted()
         }
     }
 

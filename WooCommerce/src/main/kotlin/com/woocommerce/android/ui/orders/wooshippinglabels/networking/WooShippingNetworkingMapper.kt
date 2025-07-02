@@ -81,7 +81,10 @@ class WooShippingNetworkingMapper @Inject constructor(
             rate = shippingLabelDTO.rate ?: BigDecimal.ZERO,
             currency = shippingLabelDTO.currency.orEmpty(),
             expiryDate = shippingLabelDTO.expiryDate ?: 0,
-            usedDate = shippingLabelDTO.usedDate
+            usedDate = shippingLabelDTO.usedDate,
+            refund = shippingLabelDTO.refund?.let { refund ->
+                ShippingLabelModel.Refund(status = refund.status, requestDate = refund.requestDate?.let { Date(it) })
+            }
         )
     }
 
@@ -129,7 +132,9 @@ class WooShippingNetworkingMapper @Inject constructor(
         labels = purchasedShippingLabelResponseDTO.labels.map { invoke(it) },
         destination = purchasedShippingLabelResponseDTO.selectedDestination.mapValues { invoke(it.value) },
         origin = purchasedShippingLabelResponseDTO.selectedOrigin.mapValues { invoke(it.value) },
-        rates = purchasedShippingLabelResponseDTO.selectedRates.mapValues { ratesMapper(it.key, it.value) }
+        rates = purchasedShippingLabelResponseDTO.selectedRates.mapValues {
+            requireNotNull(ratesMapper(it.key, it.value))
+        }
     )
 
     operator fun invoke(addressListDTO: Array<AddressDTO>): List<OriginShippingAddress> {
@@ -261,7 +266,7 @@ class WooShippingNetworkingMapper @Inject constructor(
             isSelected = selectedRate.isSelected,
             tracking = selectedRate.isTrackingEnabled,
             listRate = selectedRate.listRate,
-            retailRate = selectedRate.discount
+            retailRate = selectedRate.retailRate
         )
     }
 
