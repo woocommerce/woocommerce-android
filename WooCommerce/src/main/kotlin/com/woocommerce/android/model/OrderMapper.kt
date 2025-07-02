@@ -71,7 +71,7 @@ class OrderMapper @Inject constructor(
             salesChannel = if (databaseEntity.createdVia == "pos-rest-api") {
                 Order.SalesChannel.POS
             } else {
-                Order.SalesChannel.ALL_OTHER
+                Order.SalesChannel.NON_POS
             },
         )
     }
