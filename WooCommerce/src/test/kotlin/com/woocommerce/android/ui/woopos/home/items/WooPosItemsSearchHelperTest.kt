@@ -217,6 +217,29 @@ class WooPosItemsSearchHelperTest {
     }
 
     @Test
+    fun `given checkout clicked event, when received, then closes search`() = runTest {
+        // GIVEN
+        searchHelper.initialize(CoroutineScope(coroutinesTestRule.testDispatcher), viewStateFlow)
+        searchHelper.onSearchChanged("test query", "test query".length)
+
+        val initialState = viewStateFlow.value as WooPosItemsToolbarViewState.ProductList
+        val initialSearchState = initialState.search as WooPosItemsToolbarViewState.SearchState.Visible
+        assertThat(initialSearchState.state).isInstanceOf(WooPosSearchInputState.Open::class.java)
+
+        // WHEN
+        whenever(mockParentToChildrenEventReceiver.events).thenReturn(
+            flowOf(ParentToChildrenEvent.CheckoutClicked(emptyList()))
+        )
+        searchHelper.initialize(CoroutineScope(coroutinesTestRule.testDispatcher), viewStateFlow)
+        advanceUntilIdle()
+
+        // THEN
+        val currentState = viewStateFlow.value as WooPosItemsToolbarViewState.ProductList
+        val searchState = currentState.search as WooPosItemsToolbarViewState.SearchState.Visible
+        assertThat(searchState.state).isInstanceOf(WooPosSearchInputState.Closed::class.java)
+    }
+
+    @Test
     fun `given coupons screen, when search event started received, then loading state remains false`() = runTest {
         // GIVEN
         viewStateFlow.value = WooPosItemsToolbarViewState.CouponList(
