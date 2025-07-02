@@ -112,7 +112,6 @@ private fun MainItemsList(
                 modifier = Modifier
                     .statusBarsPadding()
                     .padding(
-                        top = WooPosSpacing.Small.value.toAdaptivePadding(),
                         end = WooPosSpacing.Medium.value.toAdaptivePadding(),
                     ),
                 state = state.value,
