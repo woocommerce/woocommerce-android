@@ -53,7 +53,8 @@ data class RateDTO(
     val shipmentId: String,
     val deliveryDays: Int,
     val deliveryDateGuaranteed: Boolean,
-    val deliveryDate: String?
+    val deliveryDate: String?,
+    val type: String?,
 )
 
 data class HazmatDTO(

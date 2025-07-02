@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.networking
 
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toLowerCase
+import com.woocommerce.android.extensions.snakeToCamelCase
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.Location
@@ -279,7 +280,13 @@ class WooShippingNetworkingMapper @Inject constructor(
             isSelected = selectedRate.isSelected,
             tracking = selectedRate.isTrackingEnabled,
             listRate = selectedRate.listRate,
-            retailRate = selectedRate.retailRate
+            retailRate = selectedRate.retailRate,
+            type = when (selectedRate.option) {
+                WooShippingRateModel.Option.SIGNATURE, WooShippingRateModel.Option.ADULT_SIGNATURE ->
+                    selectedRate.option.id.snakeToCamelCase()
+
+                else -> null
+            }
         )
     }
 
