@@ -8,6 +8,8 @@ import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.model.toAppModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus.UNKNOWN
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
@@ -95,6 +97,39 @@ object OrderTestUtils {
                     serviceName = "Service$i",
                     createdDate = Date(),
                     commercialInvoiceUrl = "",
+                )
+            )
+        }
+        return result
+    }
+
+    fun generateShippingLabelModels(totalCount: Int = 5): List<ShippingLabelModel> {
+        val result = ArrayList<ShippingLabelModel>()
+        for (i in totalCount downTo 1) {
+            result.add(
+                ShippingLabelModel(
+                    labelId = i.toLong(),
+                    packageName = "Package$i",
+                    serviceName = "Service$i",
+                    createdDate = Date(),
+                    tracking = "",
+                    refundableAmount = BigDecimal.ZERO,
+                    status = UNKNOWN,
+                    created = null,
+                    carrierId = "",
+                    commercialInvoiceUrl = "",
+                    isCommercialInvoiceSubmittedElectronically = false,
+                    isLetter = false,
+                    productNames = emptyList(),
+                    productIds = emptyList(),
+                    shipmentId = "0",
+                    receiptItemId = 0L,
+                    mainReceiptId = 0L,
+                    rate = BigDecimal.ZERO,
+                    currency = "",
+                    expiryDate = 0L,
+                    usedDate = 0L,
+                    refund = null,
                 )
             )
         }
