@@ -184,26 +184,28 @@ private fun PrintShippingLabelCard(
         Divider(modifier = Modifier.padding(vertical = 8.dp))
         ShippingLabelLink(
             text = stringResource(id = R.string.shipping_label_purchased_track_shipment),
-            onClick = {
-                onTrackShipmentClicked()
-            },
+            onClick = { onTrackShipmentClicked() },
             showIcon = true,
             modifier = Modifier.padding(vertical = 8.dp)
         )
         ShippingLabelLink(
             text = stringResource(id = R.string.shipping_label_purchased_schedule_pick_up),
-            onClick = {
-                onSchedulePickUpClicked()
-            },
+            onClick = { onSchedulePickUpClicked() },
             showIcon = true,
             modifier = Modifier.padding(vertical = 8.dp)
         )
+        if (isCustomsFormAvailable) {
+            ShippingLabelLink(
+                text = stringResource(id = R.string.shipping_label_print_customs_form),
+                onClick = { onPrintCustomsClicked() },
+                showIcon = true,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+        }
         if (isRefundAvailable) {
             ShippingLabelLink(
                 text = stringResource(id = R.string.shipping_label_purchased_request_refund),
-                onClick = {
-                    onRefundClicked()
-                },
+                onClick = { onRefundClicked() },
                 showIcon = false,
                 modifier = Modifier.padding(vertical = 8.dp)
             )
