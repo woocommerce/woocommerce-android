@@ -386,7 +386,6 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         }.collectLatest { packageSelectionsFlow.value = it }
     }
 
-    // This logic will be updated later once the Customs data state is available
     private suspend fun observeCustomsDataChanges() {
         combine(
             shippingAddresses,
