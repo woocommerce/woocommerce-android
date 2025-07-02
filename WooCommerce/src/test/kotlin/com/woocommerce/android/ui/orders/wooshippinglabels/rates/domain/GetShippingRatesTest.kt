@@ -40,8 +40,6 @@ class GetShippingRatesTest : BaseUnitTest() {
     )
 
     private val defaultCustomData = CustomsData(
-        packageId = "1",
-        packageName = "Package 1",
         contentType = ContentType.MERCHANDISE,
         contentDescription = "",
         restrictionType = RestrictionType.NONE,
