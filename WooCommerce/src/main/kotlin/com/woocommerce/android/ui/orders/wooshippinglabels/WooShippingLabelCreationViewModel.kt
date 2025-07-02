@@ -931,6 +931,11 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         }
     }
 
+    fun onPrintCustomsClicked() {
+        val commercialInvoiceUrl = shipments.value[selectedShipmentIndex].label?.commercialInvoiceUrl ?: return
+        triggerEvent(OpenUrl(commercialInvoiceUrl))
+    }
+
     fun onLearnMoreClicked() {
         triggerEvent(OpenLearnMoreScreen)
     }
