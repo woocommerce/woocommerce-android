@@ -353,22 +353,28 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             selectedRatesFlow.filter { it.isNotEmpty() },
             selectedRatesSortOrdersFlow.filter { it.isNotEmpty() },
         ) { shippingRates, selectedRates, selectedRatesSortOrders ->
-            shippingRates.mapIndexed { index, map ->
-                if (map.isEmpty()) {
-                    ShippingRatesState.NoAvailable
-                } else {
-                    ShippingRatesState.DataState(
-                        selectedRatesSortOrder = selectedRatesSortOrders[index],
-                        shippingRates = sortShippingRates(selectedRatesSortOrders[index], map),
-                        selectedRate = selectedRates[index],
-                        onSelectedShippingRateChanged = ::onSelectedShippingRateChanged,
-                        onSelectedRateOptionChanged = ::onSelectedRateOptionChanged
-                    )
-                }
-            }
-        }.collectLatest {
-            shippingRatesStatesFlow.value = it
+            Triple(shippingRates, selectedRates, selectedRatesSortOrders)
         }
+            .filter { (shippingRates, selectedRates, selectedRatesSortOrders) ->
+                shippingRates.size == selectedRates.size && shippingRates.size == selectedRatesSortOrders.size
+            }
+            .map { (shippingRates, selectedRates, selectedRatesSortOrders) ->
+                shippingRates.mapIndexed { index, map ->
+                    if (map.isEmpty()) {
+                        ShippingRatesState.NoAvailable
+                    } else {
+                        ShippingRatesState.DataState(
+                            selectedRatesSortOrder = selectedRatesSortOrders[index],
+                            shippingRates = sortShippingRates(selectedRatesSortOrders[index], map),
+                            selectedRate = selectedRates[index],
+                            onSelectedShippingRateChanged = ::onSelectedShippingRateChanged,
+                            onSelectedRateOptionChanged = ::onSelectedRateOptionChanged
+                        )
+                    }
+                }
+            }.collectLatest {
+                shippingRatesStatesFlow.value = it
+            }
     }
 
     @OptIn(FlowPreview::class)
@@ -739,7 +745,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     fun onPurchaseShippingLabel() {
         val selectedPackage = selectedPackagesFlow.value[selectedShipmentIndex]
         val addresses = shippingAddresses.value
-        val shippingRate = selectedRatesFlow.value[selectedShipmentIndex]?.selectedRateOption?.rate
+        val shippingRate = selectedRatesFlow.value[selectedShipmentIndex]
         val weight = packageWeightsFlow.value[selectedShipmentIndex]?.totalWeight
 
         if (selectedPackage == null || addresses == null || shippingRate == null || weight == null) return
@@ -755,7 +761,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             shipments.value[selectedShipmentIndex].copy(purchaseState = PurchaseState.InProgress)
         )
 
-        val customsData = customsFormDataFlow.value[selectedShipmentIndex]?.let { listOf(it) }
+        val customsData = customsFormDataFlow.value[selectedShipmentIndex]
 
         launch {
             purchaseShippingLabel(

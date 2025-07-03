@@ -12,7 +12,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShi
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PurchasedLabelData
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
-import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingSelectedRateModel
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
@@ -113,36 +113,32 @@ class WooShippingLabelRepository @Inject constructor(
         orderId: Long,
         shippableItems: List<Long>,
         selectedPackage: PackageData,
-        shipmentId: String,
+        shipmentId: Int,
         shipTo: Address,
         shipFrom: OriginShippingAddress,
-        selectedRate: WooShippingRateModel,
+        selectedRate: WooShippingSelectedRateModel,
         weight: Float,
         lastOrderComplete: Boolean,
-        customsData: List<CustomsData>?,
+        customsData: CustomsData?,
         hazmatSelection: ShippingLabelHazmatCategory? = null
     ): WooResult<PurchasedLabelData> {
-        val origin = mapper.toOriginAddressPurchaseDTO(shipFrom)
-        val destination = mapper.toDestinationAddressDTO(shipTo)
-        val packageDTO = mapper.toPackagePurchaseDTO(
-            selectedPackage = selectedPackage,
-            selectedRate = selectedRate,
-            shippableItems = shippableItems,
-            weight = weight
-        )
-        val rateDTO = mapper.toRateDTO(selectedRate)
-        val customsDTO = customsData?.let { mapper.toCustomsDTO(it) }
-        val hazmatDTO = mapper.toHazmatDTO(hazmatSelection)
         return restClient.purchaseShippingLabel(
             site = site,
             orderId = orderId,
-            origin = origin,
-            destination = destination,
-            selectedPackage = packageDTO,
-            shipmentId = shipmentId,
-            selectedRate = rateDTO,
-            customs = customsDTO ?: emptyMap(),
-            hazmat = hazmatDTO,
+            origin = mapper.toOriginAddressPurchaseDTO(shipFrom),
+            destination = mapper.toDestinationAddressDTO(shipTo),
+            selectedPackage = mapper.toPackagePurchaseDTO(
+                shipmentId = shipmentId,
+                selectedPackage = selectedPackage,
+                selectedRate = selectedRate,
+                shippableItems = shippableItems,
+                weight = weight
+            ),
+            selectedRate = mapper.toRateDTO(selectedRate.rate),
+            parentRate = selectedRate.parentRate?.let { mapper.toRateDTO(it) },
+            selectedRateOptions = mapper.toSelectedRateOptions(selectedRate),
+            customs = customsData?.let { mapper.toCustomsDTO(it) },
+            hazmat = mapper.toHazmatDTO(hazmatSelection),
             markOrderComplete = lastOrderComplete
         ).asWooResult { mapper(it) }
     }

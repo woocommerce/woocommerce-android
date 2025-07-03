@@ -16,7 +16,11 @@ data class PackagePurchaseDTO(
     @SerializedName("rate_id") val rateId: String,
     @SerializedName("service_id") val serviceId: String,
     @SerializedName("carrier_id") val carrierId: String,
-    @SerializedName("service_name") val serviceName: String
+    @SerializedName("service_name") val serviceName: String,
+    @SerializedName("signature") val signature: String? = null,
+    @SerializedName("carbon_neutral") val carbonNeutral: Boolean? = null,
+    @SerializedName("additional_handling") val additionalHandling: Boolean? = null,
+    @SerializedName("saturday_delivery") val saturdayDelivery: Boolean? = null,
 )
 
 data class OriginAddressPurchaseDTO(
@@ -49,7 +53,8 @@ data class RateDTO(
     val shipmentId: String,
     val deliveryDays: Int,
     val deliveryDateGuaranteed: Boolean,
-    val deliveryDate: String?
+    val deliveryDate: String?,
+    val type: String?,
 )
 
 data class HazmatDTO(

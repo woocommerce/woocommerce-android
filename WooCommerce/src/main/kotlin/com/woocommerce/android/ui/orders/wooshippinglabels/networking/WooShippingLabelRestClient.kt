@@ -3,7 +3,9 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.networking
 import com.google.gson.JsonObject
 import com.woocommerce.android.extensions.filterNotNull
 import com.woocommerce.android.ui.orders.wooshippinglabels.purchased.printing.ShippingLabelPrintingResponse
+import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.DestinationAddressDTO
+import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.ShippingRateSurchargeDTO
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
@@ -149,13 +151,16 @@ class WooShippingLabelRestClient @Inject constructor(
         origin: OriginAddressPurchaseDTO,
         destination: DestinationAddressDTO,
         selectedPackage: PackagePurchaseDTO,
-        shipmentId: String,
         selectedRate: RateDTO,
+        parentRate: RateDTO?,
+        selectedRateOptions: Map<WooShippingRateModel.Option, ShippingRateSurchargeDTO>,
         markOrderComplete: Boolean,
-        hazmat: HazmatDTO = HazmatDTO(),
-        customs: Map<String, CustomsDTO>,
+        hazmat: HazmatDTO,
+        customs: CustomsDTO?,
     ): WooPayload<PurchasedShippingLabelResponseDTO> {
         val url = "/wcshipping/v1/label/purchase/$orderId/"
+        val shipmentKey = "shipment_${selectedPackage.id}"
+
         return wooNetwork.executePostGsonRequest(
             site = site,
             path = url,
@@ -163,17 +168,14 @@ class WooShippingLabelRestClient @Inject constructor(
                 "origin" to origin,
                 "destination" to destination,
                 // For this purchase endpoint, `id` represents the shipment ID instead of the package ID
-                "packages" to listOf(selectedPackage.copy(id = shipmentId)),
+                "packages" to listOf(selectedPackage),
                 "selected_rate" to mapOf(
-                    selectedPackage.boxId to mapOf(
-                        "rate" to selectedRate,
-                        "parent" to null
-                    )
+                    "rate" to selectedRate,
+                    "parent" to parentRate
                 ),
-                // TODO: `selected_rate_options` will be updated while adding UPS support PaJDVv-2Gf-p2
-                "selected_rate_options" to "",
-                "hazmat" to mapOf(selectedPackage.boxId to hazmat),
-                "customs" to customs,
+                "selected_rate_options" to selectedRateOptions.mapKeys { it.key.typeId },
+                "hazmat" to mapOf(shipmentKey to hazmat),
+                "customs" to customs?.let { mapOf(shipmentKey to it) }.orEmpty(),
                 "user_meta" to mapOf("last_order_completed" to markOrderComplete),
                 "features_supported_by_client" to listOf("upsdap"),
             ),
