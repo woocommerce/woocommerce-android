@@ -264,19 +264,30 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     }
 
     private suspend fun getDestinationAddress() {
-        order.drop(1).collectLatest { order ->
-            val defaultDestination = DestinationShippingAddress(
-                address = order.shippingAddress.copy(email = order.billingAddress.email),
-                isVerified = false
-            )
-
-            destinationAddress.value = defaultDestination
-
-            if (addressValidationHelper.isMissingDestinationAddress(order.shippingAddress).not()) {
-                verifyDestinationAddress(order.id).fold(
-                    onSuccess = { destinationAddress.value = it },
-                    onFailure = { }
+        combine(
+            order.drop(1),
+            shipments.drop(1),
+            uiState.map { it.selectedIndex }.distinctUntilChanged()
+        ) { order, shipments, selectedIndex ->
+            Pair(order, shipments[selectedIndex].label?.destinationAddress)
+        }.collectLatest { (order, labelDestination) ->
+            if (labelDestination == null) {
+                val defaultDestination = DestinationShippingAddress(
+                    address = order.shippingAddress.copy(email = order.billingAddress.email),
+                    isVerified = false
                 )
+
+                destinationAddress.value = defaultDestination
+
+                if (addressValidationHelper.isMissingDestinationAddress(order.shippingAddress).not()) {
+                    verifyDestinationAddress(order.id).fold(
+                        onSuccess = { destinationAddress.value = it },
+                        onFailure = { }
+                    )
+                }
+            } else {
+                // Using stored destination address for purchased labels
+                destinationAddress.value = DestinationShippingAddress(address = labelDestination, isVerified = true)
             }
         }
     }
