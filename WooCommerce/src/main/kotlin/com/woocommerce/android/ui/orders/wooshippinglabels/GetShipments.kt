@@ -6,7 +6,6 @@ import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
-import com.woocommerce.android.ui.orders.wooshippinglabels.networking.CustomsDTO
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ShippingLabelDTO
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingNetworkingMapper
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
@@ -48,7 +47,7 @@ class GetShipments @Inject constructor(
 
         val shipments = config?.shipments
 
-        var shipmentUIModelList = if (shipments.isNullOrEmpty()) {
+        val shipmentUIModelList = if (shipments.isNullOrEmpty()) {
             listOf(ShipmentUIModel(localId = "0", items = orderItems))
         } else {
             shipments.map { (shipmentId, shipmentItems) ->
@@ -62,19 +61,10 @@ class GetShipments @Inject constructor(
             }
         }.sortedBy { it.localId.toLong() }
 
-        config?.shippingLabelData?.let { data ->
-            // If there are purchased labels, merge their data into the result list
-            data.currentOrderLabels?.let { labels ->
-                shipmentUIModelList = mergePurchaseData(shipmentUIModelList, labels)
-            }
-
-            // If there are customs data, merge it into the result list
-            data.storedData?.customsInformation?.let { customs ->
-                shipmentUIModelList = mergeCustomsData(shipmentUIModelList, customs)
-            }
-        }
-
-        return shipmentUIModelList
+        // If there are purchased labels, merge their data into the result list
+        return config?.shippingLabelData?.currentOrderLabels?.let { data ->
+            mergePurchaseData(shipmentUIModelList, data)
+        } ?: shipmentUIModelList
     }
 
     private fun mergePurchaseData(
@@ -90,20 +80,4 @@ class GetShipments @Inject constructor(
             shipmentUIModel.copy(purchased = true, label = mapper.invoke(noRefundedLabelForShipment))
         }
     }
-
-    private fun mergeCustomsData(
-        shipmentUIModelList: List<ShipmentUIModel>,
-        customsInformation: Map<String, CustomsDTO>
-    ) = shipmentUIModelList.map { shipmentUIModel ->
-        val id = shipmentUIModel.remoteId
-        if (id != null && customsInformation.contains(getStoredDataKey(id))) {
-            customsInformation[getStoredDataKey(id)]?.let {
-                shipmentUIModel.copy(label = shipmentUIModel.label?.copy(customsData = mapper.invoke(it)))
-            } ?: shipmentUIModel
-        } else {
-            shipmentUIModel
-        }
-    }
-
-    private fun getStoredDataKey(shipmentId: String) = "shipment_$shipmentId"
 }
