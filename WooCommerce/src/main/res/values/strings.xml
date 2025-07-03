@@ -1292,6 +1292,7 @@
     <string name="shipping_label_shipment_details_title">Shipment details</string>
     <string name="shipping_label_shipment_details_order_details">Order details</string>
     <string name="shipping_label_shipment_details_shipment_cost">Shipment cost</string>
+    <string name="shipping_label_shipment_details_shipment_cost_base_fee">%1$s (base fee)</string>
     <string name="shipping_label_shipment_details_mark_order_complete">After purchasing a label, mark this order as complete and notify the customer.</string>
     <string name="shipping_label_shipment_details_purchase_label">Purchase Label · %1$s </string>
     <string name="shipping_label_shipment_details_purchase_label_disabled">Purchase Label</string>
@@ -4696,6 +4697,13 @@
     <string name="wpp_shipping_ups_tos_condition_prohibited_items">I will not ship any &lt;a href=\"ups-prohibited-items\"&gt;Prohibited Items&lt;/a&gt; that UPS® disallows, nor any regulated items without the necessary permissions.</string>
     <string name="wpp_shipping_ups_tos_condition_technology_agreement">I also agree to the &lt;a href=\"ups-technology-agreement\"&gt;UPS® Technology Agreement&lt;/a&gt;.</string>
     <string name="wpp_shipping_ups_tos_accept">Confirm and continue</string>
+
+    <string name="woo_shipping_rate_surcharge_description_template">%1$s (%2$s)</string>
+    <string name="woo_shipping_rate_option_signature_required">Signature required</string>
+    <string name="woo_shipping_rate_option_adult_signature_required">Adult signature required</string>
+    <string name="woo_shipping_rate_option_carbon_neutral">Carbon neutral</string>
+    <string name="woo_shipping_rate_option_saturday_delivery">Saturday delivery</string>
+    <string name="woo_shipping_rate_option_additional_handling">Additional handling</string>
 
     <string name="media_library_title">WordPress Media Library</string>
     <string name="media_loading_failed">Media loading failed</string>
