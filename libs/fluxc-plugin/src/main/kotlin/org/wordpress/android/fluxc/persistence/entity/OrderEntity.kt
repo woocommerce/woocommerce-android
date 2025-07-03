@@ -2,7 +2,6 @@ package org.wordpress.android.fluxc.persistence.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.Ignore
 import androidx.room.Index
 import androidx.room.TypeConverters
 import com.google.gson.Gson
@@ -18,6 +17,7 @@ import org.wordpress.android.fluxc.model.order.ShippingLine
 import org.wordpress.android.fluxc.model.order.TaxLine
 import org.wordpress.android.fluxc.persistence.converters.WCMetaDataConverter
 import java.math.BigDecimal
+import java.util.WeakHashMap
 
 @Entity(
     tableName = "OrderEntity",
@@ -94,12 +94,14 @@ data class OrderEntity(
     @ColumnInfo(name = "shippingTax", defaultValue = "")
     val shippingTax: String = "",
 ) {
-    companion object {
-        private val gson by lazy { Gson() }
+    private fun getCache(): MutableMap<String, List<*>> {
+        return cacheHolder.getOrPut(System.identityHashCode(this)) { mutableMapOf() }
     }
 
-    @Ignore
-    private val cache = mutableMapOf<String, List<*>>()
+    companion object {
+        private val gson by lazy { Gson() }
+        private val cacheHolder = WeakHashMap<Int, MutableMap<String, List<*>>>()
+    }
 
     /**
      * Returns true if there are shipping details defined for this order,
@@ -165,7 +167,8 @@ data class OrderEntity(
 
     @Suppress("UNCHECKED_CAST")
     private inline fun <reified T> getCachedOrParse(json: String): List<T> {
-        return cache.getOrPut(json) {
+        val cacheKey = "$json:${T::class.java.name}"
+        return getCache().getOrPut(cacheKey) {
             parseJsonListSafely<T>(json)
         } as List<T>
     }
