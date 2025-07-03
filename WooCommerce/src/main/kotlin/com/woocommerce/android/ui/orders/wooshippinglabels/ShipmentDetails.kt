@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels
 
 import android.content.res.Configuration
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -12,15 +11,17 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.BottomSheetScaffoldState
+import androidx.compose.material.BottomSheetState
+import androidx.compose.material.BottomSheetValue
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -29,13 +30,22 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.rememberBottomSheetScaffoldState
+import androidx.compose.material.rememberBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -60,103 +70,165 @@ import com.woocommerce.android.util.StringUtils
 
 @Composable
 fun ShipmentDetails(
-    scaffoldState: BottomSheetScaffoldState,
+    bottomSheetState: BottomSheetState,
     totalItems: Int,
     totalItemsCost: String,
     shippingLines: List<ShippingLineSummaryUI>,
     shippingAddresses: WooShippingAddresses,
     shipmentCostUI: ShipmentCostUI?,
     paymentsSectionUI: PaymentsSectionUI,
+    purchaseSectionUI: PurchaseSectionUI,
     modifier: Modifier = Modifier,
     noticeBannerUiState: NoticeBannerUiState? = null,
-    isShipmentDetailsExpanded: Boolean = false,
     onShipmentDetailsExpandedChange: (Boolean) -> Unit,
     onEditDestinationAddress: (DestinationShippingAddress) -> Unit,
     onEditOriginAddress: (OriginShippingAddress) -> Unit,
     onOriginAddressSelected: (OriginShippingAddress) -> Unit,
     destinationStatus: AddressStatus,
-    markOrderComplete: Boolean = false,
-    onMarkOrderCompleteChange: (Boolean) -> Unit,
-    handlerModifier: Modifier = Modifier,
-    shipmentPurchased: Boolean
+    shipmentPurchased: Boolean,
+    onPeekHeightChanged: (Dp) -> Unit
 ) {
-    Column {
-        Column(
-            handlerModifier
+    val expandProgress = bottomSheetState.progress(
+        from = BottomSheetValue.Collapsed,
+        to = BottomSheetValue.Expanded
+    ).let {
+        if (it == 1f && bottomSheetState.isCollapsed &&
+            bottomSheetState.targetValue == BottomSheetValue.Collapsed
+        ) {
+            // Sometimes the progress is 1f at the end of the collapse drag, we want to reset it to 0f
+            0f
+        } else {
+            it
+        }
+    }
+
+    val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+
+    var expandableContentHeight by remember { mutableIntStateOf(0) }
+    var sheetHandleHeight by remember { mutableIntStateOf(0) }
+    var topSectionHeight by remember { mutableIntStateOf(0) }
+    var purchaseSectionHeight by remember { mutableIntStateOf(0) }
+
+    val collapsedContentHeight by remember(purchaseSectionUI.isVisible) {
+        derivedStateOf {
+            sheetHandleHeight + topSectionHeight + if (purchaseSectionUI.isVisible) purchaseSectionHeight else 0
+        }
+    }
+
+    val density = LocalDensity.current
+
+    LaunchedEffect(collapsedContentHeight) {
+        val peekHeight = with(density) {
+            collapsedContentHeight.toDp()
+        }
+        onPeekHeightChanged(peekHeight)
+    }
+
+    Column(modifier.fillMaxHeight()) {
+        Icon(
+            painter = if (bottomSheetState.isExpanded) {
+                painterResource(R.drawable.ic_arrow_down_26)
+            } else {
+                painterResource(R.drawable.ic_arrow_up_26)
+            },
+            contentDescription = stringResource(R.string.order_creation_expand_collapse_order_totals),
+            tint = colorResource(id = R.color.color_primary),
+            modifier = Modifier
+                .onSizeChanged { sheetHandleHeight = it.height }
+                .padding(top = 16.dp)
+                .align(Alignment.CenterHorizontally)
                 .clickable(
-                    onClick = { onShipmentDetailsExpandedChange(isShipmentDetailsExpanded.not()) },
+                    onClick = { onShipmentDetailsExpandedChange(bottomSheetState.isCollapsed) },
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null
                 )
-                .fillMaxWidth()
-                .padding(dimensionResource(R.dimen.minor_100)),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+        )
+
+        Box(
+            Modifier
+                .onSizeChanged { expandableContentHeight = it.height }
+                .weight(1f)
         ) {
-            Icon(
-                modifier = Modifier.padding(top = dimensionResource(R.dimen.minor_100)),
-                painter = if (scaffoldState.bottomSheetState.isExpanded) {
-                    painterResource(R.drawable.ic_arrow_down_26)
-                } else {
-                    painterResource(R.drawable.ic_arrow_up_26)
-                },
-                contentDescription = stringResource(R.string.order_creation_expand_collapse_order_totals),
-                tint = colorResource(id = R.color.color_primary),
-            )
-            AnimatedVisibility(isShipmentDetailsExpanded.not()) {
+            if (expandProgress < 1f) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier
+                        .onSizeChanged { topSectionHeight = it.height }
+                        .padding(horizontal = 16.dp)
+                        .padding(top = 8.dp, bottom = 16.dp)
+                        .fillMaxWidth()
+                        .alpha(1 - expandProgress)
                 ) {
                     Text(
                         text = stringResource(R.string.shipping_label_shipment_details_title),
                         color = MaterialTheme.colors.primary,
                         modifier = Modifier
-                            .padding(top = dimensionResource(R.dimen.minor_100) * LocalConfiguration.current.fontScale)
                     )
-
                     NoticeBanner(noticeBannerUiState)
+                }
+            }
 
-                    Spacer(
-                        modifier = Modifier.size(
-                            dimensionResource(R.dimen.major_200) * LocalConfiguration.current.fontScale
+            if (expandProgress > 0f) {
+                Column(
+                    modifier = Modifier
+                        .padding(vertical = 16.dp)
+                        .alpha(expandProgress)
+                ) {
+                    if (isLandscape) {
+                        ShipmentDetailsLandscape(
+                            totalItems = totalItems,
+                            totalItemsCost = totalItemsCost,
+                            shippingLines = shippingLines,
+                            shippingAddresses = shippingAddresses,
+                            shipmentCostUI = shipmentCostUI,
+                            paymentsSectionUI = paymentsSectionUI,
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(horizontal = 16.dp),
+                            shipmentPurchased = shipmentPurchased,
+                            onEditDestinationAddress = onEditDestinationAddress,
+                            onEditOriginAddress = onEditOriginAddress,
+                            onOriginAddressSelected = onOriginAddressSelected,
+                            destinationStatus = destinationStatus
                         )
-                    )
+                    } else {
+                        ShipmentDetailsPortrait(
+                            totalItems = totalItems,
+                            totalItemsCost = totalItemsCost,
+                            shippingLines = shippingLines,
+                            shippingAddresses = shippingAddresses,
+                            shipmentCostUI = shipmentCostUI,
+                            paymentsSectionUI = paymentsSectionUI,
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(horizontal = 16.dp),
+                            shipmentPurchased = shipmentPurchased,
+                            onEditDestinationAddress = onEditDestinationAddress,
+                            onEditOriginAddress = onEditOriginAddress,
+                            onOriginAddressSelected = onOriginAddressSelected,
+                            destinationStatus = destinationStatus
+                        )
+                    }
+
+                    Divider()
                 }
             }
         }
-        if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            ShipmentDetailsLandscape(
-                totalItems = totalItems,
-                totalItemsCost = totalItemsCost,
-                shippingLines = shippingLines,
-                shippingAddresses = shippingAddresses,
-                shipmentCostUI = shipmentCostUI,
-                paymentsSectionUI = paymentsSectionUI,
-                modifier = modifier.padding(top = dimensionResource(R.dimen.major_100)),
-                shipmentPurchased = shipmentPurchased,
-                onEditDestinationAddress = onEditDestinationAddress,
-                onEditOriginAddress = onEditOriginAddress,
-                onOriginAddressSelected = onOriginAddressSelected,
-                destinationStatus = destinationStatus
-            )
-        } else {
-            ShipmentDetailsPortrait(
-                totalItems = totalItems,
-                totalItemsCost = totalItemsCost,
-                shippingLines = shippingLines,
-                markOrderComplete = markOrderComplete,
-                shippingAddresses = shippingAddresses,
-                shipmentCostUI = shipmentCostUI,
-                paymentsSectionUI = paymentsSectionUI,
-                modifier = modifier.padding(top = dimensionResource(R.dimen.minor_100)),
-                shipmentPurchased = shipmentPurchased,
-                onMarkOrderCompleteChange = onMarkOrderCompleteChange,
-                onEditDestinationAddress = onEditDestinationAddress,
-                onEditOriginAddress = onEditOriginAddress,
-                onOriginAddressSelected = onOriginAddressSelected,
-                destinationStatus = destinationStatus
-            )
-        }
+
+        PurchaseSection(
+            state = purchaseSectionUI,
+            orderCompleteToggleVisible = isLandscape || bottomSheetState.isExpanded,
+            modifier = Modifier
+                .onSizeChanged { purchaseSectionHeight = it.height }
+                .graphicsLayer(
+                    translationY = (expandProgress - 1) * (expandableContentHeight - topSectionHeight)
+                )
+                .fillMaxWidth()
+                .background(MaterialTheme.colors.surface)
+                .padding(horizontal = 16.dp)
+                .padding(bottom = 16.dp)
+        )
     }
 }
 
@@ -166,10 +238,8 @@ private fun ShipmentDetailsPortrait(
     totalItemsCost: String,
     shippingLines: List<ShippingLineSummaryUI>,
     shippingAddresses: WooShippingAddresses,
-    markOrderComplete: Boolean,
     shipmentCostUI: ShipmentCostUI?,
     paymentsSectionUI: PaymentsSectionUI,
-    onMarkOrderCompleteChange: (Boolean) -> Unit,
     onEditDestinationAddress: (DestinationShippingAddress) -> Unit,
     onEditOriginAddress: (OriginShippingAddress) -> Unit,
     onOriginAddressSelected: (OriginShippingAddress) -> Unit,
@@ -177,44 +247,29 @@ private fun ShipmentDetailsPortrait(
     modifier: Modifier = Modifier,
     shipmentPurchased: Boolean
 ) {
-    Column(modifier) {
-        Column(
-            Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .verticalScroll(rememberScrollState())
-        ) {
-            OrderDetailsSection(
-                shippingAddresses = shippingAddresses,
-                totalItems = totalItems,
-                totalItemsCost = totalItemsCost,
-                shippingLines = shippingLines,
-                isReadOnly = shipmentPurchased,
-                onEditDestinationAddress = onEditDestinationAddress,
-                onEditOriginAddress = onEditOriginAddress,
-                onOriginAddressSelected = onOriginAddressSelected,
-                destinationStatus = destinationStatus
-            )
-            Divider(modifier = Modifier.padding(horizontal = 16.dp))
-            if (!shipmentPurchased) {
-                PaymentSection(
-                    paymentsSectionUI = paymentsSectionUI,
-                    modifier = Modifier.padding(16.dp)
-                )
-            }
-            Divider(modifier = Modifier.padding(horizontal = 16.dp))
-            ShipmentCostSection(
-                shipmentCostUI = shipmentCostUI,
-                modifier = Modifier.padding(16.dp)
-            )
+    Column(
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = modifier
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState())
+    ) {
+        OrderDetailsSection(
+            shippingAddresses = shippingAddresses,
+            totalItems = totalItems,
+            totalItemsCost = totalItemsCost,
+            shippingLines = shippingLines,
+            isReadOnly = shipmentPurchased,
+            onEditDestinationAddress = onEditDestinationAddress,
+            onEditOriginAddress = onEditOriginAddress,
+            onOriginAddressSelected = onOriginAddressSelected,
+            destinationStatus = destinationStatus
+        )
+        Divider()
+        if (!shipmentPurchased) {
+            PaymentSection(paymentsSectionUI = paymentsSectionUI)
         }
-        if (shipmentPurchased.not()) {
-            Divider()
-            MarkComplete(
-                markOrderComplete = markOrderComplete,
-                onMarkOrderCompleteChange = onMarkOrderCompleteChange
-            )
-        }
+        Divider()
+        ShipmentCostSection(shipmentCostUI = shipmentCostUI)
     }
 }
 
@@ -233,48 +288,49 @@ private fun ShipmentDetailsLandscape(
     modifier: Modifier = Modifier,
     shipmentPurchased: Boolean = false
 ) {
-    Column(modifier) {
-        Column(
-            Modifier
+    Column(
+        modifier
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState())
+    ) {
+        AddressSectionLandscape(
+            shippingAddresses = shippingAddresses,
+            isReadOnly = shipmentPurchased,
+            onEditDestinationAddress = onEditDestinationAddress,
+            onEditOriginAddress = onEditOriginAddress,
+            onOriginAddressSelected = onOriginAddressSelected,
+            destinationStatus = destinationStatus
+        )
+        Row(
+            modifier = Modifier
+                .height(IntrinsicSize.Min)
                 .fillMaxWidth()
-                .weight(1f)
-                .verticalScroll(rememberScrollState())
         ) {
-            AddressSectionLandscape(
-                shippingAddresses = shippingAddresses,
-                modifier = Modifier.padding(horizontal = 16.dp),
-                isReadOnly = shipmentPurchased,
-                onEditDestinationAddress = onEditDestinationAddress,
-                onEditOriginAddress = onEditOriginAddress,
-                onOriginAddressSelected = onOriginAddressSelected,
-                destinationStatus = destinationStatus
-            )
-            Row(
+            OrderDetailsSectionLandscape(
+                totalItems = totalItems,
+                totalItemsCost = totalItemsCost,
+                shippingLines = shippingLines,
                 modifier = Modifier
-                    .height(IntrinsicSize.Min)
-                    .fillMaxWidth()
-            ) {
-                OrderDetailsSectionLandscape(
-                    totalItems = totalItems,
-                    totalItemsCost = totalItemsCost,
-                    shippingLines = shippingLines,
-                    modifier = Modifier.weight(1f)
-                )
-                VerticalDivider(modifier = Modifier.padding(top = 16.dp))
-                Column(modifier = Modifier.weight(1f)) {
-                    if (!shipmentPurchased) {
-                        PaymentSection(
-                            paymentsSectionUI = paymentsSectionUI,
-                            modifier = Modifier.padding(16.dp)
-                        )
-                    }
-                    Divider()
-                    ShipmentCostSection(
-                        shipmentCostUI = shipmentCostUI,
+                    .weight(1f)
+                    .padding(end = 16.dp)
+            )
+            VerticalDivider(Modifier.padding(top = 16.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                if (!shipmentPurchased) {
+                    PaymentSection(
+                        paymentsSectionUI = paymentsSectionUI,
                         modifier = Modifier
-                            .padding(16.dp)
+                            .padding(vertical = 16.dp)
+                            .padding(start = 16.dp)
                     )
                 }
+                Divider()
+                ShipmentCostSection(
+                    shipmentCostUI = shipmentCostUI,
+                    modifier = Modifier
+                        .padding(vertical = 16.dp)
+                        .padding(start = 16.dp)
+                )
             }
         }
     }
@@ -314,15 +370,15 @@ private fun OrderDetailsSection(
     modifier: Modifier = Modifier,
     isReadOnly: Boolean = false
 ) {
-    Column(modifier.fillMaxWidth()) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = modifier.fillMaxWidth()
+    ) {
         ShipmentDetailsSectionTitle(
-            title = stringResource(R.string.shipping_label_shipment_details_order_details),
-            modifier = Modifier.padding(start = dimensionResource(R.dimen.major_100))
+            title = stringResource(R.string.shipping_label_shipment_details_order_details)
         )
-        Spacer(modifier = Modifier.height(dimensionResource(R.dimen.major_100)))
         AddressSectionPortrait(
             shippingAddresses = shippingAddresses,
-            modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.major_100)),
             isReadOnly = isReadOnly,
             onEditDestinationAddress = onEditDestinationAddress,
             onEditOriginAddress = onEditOriginAddress,
@@ -333,7 +389,6 @@ private fun OrderDetailsSection(
             totalItems = totalItems,
             totalItemsCost = totalItemsCost,
             shippingLines = shippingLines,
-            modifier = Modifier.padding(dimensionResource(R.dimen.major_100))
         )
     }
 }
@@ -345,19 +400,20 @@ private fun OrderDetailsSectionLandscape(
     shippingLines: List<ShippingLineSummaryUI>,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier.fillMaxWidth()) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = modifier.fillMaxWidth()
+    ) {
         ShipmentDetailsSectionTitle(
             title = stringResource(R.string.shipping_label_shipment_details_order_details),
             modifier = Modifier.padding(
-                top = dimensionResource(R.dimen.major_100),
-                start = dimensionResource(R.dimen.major_100)
+                top = dimensionResource(R.dimen.major_100)
             )
         )
         TotalCard(
             totalItems = totalItems,
             totalItemsCost = totalItemsCost,
             shippingLines = shippingLines,
-            modifier = Modifier.padding(dimensionResource(R.dimen.major_100))
         )
     }
 }
@@ -421,7 +477,7 @@ private fun TotalItem(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(dimensionResource(R.dimen.minor_50)),
+            .padding(vertical = dimensionResource(R.dimen.minor_50)),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
@@ -514,7 +570,10 @@ private fun ShipmentCostSection(
         )
 
         val serviceName = if (shipmentCostUI?.optionsWithFees?.isNotEmpty() == true) {
-            stringResource(R.string.shipping_label_shipment_details_shipment_cost_base_fee, shipmentCostUI.serviceName)
+            stringResource(
+                R.string.shipping_label_shipment_details_shipment_cost_base_fee,
+                shipmentCostUI.serviceName
+            )
         } else {
             shipmentCostUI?.serviceName
         }
@@ -582,11 +641,13 @@ fun VerticalDivider(
 @LightDarkThemePreviews
 @OrientationPreviews
 @Composable
-fun ShipmentDetailsLandscapePreview() {
+fun ShipmentDetailsExpandedPreview() {
     WooThemeWithBackground {
         Surface {
             ShipmentDetails(
-                scaffoldState = rememberBottomSheetScaffoldState(),
+                bottomSheetState = rememberBottomSheetState(
+                    initialValue = BottomSheetValue.Expanded
+                ),
                 totalItems = 6,
                 totalItemsCost = "$92.78",
                 shippingLines = ShippingLabelSampleData.getShippingLines(),
@@ -597,18 +658,51 @@ fun ShipmentDetailsLandscapePreview() {
                 ),
                 shipmentCostUI = null,
                 paymentsSectionUI = ShippingLabelSampleData.getPaymentsSection(),
-                modifier = Modifier,
+                purchaseSectionUI = ShippingLabelSampleData.getPurchaseSection(),
+                modifier = Modifier.fillMaxSize(),
                 noticeBannerUiState = null,
-                isShipmentDetailsExpanded = false,
                 onShipmentDetailsExpandedChange = {},
                 onEditDestinationAddress = {},
                 onEditOriginAddress = {},
                 onOriginAddressSelected = {},
                 destinationStatus = AddressStatus.VERIFIED,
-                markOrderComplete = false,
-                onMarkOrderCompleteChange = {},
-                handlerModifier = Modifier,
-                shipmentPurchased = false
+                shipmentPurchased = false,
+                onPeekHeightChanged = {}
+            )
+        }
+    }
+}
+
+@LightDarkThemePreviews
+@OrientationPreviews
+@Composable
+private fun ShipmentDetailsCollapsedPreview() {
+    WooThemeWithBackground {
+        Surface {
+            ShipmentDetails(
+                bottomSheetState = rememberBottomSheetState(
+                    initialValue = BottomSheetValue.Collapsed
+                ),
+                totalItems = 6,
+                totalItemsCost = "$92.78",
+                shippingLines = ShippingLabelSampleData.getShippingLines(),
+                shippingAddresses = WooShippingAddresses(
+                    shipFrom = ShippingLabelSampleData.getShipFrom(),
+                    shipTo = ShippingLabelSampleData.getShipTo(),
+                    originAddresses = listOf(ShippingLabelSampleData.getShipFrom())
+                ),
+                shipmentCostUI = null,
+                paymentsSectionUI = ShippingLabelSampleData.getPaymentsSection(),
+                purchaseSectionUI = ShippingLabelSampleData.getPurchaseSection(),
+                modifier = Modifier.heightIn(max = 180.dp),
+                noticeBannerUiState = null,
+                onShipmentDetailsExpandedChange = {},
+                onEditDestinationAddress = {},
+                onEditOriginAddress = {},
+                onOriginAddressSelected = {},
+                destinationStatus = AddressStatus.VERIFIED,
+                shipmentPurchased = false,
+                onPeekHeightChanged = {},
             )
         }
     }

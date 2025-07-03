@@ -1,11 +1,9 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels
 
-import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -45,12 +43,13 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
@@ -74,7 +73,6 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreat
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.PackageSelectionState
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.PackageSelectionState.DataAvailable
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.PackageSelectionState.NotSelected
-import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.ShippingRatesState
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.AddressStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.PrintShippingLabelSection
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.ShipmentTabData
@@ -103,13 +101,13 @@ fun WooShippingLabelCreationScreen(viewModel: WooShippingLabelCreationViewModel)
         is WooShippingLabelCreationViewModel.WooShippingViewState.DataState -> {
             WooShippingLabelCreationScreen(
                 onSelectPackageClick = viewModel::onSelectPackageClicked,
-                onPurchaseShippingLabel = viewModel::onPurchaseShippingLabel,
                 shipmentUIList = viewState.shipmentUIList,
                 shouldShowSplitShipmentButton = viewState.shouldShowSplitShipmentButton,
                 totalItems = viewState.totalItems,
                 totalItemsCost = viewState.totalItemsCost,
                 shippingLines = viewState.shippingLines,
                 paymentsSectionUI = viewState.paymentsSectionUI,
+                purchaseSectionUI = viewState.purchaseSectionUI,
                 shippingAddresses = viewState.shippingAddresses,
                 onSelectedShipmentChanged = viewModel::onSelectedShipmentChanged,
                 onOriginAddressSelected = viewModel::onOriginAddressSelected,
@@ -119,7 +117,6 @@ fun WooShippingLabelCreationScreen(viewModel: WooShippingLabelCreationViewModel)
                 customWeightList = viewModel.customWeight,
                 onCustomWeightChange = viewModel::onCustomWeightChange,
                 uiState = viewState.uiState,
-                onMarkOrderCompleteChange = viewModel::onMarkOrderCompleteChange,
                 onNavigateBack = viewModel::onNavigateBack,
                 onShipmentDetailsExpandedChange = viewModel::onShipmentDetailsExpandedChange,
                 onEditCustomsClick = viewModel::onEditCustomsClick,
@@ -157,18 +154,17 @@ fun WooShippingLabelCreationScreen(
     totalItemsCost: String,
     shippingLines: List<ShippingLineSummaryUI>,
     paymentsSectionUI: PaymentsSectionUI,
+    purchaseSectionUI: PurchaseSectionUI,
     shippingAddresses: WooShippingAddresses,
     onSelectedShipmentChanged: (index: Int) -> Unit,
     onOriginAddressSelected: (OriginShippingAddress) -> Unit,
     onEditOriginAddress: (OriginShippingAddress) -> Unit,
     onSelectPackageClick: () -> Unit,
-    onPurchaseShippingLabel: () -> Unit,
     onSelectedRateSortOrderChanged: (ShippingSortOption) -> Unit,
     onRefreshShippingRates: () -> Unit,
     onCustomWeightChange: (String) -> Unit,
     customWeightList: List<String>,
     uiState: WooShippingLabelCreationViewModel.UIControlsState,
-    onMarkOrderCompleteChange: (Boolean) -> Unit,
     onShipmentDetailsExpandedChange: (Boolean) -> Unit,
     onEditCustomsClick: () -> Unit,
     onNavigateBack: () -> Unit,
@@ -217,6 +213,7 @@ fun WooShippingLabelCreationScreen(
             scaffoldState = scaffoldState,
             shippingLines = shippingLines,
             paymentsSectionUI = paymentsSectionUI,
+            purchaseSectionUI = purchaseSectionUI,
             shippingAddresses = shippingAddresses,
             onSelectedShipmentChanged = onSelectedShipmentChanged,
             onOriginAddressSelected = onOriginAddressSelected,
@@ -227,7 +224,6 @@ fun WooShippingLabelCreationScreen(
             onCustomWeightChange = onCustomWeightChange,
             uiState = uiState,
             onNavigateBack = onNavigateBack,
-            onMarkOrderCompleteChange = onMarkOrderCompleteChange,
             onShipmentDetailsExpandedChange = onShipmentDetailsExpandedChange,
             onEditCustomsClick = onEditCustomsClick,
             onEditDestinationAddress = onEditDestinationAddress,
@@ -243,39 +239,8 @@ fun WooShippingLabelCreationScreen(
             onPrintCustomsClicked = onPrintCustomsClicked,
             onLearnMoreClicked = onLearnMoreClicked,
         )
-        val isDarkTheme = isSystemInDarkTheme()
-        val isCollapsed = scaffoldState.bottomSheetState.isCollapsed
-        val elevation = when {
-            isDarkTheme && isCollapsed -> 7.dp
-            !isDarkTheme && isCollapsed -> 0.dp
-            isDarkTheme && !isCollapsed -> 16.dp
-            else -> 8.dp
-        }
+
         val selectedShipment = shipmentUIList[uiState.selectedIndex]
-        val selectedShippingRatesState = selectedShipment.shippingRatesState
-        if (selectedShippingRatesState is ShippingRatesState.DataState && !selectedShipment.purchased) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.BottomCenter)
-            ) {
-                Surface(elevation = elevation) {
-                    if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                        PurchasesSectionLandscape(
-                            total = selectedShipment.shipmentCostUI?.formattedTotalPrice,
-                            markOrderComplete = uiState.markOrderComplete,
-                            onMarkOrderCompleteChange = onMarkOrderCompleteChange,
-                            onPurchaseShippingLabel = onPurchaseShippingLabel
-                        )
-                    } else {
-                        PurchaseButton(
-                            total = selectedShipment.shipmentCostUI?.formattedTotalPrice,
-                            onPurchaseShippingLabel = onPurchaseShippingLabel
-                        )
-                    }
-                }
-            }
-        }
         val selectedPurchaseState = selectedShipment.purchaseState
         if (selectedPurchaseState is PurchaseState.InProgress) {
             Box(
@@ -304,6 +269,7 @@ private fun LabelCreationScreenWithBottomSheet(
     totalItemsCost: String,
     shippingLines: List<ShippingLineSummaryUI>,
     paymentsSectionUI: PaymentsSectionUI,
+    purchaseSectionUI: PurchaseSectionUI,
     onSelectPackageClick: () -> Unit,
     shippingAddresses: WooShippingAddresses,
     onSelectedShipmentChanged: (index: Int) -> Unit,
@@ -315,7 +281,6 @@ private fun LabelCreationScreenWithBottomSheet(
     onCustomWeightChange: (String) -> Unit,
     uiState: WooShippingLabelCreationViewModel.UIControlsState,
     scaffoldState: BottomSheetScaffoldState,
-    onMarkOrderCompleteChange: (Boolean) -> Unit,
     onNavigateBack: () -> Unit,
     onShipmentDetailsExpandedChange: (Boolean) -> Unit,
     onEditCustomsClick: () -> Unit,
@@ -336,24 +301,8 @@ private fun LabelCreationScreenWithBottomSheet(
     val snackbarHostState = remember { SnackbarHostState() }
 
     val selectedShipment = shipmentUIList[uiState.selectedIndex]
-    val shippingRatesState = selectedShipment.shippingRatesState
-    val isPurchaseButtonDisplayed = shippingRatesState is ShippingRatesState.DataState && !selectedShipment.purchased
-    val requiresLargePeekHeight = isPurchaseButtonDisplayed || uiState.noticeBannerUiState != null
 
-    val bottomSheetPeekHeight = when {
-        requiresLargePeekHeight -> 128.dp
-        else -> 72.dp
-    } * LocalConfiguration.current.fontScale
-
-    val paddingBottom = when {
-        isPurchaseButtonDisplayed -> 72.dp
-        else -> 0.dp
-    }
-    val snackbarPaddingBottom = if (isPurchaseButtonDisplayed && scaffoldState.bottomSheetState.isExpanded) {
-        paddingBottom
-    } else {
-        0.dp
-    }
+    var bottomSheetPeekHeight by remember { mutableStateOf(0.dp) }
 
     val screenTitle = if (shipmentUIList[uiState.selectedIndex].purchased) {
         R.string.shipping_label_print_screen_title
@@ -363,26 +312,21 @@ private fun LabelCreationScreenWithBottomSheet(
 
     BottomSheetScaffold(
         snackbarHost = {
-            SnackbarHost(
-                snackbarHostState,
-                modifier = Modifier.padding(bottom = snackbarPaddingBottom)
-            ) { data ->
+            SnackbarHost(snackbarHostState) { data ->
                 val visuals = data.visuals as ShippingLabelsSnackbarVisuals
                 ShippingLabelsSnackbar(visuals = visuals, action = { data.performAction() })
             }
         },
         sheetContent = {
             ShipmentDetails(
-                scaffoldState = scaffoldState,
+                bottomSheetState = scaffoldState.bottomSheetState,
                 totalItems = totalItems,
                 totalItemsCost = totalItemsCost,
                 shippingLines = shippingLines,
-                onMarkOrderCompleteChange = onMarkOrderCompleteChange,
                 shippingAddresses = shippingAddresses,
                 shipmentCostUI = selectedShipment.shipmentCostUI,
                 paymentsSectionUI = paymentsSectionUI,
-                isShipmentDetailsExpanded = uiState.isShipmentDetailsExpanded,
-                markOrderComplete = uiState.markOrderComplete,
+                purchaseSectionUI = purchaseSectionUI,
                 onShipmentDetailsExpandedChange = onShipmentDetailsExpandedChange,
                 onEditDestinationAddress = onEditDestinationAddress,
                 onEditOriginAddress = onEditOriginAddress,
@@ -390,6 +334,7 @@ private fun LabelCreationScreenWithBottomSheet(
                 destinationStatus = destinationStatus,
                 noticeBannerUiState = uiState.noticeBannerUiState,
                 shipmentPurchased = selectedShipment.purchased,
+                onPeekHeightChanged = { bottomSheetPeekHeight = it },
             )
         },
         sheetPeekHeight = bottomSheetPeekHeight,
@@ -929,9 +874,9 @@ private fun WooShippingLabelCreationScreenPreview() {
             totalItemsCost = "$92.78",
             shippingLines = ShippingLabelSampleData.getShippingLines(),
             paymentsSectionUI = ShippingLabelSampleData.getPaymentsSection(),
+            purchaseSectionUI = ShippingLabelSampleData.getPurchaseSection(),
             modifier = Modifier.fillMaxSize(),
             onSelectPackageClick = {},
-            onPurchaseShippingLabel = {},
             shippingAddresses = WooShippingAddresses(
                 shipFrom = ShippingLabelSampleData.getShipFrom(),
                 shipTo = ShippingLabelSampleData.getShipTo(),
@@ -943,7 +888,6 @@ private fun WooShippingLabelCreationScreenPreview() {
             onSelectedRateSortOrderChanged = {},
             customWeightList = listOf(""),
             onCustomWeightChange = {},
-            onMarkOrderCompleteChange = {},
             onNavigateBack = {},
             onEditOriginAddress = {},
             uiState = WooShippingLabelCreationViewModel.UIControlsState(
