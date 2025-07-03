@@ -88,7 +88,7 @@ class OrderDetailTracker @Inject constructor(
         trackerWrapper.track(AnalyticsEvent.ORDER_DETAIL_PULLED_TO_REFRESH)
     }
 
-    fun trackShippinhLabelTapped() {
+    fun trackShippingLabelTapped() {
         trackerWrapper.track(AnalyticsEvent.ORDER_DETAIL_CREATE_SHIPPING_LABEL_BUTTON_TAPPED)
     }
 

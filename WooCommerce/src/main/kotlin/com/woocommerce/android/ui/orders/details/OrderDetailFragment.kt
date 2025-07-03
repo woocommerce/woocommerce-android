@@ -829,6 +829,10 @@ class OrderDetailFragment :
                         override fun onPrintCustomsFormClicked(shippingLabel: ShippingLabelModel) {
                             viewModel.onPrintCustomsFormClicked(shippingLabel)
                         }
+
+                        override fun onViewShippingLabelClicked(shippingLabel: ShippingLabelModel) {
+                            viewModel.onViewShippingLabelClicked(shippingLabel)
+                        }
                     }
                 )
             }
