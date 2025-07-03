@@ -353,22 +353,28 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             selectedRatesFlow.filter { it.isNotEmpty() },
             selectedRatesSortOrdersFlow.filter { it.isNotEmpty() },
         ) { shippingRates, selectedRates, selectedRatesSortOrders ->
-            shippingRates.mapIndexed { index, map ->
-                if (map.isEmpty()) {
-                    ShippingRatesState.NoAvailable
-                } else {
-                    ShippingRatesState.DataState(
-                        selectedRatesSortOrder = selectedRatesSortOrders[index],
-                        shippingRates = sortShippingRates(selectedRatesSortOrders[index], map),
-                        selectedRate = selectedRates[index],
-                        onSelectedShippingRateChanged = ::onSelectedShippingRateChanged,
-                        onSelectedRateOptionChanged = ::onSelectedRateOptionChanged
-                    )
-                }
-            }
-        }.collectLatest {
-            shippingRatesStatesFlow.value = it
+            Triple(shippingRates, selectedRates, selectedRatesSortOrders)
         }
+            .filter { (shippingRates, selectedRates, selectedRatesSortOrders) ->
+                shippingRates.size == selectedRates.size && shippingRates.size == selectedRatesSortOrders.size
+            }
+            .map { (shippingRates, selectedRates, selectedRatesSortOrders) ->
+                shippingRates.mapIndexed { index, map ->
+                    if (map.isEmpty()) {
+                        ShippingRatesState.NoAvailable
+                    } else {
+                        ShippingRatesState.DataState(
+                            selectedRatesSortOrder = selectedRatesSortOrders[index],
+                            shippingRates = sortShippingRates(selectedRatesSortOrders[index], map),
+                            selectedRate = selectedRates[index],
+                            onSelectedShippingRateChanged = ::onSelectedShippingRateChanged,
+                            onSelectedRateOptionChanged = ::onSelectedRateOptionChanged
+                        )
+                    }
+                }
+            }.collectLatest {
+                shippingRatesStatesFlow.value = it
+            }
     }
 
     @OptIn(FlowPreview::class)
