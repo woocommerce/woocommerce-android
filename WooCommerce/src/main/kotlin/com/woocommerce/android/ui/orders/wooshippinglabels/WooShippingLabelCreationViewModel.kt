@@ -147,7 +147,6 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         UIControlsState(
             markOrderComplete = false,
             selectedIndex = navArgs.shipmentId,
-            isShipmentDetailsExpanded = false,
             paperSizeOption = WooShippingLabelPaperSize.LABEL
         )
     )
@@ -696,10 +695,6 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         uiState.update { it.copy(markOrderComplete = value) }
     }
 
-    fun onShipmentDetailsExpandedChange(value: Boolean) {
-        uiState.update { it.copy(isShipmentDetailsExpanded = value) }
-    }
-
     fun onSelectPackageClicked() {
         triggerEvent(NavigatePackageSelection)
     }
@@ -980,20 +975,8 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         triggerEvent(OpenLearnMoreScreen)
     }
 
-    fun allowBackNavigation(): Boolean {
-        val state = uiState.value
-        return when {
-            state.isShipmentDetailsExpanded -> {
-                uiState.update { it.copy(isShipmentDetailsExpanded = false) }
-                false
-            }
-
-            else -> true
-        }
-    }
-
     fun onNavigateBack() {
-        if (allowBackNavigation()) triggerEvent(Event.Exit)
+        triggerEvent(Event.Exit)
     }
 
     fun onRetry() {
@@ -1126,7 +1109,6 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     data class UIControlsState(
         val markOrderComplete: Boolean,
         val selectedIndex: Int = 0,
-        val isShipmentDetailsExpanded: Boolean,
         val noticeBannerUiState: NoticeBannerUiState? = null,
         val paperSizeOption: WooShippingLabelPaperSize,
     )

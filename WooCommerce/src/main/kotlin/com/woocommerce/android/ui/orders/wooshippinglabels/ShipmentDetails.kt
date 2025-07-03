@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels
 
 import android.content.res.Configuration
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -37,6 +38,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -67,6 +69,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeBann
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.DestinationShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
 import com.woocommerce.android.util.StringUtils
+import kotlinx.coroutines.launch
 
 @Composable
 fun ShipmentDetails(
@@ -80,7 +83,6 @@ fun ShipmentDetails(
     purchaseSectionUI: PurchaseSectionUI,
     modifier: Modifier = Modifier,
     noticeBannerUiState: NoticeBannerUiState? = null,
-    onShipmentDetailsExpandedChange: (Boolean) -> Unit,
     onEditDestinationAddress: (DestinationShippingAddress) -> Unit,
     onEditOriginAddress: (OriginShippingAddress) -> Unit,
     onOriginAddressSelected: (OriginShippingAddress) -> Unit,
@@ -100,6 +102,11 @@ fun ShipmentDetails(
         } else {
             it
         }
+    }
+    val coroutineScope = rememberCoroutineScope()
+
+    BackHandler(enabled = bottomSheetState.isExpanded) {
+        coroutineScope.launch { bottomSheetState.collapse() }
     }
 
     val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
@@ -138,7 +145,15 @@ fun ShipmentDetails(
                 .padding(top = 16.dp)
                 .align(Alignment.CenterHorizontally)
                 .clickable(
-                    onClick = { onShipmentDetailsExpandedChange(bottomSheetState.isCollapsed) },
+                    onClick = {
+                        coroutineScope.launch {
+                            if (bottomSheetState.isCollapsed) {
+                                bottomSheetState.expand()
+                            } else {
+                                bottomSheetState.collapse()
+                            }
+                        }
+                    },
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null
                 )
@@ -661,7 +676,6 @@ fun ShipmentDetailsExpandedPreview() {
                 purchaseSectionUI = ShippingLabelSampleData.getPurchaseSection(),
                 modifier = Modifier.fillMaxSize(),
                 noticeBannerUiState = null,
-                onShipmentDetailsExpandedChange = {},
                 onEditDestinationAddress = {},
                 onEditOriginAddress = {},
                 onOriginAddressSelected = {},
@@ -696,7 +710,6 @@ private fun ShipmentDetailsCollapsedPreview() {
                 purchaseSectionUI = ShippingLabelSampleData.getPurchaseSection(),
                 modifier = Modifier.heightIn(max = 180.dp),
                 noticeBannerUiState = null,
-                onShipmentDetailsExpandedChange = {},
                 onEditDestinationAddress = {},
                 onEditOriginAddress = {},
                 onOriginAddressSelected = {},

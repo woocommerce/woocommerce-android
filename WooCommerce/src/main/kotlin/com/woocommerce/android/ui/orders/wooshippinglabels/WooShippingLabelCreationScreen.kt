@@ -19,9 +19,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.BottomSheetScaffold
-import androidx.compose.material.BottomSheetScaffoldDefaults
 import androidx.compose.material.BottomSheetScaffoldState
-import androidx.compose.material.BottomSheetState
 import androidx.compose.material.BottomSheetValue
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
@@ -37,6 +35,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.rememberBottomSheetScaffoldState
+import androidx.compose.material.rememberBottomSheetState
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
@@ -50,7 +49,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -118,7 +116,6 @@ fun WooShippingLabelCreationScreen(viewModel: WooShippingLabelCreationViewModel)
                 onCustomWeightChange = viewModel::onCustomWeightChange,
                 uiState = viewState.uiState,
                 onNavigateBack = viewModel::onNavigateBack,
-                onShipmentDetailsExpandedChange = viewModel::onShipmentDetailsExpandedChange,
                 onEditCustomsClick = viewModel::onEditCustomsClick,
                 onEditDestinationAddress = viewModel::onEditDestinationAddress,
                 destinationStatus = viewState.destinationStatus,
@@ -165,7 +162,6 @@ fun WooShippingLabelCreationScreen(
     onCustomWeightChange: (String) -> Unit,
     customWeightList: List<String>,
     uiState: WooShippingLabelCreationViewModel.UIControlsState,
-    onShipmentDetailsExpandedChange: (Boolean) -> Unit,
     onEditCustomsClick: () -> Unit,
     onNavigateBack: () -> Unit,
     onEditDestinationAddress: (DestinationShippingAddress) -> Unit,
@@ -182,20 +178,8 @@ fun WooShippingLabelCreationScreen(
     onPrintCustomsClicked: () -> Unit,
     onLearnMoreClicked: () -> Unit,
 ) {
-    val shipmentDetailsValue = if (uiState.isShipmentDetailsExpanded) {
-        BottomSheetValue.Expanded
-    } else {
-        BottomSheetValue.Collapsed
-    }
-
-    val shipmentDetailsBottomSheetState = BottomSheetState(
-        initialValue = shipmentDetailsValue,
-        animationSpec = BottomSheetScaffoldDefaults.AnimationSpec,
-        density = LocalDensity.current,
-        confirmValueChange = {
-            onShipmentDetailsExpandedChange(it == BottomSheetValue.Expanded)
-            true
-        }
+    val shipmentDetailsBottomSheetState = rememberBottomSheetState(
+        initialValue = BottomSheetValue.Collapsed
     )
 
     val scaffoldState = rememberBottomSheetScaffoldState(
@@ -224,7 +208,6 @@ fun WooShippingLabelCreationScreen(
             onCustomWeightChange = onCustomWeightChange,
             uiState = uiState,
             onNavigateBack = onNavigateBack,
-            onShipmentDetailsExpandedChange = onShipmentDetailsExpandedChange,
             onEditCustomsClick = onEditCustomsClick,
             onEditDestinationAddress = onEditDestinationAddress,
             destinationStatus = destinationStatus,
@@ -282,7 +265,6 @@ private fun LabelCreationScreenWithBottomSheet(
     uiState: WooShippingLabelCreationViewModel.UIControlsState,
     scaffoldState: BottomSheetScaffoldState,
     onNavigateBack: () -> Unit,
-    onShipmentDetailsExpandedChange: (Boolean) -> Unit,
     onEditCustomsClick: () -> Unit,
     onEditDestinationAddress: (DestinationShippingAddress) -> Unit,
     destinationStatus: AddressStatus,
@@ -327,7 +309,6 @@ private fun LabelCreationScreenWithBottomSheet(
                 shipmentCostUI = selectedShipment.shipmentCostUI,
                 paymentsSectionUI = paymentsSectionUI,
                 purchaseSectionUI = purchaseSectionUI,
-                onShipmentDetailsExpandedChange = onShipmentDetailsExpandedChange,
                 onEditDestinationAddress = onEditDestinationAddress,
                 onEditOriginAddress = onEditOriginAddress,
                 onOriginAddressSelected = onOriginAddressSelected,
@@ -892,10 +873,8 @@ private fun WooShippingLabelCreationScreenPreview() {
             onEditOriginAddress = {},
             uiState = WooShippingLabelCreationViewModel.UIControlsState(
                 markOrderComplete = false,
-                isShipmentDetailsExpanded = false,
                 paperSizeOption = WooShippingLabelPaperSize.LABEL
             ),
-            onShipmentDetailsExpandedChange = {},
             onEditCustomsClick = {},
             onEditDestinationAddress = {},
             destinationStatus = AddressStatus.VERIFIED,
