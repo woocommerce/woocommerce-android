@@ -1,10 +1,7 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.customs
 
 import android.os.Parcelable
-import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.ContentType
-import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.RestrictionType
 import com.woocommerce.android.R
-import com.woocommerce.android.util.WooLog.T
 import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
 
