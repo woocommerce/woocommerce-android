@@ -137,7 +137,6 @@ object ShippingLabelSampleData {
                 serviceName = "$carrier $it",
                 deliveryDays = it,
                 price = it.toBigDecimal(),
-                discount = it.toBigDecimal(),
                 option = WooShippingRateModel.Option.DEFAULT,
                 carrier = WooShippingCarrier.DHL,
                 hasFreePickup = true,

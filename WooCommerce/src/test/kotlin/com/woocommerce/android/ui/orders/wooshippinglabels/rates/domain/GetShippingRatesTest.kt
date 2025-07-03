@@ -57,7 +57,6 @@ class GetShippingRatesTest : BaseUnitTest() {
                 WooShippingRateModel.Option.DEFAULT to WooShippingRateModel(
                     carrier = WooShippingCarrier.DHL,
                     deliveryDays = (1..10).random(),
-                    discount = BigDecimal.ZERO,
                     hasFreePickup = true,
                     insurance = null,
                     isTrackingEnabled = true,

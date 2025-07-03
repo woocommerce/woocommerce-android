@@ -76,7 +76,6 @@ class WooShippingRatesDomainMapperTest : BaseUnitTest() {
                     WooShippingRateModel.Option.DEFAULT to WooShippingRateModel(
                         carrier = WooShippingCarrier.DHL,
                         deliveryDays = (1..10).random(),
-                        discount = BigDecimal.ZERO,
                         hasFreePickup = true,
                         insurance = null,
                         isTrackingEnabled = true,
@@ -112,7 +111,6 @@ class WooShippingRatesDomainMapperTest : BaseUnitTest() {
                     WooShippingRateModel.Option.DEFAULT to WooShippingRateModel(
                         carrier = WooShippingCarrier.DHL,
                         deliveryDays = (1..10).random(),
-                        discount = BigDecimal.ZERO,
                         hasFreePickup = true,
                         insurance = BigDecimal.TEN,
                         isTrackingEnabled = true,
@@ -148,7 +146,6 @@ class WooShippingRatesDomainMapperTest : BaseUnitTest() {
                     WooShippingRateModel.Option.DEFAULT to WooShippingRateModel(
                         carrier = WooShippingCarrier.DHL,
                         deliveryDays = (1..10).random(),
-                        discount = BigDecimal.ZERO,
                         hasFreePickup = true,
                         insurance = BigDecimal.TEN,
                         isTrackingEnabled = false,
@@ -184,7 +181,6 @@ class WooShippingRatesDomainMapperTest : BaseUnitTest() {
                     WooShippingRateModel.Option.DEFAULT to WooShippingRateModel(
                         carrier = WooShippingCarrier.DHL,
                         deliveryDays = (1..10).random(),
-                        discount = BigDecimal.ZERO,
                         hasFreePickup = true,
                         insurance = BigDecimal.TEN,
                         isTrackingEnabled = true,
@@ -220,7 +216,6 @@ class WooShippingRatesDomainMapperTest : BaseUnitTest() {
                     WooShippingRateModel.Option.DEFAULT to WooShippingRateModel(
                         carrier = WooShippingCarrier.DHL,
                         deliveryDays = (1..10).random(),
-                        discount = BigDecimal.ZERO,
                         hasFreePickup = false,
                         insurance = BigDecimal.TEN,
                         isTrackingEnabled = true,
@@ -256,7 +251,6 @@ class WooShippingRatesDomainMapperTest : BaseUnitTest() {
                     WooShippingRateModel.Option.DEFAULT to WooShippingRateModel(
                         carrier = WooShippingCarrier.DHL,
                         deliveryDays = (1..10).random(),
-                        discount = BigDecimal.ZERO,
                         hasFreePickup = true,
                         insurance = BigDecimal.TEN,
                         isTrackingEnabled = true,
@@ -301,7 +295,6 @@ class WooShippingRatesDomainMapperTest : BaseUnitTest() {
             ratesMap[WooShippingRateModel.Option.DEFAULT] = WooShippingRateModel(
                 carrier = carrier,
                 deliveryDays = (1..10).random(),
-                discount = BigDecimal.ZERO,
                 hasFreePickup = true,
                 insurance = BigDecimal.TEN,
                 isTrackingEnabled = true,
@@ -323,7 +316,6 @@ class WooShippingRatesDomainMapperTest : BaseUnitTest() {
             ratesMap[WooShippingRateModel.Option.SIGNATURE] = WooShippingRateModel(
                 carrier = carrier,
                 deliveryDays = (1..10).random(),
-                discount = BigDecimal.ZERO,
                 hasFreePickup = true,
                 insurance = BigDecimal.TEN,
                 isTrackingEnabled = true,
@@ -345,7 +337,6 @@ class WooShippingRatesDomainMapperTest : BaseUnitTest() {
             ratesMap[WooShippingRateModel.Option.ADULT_SIGNATURE] = WooShippingRateModel(
                 carrier = carrier,
                 deliveryDays = (1..10).random(),
-                discount = BigDecimal.ZERO,
                 hasFreePickup = true,
                 insurance = BigDecimal.TEN,
                 isTrackingEnabled = true,

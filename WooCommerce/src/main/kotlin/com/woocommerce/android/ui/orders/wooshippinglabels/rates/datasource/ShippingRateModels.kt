@@ -16,7 +16,6 @@ data class WooShippingRateModel(
     val serviceName: String,
     val deliveryDays: Int,
     val price: BigDecimal,
-    val discount: BigDecimal,
     val isTrackingEnabled: Boolean,
     val hasFreePickup: Boolean,
     val insurance: BigDecimal?,
@@ -29,17 +28,25 @@ data class WooShippingRateModel(
     val carrier: WooShippingCarrier
 ) : Parcelable {
     enum class Option(
+        val id: String,
+        val typeId: String = id,
         /**
          * Indicates whether this option is an additional service that can be added to a base shipping rate.
          */
         val isAdditionalOption: Boolean
     ) {
-        DEFAULT(isAdditionalOption = false),
-        SIGNATURE(isAdditionalOption = false),
-        ADULT_SIGNATURE(isAdditionalOption = false),
-        CARBON_NEUTRAL(isAdditionalOption = true),
-        ADDITIONAL_HANDLING(isAdditionalOption = true),
-        SATURDAY_DELIVERY(isAdditionalOption = true)
+        DEFAULT(id = "default", isAdditionalOption = false),
+        SIGNATURE(id = "signature_required", typeId = "signature", isAdditionalOption = false),
+        ADULT_SIGNATURE(id = "adult_signature_required", typeId = "signature", isAdditionalOption = false),
+        CARBON_NEUTRAL(id = "carbon_neutral", isAdditionalOption = true),
+        ADDITIONAL_HANDLING(id = "additional_handling", isAdditionalOption = true),
+        SATURDAY_DELIVERY(id = "saturday_delivery", isAdditionalOption = true);
+
+        companion object {
+            fun fromId(id: String): Option? {
+                return entries.firstOrNull { it.id == id }
+            }
+        }
     }
 }
 
@@ -48,4 +55,22 @@ data class WooShippingRateOptionsModel(
 ) {
     val defaultRate: WooShippingRateModel
         get() = rateOptions[Option.DEFAULT] ?: rateOptions.values.first()
+}
+
+data class WooShippingSelectedRateModel(
+    val rate: WooShippingRateModel,
+    val parentRate: WooShippingRateModel?,
+    val additionalRates: List<WooShippingRateModel>
+) {
+    private val defaultRate: WooShippingRateModel
+        get() = parentRate ?: rate
+
+    fun getSurcharge(option: Option): BigDecimal {
+        return if (option.isAdditionalOption) {
+            additionalRates.first { it.option == option }.price - defaultRate.price
+        } else {
+            require(option == rate.option)
+            rate.price - defaultRate.price
+        }
+    }
 }

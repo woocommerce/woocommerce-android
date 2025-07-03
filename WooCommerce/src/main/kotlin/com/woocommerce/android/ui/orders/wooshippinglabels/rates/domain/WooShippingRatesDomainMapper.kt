@@ -6,6 +6,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingCar
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel.Option
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateOptionsModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingSelectedRateModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.CarrierUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRateOptionUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRateUI
@@ -25,6 +26,22 @@ class WooShippingRatesDomainMapper @Inject constructor(
         return rates.groupBy { it.defaultRate.carrier }.map { entry ->
             getCarrier(entry.key) to entry.value.map { getShippingRate(it, resourceProvider, currencyCode) }
         }.toMap()
+    }
+
+    operator fun invoke(
+        selectedRate: ShippingRateUI
+    ): WooShippingSelectedRateModel {
+        return WooShippingSelectedRateModel(
+            rate = selectedRate.selectedRateOption.rate,
+            parentRate = if (selectedRate.selectedOption != Option.DEFAULT) {
+                selectedRate.defaultRate.rate
+            } else {
+                null
+            },
+            additionalRates = selectedRate.additionalSelectedOptions.map {
+                selectedRate.options.getValue(it).rate
+            }
+        )
     }
 
     private fun getCarrier(carrier: WooShippingCarrier): CarrierUI {
