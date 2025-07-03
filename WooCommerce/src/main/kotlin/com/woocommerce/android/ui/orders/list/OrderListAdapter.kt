@@ -284,7 +284,6 @@ class OrderListAdapter(
             }
         }
 
-
         override fun isSwipeAble(): Boolean = isNotCompleted
         override fun getSwipedItemId(): Long = orderId
         override fun getSwipedExtras(): Map<String, String> = extras
