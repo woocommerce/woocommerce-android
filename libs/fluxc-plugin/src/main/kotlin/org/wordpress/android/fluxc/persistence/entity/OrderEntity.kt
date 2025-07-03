@@ -2,6 +2,7 @@ package org.wordpress.android.fluxc.persistence.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.Index
 import androidx.room.TypeConverters
 import com.google.gson.Gson
@@ -95,15 +96,10 @@ data class OrderEntity(
 ) {
     companion object {
         private val gson by lazy { Gson() }
-        private val cache = mutableMapOf<CacheKey, List<*>>()
-
-        private data class CacheKey(
-            val orderId: Long,
-            val localSiteId: LocalId,
-            val jsonHash: Int,
-            val type: String
-        )
     }
+
+    @Ignore
+    private val cache = mutableMapOf<String, List<*>>()
 
     /**
      * Returns true if there are shipping details defined for this order,
@@ -128,7 +124,7 @@ data class OrderEntity(
      * Deserializes the JSON contained in [lineItems] into a list of [LineItem] objects.
      */
     fun getLineItemList(): List<LineItem> {
-        return getCachedOrParse(lineItems, "lineItems")
+        return getCachedOrParse(lineItems)
     }
 
     /**
@@ -142,21 +138,21 @@ data class OrderEntity(
      * Deserializes the JSON contained in [shippingLines] into a list of [ShippingLine] objects.
      */
     fun getShippingLineList(): List<ShippingLine> {
-        return getCachedOrParse(shippingLines, "shippingLines")
+        return getCachedOrParse(shippingLines)
     }
 
     /**
      * Deserializes the JSON contained in [feeLines] into a list of [FeeLine] objects.
      */
     fun getFeeLineList(): List<FeeLine> {
-        return getCachedOrParse(feeLines, "feeLines")
+        return getCachedOrParse(feeLines)
     }
 
     /**
      * Deserializes the JSON contained in [couponLines] into a list of [CouponLine] objects.
      */
     fun getCouponLineList(): List<CouponLine> {
-        return getCachedOrParse(couponLines, "couponLines")
+        return getCachedOrParse(couponLines)
     }
 
     /**
@@ -164,18 +160,14 @@ data class OrderEntity(
      * Returns an empty list if deserialization fails.
      */
     fun getTaxLineList(): List<TaxLine> {
-        return getCachedOrParse(taxLines, "taxLines")
+        return getCachedOrParse(taxLines)
     }
 
     @Suppress("UNCHECKED_CAST")
-    private inline fun <reified T> getCachedOrParse(json: String, type: String): List<T> {
-        val cacheKey = CacheKey(orderId, localSiteId, json.hashCode(), type)
-
-        return synchronized(cache) {
-            cache.getOrPut(cacheKey) {
-                parseJsonListSafely<T>(json)
-            } as List<T>
-        }
+    private inline fun <reified T> getCachedOrParse(json: String): List<T> {
+        return cache.getOrPut(json) {
+            parseJsonListSafely<T>(json)
+        } as List<T>
     }
 
     private inline fun <reified T> parseJsonListSafely(json: String): List<T> =

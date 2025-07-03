@@ -450,22 +450,35 @@ class OrderEntityTest {
     }
 
     @Test
-    fun testCachingWithDifferentOrderIds() {
+    fun testCachingIsolatedPerInstance() {
         // GIVEN
         val json = """[{"id": 1, "name": "Product", "total": "10.00"}]"""
         val model1 = OrderTestUtils.generateSampleOrder(61).copy(lineItems = json)
         val model2 = OrderTestUtils.generateSampleOrder(62).copy(lineItems = json)
 
         // WHEN
-        val list1FirstCall = model1.getLineItemList()
-        val list1SecondCall = model1.getLineItemList()
-        val list2FirstCall = model2.getLineItemList()
-        val list2SecondCall = model2.getLineItemList()
+        val startTime1 = System.nanoTime()
+        val list1 = model1.getLineItemList()
+        val endTime1 = System.nanoTime()
+        val firstCallDuration = (endTime1 - startTime1) / 1_000_000.0
+
+        val startTime2 = System.nanoTime()
+        val list2 = model2.getLineItemList()
+        val endTime2 = System.nanoTime()
+        val secondCallDuration = (endTime2 - startTime2) / 1_000_000.0
+
+        val startTime3 = System.nanoTime()
+        val list1Cached = model1.getLineItemList()
+        val endTime3 = System.nanoTime()
+        val cachedCallDuration = (endTime3 - startTime3) / 1_000_000.0
 
         // THEN
-        assertEquals(list1FirstCall, list1SecondCall)
-        assertEquals(list2FirstCall, list2SecondCall)
-        assertEquals(list1FirstCall.size, list2FirstCall.size)
+        assertEquals(list1.size, list2.size)
+        assertEquals(list1[0].name, list2[0].name)
+        assertEquals(list1, list1Cached)
+
+        assertTrue(cachedCallDuration < firstCallDuration * 0.1,
+            "Cached call should be much faster than first parse")
     }
 
     @Test
@@ -497,14 +510,13 @@ class OrderEntityTest {
             taxLines = """[{"id": 1, "rate_id": 1, "tax_total": "3.00"}]"""
         )
 
-        // WHEN - First calls (should parse)
+        // WHEN
         val lineItems1 = model.getLineItemList()
         val shippingLines1 = model.getShippingLineList()
         val feeLines1 = model.getFeeLineList()
         val couponLines1 = model.getCouponLineList()
         val taxLines1 = model.getTaxLineList()
 
-        // WHEN - Second calls (should be cached)
         val startTime = System.nanoTime()
         val lineItems2 = model.getLineItemList()
         val shippingLines2 = model.getShippingLineList()
@@ -555,5 +567,38 @@ class OrderEntityTest {
             assertEquals("Product 1", list[0].name)
             assertEquals("Product $itemCount", list[itemCount - 1].name)
         }
+    }
+
+    @Test
+    fun testCachingWithMultipleListTypes() {
+        // GIVEN
+        val model = OrderTestUtils.generateSampleOrder(61).copy(
+            lineItems = """[{"id": 1, "name": "Product A", "total": "10.00"}]""",
+            shippingLines = """[{"id": 1, "method_title": "Express", "total": "5.00"}]""",
+            feeLines = """[{"id": 1, "name": "Processing Fee", "total": "2.00"}]"""
+        )
+
+        // WHEN
+        val lineItems1 = model.getLineItemList()
+        val shippingLines1 = model.getShippingLineList()
+        val feeLines1 = model.getFeeLineList()
+
+        val startTime = System.nanoTime()
+        val lineItems2 = model.getLineItemList() // Should be cached
+        val shippingLines2 = model.getShippingLineList() // Should be cached
+        val feeLines2 = model.getFeeLineList() // Should be cached
+        val endTime = System.nanoTime()
+        val cachedCallsDuration = (endTime - startTime) / 1_000_000.0
+
+        // THEN
+        assertEquals(lineItems1, lineItems2)
+        assertEquals(shippingLines1, shippingLines2)
+        assertEquals(feeLines1, feeLines2)
+
+        assertEquals(1, lineItems2.size)
+        assertEquals(1, shippingLines2.size)
+        assertEquals(1, feeLines2.size)
+
+        assertTrue(cachedCallsDuration < 2.0, "All cached calls should complete very quickly")
     }
 }
