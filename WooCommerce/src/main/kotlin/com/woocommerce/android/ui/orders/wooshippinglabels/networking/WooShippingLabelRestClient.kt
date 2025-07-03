@@ -150,7 +150,6 @@ class WooShippingLabelRestClient @Inject constructor(
             site = site,
             path = url,
             body = mapOf(
-                "async" to true,
                 "origin" to origin,
                 "destination" to destination,
                 // For this purchase endpoint, `id` represents the shipment ID instead of the package ID
