@@ -68,6 +68,11 @@ class OrderMapper @Inject constructor(
             giftCardDiscountedAmount = databaseEntity.giftCardAmount
                 .toBigDecimalOrNull() ?: BigDecimal.ZERO,
             shippingTax = databaseEntity.shippingTax.toBigDecimalOrNull() ?: BigDecimal.ZERO,
+            salesChannel = if (databaseEntity.createdVia.lowercase() == "pos-rest-api") {
+                Order.SalesChannel.POS
+            } else {
+                Order.SalesChannel.NON_POS
+            },
         )
     }
 
