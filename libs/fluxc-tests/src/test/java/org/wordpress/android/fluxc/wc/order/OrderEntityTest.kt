@@ -3,10 +3,10 @@ package org.wordpress.android.fluxc.wc.order
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import org.junit.Test
-import java.util.Collections
 import org.wordpress.android.fluxc.UnitTestUtils
 import org.wordpress.android.fluxc.model.order.LineItem
 import org.wordpress.android.fluxc.model.order.ShippingLine
+import java.util.Collections
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 import kotlin.test.assertNull
@@ -440,21 +440,12 @@ class OrderEntityTest {
         val endTime2 = System.nanoTime()
         val secondCallDuration = (endTime2 - startTime2) / 1_000_000.0
 
-        val startTime3 = System.nanoTime()
         val thirdCall = model.getLineItemList()
-        val endTime3 = System.nanoTime()
-        val thirdCallDuration = (endTime3 - startTime3) / 1_000_000.0
 
         // THEN
         assertEquals(firstCall, secondCall)
         assertEquals(secondCall, thirdCall)
-        println("\nCaching Performance Test:")
-        println("First call (parse): ${"%.3f".format(firstCallDuration)} ms")
-        println("Second call (cached): ${"%.3f".format(secondCallDuration)} ms")
-        println("Third call (cached): ${"%.3f".format(thirdCallDuration)} ms")
-        println("Speed improvement: ${"%.1f".format(firstCallDuration / secondCallDuration)}x faster")
-        
-        assertTrue(secondCallDuration < firstCallDuration * 0.1, 
+        assertTrue(secondCallDuration < firstCallDuration * 0.1,
             "Cached call should be at least 10x faster than first call")
     }
 
@@ -529,8 +520,7 @@ class OrderEntityTest {
         assertEquals(feeLines1, feeLines2)
         assertEquals(couponLines1, couponLines2)
         assertEquals(taxLines1, taxLines2)
-        
-        println("\nAll cached calls total time: ${"%.3f".format(totalCachedDuration)} ms")
+
         assertTrue(totalCachedDuration < 5.0, "All cached calls should complete in under 5ms")
     }
 

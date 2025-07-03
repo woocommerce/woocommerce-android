@@ -96,7 +96,7 @@ data class OrderEntity(
     companion object {
         private val gson by lazy { Gson() }
         private val cache = mutableMapOf<CacheKey, List<*>>()
-        
+
         private data class CacheKey(
             val orderId: Long,
             val localSiteId: LocalId,
@@ -166,11 +166,11 @@ data class OrderEntity(
     fun getTaxLineList(): List<TaxLine> {
         return getCachedOrParse(taxLines, "taxLines")
     }
-    
+
     @Suppress("UNCHECKED_CAST")
     private inline fun <reified T> getCachedOrParse(json: String, type: String): List<T> {
         val cacheKey = CacheKey(orderId, localSiteId, json.hashCode(), type)
-        
+
         return synchronized(cache) {
             cache.getOrPut(cacheKey) {
                 parseJsonListSafely<T>(json)
