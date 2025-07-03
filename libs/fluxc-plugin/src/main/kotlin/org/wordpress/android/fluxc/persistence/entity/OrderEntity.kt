@@ -120,39 +120,35 @@ data class OrderEntity(
      * Deserializes the JSON contained in [lineItems] into a list of [LineItem] objects.
      */
     fun getLineItemList(): List<LineItem> {
-        val responseType = object : TypeToken<List<LineItem>>() {}.type
-        return gson.fromJson(lineItems, responseType) as? List<LineItem> ?: emptyList()
+        return parseJsonListSafely(lineItems)
     }
 
     /**
      * Returns the order subtotal (the sum of the subtotals of each line item in the order).
      */
     fun getOrderSubtotal(): Double {
-        return getLineItemList().sumByDouble { it.subtotal?.toDoubleOrNull() ?: 0.0 }
+        return getLineItemList().sumOf { it.subtotal?.toDoubleOrNull() ?: 0.0 }
     }
 
     /**
      * Deserializes the JSON contained in [shippingLines] into a list of [ShippingLine] objects.
      */
     fun getShippingLineList(): List<ShippingLine> {
-        val responseType = object : TypeToken<List<ShippingLine>>() {}.type
-        return gson.fromJson(shippingLines, responseType) as? List<ShippingLine> ?: emptyList()
+        return parseJsonListSafely(shippingLines)
     }
 
     /**
      * Deserializes the JSON contained in [feeLines] into a list of [FeeLine] objects.
      */
     fun getFeeLineList(): List<FeeLine> {
-        val responseType = object : TypeToken<List<FeeLine>>() {}.type
-        return gson.fromJson(feeLines, responseType) as? List<FeeLine> ?: emptyList()
+        return parseJsonListSafely(feeLines)
     }
 
     /**
      * Deserializes the JSON contained in [couponLines] into a list of [CouponLine] objects.
      */
     fun getCouponLineList(): List<CouponLine> {
-        val responseType = object : TypeToken<List<CouponLine>>() {}.type
-        return gson.fromJson(couponLines, responseType) as? List<CouponLine> ?: emptyList()
+        return parseJsonListSafely(couponLines)
     }
 
     /**
@@ -160,13 +156,20 @@ data class OrderEntity(
      * Returns an empty list if deserialization fails.
      */
     fun getTaxLineList(): List<TaxLine> {
-        return try {
-            val responseType = object : TypeToken<List<TaxLine>>() {}.type
-            gson.fromJson(taxLines, responseType) as? List<TaxLine> ?: emptyList()
+        return parseJsonListSafely(taxLines)
+    }
+
+    private inline fun <reified T> parseJsonListSafely(json: String): List<T> =
+        try {
+            val responseType = object : TypeToken<List<T>>() {}.type
+            gson.fromJson(json, responseType) as? List<T> ?: emptyList()
         } catch (e: JsonSyntaxException) {
             @Suppress("PrintStackTrace")
             e.printStackTrace()
             emptyList()
+        } catch (e: NumberFormatException) {
+            @Suppress("PrintStackTrace")
+            e.printStackTrace()
+            emptyList()
         }
-    }
 }
