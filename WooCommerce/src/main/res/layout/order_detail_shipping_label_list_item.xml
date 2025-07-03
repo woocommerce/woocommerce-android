@@ -197,6 +197,16 @@
 
         </LinearLayout>
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/shippingLabelItem_viewPurchasedShippingLabelButton"
+            style="@style/Woo.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:paddingHorizontal="16dp"
+            android:text="@string/orderdetail_shipping_label_item_view_purchased_shipping_label"
+            android:textAllCaps="false" />
+
         <!-- VIEW MORE Button -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/shippingLabelItem_viewMore"

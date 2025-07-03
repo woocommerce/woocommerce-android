@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyListState
@@ -112,22 +113,11 @@ private fun WooPosCartScreen(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.surfaceBright)
     ) {
-        val (topMargin, toolbar, body, checkoutButton) = createRefs()
-
-        Spacer(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(WooPosSpacing.XLarge.value.toAdaptivePadding())
-                .constrainAs(topMargin) {
-                    top.linkTo(parent.top)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                }
-        )
+        val (toolbar, body, checkoutButton) = createRefs()
 
         CartToolbar(
             modifier = Modifier.constrainAs(toolbar) {
-                top.linkTo(topMargin.bottom)
+                top.linkTo(parent.top)
                 start.linkTo(parent.start)
                 end.linkTo(parent.end)
             },
@@ -371,6 +361,7 @@ private fun CartToolbar(
     ConstraintLayout(
         modifier = modifier
             .fillMaxWidth()
+            .statusBarsPadding()
             .height(56.dp)
     ) {
         val (backButton, title, spacer, itemsCount, clearAllButton) = createRefs()
