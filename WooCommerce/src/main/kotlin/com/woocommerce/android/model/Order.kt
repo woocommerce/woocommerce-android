@@ -70,12 +70,6 @@ data class Order(
     val billingName
         get() = getBillingName("")
 
-    val hasMultipleShippingLines: Boolean
-        get() = shippingLines.size > 1
-
-    val hasMultipleFeeLines: Boolean
-        get() = feesLines.size > 1
-
     @IgnoredOnParcel
     val feesTotal = feesLines.sumByBigDecimal(FeeLine::total)
 
@@ -136,9 +130,6 @@ data class Order(
 
         @IgnoredOnParcel
         var containsAddons = false
-
-        @IgnoredOnParcel
-        val attributesNames = attributesList.map { it.addonName }
 
         /**
          * @return a comma-separated list of attribute values for display
