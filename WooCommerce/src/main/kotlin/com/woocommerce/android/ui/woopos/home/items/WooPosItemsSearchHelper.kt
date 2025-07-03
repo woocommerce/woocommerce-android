@@ -56,7 +56,7 @@ class WooPosItemsSearchHelper @Inject constructor(
                         }
                     }
                     is ParentToChildrenEvent.CheckoutClicked -> {
-                        onCloseSearchClicked()
+                        closeSearchToPreventFocusAcquiringAfterNavigation()
                     }
 
                     is ParentToChildrenEvent.BackFromCheckoutToCartClicked -> Unit
@@ -87,7 +87,9 @@ class WooPosItemsSearchHelper @Inject constructor(
         }
     }
 
-    fun onCloseSearchClicked() {
+    fun onCloseSearchClicked() = closeSearch()
+
+    fun closeSearch() {
         wasLastStateClosed = true
         viewStateFlow.value = viewStateFlow.value.copy(
             search = SearchState.Visible(
@@ -95,6 +97,8 @@ class WooPosItemsSearchHelper @Inject constructor(
             )
         )
     }
+
+    private fun closeSearchToPreventFocusAcquiringAfterNavigation() = closeSearch()
 
     fun onClearSearchClicked() {
         coroutineScope.launch {
