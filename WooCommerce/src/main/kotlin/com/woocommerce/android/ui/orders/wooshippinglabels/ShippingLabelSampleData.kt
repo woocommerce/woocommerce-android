@@ -61,7 +61,8 @@ object ShippingLabelSampleData {
     }
 
     fun getPaymentsSection() = PaymentsSectionUI(
-        selectedPaymentMethod = getPaymentMethod()
+        selectedPaymentMethod = getPaymentMethod(),
+        onEditPaymentMethodClicked = {}
     )
 
     fun getPaymentOptions(countOfPaymentMethods: Int = 3) = PaymentMethodOptions(

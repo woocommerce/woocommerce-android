@@ -77,7 +77,6 @@ fun ShipmentDetails(
     destinationStatus: AddressStatus,
     markOrderComplete: Boolean = false,
     onMarkOrderCompleteChange: (Boolean) -> Unit,
-    onEditPaymentMethodClicked: () -> Unit,
     handlerModifier: Modifier = Modifier,
     shipmentPurchased: Boolean
 ) {
@@ -138,7 +137,6 @@ fun ShipmentDetails(
                 onEditDestinationAddress = onEditDestinationAddress,
                 onEditOriginAddress = onEditOriginAddress,
                 onOriginAddressSelected = onOriginAddressSelected,
-                onEditPaymentMethodClicked = onEditPaymentMethodClicked,
                 destinationStatus = destinationStatus
             )
         } else {
@@ -156,7 +154,6 @@ fun ShipmentDetails(
                 onEditDestinationAddress = onEditDestinationAddress,
                 onEditOriginAddress = onEditOriginAddress,
                 onOriginAddressSelected = onOriginAddressSelected,
-                onEditPaymentMethodClicked = onEditPaymentMethodClicked,
                 destinationStatus = destinationStatus
             )
         }
@@ -176,7 +173,6 @@ private fun ShipmentDetailsPortrait(
     onEditDestinationAddress: (DestinationShippingAddress) -> Unit,
     onEditOriginAddress: (OriginShippingAddress) -> Unit,
     onOriginAddressSelected: (OriginShippingAddress) -> Unit,
-    onEditPaymentMethodClicked: () -> Unit,
     destinationStatus: AddressStatus,
     modifier: Modifier = Modifier,
     shipmentPurchased: Boolean
@@ -203,7 +199,6 @@ private fun ShipmentDetailsPortrait(
             if (!shipmentPurchased) {
                 PaymentSection(
                     paymentsSectionUI = paymentsSectionUI,
-                    onEditPaymentMethodClicked = onEditPaymentMethodClicked,
                     modifier = Modifier.padding(16.dp)
                 )
             }
@@ -234,7 +229,6 @@ private fun ShipmentDetailsLandscape(
     onEditDestinationAddress: (DestinationShippingAddress) -> Unit,
     onEditOriginAddress: (OriginShippingAddress) -> Unit,
     onOriginAddressSelected: (OriginShippingAddress) -> Unit,
-    onEditPaymentMethodClicked: () -> Unit,
     destinationStatus: AddressStatus,
     modifier: Modifier = Modifier,
     shipmentPurchased: Boolean = false
@@ -271,7 +265,6 @@ private fun ShipmentDetailsLandscape(
                     if (!shipmentPurchased) {
                         PaymentSection(
                             paymentsSectionUI = paymentsSectionUI,
-                            onEditPaymentMethodClicked = onEditPaymentMethodClicked,
                             modifier = Modifier.padding(16.dp)
                         )
                     }
@@ -465,7 +458,6 @@ private fun TotalItem(
 @Composable
 private fun PaymentSection(
     paymentsSectionUI: PaymentsSectionUI,
-    onEditPaymentMethodClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -479,7 +471,7 @@ private fun PaymentSection(
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .clickable(onClick = onEditPaymentMethodClicked)
+                .clickable(onClick = paymentsSectionUI.onEditPaymentMethodClicked)
                 .padding(vertical = 4.dp)
         ) {
             if (paymentsSectionUI.selectedPaymentMethod != null) {
@@ -615,7 +607,6 @@ fun ShipmentDetailsLandscapePreview() {
                 destinationStatus = AddressStatus.VERIFIED,
                 markOrderComplete = false,
                 onMarkOrderCompleteChange = {},
-                onEditPaymentMethodClicked = {},
                 handlerModifier = Modifier,
                 shipmentPurchased = false
             )

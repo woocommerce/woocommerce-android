@@ -135,7 +135,6 @@ fun WooShippingLabelCreationScreen(viewModel: WooShippingLabelCreationViewModel)
                 onRefundClicked = viewModel::onRefundClicked,
                 onPrintCustomsClicked = viewModel::onPrintCustomsClicked,
                 onLearnMoreClicked = viewModel::onLearnMoreClicked,
-                onEditPaymentMethodClicked = viewModel::onEditPaymentMethodClicked,
             )
         }
 
@@ -186,7 +185,6 @@ fun WooShippingLabelCreationScreen(
     onRefundClicked: () -> Unit,
     onPrintCustomsClicked: () -> Unit,
     onLearnMoreClicked: () -> Unit,
-    onEditPaymentMethodClicked: () -> Unit,
 ) {
     val shipmentDetailsValue = if (uiState.isShipmentDetailsExpanded) {
         BottomSheetValue.Expanded
@@ -244,7 +242,6 @@ fun WooShippingLabelCreationScreen(
             onRefundClicked = onRefundClicked,
             onPrintCustomsClicked = onPrintCustomsClicked,
             onLearnMoreClicked = onLearnMoreClicked,
-            onEditPaymentMethodClicked = onEditPaymentMethodClicked,
         )
         val isDarkTheme = isSystemInDarkTheme()
         val isCollapsed = scaffoldState.bottomSheetState.isCollapsed
@@ -335,7 +332,6 @@ private fun LabelCreationScreenWithBottomSheet(
     onRefundClicked: () -> Unit,
     onPrintCustomsClicked: () -> Unit,
     onLearnMoreClicked: () -> Unit,
-    onEditPaymentMethodClicked: () -> Unit,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -394,7 +390,6 @@ private fun LabelCreationScreenWithBottomSheet(
                 destinationStatus = destinationStatus,
                 noticeBannerUiState = uiState.noticeBannerUiState,
                 shipmentPurchased = selectedShipment.purchased,
-                onEditPaymentMethodClicked = onEditPaymentMethodClicked,
             )
         },
         sheetPeekHeight = bottomSheetPeekHeight,
@@ -967,7 +962,6 @@ private fun WooShippingLabelCreationScreenPreview() {
             onRefundClicked = {},
             onPrintCustomsClicked = {},
             onLearnMoreClicked = {},
-            onEditPaymentMethodClicked = {},
         )
     }
 }

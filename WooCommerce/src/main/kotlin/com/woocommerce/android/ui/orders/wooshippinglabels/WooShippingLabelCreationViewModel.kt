@@ -583,7 +583,10 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                 shippingAddresses = addresses,
                 uiState = uiState,
                 destinationStatus = destinationStatus,
-                paymentsSectionUI = PaymentsSectionUI(accountSettings.paymentMethodOptions.selectedPaymentMethod)
+                paymentsSectionUI = PaymentsSectionUI(
+                    selectedPaymentMethod = accountSettings.paymentMethodOptions.selectedPaymentMethod,
+                    onEditPaymentMethodClicked = ::onEditPaymentMethodClicked
+                )
             )
         }.combine(loadTrigger.onStart { emit(Unit) }) { viewState, _ ->
             viewState
@@ -969,10 +972,6 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         triggerEvent(OpenLearnMoreScreen)
     }
 
-    fun onEditPaymentMethodClicked() {
-        triggerEvent(NavigateToPaymentMethodEdit)
-    }
-
     fun allowBackNavigation(): Boolean {
         val state = uiState.value
         return when {
@@ -1006,6 +1005,10 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                 loadTrigger.emit(Unit)
             }
         }
+    }
+
+    private fun onEditPaymentMethodClicked() {
+        triggerEvent(NavigateToPaymentMethodEdit)
     }
 
     private fun List<ShippableItemModel>.isItnRequired(): Boolean {
@@ -1245,5 +1248,6 @@ data class ShipmentCostUI(
 ) : Parcelable
 
 data class PaymentsSectionUI(
-    val selectedPaymentMethod: PaymentMethodModel?
+    val selectedPaymentMethod: PaymentMethodModel?,
+    val onEditPaymentMethodClicked: () -> Unit
 )
