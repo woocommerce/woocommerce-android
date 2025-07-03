@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels
 
+import com.woocommerce.android.extensions.filterNotNull
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.sumByFloat
@@ -12,9 +13,11 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIMode
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel.Companion.SINGLE_QUANTITY
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus
+import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRateOption
 import com.woocommerce.android.ui.orders.wooshippinglabels.split.SelectableShippableItemUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.split.SelectableShippableItemsUI
 import com.woocommerce.android.util.CurrencyFormatter
+import java.math.BigDecimal
 
 fun ShippableItemModel.toUIModel(
     currencyFormatter: CurrencyFormatter,
@@ -47,6 +50,9 @@ fun List<ShippableItemModel>.toUIModel(
     val shippableItemsUI = map { item -> item.toUIModel(currencyFormatter, dimensionUnit, weightUnit) }
     val formattedTotalPrice = getFormattedTotalPrice(currencyFormatter)
     val formattedTotalWeight = getFormattedTotalWeight(weightUnit)
+    val shipmentCostUI = shippingRates.toShipmentCostUI(
+        currencyFormatter = { currencyFormatter.formatCurrency(it, firstOrNull()?.currency.orEmpty()) }
+    )
 
     return ShipmentUI(
         shippableItems = shippableItemsUI,
@@ -58,6 +64,7 @@ fun List<ShippableItemModel>.toUIModel(
         hazmatState = hazmatCategory?.let { WooShippingLabelCreationViewModel.HazmatState.Declared(it) }
             ?: WooShippingLabelCreationViewModel.HazmatState.NoSelection,
         shippingRatesState = shippingRates,
+        shipmentCostUI = shipmentCostUI,
         purchaseState = shipmentUIModel.purchaseState,
         status = shipmentUIModel.label?.status ?: ShippingLabelStatus.UNKNOWN,
         isRefundAvailable = shipmentUIModel.label?.isRefundAvailable == true,
@@ -136,5 +143,37 @@ fun Order.getShippingLinesSummary(
             title = it.methodTitle,
             amount = currencyFormatter.formatCurrency(it.total, currency)
         )
+    }
+}
+
+private fun ShippingRatesState.toShipmentCostUI(
+    currencyFormatter: (BigDecimal) -> String
+): ShipmentCostUI? {
+    return when (this) {
+        is ShippingRatesState.DataState -> {
+            val selectedRate = selectedRate ?: return null
+            val totalPrice = selectedRate.selectedRateOption.rate.price +
+                selectedRate.additionalSelectedOptions.sumOf { selectedRate.options.getValue(it).fee }
+
+            @Suppress("SpreadOperator")
+            ShipmentCostUI(
+                serviceName = selectedRate.title,
+                formattedBasePrice = selectedRate.formattedBasePrice,
+                formattedTotalPrice = currencyFormatter(totalPrice),
+                optionsWithFees = mapOf(
+                    if (selectedRate.selectedOption != ShippingRateOption.DEFAULT) {
+                        selectedRate.selectedRateOption.optionName to selectedRate.selectedRateOption.formattedFee
+                    } else {
+                        "" to null
+                    },
+                    *selectedRate.additionalSelectedOptions.map { option ->
+                        val rateOption = selectedRate.options.getValue(option)
+                        rateOption.optionName to rateOption.formattedFee
+                    }.toTypedArray()
+                ).filterNotNull()
+            )
+        }
+
+        else -> null
     }
 }

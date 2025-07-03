@@ -20,8 +20,9 @@ class WooShippingRatesDomainMapperTest : BaseUnitTest() {
         on(it.formatCurrency(any<BigDecimal>(), any(), any())).thenAnswer { i -> "${i.arguments[1]}${i.arguments[0]}" }
     }
     private val resourceProvider: ResourceProvider = mock {
-        on(it.getString(any(), any())).thenAnswer { i -> "formatted ${i.arguments[1]}" }
         on(it.getString(any())).thenAnswer { i -> "formatted ${i.arguments[0]}" }
+        on(it.getString(any(), any())).thenAnswer { i -> "formatted ${i.arguments.joinToString(",")}" }
+        on(it.getString(any(), any(), any())).thenAnswer { i -> "formatted ${i.arguments.joinToString(",")}" }
         on(it.getQuantityString(any(), anyOrNull(), anyOrNull(), anyOrNull()))
             .thenAnswer { i -> "formatted ${i.arguments[0]}" }
     }
@@ -100,7 +101,7 @@ class WooShippingRatesDomainMapperTest : BaseUnitTest() {
 
         val rate = mappedRates.values.first().first()
 
-        assertEquals(2, rate.defaultRate.shippingRateOptions.size)
+        assertEquals(2, rate.shippingRateIncludedOptions.size)
     }
 
     @Test
@@ -136,7 +137,7 @@ class WooShippingRatesDomainMapperTest : BaseUnitTest() {
 
         val rate = mappedRates.values.first().first()
 
-        assertEquals(3, rate.defaultRate.shippingRateOptions.size)
+        assertEquals(3, rate.shippingRateIncludedOptions.size)
     }
 
     @Test
@@ -172,7 +173,7 @@ class WooShippingRatesDomainMapperTest : BaseUnitTest() {
 
         val rate = mappedRates.values.first().first()
 
-        assertEquals(2, rate.defaultRate.shippingRateOptions.size)
+        assertEquals(2, rate.shippingRateIncludedOptions.size)
     }
 
     @Test
@@ -208,7 +209,7 @@ class WooShippingRatesDomainMapperTest : BaseUnitTest() {
 
         val rate = mappedRates.values.first().first()
 
-        assertEquals(3, rate.defaultRate.shippingRateOptions.size)
+        assertEquals(3, rate.shippingRateIncludedOptions.size)
     }
 
     @Test
@@ -244,7 +245,7 @@ class WooShippingRatesDomainMapperTest : BaseUnitTest() {
 
         val rate = mappedRates.values.first().first()
 
-        assertEquals(2, rate.defaultRate.shippingRateOptions.size)
+        assertEquals(2, rate.shippingRateIncludedOptions.size)
     }
 
     @Test
@@ -280,7 +281,7 @@ class WooShippingRatesDomainMapperTest : BaseUnitTest() {
 
         val rate = mappedRates.values.first().first()
 
-        assertEquals(3, rate.defaultRate.shippingRateOptions.size)
+        assertEquals(3, rate.shippingRateIncludedOptions.size)
     }
 
     @Suppress("LongMethod")

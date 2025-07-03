@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.rates.domain
 
 import com.woocommerce.android.model.Address
+import com.woocommerce.android.ui.orders.wooshippinglabels.ShippingLabelSampleData
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.ContentType
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.RestrictionType
@@ -10,7 +11,6 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageDa
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateOptionsModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRatesRepository
-import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.generateShippingRates
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -79,7 +79,7 @@ class GetShippingRatesTest : BaseUnitTest() {
 
     @Test
     fun `when shipping rates request succeeds then result is a success`() = testBlocking {
-        whenever(mapper(any(), any())).doReturn(generateShippingRates())
+        whenever(mapper(any(), any())).doReturn(ShippingLabelSampleData.generateShippingRates())
         whenever(repository.getShippingRates(any(), any(), any(), any(), any(), any(), isNull()))
             .doReturn(Result.success(defaultRates))
 
