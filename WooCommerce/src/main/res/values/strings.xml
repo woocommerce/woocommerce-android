@@ -620,7 +620,7 @@
     <string name="orderlist_order_trashed_error">Error trashing order</string>
     <string name="orderlist_selection_count">%d orders selected</string>
     <string name="orderlist_selection_count_single">%d order selected</string>
-    <string name="orderlist_selection_menu_update_status">Update kstatus</string>
+    <string name="orderlist_selection_menu_update_status">Update status</string>
     <string name="orderlist_bulk_update_status_updated">Status updated!</string>
     <string name="orderlist_bulk_update_maximum_reached">Maximum selection count (%d) is reached.</string>
     <string name="orderlist_bulk_update_result_no_orders_updated">No orders updated. Please try again.</string>
@@ -1002,6 +1002,7 @@
     <string name="orderdetail_shipping_label_item_carrier">Shipping carriers and rates</string>
     <string name="orderdetail_shipping_label_item_payment">Payment method</string>
     <string name="orderdetail_shipping_label_item_payment_type">Credit card</string>
+    <string name="orderdetail_shipping_label_item_view_purchased_shipping_label">View purchased shipping label</string>
     <string name="orderdetail_shipping_label_item_show_shipping">Show shipment details</string>
     <string name="orderdetail_shipping_label_item_hide_shipping">Hide shipment details</string>
     <string name="orderdetail_shipping_label_carrier_info">%1$s\n%2$s</string>

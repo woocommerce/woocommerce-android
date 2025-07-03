@@ -233,8 +233,10 @@ class OrderNavigator @Inject constructor() {
             }
 
             is StartWooShippingLabelCreationFlow -> {
-                val action = OrderDetailFragmentDirections
-                    .actionOrderDetailFragmentToWooShippingLabelCreationFragment(target.orderId)
+                val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToWooShippingLabelCreationFragment(
+                    target.orderId,
+                    target.shipmentId ?: 0
+                )
                 fragment.findNavController().navigateSafely(action)
             }
         }
