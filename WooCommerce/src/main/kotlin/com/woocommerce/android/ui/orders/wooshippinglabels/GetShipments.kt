@@ -8,6 +8,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIMode
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ShippingLabelDTO
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingNetworkingMapper
+import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.DestinationAddressDTO
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
@@ -47,7 +48,7 @@ class GetShipments @Inject constructor(
 
         val shipments = config?.shipments
 
-        val shipmentUIModelList = if (shipments.isNullOrEmpty()) {
+        var shipmentUIModelList = if (shipments.isNullOrEmpty()) {
             listOf(ShipmentUIModel(localId = "0", items = orderItems))
         } else {
             shipments.map { (shipmentId, shipmentItems) ->
@@ -61,10 +62,19 @@ class GetShipments @Inject constructor(
             }
         }.sortedBy { it.localId.toLong() }
 
-        // If there are purchased labels, merge their data into the result list
-        return config?.shippingLabelData?.currentOrderLabels?.let { data ->
-            mergePurchaseData(shipmentUIModelList, data)
-        } ?: shipmentUIModelList
+        config?.shippingLabelData?.let { data ->
+            // If there are purchased labels, merge their data into the result list
+            data.currentOrderLabels?.let { labels ->
+                shipmentUIModelList = mergePurchaseData(shipmentUIModelList, labels)
+            }
+
+            // If there are stored destination address, merge it into the result list
+            data.storedData?.selectedDestination?.let { selectedDestination ->
+                shipmentUIModelList = mergeDestinationAddresses(shipmentUIModelList, selectedDestination)
+            }
+        }
+
+        return shipmentUIModelList
     }
 
     private fun mergePurchaseData(
@@ -80,4 +90,20 @@ class GetShipments @Inject constructor(
             shipmentUIModel.copy(purchased = true, label = mapper.invoke(noRefundedLabelForShipment))
         }
     }
+
+    private fun mergeDestinationAddresses(
+        shipmentUIModelList: List<ShipmentUIModel>,
+        destinationAddresses: Map<String, DestinationAddressDTO>
+    ) = shipmentUIModelList.map { shipmentUIModel ->
+        val id = shipmentUIModel.remoteId
+        if (id != null && destinationAddresses.contains(getStoredDataKey(id))) {
+            destinationAddresses[getStoredDataKey(id)]?.let {
+                shipmentUIModel.copy(label = shipmentUIModel.label?.copy(destinationAddress = mapper.invoke(it)))
+            } ?: shipmentUIModel
+        } else {
+            shipmentUIModel
+        }
+    }
+
+    private fun getStoredDataKey(shipmentId: String) = "shipment_$shipmentId"
 }
