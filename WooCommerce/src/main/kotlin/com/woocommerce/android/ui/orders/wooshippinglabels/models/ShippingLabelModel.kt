@@ -6,7 +6,6 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.ui.orders.shippinglabels.ShipmentTrackingUrls
-import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRatesDatasourceMapper.Companion.CARRIER_DHL_EXPRESS_KEY
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
@@ -40,8 +39,7 @@ data class ShippingLabelModel(
     val refund: Refund?,
     val products: List<Order.Item> = emptyList(),
     val originAddress: Address? = null,
-    val destinationAddress: Address? = null,
-    val customsData: CustomsData? = null
+    val destinationAddress: Address? = null
 ) : Parcelable {
     @IgnoredOnParcel
     val trackingLink: String
