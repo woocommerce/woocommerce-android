@@ -586,6 +586,14 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                 paymentsSectionUI = PaymentsSectionUI(
                     selectedPaymentMethod = accountSettings.paymentMethodOptions.selectedPaymentMethod,
                     onEditPaymentMethodClicked = ::onEditPaymentMethodClicked
+                ),
+                purchaseSectionUI = PurchaseSectionUI(
+                    isVisible = !shipmentUIList[uiState.selectedIndex].purchased &&
+                        shippingRatesStatesFlow.value[uiState.selectedIndex] is ShippingRatesState.DataState,
+                    markOrderComplete = uiState.markOrderComplete,
+                    formattedPrice = shipmentUIList[uiState.selectedIndex].shipmentCostUI?.formattedTotalPrice,
+                    onMarkOrderCompleteChange = ::onMarkOrderCompleteChange,
+                    onPurchaseShippingLabel = ::onPurchaseShippingLabel
                 )
             )
         }.combine(loadTrigger.onStart { emit(Unit) }) { viewState, _ ->
@@ -1059,7 +1067,8 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             val shippingAddresses: WooShippingAddresses,
             val uiState: UIControlsState,
             val destinationStatus: AddressStatus,
-            val paymentsSectionUI: PaymentsSectionUI
+            val paymentsSectionUI: PaymentsSectionUI,
+            val purchaseSectionUI: PurchaseSectionUI
         ) : WooShippingViewState() {
             val shouldShowSplitShipmentButton: Boolean
                 get() {
@@ -1246,6 +1255,14 @@ data class ShipmentCostUI(
     val formattedTotalPrice: String,
     val optionsWithFees: Map<String, String>,
 ) : Parcelable
+
+data class PurchaseSectionUI(
+    val isVisible: Boolean,
+    val markOrderComplete: Boolean,
+    val formattedPrice: String?,
+    val onMarkOrderCompleteChange: (Boolean) -> Unit,
+    val onPurchaseShippingLabel: () -> Unit,
+)
 
 data class PaymentsSectionUI(
     val selectedPaymentMethod: PaymentMethodModel?,

@@ -65,6 +65,14 @@ object ShippingLabelSampleData {
         onEditPaymentMethodClicked = {}
     )
 
+    fun getPurchaseSection() = PurchaseSectionUI(
+        markOrderComplete = true,
+        isVisible = true,
+        formattedPrice = "$10.00",
+        onPurchaseShippingLabel = {},
+        onMarkOrderCompleteChange = {},
+    )
+
     fun getPaymentOptions(countOfPaymentMethods: Int = 3) = PaymentMethodOptions(
         selectedPaymentId = if (countOfPaymentMethods > 0) 1 else null,
         paymentMethods = List(countOfPaymentMethods) { getPaymentMethod(it) },
