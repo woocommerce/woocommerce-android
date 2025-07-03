@@ -1001,6 +1001,7 @@
     <string name="orderdetail_shipping_label_item_carrier">Shipping carriers and rates</string>
     <string name="orderdetail_shipping_label_item_payment">Payment method</string>
     <string name="orderdetail_shipping_label_item_payment_type">Credit card</string>
+    <string name="orderdetail_shipping_label_item_view_purchased_shipping_label">View purchased shipping label</string>
     <string name="orderdetail_shipping_label_item_show_shipping">Show shipment details</string>
     <string name="orderdetail_shipping_label_item_hide_shipping">Hide shipment details</string>
     <string name="orderdetail_shipping_label_carrier_info">%1$s\n%2$s</string>

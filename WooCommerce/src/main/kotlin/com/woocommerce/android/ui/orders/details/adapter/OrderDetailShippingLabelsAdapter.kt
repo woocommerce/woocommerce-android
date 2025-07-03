@@ -38,6 +38,7 @@ class OrderDetailShippingLabelsAdapter(
         fun onRefundRequested(shippingLabel: ShippingLabelModel)
         fun onPrintShippingLabelClicked(shippingLabel: ShippingLabelModel)
         fun onPrintCustomsFormClicked(shippingLabel: ShippingLabelModel)
+        fun onViewShippingLabelClicked(shippingLabel: ShippingLabelModel)
     }
 
     var shippingLabels: List<ShippingLabelModel> = ArrayList()
@@ -243,10 +244,28 @@ class OrderDetailShippingLabelsAdapter(
                 }
             }
 
-            if (isRevampWooShippingEnabled && !isNotRefunded) {
+            if (isRevampWooShippingEnabled) {
+                // Legacy flow buttons
                 viewBinding.shippingLabelItemViewMore.isVisible = false
+                viewBinding.shippingLabelItemViewMoreButtonTitle.isVisible = false
+
+                if (isNotRefunded) {
+                    // New flow buttons
+                    viewBinding.shippingLabelItemViewPurchasedShippingLabelButton.isVisible = true
+                    viewBinding.shippingLabelItemViewPurchasedShippingLabelButton.setOnClickListener {
+                        listener.onViewShippingLabelClicked(shippingLabel)
+                    }
+                } else {
+                    viewBinding.shippingLabelItemViewPurchasedShippingLabelButton.isVisible = false
+                }
             } else {
+                // New flow buttons
+                viewBinding.shippingLabelItemViewPurchasedShippingLabelButton.isVisible = false
+
+                // Legacy flow buttons
                 viewBinding.shippingLabelItemViewMore.isVisible = true
+                viewBinding.shippingLabelItemViewMoreButtonTitle.isVisible = true
+
                 // click on view more details section
                 viewBinding.shippingLabelItemViewMore.setOnClickListener {
                     val isChecked = viewBinding.shippingLabelItemViewMoreButtonImage.rotation == 0F
