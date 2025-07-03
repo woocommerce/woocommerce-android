@@ -4,9 +4,9 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.Location
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.ContentType
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
-import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.ContentType
-import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.RestrictionType
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.RestrictionType
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.WooShippingRatesRestClient
@@ -78,8 +78,6 @@ class WooShippingRatesRepositoryTest : BaseUnitTest() {
     )
 
     private val defaultCustomData = CustomsData(
-        packageId = "1",
-        packageName = "Package 1",
         contentType = ContentType.MERCHANDISE,
         contentDescription = "",
         restrictionType = RestrictionType.NONE,

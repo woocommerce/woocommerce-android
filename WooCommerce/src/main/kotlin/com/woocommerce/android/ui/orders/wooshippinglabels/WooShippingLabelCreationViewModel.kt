@@ -425,7 +425,6 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         }.collectLatest { packageSelectionsFlow.value = it }
     }
 
-    // This logic will be updated later once the Customs data state is available
     private suspend fun observeCustomsDataChanges() {
         combine(
             shippingAddresses,
@@ -961,6 +960,11 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         }
     }
 
+    fun onPrintCustomsClicked() {
+        val commercialInvoiceUrl = shipments.value[selectedShipmentIndex].label?.commercialInvoiceUrl ?: return
+        triggerEvent(OpenUrl(commercialInvoiceUrl))
+    }
+
     fun onLearnMoreClicked() {
         triggerEvent(OpenLearnMoreScreen)
     }
@@ -1220,6 +1224,7 @@ data class ShipmentUI(
     val purchaseState: PurchaseState = PurchaseState.NoStarted,
     val status: ShippingLabelStatus = ShippingLabelStatus.UNKNOWN,
     val isRefundAvailable: Boolean = false,
+    val isCustomsFormAvailable: Boolean = false,
 ) : Parcelable {
     val totalItemQuantity
         get() = shippableItems.sumByFloat { it.quantity }.toInt()

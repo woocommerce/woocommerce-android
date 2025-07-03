@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.wooshippinglabels
 
 import com.woocommerce.android.extensions.filterNotNull
 import com.woocommerce.android.extensions.formatToString
+import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.sumByFloat
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
@@ -66,7 +67,8 @@ fun List<ShippableItemModel>.toUIModel(
         shipmentCostUI = shipmentCostUI,
         purchaseState = shipmentUIModel.purchaseState,
         status = shipmentUIModel.label?.status ?: ShippingLabelStatus.UNKNOWN,
-        isRefundAvailable = shipmentUIModel.label?.isRefundAvailable == true
+        isRefundAvailable = shipmentUIModel.label?.isRefundAvailable == true,
+        isCustomsFormAvailable = shipmentUIModel.label?.commercialInvoiceUrl.isNotNullOrEmpty()
     )
 }
 
