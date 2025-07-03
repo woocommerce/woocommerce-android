@@ -28,10 +28,18 @@ data class WooShippingRateModel(
     val option: Option,
     val carrier: WooShippingCarrier
 ) : Parcelable {
-    enum class Option {
-        DEFAULT,
-        SIGNATURE,
-        ADULT_SIGNATURE
+    enum class Option(
+        /**
+         * Indicates whether this option is an additional service that can be added to a base shipping rate.
+         */
+        val isAdditionalOption: Boolean
+    ) {
+        DEFAULT(isAdditionalOption = false),
+        SIGNATURE(isAdditionalOption = false),
+        ADULT_SIGNATURE(isAdditionalOption = false),
+        CARBON_NEUTRAL(isAdditionalOption = true),
+        ADDITIONAL_HANDLING(isAdditionalOption = true),
+        SATURDAY_DELIVERY(isAdditionalOption = true)
     }
 }
 

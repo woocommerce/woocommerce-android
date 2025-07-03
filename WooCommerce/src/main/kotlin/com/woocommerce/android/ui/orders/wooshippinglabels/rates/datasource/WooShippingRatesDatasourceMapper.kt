@@ -13,6 +13,9 @@ class WooShippingRatesDatasourceMapper @Inject constructor() {
         private const val DEFAULT_RATE_OPTION = "default"
         private const val SIGNATURE_RATE_OPTION = "signature_required"
         private const val ADULT_SIGNATURE_RATE_OPTION = "adult_signature_required"
+        private const val CARBON_NEUTRAL_RATE_OPTION = "carbon_neutral"
+        private const val ADDITIONAL_HANDLING_RATE_OPTION = "additional_handling"
+        private const val SATURDAY_DELIVERY_RATE_OPTION = "saturday_delivery"
 
         const val CARRIER_DHL_EXPRESS_KEY = "dhlexpress"
     }
@@ -99,6 +102,9 @@ class WooShippingRatesDatasourceMapper @Inject constructor() {
             DEFAULT_RATE_OPTION -> Option.DEFAULT
             SIGNATURE_RATE_OPTION -> Option.SIGNATURE
             ADULT_SIGNATURE_RATE_OPTION -> Option.ADULT_SIGNATURE
+            CARBON_NEUTRAL_RATE_OPTION -> Option.CARBON_NEUTRAL
+            ADDITIONAL_HANDLING_RATE_OPTION -> Option.ADDITIONAL_HANDLING
+            SATURDAY_DELIVERY_RATE_OPTION -> Option.SATURDAY_DELIVERY
             else -> null
         }
     }
