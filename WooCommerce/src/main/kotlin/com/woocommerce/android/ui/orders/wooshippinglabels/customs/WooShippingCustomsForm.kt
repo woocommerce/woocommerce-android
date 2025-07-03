@@ -34,12 +34,12 @@ enum class ContentType(val resourceId: Int) {
     RETURNED_GOODS(R.string.woo_shipping_labels_customs_content_returned_goods),
     SAMPLE(R.string.woo_shipping_labels_customs_content_sample),
     DOCUMENTS(R.string.woo_shipping_labels_customs_content_documents),
-    OTHER(R.string.woo_shipping_labels_customs_content_other);
+    OTHER(R.string.woo_shipping_labels_customs_content_other)
 }
 
 enum class RestrictionType(val resourceId: Int) {
     NONE(R.string.woo_shipping_labels_customs_restriction_none),
     QUARANTINE(R.string.woo_shipping_labels_customs_restriction_quarantine),
     SANITARY_INSPECTION(R.string.woo_shipping_labels_customs_restriction_sanitary),
-    OTHER(R.string.woo_shipping_labels_customs_restriction_other);
+    OTHER(R.string.woo_shipping_labels_customs_restriction_other)
 }
