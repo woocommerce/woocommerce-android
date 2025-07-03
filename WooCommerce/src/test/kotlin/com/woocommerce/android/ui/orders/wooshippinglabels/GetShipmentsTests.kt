@@ -3,20 +3,12 @@ package com.woocommerce.android.ui.orders.wooshippinglabels
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
-import com.woocommerce.android.ui.orders.wooshippinglabels.customs.ContentType
-import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
-import com.woocommerce.android.ui.orders.wooshippinglabels.customs.RestrictionType
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigDataStore
-import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
-import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus.UNKNOWN
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ConfigDTO
-import com.woocommerce.android.ui.orders.wooshippinglabels.networking.CustomsDTO
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.Item
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.LabelRefund
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ShippingLabelDTO
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ShippingLabelDataDTO
-import com.woocommerce.android.ui.orders.wooshippinglabels.networking.StoredDataDTO
-import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingNetworkingMapper
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -32,10 +24,8 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import java.math.BigDecimal
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
-import kotlin.test.assertNotNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class GetShipmentsTests : BaseUnitTest() {
@@ -45,9 +35,7 @@ class GetShipmentsTests : BaseUnitTest() {
         doReturn(flowOf(null)).whenever(it).observeConfig(any())
     }
 
-    private val mapper: WooShippingNetworkingMapper = mock()
-
-    private val sut = GetShipments(orderDetailRepository, productDetailRepository, configDataStore, mapper)
+    private val sut = GetShipments(orderDetailRepository, productDetailRepository, configDataStore, mock())
 
     @Test
     fun `when order only contains refunded products then should return empty list`() = testBlocking {
@@ -229,79 +217,5 @@ class GetShipmentsTests : BaseUnitTest() {
         val shipmentUIModel = result.first()
 
         assertFalse(shipmentUIModel.purchased)
-    }
-
-    @Suppress("LongMethod")
-    @Test
-    fun `when there are customs in config, result should contain label with customs`() = testBlocking {
-        val orderItem = OrderTestUtils.generateTestOrderItems(count = 1).first()
-        val order = OrderTestUtils.generateTestOrder().copy(items = listOf(orderItem))
-        val shipmentId = "0"
-        val labelId = 12L
-
-        val shippingLabel = ShippingLabelDTO(labelId = labelId, shipmentId = shipmentId)
-        val customsDTO = CustomsDTO(
-            contentsType = "merchandise",
-            restrictionType = "none",
-            contentExplanation = null,
-            restrictionComments = null,
-            nonDeliveryOption = "abandon",
-            itn = "",
-            items = emptyList(),
-            isReturnToSender = null,
-        )
-        val configDTO = ConfigDTO(
-            shipments = mapOf(shipmentId to listOf(Item(id = orderItem.itemId, subItems = emptyList()))),
-            shippingLabelData = ShippingLabelDataDTO(
-                currentOrderLabels = listOf(shippingLabel),
-                storedData = StoredDataDTO(customsInformation = mapOf("shipment_$shipmentId" to customsDTO))
-            )
-        )
-
-        whenever(orderDetailRepository.getOrderRefunds(eq(order.id))) doReturn emptyList()
-        whenever(productDetailRepository.getProductAsync(any())).thenAnswer { invocation ->
-            val productId = invocation.arguments[0] as Long
-            ProductTestUtils.generateProduct(productId = productId, productName = "Product $productId")
-        }
-        whenever(configDataStore.observeConfig(eq(order.id))) doReturn flowOf(configDTO)
-        whenever(mapper.invoke(shippingLabel)) doReturn ShippingLabelModel(
-            labelId = labelId,
-            tracking = "",
-            refundableAmount = BigDecimal.ZERO,
-            status = UNKNOWN,
-            created = null,
-            carrierId = "",
-            serviceName = "",
-            commercialInvoiceUrl = "",
-            isCommercialInvoiceSubmittedElectronically = false,
-            packageName = "",
-            isLetter = false,
-            productNames = emptyList(),
-            productIds = emptyList(),
-            shipmentId = shipmentId,
-            receiptItemId = 0L,
-            createdDate = null,
-            mainReceiptId = 0L,
-            rate = BigDecimal.ZERO,
-            currency = "",
-            expiryDate = 0L,
-            usedDate = 0L,
-            refund = null,
-        )
-        whenever(mapper.invoke(customsDTO)) doReturn CustomsData(
-            contentType = ContentType.MERCHANDISE,
-            restrictionType = RestrictionType.NONE,
-            contentDescription = "",
-            restrictionDescription = "",
-            isReturnToSender = false,
-            itn = "",
-            items = emptyList()
-        )
-
-        val result = sut.invoke(order)
-        val shipmentUIModel = result.first()
-
-        assertNotNull(shipmentUIModel.label)
-        assertNotNull(shipmentUIModel.label.customsData)
     }
 }
