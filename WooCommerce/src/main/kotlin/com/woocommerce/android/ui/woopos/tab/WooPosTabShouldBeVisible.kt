@@ -8,7 +8,7 @@ import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
-class WooPosTabIsVisible @Inject constructor(
+class WooPosTabShouldBeVisible @Inject constructor(
     private val selectedSite: SelectedSite,
     private val wooCommerceStore: WooCommerceStore,
     private val isRemoteFeatureFlagEnabled: IsRemoteFeatureFlagEnabled
