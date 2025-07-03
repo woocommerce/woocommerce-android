@@ -6,10 +6,7 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.Location
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
-import com.woocommerce.android.ui.orders.wooshippinglabels.customs.ContentType
 import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsData
-import com.woocommerce.android.ui.orders.wooshippinglabels.customs.CustomsItem
-import com.woocommerce.android.ui.orders.wooshippinglabels.customs.RestrictionType
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.AccountSettingsModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.AddressNormalizationModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
@@ -90,26 +87,6 @@ class WooShippingNetworkingMapper @Inject constructor(
             }
         )
     }
-
-    operator fun invoke(customsDTO: CustomsDTO) = CustomsData(
-        contentType = ContentType.fromString(customsDTO.contentsType),
-        contentDescription = customsDTO.contentExplanation.orEmpty(),
-        restrictionType = RestrictionType.fromString(customsDTO.restrictionType),
-        restrictionDescription = customsDTO.restrictionComments.orEmpty(),
-        isReturnToSender = customsDTO.isReturnToSender == true,
-        itn = customsDTO.itn,
-        items = customsDTO.items.map {
-            CustomsItem(
-                productID = it.productId,
-                description = it.description,
-                quantity = it.quantity,
-                value = it.price?.toBigDecimal() ?: BigDecimal.ZERO,
-                weight = it.weight.toFloat(),
-                hsTariffNumber = it.hsTariffNumber,
-                originCountry = it.originCountry,
-            )
-        },
-    )
 
     operator fun invoke(destinationAddressDTO: DestinationAddressDTO): Address {
         val name = destinationAddressDTO.name?.split(" ") ?: listOf("", "")

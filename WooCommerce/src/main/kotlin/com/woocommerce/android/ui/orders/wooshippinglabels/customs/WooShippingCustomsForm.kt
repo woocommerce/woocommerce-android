@@ -1,8 +1,9 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.customs
 
 import android.os.Parcelable
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.ContentType
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormViewModel.RestrictionType
 import com.woocommerce.android.R
-import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
@@ -37,16 +38,6 @@ enum class ContentType(val resourceId: Int) {
     SAMPLE(R.string.woo_shipping_labels_customs_content_sample),
     DOCUMENTS(R.string.woo_shipping_labels_customs_content_documents),
     OTHER(R.string.woo_shipping_labels_customs_content_other);
-
-    companion object {
-        fun fromString(value: String?): ContentType {
-            val type = entries.find { it.name.equals(value, ignoreCase = true) }
-            if (type == null) {
-                WooLog.w(T.SHIPPING_LABELS, "Unexpected ContentType value received: $value")
-            }
-            return type ?: OTHER
-        }
-    }
 }
 
 enum class RestrictionType(val resourceId: Int) {
@@ -54,14 +45,4 @@ enum class RestrictionType(val resourceId: Int) {
     QUARANTINE(R.string.woo_shipping_labels_customs_restriction_quarantine),
     SANITARY_INSPECTION(R.string.woo_shipping_labels_customs_restriction_sanitary),
     OTHER(R.string.woo_shipping_labels_customs_restriction_other);
-
-    companion object {
-        fun fromString(value: String?): RestrictionType {
-            val type = entries.find { it.name.equals(value, ignoreCase = true) }
-            if (type == null) {
-                WooLog.w(T.SHIPPING_LABELS, "Unexpected RestrictionType value received: $value")
-            }
-            return type ?: NONE
-        }
-    }
 }
