@@ -269,9 +269,8 @@ class OrderListAdapter(
 
             when (salesChannelLabel) {
                 is OrderListItemUI.SalesChannelLabel.Visible -> {
-                    val salesChannelTag = createSalesChannelTag(salesChannelLabel.text)
                     val salesChannelTagView = TagView(holder.itemView.context)
-                    salesChannelTagView.tag = salesChannelTag
+                    salesChannelTagView.tag = SalesChannelTag(salesChannelLabel.text)
                     holder.viewBinding.orderTags.addView(salesChannelTagView)
                 }
                 is OrderListItemUI.SalesChannelLabel.Hidden -> Unit
@@ -283,10 +282,6 @@ class OrderListAdapter(
                 statusKey = status
                 label = status
             }
-        }
-
-        private fun createSalesChannelTag(text: String): SalesChannelTag {
-            return SalesChannelTag(text)
         }
 
         override fun isSwipeAble(): Boolean = isNotCompleted

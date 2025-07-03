@@ -10,7 +10,8 @@ class SalesChannelTag(private val salesChannelText: String) : ITag(salesChannelT
     override fun getTagConfiguration(context: Context): TagConfig {
         return TagConfig(context).apply {
             tagText = salesChannelText
-            bgColor = ContextCompat.getColor(context, R.color.tag_bg_other)
+            bgColor = ContextCompat.getColor(context, R.color.tag_bg_pos)
+            fgColor = ContextCompat.getColor(context, R.color.tag_text_pos)
         }
     }
 }
