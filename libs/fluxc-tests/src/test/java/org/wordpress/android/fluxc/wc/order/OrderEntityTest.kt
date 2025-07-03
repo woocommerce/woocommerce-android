@@ -3,9 +3,12 @@ package org.wordpress.android.fluxc.wc.order
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import org.junit.Test
+import java.util.Collections
 import org.wordpress.android.fluxc.UnitTestUtils
+import org.wordpress.android.fluxc.model.order.LineItem
 import org.wordpress.android.fluxc.model.order.ShippingLine
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -415,5 +418,152 @@ class OrderEntityTest {
         assertTrue(feeLines.isEmpty())
         assertTrue(couponLines.isEmpty())
         assertTrue(taxLines.isEmpty())
+    }
+
+    @Test
+    fun testCachingBehavior() {
+        // GIVEN
+        val json = """[
+            {"id": 1, "name": "Product 1", "total": "10.00"},
+            {"id": 2, "name": "Product 2", "total": "20.00"}
+        ]"""
+        val model = OrderTestUtils.generateSampleOrder(61).copy(lineItems = json)
+
+        // WHEN
+        val startTime1 = System.nanoTime()
+        val firstCall = model.getLineItemList()
+        val endTime1 = System.nanoTime()
+        val firstCallDuration = (endTime1 - startTime1) / 1_000_000.0
+
+        val startTime2 = System.nanoTime()
+        val secondCall = model.getLineItemList()
+        val endTime2 = System.nanoTime()
+        val secondCallDuration = (endTime2 - startTime2) / 1_000_000.0
+
+        val startTime3 = System.nanoTime()
+        val thirdCall = model.getLineItemList()
+        val endTime3 = System.nanoTime()
+        val thirdCallDuration = (endTime3 - startTime3) / 1_000_000.0
+
+        // THEN
+        assertEquals(firstCall, secondCall)
+        assertEquals(secondCall, thirdCall)
+        println("\nCaching Performance Test:")
+        println("First call (parse): ${"%.3f".format(firstCallDuration)} ms")
+        println("Second call (cached): ${"%.3f".format(secondCallDuration)} ms")
+        println("Third call (cached): ${"%.3f".format(thirdCallDuration)} ms")
+        println("Speed improvement: ${"%.1f".format(firstCallDuration / secondCallDuration)}x faster")
+        
+        assertTrue(secondCallDuration < firstCallDuration * 0.1, 
+            "Cached call should be at least 10x faster than first call")
+    }
+
+    @Test
+    fun testCachingWithDifferentOrderIds() {
+        // GIVEN
+        val json = """[{"id": 1, "name": "Product", "total": "10.00"}]"""
+        val model1 = OrderTestUtils.generateSampleOrder(61).copy(lineItems = json)
+        val model2 = OrderTestUtils.generateSampleOrder(62).copy(lineItems = json)
+
+        // WHEN
+        val list1FirstCall = model1.getLineItemList()
+        val list1SecondCall = model1.getLineItemList()
+        val list2FirstCall = model2.getLineItemList()
+        val list2SecondCall = model2.getLineItemList()
+
+        // THEN
+        assertEquals(list1FirstCall, list1SecondCall)
+        assertEquals(list2FirstCall, list2SecondCall)
+        assertEquals(list1FirstCall.size, list2FirstCall.size)
+    }
+
+    @Test
+    fun testCachingWithDifferentJsonContent() {
+        // GIVEN
+        val json1 = """[{"id": 1, "name": "Product 1", "total": "10.00"}]"""
+        val json2 = """[{"id": 2, "name": "Product 2", "total": "20.00"}]"""
+        val model1 = OrderTestUtils.generateSampleOrder(61).copy(lineItems = json1)
+        val model2 = OrderTestUtils.generateSampleOrder(61).copy(lineItems = json2)
+
+        // WHEN
+        val list1 = model1.getLineItemList()
+        val list2 = model2.getLineItemList()
+
+        // THEN
+        assertNotEquals(list1[0].name, list2[0].name)
+        assertEquals("Product 1", list1[0].name)
+        assertEquals("Product 2", list2[0].name)
+    }
+
+    @Test
+    fun testCachingAcrossAllListTypes() {
+        // GIVEN
+        val model = OrderTestUtils.generateSampleOrder(61).copy(
+            lineItems = """[{"id": 1, "name": "Product", "total": "10.00"}]""",
+            shippingLines = """[{"id": 1, "method_title": "Flat Rate", "total": "5.00"}]""",
+            feeLines = """[{"id": 1, "name": "Fee", "total": "2.00"}]""",
+            couponLines = """[{"id": 1, "code": "DISCOUNT10", "discount": "10.00"}]""",
+            taxLines = """[{"id": 1, "rate_id": 1, "tax_total": "3.00"}]"""
+        )
+
+        // WHEN - First calls (should parse)
+        val lineItems1 = model.getLineItemList()
+        val shippingLines1 = model.getShippingLineList()
+        val feeLines1 = model.getFeeLineList()
+        val couponLines1 = model.getCouponLineList()
+        val taxLines1 = model.getTaxLineList()
+
+        // WHEN - Second calls (should be cached)
+        val startTime = System.nanoTime()
+        val lineItems2 = model.getLineItemList()
+        val shippingLines2 = model.getShippingLineList()
+        val feeLines2 = model.getFeeLineList()
+        val couponLines2 = model.getCouponLineList()
+        val taxLines2 = model.getTaxLineList()
+        val endTime = System.nanoTime()
+        val totalCachedDuration = (endTime - startTime) / 1_000_000.0
+
+        // THEN
+        assertEquals(lineItems1, lineItems2)
+        assertEquals(shippingLines1, shippingLines2)
+        assertEquals(feeLines1, feeLines2)
+        assertEquals(couponLines1, couponLines2)
+        assertEquals(taxLines1, taxLines2)
+        
+        println("\nAll cached calls total time: ${"%.3f".format(totalCachedDuration)} ms")
+        assertTrue(totalCachedDuration < 5.0, "All cached calls should complete in under 5ms")
+    }
+
+    @Test
+    fun testCachingThreadSafety() {
+        // GIVEN
+        val itemCount = 100
+        val json = (1..itemCount).joinToString(",", "[", "]") {
+            """{"id": $it, "name": "Product $it", "total": "${it * 10}.00"}"""
+        }
+        val model = OrderTestUtils.generateSampleOrder(61).copy(lineItems = json)
+        val results = Collections.synchronizedList(mutableListOf<List<LineItem>>())
+        val threads = mutableListOf<Thread>()
+
+        // WHEN
+        repeat(10) {
+            val thread = Thread {
+                repeat(100) {
+                    results.add(model.getLineItemList())
+                }
+            }
+            threads.add(thread)
+            thread.start()
+        }
+
+        threads.forEach { it.join() }
+
+        // THEN
+        assertEquals(1000, results.size)
+        results.forEach { list ->
+            assertEquals(itemCount, list.size)
+            assertEquals("Product 1", list[0].name)
+            assertEquals("Product $itemCount", list[itemCount - 1].name)
+        }
     }
 }

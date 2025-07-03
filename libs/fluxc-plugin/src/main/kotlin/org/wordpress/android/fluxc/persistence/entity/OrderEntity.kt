@@ -95,6 +95,14 @@ data class OrderEntity(
 ) {
     companion object {
         private val gson by lazy { Gson() }
+        private val cache = mutableMapOf<CacheKey, List<*>>()
+        
+        private data class CacheKey(
+            val orderId: Long,
+            val localSiteId: LocalId,
+            val jsonHash: Int,
+            val type: String
+        )
     }
 
     /**
@@ -120,7 +128,7 @@ data class OrderEntity(
      * Deserializes the JSON contained in [lineItems] into a list of [LineItem] objects.
      */
     fun getLineItemList(): List<LineItem> {
-        return parseJsonListSafely(lineItems)
+        return getCachedOrParse(lineItems, "lineItems")
     }
 
     /**
@@ -134,21 +142,21 @@ data class OrderEntity(
      * Deserializes the JSON contained in [shippingLines] into a list of [ShippingLine] objects.
      */
     fun getShippingLineList(): List<ShippingLine> {
-        return parseJsonListSafely(shippingLines)
+        return getCachedOrParse(shippingLines, "shippingLines")
     }
 
     /**
      * Deserializes the JSON contained in [feeLines] into a list of [FeeLine] objects.
      */
     fun getFeeLineList(): List<FeeLine> {
-        return parseJsonListSafely(feeLines)
+        return getCachedOrParse(feeLines, "feeLines")
     }
 
     /**
      * Deserializes the JSON contained in [couponLines] into a list of [CouponLine] objects.
      */
     fun getCouponLineList(): List<CouponLine> {
-        return parseJsonListSafely(couponLines)
+        return getCachedOrParse(couponLines, "couponLines")
     }
 
     /**
@@ -156,7 +164,18 @@ data class OrderEntity(
      * Returns an empty list if deserialization fails.
      */
     fun getTaxLineList(): List<TaxLine> {
-        return parseJsonListSafely(taxLines)
+        return getCachedOrParse(taxLines, "taxLines")
+    }
+    
+    @Suppress("UNCHECKED_CAST")
+    private inline fun <reified T> getCachedOrParse(json: String, type: String): List<T> {
+        val cacheKey = CacheKey(orderId, localSiteId, json.hashCode(), type)
+        
+        return synchronized(cache) {
+            cache.getOrPut(cacheKey) {
+                parseJsonListSafely<T>(json)
+            } as List<T>
+        }
     }
 
     private inline fun <reified T> parseJsonListSafely(json: String): List<T> =
