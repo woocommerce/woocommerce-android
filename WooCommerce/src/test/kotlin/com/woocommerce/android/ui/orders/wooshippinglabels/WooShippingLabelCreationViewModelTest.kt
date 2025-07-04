@@ -812,7 +812,8 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
             ShipmentUIModel(
                 localId = "0",
                 items = defaultShippableItems,
-                purchased = true
+                purchased = true,
+                label = shippingLabelModel
             )
         )
 
@@ -822,6 +823,35 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
         val dataState = sut.viewState.value as DataState
         assertThat(dataState.uiState.noticeBannerUiState).isNull()
+    }
+
+    @Test
+    fun `when current label is purchased, then show its price`() = testBlocking {
+        val label = shippingLabelModel.copy(
+            serviceName = "Test Service",
+            rate = BigDecimal.TEN,
+        )
+        whenever(getShipments(any())) doReturn listOf(
+            ShipmentUIModel(
+                localId = "0",
+                items = defaultShippableItems,
+                purchased = true,
+                label = label
+            )
+        )
+
+        createViewModel()
+
+        advanceUntilIdle()
+
+        val currentViewState = sut.viewState.value
+        assert(currentViewState is DataState)
+        val dataState = currentViewState as DataState
+        assertThat(dataState.shipmentUIList[0].shipmentCostUI?.formattedBasePrice)
+            .isEqualTo(currencyFormatter.formatCurrency(label.rate, label.currency))
+        assertThat(dataState.shipmentUIList[0].shipmentCostUI?.formattedTotalPrice)
+            .isEqualTo(currencyFormatter.formatCurrency(label.rate, label.currency))
+        assertThat(dataState.shipmentUIList[0].shipmentCostUI?.serviceName).isEqualTo(label.serviceName)
     }
 
     @Test
