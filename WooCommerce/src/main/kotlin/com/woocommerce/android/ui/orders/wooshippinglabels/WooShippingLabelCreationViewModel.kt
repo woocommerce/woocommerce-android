@@ -265,8 +265,9 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
     private suspend fun getDestinationAddress() {
         order.drop(1).collectLatest { order ->
+            val orderShippingEmail = order.shippingAddress.email.ifBlank { order.billingAddress.email }
             val defaultDestination = DestinationShippingAddress(
-                address = order.shippingAddress.copy(email = order.billingAddress.email),
+                address = order.shippingAddress.copy(email = orderShippingEmail),
                 isVerified = false
             )
 
@@ -274,7 +275,11 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
             if (addressValidationHelper.isMissingDestinationAddress(order.shippingAddress).not()) {
                 verifyDestinationAddress(order.id).fold(
-                    onSuccess = { destinationAddress.value = it },
+                    onSuccess = {
+                        destinationAddress.value = it.copy(
+                            address = it.address.copy(email = orderShippingEmail)
+                        )
+                    },
                     onFailure = { }
                 )
             }
