@@ -59,7 +59,7 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
         }
     }
 
-    private fun isCurrencySupported(currency: String) = SUPPORTED_CURRENCIES.contains(currency)
+    private fun isCurrencySupported(currency: String) = SUPPORTED_CURRENCIES.contains(currency.lowercase())
 
     private fun isWooCoreSupportsOrderAutoDraftsAndExtraPaymentsProps(): Boolean {
         val wooCoreVersion = getWooCoreVersion() ?: return false
