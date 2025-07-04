@@ -9,8 +9,13 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * Determines if POS can be launched *from within the POS tab* based on launch conditions,
+ * e.g., currency support, WooCommerce version, feature flags, etc.
+ * This is only checked once the POS tab is already visible.
+ */
 @Singleton
-class WooPosCanBeLaunched @Inject constructor(
+class WooPosCanBeLaunchedInTab @Inject constructor(
     private val selectedSite: SelectedSite,
     private val isScreenSizeAllowed: WooPosIsScreenSizeAllowed,
     private val getWooCoreVersion: GetWooCorePluginCachedVersion,
@@ -23,12 +28,6 @@ class WooPosCanBeLaunched @Inject constructor(
             ?: return@withContext WooPosLaunchability.NotLaunchable(
                 WooPosLaunchability.Reason.NoSiteSelected
             )
-
-        if (!isScreenSizeAllowed()) {
-            return@withContext WooPosLaunchability.NotLaunchable(
-                WooPosLaunchability.Reason.NotTablet
-            )
-        }
 
         if (!isWooCoreSupportsOrderAutoDraftsAndExtraPaymentsProps()) {
             return@withContext WooPosLaunchability.NotLaunchable(
@@ -85,7 +84,6 @@ sealed class WooPosLaunchability {
     data class NotLaunchable(val reason: Reason) : WooPosLaunchability()
 
     enum class Reason {
-        NotTablet,
         UnsupportedWooCommerceVersion,
         SiteSettingsUnavailable,
         FeatureSwitchDisabled,
