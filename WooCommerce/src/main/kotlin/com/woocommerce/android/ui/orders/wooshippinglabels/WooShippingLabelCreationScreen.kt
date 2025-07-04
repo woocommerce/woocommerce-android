@@ -839,12 +839,6 @@ private fun PackageSelectionAvailableCard(
                         imageVector = Icons.Filled.Star,
                         contentDescription = "Star",
                     )
-                } else {
-                    Icon(
-                        tint = colorResource(id = R.color.color_on_surface_disabled),
-                        imageVector = Icons.Outlined.Star,
-                        contentDescription = "Star",
-                    )
                 }
             }
         }

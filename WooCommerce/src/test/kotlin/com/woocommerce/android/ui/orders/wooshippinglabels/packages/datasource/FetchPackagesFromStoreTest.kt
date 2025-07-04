@@ -41,7 +41,7 @@ class FetchPackagesFromStoreTest : BaseUnitTest() {
                 weight = "weight",
                 isSelected = false,
                 isLetter = false,
-                isPredefined = true,
+                isUserDefined = true,
             ),
             PackageData(
                 id = "2",
@@ -50,7 +50,7 @@ class FetchPackagesFromStoreTest : BaseUnitTest() {
                 weight = "weight",
                 isSelected = false,
                 isLetter = false,
-                isPredefined = true,
+                isUserDefined = true,
                 isStarred = true,
             )
         )
@@ -65,7 +65,7 @@ class FetchPackagesFromStoreTest : BaseUnitTest() {
                         weight = "weight",
                         isSelected = false,
                         isLetter = false,
-                        isPredefined = true,
+                        isUserDefined = true,
                     )
                 )
             )
