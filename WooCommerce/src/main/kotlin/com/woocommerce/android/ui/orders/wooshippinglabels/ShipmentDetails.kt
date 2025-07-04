@@ -133,7 +133,7 @@ fun ShipmentDetails(
 
     Column(modifier.fillMaxHeight()) {
         Icon(
-            painter = if (bottomSheetState.isExpanded) {
+            painter = if (expandProgress > 0.5f) {
                 painterResource(R.drawable.ic_arrow_down_26)
             } else {
                 painterResource(R.drawable.ic_arrow_up_26)
