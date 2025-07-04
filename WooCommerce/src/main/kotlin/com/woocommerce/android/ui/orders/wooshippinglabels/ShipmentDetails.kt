@@ -104,10 +104,7 @@ fun ShipmentDetails(
         }
     }
     val coroutineScope = rememberCoroutineScope()
-
-    BackHandler(enabled = bottomSheetState.isExpanded) {
-        coroutineScope.launch { bottomSheetState.collapse() }
-    }
+    val density = LocalDensity.current
 
     val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
 
@@ -122,7 +119,9 @@ fun ShipmentDetails(
         }
     }
 
-    val density = LocalDensity.current
+    BackHandler(enabled = bottomSheetState.isExpanded) {
+        coroutineScope.launch { bottomSheetState.collapse() }
+    }
 
     LaunchedEffect(collapsedContentHeight) {
         val peekHeight = with(density) {
