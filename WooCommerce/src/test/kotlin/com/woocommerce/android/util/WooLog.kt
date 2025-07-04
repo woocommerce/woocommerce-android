@@ -27,7 +27,8 @@ object WooLog {
         SITE_PICKER,
         BLAZE,
         AI,
-        POS
+        POS,
+        SHIPPING_LABELS
     }
 
     // Breaking convention to be consistent with org.wordpress.android.util.AppLog
