@@ -833,7 +833,13 @@ private fun PackageSelectionAvailableCard(
                     )
                 }
 
-                if (packageData.isPredefined) {
+                if (packageData.isStarred) {
+                    Icon(
+                        tint = colorResource(id = R.color.color_on_surface_disabled),
+                        imageVector = Icons.Outlined.Star,
+                        contentDescription = "Star",
+                    )
+                } else {
                     Icon(
                         tint = colorResource(id = R.color.woo_yellow_20),
                         imageVector = Icons.Filled.Star,
