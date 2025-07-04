@@ -32,7 +32,7 @@ import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCRefundStore
 import java.math.BigDecimal
-import java.util.*
+import java.util.Date
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -96,7 +96,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             viewModel.viewState.observeForever { new -> viewState = new }
 
             viewState!!.feesSection.isFeesRefundAvailable.let { assertTrue(it) }
-            assertTrue(viewState!!.feesSection.isFeesMainSwitchChecked)
+            assertTrue(viewState.feesSection.isFeesMainSwitchChecked)
         }
     }
 
@@ -226,7 +226,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
         }
         val orderEntity = mock<OrderEntity>()
         val orderMapper = mock<OrderMapper> {
-            on { toAppModel(orderEntity) }.thenReturn(order)
+            onBlocking { toAppModel(orderEntity) }.thenReturn(order)
         }
         whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderEntity)
         whenever(refundStore.getAllRefunds(any(), any())).thenReturn(emptyList())
@@ -266,7 +266,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
         }
         val orderEntity = mock<OrderEntity>()
         val orderMapper = mock<OrderMapper> {
-            on { toAppModel(orderEntity) }.thenReturn(order)
+            onBlocking { toAppModel(orderEntity) }.thenReturn(order)
         }
         val refundedItems = listOf(
             mock<WCRefundItem> {
@@ -330,7 +330,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             }
             val orderEntity = mock<OrderEntity>()
             val orderMapper = mock<OrderMapper> {
-                on { toAppModel(orderEntity) }.thenReturn(order)
+                onBlocking { toAppModel(orderEntity) }.thenReturn(order)
             }
             val refundedItems = listOf(
                 mock<WCRefundItem> {
@@ -415,7 +415,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             }
             val orderEntity = mock<OrderEntity>()
             val orderMapper = mock<OrderMapper> {
-                on { toAppModel(orderEntity) }.thenReturn(order)
+                onBlocking { toAppModel(orderEntity) }.thenReturn(order)
             }
             val refundedItems = listOf(
                 mock<WCRefundItem> {
