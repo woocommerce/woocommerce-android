@@ -107,14 +107,24 @@ fun String?.isNotNullOrEmpty(): Boolean {
     return this.isNullOrEmpty().not()
 }
 
-fun String.toCamelCase(delimiter: String = " "): String {
-    return split(delimiter).joinToString(delimiter) { word ->
-        word.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+fun String.capitalizeAllWords(locale: Locale = Locale.getDefault()): String {
+    return split(" ").joinToString(" ") { word ->
+        word.capitalize(locale)
     }
 }
 
 fun String.capitalize(locale: Locale = Locale.getDefault()) = replaceFirstChar {
     if (it.isLowerCase()) it.titlecase(locale) else it.toString()
+}
+
+fun String.snakeToCamelCase(capitalizeFirstWord: Boolean = false): String {
+    return split("_").mapIndexed { index, s ->
+        if (index == 0 && !capitalizeFirstWord) {
+            s.lowercase(Locale.getDefault())
+        } else {
+            s.lowercase().capitalize()
+        }
+    }.joinToString("")
 }
 
 /**

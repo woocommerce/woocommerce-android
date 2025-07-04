@@ -89,7 +89,6 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShipping
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PurchaseState
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.components.ErrorMessageWithButton
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
-import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRateUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRatesSection
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingSortOption
 import kotlinx.coroutines.launch
@@ -117,7 +116,6 @@ fun WooShippingLabelCreationScreen(viewModel: WooShippingLabelCreationViewModel)
                 onEditOriginAddress = viewModel::onEditOriginAddress,
                 onSelectedRateSortOrderChanged = viewModel::onSelectedRateSortOrderChanged,
                 onRefreshShippingRates = viewModel::onRefreshShippingRates,
-                onSelectedSippingRateChanged = viewModel::onSelectedSippingRateChanged,
                 customWeightList = viewModel.customWeight,
                 onCustomWeightChange = viewModel::onCustomWeightChange,
                 uiState = viewState.uiState,
@@ -135,6 +133,7 @@ fun WooShippingLabelCreationScreen(viewModel: WooShippingLabelCreationViewModel)
                 onTrackShipmentClicked = viewModel::onTrackShipmentClicked,
                 onSchedulePickUpClicked = viewModel::onSchedulePickUpClicked,
                 onRefundClicked = viewModel::onRefundClicked,
+                onPrintCustomsClicked = viewModel::onPrintCustomsClicked,
                 onLearnMoreClicked = viewModel::onLearnMoreClicked,
                 onEditPaymentMethodClicked = viewModel::onEditPaymentMethodClicked,
             )
@@ -168,7 +167,6 @@ fun WooShippingLabelCreationScreen(
     onSelectedRateSortOrderChanged: (ShippingSortOption) -> Unit,
     onRefreshShippingRates: () -> Unit,
     onCustomWeightChange: (String) -> Unit,
-    onSelectedSippingRateChanged: (rate: ShippingRateUI) -> Unit,
     customWeightList: List<String>,
     uiState: WooShippingLabelCreationViewModel.UIControlsState,
     onMarkOrderCompleteChange: (Boolean) -> Unit,
@@ -186,6 +184,7 @@ fun WooShippingLabelCreationScreen(
     onTrackShipmentClicked: () -> Unit,
     onSchedulePickUpClicked: () -> Unit,
     onRefundClicked: () -> Unit,
+    onPrintCustomsClicked: () -> Unit,
     onLearnMoreClicked: () -> Unit,
     onEditPaymentMethodClicked: () -> Unit,
 ) {
@@ -228,7 +227,6 @@ fun WooShippingLabelCreationScreen(
             onRefreshShippingRates = onRefreshShippingRates,
             customWeightList = customWeightList,
             onCustomWeightChange = onCustomWeightChange,
-            onSelectedShippingRateChanged = onSelectedSippingRateChanged,
             uiState = uiState,
             onNavigateBack = onNavigateBack,
             onMarkOrderCompleteChange = onMarkOrderCompleteChange,
@@ -244,6 +242,7 @@ fun WooShippingLabelCreationScreen(
             onTrackShipmentClicked = onTrackShipmentClicked,
             onSchedulePickUpClicked = onSchedulePickUpClicked,
             onRefundClicked = onRefundClicked,
+            onPrintCustomsClicked = onPrintCustomsClicked,
             onLearnMoreClicked = onLearnMoreClicked,
             onEditPaymentMethodClicked = onEditPaymentMethodClicked,
         )
@@ -266,14 +265,14 @@ fun WooShippingLabelCreationScreen(
                 Surface(elevation = elevation) {
                     if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) {
                         PurchasesSectionLandscape(
-                            total = selectedShippingRatesState.selectedRate?.selectedOption?.formatedPrice,
+                            total = selectedShipment.shipmentCostUI?.formattedTotalPrice,
                             markOrderComplete = uiState.markOrderComplete,
                             onMarkOrderCompleteChange = onMarkOrderCompleteChange,
                             onPurchaseShippingLabel = onPurchaseShippingLabel
                         )
                     } else {
                         PurchaseButton(
-                            total = selectedShippingRatesState.selectedRate?.selectedOption?.formatedPrice,
+                            total = selectedShipment.shipmentCostUI?.formattedTotalPrice,
                             onPurchaseShippingLabel = onPurchaseShippingLabel
                         )
                     }
@@ -317,7 +316,6 @@ private fun LabelCreationScreenWithBottomSheet(
     onRefreshShippingRates: () -> Unit,
     customWeightList: List<String>,
     onCustomWeightChange: (String) -> Unit,
-    onSelectedShippingRateChanged: (rate: ShippingRateUI) -> Unit,
     uiState: WooShippingLabelCreationViewModel.UIControlsState,
     scaffoldState: BottomSheetScaffoldState,
     onMarkOrderCompleteChange: (Boolean) -> Unit,
@@ -335,6 +333,7 @@ private fun LabelCreationScreenWithBottomSheet(
     onTrackShipmentClicked: () -> Unit,
     onSchedulePickUpClicked: () -> Unit,
     onRefundClicked: () -> Unit,
+    onPrintCustomsClicked: () -> Unit,
     onLearnMoreClicked: () -> Unit,
     onEditPaymentMethodClicked: () -> Unit,
 ) {
@@ -359,7 +358,6 @@ private fun LabelCreationScreenWithBottomSheet(
     } else {
         0.dp
     }
-    val shippingRateSummary = (shippingRatesState as? ShippingRatesState.DataState)?.selectedRate?.summary
 
     val screenTitle = if (shipmentUIList[uiState.selectedIndex].purchased) {
         R.string.shipping_label_print_screen_title
@@ -385,7 +383,7 @@ private fun LabelCreationScreenWithBottomSheet(
                 shippingLines = shippingLines,
                 onMarkOrderCompleteChange = onMarkOrderCompleteChange,
                 shippingAddresses = shippingAddresses,
-                shippingRateSummary = shippingRateSummary,
+                shipmentCostUI = selectedShipment.shipmentCostUI,
                 paymentsSectionUI = paymentsSectionUI,
                 isShipmentDetailsExpanded = uiState.isShipmentDetailsExpanded,
                 markOrderComplete = uiState.markOrderComplete,
@@ -485,12 +483,12 @@ private fun LabelCreationScreenWithBottomSheet(
                         onCustomWeightChange = onCustomWeightChange,
                         onSelectedRateSortOrderChanged = onSelectedRateSortOrderChanged,
                         onRefreshShippingRates = onRefreshShippingRates,
-                        onSelectedShippingRateChanged = onSelectedShippingRateChanged,
                         onLabelPaperSizeOptionSelected = onLabelPaperSizeOptionSelected,
                         onPrintShippingLabelClicked = onPrintShippingLabelClicked,
                         onTrackShipmentClicked = onTrackShipmentClicked,
                         onSchedulePickUpClicked = onSchedulePickUpClicked,
                         onRefundClicked = onRefundClicked,
+                        onPrintCustomsClicked = onPrintCustomsClicked,
                         onLearnMoreClicked = onLearnMoreClicked,
                     )
                 }
@@ -530,12 +528,12 @@ private fun CreateShippingCards(
     onCustomWeightChange: (String) -> Unit,
     onSelectedRateSortOrderChanged: (ShippingSortOption) -> Unit,
     onRefreshShippingRates: () -> Unit,
-    onSelectedShippingRateChanged: (rate: ShippingRateUI) -> Unit,
     onLabelPaperSizeOptionSelected: (WooShippingLabelPaperSize) -> Unit,
     onPrintShippingLabelClicked: () -> Unit,
     onTrackShipmentClicked: () -> Unit,
     onSchedulePickUpClicked: () -> Unit,
     onRefundClicked: () -> Unit,
+    onPrintCustomsClicked: () -> Unit,
     onLearnMoreClicked: () -> Unit,
 ) {
     Column {
@@ -544,6 +542,7 @@ private fun CreateShippingCards(
         if (shipmentUI.purchased) {
             PrintShippingLabelSection(
                 status = shipmentUI.status,
+                isCustomsFormAvailable = shipmentUI.isCustomsFormAvailable,
                 isRefundAvailable = shipmentUI.isRefundAvailable,
                 selectedLabelPaperSizeOption = uiState.paperSizeOption,
                 onLabelPaperSizeOptionSelected = onLabelPaperSizeOptionSelected,
@@ -551,6 +550,7 @@ private fun CreateShippingCards(
                 onTrackShipmentClicked = onTrackShipmentClicked,
                 onSchedulePickUpClicked = onSchedulePickUpClicked,
                 onRefundClicked = onRefundClicked,
+                onPrintCustomsClicked = onPrintCustomsClicked,
                 onLearnMoreClicked = onLearnMoreClicked,
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
@@ -592,8 +592,7 @@ private fun CreateShippingCards(
             ShippingRatesSection(
                 shippingRatesState = shipmentUI.shippingRatesState,
                 onSelectedRateSortOrderChanged = onSelectedRateSortOrderChanged,
-                onRefreshShippingRates = onRefreshShippingRates,
-                onSelectedSippingRateChanged = onSelectedShippingRateChanged
+                onRefreshShippingRates = onRefreshShippingRates
             )
         }
     }
@@ -926,11 +925,8 @@ private fun WooShippingLabelCreationScreenPreview() {
                     packageSelectionState = NotSelected,
                     customsState = Unavailable,
                     hazmatState = Declared(ShippingLabelHazmatCategory.CLASS_1),
-                    shippingRatesState = ShippingRatesState.DataState(
-                        selectedRatesSortOrder = ShippingSortOption.CHEAPEST,
-                        shippingRates = emptyMap(),
-                        selectedRate = null
-                    ),
+                    shippingRatesState = ShippingLabelSampleData.getShippingRatesSection(),
+                    shipmentCostUI = ShippingLabelSampleData.getShippingRateSummaryUI(),
                 )
             ),
             shouldShowSplitShipmentButton = true,
@@ -952,7 +948,6 @@ private fun WooShippingLabelCreationScreenPreview() {
             onSelectedRateSortOrderChanged = {},
             customWeightList = listOf(""),
             onCustomWeightChange = {},
-            onSelectedSippingRateChanged = {},
             onMarkOrderCompleteChange = {},
             onNavigateBack = {},
             onEditOriginAddress = {},
@@ -961,7 +956,7 @@ private fun WooShippingLabelCreationScreenPreview() {
                 isShipmentDetailsExpanded = false,
                 paperSizeOption = WooShippingLabelPaperSize.LABEL
             ),
-            onShipmentDetailsExpandedChange = { true },
+            onShipmentDetailsExpandedChange = {},
             onEditCustomsClick = {},
             onEditDestinationAddress = {},
             destinationStatus = AddressStatus.VERIFIED,
@@ -970,6 +965,7 @@ private fun WooShippingLabelCreationScreenPreview() {
             onTrackShipmentClicked = {},
             onSchedulePickUpClicked = {},
             onRefundClicked = {},
+            onPrintCustomsClicked = {},
             onLearnMoreClicked = {},
             onEditPaymentMethodClicked = {},
         )

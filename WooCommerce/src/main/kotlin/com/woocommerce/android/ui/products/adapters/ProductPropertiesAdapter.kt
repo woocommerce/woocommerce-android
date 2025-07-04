@@ -11,7 +11,6 @@ import com.woocommerce.android.ui.products.models.ProductProperty.Link
 import com.woocommerce.android.ui.products.models.ProductProperty.Property
 import com.woocommerce.android.ui.products.models.ProductProperty.PropertyGroup
 import com.woocommerce.android.ui.products.models.ProductProperty.RatingBar
-import com.woocommerce.android.ui.products.models.ProductProperty.ReadMore
 import com.woocommerce.android.ui.products.models.ProductProperty.Switch
 import com.woocommerce.android.ui.products.models.ProductProperty.Type
 import com.woocommerce.android.ui.products.models.ProductProperty.Type.BUTTON
@@ -22,7 +21,6 @@ import com.woocommerce.android.ui.products.models.ProductProperty.Type.LINK
 import com.woocommerce.android.ui.products.models.ProductProperty.Type.PROPERTY
 import com.woocommerce.android.ui.products.models.ProductProperty.Type.PROPERTY_GROUP
 import com.woocommerce.android.ui.products.models.ProductProperty.Type.RATING_BAR
-import com.woocommerce.android.ui.products.models.ProductProperty.Type.READ_MORE
 import com.woocommerce.android.ui.products.models.ProductProperty.Type.SWITCH
 import com.woocommerce.android.ui.products.models.ProductProperty.Type.WARNING
 import com.woocommerce.android.ui.products.models.ProductProperty.Warning
@@ -35,7 +33,6 @@ import com.woocommerce.android.ui.products.viewholders.ProductPropertyViewHolder
 import com.woocommerce.android.ui.products.viewholders.PropertyGroupViewHolder
 import com.woocommerce.android.ui.products.viewholders.PropertyViewHolder
 import com.woocommerce.android.ui.products.viewholders.RatingBarViewHolder
-import com.woocommerce.android.ui.products.viewholders.ReadMoreViewHolder
 import com.woocommerce.android.ui.products.viewholders.SwitchViewHolder
 import com.woocommerce.android.ui.products.viewholders.WarningViewHolder
 import com.woocommerce.android.widgets.WCWarningBanner
@@ -63,7 +60,6 @@ class ProductPropertiesAdapter : Adapter<ProductPropertyViewHolder>() {
             PROPERTY_GROUP -> PropertyGroupViewHolder(parent)
             EDITABLE -> EditableViewHolder(parent)
             LINK -> LinkViewHolder(parent)
-            READ_MORE -> ReadMoreViewHolder(parent)
             SWITCH -> SwitchViewHolder(parent)
             WARNING -> WarningViewHolder(WCWarningBanner(parent.context))
             BUTTON -> ButtonViewHolder(parent)
@@ -85,7 +81,6 @@ class ProductPropertiesAdapter : Adapter<ProductPropertyViewHolder>() {
             is PropertyGroupViewHolder -> holder.bind(item as PropertyGroup)
             is RatingBarViewHolder -> holder.bind(item as RatingBar)
             is LinkViewHolder -> holder.bind(item as Link)
-            is ReadMoreViewHolder -> holder.bind(item as ReadMore)
             is SwitchViewHolder -> holder.bind(item as Switch)
             is WarningViewHolder -> holder.bind(item as Warning)
             is ButtonViewHolder -> holder.bind(item as Button)

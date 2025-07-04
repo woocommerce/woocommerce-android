@@ -54,8 +54,10 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.StoreOptionsMo
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
 import com.woocommerce.android.ui.orders.wooshippinglabels.purchased.ObserveShippingLabelStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.purchased.printing.FetchShippingLabelFile
+import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.domain.GetShippingRates
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.CarrierUI
+import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRateOption
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRateUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingSortOption
 import com.woocommerce.android.util.CurrencyFormatter
@@ -317,25 +319,62 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     }
 
     private suspend fun observeShippingRatesState() {
+        fun onSelectedShippingRateChanged(
+            rate: ShippingRateUI?
+        ) {
+            selectedRatesFlow.update {
+                it.toMutableList().apply { set(selectedShipmentIndex, rate) }
+            }
+        }
+
+        fun onSelectedRateOptionChanged(
+            option: WooShippingRateModel.Option,
+            checked: Boolean
+        ) {
+            selectedRatesFlow.update { currentRates ->
+                val currentRate = currentRates[selectedShipmentIndex] ?: return
+                val newRate = if (!option.isAdditionalOption) {
+                    currentRate.copy(selectedOption = if (checked) option else ShippingRateOption.DEFAULT)
+                } else {
+                    currentRate.copy(
+                        additionalSelectedOptions = currentRate.additionalSelectedOptions.let {
+                            if (checked) it + option else it - option
+                        }
+                    )
+                }
+                currentRates.toMutableList().apply {
+                    set(selectedShipmentIndex, newRate)
+                }
+            }
+        }
+
         combine(
             shippingRatesListFlow.filter { it.isNotEmpty() },
             selectedRatesFlow.filter { it.isNotEmpty() },
             selectedRatesSortOrdersFlow.filter { it.isNotEmpty() },
         ) { shippingRates, selectedRates, selectedRatesSortOrders ->
-            shippingRates.mapIndexed { index, map ->
-                if (map.isEmpty()) {
-                    ShippingRatesState.NoAvailable
-                } else {
-                    ShippingRatesState.DataState(
-                        selectedRatesSortOrders[index],
-                        sortShippingRates(selectedRatesSortOrders[index], map),
-                        selectedRates[index]
-                    )
-                }
-            }
-        }.collectLatest {
-            shippingRatesStatesFlow.value = it
+            Triple(shippingRates, selectedRates, selectedRatesSortOrders)
         }
+            .filter { (shippingRates, selectedRates, selectedRatesSortOrders) ->
+                shippingRates.size == selectedRates.size && shippingRates.size == selectedRatesSortOrders.size
+            }
+            .map { (shippingRates, selectedRates, selectedRatesSortOrders) ->
+                shippingRates.mapIndexed { index, map ->
+                    if (map.isEmpty()) {
+                        ShippingRatesState.NoAvailable
+                    } else {
+                        ShippingRatesState.DataState(
+                            selectedRatesSortOrder = selectedRatesSortOrders[index],
+                            shippingRates = sortShippingRates(selectedRatesSortOrders[index], map),
+                            selectedRate = selectedRates[index],
+                            onSelectedShippingRateChanged = ::onSelectedShippingRateChanged,
+                            onSelectedRateOptionChanged = ::onSelectedRateOptionChanged
+                        )
+                    }
+                }
+            }.collectLatest {
+                shippingRatesStatesFlow.value = it
+            }
     }
 
     @OptIn(FlowPreview::class)
@@ -386,7 +425,6 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         }.collectLatest { packageSelectionsFlow.value = it }
     }
 
-    // This logic will be updated later once the Customs data state is available
     private suspend fun observeCustomsDataChanges() {
         combine(
             shippingAddresses,
@@ -664,14 +702,10 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         ) {
             val newRate = newRates.values.flatten().find {
                 it.defaultRate.rate.serviceId == previouslySelectedRate.defaultRate.rate.serviceId
-            }?.let {
-                val selectedOption = it.options[previouslySelectedRate.selectedOption.option]
-                if (selectedOption != null) {
-                    it.copy(selectedOption = selectedOption)
-                } else {
-                    null
-                }
-            } ?: return
+            }?.copy(
+                selectedOption = previouslySelectedRate.selectedOption,
+                additionalSelectedOptions = previouslySelectedRate.additionalSelectedOptions
+            ) ?: return
 
             selectedRatesFlow.update { currentRates ->
                 currentRates.toMutableList().apply {
@@ -710,7 +744,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     fun onPurchaseShippingLabel() {
         val selectedPackage = selectedPackagesFlow.value[selectedShipmentIndex]
         val addresses = shippingAddresses.value
-        val shippingRate = selectedRatesFlow.value[selectedShipmentIndex]?.selectedOption?.rate
+        val shippingRate = selectedRatesFlow.value[selectedShipmentIndex]
         val weight = packageWeightsFlow.value[selectedShipmentIndex]?.totalWeight
 
         if (selectedPackage == null || addresses == null || shippingRate == null || weight == null) return
@@ -726,7 +760,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             shipments.value[selectedShipmentIndex].copy(purchaseState = PurchaseState.InProgress)
         )
 
-        val customsData = customsFormDataFlow.value[selectedShipmentIndex]?.let { listOf(it) }
+        val customsData = customsFormDataFlow.value[selectedShipmentIndex]
 
         launch {
             purchaseShippingLabel(
@@ -778,12 +812,6 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     fun onSelectedRateSortOrderChanged(option: ShippingSortOption) {
         selectedRatesSortOrdersFlow.value = selectedRatesSortOrdersFlow.value.toMutableList().apply {
             set(selectedShipmentIndex, option)
-        }
-    }
-
-    fun onSelectedSippingRateChanged(rate: ShippingRateUI) {
-        selectedRatesFlow.update {
-            selectedRatesFlow.value.toMutableList().apply { set(selectedShipmentIndex, rate) }
         }
     }
 
@@ -932,6 +960,11 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         }
     }
 
+    fun onPrintCustomsClicked() {
+        val commercialInvoiceUrl = shipments.value[selectedShipmentIndex].label?.commercialInvoiceUrl ?: return
+        triggerEvent(OpenUrl(commercialInvoiceUrl))
+    }
+
     fun onLearnMoreClicked() {
         triggerEvent(OpenLearnMoreScreen)
     }
@@ -1051,7 +1084,9 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         data class DataState(
             val selectedRatesSortOrder: ShippingSortOption,
             val shippingRates: Map<CarrierUI, List<ShippingRateUI>>,
-            val selectedRate: ShippingRateUI? = null
+            val selectedRate: ShippingRateUI?,
+            val onSelectedShippingRateChanged: (ShippingRateUI) -> Unit,
+            val onSelectedRateOptionChanged: (WooShippingRateModel.Option, Boolean) -> Unit
         ) : ShippingRatesState()
     }
 
@@ -1185,9 +1220,11 @@ data class ShipmentUI(
     val customsState: CustomsState,
     val hazmatState: HazmatState,
     val shippingRatesState: ShippingRatesState,
+    val shipmentCostUI: ShipmentCostUI?,
     val purchaseState: PurchaseState = PurchaseState.NoStarted,
     val status: ShippingLabelStatus = ShippingLabelStatus.UNKNOWN,
     val isRefundAvailable: Boolean = false,
+    val isCustomsFormAvailable: Boolean = false,
 ) : Parcelable {
     val totalItemQuantity
         get() = shippableItems.sumByFloat { it.quantity }.toInt()
@@ -1200,11 +1237,11 @@ data class ShippingLineSummaryUI(
 ) : Parcelable
 
 @Parcelize
-data class ShippingRateSummaryUI(
+data class ShipmentCostUI(
     val serviceName: String,
-    val total: String,
-    val optionName: String? = null,
-    val optionFee: String? = null
+    val formattedBasePrice: String,
+    val formattedTotalPrice: String,
+    val optionsWithFees: Map<String, String>,
 ) : Parcelable
 
 data class PaymentsSectionUI(

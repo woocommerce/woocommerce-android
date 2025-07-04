@@ -82,3 +82,8 @@ data class ShippingRateDTO(
 data class WooShippingRatesDTO(
     val rates: List<ShippingRateDTO>
 )
+
+data class ShippingRateSurchargeDTO(
+    val value: Any,
+    val surcharge: BigDecimal
+)

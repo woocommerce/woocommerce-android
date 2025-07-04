@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.networking
 
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toLowerCase
+import com.woocommerce.android.extensions.snakeToCamelCase
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.Location
@@ -18,7 +19,9 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.StoreOptionsMo
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRateModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRatesDatasourceMapper
+import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingSelectedRateModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.DestinationAddressDTO
+import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.ShippingRateSurchargeDTO
 import com.woocommerce.android.util.StringUtils.combineStrings
 import java.math.BigDecimal
 import java.util.Date
@@ -228,25 +231,40 @@ class WooShippingNetworkingMapper @Inject constructor(
     }
 
     fun toPackagePurchaseDTO(
+        shipmentId: Int,
         selectedPackage: PackageData,
-        selectedRate: WooShippingRateModel,
+        selectedRate: WooShippingSelectedRateModel,
         shippableItems: List<Long>,
         weight: Float
     ): PackagePurchaseDTO {
         return PackagePurchaseDTO(
-            id = "default_package",
+            id = shipmentId.toString(),
             boxId = selectedPackage.id,
             length = selectedPackage.length.toFloat(),
             width = selectedPackage.width.toFloat(),
             height = selectedPackage.height.toFloatOrNull() ?: PackageData.DEFAULT_HEIGHT.toFloat(),
             weight = weight,
             isLetter = selectedPackage.isLetter,
-            shipmentId = selectedRate.shipmentId,
+            shipmentId = selectedRate.rate.shipmentId,
             products = shippableItems,
-            rateId = selectedRate.rateId,
-            serviceId = selectedRate.serviceId,
-            carrierId = selectedRate.carrierId,
-            serviceName = selectedRate.serviceName
+            rateId = selectedRate.rate.rateId,
+            serviceId = selectedRate.rate.serviceId,
+            carrierId = selectedRate.rate.carrierId,
+            serviceName = selectedRate.rate.serviceName,
+            signature = when (selectedRate.rate.option) {
+                WooShippingRateModel.Option.SIGNATURE -> "yes"
+                WooShippingRateModel.Option.ADULT_SIGNATURE -> "adult"
+                else -> null
+            },
+            carbonNeutral = selectedRate.additionalRates
+                .any { it.option == WooShippingRateModel.Option.CARBON_NEUTRAL }
+                .takeIf { true },
+            additionalHandling = selectedRate.additionalRates
+                .any { it.option == WooShippingRateModel.Option.ADDITIONAL_HANDLING }
+                .takeIf { true },
+            saturdayDelivery = selectedRate.additionalRates
+                .any { it.option == WooShippingRateModel.Option.SATURDAY_DELIVERY }
+                .takeIf { true }
         )
     }
 
@@ -266,8 +284,41 @@ class WooShippingNetworkingMapper @Inject constructor(
             isSelected = selectedRate.isSelected,
             tracking = selectedRate.isTrackingEnabled,
             listRate = selectedRate.listRate,
-            retailRate = selectedRate.retailRate
+            retailRate = selectedRate.retailRate,
+            type = when (selectedRate.option) {
+                WooShippingRateModel.Option.SIGNATURE, WooShippingRateModel.Option.ADULT_SIGNATURE ->
+                    selectedRate.option.id.snakeToCamelCase()
+
+                else -> null
+            }
         )
+    }
+
+    fun toSelectedRateOptions(
+        selectedRate: WooShippingSelectedRateModel
+    ): Map<WooShippingRateModel.Option, ShippingRateSurchargeDTO> {
+        val additionalRates = selectedRate.additionalRates.associate {
+            it.option to ShippingRateSurchargeDTO(
+                value = true,
+                surcharge = selectedRate.getSurcharge(it.option)
+            )
+        }
+
+        val signatureSurcharge = if (selectedRate.rate.option == WooShippingRateModel.Option.SIGNATURE ||
+            selectedRate.rate.option == WooShippingRateModel.Option.ADULT_SIGNATURE
+        ) {
+            selectedRate.rate.option to ShippingRateSurchargeDTO(
+                value = if (selectedRate.rate.option == WooShippingRateModel.Option.SIGNATURE) {
+                    "yes"
+                } else {
+                    "adult"
+                },
+                surcharge = selectedRate.getSurcharge(selectedRate.rate.option)
+            )
+        } else {
+            null
+        }
+        return additionalRates + (signatureSurcharge?.let { mapOf(it) } ?: emptyMap())
     }
 
     fun toAddressDTO(address: Address, id: String? = null): AddressDTO {
@@ -287,31 +338,26 @@ class WooShippingNetworkingMapper @Inject constructor(
     }
 
     fun toCustomsDTO(
-        customsDataList: List<CustomsData>
-    ): Map<String, CustomsDTO> {
-        return customsDataList.map { customsData ->
-            CustomsDTO(
-                contentsType = customsData.contentType.name.toLowerCase(Locale.current),
-                contentExplanation = customsData.contentDescription,
-                restrictionType = customsData.restrictionType.name.toLowerCase(Locale.current),
-                restrictionComments = customsData.restrictionDescription,
-                isReturnToSender = if (customsData.isReturnToSender) "return" else "abandon",
-                itn = customsData.itn,
-                items = customsData.items.map {
-                    CustomsItemDTO(
-                        productId = it.productID,
-                        description = it.description,
-                        quantity = it.quantity,
-                        value = it.value.toDouble(),
-                        weight = it.weight.toDouble(),
-                        hsTariffNumber = it.hsTariffNumber,
-                        originCountry = it.originCountryCode
-                    )
-                }
-            )
-        }.withIndex().associateBy(
-            keySelector = { "${CUSTOMS_PACKAGE_PREFIX}${it.index}" },
-            valueTransform = { it.value }
+        customsData: CustomsData
+    ): CustomsDTO {
+        return CustomsDTO(
+            contentsType = customsData.contentType.name.toLowerCase(Locale.current),
+            contentExplanation = customsData.contentDescription,
+            restrictionType = customsData.restrictionType.name.toLowerCase(Locale.current),
+            restrictionComments = customsData.restrictionDescription,
+            isReturnToSender = if (customsData.isReturnToSender) "return" else "abandon",
+            itn = customsData.itn,
+            items = customsData.items.map {
+                CustomsItemDTO(
+                    productId = it.productID,
+                    description = it.description,
+                    quantity = it.quantity,
+                    value = it.value.toDouble(),
+                    weight = it.weight.toDouble(),
+                    hsTariffNumber = it.hsTariffNumber,
+                    originCountry = it.originCountryCode
+                )
+            }
         )
     }
 
@@ -322,8 +368,4 @@ class WooShippingNetworkingMapper @Inject constructor(
                 category = hazmatSelection.requestFieldValue
             )
         } ?: HazmatDTO()
-
-    companion object {
-        private const val CUSTOMS_PACKAGE_PREFIX = "shipment_"
-    }
 }
