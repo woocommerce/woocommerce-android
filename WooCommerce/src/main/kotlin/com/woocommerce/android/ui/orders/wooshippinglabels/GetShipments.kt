@@ -6,6 +6,7 @@ import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigDataStore
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShipmentUIModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ShippingLabelDTO
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingNetworkingMapper
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
@@ -71,13 +72,13 @@ class GetShipments @Inject constructor(
         shipmentUIModelList: List<ShipmentUIModel>,
         currentOrderLabels: List<ShippingLabelDTO>
     ) = shipmentUIModelList.map { shipmentUIModel ->
-        val noRefundedLabelForShipment = currentOrderLabels.find {
-            it.shipmentId == shipmentUIModel.remoteId && it.refund == null
+        val purchasedNonRefundedLabel = currentOrderLabels.find {
+            it.shipmentId == shipmentUIModel.remoteId && it.status == ShippingLabelStatus.PURCHASED && it.refund == null
         }
-        if (noRefundedLabelForShipment == null) {
+        if (purchasedNonRefundedLabel == null) {
             shipmentUIModel
         } else {
-            shipmentUIModel.copy(purchased = true, label = mapper.invoke(noRefundedLabelForShipment))
+            shipmentUIModel.copy(purchased = true, label = mapper.invoke(purchasedNonRefundedLabel))
         }
     }
 }

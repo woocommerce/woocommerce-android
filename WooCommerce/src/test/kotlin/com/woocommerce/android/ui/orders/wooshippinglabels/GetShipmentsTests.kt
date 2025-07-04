@@ -4,6 +4,7 @@ import com.woocommerce.android.model.Refund
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.wooshippinglabels.datasource.WooShippingConfigDataStore
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ConfigDTO
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.Item
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.LabelRefund
@@ -203,6 +204,37 @@ class GetShipmentsTests : BaseUnitTest() {
             labelId = labelId,
             shipmentId = shipmentId,
             refund = LabelRefund(status = "") // Mark as refunded
+        )
+        val configDTO = ConfigDTO(
+            shipments = shipments,
+            shippingLabelData = ShippingLabelDataDTO(currentOrderLabels = listOf(shippingLabel))
+        )
+        whenever(configDataStore.observeConfig(eq(order.id))) doReturn flowOf(configDTO)
+
+        val result = sut.invoke(order)
+        val shipmentUIModel = result.first()
+
+        assertFalse(shipmentUIModel.purchased)
+    }
+
+    @Test
+    fun `when label is failed, then purchased should be false`() = testBlocking {
+        val orderItem = OrderTestUtils.generateTestOrderItems(count = 1).first()
+        val order = OrderTestUtils.generateTestOrder().copy(items = listOf(orderItem))
+        val shipmentId = "0"
+        val labelId = 123L
+
+        whenever(orderDetailRepository.getOrderRefunds(eq(order.id))) doReturn emptyList()
+        whenever(productDetailRepository.getProductAsync(any())).thenAnswer { invocation ->
+            val productId = invocation.arguments[0] as Long
+            ProductTestUtils.generateProduct(productId = productId, productName = "Product $productId")
+        }
+
+        val shipments = mapOf(shipmentId to listOf(Item(id = orderItem.itemId, subItems = emptyList())))
+        val shippingLabel = ShippingLabelDTO(
+            labelId = labelId,
+            shipmentId = shipmentId,
+            status = ShippingLabelStatus.PURCHASE_ERROR
         )
         val configDTO = ConfigDTO(
             shipments = shipments,
