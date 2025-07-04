@@ -103,7 +103,7 @@ fun WooShippingPackageListItemContent(
 ) {
     Surface {
         Row(
-            modifier = Modifier.padding(top = 8.dp),
+            modifier = modifier.padding(16.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -134,9 +134,7 @@ fun WooShippingPackageListItemContent(
             }
             if (packageItemSupportsStarring) {
                 Icon(
-                    modifier = Modifier
-                        .padding(end = 16.dp)
-                        .clickable { onPackageStarred(packageData, !packageData.isStarred) },
+                    modifier = Modifier.clickable { onPackageStarred(packageData, !packageData.isStarred) },
                     tint = colorResource(id = R.color.color_on_surface_disabled),
                     imageVector = when (packageData.isStarred) {
                         true -> Icons.Filled.Star
@@ -158,13 +156,9 @@ fun WooShippingPackageListItemContent(
 fun WooShippingPackageListItemSkeleton(
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier
-            .padding(top = 8.dp)
-            .fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
+    Column(modifier = modifier.fillMaxWidth()) {
         Row(
+            modifier = Modifier.padding(vertical = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {

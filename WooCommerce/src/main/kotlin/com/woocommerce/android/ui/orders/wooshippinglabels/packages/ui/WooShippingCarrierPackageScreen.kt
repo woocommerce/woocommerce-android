@@ -4,7 +4,6 @@ import android.content.res.Configuration
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -252,13 +251,9 @@ private fun PackageListSection(
     onPackageSelected: (PackageData, Boolean) -> Unit,
     onPackageStarred: (PackageData, Boolean) -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .padding(start = 8.dp)
-            .wrapContentHeight(),
-        verticalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
+    Column(modifier = Modifier.wrapContentHeight()) {
         Text(
+            modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 8.dp),
             text = sectionHeader,
             style = MaterialTheme.typography.body1,
             color = colorResource(id = R.color.color_on_surface_disabled)
@@ -266,9 +261,7 @@ private fun PackageListSection(
         Divider()
         packages.forEachIndexed { index, packageData ->
             WooShippingPackageListItem(
-                modifier = Modifier
-                    .clickable { onPackageSelected(packageData, packageData.isSelected.not()) }
-                    .padding(start = 16.dp),
+                modifier = Modifier.clickable { onPackageSelected(packageData, packageData.isSelected.not()) },
                 packageData = packageData,
                 onPackageSelected = onPackageSelected,
                 divider = index < packages.size - 1,

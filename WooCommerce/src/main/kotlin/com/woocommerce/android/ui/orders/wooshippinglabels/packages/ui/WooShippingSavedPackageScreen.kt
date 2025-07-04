@@ -116,7 +116,6 @@ fun WooShippingSavedPackageContent(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp)
             .verticalScroll(rememberScrollState())
     ) {
         savedPackages.forEachIndexed { index, packageData ->
